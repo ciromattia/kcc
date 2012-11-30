@@ -3,8 +3,10 @@
 `KindleComicConverter` is a MacOS X AppleScript droplet to convert image folders to a comic-type Mobipocket ebook to take advantage of the new Panel View mode on Amazon's Kindle.
 
 ## REQUIREMENTS
-  - `kindlegen` in /usr/local/bin/  
-  - [unrar](http://www.rarlab.com/download.htm) and [rarfile.py](http://developer.berlios.de/project/showfiles.php?group_id=5373&release_id=18844) for `calibre2ebook.py` automatic CBR extracting
+- Python (included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows)  
+- `kindlegen` in /usr/local/bin/  
+- [unrar](http://www.rarlab.com/download.htm) and [rarfile.py](http://developer.berlios.de/project/showfiles.php?group_id=5373&release_id=18844) for `calibre2ebook.py` automatic CBR extracting.  
+- `comic2ebook.py` can optionally use the [Python Imaging Library](http://www.pythonware.com/products/pil/) to correctly set the image resolution on OPF file, please refer to official documentation for installing into your system.
 
 ## USAGE
 Drop a folder over the droplet, after a while you'll get a comic-type .mobi to sideload on your Kindle.  
