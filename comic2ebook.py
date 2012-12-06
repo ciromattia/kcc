@@ -164,7 +164,7 @@ if __name__ == "__main__":
                     print "Optimizing " + file + " for " + profile
                     img = image.ComicPage(dir+'/'+file, profile)
                     img.resizeImage()
-                    img.frameImage()
+                    #img.frameImage()
                     img.quantizeImage()
                     img.saveToDir(dir)
         except ImportError:
@@ -172,9 +172,15 @@ if __name__ == "__main__":
 
         for file in os.listdir(dir):
             if (getImageFileName(file) != None and isInFilelist(file,filelist) == False):
+                # put credits at the end
+                if "credits" in file.lower():
+                    os.rename(dir+'/'+file, dir+'/ZZZ999_'+file)
+                    file = 'ZZZ999_'+file
                 filename = HTMLbuilder(dir,file).getResult()
                 if (filename != None):
                     filelist.append(filename)
         NCXbuilder(dir,title)
+        # ensure we're sorting files alphabetically
+        filelist = sorted(filelist, key=lambda name: name[0])
         OPFBuilder(dir,title,filelist)
     sys.exit(0)
