@@ -19,113 +19,48 @@
 # Changelog
 #  1.00 - Initial version
 #  1.10 - Added support for CBZ/CBR files
+#  1.11 - Added support for ZIP/RAR extensions
+#  1.20 - Comic optimizations! Split pages not target-oriented (landscape
+#       with portrait target or portrait with landscape target), add palette
+#       and other image optimizations from Mangle.
+#       WARNING: PIL is required for all image mangling!
 #
 # Todo:
 #   - Add gracefully exit for CBR if no rarfile.py and no unrar
 #       executable are found
 #   - Improve error reporting
-#
+#   - recurse into dirtree for multiple comics
 
-__version__ = '1.10'
+__version__ = '1.20'
 
 import os
 import sys
-
-class Unbuffered:
-    def __init__(self, stream):
-        self.stream = stream
-    def write(self, data):
-        self.stream.write(data)
-        self.stream.flush()
-    def __getattr__(self, attr):
-        return getattr(self.stream, attr)
-
-class CBxArchive:
-    def __init__(self, origFileName):
-        self.cbxexts = ['.cbz', '.cbr']
-        self.origFileName = origFileName
-        self.filename = os.path.splitext(origFileName)
-        self.path = self.filename[0]
-
-    def isCbxFile(self):
-        result = (self.filename[1].lower() in self.cbxexts)
-        if result == True:
-            return result
-        return False
-
-    def getPath(self):
-        return self.path
-
-    def extractCBZ(self):
-        try:
-            from zipfile import ZipFile
-        except ImportError:
-            self.cbzFile = None
-        cbzFile = ZipFile(self.origFileName)
-        for f in cbzFile.namelist():
-            if (f.startswith('__MACOSX') or f.endswith('.DS_Store')):
-                pass # skip MacOS special files
-            elif f.endswith('/'):
-                try:
-                    os.makedirs(self.path+f)
-                except:
-                    pass #the dir exists so we are going to extract the images only.
-            else:
-                cbzFile.extract(f, self.path)
-
-    def extractCBR(self):
-        try:
-            import rarfile
-        except ImportError:
-            self.cbrFile = None
-        cbrFile = rarfile.RarFile(self.origFileName)
-        for f in cbrFile.namelist():
-            if f.endswith('/'):
-                try:
-                    os.makedirs(self.path+f)
-                except:
-                    pass #the dir exists so we are going to extract the images only.
-            else:
-                cbrFile.extract(f, self.path)
-
-    def extract(self):
-        if ('.cbr' == self.filename[1].lower()):
-            self.extractCBR()
-        elif ('.cbz' == self.filename[1].lower()):
-            self.extractCBZ()
-        dir = os.listdir(self.path)
-        if (len(dir) == 1):
-            import shutil
-            for f in os.listdir(self.path + "/" + dir[0]):
-                shutil.move(self.path + "/" + dir[0] + "/" + f,self.path)
-            os.rmdir(self.path + "/" + dir[0])
+import cbxarchive
 
 class HTMLbuilder:
+
     def getResult(self):
-        if (self.filename[0].startswith('.') or (self.filename[1] != '.png' and self.filename[1] != '.jpg' and self.filename[1] != '.jpeg')):
-            return None
-        return self.filename
+        return getImageFileName(self.file)
 
     def __init__(self, dstdir, file):
-        self.filename = os.path.splitext(file)
-        basefilename = self.filename[0]
-        ext = self.filename[1]
-        if (basefilename.startswith('.') or (ext != '.png' and ext != '.jpg' and ext != '.jpeg')):
-            return
-        htmlfile = dstdir + '/' + basefilename + '.html'
-        f = open(htmlfile, "w");
-        f.writelines(["<!DOCTYPE html SYSTEM \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n",
-                    "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
-                    "<head>\n",
-                    "<title>",basefilename,"</title>\n",
-                    "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
-                    "</head>\n",
-                    "<body>\n",
-                    "<div><img src=\"",file,"\" /></div>\n",
-                    "</body>\n",
-                    "</html>"
-                    ])
-        f.close()
+        self.file = file
+        filename = getImageFileName(file)
+        if (filename != None):
+            htmlfile = dstdir + '/' + filename[0] + '.html'
+            f = open(htmlfile, "w");
+            f.writelines(["<!DOCTYPE html SYSTEM \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n",
+                          "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
+                          "<head>\n",
+                          "<title>",filename[0],"</title>\n",
+                          "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
+                          "</head>\n",
+                          "<body>\n",
+                          "<div><img src=\"",file,"\" /></div>\n",
+                          "</body>\n",
+                          "</html>"
+                          ])
+            f.close()
+        return None
 
 class NCXbuilder:
     def __init__(self, dstdir, title):
@@ -151,7 +86,7 @@ class OPFBuilder:
             width, height = im.size
             imgres = str(width) + "x" + str(height)
         except ImportError:
-	    print "Could not load PIL, falling back on default HD"
+            print "Could not load PIL, falling back on default HD"
             imgres = "758x1024"
         f = open(opffile, "w");
         f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
@@ -181,32 +116,65 @@ class OPFBuilder:
         f.close()
         return
 
+def getImageFileName(file):
+    filename = os.path.splitext(file)
+    if (filename[0].startswith('.') or (filename[1].lower() != '.png' and filename[1].lower() != '.jpg' and filename[1].lower() != '.jpeg')):
+        return None
+    return filename
+
+def isInFilelist(file,list):
+    filename = os.path.splitext(file)
+    seen = False
+    for item in list:
+        if filename[0] == item[0]:
+            seen = True
+    return seen
+
 if __name__ == "__main__":
-    sys.stdout=Unbuffered(sys.stdout)
     print ('comic2ebook v%(__version__)s. '
        'Written 2012 by Ciro Mattia Gonano.' % globals())
-    if len(sys.argv)<2 or len(sys.argv)>3:
+    if len(sys.argv)<3 or len(sys.argv)>4:
         print "Generates HTML, NCX and OPF for a Comic ebook from a bunch of images"
         print "Optimized for creating Mobipockets to be read into Kindle Paperwhite"
         print "Usage:"
-        print "    %s <dir> <title>" % sys.argv[0]
+        print "    %s <profile> <dir> <title>" % sys.argv[0]
         print " <title> is optional"
         sys.exit(1)
     else:
-        dir = sys.argv[1]
-        cbx = CBxArchive(dir)
+        profile = sys.argv[1]
+        dir = sys.argv[2]
+        cbx = cbxarchive.CBxArchive(dir)
         if cbx.isCbxFile():
             cbx.extract()
             dir = cbx.getPath()
-        if len(sys.argv)==3:
-            title = sys.argv[2]
+        if len(sys.argv)==4:
+            title = sys.argv[3]
         else:
             title = "comic"
         filelist = []
+        try:
+            import image
+            print "Splitting double pages..."
+            for file in os.listdir(dir):
+                if (getImageFileName(file) != None):
+                    img = image.ComicPage(dir+'/'+file, profile)
+                    img.splitPage(dir)
+            for file in os.listdir(dir):
+                if (getImageFileName(file) != None):
+                    print "Optimizing " + file + " for " + profile
+                    img = image.ComicPage(dir+'/'+file, profile)
+                    img.resizeImage()
+                    img.frameImage()
+                    img.quantizeImage()
+                    img.saveToDir(dir)
+        except ImportError:
+            print "Could not load PIL, not optimizing image"
+
         for file in os.listdir(dir):
-            filename = HTMLbuilder(dir,file).getResult()
-            if (filename != None):
-                filelist.append(filename)
+            if (getImageFileName(file) != None and isInFilelist(file,filelist) == False):
+                filename = HTMLbuilder(dir,file).getResult()
+                if (filename != None):
+                    filelist.append(filename)
         NCXbuilder(dir,title)
         OPFBuilder(dir,title,filelist)
     sys.exit(0)
