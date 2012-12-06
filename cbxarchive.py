@@ -56,6 +56,7 @@ class CBxArchive:
             import rarfile
         except ImportError:
             self.cbrFile = None
+            return
         cbrFile = rarfile.RarFile(self.origFileName)
         for f in cbrFile.namelist():
             if (f.startswith('__MACOSX') or f.endswith('.DS_Store')):
