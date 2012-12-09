@@ -35,7 +35,7 @@ __version__ = '1.20'
 
 import os
 import sys
-import cbxarchive
+import image, cbxarchive
 
 class HTMLbuilder:
 
@@ -153,7 +153,6 @@ if __name__ == "__main__":
             title = "comic"
         filelist = []
         try:
-            import image
             print "Splitting double pages..."
             for file in os.listdir(dir):
                 if (getImageFileName(file) != None):

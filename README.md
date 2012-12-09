@@ -58,6 +58,7 @@ and installed in `/usr/local/bin/`
   - Improve error reporting
   - Recurse into dirtree for multiple comics
   - Create a GUI to allow user control more options
+  - Support pages extraction from PDF files
 
 ## COPYRIGHT
 

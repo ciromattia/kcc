@@ -1,3 +1,6 @@
+/*.pyc
 /*.cbz
 /*.cbr
 /.idea
+/dist
+/build
