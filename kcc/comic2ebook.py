@@ -130,56 +130,67 @@ def isInFilelist(file,list):
             seen = True
     return seen
 
-if __name__ == "__main__":
+def Copyright():
     print ('comic2ebook v%(__version__)s. '
-       'Written 2012 by Ciro Mattia Gonano.' % globals())
+        'Written 2012 by Ciro Mattia Gonano.' % globals())
+
+def Usage():
+    print "Generates HTML, NCX and OPF for a Comic ebook from a bunch of images"
+    print "Optimized for creating Mobipockets to be read into Kindle Paperwhite"
+    print "Usage:"
+    print "    %s <profile> <dir> <title>" % sys.argv[0]
+    print " <title> is optional"
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    profile = argv[1]
+    dir = argv[2]
+    cbx = cbxarchive.CBxArchive(dir)
+    if cbx.isCbxFile():
+        cbx.extract()
+        dir = cbx.getPath()
+    if len(argv)==4:
+        title = argv[3]
+    else:
+        title = "comic"
+    filelist = []
+    try:
+        print "Splitting double pages..."
+        for file in os.listdir(dir):
+            if (getImageFileName(file) != None):
+                img = image.ComicPage(dir+'/'+file, profile)
+                img.splitPage(dir)
+        for file in os.listdir(dir):
+            if (getImageFileName(file) != None):
+                print "Optimizing " + file + " for " + profile
+                img = image.ComicPage(dir+'/'+file, profile)
+                img.resizeImage()
+                #img.frameImage()
+                img.quantizeImage()
+                img.saveToDir(dir)
+    except ImportError:
+        print "Could not load PIL, not optimizing image"
+
+    for file in os.listdir(dir):
+        if (getImageFileName(file) != None and isInFilelist(file,filelist) == False):
+            # put credits at the end
+            if "credits" in file.lower():
+                os.rename(dir+'/'+file, dir+'/ZZZ999_'+file)
+                file = 'ZZZ999_'+file
+            filename = HTMLbuilder(dir,file).getResult()
+            if (filename != None):
+                filelist.append(filename)
+    NCXbuilder(dir,title)
+    # ensure we're sorting files alphabetically
+    filelist = sorted(filelist, key=lambda name: name[0])
+    OPFBuilder(dir,title,filelist)
+
+if __name__ == "__main__":
+    Copyright()
     if len(sys.argv)<3 or len(sys.argv)>4:
-        print "Generates HTML, NCX and OPF for a Comic ebook from a bunch of images"
-        print "Optimized for creating Mobipockets to be read into Kindle Paperwhite"
-        print "Usage:"
-        print "    %s <profile> <dir> <title>" % sys.argv[0]
-        print " <title> is optional"
+        Usage()
         sys.exit(1)
     else:
-        profile = sys.argv[1]
-        dir = sys.argv[2]
-        cbx = cbxarchive.CBxArchive(dir)
-        if cbx.isCbxFile():
-            cbx.extract()
-            dir = cbx.getPath()
-        if len(sys.argv)==4:
-            title = sys.argv[3]
-        else:
-            title = "comic"
-        filelist = []
-        try:
-            print "Splitting double pages..."
-            for file in os.listdir(dir):
-                if (getImageFileName(file) != None):
-                    img = image.ComicPage(dir+'/'+file, profile)
-                    img.splitPage(dir)
-            for file in os.listdir(dir):
-                if (getImageFileName(file) != None):
-                    print "Optimizing " + file + " for " + profile
-                    img = image.ComicPage(dir+'/'+file, profile)
-                    img.resizeImage()
-                    #img.frameImage()
-                    img.quantizeImage()
-                    img.saveToDir(dir)
-        except ImportError:
-            print "Could not load PIL, not optimizing image"
-
-        for file in os.listdir(dir):
-            if (getImageFileName(file) != None and isInFilelist(file,filelist) == False):
-                # put credits at the end
-                if "credits" in file.lower():
-                    os.rename(dir+'/'+file, dir+'/ZZZ999_'+file)
-                    file = 'ZZZ999_'+file
-                filename = HTMLbuilder(dir,file).getResult()
-                if (filename != None):
-                    filelist.append(filename)
-        NCXbuilder(dir,title)
-        # ensure we're sorting files alphabetically
-        filelist = sorted(filelist, key=lambda name: name[0])
-        OPFBuilder(dir,title,filelist)
+        main()
     sys.exit(0)

@@ -1,19 +1,18 @@
 # KindleComicConverter
 
-`KindleComicConverter` is a Python script wrapped by a MacOS X AppleScript droplet to convert image folders to a comic-type Mobipocket ebook to take advantage of the new Panel View mode on Amazon's Kindle.
+`KindleComicConverter` is a Python app which aim is to convert image folders to a comic-type (Mobipocket) ebook to take advantage of the new Panel View mode on Amazon's Kindle.
 
 ## REQUIREMENTS
-- Python (included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows)  
 - `kindlegen` in /usr/local/bin/
+- [unrar](http://www.rarlab.com/download.htm) and [rarfile.py](http://developer.berlios.de/project/showfiles.php?group_id=5373&release_id=18844) for `calibre2ebook.py` automatic CBR extracting.
 
-### for standalone `comic2ebook.py` script:
-- [unrar](http://www.rarlab.com/download.htm) and [rarfile.py](http://developer.berlios.de/project/showfiles.php?group_id=5373&release_id=18844) for `calibre2ebook.py` automatic CBR extracting.  
-
-You are strongly encouraged to get the [Python Imaging Library](http://www.pythonware.com/products/pil/) that, altough optional, provides a bunch of comic optimizations like split double pages, resize to optimal resolution, improve contrast and palette, etc.
-Please refer to official documentation for installing into your system.
+### for compiling/running from source:
+- Python 2.7+ (included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows)
+- You are strongly encouraged to get the [Python Imaging Library](http://www.pythonware.com/products/pil/) that, altough optional, provides a bunch of comic optimizations like split double pages, resize to optimal resolution, improve contrast and palette, etc.
+  Please refer to official documentation for installing into your system.
 
 ## USAGE
-Drop a folder or a CBZ/CBR file over the droplet, after a while you'll get a comic-type .mobi to sideload on your Kindle.  
+Drop a folder or a CBZ/CBR file over the app, after a while you'll get a comic-type .mobi to sideload on your Kindle.
 The script takes care of calling `comic2ebook.py`, `kindlegen` and `kindlestrip.py`.
 
 > **WARNING:** at the moment the droplet *ALWAYS* uses the **KHD** profile (*Kindle Paperwhite*).
@@ -52,12 +51,12 @@ and installed in `/usr/local/bin/`
   - 1.20 - Comic optimizations! Split pages not target-oriented (landscape with portrait target or portrait
    with landscape target), add palette and other image optimizations from Mangle.
    WARNING: PIL is required for all image mangling!
+  - 2.00 - GUI! AppleScript is gone and Tk is used to provide cross-platform GUI support.
 
 ## TODO
   - Add gracefully exit for CBR if no rarfile.py and no unrar executable are found
   - Improve error reporting
   - Recurse into dirtree for multiple comics
-  - Create a GUI to allow user control more options
   - Support pages extraction from PDF files
 
 ## COPYRIGHT
