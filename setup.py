@@ -21,7 +21,7 @@ VERSION="1.2.0"
 IDENTIFIER="com.github.ciromattia.kcc"
 EXENAME="KindleComicConverter"
 
-APP = ['kcc/comic2ebook.py']
+APP = ['kcc.py']
 DATA_FILES = []
 OPTIONS = { 'argv_emulation': True,
             'iconfile': 'resources/comic2ebook.icns',
@@ -36,20 +36,10 @@ if sys.platform == 'darwin':
                 plist=dict(
                     CFBundleName               = NAME,
                     CFBundleShortVersionString = VERSION,
-                    CFBundleGetInfoString      = NAME + " " + VERSION,
+                    CFBundleGetInfoString      = NAME + " " + VERSION + ", written 2012 by Ciro Mattia Gonano",
                     CFBundleExecutable         = EXENAME,
                     CFBundleIdentifier         = IDENTIFIER,
-                    CFBundleDocumentTypes      = dict(
-                        CFBundleTypeExtensions=["zip","rar","cbz","cbr"],
-                        CFBundleTypeName="Comics",
-                        CFBundleTypeRole="Editor",
-                        LSItemContentTypes = [
-                                             "public.plain-text",
-                                             "public.text",
-                                             "public.data",
-                                             "com.apple.application-bundle"
-                        ]
-                    )
+                    CFBundleSignature       = 'dplt'
                 )
             )
         )
@@ -69,5 +59,14 @@ setup(
     name=NAME,
     app=APP,
     data_files=DATA_FILES,
+    classifiers=[
+        # make sure to use :: Python *and* :: Python :: 3 so
+        # that pypi can list the package on the python 3 page
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3'
+    ],
+    packages=['kcc'],
+    # make sure to add custom_fixers to the MANIFEST.in
+    include_package_data=True,
     **extra_options
 )
