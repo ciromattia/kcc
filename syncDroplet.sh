@@ -4,3 +4,4 @@ cp -a resources/Scripts resources/description.rtfd resources/droplet.rsrc Kindle
 cp resources/Info.plist KindleComicConverter.app/Contents/
 cp resources/comic2ebook.icns KindleComicConverter.app/Contents/Resources/droplet.icns
 cp kcc/*.py KindleComicConverter.app/Contents/Resources/
+cp `which unrar` KindleComicConverter.app/Contents/Resources/
