@@ -1699,10 +1699,6 @@ def custom_popen(cmd):
     if sys.platform == 'win32':
         creationflags = 0x08000000 # CREATE_NO_WINDOW
 
-    out_file = open("/tmp/test.txt","w")
-    out_file.write('[%s]' % ', '.join(map(str, cmd)))
-    out_file.close()
-
     # run command
     p = Popen(cmd, bufsize = 0, stdout = PIPE, stdin = PIPE, stderr = STDOUT,
               creationflags = creationflags)
