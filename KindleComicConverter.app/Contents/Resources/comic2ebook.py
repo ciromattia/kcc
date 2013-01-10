@@ -24,6 +24,8 @@
 #       with portrait target or portrait with landscape target), add palette
 #       and other image optimizations from Mangle.
 #       WARNING: PIL is required for all image mangling!
+#  1.30 - Fixed an issue in OPF generation for device resolution
+#       Reworked options system (call with -h option to get the inline help)
 #
 # Todo:
 #   - Add gracefully exit for CBR if no rarfile.py and no unrar
@@ -31,10 +33,11 @@
 #   - Improve error reporting
 #   - recurse into dirtree for multiple comics
 
-__version__ = '1.20'
+__version__ = '1.30'
 
 import os
 import sys
+from optparse import OptionParser
 import image, cbxarchive
 
 class HTMLbuilder:
@@ -77,17 +80,11 @@ class NCXbuilder:
         return
 
 class OPFBuilder:
-    def __init__(self, dstdir, title, filelist):
+    def __init__(self, profile, dstdir, title, filelist):
         opffile = dstdir + '/content.opf'
         # read the first file resolution
-        try:
-            from PIL import Image
-            im = Image.open(dstdir + "/" + filelist[0][0] + filelist[0][1])
-            width, height = im.size
-            imgres = str(width) + "x" + str(height)
-        except ImportError:
-            print "Could not load PIL, falling back on default HD"
-            imgres = "758x1024"
+        deviceres, palette = image.ProfileData.Profiles[profile]
+        imgres = str(deviceres[0]) + "x" + str(deviceres[1])
         f = open(opffile, "w");
         f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
             "<package version=\"2.0\" unique-identifier=\"PrimaryID\" xmlns=\"http://www.idpf.org/2007/opf\">\n",
@@ -137,34 +134,41 @@ def Copyright():
 def Usage():
     print "Generates HTML, NCX and OPF for a Comic ebook from a bunch of images"
     print "Optimized for creating Mobipockets to be read into Kindle Paperwhite"
-    print "Usage:"
-    print "    %s <profile> <dir> <title>" % sys.argv[0]
-    print " <title> is optional"
+    #print "Usage:"
+    #print "    %s <profile> <dir> <title>" % sys.argv[0]
+    #print " <title> is optional"
+    parser.print_help()
 
 def main(argv=None):
-    if argv is None:
-        argv = sys.argv
-    profile = argv[1]
-    dir = argv[2]
+    global parser
+    usage = "Usage: %prog [options] comic_file|comic_folder"
+    parser = OptionParser(usage=usage, version=__version__)
+    parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
+                      help="Device profile (choose one among K1, K2, K3, K4, KHD [default])")
+    parser.add_option("-t", "--title", action="store", dest="title", default="comic",
+                      help="Comic title")
+    parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
+                      help="Split pages 'manga style' (right-to-left reading)")
+    options, args = parser.parse_args()
+    if len(args) != 1:
+        parser.print_help()
+        sys.exit(1)
+    dir = args[0]
     cbx = cbxarchive.CBxArchive(dir)
     if cbx.isCbxFile():
         cbx.extract()
         dir = cbx.getPath()
-    if len(argv)==4:
-        title = argv[3]
-    else:
-        title = "comic"
     filelist = []
     try:
         print "Splitting double pages..."
         for file in os.listdir(dir):
             if (getImageFileName(file) != None):
-                img = image.ComicPage(dir+'/'+file, profile)
-                img.splitPage(dir)
+                img = image.ComicPage(dir+'/'+file, options.profile)
+                img.splitPage(dir, options.righttoleft)
         for file in os.listdir(dir):
             if (getImageFileName(file) != None):
-                print "Optimizing " + file + " for " + profile
-                img = image.ComicPage(dir+'/'+file, profile)
+                print "Optimizing " + file + " for " + options.profile
+                img = image.ComicPage(dir+'/'+file, options.profile)
                 img.resizeImage()
                 #img.frameImage()
                 img.quantizeImage()
@@ -181,16 +185,12 @@ def main(argv=None):
             filename = HTMLbuilder(dir,file).getResult()
             if (filename != None):
                 filelist.append(filename)
-    NCXbuilder(dir,title)
+    NCXbuilder(dir,options.title)
     # ensure we're sorting files alphabetically
     filelist = sorted(filelist, key=lambda name: name[0])
-    OPFBuilder(dir,title,filelist)
+    OPFBuilder(options.profile,dir,options.title,filelist)
 
 if __name__ == "__main__":
     Copyright()
-    if len(sys.argv)<3 or len(sys.argv)>4:
-        Usage()
-        sys.exit(1)
-    else:
-        main()
+    main()
     sys.exit(0)

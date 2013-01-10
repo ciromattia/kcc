@@ -33,12 +33,12 @@
 
 __version__ = '1.30'
 
-import sys
-from kcc import comic2ebook
+from Tkinter import *
+from kcc import gui
 
-if __name__ == "__main__":
-    print ('kcc v%(__version__)s. '
-           'Written 2012 by Ciro Mattia Gonano.' % globals())
-    for arg in sys.argv[1:]:
-        comic2ebook.main(['','KHD',arg])
-    sys.exit(0)
+root = Tk()
+app = gui.MainWindow(master=root)
+app.master.title("Kindle Comic Converter v" + __version__)
+app.master.maxsize(1000, 400)
+app.mainloop()
+root.destroy()

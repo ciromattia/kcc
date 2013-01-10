@@ -19,14 +19,23 @@ The script takes care of calling `comic2ebook.py`, `kindlegen` and `kindlestrip.
 > If you want to specify other profiles, please use the script from command line.
 
 ### standalone `comic2ebook.py` usage:
-1. Launch
 
-	```python comic2ebook.py <profile> <directory|file> <title>```
+```comic2ebook.py [options] comic_file|comic_folder
 
-	The script takes care of unzipping/unrarring the file if it's an archive, creating a directory of images which should be then filled with a `.opf`, `.ncx`, and many `.html` files.
-4. Run `Kindlegen` on `content.opf`. Depending on how many images you have, this may take awhile. Once completed, the `.mobi` file should be in the directory.
-5. Remove the SRCS record to reduce the `.mobi` filesize in half. You can use [Kindlestrip](http://www.mobileread.com/forums/showthread.php?t=96903).
-6. Copy the `.mobi` file to your Kindle!
+  Options:
+     --version             show program's version number and exit
+     -h, --help            show this help message and exit
+     -p PROFILE, --profile=PROFILE
+                           Device profile (choose one among K1, K2, K3, K4, KHD
+                           [default])
+     -t TITLE, --title=TITLE
+                           Comic title
+     -m, --manga-style     Split pages 'manga style' (right-to-left reading)```
+
+The script takes care of unzipping/unrarring the file if it's an archive, creating a directory of images which should be then filled with a `.opf`, `.ncx`, and many `.html` files.  
+Run `Kindlegen` on `content.opf`. Depending on how many images you have, this may take awhile. Once completed, the `.mobi` file should be in the directory.  
+Remove the SRCS record to reduce the `.mobi` filesize in half. You can use [Kindlestrip](http://www.mobileread.com/forums/showthread.php?t=96903).  
+Copy the `.mobi` file to your Kindle!
 
 ## CREDITS
 This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published in [this mobileread forum thread](http://www.mobileread.com/forums/showthread.php?t=192783))
@@ -51,6 +60,8 @@ and installed in `/usr/local/bin/`
   - 1.20 - Comic optimizations! Split pages not target-oriented (landscape with portrait target or portrait
    with landscape target), add palette and other image optimizations from Mangle.
    WARNING: PIL is required for all image mangling!
+  - 1.30 - Fixed an issue in OPF generation for device resolution
+   Reworked options system (call with -h option to get the inline help)
   - 2.00 - GUI! AppleScript is gone and Tk is used to provide cross-platform GUI support.
 
 ## TODO
@@ -61,4 +72,4 @@ and installed in `/usr/local/bin/`
 
 ## COPYRIGHT
 
-Copyright (c) 2012 Ciro Mattia Gonano. See LICENSE.txt for further details.
+Copyright (c) 2012-2013 Ciro Mattia Gonano. See LICENSE.txt for further details.

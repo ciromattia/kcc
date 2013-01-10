@@ -24,7 +24,7 @@ class ImageFlags:
     Stretch = 1 << 4
 
 
-class KindleData:
+class ProfileData:
     Palette4 = [
         0x00, 0x00, 0x00,
         0x55, 0x55, 0x55,
@@ -80,7 +80,7 @@ class KindleData:
 class ComicPage:
     def __init__(self,source,device):
         try:
-            self.size, self.palette = KindleData.Profiles[device]
+            self.size, self.palette = ProfileData.Profiles[device]
         except KeyError:
             raise RuntimeError('Unexpected output device %s' % device)
         try:
