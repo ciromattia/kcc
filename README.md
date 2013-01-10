@@ -20,8 +20,8 @@ The script takes care of calling `comic2ebook.py`, `kindlegen` and `kindlestrip.
 
 ### standalone `comic2ebook.py` usage:
 
-```comic2ebook.py [options] comic_file|comic_folder
-
+```
+comic2ebook.py [options] comic_file|comic_folder
   Options:
      --version             show program's version number and exit
      -h, --help            show this help message and exit
@@ -30,12 +30,13 @@ The script takes care of calling `comic2ebook.py`, `kindlegen` and `kindlestrip.
                            [default])
      -t TITLE, --title=TITLE
                            Comic title
-     -m, --manga-style     Split pages 'manga style' (right-to-left reading)```
+     -m, --manga-style     Split pages 'manga style' (right-to-left reading)
+```
 
-The script takes care of unzipping/unrarring the file if it's an archive, creating a directory of images which should be then filled with a `.opf`, `.ncx`, and many `.html` files.  
-Run `Kindlegen` on `content.opf`. Depending on how many images you have, this may take awhile. Once completed, the `.mobi` file should be in the directory.  
-Remove the SRCS record to reduce the `.mobi` filesize in half. You can use [Kindlestrip](http://www.mobileread.com/forums/showthread.php?t=96903).  
-Copy the `.mobi` file to your Kindle!
+The script takes care of unzipping/unrarring the file if it's an archive, creating a directory of images which should be then filled with a `.opf`, `.ncx`, and many `.html` files, then:  
+1. Run `Kindlegen` on `content.opf`. Depending on how many images you have, this may take awhile. Once completed, the `.mobi` file should be in the directory.  
+2. Remove the SRCS record to reduce the `.mobi` filesize in half. You can use [Kindlestrip](http://www.mobileread.com/forums/showthread.php?t=96903).  
+3. Copy the `.mobi` file to your Kindle!
 
 ## CREDITS
 This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published in [this mobileread forum thread](http://www.mobileread.com/forums/showthread.php?t=192783))
