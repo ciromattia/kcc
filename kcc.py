@@ -31,14 +31,11 @@
 #   - Improve error reporting
 #   - recurse into dirtree for multiple comics
 
-__version__ = '1.30'
+__version__ = '2.0'
 
 from Tkinter import *
 from kcc import gui
 
 root = Tk()
-app = gui.MainWindow(master=root)
-app.master.title("Kindle Comic Converter v" + __version__)
-app.master.maxsize(1000, 400)
-app.mainloop()
-root.destroy()
+app = gui.MainWindow(master=root,title="Kindle Comic Converter v" + __version__)
+root.mainloop()
