@@ -38,7 +38,7 @@ __version__ = '1.30'
 import os
 import sys
 from optparse import OptionParser
-import image, cbxarchive
+import image, cbxarchive, pdfjpgextract
 
 class HTMLbuilder:
 
@@ -149,15 +149,21 @@ def main(argv=None):
                       help="Comic title")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                       help="Split pages 'manga style' (right-to-left reading)")
-    options, args = parser.parse_args()
+    options, args = parser.parse_args(argv)
     if len(args) != 1:
         parser.print_help()
-        sys.exit(1)
+        return
     dir = args[0]
-    cbx = cbxarchive.CBxArchive(dir)
-    if cbx.isCbxFile():
-        cbx.extract()
-        dir = cbx.getPath()
+    fname = os.path.splitext(dir)
+    if (fname[1].lower() == '.pdf'):
+        pdf = pdfjpgextract.PdfJpgExtract(dir)
+        pdf.extract()
+        dir = pdf.getPath()
+    else:
+        cbx = cbxarchive.CBxArchive(dir)
+        if cbx.isCbxFile():
+            cbx.extract()
+            dir = cbx.getPath()
     filelist = []
     try:
         print "Splitting double pages..."
@@ -192,5 +198,5 @@ def main(argv=None):
 
 if __name__ == "__main__":
     Copyright()
-    main()
+    main(sys.argv[1:])
     sys.exit(0)
