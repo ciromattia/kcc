@@ -1,6 +1,14 @@
 # KindleComicConverter
 
-`KindleComicConverter` is a Python app which aim is to convert image folders to a comic-type (Mobipocket) ebook to take advantage of the new Panel View mode on Amazon's Kindle.
+`KindleComicConverter` is a Python app which aim is to convert comic files or folders to a comic-type (Mobipocket) ebook to take advantage of the new Panel View mode on Amazon's Kindle.
+
+## INPUT FORMATS
+`kcc` can understand and convert, at the moment, the following file types:  
+- CBZ, ZIP
+- CBR, RAR
+- flat folders
+- PDF *(extracting only contained JPG images)*  
+For now the script does not understand folder depth, so it will work on flat folders/archives only.
 
 ## REQUIREMENTS
 - `kindlegen` in /usr/local/bin/
@@ -47,7 +55,7 @@ The app relies and includes the following scripts/binaries:
  - the `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>, released with ISC License
  - the free version `unrar` executable (downloadable from [here](http://www.rarlab.com/rar_add.htm), refer to `LICENSE_unrar.txt` for further details)
  - the icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC Attribution-NonCommercial-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
- - the `image.py` class from [Mangle](http://foosoft.net/mangle/)
+ - the `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches
 
 Also, you need to have `kindlegen` v2.7 (with KF8 support) which is downloadable from Amazon website
 and installed in `/usr/local/bin/`
