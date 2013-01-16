@@ -18,19 +18,20 @@
 
 from Tkinter import *
 import tkFileDialog
+import ttk
 import comic2ebook
 from image import ProfileData
 
 class MainWindow:
 
     def clear_files(self):
-        self.files = []
+        self.filelist = []
         self.refresh_list()
 
     def open_files(self):
-        filetypes = [('all files', '.*'), ('Comic files', ('*.cbr','*.cbz','*.zip','*.rar'))]
+        filetypes = [('all files', '.*'), ('Comic files', ('*.cbr','*.cbz','*.zip','*.rar','*.pdf'))]
         f = tkFileDialog.askopenfilenames(title="Choose a file...",filetypes=filetypes)
-        if (isinstance(f,tuple) == False):
+        if not isinstance(f,tuple):
             try:
                 import re
                 f = re.findall('\{(.*?)\}', f)
@@ -41,17 +42,17 @@ class MainWindow:
                     "askopenfilename() returned other than a tuple and no regex module could be found"
                 )
                 sys.exit(1)
-        self.files.extend(f)
+        self.filelist.extend(f)
         self.refresh_list()
 
     def open_folder(self):
-        self.files = tkFileDialog.askdirectory(title="Choose a folder...")
+        self.filelist = tkFileDialog.askdirectory(title="Choose a folder...")
         self.refresh_list()
 
     def refresh_list(self):
         self.filelocation.config(state=NORMAL)
         self.filelocation.delete(0, END)
-        for file in self.files:
+        for file in self.filelist:
             self.filelocation.insert(END, file)
         self.filelocation.config(state=DISABLED)
 
@@ -69,10 +70,8 @@ class MainWindow:
 
         self.profile = StringVar()
         self.profile.set("KHD")
-        for text in ProfileData.Profiles:
-            b = Radiobutton(self.master, text=text,
-                            variable=self.profile, value=text)
-            b.pack(anchor=W,fill=BOTH)
+        w = apply(OptionMenu, (self.master, self.profile) + tuple(sorted(ProfileData.Profiles.iterkeys())))
+        w.pack(anchor=W,fill=BOTH)
 
         self.mangastyle = BooleanVar()
         self.mangastyle = False
@@ -84,18 +83,22 @@ class MainWindow:
         self.submit = Button(self.master, text="Execute!", command=self.convert, fg="red")
         self.submit.pack()
 
+        self.progressbar = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate')
+        self.progressbar.pack(side=BOTTOM)
+
     def convert(self):
         argv = ["-p",self.profile.get()]
-        if (self.mangastyle == True):
+        if self.mangastyle:
             argv.append("-m")
-        for entry in self.files:
+        self.progressbar.start()
+        for entry in self.filelist:
             subargv = list(argv)
             subargv.append(entry)
             comic2ebook.main(subargv)
         print "Done!"
 
     def __init__(self, master, title):
-        self.files = []
+        self.filelist = []
         self.master = master
         self.master.title(title)
         self.initialize()

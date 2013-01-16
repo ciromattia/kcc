@@ -48,9 +48,9 @@ class HTMLbuilder:
     def __init__(self, dstdir, file):
         self.file = file
         filename = getImageFileName(file)
-        if (filename != None):
+        if filename is not None:
             htmlfile = dstdir + '/' + filename[0] + '.html'
-            f = open(htmlfile, "w");
+            f = open(htmlfile, "w")
             f.writelines(["<!DOCTYPE html SYSTEM \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n",
                           "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
                           "<head>\n",
@@ -63,12 +63,12 @@ class HTMLbuilder:
                           "</html>"
                           ])
             f.close()
-        return None
+        return
 
 class NCXbuilder:
     def __init__(self, dstdir, title):
         ncxfile = dstdir + '/content.ncx'
-        f = open(ncxfile, "w");
+        f = open(ncxfile, "w")
         f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
             "<!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\" \"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\n",
             "<ncx version=\"2005-1\" xml:lang=\"en-US\" xmlns=\"http://www.daisy.org/z3986/2005/ncx/\">\n",
@@ -83,9 +83,9 @@ class OPFBuilder:
     def __init__(self, profile, dstdir, title, filelist):
         opffile = dstdir + '/content.opf'
         # read the first file resolution
-        deviceres, palette = image.ProfileData.Profiles[profile]
+        profilelabel, deviceres, palette = image.ProfileData.Profiles[profile]
         imgres = str(deviceres[0]) + "x" + str(deviceres[1])
-        f = open(opffile, "w");
+        f = open(opffile, "w")
         f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
             "<package version=\"2.0\" unique-identifier=\"PrimaryID\" xmlns=\"http://www.idpf.org/2007/opf\">\n",
             "<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\n",
@@ -101,10 +101,10 @@ class OPFBuilder:
         for filename in filelist:
             f.write("<item id=\"page_" + filename[0] + "\" href=\"" + filename[0] + ".html\" media-type=\"application/xhtml+xml\"/>\n")
         for filename in filelist:
-            if ('.png' == filename[1]):
-                mt = 'image/png';
+            if '.png' == filename[1]:
+                mt = 'image/png'
             else:
-                mt = 'image/jpeg';
+                mt = 'image/jpeg'
             f.write("<item id=\"img_" + filename[0] + "\" href=\"" + filename[0] + filename[1] + "\" media-type=\"" + mt + "\"/>\n")
         f.write("</manifest>\n<spine toc=\"ncx\">\n")
         for filename in filelist:
@@ -115,7 +115,7 @@ class OPFBuilder:
 
 def getImageFileName(file):
     filename = os.path.splitext(file)
-    if (filename[0].startswith('.') or (filename[1].lower() != '.png' and filename[1].lower() != '.jpg' and filename[1].lower() != '.jpeg')):
+    if filename[0].startswith('.') or (filename[1].lower() != '.png' and filename[1].lower() != '.jpg' and filename[1].lower() != '.jpeg'):
         return None
     return filename
 
@@ -134,9 +134,6 @@ def Copyright():
 def Usage():
     print "Generates HTML, NCX and OPF for a Comic ebook from a bunch of images"
     print "Optimized for creating Mobipockets to be read into Kindle Paperwhite"
-    #print "Usage:"
-    #print "    %s <profile> <dir> <title>" % sys.argv[0]
-    #print " <title> is optional"
     parser.print_help()
 
 def main(argv=None):
@@ -144,18 +141,20 @@ def main(argv=None):
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                      help="Device profile (choose one among K1, K2, K3, K4, KHD [default])")
-    parser.add_option("-t", "--title", action="store", dest="title", default="comic",
-                      help="Comic title")
+                      help="Device profile (choose one among K1, K2, K3, K4, KDX or KHD) [default=KHD]")
+    parser.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
+                      help="Comic title [default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
-                      help="Split pages 'manga style' (right-to-left reading)")
+                      help="Split pages 'manga style' (right-to-left reading) [default=False]")
+    parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
+                      help="Verbose output [default=False]")
     options, args = parser.parse_args(argv)
     if len(args) != 1:
         parser.print_help()
         return
     dir = args[0]
     fname = os.path.splitext(dir)
-    if (fname[1].lower() == '.pdf'):
+    if fname[1].lower() == '.pdf':
         pdf = pdfjpgextract.PdfJpgExtract(dir)
         pdf.extract()
         dir = pdf.getPath()
@@ -168,28 +167,31 @@ def main(argv=None):
     try:
         print "Splitting double pages..."
         for file in os.listdir(dir):
-            if (getImageFileName(file) != None):
+            if getImageFileName(file) is not None:
                 img = image.ComicPage(dir+'/'+file, options.profile)
                 img.splitPage(dir, options.righttoleft)
         for file in os.listdir(dir):
-            if (getImageFileName(file) != None):
+            if getImageFileName(file) is not None:
                 print "Optimizing " + file + " for " + options.profile
                 img = image.ComicPage(dir+'/'+file, options.profile)
+                img.cutPageNumber()
+                img.cropWhiteSpace(5.0)
                 img.resizeImage()
                 #img.frameImage()
+                #img.addProgressbar()
                 img.quantizeImage()
                 img.saveToDir(dir)
     except ImportError:
         print "Could not load PIL, not optimizing image"
 
     for file in os.listdir(dir):
-        if (getImageFileName(file) != None and isInFilelist(file,filelist) == False):
+        if getImageFileName(file) is not None and isInFilelist(file,filelist) == False:
             # put credits at the end
             if "credits" in file.lower():
                 os.rename(dir+'/'+file, dir+'/ZZZ999_'+file)
                 file = 'ZZZ999_'+file
             filename = HTMLbuilder(dir,file).getResult()
-            if (filename != None):
+            if filename is not None:
                 filelist.append(filename)
     NCXbuilder(dir,options.title)
     # ensure we're sorting files alphabetically
