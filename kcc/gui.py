@@ -95,6 +95,7 @@ class MainWindow:
             subargv = list(argv)
             subargv.append(entry)
             comic2ebook.main(subargv)
+
         print "Done!"
 
     def __init__(self, master, title):
