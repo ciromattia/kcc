@@ -141,13 +141,21 @@ def main(argv=None):
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                      help="Device profile (choose one among K1, K2, K3, K4, KDX or KHD) [default=KHD]")
+                      help="Device profile (choose one among K1, K2, K3, K4, KDX, KDXG or KHD) [default=KHD]")
     parser.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                       help="Comic title [default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                       help="Split pages 'manga style' (right-to-left reading) [default=False]")
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="Verbose output [default=False]")
+    parser.add_option("-i", "--image-processing", action="store_false", dest="imgproc", default=True,
+                    help="Apply image preprocessing (page splitting and optimizations) [default=True]")
+    parser.add_option("--upscale-images", action="store_true", dest="upscale", default=False,
+                    help="Resize images smaller than device's resolution [default=False]")
+    parser.add_option("--stretch-images", action="store_true", dest="stretch", default=False,
+                    help="Stretch images to device's resolution [default=False]")
+    parser.add_option("--cut-page-numbers", action="store_false", dest="cutpagenumbers", default=True,
+                    help="Try to cut page numbering on images [default=True]")
     options, args = parser.parse_args(argv)
     if len(args) != 1:
         parser.print_help()
@@ -163,26 +171,36 @@ def main(argv=None):
         if cbx.isCbxFile():
             cbx.extract()
             dir = cbx.getPath()
+        else:
+            try:
+                import shutil
+                shutil.copytree(dir, dir + "_orig")
+                #dir = dir + "_orig"
+            except OSError as exc:
+                raise
     filelist = []
-    try:
-        print "Splitting double pages..."
-        for file in os.listdir(dir):
-            if getImageFileName(file) is not None:
-                img = image.ComicPage(dir+'/'+file, options.profile)
-                img.splitPage(dir, options.righttoleft)
-        for file in os.listdir(dir):
-            if getImageFileName(file) is not None:
-                print "Optimizing " + file + " for " + options.profile
-                img = image.ComicPage(dir+'/'+file, options.profile)
-                img.cutPageNumber()
-                img.cropWhiteSpace(5.0)
-                img.resizeImage()
-                #img.frameImage()
-                #img.addProgressbar()
-                img.quantizeImage()
-                img.saveToDir(dir)
-    except ImportError:
-        print "Could not load PIL, not optimizing image"
+    if options.imgproc:
+        try:
+            if options.verbose:
+                print "Splitting double pages..."
+            for file in os.listdir(dir):
+                if getImageFileName(file) is not None:
+                    img = image.ComicPage(dir+'/'+file, options.profile)
+                    img.splitPage(dir, options.righttoleft)
+            for file in os.listdir(dir):
+                if getImageFileName(file) is not None:
+                    if options.verbose:
+                        print "Optimizing " + file + " for " + options.profile
+                    img = image.ComicPage(dir+'/'+file, options.profile)
+                    img.optimizeImage()
+                    img.cropWhiteSpace(10.0)
+                    if options.cutpagenumbers:
+                        img.cutPageNumber()
+                    img.resizeImage(options.upscale,options.stretch)
+                    img.quantizeImage()
+                    img.saveToDir(dir)
+        except ImportError:
+            print "Could not load PIL, not optimizing image"
 
     for file in os.listdir(dir):
         if getImageFileName(file) is not None and isInFilelist(file,filelist) == False:
@@ -193,10 +211,13 @@ def main(argv=None):
             filename = HTMLbuilder(dir,file).getResult()
             if filename is not None:
                 filelist.append(filename)
+    if options.title == 'defaulttitle':
+        options.title = os.path.basename(dir)
     NCXbuilder(dir,options.title)
     # ensure we're sorting files alphabetically
     filelist = sorted(filelist, key=lambda name: name[0])
     OPFBuilder(options.profile,dir,options.title,filelist)
+
 
 if __name__ == "__main__":
     Copyright()

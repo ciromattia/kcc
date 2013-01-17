@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from PIL import Image, ImageDraw, ImageStat
+from PIL import Image, ImageOps, ImageDraw, ImageStat
 
 class ImageFlags:
     Orient = 1 << 0
@@ -103,6 +103,9 @@ class ComicPage:
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' %(targetdir,e))
 
+    def optimizeImage(self):
+        self.image = ImageOps.autocontrast(self.image)
+
     def quantizeImage(self):
         colors = len(self.palette) / 3
         if colors < 256:
@@ -111,33 +114,31 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def stretchImage(self):
-        widthDev, heightDev = self.size
-        self.image = self.image.resize((widthDev, heightDev), Image.ANTIALIAS)
+    def resizeImage(self,upscale=False, stretch=False):
+        method = Image.ANTIALIAS
+        if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
+            if not upscale:
+                return self.image
+            else:
+                method = Image.NEAREST
 
-    # TODO:
-    # - add option to stretch page
-    # - add option to upscale page
-    # - if ratio is not equal to dev size and stretch is not enabled, add white
-    #   background and center it (otherwise K3 does not display page
-    #   center-aligned but left-aligned)
-    def resizeImage(self):
-        widthDev, heightDev = self.size
-        widthImg, heightImg = self.image.size
-        if widthImg <= widthDev and heightImg <= heightDev:
+        if stretch: # if stretching call directly resize() without other considerations.
+            self.image = self.image.resize(self.size,method)
             return self.image
-        ratioImg = float(widthImg) / float(heightImg)
-        ratioWidth = float(widthImg) / float(widthDev)
-        ratioHeight = float(heightImg) / float(heightDev)
-        if ratioWidth > ratioHeight:
-            widthImg = widthDev
-            heightImg = int(widthDev / ratioImg)
-        elif ratioWidth < ratioHeight:
-            heightImg = heightDev
-            widthImg = int(heightDev * ratioImg)
-        else:
-            widthImg, heightImg = self.size
-        self.image = self.image.resize((widthImg, heightImg), Image.ANTIALIAS)
+
+        ratioDev = float(self.size[0]) / float(self.size[1])
+        if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
+            diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
+            newImage = Image.new('RGB', (self.image.size[0] + diff, self.image.size[1]), (255,255,255))
+            newImage.paste(self.image, (diff / 2, 0, diff / 2 + self.image.size[0], self.image.size[1]))
+            self.image = newImage
+        elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
+            diff = int(self.image.size[0] * ratioDev) - self.image.size[1]
+            newImage = Image.new('RGB', (self.image.size[0], self.image.size[1] + diff), (255,255,255))
+            newImage.paste(self.image, (0, diff / 2, self.image.size[0], diff / 2 + self.image.size[1]))
+            self.image = newImage
+        self.image = ImageOps.fit(self.image, self.size, method = method, centering = (0.5,0.5))
+        return self.image
 
     def splitPage(self, targetdir, righttoleft=False):
         width, height = self.image.size
