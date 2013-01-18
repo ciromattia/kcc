@@ -96,7 +96,7 @@ class ComicPage:
 
     def saveToDir(self,targetdir):
         filename = os.path.basename(self.origFileName)
-        print "Saving to " + targetdir + '/' + filename
+        #print "Saving to " + targetdir + '/' + filename
         try:
             self.image = self.image.convert('L')    # convert to grayscale
             self.image.save(targetdir + '/' + filename,"JPEG")
@@ -133,7 +133,7 @@ class ComicPage:
             newImage.paste(self.image, (diff / 2, 0, diff / 2 + self.image.size[0], self.image.size[1]))
             self.image = newImage
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
-            diff = int(self.image.size[0] * ratioDev) - self.image.size[1]
+            diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
             newImage = Image.new('RGB', (self.image.size[0], self.image.size[1] + diff), (255,255,255))
             newImage.paste(self.image, (0, diff / 2, self.image.size[0], diff / 2 + self.image.size[1]))
             self.image = newImage
@@ -143,7 +143,7 @@ class ComicPage:
     def splitPage(self, targetdir, righttoleft=False):
         width, height = self.image.size
         dstwidth, dstheight = self.size
-        print "Image is %d x %d" % (width,height)
+        #print "Image is %d x %d" % (width,height)
         # only split if origin is not oriented the same as target
         if (width > height) != (dstwidth > dstheight):
             if width > height:
