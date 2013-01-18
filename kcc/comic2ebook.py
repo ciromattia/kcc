@@ -26,6 +26,9 @@
 #       WARNING: PIL is required for all image mangling!
 #  1.30 - Fixed an issue in OPF generation for device resolution
 #       Reworked options system (call with -h option to get the inline help)
+#  1.40 - Added some options for controlling image optimization
+#       Further optimization (ImageOps, page numbering cut, autocontrast)
+#  1.41 - Fixed a serious bug on resizing when img ratio was bigger than device one
 #
 # Todo:
 #   - Add gracefully exit for CBR if no rarfile.py and no unrar
@@ -180,17 +183,21 @@ def main(argv=None):
                 raise
     filelist = []
     if options.imgproc:
+        print "Processing images..."
         try:
             if options.verbose:
                 print "Splitting double pages..."
             for file in os.listdir(dir):
                 if getImageFileName(file) is not None:
+                    print ".",
                     img = image.ComicPage(dir+'/'+file, options.profile)
                     img.splitPage(dir, options.righttoleft)
             for file in os.listdir(dir):
                 if getImageFileName(file) is not None:
                     if options.verbose:
                         print "Optimizing " + file + " for " + options.profile
+                    else:
+                        print ".",
                     img = image.ComicPage(dir+'/'+file, options.profile)
                     img.optimizeImage()
                     img.cropWhiteSpace(10.0)
@@ -202,6 +209,7 @@ def main(argv=None):
         except ImportError:
             print "Could not load PIL, not optimizing image"
 
+    print "Creating ePub structure..."
     for file in os.listdir(dir):
         if getImageFileName(file) is not None and isInFilelist(file,filelist) == False:
             # put credits at the end
@@ -215,7 +223,7 @@ def main(argv=None):
         options.title = os.path.basename(dir)
     NCXbuilder(dir,options.title)
     # ensure we're sorting files alphabetically
-    filelist = sorted(filelist, key=lambda name: name[0])
+    filelist = sorted(filelist, key=lambda name: name[0].lower())
     OPFBuilder(options.profile,dir,options.title,filelist)
 
 
