@@ -35,9 +35,11 @@
 #   - Add gracefully exit for CBR if no rarfile.py and no unrar
 #       executable are found
 #   - Improve error reporting
-#   - recurse into dirtree for multiple comics
 
 __version__ = '1.50'
+__license__   = 'ISC'
+__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
+__docformat__ = 'restructuredtext en'
 
 import os
 import sys
@@ -240,7 +242,6 @@ def main(argv=None):
     if options.imgproc:
         print "Processing images..."
         dirImgProcess(path)
-
     print "Creating ePub structure..."
     genEpubStruct(path)
 

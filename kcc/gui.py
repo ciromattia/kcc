@@ -16,6 +16,10 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
+__license__   = 'ISC'
+__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
+__docformat__ = 'restructuredtext en'
+
 from Tkinter import *
 import tkFileDialog
 import ttk
