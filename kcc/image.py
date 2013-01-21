@@ -118,6 +118,12 @@ class ComicPage:
         method = Image.ANTIALIAS
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
+                # do not upscale but center image in a device-sized image
+                newImage = Image.new('RGB', (self.size[0], self.size[1]), (255,255,255))
+                newImage.paste(self.image, (
+                    (self.size[0] - self.image.size[0]) / 2,
+                    (self.size[1] - self.image.size[1]) / 2))
+                self.image = newImage
                 return self.image
             else:
                 method = Image.NEAREST
@@ -170,7 +176,8 @@ class ComicPage:
             except IOError as e:
                 raise RuntimeError('Cannot write image in directory %s: %s' %(targetdir,e))
             return fileone,filetwo
-        return None
+        else:
+            return None
 
     def frameImage(self):
         foreground = tuple(self.palette[:3])
