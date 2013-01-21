@@ -65,7 +65,7 @@ def buildHTML(path,file):
         f.close()
         return path,file
 
-def buildNCX(dstdir, title):
+def buildNCX(dstdir, title, chapters):
     ncxfile = dstdir + '/toc.ncx'
     f = open(ncxfile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
@@ -73,12 +73,19 @@ def buildNCX(dstdir, title):
         "<ncx version=\"2005-1\" xml:lang=\"en-US\" xmlns=\"http://www.daisy.org/z3986/2005/ncx/\">\n",
         "<head>\n</head>\n",
         "<docTitle><text>",title,"</text></docTitle>\n",
-        "<navMap></navMap>\n</ncx>"
+        "<navMap>"
         ])
+    for chapter in chapters:
+        folder = chapter[0].replace(dstdir,'').lstrip('/')
+        title = os.path.basename(folder)
+        filename = getImageFileName(os.path.join(folder,chapter[1]))
+        f.write("<navPoint id=\"" + folder + "\"><navLabel><text>" + title
+                + "</text></navLabel><content src=\"" + filename[0] + ".html\"/></navPoint>\n")
+    f.write("</navMap>\n</ncx>")
     f.close()
     return
 
-def buildOPF(profile, dstdir, title, filelist):
+def buildOPF(profile, dstdir, title, filelist, cover=None):
     opffile = dstdir + '/content.opf'
     # read the first file resolution
     profilelabel, deviceres, palette = image.ProfileData.Profiles[profile]
@@ -89,20 +96,30 @@ def buildOPF(profile, dstdir, title, filelist):
         "<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\n",
         "<dc:title>",title,"</dc:title>\n",
         "<dc:language>en-US</dc:language>\n",
+        "<meta name=\"cover\" content=\"cover\"/>\n",
         "<meta name=\"book-type\" content=\"comic\"/>\n",
         "<meta name=\"zero-gutter\" content=\"true\"/>\n",
         "<meta name=\"zero-margin\" content=\"true\"/>\n",
         "<meta name=\"fixed-layout\" content=\"true\"/>\n",
         "<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
         "<meta name=\"original-resolution\" content=\"" + imgres + "\"/>\n",
-        "</metadata><manifest><item id=\"ncx\" href=\"toc.ncx\" media-type=\"application/x-dtbncx+xml\"/>\n"])
+        "</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" media-type=\"application/x-dtbncx+xml\"/>\n"
+        ])
+    # set cover
+    if cover is not None:
+        folder = cover[0].replace(dstdir,'').lstrip('/')
+        filename = getImageFileName(cover[1])
+        if '.png' == filename[1]:
+            mt = 'image/png'
+        else:
+            mt = 'image/jpeg'
+        f.write("<item id=\"cover\" href=\"" + os.path.join(folder,cover[1]) + "\" media-type=\"" + mt + "\"/>\n")
     for path in filelist:
         folder = path[0].replace(dstdir,'').lstrip('/')
         filename = getImageFileName(path[1])
         uniqueid = os.path.join(folder,filename[0]).replace('/','_')
         f.write("<item id=\"page_" + uniqueid + "\" href=\"" + os.path.join(folder,filename[0])
                 + ".html\" media-type=\"application/xhtml+xml\"/>\n")
-    #for filename in filelist:
         if '.png' == filename[1]:
             mt = 'image/png'
         else:
@@ -154,7 +171,8 @@ def dirImgProcess(path):
                 img = image.ComicPage(os.path.join(dirpath,file), options.profile)
                 split = img.splitPage(dirpath, options.righttoleft)
                 if split is not None:
-                    print "Splitted " + file
+                    if options.verbose:
+                        print "Splitted " + file
                     img0 = image.ComicPage(split[0],options.profile)
                     img1 = image.ComicPage(split[1],options.profile)
                     applyImgOptimization(img0)
@@ -168,7 +186,10 @@ def dirImgProcess(path):
 def genEpubStruct(path):
     global options
     filelist = []
+    chapterlist = []
+    cover = None
     for (dirpath, dirnames, filenames) in os.walk(path):
+        chapter = False
         for file in filenames:
             if getImageFileName(file) is not None:
                 # put credits at the end
@@ -176,13 +197,17 @@ def genEpubStruct(path):
                     os.rename(os.path.join(dirpath,file), os.path.join(dirpath,'ZZZ999_'+file))
                     file = 'ZZZ999_'+file
                 filelist.append(buildHTML(dirpath,file))
-        #filelist.extend(filenames)
+                if not chapter:
+                    chapterlist.append((dirpath,filelist[-1][1]))
+                    chapter = True
+                if cover is None:
+                    cover = filelist[-1]
     if options.title == 'defaulttitle':
         options.title = os.path.basename(path)
-    buildNCX(path,options.title)
+    buildNCX(path,options.title,chapterlist)
     # ensure we're sorting files alphabetically
     filelist = sorted(filelist, key=lambda name: (name[0].lower(), name[1].lower()))
-    buildOPF(options.profile,path,options.title,filelist)
+    buildOPF(options.profile,path,options.title,filelist,cover)
 
 def getWorkFolder(file):
     fname = os.path.splitext(file)
