@@ -15,6 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+__license__   = 'ISC'
+__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
+__docformat__ = 'restructuredtext en'
+
 import os
 from PIL import Image, ImageOps, ImageDraw, ImageStat
 
