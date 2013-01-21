@@ -26,7 +26,6 @@ import os
 
 class PdfJpgExtract:
     def __init__(self, origFileName):
-        self.cbxexts = ['.zip','.cbz','.rar','.cbr']
         self.origFileName = origFileName
         self.filename = os.path.splitext(origFileName)
         self.path = self.filename[0]
