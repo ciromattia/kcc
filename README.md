@@ -15,7 +15,8 @@ It also optimizes comic images by:
 - flat folders
 - PDF *(extracting only contained JPG images)*
 
-For now the script does not understand folder depth, so it will work on flat folders/archives only.
+~~For now the script does not understand folder depth, so it will work on flat folders/archives only.~~
+As of v. 1.50, KCC supports subfolders!
 
 ## REQUIREMENTS
 - `kindlegen` in /usr/local/bin/
@@ -90,6 +91,7 @@ and installed in `/usr/local/bin/`
   - 1.40 - Added some options for controlling image optimization
         Further optimization (ImageOps, page numbering cut, autocontrast)
   - 1.41 - Fixed a serious bug on resizing when img ratio was bigger than device one
+  - 1.50 - Added subfolder support for multiple chapters.
   - 2.00 - GUI! AppleScript is gone and Tk is used to provide cross-platform GUI support.
 
 ## TODO
