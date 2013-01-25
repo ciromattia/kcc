@@ -193,9 +193,13 @@ def genEpubStruct(path):
         for file in filenames:
             if getImageFileName(file) is not None:
                 # put credits at the end
-                if "credits" in file.lower():
+                if "credit" in file.lower():
                     os.rename(os.path.join(dirpath,file), os.path.join(dirpath,'ZZZ999_'+file))
                     file = 'ZZZ999_'+file
+                if "+" in file.lower():
+                    newfilename = file.replace('+','_')
+                    os.rename(os.path.join(dirpath,file), os.path.join(dirpath,newfilename))
+                    file = newfilename
                 filelist.append(buildHTML(dirpath,file))
                 if not chapter:
                     chapterlist.append((dirpath,filelist[-1][1]))
