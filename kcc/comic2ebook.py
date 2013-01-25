@@ -239,7 +239,7 @@ def Usage():
     parser.print_help()
 
 def main(argv=None):
-    global parser, options
+    global parser, options, epub_path
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
@@ -250,14 +250,14 @@ def main(argv=None):
                       help="Split pages 'manga style' (right-to-left reading) [default=False]")
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="Verbose output [default=False]")
-    parser.add_option("-i", "--image-processing", action="store_false", dest="imgproc", default=True,
-                    help="Apply image preprocessing (page splitting and optimizations) [default=True]")
+    parser.add_option("--no-image-processing", action="store_false", dest="imgproc", default=True,
+                    help="Do not apply image preprocessing (page splitting and optimizations) [default=True]")
     parser.add_option("--upscale-images", action="store_true", dest="upscale", default=False,
                     help="Resize images smaller than device's resolution [default=False]")
     parser.add_option("--stretch-images", action="store_true", dest="stretch", default=False,
                     help="Stretch images to device's resolution [default=False]")
-    parser.add_option("--cut-page-numbers", action="store_false", dest="cutpagenumbers", default=True,
-                    help="Try to cut page numbering on images [default=True]")
+    parser.add_option("--no-cut-page-numbers", action="store_false", dest="cutpagenumbers", default=True,
+                    help="Do not try to cut page numbering on images [default=True]")
     options, args = parser.parse_args(argv)
     if len(args) != 1:
         parser.print_help()
@@ -269,7 +269,11 @@ def main(argv=None):
         dirImgProcess(path)
     print "Creating ePub structure..."
     genEpubStruct(path)
+    epub_path = path
 
+def getEpubPath():
+    global epub_path
+    return epub_path
 
 if __name__ == "__main__":
     Copyright()

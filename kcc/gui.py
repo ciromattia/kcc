@@ -21,10 +21,11 @@ __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
 
 from Tkinter import *
-import tkFileDialog
-import ttk
-import comic2ebook
+import tkFileDialog, tkMessageBox, ttk
+import comic2ebook, kindlestrip
 from image import ProfileData
+from subprocess import call
+import os, shutil, stat
 
 class MainWindow:
 
@@ -77,30 +78,78 @@ class MainWindow:
         w = apply(OptionMenu, (self.master, self.profile) + tuple(sorted(ProfileData.Profiles.iterkeys())))
         w.pack(anchor=W,fill=BOTH)
 
-        self.mangastyle = BooleanVar()
-        self.mangastyle = False
+        self.image_preprocess = IntVar()
+        self.image_preprocess = 1
+        self.cut_page_numbers = IntVar()
+        self.cut_page_numbers = 1
+        self.mangastyle = IntVar()
+        self.mangastyle = 0
+        self.image_upscale = IntVar()
+        self.image_upscale = 0
+        self.image_stretch = IntVar()
+        self.image_stretch = 0
+        self.c = Checkbutton(self.master, text="Apply image optimizations",
+            variable=self.image_preprocess)
+        self.c.select()
+        self.c.pack()
+        self.c = Checkbutton(self.master, text="Cut page numbers",
+            variable=self.cut_page_numbers)
+        self.c.pack()
         self.c = Checkbutton(self.master, text="Split manga-style (right-to-left reading)",
-                             variable=self.mangastyle)
+            variable=self.mangastyle)
+        self.c.pack()
+        self.c = Checkbutton(self.master, text="Allow image upscaling",
+            variable=self.image_upscale)
+        self.c.pack()
+        self.c = Checkbutton(self.master, text="Stretch images",
+            variable=self.image_stretch)
         self.c.pack()
 
-        #now for a button
-        self.submit = Button(self.master, text="Execute!", command=self.convert, fg="red")
-        self.submit.pack()
-
         self.progressbar = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate')
+        #now for a button
+        self.submit = Button(self.master, text="Execute!", command=self.start_conversion, fg="red")
+        self.submit.pack()
         self.progressbar.pack(side=BOTTOM)
+
+    def start_conversion(self):
+        self.progressbar.start()
+        self.convert()
+        self.progressbar.stop()
 
     def convert(self):
         argv = ["-p",self.profile.get()]
-        if self.mangastyle:
+        if self.image_preprocess == 0:
+            argv.append("--no-image-processing")
+        if self.cut_page_numbers == 0:
+            argv.append("--no-cut-page-numbers")
+        if self.mangastyle == 1:
             argv.append("-m")
-        self.progressbar.start()
+        if self.image_upscale == 1:
+            argv.append("--upscale-images")
+        if self.image_stretch == 1:
+            argv.append("--stretch-images")
         for entry in self.filelist:
             subargv = list(argv)
             subargv.append(entry)
             comic2ebook.main(subargv)
+            path = comic2ebook.getEpubPath()
+            call(['kindlegen',path + "/content.opf"])
+            kindlestrip.main((path + "/content.mobi", path + '.mobi'))
+            # try to clean up temp files... may be destructive!!!
+            shutil.rmtree(path, onerror=self.remove_readonly)
+        tkMessageBox.showinfo(
+            "Success!!",
+            "Conversion successfully done!"
+        )
 
-        print "Done!"
+
+    def remove_readonly(self, fn, path, excinfo):
+        if fn is os.rmdir:
+            os.chmod(path, stat.S_IWRITE)
+            os.rmdir(path)
+        elif fn is os.remove:
+            os.chmod(path, stat.S_IWRITE)
+            os.remove(path)
 
     def __init__(self, master, title):
         self.filelist = []
