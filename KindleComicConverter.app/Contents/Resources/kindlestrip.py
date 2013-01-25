@@ -206,6 +206,20 @@ class SectionStripper:
     def getHeader(self):
         return self.stripped_data_header
 
+def main(argv=None):
+    infile = argv[0]
+    outfile = argv[1]
+    data_file = file(infile, 'rb').read()
+    try:
+        strippedFile = SectionStripper(data_file)
+        file(outfile, 'wb').write(strippedFile.getResult())
+        print "Header Bytes: " + binascii.b2a_hex(strippedFile.getHeader())
+        if len(argv)==3:
+            file(argv[2], 'wb').write(strippedFile.getStrippedData())
+    except StripException, e:
+        print "Error: %s" % e
+        sys.exit(1)
+
 if __name__ == "__main__":
     sys.stdout=Unbuffered(sys.stdout)
     print ('KindleStrip v%(__version__)s. '
@@ -218,16 +232,5 @@ if __name__ == "__main__":
         print "<strippeddatafile> is optional."
         sys.exit(1)
     else:
-        infile = sys.argv[1]
-        outfile = sys.argv[2]
-        data_file = file(infile, 'rb').read()
-        try:
-            strippedFile = SectionStripper(data_file)
-            file(outfile, 'wb').write(strippedFile.getResult())
-            print "Header Bytes: " + binascii.b2a_hex(strippedFile.getHeader())
-            if len(sys.argv)==4:
-                file(sys.argv[3], 'wb').write(strippedFile.getStrippedData())
-        except StripException, e:
-            print "Error: %s" % e
-            sys.exit(1)
+        main(sys.argv[1:])
     sys.exit(0)
