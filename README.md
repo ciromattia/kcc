@@ -29,6 +29,10 @@ As of v. 1.50, KCC supports subfolders!
 
 ## USAGE
 
+### GUI
+
+Should be pretty self-explanatory, just keep in mind that it's still in development ;)
+
 ### Standalone `comic2ebook.py` usage:
 
 ```
