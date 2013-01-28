@@ -16,30 +16,24 @@ ez_setup.use_setuptools()
 import sys
 from setuptools import setup
 
-NAME="KindleComicConverter"
-VERSION="2.0"
-IDENTIFIER="com.github.ciromattia.kcc"
-EXENAME="KindleComicConverter"
-
-APP = ['kcc.py']
-DATA_FILES = []
-OPTIONS = { 'argv_emulation': True,
-            'iconfile': 'resources/comic2ebook.icns',
-            'includes': 'kcc/*.py'}
+NAME='KindleComicConverter'
+VERSION="2.1"
+mainscript = 'kcc.py'
 
 if sys.platform == 'darwin':
     extra_options = dict(
         setup_requires=['py2app'],
+        app=[mainscript],
         options=dict(
-            py2app=dict(OPTIONS,
-                #resources=['LICENSE.txt','resources/Scripts','resources/description.rtfd'],
-                resources=['LICENSE.txt','resources/description.rtfd'],
+            py2app=dict(
+                argv_emulation=True,
+                iconfile='resources/comic2ebook.icns',
                 plist=dict(
                     CFBundleName               = NAME,
                     CFBundleShortVersionString = VERSION,
                     CFBundleGetInfoString      = NAME + " " + VERSION + ", written 2012-2013 by Ciro Mattia Gonano",
-                    CFBundleExecutable         = EXENAME,
-                    CFBundleIdentifier         = IDENTIFIER,
+                    CFBundleExecutable         = NAME,
+                    CFBundleIdentifier         = 'com.github.ciromattia.kcc',
                     CFBundleSignature       = 'dplt'
                 )
             )
@@ -48,18 +42,17 @@ if sys.platform == 'darwin':
 elif sys.platform == 'win32':
     extra_options = dict(
         setup_requires=['py2exe'],
+        app=[mainscript]
     )
 else:
     extra_options = dict(
         # Normally unix-like platforms will use "setup.py install"
         # and install the main script as such
-        scripts=APP,
+        scripts=[mainscript],
     )
 
 setup(
     name=NAME,
-    app=APP,
-    data_files=DATA_FILES,
     version=VERSION,
     author="Ciro Mattia Gonano",
     author_email="ciromattia@gmail.com",

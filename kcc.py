@@ -38,7 +38,11 @@ __docformat__ = 'restructuredtext en'
 
 from Tkinter import *
 from kcc import gui
+from sys import platform
+import os
 
+if platform == 'darwin':
+    os.environ['PATH'] = '/usr/local/bin:' + os.environ['PATH']
 root = Tk()
 app = gui.MainWindow(master=root,title="Kindle Comic Converter v" + __version__)
 root.tkraise()

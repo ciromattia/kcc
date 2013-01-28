@@ -107,6 +107,7 @@ and installed in `/usr/local/bin/`
   - Add option to gen .mobi or .epub
   - Validate ePub
   - Make window take focus on app launch
+  - [OSX] Finder-launched app does not take into account user local $PATH
 
 ## COPYRIGHT
 
