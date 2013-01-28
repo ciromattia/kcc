@@ -84,6 +84,16 @@ class ProfileData:
         'KDX': ("Kindle DX", (824, 1200), Palette15),
         'KDXG': ("Kindle DXG", (824, 1200), Palette16)
     }
+    
+    ProfileLabels = {
+        "Kindle" : 'K1',
+        "Kindle 2" : 'K2',
+        "Kindle 3/Keyboard" : 'K3',
+        "Kindle 4/NT/Touch" : 'K4',
+        "Kindle Paperwhite" : 'KHD',
+        "Kindle DX" : 'KDX',
+        "Kindle DXG" : 'KDXG'
+    }
 
 class ComicPage:
     def __init__(self,source,device):

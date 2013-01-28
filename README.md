@@ -84,24 +84,29 @@ and installed in `/usr/local/bin/`
 
 
 ## CHANGELOG
-  - 1.00 - Initial version
-  - 1.10 - Added support for CBZ/CBR files in comic2ebook.py
-  - 1.11 - Added support for CBZ/CBR files in KindleComicConverter
-  - 1.20 - Comic optimizations! Split pages not target-oriented (landscape with portrait target or portrait
+  - 1.00: Initial version
+  - 1.10: Added support for CBZ/CBR files in comic2ebook.py
+  - 1.11: Added support for CBZ/CBR files in KindleComicConverter
+  - 1.20: Comic optimizations! Split pages not target-oriented (landscape with portrait target or portrait
    with landscape target), add palette and other image optimizations from Mangle.
    WARNING: PIL is required for all image mangling!
-  - 1.30 - Fixed an issue in OPF generation for device resolution
+  - 1.30: Fixed an issue in OPF generation for device resolution
    Reworked options system (call with -h option to get the inline help)
-  - 1.40 - Added some options for controlling image optimization
+  - 1.40: Added some options for controlling image optimization
         Further optimization (ImageOps, page numbering cut, autocontrast)
-  - 1.41 - Fixed a serious bug on resizing when img ratio was bigger than device one
-  - 1.50 - Added subfolder support for multiple chapters.
-  - 2.00 - GUI! AppleScript is gone and Tk is used to provide cross-platform GUI support.
+  - 1.41: Fixed a serious bug on resizing when img ratio was bigger than device one
+  - 1.50: Added subfolder support for multiple chapters.
+  - 2.0: GUI! AppleScript is gone and Tk is used to provide cross-platform GUI support.
+  - 2.1: Added basic error reporting
 
 ## TODO
   - Add gracefully exit for CBR if no rarfile.py and no unrar executable are found
-  - Improve error reporting
-  - Recurse into dirtree for multiple comics
+  - Try to get filetype from magic number (found some CBR that was actually CBZ)
+  - Improve GUI displaying what file we're processing and giving an explicit progress status
+  - Better GUI design
+  - Add option to gen .mobi or .epub
+  - Validate ePub
+  - Make window take focus on app launch
 
 ## COPYRIGHT
 

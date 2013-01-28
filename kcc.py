@@ -41,4 +41,5 @@ from kcc import gui
 
 root = Tk()
 app = gui.MainWindow(master=root,title="Kindle Comic Converter v" + __version__)
+root.tkraise()
 root.mainloop()
