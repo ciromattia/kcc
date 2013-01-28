@@ -24,7 +24,7 @@ from Tkinter import *
 import tkFileDialog, tkMessageBox, ttk
 import comic2ebook, kindlestrip
 from image import ProfileData
-from subprocess import call
+from subprocess import call, Popen, PIPE, STDOUT
 import os, shutil, stat
 
 class MainWindow:
@@ -63,21 +63,21 @@ class MainWindow:
 
     def initialize(self):
         self.filelocation = Listbox(self.master)
-        self.filelocation.pack(fill=BOTH, expand=1)
+        self.filelocation.grid(row=0,columnspan=4,sticky=W+E+N+S)
         self.refresh_list()
 
         self.clear_file = Button(self.master, text="Clear files", command=self.clear_files)
-        self.clear_file.pack(side=LEFT)
+        self.clear_file.grid(row=4,column=0,rowspan=3)
         self.open_file = Button(self.master, text="Add files...", command=self.open_files)
-        self.open_file.pack(side=LEFT)
+        self.open_file.grid(row=4,column=1,rowspan=3)
         self.open_folder = Button(self.master, text="Add folder...", command=self.open_folder)
-        self.open_folder.pack(side=LEFT)
+        self.open_folder.grid(row=4,column=2,rowspan=3)
 
         self.profile = StringVar()
         options = sorted(ProfileData.ProfileLabels.iterkeys())
         self.profile.set(options[-1])
         w = apply(OptionMenu, (self.master, self.profile) + tuple(options))
-        w.pack(anchor=W,fill=BOTH)
+        w.grid(row=1,column=3)
 
         self.image_preprocess = IntVar()
         self.image_preprocess = 1
@@ -92,25 +92,29 @@ class MainWindow:
         self.c = Checkbutton(self.master, text="Apply image optimizations",
             variable=self.image_preprocess)
         self.c.select()
-        self.c.pack()
+        self.c.grid(row=2,column=3,sticky=W)
         self.c = Checkbutton(self.master, text="Cut page numbers",
             variable=self.cut_page_numbers)
-        self.c.pack()
+        self.c.grid(row=3,column=3,sticky=W)
         self.c = Checkbutton(self.master, text="Split manga-style (right-to-left reading)",
             variable=self.mangastyle)
-        self.c.pack()
+        self.c.grid(row=4,column=3,sticky=W)
         self.c = Checkbutton(self.master, text="Allow image upscaling",
             variable=self.image_upscale)
-        self.c.pack()
+        self.c.grid(row=5,column=3,sticky=W)
         self.c = Checkbutton(self.master, text="Stretch images",
             variable=self.image_stretch)
-        self.c.pack()
+        self.c.grid(row=6,column=3,sticky=W)
 
         self.progressbar = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate')
-        #now for a button
+
         self.submit = Button(self.master, text="Execute!", command=self.start_conversion, fg="red")
-        self.submit.pack()
-        self.progressbar.pack(side=BOTTOM)
+        self.submit.grid(row=7,column=3)
+        self.progressbar.grid(row=8,column=0,columnspan=4,sticky=W+E+N+S)
+
+#        self.debug = Listbox(self.master)
+#        self.debug.grid(row=9,columnspan=4,sticky=W+E+N+S)
+#        self.debug.insert(END, os.environ['PATH'])
 
     def start_conversion(self):
         self.progressbar.start()
@@ -132,18 +136,34 @@ class MainWindow:
             argv.append("--stretch-images")
         errors = False
         for entry in self.filelist:
+            self.master.update()
             try:
                 subargv = list(argv)
                 subargv.append(entry)
                 comic2ebook.main(subargv)
                 path = comic2ebook.getEpubPath()
-                call(['kindlegen',path + "/content.opf"])
+            except Exception, err:
+                tkMessageBox.showerror('Error comic2ebook', "Error on file %s:\n%s" % (subargv[-1], str(err)))
+                errors = True
+                continue
+            try:
+                retcode = call("kindlegen " + path + "/content.opf", shell=True)
+                if retcode < 0:
+                    print >>sys.stderr, "Child was terminated by signal", -retcode
+                else:
+                    print >>sys.stderr, "Child returned", retcode
+            except OSError as e:
+                tkMessageBox.showerror('Error kindlegen', "Error on file %s:\n%s" % (path + "/content.opf", e))
+                errors = True
+                continue
+            try:
                 kindlestrip.main((path + "/content.mobi", path + '.mobi'))
                 # try to clean up temp files... may be destructive!!!
                 shutil.rmtree(path, onerror=self.remove_readonly)
             except Exception, err:
-                tkMessageBox.showerror('Error', "Error on file %s:\n%s" % (subargv[-1], str(err)))
+                tkMessageBox.showerror('Error', "Error on file %s:\n%s" % (path + "/content.mobi", str(err)))
                 errors = True
+                continue
         if errors:
             tkMessageBox.showinfo(
                 "Done",
