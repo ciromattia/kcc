@@ -74,8 +74,9 @@ class MainWindow:
         self.open_folder.pack(side=LEFT)
 
         self.profile = StringVar()
-        self.profile.set("KHD")
-        w = apply(OptionMenu, (self.master, self.profile) + tuple(sorted(ProfileData.Profiles.iterkeys())))
+        options = sorted(ProfileData.ProfileLabels.iterkeys())
+        self.profile.set(options[-1])
+        w = apply(OptionMenu, (self.master, self.profile) + tuple(options))
         w.pack(anchor=W,fill=BOTH)
 
         self.image_preprocess = IntVar()
@@ -117,7 +118,8 @@ class MainWindow:
         self.progressbar.stop()
 
     def convert(self):
-        argv = ["-p",self.profile.get()]
+        profilekey = ProfileData.ProfileLabels[self.profile.get()]
+        argv = ["-p",profilekey]
         if self.image_preprocess == 0:
             argv.append("--no-image-processing")
         if self.cut_page_numbers == 0:
@@ -128,20 +130,30 @@ class MainWindow:
             argv.append("--upscale-images")
         if self.image_stretch == 1:
             argv.append("--stretch-images")
+        errors = False
         for entry in self.filelist:
-            subargv = list(argv)
-            subargv.append(entry)
-            comic2ebook.main(subargv)
-            path = comic2ebook.getEpubPath()
-            call(['kindlegen',path + "/content.opf"])
-            kindlestrip.main((path + "/content.mobi", path + '.mobi'))
-            # try to clean up temp files... may be destructive!!!
-            shutil.rmtree(path, onerror=self.remove_readonly)
-        tkMessageBox.showinfo(
-            "Success!!",
-            "Conversion successfully done!"
-        )
-
+            try:
+                subargv = list(argv)
+                subargv.append(entry)
+                comic2ebook.main(subargv)
+                path = comic2ebook.getEpubPath()
+                call(['kindlegen',path + "/content.opf"])
+                kindlestrip.main((path + "/content.mobi", path + '.mobi'))
+                # try to clean up temp files... may be destructive!!!
+                shutil.rmtree(path, onerror=self.remove_readonly)
+            except Exception, err:
+                tkMessageBox.showerror('Error', "Error on file %s:\n%s" % (subargv[-1], str(err)))
+                errors = True
+        if errors:
+            tkMessageBox.showinfo(
+                "Done",
+                "Conversion finished (some errors have been reported)"
+            )
+        else:
+            tkMessageBox.showinfo(
+                "Done",
+                "Conversion successfully done!"
+            )
 
     def remove_readonly(self, fn, path, excinfo):
         if fn is os.rmdir:

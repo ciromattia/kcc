@@ -25,8 +25,7 @@ APP = ['kcc.py']
 DATA_FILES = []
 OPTIONS = { 'argv_emulation': True,
             'iconfile': 'resources/comic2ebook.icns',
-            'includes': 'kcc/*.py',
-            'packages': 'PIL'}
+            'includes': 'kcc/*.py'}
 
 if sys.platform == 'darwin':
     extra_options = dict(
