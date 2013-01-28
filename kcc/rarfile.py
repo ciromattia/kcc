@@ -1,6 +1,6 @@
 # rarfile.py
 #
-# Copyright (c) 2005-2011  Marko Kreen <markokr@gmail.com>
+# Copyright (c) 2005-2012  Marko Kreen <markokr@gmail.com>
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -64,7 +64,7 @@ For more details, refer to source.
 
 """
 
-__version__ = '2.4'
+__version__ = '2.5'
 
 # export only interesting items
 __all__ = ['is_rarfile', 'RarInfo', 'RarFile', 'RarExtFile']
@@ -300,6 +300,32 @@ class NeedFirstVolume(Error):
     """Need to start from first volume."""
 class NoCrypto(Error):
     """Cannot parse encrypted headers - no crypto available."""
+class RarExecError(Error):
+    """Problem reported by unrar/rar."""
+class RarWarning(RarExecError):
+    """Non-fatal error"""
+class RarFatalError(RarExecError):
+    """Fatal error"""
+class RarCRCError(RarExecError):
+    """CRC error during unpacking"""
+class RarLockedArchiveError(RarExecError):
+    """Must not modify locked archive"""
+class RarWriteError(RarExecError):
+    """Write error"""
+class RarOpenError(RarExecError):
+    """Open error"""
+class RarUserError(RarExecError):
+    """User error"""
+class RarMemoryError(RarExecError):
+    """Memory error"""
+class RarCreateError(RarExecError):
+    """Create error"""
+class RarUserBreak(RarExecError):
+    """User stop"""
+class RarUnknownError(RarExecError):
+    """Unknown exit code"""
+class RarSignalExit(RarExecError):
+    """Unrar exited with signal"""
 
 
 def is_rarfile(fn):
@@ -391,7 +417,7 @@ class RarInfo(object):
         'header_offset',
         'salt',
         'volume_file',
-    )
+        )
 
     def isdir(self):
         '''Returns True if the entry is a directory.'''
@@ -436,6 +462,12 @@ class RarFile(object):
             raise NotImplementedError("RarFile supports only mode=r")
 
         self._parse()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.close()
 
     def setpassword(self, password):
         '''Sets the password to use when extracting.'''
@@ -595,9 +627,8 @@ class RarFile(object):
             cmd.append('-p-')
         cmd.append(self.rarfile)
         p = custom_popen(cmd)
-        p.communicate()
-        if p.returncode != 0:
-            raise BadRarFile("Testing failed")
+        output = p.communicate()[0]
+        check_returncode(p, output)
 
     ##
     ## private methods
@@ -698,7 +729,7 @@ class RarFile(object):
                 # RAR 2.x does not write RAR_BLOCK_ENDARC
                 if h.flags & RAR_FILE_SPLIT_AFTER:
                     more_vols = 1
-                # RAR 2.x does not set RAR_MAIN_FIRSTVOLUME
+                    # RAR 2.x does not set RAR_MAIN_FIRSTVOLUME
                 if volume == 0 and h.flags & RAR_FILE_SPLIT_BEFORE:
                     raise NeedFirstVolume("Need to start from first volume")
 
@@ -919,7 +950,7 @@ class RarFile(object):
                 pos += S_COMMENT_HDR.size
                 data = hdata[pos : pos_next]
                 cmt = rar_decompress(ver, meth, data, declen, sflags,
-                                     crc, self._password)
+                    crc, self._password)
                 if not self._crc_check:
                     h.comment = self._decode_comment(cmt)
                 elif crc32(cmt) & 0xFFFF == crc:
@@ -1042,7 +1073,7 @@ class RarFile(object):
 
         # decompress
         cmt = rar_decompress(inf.extract_version, inf.compress_type, data,
-                             inf.file_size, inf.flags, inf.CRC, psw, inf.salt)
+            inf.file_size, inf.flags, inf.CRC, psw, inf.salt)
 
         # check crc
         if self._crc_check:
@@ -1110,7 +1141,8 @@ class RarFile(object):
 
         # call
         p = custom_popen(cmd)
-        p.communicate()
+        output = p.communicate()[0]
+        check_returncode(p, output)
 
 ##
 ## Utility classes
@@ -1203,6 +1235,7 @@ class RarExtFile(RawIOBase):
         self.fd = None
         self.CRC = 0
         self.remain = 0
+        self.returncode = 0
 
         self._open()
 
@@ -1229,6 +1262,8 @@ class RarExtFile(RawIOBase):
         if data:
             self.CRC = crc32(data, self.CRC)
             self.remain -= len(data)
+        if len(data) != cnt:
+            raise BadRarFile("Failed the read enough data")
 
         # done?
         if not data or self.remain == 0:
@@ -1240,6 +1275,8 @@ class RarExtFile(RawIOBase):
         """Check final CRC."""
         if not self.crc_check:
             return
+        if self.returncode:
+            check_returncode(self, '')
         if self.remain != 0:
             raise BadRarFile("Failed the read enough data")
         crc = self.CRC
@@ -1364,6 +1401,7 @@ class PipeReader(RarExtFile):
         if self.proc.stderr:
             self.proc.stderr.close()
         self.proc.wait()
+        self.returncode = self.proc.returncode
         self.proc = None
 
     def _open(self):
@@ -1373,6 +1411,7 @@ class PipeReader(RarExtFile):
         self._close_proc()
 
         # launch new process
+        self.returncode = 0
         self.proc = custom_popen(self.cmd)
         self.fd = self.proc.stdout
 
@@ -1382,7 +1421,22 @@ class PipeReader(RarExtFile):
 
     def _read(self, cnt):
         """Read from pipe."""
-        return self.fd.read(cnt)
+
+        # normal read is usually enough
+        data = self.fd.read(cnt)
+        if len(data) == cnt or not data:
+            return data
+
+        # short read, try looping
+        buf = [data]
+        cnt -= len(data)
+        while cnt > 0:
+            data = self.fd.read(cnt)
+            if not data:
+                break
+            cnt -= len(data)
+            buf.append(data)
+        return EMPTY.join(buf)
 
     def close(self):
         """Close open resources."""
@@ -1404,12 +1458,16 @@ class PipeReader(RarExtFile):
             if cnt > self.remain:
                 cnt = self.remain
             vbuf = memoryview(buf)
-            res = self.fd.readinto(vbuf[0:cnt])
-            if res:
+            res = got = 0
+            while got < cnt:
+                res = self.fd.readinto(vbuf[got : cnt])
+                if not res:
+                    break
                 if self.crc_check:
-                    self.CRC = crc32(vbuf[:res], self.CRC)
+                    self.CRC = crc32(vbuf[got : got + res], self.CRC)
                 self.remain -= res
-            return res
+                got += res
+            return got
 
 
 class DirectReader(RarExtFile):
@@ -1448,7 +1506,7 @@ class DirectReader(RarExtFile):
     def _read(self, cnt):
         """Read from potentially multi-volume archive."""
 
-        buf = EMPTY
+        buf = []
         while cnt > 0:
             # next vol needed?
             if self.cur_avail == 0:
@@ -1466,12 +1524,11 @@ class DirectReader(RarExtFile):
             # got some data
             cnt -= len(data)
             self.cur_avail -= len(data)
-            if buf:
-                buf += data
-            else:
-                buf = data
+            buf.append(data)
 
-        return buf
+        if len(buf) == 1:
+            return buf[0]
+        return EMPTY.join(buf)
 
     def _open_next(self):
         """Proceed to next volume."""
@@ -1611,7 +1668,7 @@ def rar_decompress(vers, meth, data, declen=0, flags=0, crc=0, psw=None, salt=No
     date = 0
     mode = 0x20
     fhdr = S_FILE_HDR.pack(len(data), declen, RAR_OS_MSDOS, crc,
-                           date, vers, meth, len(fname), mode)
+        date, vers, meth, len(fname), mode)
     fhdr += fname
     if flags & RAR_FILE_SALT:
         if not salt:
@@ -1701,6 +1758,35 @@ def custom_popen(cmd):
 
     # run command
     p = Popen(cmd, bufsize = 0, stdout = PIPE, stdin = PIPE, stderr = STDOUT,
-              creationflags = creationflags)
+        creationflags = creationflags)
     return p
+
+def check_returncode(p, out):
+    """Raise exception according to unrar exit code"""
+
+    code = p.returncode
+    if code == 0:
+        return
+
+    # map return code to exception class
+    errmap = [None,
+              RarWarning, RarFatalError, RarCRCError, RarLockedArchiveError,
+              RarWriteError, RarOpenError, RarUserError, RarMemoryError,
+              RarCreateError] # codes from rar.txt
+    if code > 0 and code < len(errmap):
+        exc = errmap[code]
+    elif code == 255:
+        exc = RarUserBreak
+    elif code < 0:
+        exc = RarSignalExit
+    else:
+        exc = RarUnknownError
+
+    # format message
+    if out:
+        msg = "%s [%d]: %s" % (exc.__doc__, p.returncode, out)
+    else:
+        msg = "%s [%d]" % (exc.__doc__, p.returncode)
+
+    raise exc(msg)
 
