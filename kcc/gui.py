@@ -127,6 +127,7 @@ class MainWindow:
         self.progressbar.stop()
 
     def convert(self):
+        tkMessageBox.showerror('Starting conversion', "KCC will now start converting files. GUI can seem frozen, kindly wait until some message appears!")
         profilekey = ProfileData.ProfileLabels[self.profile.get()]
         argv = ["-p",profilekey]
         if self.image_preprocess == 0:

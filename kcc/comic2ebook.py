@@ -36,7 +36,7 @@
 #       executable are found
 #   - Improve error reporting
 
-__version__ = '2.10'
+__version__ = '2.3'
 __license__   = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
@@ -49,7 +49,15 @@ import image, cbxarchive, pdfjpgextract
 def buildHTML(path,file):
     filename = getImageFileName(file)
     if filename is not None:
-        htmlfile = os.path.join(path.replace('/Images','/Text'),filename[0] + '.html')
+        postfix = ''
+        head = path
+        while True:
+            head, tail = os.path.split(head)
+            if tail == 'Images':
+                htmlpath = os.path.join(head,'Text')
+                break
+            postfix = tail + "/" + postfix
+        htmlfile = os.path.join(htmlpath,filename[0] + '.html')
         f = open(htmlfile, "w")
         f.writelines(["<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
                       "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
@@ -58,7 +66,7 @@ def buildHTML(path,file):
                       "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
                       "</head>\n",
                       "<body>\n",
-                      "<div><img src=\"../Images/",file,"\" alt=\"",file,"\" /></div>\n",
+                      "<div><img src=\"../Images/",postfix,file,"\" alt=\"",file,"\" /></div>\n",
                       "</body>\n",
                       "</html>"
                       ])
@@ -66,7 +74,7 @@ def buildHTML(path,file):
         return path,file
 
 def buildNCX(dstdir, title, chapters):
-    ncxfile = dstdir + '/OEBPS/toc.ncx'
+    ncxfile = os.path.join(dstdir,'OEBPS','toc.ncx')
     f = open(ncxfile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
         "<!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\" \"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\n",
@@ -81,7 +89,7 @@ def buildNCX(dstdir, title, chapters):
         "<navMap>"
         ])
     for chapter in chapters:
-        folder = chapter[0].replace(dstdir + '/OEBPS','').lstrip('/')
+        folder = chapter[0].replace(os.path.join(dstdir,'OEBPS'),'').lstrip('/').lstrip('\\\\')
         title = os.path.basename(folder)
         filename = getImageFileName(os.path.join(folder,chapter[1]))
         f.write("<navPoint id=\"" + folder.replace('/','_') + "\"><navLabel><text>" + title
@@ -91,7 +99,7 @@ def buildNCX(dstdir, title, chapters):
     return
 
 def buildOPF(profile, dstdir, title, filelist, cover=None):
-    opffile = dstdir + '/OEBPS/content.opf'
+    opffile = os.path.join(dstdir,'OEBPS','content.opf')
     # read the first file resolution
     profilelabel, deviceres, palette = image.ProfileData.Profiles[profile]
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
@@ -113,7 +121,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
         ])
     # set cover
     if cover is not None:
-        filename = getImageFileName(cover.replace(dstdir + '/OEBPS','').lstrip('/'))
+        filename = getImageFileName(cover.replace(os.path.join(dstdir,'OEBPS'),'').lstrip('/').lstrip('\\\\'))
         if '.png' == filename[1]:
             mt = 'image/png'
         else:
@@ -121,7 +129,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
         f.write("<item id=\"cover\" href=\"" + filename[0] + filename[1] + "\" media-type=\"" + mt + "\"/>\n")
     reflist = []
     for path in filelist:
-        folder = path[0].replace(dstdir + '/OEBPS','').lstrip('/')
+        folder = path[0].replace(os.path.join(dstdir,'OEBPS'),'').lstrip('/').lstrip('\\\\')
         filename = getImageFileName(path[1])
         uniqueid = os.path.join(folder,filename[0]).replace('/','_')
         reflist.append(uniqueid)
@@ -138,11 +146,11 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
     f.close()
     # finish with standard ePub folders
-    os.mkdir(dstdir + '/META-INF')
-    f = open(dstdir + '/mimetype', 'w')
+    os.mkdir(os.path.join(dstdir,'META-INF'))
+    f = open(os.path.join(dstdir,'mimetype'), 'w')
     f.write('application/epub+zip')
     f.close()
-    f = open(dstdir + '/META-INF/container.xml', 'w')
+    f = open(os.path.join(dstdir,'META-INF','container.xml'), 'w')
     f.writelines(["<?xml version=\"1.0\"?>\n",
         "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\n",
         "<rootfiles>\n",
@@ -205,8 +213,8 @@ def genEpubStruct(path):
     filelist = []
     chapterlist = []
     cover = None
-    os.mkdir(path + "/OEBPS/Text")
-    for (dirpath, dirnames, filenames) in os.walk(path + "/OEBPS/Images/"):
+    os.mkdir(os.path.join(path,'OEBPS','Text'))
+    for (dirpath, dirnames, filenames) in os.walk(os.path.join(path,'OEBPS','Images')):
         chapter = False
         for file in filenames:
             filename = getImageFileName(file)
@@ -215,13 +223,13 @@ def genEpubStruct(path):
                 if "credit" in file.lower():
                     os.rename(os.path.join(dirpath,file), os.path.join(dirpath,'ZZZ999_'+file))
                     file = 'ZZZ999_'+file
-                if "+" in file.lower():
-                    newfilename = file.replace('+','_')
+                if "+" in file.lower() or "#" in file.lower():
+                    newfilename = file.replace('+','_').replace('#','_')
                     os.rename(os.path.join(dirpath,file), os.path.join(dirpath,newfilename))
                     file = newfilename
                 filelist.append(buildHTML(dirpath,file))
                 if not chapter:
-                    chapterlist.append((dirpath.replace('/Images','/Text'),filelist[-1][1]))
+                    chapterlist.append((dirpath.replace('Images','Text'),filelist[-1][1]))
                     chapter = True
                 if cover is None:
                     cover = os.path.join(filelist[-1][0],'cover' + getImageFileName(filelist[-1][1])[1])
@@ -256,7 +264,7 @@ def getWorkFolder(file):
             except OSError:
                 raise
     move(path,path + "_temp")
-    move(path + "_temp",path + "/OEBPS/Images/")
+    move(path + "_temp",os.path.join(path,'OEBPS','Images'))
     return path
 
 def Copyright():
