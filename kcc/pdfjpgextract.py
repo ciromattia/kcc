@@ -70,10 +70,3 @@ class PdfJpgExtract:
             njpg += 1
             i = iend
 
-        dir = os.listdir(self.path)
-        if len(dir) == 1:
-            import shutil
-            for f in os.listdir(self.path + "/" + dir[0]):
-                shutil.move(self.path + "/" + dir[0] + "/" + f, self.path)
-            os.rmdir(self.path + "/" + dir[0])
-
