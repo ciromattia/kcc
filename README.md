@@ -1,6 +1,8 @@
 # KindleComicConverter
 
-`KindleComicConverter` is a Python app which aim is to convert comic files or folders to a comic-type (Mobipocket) ebook to take advantage of the new Panel View mode on Amazon's Kindle.
+`KindleComicConverter` is a Python app to convert comic files or folders to ePub or Panel View Mobipocket.
+It was initally developed for Kindle but as of version 2.2 it outputs valid ePub 2.0 so you can use in nearly
+ any eReader.
 It also optimizes comic images by:
 - enhancing contrast
 - cutting page numbering
@@ -8,19 +10,25 @@ It also optimizes comic images by:
 - resizing larger images to device's native resolution
 - quantizing images to device's palette
 
+## BINARY RELEASES
+You can find the latest released binary at the following links:  
+- OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.2.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.2.zip)
+- Win32: 
+- Linux: just download sourcecode and launch `python kcc.py` *(provided you have Python and Pillow installed)*
+
 ## INPUT FORMATS
 `kcc` can understand and convert, at the moment, the following file types:  
 - CBZ, ZIP
 - CBR, RAR *(with `unrar` executable)*
-- flat folders
-- PDF *(extracting only contained JPG images)*
+- ~flat folders~ AT THE MOMENT `kcc` CAN NOT MANAGE FOLDERS!
+- PDF *(extracting only contained **JPG** images)*
 
 ~~For now the script does not understand folder depth, so it will work on flat folders/archives only.~~
 As of v. 1.50, KCC supports subfolders!
 
-## REQUIREMENTS
-- `kindlegen` in /usr/local/bin/
-- [unrar](http://www.rarlab.com/download.htm) CBR support.
+## OPTIONAL REQUIREMENTS
+- `kindlegen` in /usr/local/bin/ *(for .mobi generation)*
+- [unrar](http://www.rarlab.com/download.htm) *(for CBR support)*
 
 ### for compiling/running from source:
 - Python 2.7+ (included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows)
@@ -38,19 +46,25 @@ Should be pretty self-explanatory, just keep in mind that it's still in developm
 ```
 comic2ebook.py [options] comic_file|comic_folder
   Options:
-     --version             show program's version number and exit
-     -h, --help            show this help message and exit
-     -p PROFILE, --profile=PROFILE
-                           Device profile (choose one among K1, K2, K3, K4, KDX, KDXG or KHD) [default=KHD]
-     -t TITLE, --title=TITLE
-                           Comic title [default=filename]
-     -m, --manga-style     Split pages 'manga style' (right-to-left reading) [default=False]
-     -v, --verbose         Verbose output [default=False]
-     -i, --image-processing
-                           Apply image preprocessing (page splitting and optimizations) [default=True]
-     --upscale-images      Resize images smaller than device's resolution [default=False]
-     --stretch-images      Stretch images to device's resolution [default=False]
-     --cut-page-numbers    Try to cut page numbering on images [default=True]
+    --version             show program's version number and exit
+    -h, --help            show this help message and exit
+    -p PROFILE, --profile=PROFILE
+                          Device profile (choose one among K1, K2, K3, K4, KDX,
+                          KDXG or KHD) [default=KHD]
+    -t TITLE, --title=TITLE
+                          Comic title [default=filename]
+    -m, --manga-style     Split pages 'manga style' (right-to-left reading)
+                          [default=False]
+    -v, --verbose         Verbose output [default=False]
+    --no-image-processing
+                          Do not apply image preprocessing (page splitting and
+                          optimizations) [default=True]
+    --upscale-images      Resize images smaller than device's resolution
+                          [default=False]
+    --stretch-images      Stretch images to device's resolution [default=False]
+    --no-cut-page-numbers
+                          Do not try to cut page numbering on images
+                          [default=True]
 ```
 
 The script takes care of unzipping/unrarring the file if it's an archive, creating a directory of images which should be then filled with a `.opf`, `.ncx`, and many `.html` files, then:  
@@ -98,14 +112,14 @@ and installed in `/usr/local/bin/`
   - 1.50: Added subfolder support for multiple chapters.
   - 2.0: GUI! AppleScript is gone and Tk is used to provide cross-platform GUI support.
   - 2.1: Added basic error reporting
+  - 2.2: Added (valid!) ePub 2.0 output
+        Rename .zip files to .cbz to avoid overwriting
 
 ## TODO
   - Add gracefully exit for CBR if no rarfile.py and no unrar executable are found
   - Try to get filetype from magic number (found some CBR that was actually CBZ)
   - Improve GUI displaying what file we're processing and giving an explicit progress status
   - Better GUI design
-  - Add option to gen .mobi or .epub
-  - Validate ePub
   - Make window take focus on app launch
   - [OSX] Finder-launched app does not take into account user local $PATH
 
