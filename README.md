@@ -114,6 +114,7 @@ and installed in `/usr/local/bin/`
   - 2.1: Added basic error reporting
   - 2.2: Added (valid!) ePub 2.0 output
         Rename .zip files to .cbz to avoid overwriting
+  - 2.3: Fixed win32 ePub generation, folder handling, filenames with spaces and subfolders.
 
 ## TODO
   - Add gracefully exit for CBR if no rarfile.py and no unrar executable are found

@@ -155,7 +155,7 @@ class MainWindow:
             if self.epub_only == 1:
                 continue;
             try:
-                retcode = call("kindlegen " + epub_path, shell=True)
+                retcode = call("kindlegen \"" + epub_path + "\"", shell=True)
                 if retcode < 0:
                     print >>sys.stderr, "Child was terminated by signal", -retcode
                 else:

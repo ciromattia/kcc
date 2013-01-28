@@ -50,13 +50,17 @@ def buildHTML(path,file):
     filename = getImageFileName(file)
     if filename is not None:
         postfix = ''
+        backref = 1
         head = path
         while True:
             head, tail = os.path.split(head)
             if tail == 'Images':
-                htmlpath = os.path.join(head,'Text')
+                htmlpath = os.path.join(head,'Text',postfix)
                 break
             postfix = tail + "/" + postfix
+            backref += 1
+        if not os.path.exists(htmlpath):
+            os.makedirs(htmlpath)
         htmlfile = os.path.join(htmlpath,filename[0] + '.html')
         f = open(htmlfile, "w")
         f.writelines(["<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
@@ -66,7 +70,7 @@ def buildHTML(path,file):
                       "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
                       "</head>\n",
                       "<body>\n",
-                      "<div><img src=\"../Images/",postfix,file,"\" alt=\"",file,"\" /></div>\n",
+                      "<div><img src=\"","../" * backref,"Images/",postfix,file,"\" alt=\"",file,"\" /></div>\n",
                       "</body>\n",
                       "</html>"
                       ])
@@ -133,7 +137,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
         filename = getImageFileName(path[1])
         uniqueid = os.path.join(folder,filename[0]).replace('/','_')
         reflist.append(uniqueid)
-        f.write("<item id=\"page_" + uniqueid + "\" href=\"" + os.path.join(folder.replace('Images/','Text/'),filename[0])
+        f.write("<item id=\"page_" + uniqueid + "\" href=\"" + os.path.join(folder.replace('Images','Text'),filename[0])
                 + ".html\" media-type=\"application/xhtml+xml\"/>\n")
         if '.png' == filename[1]:
             mt = 'image/png'
