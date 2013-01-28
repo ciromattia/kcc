@@ -16,22 +16,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
-# Changelog
-#  1.00 - Initial version
-#  1.10 - Added support for CBZ/CBR files
-#  1.11 - Added support for ZIP/RAR extensions
-#  1.20 - Comic optimizations! Split pages not target-oriented (landscape
-#       with portrait target or portrait with landscape target), add palette
-#       and other image optimizations from Mangle.
-#       WARNING: PIL is required for all image mangling!
-#
-# Todo:
-#   - Add gracefully exit for CBR if no rarfile.py and no unrar
-#       executable are found
-#   - Improve error reporting
-#   - recurse into dirtree for multiple comics
-
-__version__ = '2.0'
+__version__ = '2.2'
 __license__   = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'

@@ -79,6 +79,8 @@ class MainWindow:
         w = apply(OptionMenu, (self.master, self.profile) + tuple(options))
         w.grid(row=1,column=3)
 
+        self.epub_only = IntVar()
+        self.epub_only = 0
         self.image_preprocess = IntVar()
         self.image_preprocess = 1
         self.cut_page_numbers = IntVar()
@@ -89,28 +91,31 @@ class MainWindow:
         self.image_upscale = 0
         self.image_stretch = IntVar()
         self.image_stretch = 0
+        self.c = Checkbutton(self.master, text="Generate ePub only (does not call 'kindlegen')",
+            variable=self.epub_only)
+        self.c.grid(row=3,column=3,sticky=W)
         self.c = Checkbutton(self.master, text="Apply image optimizations",
             variable=self.image_preprocess)
         self.c.select()
-        self.c.grid(row=2,column=3,sticky=W)
+        self.c.grid(row=4,column=3,sticky=W)
         self.c = Checkbutton(self.master, text="Cut page numbers",
             variable=self.cut_page_numbers)
-        self.c.grid(row=3,column=3,sticky=W)
+        self.c.grid(row=5,column=3,sticky=W)
         self.c = Checkbutton(self.master, text="Split manga-style (right-to-left reading)",
             variable=self.mangastyle)
-        self.c.grid(row=4,column=3,sticky=W)
+        self.c.grid(row=6,column=3,sticky=W)
         self.c = Checkbutton(self.master, text="Allow image upscaling",
             variable=self.image_upscale)
-        self.c.grid(row=5,column=3,sticky=W)
+        self.c.grid(row=7,column=3,sticky=W)
         self.c = Checkbutton(self.master, text="Stretch images",
             variable=self.image_stretch)
-        self.c.grid(row=6,column=3,sticky=W)
+        self.c.grid(row=8,column=3,sticky=W)
 
         self.progressbar = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate')
 
         self.submit = Button(self.master, text="Execute!", command=self.start_conversion, fg="red")
-        self.submit.grid(row=7,column=3)
-        self.progressbar.grid(row=8,column=0,columnspan=4,sticky=W+E+N+S)
+        self.submit.grid(row=9,column=3)
+        self.progressbar.grid(row=10,column=0,columnspan=4,sticky=W+E+N+S)
 
 #        self.debug = Listbox(self.master)
 #        self.debug.grid(row=9,columnspan=4,sticky=W+E+N+S)
@@ -141,27 +146,30 @@ class MainWindow:
                 subargv = list(argv)
                 subargv.append(entry)
                 comic2ebook.main(subargv)
-                path = comic2ebook.getEpubPath()
+                epub_path = comic2ebook.getEpubPath()
             except Exception, err:
                 tkMessageBox.showerror('Error comic2ebook', "Error on file %s:\n%s" % (subargv[-1], str(err)))
                 errors = True
                 continue
+            if self.epub_only == 1:
+                continue;
             try:
-                retcode = call("kindlegen " + path + "/content.opf", shell=True)
+                retcode = call("kindlegen " + epub_path, shell=True)
                 if retcode < 0:
                     print >>sys.stderr, "Child was terminated by signal", -retcode
                 else:
                     print >>sys.stderr, "Child returned", retcode
             except OSError as e:
-                tkMessageBox.showerror('Error kindlegen', "Error on file %s:\n%s" % (path + "/content.opf", e))
+                tkMessageBox.showerror('Error kindlegen', "Error on file %s:\n%s" % (epub_path, e))
                 errors = True
                 continue
             try:
-                kindlestrip.main((path + "/content.mobi", path + '.mobi'))
-                # try to clean up temp files... may be destructive!!!
-                shutil.rmtree(path, onerror=self.remove_readonly)
+                mobifile = epub_path.replace('.epub','.mobi')
+                shutil.move(mobifile,mobifile + '_tostrip')
+                kindlestrip.main((mobifile + '_tostrip', mobifile))
+                os.remove(mobifile + '_tostrip')
             except Exception, err:
-                tkMessageBox.showerror('Error', "Error on file %s:\n%s" % (path + "/content.mobi", str(err)))
+                tkMessageBox.showerror('Error', "Error on file %s:\n%s" % (mobifile, str(err)))
                 errors = True
                 continue
         if errors:

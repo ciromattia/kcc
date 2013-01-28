@@ -36,29 +36,29 @@
 #       executable are found
 #   - Improve error reporting
 
-__version__ = '1.50'
+__version__ = '2.10'
 __license__   = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
 
-import os
-import sys
+import os, sys
+from shutil import move,copyfile,make_archive,rmtree
 from optparse import OptionParser
 import image, cbxarchive, pdfjpgextract
 
 def buildHTML(path,file):
     filename = getImageFileName(file)
     if filename is not None:
-        htmlfile = os.path.join(path,filename[0] + '.html')
+        htmlfile = os.path.join(path.replace('/Images','/Text'),filename[0] + '.html')
         f = open(htmlfile, "w")
-        f.writelines(["<!DOCTYPE html SYSTEM \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n",
+        f.writelines(["<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
                       "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
                       "<head>\n",
                       "<title>",filename[0],"</title>\n",
                       "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
                       "</head>\n",
                       "<body>\n",
-                      "<div><img src=\"",file,"\" /></div>\n",
+                      "<div><img src=\"../Images/",file,"\" alt=\"",file,"\" /></div>\n",
                       "</body>\n",
                       "</html>"
                       ])
@@ -66,36 +66,42 @@ def buildHTML(path,file):
         return path,file
 
 def buildNCX(dstdir, title, chapters):
-    ncxfile = dstdir + '/toc.ncx'
+    ncxfile = dstdir + '/OEBPS/toc.ncx'
     f = open(ncxfile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
         "<!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\" \"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\n",
         "<ncx version=\"2005-1\" xml:lang=\"en-US\" xmlns=\"http://www.daisy.org/z3986/2005/ncx/\">\n",
-        "<head>\n</head>\n",
+        "<head>\n",
+        "<meta name=\"dtb:uid\" content=\"015ffaec-9340-42f8-b163-a0c5ab7d0611\"/>\n",
+        "<meta name=\"dtb:depth\" content=\"2\"/>\n",
+        "<meta name=\"dtb:totalPageCount\" content=\"0\"/>\n",
+        "<meta name=\"dtb:maxPageNumber\" content=\"0\"/>\n",
+        "</head>\n",
         "<docTitle><text>",title,"</text></docTitle>\n",
         "<navMap>"
         ])
     for chapter in chapters:
-        folder = chapter[0].replace(dstdir,'').lstrip('/')
+        folder = chapter[0].replace(dstdir + '/OEBPS','').lstrip('/')
         title = os.path.basename(folder)
         filename = getImageFileName(os.path.join(folder,chapter[1]))
-        f.write("<navPoint id=\"" + folder + "\"><navLabel><text>" + title
+        f.write("<navPoint id=\"" + folder.replace('/','_') + "\"><navLabel><text>" + title
                 + "</text></navLabel><content src=\"" + filename[0] + ".html\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
     return
 
 def buildOPF(profile, dstdir, title, filelist, cover=None):
-    opffile = dstdir + '/content.opf'
+    opffile = dstdir + '/OEBPS/content.opf'
     # read the first file resolution
     profilelabel, deviceres, palette = image.ProfileData.Profiles[profile]
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     f = open(opffile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
-        "<package version=\"2.0\" unique-identifier=\"PrimaryID\" xmlns=\"http://www.idpf.org/2007/opf\">\n",
+        "<package version=\"2.0\" unique-identifier=\"BookID\" xmlns=\"http://www.idpf.org/2007/opf\">\n",
         "<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\n",
         "<dc:title>",title,"</dc:title>\n",
         "<dc:language>en-US</dc:language>\n",
+        "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">015ffaec-9340-42f8-b163-a0c5ab7d0611</dc:identifier>\n",
         "<meta name=\"cover\" content=\"cover\"/>\n",
         "<meta name=\"book-type\" content=\"comic\"/>\n",
         "<meta name=\"zero-gutter\" content=\"true\"/>\n",
@@ -107,18 +113,19 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
         ])
     # set cover
     if cover is not None:
-        folder = cover[0].replace(dstdir,'').lstrip('/')
-        filename = getImageFileName(cover[1])
+        filename = getImageFileName(cover.replace(dstdir + '/OEBPS','').lstrip('/'))
         if '.png' == filename[1]:
             mt = 'image/png'
         else:
             mt = 'image/jpeg'
-        f.write("<item id=\"cover\" href=\"" + os.path.join(folder,cover[1]) + "\" media-type=\"" + mt + "\"/>\n")
+        f.write("<item id=\"cover\" href=\"" + filename[0] + filename[1] + "\" media-type=\"" + mt + "\"/>\n")
+    reflist = []
     for path in filelist:
-        folder = path[0].replace(dstdir,'').lstrip('/')
+        folder = path[0].replace(dstdir + '/OEBPS','').lstrip('/')
         filename = getImageFileName(path[1])
         uniqueid = os.path.join(folder,filename[0]).replace('/','_')
-        f.write("<item id=\"page_" + uniqueid + "\" href=\"" + os.path.join(folder,filename[0])
+        reflist.append(uniqueid)
+        f.write("<item id=\"page_" + uniqueid + "\" href=\"" + os.path.join(folder.replace('Images/','Text/'),filename[0])
                 + ".html\" media-type=\"application/xhtml+xml\"/>\n")
         if '.png' == filename[1]:
             mt = 'image/png'
@@ -126,12 +133,22 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
             mt = 'image/jpeg'
         f.write("<item id=\"img_" + uniqueid + "\" href=\"" + os.path.join(folder,path[1]) + "\" media-type=\"" + mt + "\"/>\n")
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
-    for path in filelist:
-        folder = path[0].replace(dstdir,'').lstrip('/')
-        filename = getImageFileName(path[1])
-        uniqueid = os.path.join(folder,filename[0]).replace('/','_')
-        f.write("<itemref idref=\"page_" + uniqueid + "\" />\n")
+    for entry in reflist:
+        f.write("<itemref idref=\"page_" + entry + "\" />\n")
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
+    f.close()
+    # finish with standard ePub folders
+    os.mkdir(dstdir + '/META-INF')
+    f = open(dstdir + '/mimetype', 'w')
+    f.write('application/epub+zip')
+    f.close()
+    f = open(dstdir + '/META-INF/container.xml', 'w')
+    f.writelines(["<?xml version=\"1.0\"?>\n",
+        "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\n",
+        "<rootfiles>\n",
+        "<rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\n",
+        "</rootfiles>\n",
+        "</container>"])
     f.close()
     return
 
@@ -188,10 +205,12 @@ def genEpubStruct(path):
     filelist = []
     chapterlist = []
     cover = None
-    for (dirpath, dirnames, filenames) in os.walk(path):
+    os.mkdir(path + "/OEBPS/Text")
+    for (dirpath, dirnames, filenames) in os.walk(path + "/OEBPS/Images/"):
         chapter = False
         for file in filenames:
-            if getImageFileName(file) is not None:
+            filename = getImageFileName(file)
+            if filename is not None:
                 # put credits at the end
                 if "credit" in file.lower():
                     os.rename(os.path.join(dirpath,file), os.path.join(dirpath,'ZZZ999_'+file))
@@ -202,10 +221,11 @@ def genEpubStruct(path):
                     file = newfilename
                 filelist.append(buildHTML(dirpath,file))
                 if not chapter:
-                    chapterlist.append((dirpath,filelist[-1][1]))
+                    chapterlist.append((dirpath.replace('/Images','/Text'),filelist[-1][1]))
                     chapter = True
                 if cover is None:
-                    cover = filelist[-1]
+                    cover = os.path.join(filelist[-1][0],'cover' + getImageFileName(filelist[-1][1])[1])
+                    copyfile(os.path.join(filelist[-1][0],filelist[-1][1]), cover)
     if options.title == 'defaulttitle':
         options.title = os.path.basename(path)
     buildNCX(path,options.title,chapterlist)
@@ -218,20 +238,26 @@ def getWorkFolder(file):
     if fname[1].lower() == '.pdf':
         pdf = pdfjpgextract.PdfJpgExtract(file)
         pdf.extract()
-        return pdf.getPath()
+        path = pdf.getPath()
     else:
+        if fname[1].lower() == '.zip':
+            move(file,fname[0] + '.cbz')
+            file = fname[0] + '.cbz'
         cbx = cbxarchive.CBxArchive(file)
         if cbx.isCbxFile():
             cbx.extract()
-            return cbx.getPath()
+            path = cbx.getPath()
         else:
             try:
                 import shutil
                 if not os.path.isdir(file + "_orig"):
                     shutil.copytree(file, file + "_orig")
-                return file
+                path = file
             except OSError:
                 raise
+    move(path,path + "_temp")
+    move(path + "_temp",path + "/OEBPS/Images/")
+    return path
 
 def Copyright():
     print ('comic2ebook v%(__version__)s. '
@@ -270,10 +296,14 @@ def main(argv=None):
     path = getWorkFolder(path)
     if options.imgproc:
         print "Processing images..."
-        dirImgProcess(path)
+        dirImgProcess(path + "/OEBPS/Images/")
     print "Creating ePub structure..."
     genEpubStruct(path)
-    epub_path = path
+    # actually zip the ePub
+    make_archive(path,'zip',path)
+    move(path + '.zip', path + '.epub')
+    rmtree(path)
+    epub_path = path + '.epub'
 
 def getEpubPath():
     global epub_path
