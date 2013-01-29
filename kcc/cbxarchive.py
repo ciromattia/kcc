@@ -25,35 +25,28 @@ class CBxArchive:
         self.cbxexts = ['.zip','.cbz','.rar','.cbr']
         self.origFileName = origFileName
         self.filename = os.path.splitext(origFileName)
-        self.path = self.filename[0]
 
     def isCbxFile(self):
-        result = (self.filename[1].lower() in self.cbxexts)
-        if result == True:
-            return result
-        return False
+        return self.filename[1].lower() in self.cbxexts
 
-    def getPath(self):
-        return self.path
-
-    def extractCBZ(self):
+    def extractCBZ(self,targetdir):
         try:
             from zipfile import ZipFile
         except ImportError:
             self.cbzFile = None
         cbzFile = ZipFile(self.origFileName)
         for f in cbzFile.namelist():
-            if (f.startswith('__MACOSX') or f.endswith('.DS_Store')):
+            if f.startswith('__MACOSX') or f.endswith('.DS_Store'):
                 pass # skip MacOS special files
             elif f.endswith('/'):
                 try:
-                    os.makedirs(self.path+'/'+f)
+                    os.makedirs(os.path.join(targetdir,f))
                 except:
                     pass #the dir exists so we are going to extract the images only.
             else:
-                cbzFile.extract(f, self.path)
+                cbzFile.extract(f, targetdir)
 
-    def extractCBR(self):
+    def extractCBR(self,targetdir):
         try:
             import rarfile
         except ImportError:
@@ -61,24 +54,25 @@ class CBxArchive:
             return
         cbrFile = rarfile.RarFile(self.origFileName)
         for f in cbrFile.namelist():
-            if (f.startswith('__MACOSX') or f.endswith('.DS_Store')):
+            if f.startswith('__MACOSX') or f.endswith('.DS_Store'):
                 pass # skip MacOS special files
             elif f.endswith('/'):
                 try:
-                    os.makedirs(self.path+'/'+f)
+                    os.makedirs(os.path.join(targetdir,f))
                 except:
                     pass #the dir exists so we are going to extract the images only.
             else:
-                cbrFile.extract(f, self.path)
+                cbrFile.extract(f, targetdir)
 
-    def extract(self):
-        if ('.cbr' == self.filename[1].lower() or '.rar' == self.filename[1].lower()):
-            self.extractCBR()
-        elif ('.cbz' == self.filename[1].lower() or '.zip' == self.filename[1].lower()):
-            self.extractCBZ()
-        dir = os.listdir(self.path)
-        if (len(dir) == 1):
+    def extract(self,targetdir):
+        if '.cbr' == self.filename[1].lower() or '.rar' == self.filename[1].lower():
+            self.extractCBR(targetdir)
+        elif '.cbz' == self.filename[1].lower() or '.zip' == self.filename[1].lower():
+            self.extractCBZ(targetdir)
+        dir = os.listdir(targetdir)
+        if len(dir) == 1 and os.path.isdir(os.path.join(targetdir,dir[0])):
             import shutil
-            for f in os.listdir(self.path + "/" + dir[0]):
-                shutil.move(self.path + "/" + dir[0] + "/" + f,self.path)
-            os.rmdir(self.path + "/" + dir[0])
+            for f in os.listdir(os.path.join(targetdir,dir[0])):
+                shutil.move(os.path.join(targetdir,dir[0],f),targetdir)
+            os.rmdir(os.path.join(targetdir,dir[0]))
+        return targetdir

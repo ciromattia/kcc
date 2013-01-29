@@ -51,7 +51,8 @@ class MainWindow:
         self.refresh_list()
 
     def open_folder(self):
-        self.filelist = tkFileDialog.askdirectory(title="Choose a folder...")
+        f = tkFileDialog.askdirectory(title="Choose a folder...")
+        self.filelist.extend([f])
         self.refresh_list()
 
     def refresh_list(self):
@@ -146,8 +147,7 @@ class MainWindow:
             try:
                 subargv = list(argv)
                 subargv.append(entry)
-                comic2ebook.main(subargv)
-                epub_path = comic2ebook.getEpubPath()
+                epub_path = comic2ebook.main(subargv)
             except Exception, err:
                 tkMessageBox.showerror('Error comic2ebook', "Error on file %s:\n%s" % (subargv[-1], str(err)))
                 errors = True

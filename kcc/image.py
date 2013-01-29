@@ -110,10 +110,9 @@ class ComicPage:
 
     def saveToDir(self,targetdir):
         filename = os.path.basename(self.origFileName)
-        #print "Saving to " + targetdir + '/' + filename
         try:
             self.image = self.image.convert('L')    # convert to grayscale
-            self.image.save(targetdir + '/' + filename,"JPEG")
+            self.image.save(os.path.join(targetdir,filename),"JPEG")
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' %(targetdir,e))
 
@@ -133,11 +132,9 @@ class ComicPage:
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
                 # do not upscale but center image in a device-sized image
-                newImage = Image.new('RGB', (self.size[0], self.size[1]), (255,255,255))
-                newImage.paste(self.image, (
-                    (self.size[0] - self.image.size[0]) / 2,
-                    (self.size[1] - self.image.size[1]) / 2))
-                self.image = newImage
+                borderw = (self.size[0] - self.image.size[0]) / 2
+                borderh = (self.size[1] - self.image.size[1]) / 2
+                self.image = ImageOps.expand(self.image, border=(borderw,borderh), fill='white')
                 return self.image
             else:
                 method = Image.NEAREST
@@ -149,14 +146,10 @@ class ComicPage:
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-            newImage = Image.new('RGB', (self.image.size[0] + diff, self.image.size[1]), (255,255,255))
-            newImage.paste(self.image, (diff / 2, 0, diff / 2 + self.image.size[0], self.image.size[1]))
-            self.image = newImage
+            self.image = ImageOps.expand(self.image, border=(diff/2,0), fill='white')
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
-            newImage = Image.new('RGB', (self.image.size[0], self.image.size[1] + diff), (255,255,255))
-            newImage.paste(self.image, (0, diff / 2, self.image.size[0], diff / 2 + self.image.size[1]))
-            self.image = newImage
+            self.image = ImageOps.expand(self.image, border=(0,diff/2), fill='white')
         self.image = ImageOps.fit(self.image, self.size, method = method, centering = (0.5,0.5))
         return self.image
 
@@ -338,4 +331,3 @@ class ComicPage:
             if i==5:
                 draw.rectangle([(widthImg/2-1,heightImg-5), (widthImg/2+1,heightImg)],outline=black,fill=notch_colour)
         return self.image
-
