@@ -17,7 +17,7 @@ import sys
 from setuptools import setup
 
 NAME='KindleComicConverter'
-VERSION="2.1"
+VERSION="2.3"
 mainscript = 'kcc.py'
 
 if sys.platform == 'darwin':
@@ -40,9 +40,10 @@ if sys.platform == 'darwin':
         )
     )
 elif sys.platform == 'win32':
+    from cx_Freeze import setup, Executable
+    base = "Win32GUI"
     extra_options = dict(
-        setup_requires=['py2exe'],
-        app=[mainscript]
+        executables = [Executable("kcc.py", base=base)]
     )
 else:
     extra_options = dict(
