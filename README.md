@@ -20,7 +20,7 @@ You can find the latest released binary at the following links:
 `kcc` can understand and convert, at the moment, the following file types:  
 - CBZ, ZIP
 - CBR, RAR *(with `unrar` executable)*
-- ~flat folders~ AT THE MOMENT `kcc` CAN NOT MANAGE FOLDERS!
+- folders
 - PDF *(extracting only contained **JPG** images)*
 
 ~~For now the script does not understand folder depth, so it will work on flat folders/archives only.~~
@@ -32,7 +32,7 @@ As of v. 1.50, KCC supports subfolders!
 
 ### for compiling/running from source:
 - Python 2.7+ (included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows)
-- [Python Imaging Library](http://www.pythonware.com/products/pil/) for comic optimizations like split double pages, resize to optimal resolution, improve contrast and palette, etc.
+- [Pillow](http://pypi.python.org/pypi/Pillow/) for comic optimizations like split double pages, resize to optimal resolution, improve contrast and palette, etc.
   Please refer to official documentation for installing into your system.
 
 ## USAGE
@@ -67,34 +67,24 @@ comic2ebook.py [options] comic_file|comic_folder
                           [default=True]
 ```
 
-The script takes care of unzipping/unrarring the file if it's an archive, creating a directory of images which should be then filled with a `.opf`, `.ncx`, and many `.html` files, then:  
-1. Run `Kindlegen` on `content.opf`. Depending on how many images you have, this may take awhile. Once completed, the `.mobi` file should be in the directory.  
+The script takes care of creating an *.epub* from your archive/folder, then:
+1. Run `Kindlegen` on the generated *.epub*. Depending on how many images you have, this may take awhile. Once completed, the `.mobi` file should be in the directory.
 2. (optionally) remove the SRCS record to reduce the `.mobi` filesize in half. You can use [Kindlestrip](http://www.mobileread.com/forums/showthread.php?t=96903).
 3. Copy the `.mobi` file to your Kindle!
-
-### AppleScript Droplet (may be outdated)
-
-Drop a folder or a CBZ/CBR file over the app, after a while you'll get a comic-type .mobi to sideload on your Kindle.
-The script takes care of calling `comic2ebook.py`, `kindlegen` and `kindlestrip.py`.
-
-> **WARNING:** at the moment the droplet *ALWAYS* uses the **KHD** profile (*Kindle Paperwhite*).
-> If you want to specify other profiles, please use the script from command line.
-
 
 ## CREDITS
 This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published in [this mobileread forum thread](http://www.mobileread.com/forums/showthread.php?t=192783))
 
 The app relies and includes the following scripts/binaries:
 
- - the `KindleStrip` script &copy; 2010-2012 by **Paul Durrant** and released in public domain
+ - `KindleStrip` script &copy; 2010-2012 by **Paul Durrant** and released in public domain
 ([mobileread forum thread](http://www.mobileread.com/forums/showthread.php?t=96903))
- - the `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>, released with ISC License
- - the free version `unrar` executable (downloadable from [here](http://www.rarlab.com/rar_add.htm), refer to `LICENSE_unrar.txt` for further details)
+ - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>, released with ISC License
  - the icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC Attribution-NonCommercial-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
- - the `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches
+ - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches
 
-Also, you need to have `kindlegen` v2.7 (with KF8 support) which is downloadable from Amazon website
-and installed in `/usr/local/bin/`
+Also, for .mobi generation you need to have `kindlegen` v2.7 (with KF8 support) which is downloadable from Amazon website
+and installed in a directory reachable by your PATH (e.g. `/usr/local/bin/` or `C:\Windows\`)
 
 
 ## CHANGELOG
@@ -122,7 +112,6 @@ and installed in `/usr/local/bin/`
   - Improve GUI displaying what file we're processing and giving an explicit progress status
   - Better GUI design
   - Make window take focus on app launch
-  - [OSX] Finder-launched app does not take into account user local $PATH
 
 ## COPYRIGHT
 
