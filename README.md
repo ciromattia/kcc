@@ -21,7 +21,7 @@ You can find the latest released binary at the following links:
 - CBZ, ZIP
 - CBR, RAR *(with `unrar` executable)*
 - folders
-- PDF *(extracting only contained **JPG** images)*
+- PDF *(extracting only contained JPG images)*
 
 ~~For now the script does not understand folder depth, so it will work on flat folders/archives only.~~
 As of v. 1.50, KCC supports subfolders!
@@ -67,9 +67,9 @@ comic2ebook.py [options] comic_file|comic_folder
                           [default=True]
 ```
 
-The script takes care of creating an *.epub* from your archive/folder, then:
-1. Run `Kindlegen` on the generated *.epub*. Depending on how many images you have, this may take awhile. Once completed, the `.mobi` file should be in the directory.
-2. (optionally) remove the SRCS record to reduce the `.mobi` filesize in half. You can use [Kindlestrip](http://www.mobileread.com/forums/showthread.php?t=96903).
+The script takes care of creating an *.epub* from your archive/folder, then:  
+1. Run `Kindlegen` on the generated *.epub*. Depending on how many images you have, this may take awhile. Once completed, the `.mobi` file should be in the directory.  
+2. (optionally) remove the SRCS record to reduce the `.mobi` filesize in half. You can use [Kindlestrip](http://www.mobileread.com/forums/showthread.php?t=96903).  
 3. Copy the `.mobi` file to your Kindle!
 
 ## CREDITS
