@@ -12,8 +12,8 @@ It also optimizes comic images by:
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:  
-- OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.3.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.3.zip)
-- Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.3.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.3.zip)
+- OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.4.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.4.zip)
+- Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.4.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.4.zip)
 - Linux: just download sourcecode and launch `python kcc.py` *(provided you have Python and Pillow installed)*
 
 ## INPUT FORMATS
@@ -40,6 +40,8 @@ As of v. 1.50, KCC supports subfolders!
 ### GUI
 
 Should be pretty self-explanatory, just keep in mind that it's still in development ;)
+While working it seems frozen, I'll try to fix the aesthetics later.
+Conversion being done, you should find an .epub and a .mobi files alongside the original input file (same directory)
 
 ### Standalone `comic2ebook.py` usage:
 
@@ -104,7 +106,9 @@ and installed in a directory reachable by your PATH (e.g. `/usr/local/bin/` or `
   - 2.1: Added basic error reporting
   - 2.2: Added (valid!) ePub 2.0 output
         Rename .zip files to .cbz to avoid overwriting
-  - 2.3: Fixed win32 ePub generation, folder handling, filenames with spaces and subfolders.
+  - 2.3: Fixed win32 ePub generation, folder handling, filenames with spaces and subfolders
+  - 2.4: Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)
+        Fixed "add folders" from GUI.
 
 ## TODO
   - Add gracefully exit for CBR if no rarfile.py and no unrar executable are found

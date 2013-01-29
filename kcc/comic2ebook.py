@@ -16,39 +16,20 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
-# Changelog
-#  1.00 - Initial version
-#  1.10 - Added support for CBZ/CBR files
-#  1.11 - Added support for ZIP/RAR extensions
-#  1.20 - Comic optimizations! Split pages not target-oriented (landscape
-#       with portrait target or portrait with landscape target), add palette
-#       and other image optimizations from Mangle.
-#       WARNING: PIL is required for all image mangling!
-#  1.30 - Fixed an issue in OPF generation for device resolution
-#       Reworked options system (call with -h option to get the inline help)
-#  1.40 - Added some options for controlling image optimization
-#       Further optimization (ImageOps, page numbering cut, autocontrast)
-#  1.41 - Fixed a serious bug on resizing when img ratio was bigger than device one
-#  1.50 - Support for subfolders
-#
-# Todo:
-#   - Add gracefully exit for CBR if no rarfile.py and no unrar
-#       executable are found
-#   - Improve error reporting
-
-__version__ = '2.3'
+__version__ = '2.4'
 __license__   = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
 
-import os, sys
-from shutil import move,copyfile,make_archive,rmtree
+import os, sys, tempfile
+from shutil import move,copyfile,copytree,rmtree,make_archive
 from optparse import OptionParser
 import image, cbxarchive, pdfjpgextract
 
 def buildHTML(path,file):
     filename = getImageFileName(file)
     if filename is not None:
+        htmlpath = ''
         postfix = ''
         backref = 1
         head = path
@@ -203,9 +184,9 @@ def dirImgProcess(path):
                     if options.verbose:
                         print "Splitted " + file
                     img0 = image.ComicPage(split[0],options.profile)
-                    img1 = image.ComicPage(split[1],options.profile)
                     applyImgOptimization(img0)
                     img0.saveToDir(dirpath)
+                    img1 = image.ComicPage(split[1],options.profile)
                     applyImgOptimization(img1)
                     img1.saveToDir(dirpath)
                 else:
@@ -238,35 +219,31 @@ def genEpubStruct(path):
                 if cover is None:
                     cover = os.path.join(filelist[-1][0],'cover' + getImageFileName(filelist[-1][1])[1])
                     copyfile(os.path.join(filelist[-1][0],filelist[-1][1]), cover)
-    if options.title == 'defaulttitle':
-        options.title = os.path.basename(path)
     buildNCX(path,options.title,chapterlist)
     # ensure we're sorting files alphabetically
     filelist = sorted(filelist, key=lambda name: (name[0].lower(), name[1].lower()))
     buildOPF(options.profile,path,options.title,filelist,cover)
 
 def getWorkFolder(file):
+    workdir = tempfile.mkdtemp()
     fname = os.path.splitext(file)
-    if fname[1].lower() == '.pdf':
+    if os.path.isdir(file):
+        try:
+            import shutil
+            os.rmdir(workdir)   # needed for copytree() fails if dst already exists
+            copytree(file, workdir)
+            path = workdir
+        except OSError:
+            raise
+    elif fname[1].lower() == '.pdf':
         pdf = pdfjpgextract.PdfJpgExtract(file)
-        pdf.extract()
-        path = pdf.getPath()
+        path = pdf.extract(workdir)
     else:
-        if fname[1].lower() == '.zip':
-            move(file,fname[0] + '.cbz')
-            file = fname[0] + '.cbz'
         cbx = cbxarchive.CBxArchive(file)
         if cbx.isCbxFile():
-            cbx.extract()
-            path = cbx.getPath()
+            path = cbx.extract(workdir)
         else:
-            try:
-                import shutil
-                if not os.path.isdir(file + "_orig"):
-                    shutil.copytree(file, file + "_orig")
-                path = file
-            except OSError:
-                raise
+            raise TypeError
     move(path,path + "_temp")
     move(path + "_temp",os.path.join(path,'OEBPS','Images'))
     return path
@@ -304,18 +281,23 @@ def main(argv=None):
     if len(args) != 1:
         parser.print_help()
         return
-    path = args[0]
-    path = getWorkFolder(path)
+    path = getWorkFolder(args[0])
+    if options.title == 'defaulttitle':
+        options.title = os.path.splitext(os.path.basename(args[0]))[0]
     if options.imgproc:
         print "Processing images..."
         dirImgProcess(path + "/OEBPS/Images/")
     print "Creating ePub structure..."
     genEpubStruct(path)
     # actually zip the ePub
-    make_archive(path,'zip',path)
-    move(path + '.zip', path + '.epub')
+    if os.path.isdir(args[0]):
+        epubpath = args[0] + '.epub'
+    else:
+        epubpath = os.path.splitext(args[0])[0] + '.epub'
+    make_archive(os.path.join(path,'comic'),'zip',path)
+    move(os.path.join(path,'comic') + '.zip', epubpath)
     rmtree(path)
-    epub_path = path + '.epub'
+    return epubpath
 
 def getEpubPath():
     global epub_path
