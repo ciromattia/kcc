@@ -1,8 +1,8 @@
-# KindleComicConverter
+# KCC
 
-`KindleComicConverter` is a Python app to convert comic files or folders to ePub or Panel View Mobipocket.
-It was initally developed for Kindle but as of version 2.2 it outputs valid ePub 2.0 so you can use in nearly
- any eReader.
+`KCC` (a.k.a. `KindleComicConverter`) is a Python app to convert comic files or folders to ePub or Panel View Mobipocket.  
+It was initally developed for Kindle but as of version 2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
+actually a comic 2 epub converter that every ereader owner can happily use**_.  
 It also optimizes comic images by:
 - enhancing contrast
 - cutting page numbering
