@@ -16,7 +16,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
-__version__ = '2.4'
+__version__ = '2.5'
 __license__   = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
@@ -164,7 +164,7 @@ def applyImgOptimization(img):
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
-    img.resizeImage(options.upscale,options.stretch)
+    img.resizeImage(options.upscale,options.stretch,options.black_borders)
     img.quantizeImage()
 
 
@@ -275,6 +275,8 @@ def main(argv=None):
                     help="Resize images smaller than device's resolution [default=False]")
     parser.add_option("--stretch-images", action="store_true", dest="stretch", default=False,
                     help="Stretch images to device's resolution [default=False]")
+    parser.add_option("--black-borders", action="store_true", dest="black_borders", default=False,
+        help="Use black borders (instead of white ones) when not stretching and ratio is not like the device's one [default=False]")
     parser.add_option("--no-cut-page-numbers", action="store_false", dest="cutpagenumbers", default=True,
                     help="Do not try to cut page numbering on images [default=True]")
     options, args = parser.parse_args(argv)
@@ -294,8 +296,8 @@ def main(argv=None):
         epubpath = args[0] + '.epub'
     else:
         epubpath = os.path.splitext(args[0])[0] + '.epub'
-    make_archive(os.path.join(path,'comic'),'zip',path)
-    move(os.path.join(path,'comic') + '.zip', epubpath)
+    make_archive(path + '_comic','zip',path)
+    move(path + '_comic.zip', epubpath)
     rmtree(path)
     return epubpath
 

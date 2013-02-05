@@ -12,7 +12,7 @@ It also optimizes comic images by:
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:  
-- OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.4.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.4.zip)
+- OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.5.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.5.zip)
 - Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.4.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.4.zip)
 - Linux: just download sourcecode and launch `python kcc.py` *(provided you have Python and Pillow installed)*
 
@@ -64,6 +64,9 @@ comic2ebook.py [options] comic_file|comic_folder
     --upscale-images      Resize images smaller than device's resolution
                           [default=False]
     --stretch-images      Stretch images to device's resolution [default=False]
+    --black-borders       Use black borders (instead of white ones) when not
+                          stretching and ratio is not like the device's one
+                          [default=False]
     --no-cut-page-numbers
                           Do not try to cut page numbering on images
                           [default=True]
@@ -109,6 +112,8 @@ and installed in a directory reachable by your PATH (e.g. `/usr/local/bin/` or `
   - 2.3: Fixed win32 ePub generation, folder handling, filenames with spaces and subfolders
   - 2.4: Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)
         Fixed "add folders" from GUI.
+  - 2.5: Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).
+        Fixes epub containing zipped itself (#10).
 
 ## TODO
   - Add gracefully exit for CBR if no rarfile.py and no unrar executable are found

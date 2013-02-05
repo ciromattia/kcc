@@ -127,14 +127,18 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self,upscale=False, stretch=False):
+    def resizeImage(self,upscale=False, stretch=False, black_borders=False):
         method = Image.ANTIALIAS
+        if black_borders:
+            fill = 'black'
+        else:
+            fill = 'white'
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
                 # do not upscale but center image in a device-sized image
                 borderw = (self.size[0] - self.image.size[0]) / 2
                 borderh = (self.size[1] - self.image.size[1]) / 2
-                self.image = ImageOps.expand(self.image, border=(borderw,borderh), fill='white')
+                self.image = ImageOps.expand(self.image, border=(borderw,borderh), fill=fill)
                 return self.image
             else:
                 method = Image.NEAREST
@@ -146,10 +150,10 @@ class ComicPage:
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-            self.image = ImageOps.expand(self.image, border=(diff/2,0), fill='white')
+            self.image = ImageOps.expand(self.image, border=(diff/2,0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
-            self.image = ImageOps.expand(self.image, border=(0,diff/2), fill='white')
+            self.image = ImageOps.expand(self.image, border=(0,diff/2), fill=fill)
         self.image = ImageOps.fit(self.image, self.size, method = method, centering = (0.5,0.5))
         return self.image
 
