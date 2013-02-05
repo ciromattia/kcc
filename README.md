@@ -13,7 +13,7 @@ It also optimizes comic images by:
 ## BINARY RELEASES
 You can find the latest released binary at the following links:  
 - OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.5.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.5.zip)
-- Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.4.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.4.zip)
+- Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.5.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.5.zip)
 - Linux: just download sourcecode and launch `python kcc.py` *(provided you have Python and Pillow installed)*
 
 ## INPUT FORMATS
