@@ -75,48 +75,37 @@ class MainWindow:
         self.open_folder.grid(row=4,column=2,rowspan=3)
 
         self.profile = StringVar()
-        options = sorted(ProfileData.ProfileLabels.iterkeys())
-        self.profile.set(options[-1])
-        w = apply(OptionMenu, (self.master, self.profile) + tuple(options))
+        profiles = sorted(ProfileData.ProfileLabels.iterkeys())
+        self.profile.set(profiles[-1])
+        w = apply(OptionMenu, (self.master, self.profile) + tuple(profiles))
         w.grid(row=1,column=3)
 
-        self.epub_only = IntVar()
-        self.epub_only = 0
-        self.image_preprocess = IntVar()
-        self.image_preprocess = 1
-        self.cut_page_numbers = IntVar()
-        self.cut_page_numbers = 1
-        self.mangastyle = IntVar()
-        self.mangastyle = 0
-        self.image_upscale = IntVar()
-        self.image_upscale = 0
-        self.image_stretch = IntVar()
-        self.image_stretch = 0
-        self.c = Checkbutton(self.master, text="Generate ePub only (does not call 'kindlegen')",
-            variable=self.epub_only)
-        self.c.grid(row=3,column=3,sticky=W)
-        self.c = Checkbutton(self.master, text="Apply image optimizations",
-            variable=self.image_preprocess)
-        self.c.select()
-        self.c.grid(row=4,column=3,sticky=W)
-        self.c = Checkbutton(self.master, text="Cut page numbers",
-            variable=self.cut_page_numbers)
-        self.c.grid(row=5,column=3,sticky=W)
-        self.c = Checkbutton(self.master, text="Split manga-style (right-to-left reading)",
-            variable=self.mangastyle)
-        self.c.grid(row=6,column=3,sticky=W)
-        self.c = Checkbutton(self.master, text="Allow image upscaling",
-            variable=self.image_upscale)
-        self.c.grid(row=7,column=3,sticky=W)
-        self.c = Checkbutton(self.master, text="Stretch images",
-            variable=self.image_stretch)
-        self.c.grid(row=8,column=3,sticky=W)
-
+        self.options = {
+            'epub_only':IntVar(None,0),
+            'image_preprocess':IntVar(None,1),
+            'cut_page_numbers':IntVar(None,1),
+            'mangastyle':IntVar(None,0),
+            'image_upscale':IntVar(None,0),
+            'image_stretch':IntVar(None,0),
+            'black_borders':IntVar(None,0)
+        }
+        self.optionlabels = {
+            'epub_only':"Generate ePub only (does not call 'kindlegen')",
+            'image_preprocess':"Apply image optimizations",
+            'cut_page_numbers':"Cut page numbers",
+            'mangastyle':"Split manga-style (right-to-left reading)",
+            'image_upscale':"Allow image upscaling",
+            'image_stretch':"Stretch images",
+            'black_borders':"Use black borders"
+        }
+        for key in self.options:
+            aCheckButton = Checkbutton(self.master, text=self.optionlabels[key],variable=self.options[key])
+            aCheckButton.grid(column=3,sticky='w')
         self.progressbar = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate')
 
         self.submit = Button(self.master, text="Execute!", command=self.start_conversion, fg="red")
-        self.submit.grid(row=9,column=3)
-        self.progressbar.grid(row=10,column=0,columnspan=4,sticky=W+E+N+S)
+        self.submit.grid(column=3)
+        self.progressbar.grid(column=0,columnspan=4,sticky=W+E+N+S)
 
 #        self.debug = Listbox(self.master)
 #        self.debug.grid(row=9,columnspan=4,sticky=W+E+N+S)
@@ -128,19 +117,24 @@ class MainWindow:
         self.progressbar.stop()
 
     def convert(self):
-        tkMessageBox.showerror('Starting conversion', "KCC will now start converting files. GUI can seem frozen, kindly wait until some message appears!")
+        if len(self.filelist) < 1:
+            tkMessageBox.showwarning('No file selected', "You should really select some files to convert...")
+            return
+        tkMessageBox.showinfo('Starting conversion', "KCC will now start converting files. GUI can seem frozen, kindly wait until some message appears!")
         profilekey = ProfileData.ProfileLabels[self.profile.get()]
         argv = ["-p",profilekey]
-        if self.image_preprocess == 0:
+        if self.options['image_preprocess'].get() == 0:
             argv.append("--no-image-processing")
-        if self.cut_page_numbers == 0:
+        if self.options['cut_page_numbers'].get() == 0:
             argv.append("--no-cut-page-numbers")
-        if self.mangastyle == 1:
+        if self.options['mangastyle'].get() == 1:
             argv.append("-m")
-        if self.image_upscale == 1:
+        if self.options['image_upscale'].get() == 1:
             argv.append("--upscale-images")
-        if self.image_stretch == 1:
+        if self.options['image_stretch'].get() == 1:
             argv.append("--stretch-images")
+        if self.options['black_borders'].get() == 1:
+            argv.append("--black-borders")
         errors = False
         for entry in self.filelist:
             self.master.update()
@@ -152,7 +146,7 @@ class MainWindow:
                 tkMessageBox.showerror('Error comic2ebook', "Error on file %s:\n%s" % (subargv[-1], str(err)))
                 errors = True
                 continue
-            if self.epub_only == 1:
+            if self.options['epub_only'] == 1:
                 continue;
             try:
                 retcode = call("kindlegen \"" + epub_path + "\"", shell=True)
