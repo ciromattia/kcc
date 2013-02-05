@@ -1,8 +1,8 @@
-# KindleComicConverter
+# KCC
 
-`KindleComicConverter` is a Python app to convert comic files or folders to ePub or Panel View Mobipocket.
-It was initally developed for Kindle but as of version 2.2 it outputs valid ePub 2.0 so you can use in nearly
- any eReader.
+`KCC` (a.k.a. `KindleComicConverter`) is a Python app to convert comic files or folders to ePub or Panel View Mobipocket.  
+It was initally developed for Kindle but as of version 2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
+actually a comic 2 epub converter that every ereader owner can happily use**_.  
 It also optimizes comic images by:
 - enhancing contrast
 - cutting page numbering
@@ -97,20 +97,20 @@ and installed in a directory reachable by your PATH (e.g. `/usr/local/bin/` or `
   - 1.10: Added support for CBZ/CBR files in comic2ebook.py
   - 1.11: Added support for CBZ/CBR files in KindleComicConverter
   - 1.20: Comic optimizations! Split pages not target-oriented (landscape with portrait target or portrait
-   with landscape target), add palette and other image optimizations from Mangle.
+   with landscape target), add palette and other image optimizations from Mangle.  
    WARNING: PIL is required for all image mangling!
-  - 1.30: Fixed an issue in OPF generation for device resolution
+  - 1.30: Fixed an issue in OPF generation for device resolution  
    Reworked options system (call with -h option to get the inline help)
-  - 1.40: Added some options for controlling image optimization
+  - 1.40: Added some options for controlling image optimization  
         Further optimization (ImageOps, page numbering cut, autocontrast)
   - 1.41: Fixed a serious bug on resizing when img ratio was bigger than device one
   - 1.50: Added subfolder support for multiple chapters.
   - 2.0: GUI! AppleScript is gone and Tk is used to provide cross-platform GUI support.
   - 2.1: Added basic error reporting
-  - 2.2: Added (valid!) ePub 2.0 output
+  - 2.2: Added (valid!) ePub 2.0 output  
         Rename .zip files to .cbz to avoid overwriting
   - 2.3: Fixed win32 ePub generation, folder handling, filenames with spaces and subfolders
-  - 2.4: Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)
+  - 2.4: Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)  
         Fixed "add folders" from GUI.
   - 2.5: Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).
         Fixes epub containing zipped itself (#10).
