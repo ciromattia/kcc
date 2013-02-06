@@ -115,12 +115,6 @@ and installed in a directory reachable by your PATH (e.g. `/usr/local/bin/` or `
   - 2.5: Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).
         Fixes epub containing zipped itself (#10).
 
-## TODO
-  - Add gracefully exit for CBR if no rarfile.py and no unrar executable are found
-  - Try to get filetype from magic number (found some CBR that was actually CBZ)
-  - Improve GUI displaying what file we're processing and giving an explicit progress status
-  - Better GUI design
-  - Make window take focus on app launch
 
 ## COPYRIGHT
 
