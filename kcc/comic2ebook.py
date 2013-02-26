@@ -83,11 +83,15 @@ def buildNCX(dstdir, title, chapters):
     f.close()
     return
 
-def buildOPF(profile, dstdir, title, filelist, cover=None):
+def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     opffile = os.path.join(dstdir,'OEBPS','content.opf')
     # read the first file resolution
     profilelabel, deviceres, palette = image.ProfileData.Profiles[profile]
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
+    if righttoleft:
+        writingmode = "horizontal-rl"
+    else:
+        writingmode = "horizontal-lr"
     f = open(opffile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
         "<package version=\"2.0\" unique-identifier=\"BookID\" xmlns=\"http://www.idpf.org/2007/opf\">\n",
@@ -102,6 +106,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
         "<meta name=\"fixed-layout\" content=\"true\"/>\n",
         "<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
         "<meta name=\"original-resolution\" content=\"" + imgres + "\"/>\n",
+	"<meta name=\"primary-writing-mode\" content=\"" + writingmode + "\"/>\n",
         "</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" media-type=\"application/x-dtbncx+xml\"/>\n"
         ])
     # set cover
@@ -222,7 +227,7 @@ def genEpubStruct(path):
     buildNCX(path,options.title,chapterlist)
     # ensure we're sorting files alphabetically
     filelist = sorted(filelist, key=lambda name: (name[0].lower(), name[1].lower()))
-    buildOPF(options.profile,path,options.title,filelist,cover)
+    buildOPF(options.profile,path,options.title,filelist,cover,options.righttoleft)
 
 def getWorkFolder(file):
     workdir = tempfile.mkdtemp()
