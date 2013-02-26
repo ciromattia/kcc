@@ -13,7 +13,7 @@ It also optimizes comic images by:
 ## BINARY RELEASES
 You can find the latest released binary at the following links:  
 - OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.5.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.5.zip)
-- Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.4.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.4.zip)
+- Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.5.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.5.zip)
 - Linux: just download sourcecode and launch `python kcc.py` *(provided you have Python and Pillow installed)*
 
 ## INPUT FORMATS
@@ -115,12 +115,6 @@ and installed in a directory reachable by your PATH (e.g. `/usr/local/bin/` or `
   - 2.5: Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).
         Fixes epub containing zipped itself (#10).
 
-## TODO
-  - Add gracefully exit for CBR if no rarfile.py and no unrar executable are found
-  - Try to get filetype from magic number (found some CBR that was actually CBZ)
-  - Improve GUI displaying what file we're processing and giving an explicit progress status
-  - Better GUI design
-  - Make window take focus on app launch
 
 ## COPYRIGHT
 
