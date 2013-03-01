@@ -16,16 +16,22 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__license__   = 'ISC'
+__license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
 
 from Tkinter import *
-import tkFileDialog, tkMessageBox, ttk
-import comic2ebook, kindlestrip
+import tkFileDialog
+import tkMessageBox
+import ttk
+import comic2ebook
+import kindlestrip
 from image import ProfileData
-from subprocess import call, Popen, PIPE, STDOUT
-import os, shutil, stat
+from subprocess import call
+import os
+import shutil
+import stat
+
 
 class MainWindow:
 
@@ -34,9 +40,9 @@ class MainWindow:
         self.refresh_list()
 
     def open_files(self):
-        filetypes = [('all files', '.*'), ('Comic files', ('*.cbr','*.cbz','*.zip','*.rar','*.pdf'))]
-        f = tkFileDialog.askopenfilenames(title="Choose a file...",filetypes=filetypes)
-        if not isinstance(f,tuple):
+        filetypes = [('all files', '.*'), ('Comic files', ('*.cbr', '*.cbz', '*.zip', '*.rar', '*.pdf'))]
+        f = tkFileDialog.askopenfilenames(title="Choose a file...", filetypes=filetypes)
+        if not isinstance(f, tuple):
             try:
                 import re
                 f = re.findall('\{(.*?)\}', f)
@@ -58,58 +64,58 @@ class MainWindow:
     def refresh_list(self):
         self.filelocation.config(state=NORMAL)
         self.filelocation.delete(0, END)
-        for file in self.filelist:
-            self.filelocation.insert(END, file)
+        for afile in self.filelist:
+            self.filelocation.insert(END, afile)
         self.filelocation.config(state=DISABLED)
 
     def initialize(self):
         self.filelocation = Listbox(self.master)
-        self.filelocation.grid(row=0,columnspan=4,sticky=W+E+N+S)
+        self.filelocation.grid(row=0, columnspan=4, sticky=W + E + N + S)
         self.refresh_list()
 
         self.clear_file = Button(self.master, text="Clear files", command=self.clear_files)
-        self.clear_file.grid(row=4,column=0,rowspan=3)
+        self.clear_file.grid(row=4, column=0, rowspan=3)
         self.open_file = Button(self.master, text="Add files...", command=self.open_files)
-        self.open_file.grid(row=4,column=1,rowspan=3)
+        self.open_file.grid(row=4, column=1, rowspan=3)
         self.open_folder = Button(self.master, text="Add folder...", command=self.open_folder)
-        self.open_folder.grid(row=4,column=2,rowspan=3)
+        self.open_folder.grid(row=4, column=2, rowspan=3)
 
         self.profile = StringVar()
         profiles = sorted(ProfileData.ProfileLabels.iterkeys())
         self.profile.set(profiles[-1])
         w = apply(OptionMenu, (self.master, self.profile) + tuple(profiles))
-        w.grid(row=1,column=3)
+        w.grid(row=1, column=3)
 
         self.options = {
-            'epub_only':IntVar(None,0),
-            'image_preprocess':IntVar(None,1),
-            'cut_page_numbers':IntVar(None,1),
-            'mangastyle':IntVar(None,0),
-            'image_upscale':IntVar(None,0),
-            'image_stretch':IntVar(None,0),
-            'black_borders':IntVar(None,0)
+            'epub_only': IntVar(None, 0),
+            'image_preprocess': IntVar(None, 1),
+            'cut_page_numbers': IntVar(None, 1),
+            'mangastyle': IntVar(None, 0),
+            'image_upscale': IntVar(None, 0),
+            'image_stretch': IntVar(None, 0),
+            'black_borders': IntVar(None, 0)
         }
         self.optionlabels = {
-            'epub_only':"Generate ePub only (does not call 'kindlegen')",
-            'image_preprocess':"Apply image optimizations",
-            'cut_page_numbers':"Cut page numbers",
-            'mangastyle':"Split manga-style (right-to-left reading)",
-            'image_upscale':"Allow image upscaling",
-            'image_stretch':"Stretch images",
-            'black_borders':"Use black borders"
+            'epub_only': "Generate ePub only (does not call 'kindlegen')",
+            'image_preprocess': "Apply image optimizations",
+            'cut_page_numbers': "Cut page numbers",
+            'mangastyle': "Split manga-style (right-to-left reading)",
+            'image_upscale': "Allow image upscaling",
+            'image_stretch': "Stretch images",
+            'black_borders': "Use black borders"
         }
         for key in self.options:
-            aCheckButton = Checkbutton(self.master, text=self.optionlabels[key],variable=self.options[key])
-            aCheckButton.grid(column=3,sticky='w')
+            aCheckButton = Checkbutton(self.master, text=self.optionlabels[key], variable=self.options[key])
+            aCheckButton.grid(column=3, sticky='w')
         self.progressbar = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate')
 
         self.submit = Button(self.master, text="Execute!", command=self.start_conversion, fg="red")
         self.submit.grid(column=3)
-        self.progressbar.grid(column=0,columnspan=4,sticky=W+E+N+S)
+        self.progressbar.grid(column=0, columnspan=4, sticky=W + E + N + S)
 
-#        self.debug = Listbox(self.master)
-#        self.debug.grid(row=9,columnspan=4,sticky=W+E+N+S)
-#        self.debug.insert(END, os.environ['PATH'])
+        self.notelabel = Label(self.master,
+                               text="GUI can seem frozen while converting, kindly wait until some message appears!")
+        self.notelabel.grid(column=0, columnspan=4, sticky=W + E + N + S)
 
     def start_conversion(self):
         self.progressbar.start()
@@ -120,9 +126,8 @@ class MainWindow:
         if len(self.filelist) < 1:
             tkMessageBox.showwarning('No file selected', "You should really select some files to convert...")
             return
-        tkMessageBox.showinfo('Starting conversion', "KCC will now start converting files. GUI can seem frozen, kindly wait until some message appears!")
         profilekey = ProfileData.ProfileLabels[self.profile.get()]
-        argv = ["-p",profilekey]
+        argv = ["-p", profilekey]
         if self.options['image_preprocess'].get() == 0:
             argv.append("--no-image-processing")
         if self.options['cut_page_numbers'].get() == 0:
@@ -138,8 +143,8 @@ class MainWindow:
         errors = False
         for entry in self.filelist:
             self.master.update()
+            subargv = list(argv)
             try:
-                subargv = list(argv)
                 subargv.append(entry)
                 epub_path = comic2ebook.main(subargv)
             except Exception, err:
@@ -147,7 +152,7 @@ class MainWindow:
                 errors = True
                 continue
             if self.options['epub_only'] == 1:
-                continue;
+                continue
             try:
                 retcode = call("kindlegen \"" + epub_path + "\"", shell=True)
                 if retcode < 0:
@@ -158,9 +163,9 @@ class MainWindow:
                 tkMessageBox.showerror('Error kindlegen', "Error on file %s:\n%s" % (epub_path, e))
                 errors = True
                 continue
+            mobifile = epub_path.replace('.epub', '.mobi')
             try:
-                mobifile = epub_path.replace('.epub','.mobi')
-                shutil.move(mobifile,mobifile + '_tostrip')
+                shutil.move(mobifile, mobifile + '_tostrip')
                 kindlestrip.main((mobifile + '_tostrip', mobifile))
                 os.remove(mobifile + '_tostrip')
             except Exception, err:
@@ -178,7 +183,7 @@ class MainWindow:
                 "Conversion successfully done!"
             )
 
-    def remove_readonly(self, fn, path, excinfo):
+    def remove_readonly(self, fn, path):
         if fn is os.rmdir:
             os.chmod(path, stat.S_IWRITE)
             os.rmdir(path)
@@ -191,5 +196,3 @@ class MainWindow:
         self.master = master
         self.master.title(title)
         self.initialize()
-
-
