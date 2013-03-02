@@ -227,7 +227,7 @@ def dirImgProcess(path):
                 else:
                     print ".",
                 img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
-                split = img.splitPage(dirpath, options.righttoleft)
+                split = img.splitPage(dirpath, options.righttoleft, options.rotate)
                 if split is not None:
                     if options.verbose:
                         print "Splitted " + afile
@@ -333,6 +333,8 @@ def main(argv=None):
                       + "is not like the device's one [default=False]")
     parser.add_option("--no-cut-page-numbers", action="store_false", dest="cutpagenumbers", default=True,
                       help="Do not try to cut page numbering on images [default=True]")
+    parser.add_option("--rotate", action="store_true", dest="rotate", default=False,
+                      help="Disable page spliting. Instead rotate images [default=False]")
     options, args = parser.parse_args(argv)
     if len(args) != 1:
         parser.print_help()
