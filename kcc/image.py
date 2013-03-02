@@ -165,34 +165,34 @@ class ComicPage:
         #print "Image is %d x %d" % (width,height)
         # only split if origin is not oriented the same as target
         if (width > height) != (dstwidth > dstheight):
-			if rotate:
-				self.image = self.image.rotate(90)
-				return None
-			else:
-				if width > height:
-					# source is landscape, so split by the width
-					leftbox = (0, 0, width / 2, height)
-					rightbox = (width / 2, 0, width, height)
-				else:
-					# source is portrait and target is landscape, so split by the height
-					leftbox = (0, 0, width, height / 2)
-					rightbox = (0, height / 2, width, height)
-				filename = os.path.splitext(os.path.basename(self.origFileName))
-				fileone = targetdir + '/' + filename[0] + '-1' + filename[1]
-				filetwo = targetdir + '/' + filename[0] + '-2' + filename[1]
-				try:
-					if righttoleft:
-						pageone = self.image.crop(rightbox)
-						pagetwo = self.image.crop(leftbox)
-					else:
-						pageone = self.image.crop(leftbox)
-						pagetwo = self.image.crop(rightbox)
-					pageone.save(fileone)
-					pagetwo.save(filetwo)
-					os.remove(self.origFileName)
-				except IOError as e:
-					raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
-				return fileone, filetwo
+            if rotate:
+                self.image = self.image.rotate(90)
+                return None
+            else:
+                if width > height:
+                    # source is landscape, so split by the width
+                    leftbox = (0, 0, width / 2, height)
+                    rightbox = (width / 2, 0, width, height)
+                else:
+                    # source is portrait and target is landscape, so split by the height
+                    leftbox = (0, 0, width, height / 2)
+                    rightbox = (0, height / 2, width, height)
+                filename = os.path.splitext(os.path.basename(self.origFileName))
+                fileone = targetdir + '/' + filename[0] + '-1' + filename[1]
+                filetwo = targetdir + '/' + filename[0] + '-2' + filename[1]
+                try:
+                    if righttoleft:
+                        pageone = self.image.crop(rightbox)
+                        pagetwo = self.image.crop(leftbox)
+                    else:
+                        pageone = self.image.crop(leftbox)
+                        pagetwo = self.image.crop(rightbox)
+                    pageone.save(fileone)
+                    pagetwo.save(filetwo)
+                    os.remove(self.origFileName)
+                except IOError as e:
+                    raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
+                return fileone, filetwo
         else:
             return None
 
