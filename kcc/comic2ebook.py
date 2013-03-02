@@ -319,7 +319,7 @@ def main(argv=None):
     parser.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                       help="Comic title [default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
-                      help="Split pages 'manga style' (right-to-left reading) [default=False]")
+                      help="'Manga style' (right-to-left reading and splitting) [default=False]")
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="Verbose output [default=False]")
     parser.add_option("--no-image-processing", action="store_false", dest="imgproc", default=True,
