@@ -1,5 +1,5 @@
-/*.pyc
-/*.cbz
-/*.cbr
-/.idea
-/build
+*.pyc
+*.cbz
+*.cbr
+.idea
+build
