@@ -119,8 +119,8 @@ and installed in a directory reachable by your PATH (e.g. `/usr/local/bin/` or `
         Fixed "add folders" from GUI.
   - 2.5: Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).
         Fixes epub containing zipped itself (#10).
-  - 2.6: Added --rotate option to rotate landscape images instead of splitting them
-        Added --output option to customize ePub output dir/file
+  - 2.6: Added --rotate option to rotate landscape images instead of splitting them.
+        Added --output option to customize ePub output dir/file.
         Add rendition:layout and rendition:orientation ePub meta tags (supported by new kindlegen 2.8)
 
 ## COPYRIGHT
