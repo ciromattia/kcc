@@ -141,6 +141,8 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
                   "<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
                   "<meta name=\"original-resolution\" content=\"" + imgres + "\"/>\n",
                   "<meta name=\"primary-writing-mode\" content=\"" + writingmode + "\"/>\n",
+                  "<meta name=\"rendition:layout\" content=\"pre-paginated\"/>\n",
+                  "<meta name=\"rendition:orientation\" content=\"portrait\"/>\n",
                   "</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
                   "media-type=\"application/x-dtbncx+xml\"/>\n"
                   ])
