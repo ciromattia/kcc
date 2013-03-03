@@ -56,7 +56,7 @@ comic2ebook.py [options] comic_file|comic_folder
                           KDXG or KHD) [default=KHD]
     -t TITLE, --title=TITLE
                           Comic title [default=filename]
-    -m, --manga-style     Split pages 'manga style' (right-to-left reading)
+    -m, --manga-style     'Manga style' (right-to-left reading and splitting)
                           [default=False]
     -v, --verbose         Verbose output [default=False]
     --no-image-processing
@@ -71,6 +71,10 @@ comic2ebook.py [options] comic_file|comic_folder
     --no-cut-page-numbers
                           Do not try to cut page numbering on images
                           [default=True]
+    --rotate              Disable page spliting. Instead rotate images
+                          [default=False]
+    -o OUTPUT, --output=OUTPUT
+                          Output directory or file for generated ePub
 ```
 
 The script takes care of creating an *.epub* from your archive/folder, then:  
@@ -115,8 +119,11 @@ and installed in a directory reachable by your PATH (e.g. `/usr/local/bin/` or `
         Fixed "add folders" from GUI.
   - 2.5: Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).
         Fixes epub containing zipped itself (#10).
-
+  - 2.6: Added --rotate option to rotate landscape images instead of splitting them
+        Added --output option to customize ePub output dir/file
+        Add rendition:layout and rendition:orientation ePub meta tags (supported by new kindlegen 2.8)
 
 ## COPYRIGHT
 
 Copyright (c) 2012-2013 Ciro Mattia Gonano. See LICENSE.txt for further details.
+Contributions by Paweł Jastrzębski.

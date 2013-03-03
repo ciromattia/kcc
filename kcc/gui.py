@@ -99,7 +99,7 @@ class MainWindow:
         self.optionlabels = {
             'epub_only': "Generate ePub only (does not call 'kindlegen')",
             'image_preprocess': "Apply image optimizations",
-            'rotate': "Rotate landscape images instead of splitting them.",
+            'rotate': "Rotate landscape images instead of splitting them",
             'cut_page_numbers': "Cut page numbers",
             'mangastyle': "Manga-style (right-to-left reading, applies to reading and splitting)",
             'image_upscale': "Allow image upscaling",
