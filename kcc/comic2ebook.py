@@ -340,7 +340,7 @@ def main(argv=None):
     parser.add_option("--no-cut-page-numbers", action="store_false", dest="cutpagenumbers", default=True,
                       help="Do not try to cut page numbering on images [default=True]")
     parser.add_option("--rotate", action="store_true", dest="rotate", default=False,
-                      help="Disable page spliting. Instead rotate images [default=False]")
+                      help="Rotate landscape pages instead of splitting them [default=False]")
     parser.add_option("-o", "--output", action="store", dest="output", default=None,
                       help="Output directory or file for generated ePub")
     options, args = parser.parse_args(argv)
