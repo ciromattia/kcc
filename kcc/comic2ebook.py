@@ -339,6 +339,8 @@ def main(argv=None):
                       help="Do not try to cut page numbering on images [default=True]")
     parser.add_option("--rotate", action="store_true", dest="rotate", default=False,
                       help="Disable page spliting. Instead rotate images [default=False]")
+    parser.add_option("-o", "--output", action="store", dest="output", default=None,
+                      help="Output directory or file for generated ePub")
     options, args = parser.parse_args(argv)
     if len(args) != 1:
         parser.print_help()
@@ -352,7 +354,15 @@ def main(argv=None):
     print "Creating ePub structure..."
     genEpubStruct(path)
     # actually zip the ePub
-    if os.path.isdir(args[0]):
+    if options.output is not None:
+        if options.output.endswith('.epub'):
+            epubpath = os.path.abspath(options.output)
+        elif os.path.isdir(args[0]):
+            epubpath = os.path.abspath(options.output) + "/" + os.path.basename(args[0]) + '.epub'
+        else:
+            epubpath = os.path.abspath(options.output) + "/" \
+                + os.path.basename(os.path.splitext(args[0])[0]) + '.epub'
+    elif os.path.isdir(args[0]):
         epubpath = args[0] + '.epub'
     else:
         epubpath = os.path.splitext(args[0])[0] + '.epub'
