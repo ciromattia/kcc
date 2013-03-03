@@ -117,11 +117,11 @@ and installed in a directory reachable by your PATH (e.g. `/usr/local/bin/` or `
   - 2.3: Fixed win32 ePub generation, folder handling, filenames with spaces and subfolders
   - 2.4: Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)  
         Fixed "add folders" from GUI.
-  - 2.5: Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).
-        Fixes epub containing zipped itself (#10).
-  - 2.6: Added --rotate option to rotate landscape images instead of splitting them
-        Added --output option to customize ePub output dir/file
-        Add rendition:layout and rendition:orientation ePub meta tags (supported by new kindlegen 2.8)
+  - 2.5: Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).  
+        Fixes epub containing zipped itself (#10).  
+  - 2.6: Added --rotate option to rotate landscape images instead of splitting them.  
+        Added --output option to customize ePub output dir/file.  
+        Add rendition:layout and rendition:orientation ePub meta tags (supported by new kindlegen 2.8)  
 
 ## COPYRIGHT
 
