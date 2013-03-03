@@ -69,11 +69,11 @@ comic2ebook.py [options] comic_file|comic_folder
                           stretching and ratio is not like the device's one
                           [default=False]
     --no-cut-page-numbers
-                          Do not try to cut page numbering on images
+                          Do not try to cut page numbering on images  
                           [default=True]
-    --rotate              Disable page spliting. Instead rotate images
+    --rotate              Disable page spliting. Instead rotate images  
                           [default=False]
-    -o OUTPUT, --output=OUTPUT
+    -o OUTPUT, --output=OUTPUT  
                           Output directory or file for generated ePub
 ```
 
