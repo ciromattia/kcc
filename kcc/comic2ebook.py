@@ -274,7 +274,9 @@ def genEpubStruct(path):
                     copyfile(os.path.join(filelist[-1][0], filelist[-1][1]), cover)
     buildNCX(path, options.title, chapterlist)
     # ensure we're sorting files alphabetically
-    filelist = sorted(filelist, key=lambda name: (name[0].lower(), name[1].lower()))
+    convert = lambda text: int(text) if text.isdigit() else text
+    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(options.profile, path, options.title, filelist, cover, options.righttoleft)
 
 
