@@ -47,7 +47,7 @@ def buildHTML(path, imgfile):
     if filename is not None:
         htmlpath = ''
         postfix = ''
-        backref = 1
+        backref = 0
         head = path
         while True:
             head, tail = os.path.split(head)
@@ -68,7 +68,7 @@ def buildHTML(path, imgfile):
                       "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
                       "</head>\n",
                       "<body>\n",
-                      "<div><img src=\"../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                      "<div><img src=\"../../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
                       imgfile, "\" class=\"singlePage\"/></div>\n",
                       #"<div id=\"", filename[0], "-1\">\n",
                       #"<a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"", filename[0],
