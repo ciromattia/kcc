@@ -123,6 +123,9 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
         writingmode = "horizontal-rl"
     else:
         writingmode = "horizontal-lr"
+    from uuid import uuid4
+    uuid = str(uuid4())
+    uuid = uuid.encode('utf-8')
     f = open(opffile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<package version=\"2.0\" unique-identifier=\"BookID\" xmlns=\"http://www.idpf.org/2007/opf\">\n",
@@ -130,8 +133,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
                   "xmlns:opf=\"http://www.idpf.org/2007/opf\">\n",
                   "<dc:title>", title, "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
-                  "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">",
-                  "015ffaec-9340-42f8-b163-a0c5ab7d0611</dc:identifier>\n",
+                  "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", uuid, "</dc:identifier>\n",
                   "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
                   "<meta name=\"cover\" content=\"cover\"/>\n",
                   "<meta name=\"book-type\" content=\"comic\"/>\n",
@@ -139,8 +141,8 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
                   "<meta name=\"zero-margin\" content=\"true\"/>\n",
                   "<meta name=\"fixed-layout\" content=\"true\"/>\n",
                   "<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
-                  "<meta name=\"original-resolution\" content=\"" + imgres + "\"/>\n",
-                  "<meta name=\"primary-writing-mode\" content=\"" + writingmode + "\"/>\n",
+                  "<meta name=\"original-resolution\" content=\"", imgres, "\"/>\n",
+                  "<meta name=\"primary-writing-mode\" content=\"", writingmode, "\"/>\n",
                   "<meta name=\"rendition:layout\" content=\"pre-paginated\"/>\n",
                   "<meta name=\"rendition:orientation\" content=\"portrait\"/>\n",
                   "</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
