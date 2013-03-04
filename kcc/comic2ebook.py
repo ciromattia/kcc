@@ -192,7 +192,8 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
             mt = 'image/jpeg'
         f.write("<item id=\"img_" + uniqueid + "\" href=\"" + os.path.join(folder, path[1]) + "\" media-type=\""
                 + mt + "\"/>\n")
-    f.write("<item id=\"blank-page\" href=\"Text\\blank.html\" media-type=\"application/xhtml+xml\"/>\n")
+    if options.profile == 'K4' or options.profile == 'KHD':
+        f.write("<item id=\"blank-page\" href=\"Text\\blank.html\" media-type=\"application/xhtml+xml\"/>\n")
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     for entry in reflist:
 		if entry.endswith("-1"):
@@ -321,7 +322,8 @@ def genEpubStruct(path):
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(options.profile, path, options.title, filelist, cover, options.righttoleft)
-    filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
+    if options.profile == 'K4' or options.profile == 'KHD':
+         filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
 
 
 def getWorkFolder(afile):
