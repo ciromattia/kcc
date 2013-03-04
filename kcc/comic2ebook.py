@@ -248,12 +248,12 @@ def isInFilelist(filename, filelist):
     return seen
 
 
-def applyImgOptimization(img):
+def applyImgOptimization(img, isSplit=False, toRight=False):
     img.optimizeImage()
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
-    img.resizeImage(options.upscale, options.stretch, options.black_borders)
+    img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight)
     img.quantizeImage()
 
 
@@ -272,11 +272,17 @@ def dirImgProcess(path):
                 if split is not None:
                     if options.verbose:
                         print "Splitted " + afile
+                    if options.righttoleft:
+                        toRight1 = False;
+                        toRight2 = True;
+                    else:
+                        toRight1 = True;
+                        toRight2 = False;
                     img0 = image.ComicPage(split[0], options.profile)
-                    applyImgOptimization(img0)
+                    applyImgOptimization(img0, True, toRight1)
                     img0.saveToDir(dirpath)
                     img1 = image.ComicPage(split[1], options.profile)
-                    applyImgOptimization(img1)
+                    applyImgOptimization(img1, True, toRight2)
                     img1.saveToDir(dirpath)
                 else:
                     applyImgOptimization(img)
