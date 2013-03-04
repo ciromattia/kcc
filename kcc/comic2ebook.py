@@ -192,7 +192,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
             mt = 'image/jpeg'
         f.write("<item id=\"img_" + uniqueid + "\" href=\"" + os.path.join(folder, path[1]) + "\" media-type=\""
                 + mt + "\"/>\n")
-    if options.profile == 'K4' or options.profile == 'KHD':
+    if (options.profile == 'K4' or options.profile == 'KHD') and splittedSomething:
         f.write("<item id=\"blank-page\" href=\"Text\\blank.html\" media-type=\"application/xhtml+xml\"/>\n")
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     for entry in reflist:
@@ -260,6 +260,8 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
 
 def dirImgProcess(path):
     global options
+    global splittedSomething
+    splittedSomething = False
 
     for (dirpath, dirnames, filenames) in os.walk(path):
         for afile in filenames:
@@ -271,6 +273,7 @@ def dirImgProcess(path):
                 img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
                 split = img.splitPage(dirpath, options.righttoleft, options.rotate)
                 if split is not None:
+                    splittedSomething = True
                     if options.verbose:
                         print "Splitted " + afile
                     if options.righttoleft:
@@ -322,7 +325,7 @@ def genEpubStruct(path):
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(options.profile, path, options.title, filelist, cover, options.righttoleft)
-    if options.profile == 'K4' or options.profile == 'KHD':
+    if (options.profile == 'K4' or options.profile == 'KHD') and splittedSomething:
          filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
 
 
