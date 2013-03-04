@@ -196,7 +196,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     for entry in reflist:
 		if entry.endswith("-1"):
-			if (righttoleft and facing == 'left') or (not righttoleft and facing == 'right'):
+			if ((righttoleft and facing == 'left') or (not righttoleft and facing == 'right')) and (options.profile == 'K4' or options.profile == 'KHD'):
 				f.write("<itemref idref=\"blank-page\" properties=\"layout-blank\"/>\n")
 			f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
 		elif entry.endswith("-2"):
