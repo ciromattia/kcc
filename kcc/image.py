@@ -129,7 +129,7 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False):
+    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False, profile="KHD"):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
@@ -137,7 +137,7 @@ class ComicPage:
             fill = 'white'
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
-                if isSplit:
+                if isSplit and (profile == 'K4' or profile == 'KHD'):
                     borderw = (self.size[0] - self.image.size[0])
                     borderh = (self.size[1] - self.image.size[1]) / 2
                     self.image = ImageOps.expand(self.image, border=(0, borderh), fill=fill)
