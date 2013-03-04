@@ -162,6 +162,8 @@ class ComicPage:
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
+            if isSplit and (profile == 'K4' or profile == 'KHD'):
+				diff = 2
             self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
