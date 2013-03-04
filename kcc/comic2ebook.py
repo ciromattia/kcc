@@ -86,6 +86,21 @@ def buildHTML(path, imgfile):
         f.close()
         return path, imgfile
 
+def buildBlankHTML(path):
+	f = open(os.path.join(path, 'blank.html'), "w")
+	f.writelines(["<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" ",
+				  "\"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
+				  "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
+				  "<head>\n",
+				  "<title></title>\n",
+				  "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
+				  "</head>\n",
+				  "<body>\n",
+				  "</body>\n",
+				  "</html>"
+				  ])
+	f.close()
+	return path
 
 def buildNCX(dstdir, title, chapters):
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
@@ -121,8 +136,14 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if righttoleft:
         writingmode = "horizontal-rl"
+        facing = "right"
+        facing1 = "right"
+        facing2 = "left"
     else:
         writingmode = "horizontal-lr"
+        facing = "left"
+        facing1 = "left"
+        facing2 = "right"
     from uuid import uuid4
     uuid = str(uuid4())
     uuid = uuid.encode('utf-8')
@@ -140,11 +161,11 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
                   "<meta name=\"zero-gutter\" content=\"true\"/>\n",
                   "<meta name=\"zero-margin\" content=\"true\"/>\n",
                   "<meta name=\"fixed-layout\" content=\"true\"/>\n",
-                  "<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
+                  "<meta name=\"orientation-lock\" content=\"none\"/>\n",
                   "<meta name=\"original-resolution\" content=\"", imgres, "\"/>\n",
                   "<meta name=\"primary-writing-mode\" content=\"", writingmode, "\"/>\n",
                   "<meta name=\"rendition:layout\" content=\"pre-paginated\"/>\n",
-                  "<meta name=\"rendition:orientation\" content=\"portrait\"/>\n",
+                  "<meta name=\"rendition:orientation\" content=\"auto\"/>\n",
                   "</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
                   "media-type=\"application/x-dtbncx+xml\"/>\n"
                   ])
@@ -171,9 +192,25 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
             mt = 'image/jpeg'
         f.write("<item id=\"img_" + uniqueid + "\" href=\"" + os.path.join(folder, path[1]) + "\" media-type=\""
                 + mt + "\"/>\n")
+    f.write("<item id=\"blank-page\" href=\"Text\\blank.html\" media-type=\"application/xhtml+xml\"/>\n")
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     for entry in reflist:
-        f.write("<itemref idref=\"page_" + entry + "\" />\n")
+		if entry.endswith("-1"):
+			if (righttoleft and facing == 'left') or (not righttoleft and facing == 'right'):
+				f.write("<itemref idref=\"blank-page\" properties=\"layout-blank\"/>\n")
+			f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
+		elif entry.endswith("-2"):
+			f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
+			if righttoleft:
+				facing = "right"
+			else:
+				facing = "left"
+		else:
+			f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing + "\"/>\n")
+			if facing == 'right':
+				facing = 'left'
+			else:
+				facing = 'right'
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
     f.close()
     # finish with standard ePub folders
@@ -278,6 +315,7 @@ def genEpubStruct(path):
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(options.profile, path, options.title, filelist, cover, options.righttoleft)
+    filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
 
 
 def getWorkFolder(afile):
