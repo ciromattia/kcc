@@ -129,7 +129,7 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False):
+    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
@@ -137,10 +137,20 @@ class ComicPage:
             fill = 'white'
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
-                # do not upscale but center image in a device-sized image
-                borderw = (self.size[0] - self.image.size[0]) / 2
-                borderh = (self.size[1] - self.image.size[1]) / 2
-                self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
+                if isSplit:
+                    borderw = (self.size[0] - self.image.size[0])
+                    borderh = (self.size[1] - self.image.size[1]) / 2
+                    self.image = ImageOps.expand(self.image, border=(0, borderh), fill=fill)
+                    tempImg = Image.new(self.image.mode, (self.image.size[0] + borderw, self.image.size[1]), fill)
+                    if toRight:
+                        tempImg.paste(self.image, (borderw, 0))
+                    else:
+                        tempImg.paste(self.image, (0, 0))
+                    self.image = tempImg
+                else:
+                    borderw = (self.size[0] - self.image.size[0]) / 2
+                    borderh = (self.size[1] - self.image.size[1]) / 2
+                    self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
                 return self.image
             else:
                 method = Image.NEAREST
