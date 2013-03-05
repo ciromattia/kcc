@@ -36,12 +36,6 @@ import cbxarchive
 import pdfjpgextract
 
 
-def sort_nicely(l):
-    convert = lambda text: int(text) if text.isdigit() else text
-    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
-    l.sort(key=alphanum_key)
-
-
 def buildHTML(path, imgfile):
     filename = getImageFileName(imgfile)
     if filename is not None:

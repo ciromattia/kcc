@@ -16,8 +16,8 @@ ez_setup.use_setuptools()
 import sys
 from setuptools import setup
 
-NAME='KindleComicConverter'
-VERSION="2.6-dev"
+NAME = 'KindleComicConverter'
+VERSION = "2.6-dev"
 mainscript = 'kcc.py'
 
 if sys.platform == 'darwin':
@@ -29,12 +29,12 @@ if sys.platform == 'darwin':
                 argv_emulation=True,
                 iconfile='resources/comic2ebook.icns',
                 plist=dict(
-                    CFBundleName               = NAME,
-                    CFBundleShortVersionString = VERSION,
-                    CFBundleGetInfoString      = NAME + " " + VERSION + ", written 2012-2013 by Ciro Mattia Gonano",
-                    CFBundleExecutable         = NAME,
-                    CFBundleIdentifier         = 'com.github.ciromattia.kcc',
-                    CFBundleSignature       = 'dplt'
+                    CFBundleName=NAME,
+                    CFBundleShortVersionString=VERSION,
+                    CFBundleGetInfoString=NAME + " " + VERSION + ", written 2012-2013 by Ciro Mattia Gonano",
+                    CFBundleExecutable=NAME,
+                    CFBundleIdentifier='com.github.ciromattia.kcc',
+                    CFBundleSignature='dplt'
                 )
             )
         )
@@ -43,7 +43,7 @@ elif sys.platform == 'win32':
     from cx_Freeze import setup, Executable
     base = "Win32GUI"
     extra_options = dict(
-        executables = [Executable("kcc.py", base=base)]
+        executables=[Executable("kcc.py", base=base)]
     )
 else:
     extra_options = dict(
@@ -57,10 +57,10 @@ setup(
     version=VERSION,
     author="Ciro Mattia Gonano",
     author_email="ciromattia@gmail.com",
-    description=("A tool to convert comics (CBR/CBZ/PDFs/image folders) to Mobipocket."),
-    license = "ISC License (ISCL)",
-    keywords = "kindle comic mobipocket mobi cbz cbr manga",
-    url = "http://github.com/ciromattia/kcc",
+    description="A tool to convert comics (CBR/CBZ/PDFs/image folders) to Mobipocket.",
+    license="ISC License (ISCL)",
+    keywords="kindle comic mobipocket mobi cbz cbr manga",
+    url="http://github.com/ciromattia/kcc",
     classifiers=[
         'Development Status :: 4 - Beta'
         'License :: OSI Approved :: ISC License (ISCL)',
