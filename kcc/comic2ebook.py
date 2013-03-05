@@ -189,11 +189,10 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
                 + mt + "\"/>\n")
     if (options.profile == 'K4' or options.profile == 'KHD') and splitCount > 0:
         splitCountUsed = 1
-        while (splitCountUsed <= splitCount):
-             f.write("<item id=\"blank-page" + str(splitCountUsed) + "\" href=\""
-                     + os.path.join('Text', 'blank.html')
-                     + "\" media-type=\"application/xhtml+xml\"/>\n")
-             splitCountUsed += 1
+        while splitCountUsed <= splitCount:
+            f.write("<item id=\"blank-page" + str(splitCountUsed) +
+                    "\" href=\"Text/blank.html\" media-type=\"application/xhtml+xml\"/>\n")
+            splitCountUsed += 1
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     splitCountUsed = 1
     for entry in reflist:
@@ -279,7 +278,7 @@ def dirImgProcess(path):
                     print ".",
                 img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
                 split = img.splitPage(dirpath, options.righttoleft, options.rotate)
-                if split is not None:	
+                if split is not None:
                     if options.verbose:
                         print "Splitted " + afile
                     if options.righttoleft:
