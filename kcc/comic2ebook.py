@@ -188,7 +188,9 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
         f.write("<item id=\"img_" + uniqueid + "\" href=\"" + os.path.join(folder, path[1]) + "\" media-type=\""
                 + mt + "\"/>\n")
     if (options.profile == 'K4' or options.profile == 'KHD') and splittedSomething:
-        f.write("<item id=\"blank-page\" href=\"Text\\blank.html\" media-type=\"application/xhtml+xml\"/>\n")
+        f.write("<item id=\"blank-page\" href=\""
+                + os.path.join('Text', 'blank.html')
+                + " media-type=\"application/xhtml+xml\"/>\n")
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     for entry in reflist:
         if entry.endswith("-1"):
