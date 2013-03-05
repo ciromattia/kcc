@@ -86,21 +86,22 @@ def buildHTML(path, imgfile):
         f.close()
         return path, imgfile
 
+
 def buildBlankHTML(path):
-	f = open(os.path.join(path, 'blank.html'), "w")
-	f.writelines(["<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" ",
-				  "\"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
-				  "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
-				  "<head>\n",
-				  "<title></title>\n",
-				  "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
-				  "</head>\n",
-				  "<body>\n",
-				  "</body>\n",
-				  "</html>"
-				  ])
-	f.close()
-	return path
+    f = open(os.path.join(path, 'blank.html'), "w")
+    f.writelines(["<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" ",
+                  "\"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
+                  "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
+                  "<head>\n",
+                  "<title></title>\n",
+                  "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
+                  "</head>\n",
+                  "<body>\n",
+                  "</body>\n",
+                  "</html>"])
+    f.close()
+    return path
+
 
 def buildNCX(dstdir, title, chapters):
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
@@ -196,22 +197,23 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
         f.write("<item id=\"blank-page\" href=\"Text\\blank.html\" media-type=\"application/xhtml+xml\"/>\n")
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     for entry in reflist:
-		if entry.endswith("-1"):
-			if ((righttoleft and facing == 'left') or (not righttoleft and facing == 'right')) and (options.profile == 'K4' or options.profile == 'KHD'):
-				f.write("<itemref idref=\"blank-page\" properties=\"layout-blank\"/>\n")
-			f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
-		elif entry.endswith("-2"):
-			f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
-			if righttoleft:
-				facing = "right"
-			else:
-				facing = "left"
-		else:
-			f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing + "\"/>\n")
-			if facing == 'right':
-				facing = 'left'
-			else:
-				facing = 'right'
+        if entry.endswith("-1"):
+            if (righttoleft and facing == 'left') or (not righttoleft and facing == 'right') and \
+                    (options.profile == 'K4' or options.profile == 'KHD'):
+                f.write("<itemref idref=\"blank-page\" properties=\"layout-blank\"/>\n")
+            f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
+        elif entry.endswith("-2"):
+            f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
+            if righttoleft:
+                facing = "right"
+            else:
+                facing = "left"
+        else:
+            f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing + "\"/>\n")
+            if facing == 'right':
+                facing = 'left'
+            else:
+                facing = 'right'
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
     f.close()
     # finish with standard ePub folders
@@ -277,11 +279,11 @@ def dirImgProcess(path):
                     if options.verbose:
                         print "Splitted " + afile
                     if options.righttoleft:
-                        toRight1 = False;
-                        toRight2 = True;
+                        toRight1 = False
+                        toRight2 = True
                     else:
-                        toRight1 = True;
-                        toRight2 = False;
+                        toRight1 = True
+                        toRight2 = False
                     img0 = image.ComicPage(split[0], options.profile)
                     applyImgOptimization(img0, True, toRight1)
                     img0.saveToDir(dirpath)
@@ -326,7 +328,7 @@ def genEpubStruct(path):
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(options.profile, path, options.title, filelist, cover, options.righttoleft)
     if (options.profile == 'K4' or options.profile == 'KHD') and splittedSomething:
-         filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
+        filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
 
 
 def getWorkFolder(afile):

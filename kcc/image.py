@@ -85,7 +85,7 @@ class ProfileData:
         'KDX': ("Kindle DX", (824, 1200), Palette15),
         'KDXG': ("Kindle DXG", (824, 1200), Palette16)
     }
-    
+
     ProfileLabels = {
         "Kindle": 'K1',
         "Kindle 2": 'K2',
