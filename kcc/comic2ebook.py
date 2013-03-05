@@ -179,13 +179,13 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
         uniqueid = os.path.join(folder, filename[0]).replace('/', '_').replace('\\', '_')
         reflist.append(uniqueid)
         f.write("<item id=\"page_" + uniqueid + "\" href=\""
-                + os.path.join(folder.replace('Images', 'Text'), filename[0])
+                + folder.replace('Images', 'Text') + "/" + filename[0]
                 + ".html\" media-type=\"application/xhtml+xml\"/>\n")
         if '.png' == filename[1]:
             mt = 'image/png'
         else:
             mt = 'image/jpeg'
-        f.write("<item id=\"img_" + uniqueid + "\" href=\"" + os.path.join(folder, path[1]) + "\" media-type=\""
+        f.write("<item id=\"img_" + uniqueid + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\""
                 + mt + "\"/>\n")
     if (options.profile == 'K4' or options.profile == 'KHD') and splitCount > 0:
         splitCountUsed = 1
