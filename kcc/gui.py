@@ -89,9 +89,11 @@ class MainWindow:
         self.options = {
             'epub_only': IntVar(None, 0),
             'image_preprocess': IntVar(None, 1),
+            'nosplitrotate': IntVar(None, 0),
             'rotate': IntVar(None, 0),
             'cut_page_numbers': IntVar(None, 1),
             'mangastyle': IntVar(None, 0),
+            'image_gamma': DoubleVar(None, 2.2),
             'image_upscale': IntVar(None, 0),
             'image_stretch': IntVar(None, 0),
             'black_borders': IntVar(None, 0)
@@ -99,16 +101,24 @@ class MainWindow:
         self.optionlabels = {
             'epub_only': "Generate ePub only (does not call 'kindlegen')",
             'image_preprocess': "Apply image optimizations",
+            'nosplitrotate': "Disable splitting and rotation",
             'rotate': "Rotate landscape images instead of splitting them",
             'cut_page_numbers': "Cut page numbers",
             'mangastyle': "Manga-style (right-to-left reading, applies to reading and splitting)",
+            'image_gamma': "Gamma value",
             'image_upscale': "Allow image upscaling",
             'image_stretch': "Stretch images",
             'black_borders': "Use black borders"
         }
         for key in self.options:
-            aCheckButton = Checkbutton(self.master, text=self.optionlabels[key], variable=self.options[key])
-            aCheckButton.grid(column=3, sticky='w')
+            if isinstance( self.options[key], IntVar ) or isinstance( self.options[key], BooleanVar ):
+                aCheckButton = Checkbutton(self.master, text=self.optionlabels[key], variable=self.options[key])
+                aCheckButton.grid(column=3, sticky='w')
+            elif isinstance( self.options[key], DoubleVar ):
+                aLabel = Label(self.master, text=self.optionlabels[key])
+                aLabel.grid(column=2, sticky='w')
+                aEntry = Entry(self.master, textvariable=self.options[key])
+                aEntry.grid(column=3, row=(self.master.grid_size()[1]-1), sticky='w')          
         self.progressbar = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate')
 
         self.submit = Button(self.master, text="Execute!", command=self.start_conversion, fg="red")
@@ -132,12 +142,16 @@ class MainWindow:
         argv = ["-p", profilekey]
         if self.options['image_preprocess'].get() == 0:
             argv.append("--no-image-processing")
+        if self.options['nosplitrotate'].get() == 1:
+            argv.append("--nosplitrotate")
         if self.options['rotate'].get() == 1:
             argv.append("--rotate")
         if self.options['cut_page_numbers'].get() == 0:
             argv.append("--no-cut-page-numbers")
         if self.options['mangastyle'].get() == 1:
             argv.append("-m")
+        argv.append("--gamma")
+        argv.append(self.options['image_gamma'].get())
         if self.options['image_upscale'].get() == 1:
             argv.append("--upscale-images")
         if self.options['image_stretch'].get() == 1:

@@ -252,7 +252,7 @@ def isInFilelist(filename, filelist):
 
 
 def applyImgOptimization(img, isSplit=False, toRight=False):
-    img.optimizeImage()
+    img.optimizeImage(options.gamma)
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
@@ -277,7 +277,10 @@ def dirImgProcess(path):
                 else:
                     print ".",
                 img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
-                split = img.splitPage(dirpath, options.righttoleft, options.rotate)
+                if options.nosplitrotate:
+                    split = None
+                else:
+                    split = img.splitPage(dirpath, options.righttoleft, options.rotate)
                 if split is not None:
                     if options.verbose:
                         print "Splitted " + afile
@@ -396,6 +399,8 @@ def main(argv=None):
                       help="Verbose output [default=False]")
     parser.add_option("--no-image-processing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (page splitting and optimizations) [default=True]")
+    parser.add_option("--gamma", type="float", dest="gamma", default=2.2,
+                      help="Apply gamma correction to linearize the image [default=2.2]")
     parser.add_option("--upscale-images", action="store_true", dest="upscale", default=False,
                       help="Resize images smaller than device's resolution [default=False]")
     parser.add_option("--stretch-images", action="store_true", dest="stretch", default=False,
@@ -405,6 +410,8 @@ def main(argv=None):
                       + "is not like the device's one [default=False]")
     parser.add_option("--no-cut-page-numbers", action="store_false", dest="cutpagenumbers", default=True,
                       help="Do not try to cut page numbering on images [default=True]")
+    parser.add_option("--nosplitrotate", action="store_true", dest="nosplitrotate", default=False,
+                      help="Disable splitting and rotation [default=False]")
     parser.add_option("--rotate", action="store_true", dest="rotate", default=False,
                       help="Rotate landscape pages instead of splitting them [default=False]")
     parser.add_option("-o", "--output", action="store", dest="output", default=None,
