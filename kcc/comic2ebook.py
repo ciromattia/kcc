@@ -117,7 +117,7 @@ def buildNCX(dstdir, title, chapters):
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
         title = os.path.basename(folder)
         filename = getImageFileName(os.path.join(folder, chapter[1]))
-        f.write("<navPoint id=\"" + folder.replace('/', '_') + "\"><navLabel><text>" + title
+        f.write("<navPoint id=\"" + folder.replace('/', '_').replace('\\', '_') + "\"><navLabel><text>" + title
                 + "</text></navLabel><content src=\"" + filename[0] + ".html\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
@@ -176,7 +176,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     for path in filelist:
         folder = path[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
         filename = getImageFileName(path[1])
-        uniqueid = os.path.join(folder, filename[0]).replace('/', '_')
+        uniqueid = os.path.join(folder, filename[0]).replace('/', '_').replace('\\', '_')
         reflist.append(uniqueid)
         f.write("<item id=\"page_" + uniqueid + "\" href=\""
                 + os.path.join(folder.replace('Images', 'Text'), filename[0])
