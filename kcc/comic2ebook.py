@@ -257,7 +257,8 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
     if options.cutpagenumbers:
         img.cutPageNumber()
     img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight)
-    img.quantizeImage()
+    if not options.notquantize:
+	    img.quantizeImage()
 
 
 def dirImgProcess(path):
@@ -401,6 +402,8 @@ def main(argv=None):
                       help="Do not apply image preprocessing (page splitting and optimizations) [default=True]")
     parser.add_option("--gamma", type="float", dest="gamma", default=2.2,
                       help="Apply gamma correction to linearize the image [default=2.2]")
+    parser.add_option("--nodithering", action="store_true", dest="notquantize", default=False,
+                      help="Disable image quantization [default=False]")
     parser.add_option("--upscale-images", action="store_true", dest="upscale", default=False,
                       help="Resize images smaller than device's resolution [default=False]")
     parser.add_option("--stretch-images", action="store_true", dest="stretch", default=False,
