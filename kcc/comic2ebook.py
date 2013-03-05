@@ -252,7 +252,7 @@ def isInFilelist(filename, filelist):
 
 
 def applyImgOptimization(img, isSplit=False, toRight=False):
-    img.optimizeImage()
+    img.optimizeImage(options.gamma)
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
@@ -396,6 +396,8 @@ def main(argv=None):
                       help="Verbose output [default=False]")
     parser.add_option("--no-image-processing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (page splitting and optimizations) [default=True]")
+    parser.add_option("--gamma", type="float", dest="gamma", default=2.2,
+                      help="Apply gamma correction to linearize the image [default=2.2]")
     parser.add_option("--upscale-images", action="store_true", dest="upscale", default=False,
                       help="Resize images smaller than device's resolution [default=False]")
     parser.add_option("--stretch-images", action="store_true", dest="stretch", default=False,
