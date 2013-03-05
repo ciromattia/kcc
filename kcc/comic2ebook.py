@@ -198,7 +198,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     splitCountUsed = 1
     for entry in reflist:
         if entry.endswith("-1"):
-            if (righttoleft and facing == 'left') or (not righttoleft and facing == 'right') and \
+            if ((righttoleft and facing == 'left') or (not righttoleft and facing == 'right')) and \
                     (options.profile == 'K4' or options.profile == 'KHD'):
                 f.write("<itemref idref=\"blank-page" + str(splitCountUsed) + "\" properties=\"layout-blank\"/>\n")
                 splitCountUsed += 1
