@@ -89,6 +89,7 @@ class MainWindow:
         self.options = {
             'epub_only': IntVar(None, 0),
             'image_preprocess': IntVar(None, 1),
+            'nosplitrotate': IntVar(None, 0),
             'rotate': IntVar(None, 0),
             'cut_page_numbers': IntVar(None, 1),
             'mangastyle': IntVar(None, 0),
@@ -100,6 +101,7 @@ class MainWindow:
         self.optionlabels = {
             'epub_only': "Generate ePub only (does not call 'kindlegen')",
             'image_preprocess': "Apply image optimizations",
+            'nosplitrotate': "Disable splitting and rotation",
             'rotate': "Rotate landscape images instead of splitting them",
             'cut_page_numbers': "Cut page numbers",
             'mangastyle': "Manga-style (right-to-left reading, applies to reading and splitting)",
@@ -140,6 +142,8 @@ class MainWindow:
         argv = ["-p", profilekey]
         if self.options['image_preprocess'].get() == 0:
             argv.append("--no-image-processing")
+        if self.options['nosplitrotate'].get() == 1:
+            argv.append("--nosplitrotate")
         if self.options['rotate'].get() == 1:
             argv.append("--rotate")
         if self.options['cut_page_numbers'].get() == 0:
