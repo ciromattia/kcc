@@ -100,6 +100,7 @@ class ProfileData:
 class ComicPage:
     def __init__(self, source, device):
         try:
+            self.profile = device
             self.profile_label, self.size, self.palette = ProfileData.Profiles[device]
         except KeyError:
             raise RuntimeError('Unexpected output device %s' % device)
@@ -129,7 +130,7 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False, profile="KHD"):
+    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
@@ -137,7 +138,7 @@ class ComicPage:
             fill = 'white'
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
-                if isSplit and (profile == 'K4' or profile == 'KHD'):
+                if isSplit and (self.profile == 'K4' or self.profile == 'KHD'):
                     borderw = (self.size[0] - self.image.size[0])
                     borderh = (self.size[1] - self.image.size[1]) / 2
                     self.image = ImageOps.expand(self.image, border=(0, borderh), fill=fill)
@@ -162,7 +163,7 @@ class ComicPage:
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-            if isSplit and (profile == 'K4' or profile == 'KHD'):
+            if isSplit and (self.profile == 'K4' or self.profile == 'KHD'):
                 diff = 2
             self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
