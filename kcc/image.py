@@ -115,15 +115,17 @@ class ComicPage:
         filename = os.path.basename(self.origFileName)
         try:
             self.image = self.image.convert('L')    # convert to grayscale
-            os.remove(os.path.join(targetdir,filename)) # remove original file, copied by copytree() in comic2ebook.py
-#            self.image.save(os.path.join(targetdir, filename), "JPEG")
-            self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + ".png"), "PNG") # quantized images don't like JPEG
+            os.remove(os.path.join(targetdir,filename))
+            if options.notquantize:
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + ".jpg"), "JPEG")
+            else:
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + ".png"), "PNG")
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
     def optimizeImage(self, gamma):
         self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: 255*(a/255.)**gamma))
-#        self.image = ImageOps.autocontrast(self.image)
+
 
     def quantizeImage(self):
         colors = len(self.palette) / 3
