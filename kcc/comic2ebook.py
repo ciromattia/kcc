@@ -301,17 +301,17 @@ def dirImgProcess(path):
                         facing = "left"
                     img0 = image.ComicPage(split[0], options.profile)
                     applyImgOptimization(img0, True, toRight1)
-                    img0.saveToDir(dirpath)
+                    img0.saveToDir(dirpath, options.notquantize)
                     img1 = image.ComicPage(split[1], options.profile)
                     applyImgOptimization(img1, True, toRight2)
-                    img1.saveToDir(dirpath)
+                    img1.saveToDir(dirpath, options.notquantize)
                 else:
                     if facing == "right":
                         facing = "left"
                     else:
                         facing = "right"
                     applyImgOptimization(img)
-                    img.saveToDir(dirpath)
+                    img.saveToDir(dirpath, options.notquantize)
 
 
 def genEpubStruct(path):
