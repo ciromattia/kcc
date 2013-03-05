@@ -85,7 +85,7 @@ class ProfileData:
         'KDX': ("Kindle DX", (824, 1200), Palette15),
         'KDXG': ("Kindle DXG", (824, 1200), Palette16)
     }
-    
+
     ProfileLabels = {
         "Kindle": 'K1',
         "Kindle 2": 'K2',
@@ -100,6 +100,7 @@ class ProfileData:
 class ComicPage:
     def __init__(self, source, device):
         try:
+            self.profile = device
             self.profile_label, self.size, self.palette = ProfileData.Profiles[device]
         except KeyError:
             raise RuntimeError('Unexpected output device %s' % device)
@@ -129,7 +130,7 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False):
+    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
@@ -137,10 +138,20 @@ class ComicPage:
             fill = 'white'
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
-                # do not upscale but center image in a device-sized image
-                borderw = (self.size[0] - self.image.size[0]) / 2
-                borderh = (self.size[1] - self.image.size[1]) / 2
-                self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
+                if isSplit and (self.profile == 'K4' or self.profile == 'KHD'):
+                    borderw = (self.size[0] - self.image.size[0])
+                    borderh = (self.size[1] - self.image.size[1]) / 2
+                    self.image = ImageOps.expand(self.image, border=(0, borderh), fill=fill)
+                    tempImg = Image.new(self.image.mode, (self.image.size[0] + borderw, self.image.size[1]), fill)
+                    if toRight:
+                        tempImg.paste(self.image, (borderw, 0))
+                    else:
+                        tempImg.paste(self.image, (0, 0))
+                    self.image = tempImg
+                else:
+                    borderw = (self.size[0] - self.image.size[0]) / 2
+                    borderh = (self.size[1] - self.image.size[1]) / 2
+                    self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
                 return self.image
             else:
                 method = Image.NEAREST
@@ -152,6 +163,8 @@ class ComicPage:
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
+            if isSplit and (self.profile == 'K4' or self.profile == 'KHD'):
+                diff = 2
             self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
