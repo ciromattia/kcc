@@ -83,6 +83,8 @@ The script takes care of creating an *.epub* from your archive/folder, then:
 3. Copy the `.mobi` file to your Kindle!
 
 ## CREDITS
+KCC is made by [Ciro Mattia Gonano](http://github.com/ciromattia) and [Paweł Jastrzębski](http://github.com/AcidWeb)
+
 This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published in [this mobileread forum thread](http://www.mobileread.com/forums/showthread.php?t=192783))
 
 The app relies and includes the following scripts/binaries:
@@ -93,7 +95,7 @@ The app relies and includes the following scripts/binaries:
  - the icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC Attribution-NonCommercial-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
  - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches
 
-Also, for .mobi generation you need to have `kindlegen` v2.7 (with KF8 support) which is downloadable from Amazon website
+Also, for .mobi generation you need to have `kindlegen` v2.7+ (with KF8 support) which is downloadable from Amazon website
 and installed in a directory reachable by your PATH (e.g. `/usr/local/bin/` or `C:\Windows\`)
 
 
@@ -125,5 +127,5 @@ and installed in a directory reachable by your PATH (e.g. `/usr/local/bin/` or `
 
 ## COPYRIGHT
 
-Copyright (c) 2012-2013 Ciro Mattia Gonano. See LICENSE.txt for further details.
-Contributions by Paweł Jastrzębski.
+Copyright (c) 2012-2013 Ciro Mattia Gonano with further contributions by Paweł Jastrzębski.  
+KCC is released under ISC LICENSE; see LICENSE.txt for further details.
