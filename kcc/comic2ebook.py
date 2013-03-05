@@ -190,7 +190,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     if (options.profile == 'K4' or options.profile == 'KHD') and splittedSomething:
         f.write("<item id=\"blank-page\" href=\""
                 + os.path.join('Text', 'blank.html')
-                + " media-type=\"application/xhtml+xml\"/>\n")
+                + "\" media-type=\"application/xhtml+xml\"/>\n")
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     for entry in reflist:
         if entry.endswith("-1"):
