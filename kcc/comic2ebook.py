@@ -187,16 +187,21 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
             mt = 'image/jpeg'
         f.write("<item id=\"img_" + uniqueid + "\" href=\"" + os.path.join(folder, path[1]) + "\" media-type=\""
                 + mt + "\"/>\n")
-    if (options.profile == 'K4' or options.profile == 'KHD') and splittedSomething:
-        f.write("<item id=\"blank-page\" href=\""
-                + os.path.join('Text', 'blank.html')
-                + "\" media-type=\"application/xhtml+xml\"/>\n")
+    if (options.profile == 'K4' or options.profile == 'KHD') and splitCount > 0:
+        splitCountUsed = 1
+        while (splitCountUsed <= splitCount):
+             f.write("<item id=\"blank-page" + str(splitCountUsed) + "\" href=\""
+                     + os.path.join('Text', 'blank.html')
+                     + "\" media-type=\"application/xhtml+xml\"/>\n")
+             splitCountUsed += 1
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
+    splitCountUsed = 1
     for entry in reflist:
         if entry.endswith("-1"):
             if (righttoleft and facing == 'left') or (not righttoleft and facing == 'right') and \
                     (options.profile == 'K4' or options.profile == 'KHD'):
-                f.write("<itemref idref=\"blank-page\" properties=\"layout-blank\"/>\n")
+                f.write("<itemref idref=\"blank-page" + str(splitCountUsed) + "\" properties=\"layout-blank\"/>\n")
+                splitCountUsed += 1
             f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
         elif entry.endswith("-2"):
             f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
@@ -258,8 +263,12 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
 
 def dirImgProcess(path):
     global options
-    global splittedSomething
-    splittedSomething = False
+    global splitCount
+    splitCount = 0
+    if options.righttoleft:
+        facing = "right"
+    else:
+        facing = "left"
 
     for (dirpath, dirnames, filenames) in os.walk(path):
         for afile in filenames:
@@ -270,8 +279,7 @@ def dirImgProcess(path):
                     print ".",
                 img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
                 split = img.splitPage(dirpath, options.righttoleft, options.rotate)
-                if split is not None:
-                    splittedSomething = True
+                if split is not None:	
                     if options.verbose:
                         print "Splitted " + afile
                     if options.righttoleft:
@@ -280,6 +288,14 @@ def dirImgProcess(path):
                     else:
                         toRight1 = True
                         toRight2 = False
+                    if options.righttoleft:
+                        if facing == "left":
+                            splitCount += 1
+                        facing = "right"
+                    else:
+                        if facing == "right":
+                            splitCount += 1
+                        facing = "left"
                     img0 = image.ComicPage(split[0], options.profile)
                     applyImgOptimization(img0, True, toRight1)
                     img0.saveToDir(dirpath)
@@ -287,6 +303,10 @@ def dirImgProcess(path):
                     applyImgOptimization(img1, True, toRight2)
                     img1.saveToDir(dirpath)
                 else:
+                    if facing == "right":
+                        facing = "left"
+                    else:
+                        facing = "right"
                     applyImgOptimization(img)
                     img.saveToDir(dirpath)
 
@@ -323,7 +343,7 @@ def genEpubStruct(path):
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(options.profile, path, options.title, filelist, cover, options.righttoleft)
-    if (options.profile == 'K4' or options.profile == 'KHD') and splittedSomething:
+    if (options.profile == 'K4' or options.profile == 'KHD') and splitCount > 0:
         filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
 
 
