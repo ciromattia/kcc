@@ -57,7 +57,7 @@ setup(
     version=VERSION,
     author="Ciro Mattia Gonano",
     author_email="ciromattia@gmail.com",
-    description=("A tool to convert comics (CBR/CBZ/PDFs/image folders) to Mobipocket."),
+    description="A tool to convert comics (CBR/CBZ/PDFs/image folders) to Mobipocket.",
     license = "ISC License (ISCL)",
     keywords = "kindle comic mobipocket mobi cbz cbr manga",
     url = "http://github.com/ciromattia/kcc",
