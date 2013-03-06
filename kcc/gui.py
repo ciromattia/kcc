@@ -31,6 +31,7 @@ from subprocess import call
 import os
 import shutil
 import stat
+import traceback
 
 
 class MainWindow:
@@ -177,8 +178,10 @@ class MainWindow:
                 epub_path = comic2ebook.main(subargv)
                 self.progress_file['value'] = 2
                 self.master.update()
-            except Exception, err:
-                tkMessageBox.showerror('KCC Error', "Error on file %s:\n%s" % (subargv[-1], str(err)))
+            except Exception as err:
+                type_, value_, traceback_ = sys.exc_info()
+                tkMessageBox.showerror('KCC Error', "Error on file %s:\n%s\nTraceback:\n%s" %
+                                                    (subargv[-1], str(err), traceback.format_tb(traceback_)))
                 errors = True
                 continue
             if self.options['epub_only'] == 1:
