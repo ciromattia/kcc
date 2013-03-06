@@ -1,36 +1,37 @@
 # KCC
 
-`KCC` (a.k.a. `KindleComicConverter`) is a Python app to convert comic files or folders to ePub or Panel View Mobipocket.  
+`KCC` (a.k.a. `KindleComicConverter`) is a Python app to convert comic files or folders to ePub or Panel View MOBI.  
 It was initally developed for Kindle but as of version 2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
 actually a comic 2 epub converter that every ereader owner can happily use**_.  
+
 It also optimizes comic images by:
-- enhancing contrast
-- cutting page numbering
-- cropping white borders
-- resizing larger images to device's native resolution
-- quantizing images to device's palette
+- Enhancing contrast.
+- Cutting page numbering.
+- Cropping white borders.
+- Resizing larger images to device's native resolution.
+- Quantizing images to device's palette.
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:  
 - OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.6.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.6.zip)
 - Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.6.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.6.zip)
 - Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.6.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.6.zip) *(thanks to [AcidWeb](https://github.com/AcidWeb))*
-- Linux: just download sourcecode and launch `python kcc.py` *(provided you have Python and Pillow installed)*
+- Linux: Just download sourcecode and launch `python kcc.py` *(Provided you have Python and Pillow installed)*
 
 ## INPUT FORMATS
 `kcc` can understand and convert, at the moment, the following file types:
 - PNG, JPG
 - Folders
 - CBZ, ZIP
-- CBR, RAR *(with `unrar` executable)*
-- PDF *(extracting only contained JPG images)*
+- CBR, RAR *(With `unrar` executable)*
+- PDF *(Extracting only contained JPG images)*
 
 ## OPTIONAL REQUIREMENTS
-- `kindlegen` in /usr/local/bin/ *(for .mobi generation)*
-- [unrar](http://www.rarlab.com/download.htm) *(for CBR support)*
+- `kindlegen` v2.7+ in a directory reachable by your PATH or in KCC directory *(For .mobi generation)*
+- [unrar](http://www.rarlab.com/download.htm) *(For CBR support)*
 
 ### for compiling/running from source:
-- Python 2.7+ (included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows)
+- Python 2.7+ (Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows)
 - [Pillow](http://pypi.python.org/pypi/Pillow/) for comic optimizations like split double pages, resize to optimal resolution, improve contrast and palette, etc.
   Please refer to official documentation for installing into your system.
 
@@ -78,10 +79,6 @@ The app relies and includes the following scripts/binaries:
  - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>, released with ISC License
  - the icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC Attribution-NonCommercial-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
  - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches
-
-Also, for .mobi generation you need to have `kindlegen` v2.7+ (with KF8 support) which is downloadable from Amazon website
-and installed in a directory reachable by your PATH (e.g. `/usr/local/bin/` or `C:\Windows\`)
-
 
 ## CHANGELOG
   - 1.00: Initial version
