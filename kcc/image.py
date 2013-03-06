@@ -126,7 +126,10 @@ class ComicPage:
     def optimizeImage(self, gamma):
         if gamma < 0.1:
             gamma = self.gamma
-        self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: 255 * (a / 255.) ** gamma))
+        if gamma == 1.0:
+            self.image = ImageOps.autocontrast(self.image)
+        else:
+            self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: 255 * (a / 255.) ** gamma))
 
     def quantizeImage(self):
         colors = len(self.palette) / 3
