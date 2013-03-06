@@ -1,5 +1,5 @@
 """
-py2app/py2exe build script for MyApplication.
+py2app/py2exe build script for KCC.
 
 Will automatically ensure that all build prerequisites are available
 via ez_setup
@@ -8,10 +8,10 @@ Usage (Mac OS X):
     python setup.py py2app
 
 Usage (Windows):
-    python setup.py py2exe
+    python setup.py build
 """
-import ez_setup
-ez_setup.use_setuptools()
+from ez_setup import use_setuptools
+use_setuptools()
 
 import sys
 from setuptools import setup
@@ -71,7 +71,7 @@ setup(
         'Intended Audience :: End Users/Desktop',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 2.7',
         'Topic :: Multimedia :: Graphics :: Graphics Conversion',
         'Topic :: Utilities'
     ],
