@@ -23,6 +23,7 @@ __docformat__ = 'restructuredtext en'
 from Tkinter import *
 import tkFileDialog
 import tkMessageBox
+import ttk
 import comic2ebook
 import kindlestrip
 from image import ProfileData
@@ -118,9 +119,21 @@ class MainWindow:
 
         self.submit = Button(self.master, text="CONVERT", command=self.start_conversion, fg="red")
         self.submit.grid(columnspan=4, sticky=W + E + N + S)
+        aLabel = Label(self.master, text="file progress", justify=RIGHT)
+        aLabel.grid(column=0, sticky=E)
+        self.progress_file = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate', maximum=4)
+        self.progress_file.grid(column=1, columnspan=3, row=(self.master.grid_size()[1] - 1), sticky=W + E + N + S)
+        aLabel = Label(self.master, text="overall progress", justify=RIGHT)
+        aLabel.grid(column=0, sticky=E)
+        self.progress_overall = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate')
+        self.progress_overall.grid(column=1, columnspan=3, row=(self.master.grid_size()[1] - 1), sticky=W + E + N + S)
 
     def start_conversion(self):
+        self.submit['state'] = DISABLED
+        self.master.update()
         self.convert()
+        self.submit['state'] = NORMAL
+        self.master.update()
 
     def convert(self):
         if len(self.filelist) < 1:
@@ -150,12 +163,20 @@ class MainWindow:
         if self.options['black_borders'].get() == 1:
             argv.append("--black-borders")
         errors = False
+        left_files = len(self.filelist)
+        filenum = 0
+        self.progress_overall['value'] = 0
+        self.progress_overall['maximum'] = left_files
         for entry in self.filelist:
+            filenum += 1
+            self.progress_file['value'] = 1
             self.master.update()
             subargv = list(argv)
             try:
                 subargv.append(entry)
                 epub_path = comic2ebook.main(subargv)
+                self.progress_file['value'] = 2
+                self.master.update()
             except Exception, err:
                 tkMessageBox.showerror('KCC Error', "Error on file %s:\n%s" % (subargv[-1], str(err)))
                 errors = True
@@ -168,6 +189,8 @@ class MainWindow:
                     print >>sys.stderr, "Child was terminated by signal", -retcode
                 else:
                     print >>sys.stderr, "Child returned", retcode
+                self.progress_file['value'] = 3
+                self.master.update()
             except OSError as e:
                 tkMessageBox.showerror('KindleGen Error', "Error on file %s:\n%s" % (epub_path, e))
                 errors = True
@@ -177,10 +200,14 @@ class MainWindow:
                 shutil.move(mobifile, mobifile + '_tostrip')
                 kindlestrip.main((mobifile + '_tostrip', mobifile))
                 os.remove(mobifile + '_tostrip')
+                self.progress_file['value'] = 4
+                self.master.update()
             except Exception, err:
                 tkMessageBox.showerror('Error', "Error on file %s:\n%s" % (mobifile, str(err)))
                 errors = True
                 continue
+            self.progress_overall['value'] = filenum
+            self.master.update()
         if errors:
             tkMessageBox.showinfo(
                 "Done",
