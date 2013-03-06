@@ -70,3 +70,4 @@ class PdfJpgExtract:
 
             njpg += 1
             i = iend
+        return self.path
