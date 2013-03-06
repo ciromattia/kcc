@@ -50,11 +50,7 @@ class MainWindow:
         filetypes = [('All files', '.*'), ('Comic files', ('*.cbr', '*.cbz', '*.zip', '*.rar', '*.pdf'))]
         f = tkFileDialog.askopenfilenames(title="Choose files", filetypes=filetypes)
         if not isinstance(f, tuple):
-            try:
-                import re
-                f = re.findall('\{(.*?)\}', f)
-            except:
-                sys.exit(1)
+            f = self.master.tk.splitlist(f)
         self.filelist.extend(f)
         self.refresh_list()
 
