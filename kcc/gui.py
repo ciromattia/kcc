@@ -28,6 +28,7 @@ import comic2ebook
 import kindlestrip
 from image import ProfileData
 from subprocess import call
+from subprocess import check_call
 import os
 import shutil
 import stat
@@ -65,6 +66,13 @@ class MainWindow:
         for afile in self.filelist:
             self.filelocation.insert(END, afile)
         self.filelocation.config(state=DISABLED)
+        try:
+            if len(self.filelist) > 0:
+                self.submit['state'] = NORMAL
+            else:
+                self.submit['state'] = DISABLED
+        except AttributeError:
+            pass
 
     def initialize(self):
         self.filelocation = Listbox(self.master)
@@ -124,7 +132,7 @@ class MainWindow:
                 self.aEntry['state'] = DISABLED
                 self.aEntry.grid(column=3, row=(self.master.grid_size()[1] - 1), sticky=W + N + S)
 
-        self.submit = Button(self.master, text="CONVERT", command=self.start_conversion, fg="red")
+        self.submit = Button(self.master, text="CONVERT", command=self.start_conversion, fg="red", state=DISABLED)
         self.submit.grid(columnspan=4, sticky=W + E + N + S)
         aLabel = Label(self.master, text="File progress:", anchor=W, justify=LEFT)
         aLabel.grid(column=0, sticky=E)
@@ -134,7 +142,7 @@ class MainWindow:
         aLabel.grid(column=0, sticky=E)
         self.progress_overall = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate')
         self.progress_overall.grid(column=1, columnspan=3, row=(self.master.grid_size()[1] - 1), sticky=W + E + N + S)
-        
+
         retcode = call("kindlegen", shell=True)
         if retcode == 1:
             self.optionsButtons['Aepub_only'].select()
