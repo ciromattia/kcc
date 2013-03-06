@@ -77,13 +77,13 @@ class ProfileData:
     ]
 
     Profiles = {
-        'K1': ("Kindle", (600, 800), Palette4),
-        'K2': ("Kindle 2", (600, 800), Palette15),
-        'K3': ("Kindle 3/Keyboard", (600, 800), Palette16),
-        'K4': ("Kindle 4/NT/Touch", (600, 800), Palette16),
-        'KHD': ("Kindle Paperwhite", (758, 1024), Palette16),
-        'KDX': ("Kindle DX", (824, 1200), Palette15),
-        'KDXG': ("Kindle DXG", (824, 1200), Palette16)
+        'K1': ("Kindle", (600, 800), Palette4, 1.8),
+        'K2': ("Kindle 2", (600, 800), Palette15, 1.8),
+        'K3': ("Kindle 3/Keyboard", (600, 800), Palette16, 1.8),
+        'K4': ("Kindle 4/NT/Touch", (600, 800), Palette16, 1.8),
+        'KHD': ("Kindle Paperwhite", (758, 1024), Palette16, 1.8),
+        'KDX': ("Kindle DX", (824, 1200), Palette15, 1.8),
+        'KDXG': ("Kindle DXG", (824, 1200), Palette16, 1.8)
     }
 
     ProfileLabels = {
@@ -101,7 +101,7 @@ class ComicPage:
     def __init__(self, source, device):
         try:
             self.profile = device
-            self.profile_label, self.size, self.palette = ProfileData.Profiles[device]
+            self.profile_label, self.size, self.palette, self.gamma = ProfileData.Profiles[device]
         except KeyError:
             raise RuntimeError('Unexpected output device %s' % device)
         try:
@@ -115,7 +115,7 @@ class ComicPage:
         filename = os.path.basename(self.origFileName)
         try:
             self.image = self.image.convert('L')    # convert to grayscale
-            os.remove(os.path.join(targetdir,filename))
+            os.remove(os.path.join(targetdir, filename))
             if notquantize:
                 self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + ".jpg"), "JPEG")
             else:
@@ -124,8 +124,12 @@ class ComicPage:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
     def optimizeImage(self, gamma):
-        self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: 255*(a/255.)**gamma))
-
+        if gamma < 0.1:
+            gamma = self.gamma
+        if gamma == 1.0:
+            self.image = ImageOps.autocontrast(self.image)
+        else:
+            self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: 255 * (a / 255.) ** gamma))
 
     def quantizeImage(self):
         colors = len(self.palette) / 3
