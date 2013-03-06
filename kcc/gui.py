@@ -255,4 +255,5 @@ class MainWindow:
         self.filelist = []
         self.master = master
         self.master.title(title)
+        self.master.iconbitmap(default='resources/comic2ebook.ico')
         self.initialize()
