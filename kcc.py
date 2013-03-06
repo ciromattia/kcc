@@ -17,7 +17,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 __version__ = '2.6'
-__license__   = 'ISC'
+__license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
 
@@ -31,6 +31,6 @@ if platform == 'darwin':
 root = Tk()
 root.resizable(width=FALSE, height=FALSE)
 root.config(padx=5, pady=5)
-gui.MainWindow(master=root,title="Kindle Comic Converter v" + __version__)
+gui.MainWindow(master=root, title="Kindle Comic Converter v" + __version__)
 root.tkraise()
 root.mainloop()
