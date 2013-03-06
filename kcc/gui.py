@@ -114,13 +114,14 @@ class MainWindow:
             'Gimage_stretch': "Stretch images",
             'Hblack_borders': "Use black borders"
         }
+        self.optionsButtons = {}
         for key in sorted(self.options):
             if isinstance(self.options[key], IntVar) or isinstance(self.options[key], BooleanVar):
-                aCheckButton = Checkbutton(self.master, text=self.optionlabels[key], variable=self.options[key])
-                aCheckButton.grid(columnspan=4, sticky=W + N + S)
+                self.optionsButtons[key] = Checkbutton(self.master, text=self.optionlabels[key], variable=self.options[key])
+                self.optionsButtons[key].grid(columnspan=4, sticky=W + N + S)
             elif isinstance(self.options[key], DoubleVar):
-                aCheckButton = Checkbutton(self.master, text=self.optionlabels[key], command=self.change_gamma)
-                aCheckButton.grid(columnspan=4, sticky=W + N + S)
+                self.optionsButtons[key] = Checkbutton(self.master, text=self.optionlabels[key], command=self.change_gamma)
+                self.optionsButtons[key].grid(columnspan=4, sticky=W + N + S)
                 self.aEntry = Entry(self.master, textvariable=self.options[key])
                 self.aEntry['state'] = DISABLED
                 self.aEntry.grid(column=3, row=(self.master.grid_size()[1] - 1), sticky=W + N + S)
@@ -135,6 +136,11 @@ class MainWindow:
         aLabel.grid(column=0, sticky=E)
         self.progress_overall = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate')
         self.progress_overall.grid(column=1, columnspan=3, row=(self.master.grid_size()[1] - 1), sticky=W + E + N + S)
+        
+        retcode = call("kindlegen", shell=True)
+        if retcode == 1:
+            self.optionsButtons['Aepub_only'].select()
+            self.optionsButtons['Aepub_only']['state'] = DISABLED
 
     def start_conversion(self):
         self.submit['state'] = DISABLED
