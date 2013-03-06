@@ -411,8 +411,8 @@ def Copyright():
 
 
 def Usage():
-    print "Generates HTML, NCX and OPF for a Comic ebook from a bunch of images"
-    print "Optimized for creating Mobipockets to be read into Kindle Paperwhite"
+    print "Generates HTML, NCX and OPF for a Comic ebook from a bunch of images."
+    print "Optimized for creating MOBI files to be read on Kindle Paperwhite."
     parser.print_help()
 
 
@@ -421,34 +421,34 @@ def main(argv=None):
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                      help="Device profile (choose one among K1, K2, K3, K4, KDX, KDXG or KHD) [default=KHD]")
+                      help="Device profile (Choose one among K1, K2, K3, K4, KDX, KDXG or KHD) [Default=KHD]")
     parser.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
-                      help="Comic title [default=filename]")
+                      help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
-                      help="'Manga style' (right-to-left reading and splitting) [default=False]")
-    parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
-                      help="Verbose output [default=False]")
-    parser.add_option("--no-image-processing", action="store_false", dest="imgproc", default=True,
-                      help="Do not apply image preprocessing (page splitting and optimizations) [default=True]")
-    parser.add_option("--gamma", type="float", dest="gamma", default="0.0",
-                      help="Apply gamma correction to linearize the image [default=auto]")
+                      help="Manga style (Right-to-left reading and splitting) [Default=False]")
+    parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
+                      help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--nodithering", action="store_true", dest="notquantize", default=False,
-                      help="Disable image quantization [default=False]")
-    parser.add_option("--upscale-images", action="store_true", dest="upscale", default=False,
-                      help="Resize images smaller than device's resolution [default=False]")
-    parser.add_option("--stretch-images", action="store_true", dest="stretch", default=False,
-                      help="Stretch images to device's resolution [default=False]")
-    parser.add_option("--black-borders", action="store_true", dest="black_borders", default=False,
-                      help="Use black borders (instead of white ones) when not stretching and ratio "
-                      + "is not like the device's one [default=False]")
-    parser.add_option("--no-cut-page-numbers", action="store_false", dest="cutpagenumbers", default=True,
-                      help="Do not try to cut page numbering on images [default=True]")
-    parser.add_option("--nosplitrotate", action="store_true", dest="nosplitrotate", default=False,
-                      help="Disable splitting and rotation [default=False]")
+                      help="Disable image quantization [Default=False]")
+    parser.add_option("--gamma", type="float", dest="gamma", default="0.0",
+                      help="Apply gamma correction to linearize the image [Default=Auto]")
+    parser.add_option("--upscale", action="store_true", dest="upscale", default=False,
+                      help="Resize images smaller than device's resolution [Default=False]")
+    parser.add_option("--stretch", action="store_true", dest="stretch", default=False,
+                      help="Stretch images to device's resolution [Default=False]")
+    parser.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
+                      help="Use black borders (Instead of white ones) when not stretching and ratio "
+                      + "is not like the device's one [Default=False]")
     parser.add_option("--rotate", action="store_true", dest="rotate", default=False,
-                      help="Rotate landscape pages instead of splitting them [default=False]")
+                      help="Rotate landscape pages instead of splitting them [Default=False]")
+    parser.add_option("--nosplitrotate", action="store_true", dest="nosplitrotate", default=False,
+                      help="Disable splitting and rotation [Default=False]")
+    parser.add_option("--nocutpagenumbers", action="store_false", dest="cutpagenumbers", default=True,
+                      help="Do not try to cut page numbering on images [Default=True]")
     parser.add_option("-o", "--output", action="store", dest="output", default=None,
-                      help="Output directory or file for generated ePub")
+                      help="Output generated EPUB to specified directory or file")
+    parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
+                      help="Verbose output [Default=False]")
     options, args = parser.parse_args(argv)
     if len(args) != 1:
         parser.print_help()
@@ -457,9 +457,9 @@ def main(argv=None):
     if options.title == 'defaulttitle':
         options.title = os.path.splitext(os.path.basename(args[0]))[0]
     if options.imgproc:
-        print "Processing images..."
+        print "\nProcessing images..."
         dirImgProcess(path + "/OEBPS/Images/")
-    print "Creating ePub structure..."
+    print "\nCreating ePub structure..."
     genEpubStruct(path)
     # actually zip the ePub
     if options.output is not None:

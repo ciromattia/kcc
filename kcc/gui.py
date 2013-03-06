@@ -146,7 +146,7 @@ class MainWindow:
             argv.append("--gamma")
             argv.append(self.options['image_gamma'].get())
         if self.options['image_preprocess'].get() == 0:
-            argv.append("--no-image-processing")
+            argv.append("--noprocessing")
         if self.options['notquantize'].get() == 1:
             argv.append("--nodithering")
         if self.options['nosplitrotate'].get() == 1:
@@ -154,15 +154,15 @@ class MainWindow:
         if self.options['rotate'].get() == 1:
             argv.append("--rotate")
         if self.options['cut_page_numbers'].get() == 0:
-            argv.append("--no-cut-page-numbers")
+            argv.append("--nocutpagenumbers")
         if self.options['mangastyle'].get() == 1:
             argv.append("-m")
         if self.options['image_upscale'].get() == 1:
-            argv.append("--upscale-images")
+            argv.append("--upscale")
         if self.options['image_stretch'].get() == 1:
-            argv.append("--stretch-images")
+            argv.append("--stretch")
         if self.options['black_borders'].get() == 1:
-            argv.append("--black-borders")
+            argv.append("--blackborders")
         errors = False
         left_files = len(self.filelist)
         filenum = 0
