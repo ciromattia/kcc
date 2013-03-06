@@ -18,14 +18,12 @@ You can find the latest released binary at the following links:
 - Linux: just download sourcecode and launch `python kcc.py` *(provided you have Python and Pillow installed)*
 
 ## INPUT FORMATS
-`kcc` can understand and convert, at the moment, the following file types:  
+`kcc` can understand and convert, at the moment, the following file types:
+- PNG, JPG
+- Folders
 - CBZ, ZIP
 - CBR, RAR *(with `unrar` executable)*
-- folders
 - PDF *(extracting only contained JPG images)*
-
-~~For now the script does not understand folder depth, so it will work on flat folders/archives only.~~
-As of v. 1.50, KCC supports subfolders!
 
 ## OPTIONAL REQUIREMENTS
 - `kindlegen` in /usr/local/bin/ *(for .mobi generation)*
@@ -48,39 +46,25 @@ Conversion being done, you should find an .epub and a .mobi files alongside the 
 
 ```
 comic2ebook.py [options] comic_file|comic_folder
-  Options:
-    --version             show program's version number and exit
-    -h, --help            show this help message and exit
-    -p PROFILE, --profile=PROFILE
-                          Device profile (choose one among K1, K2, K3, K4, KDX,
-                          KDXG or KHD) [default=KHD]
-    -t TITLE, --title=TITLE
-                          Comic title [default=filename]
-    -m, --manga-style     'Manga style' (right-to-left reading and splitting)
-                          [default=False]
-    -v, --verbose         Verbose output [default=False]
-    --no-image-processing
-                          Do not apply image preprocessing (page splitting and
-                          optimizations) [default=True]
-    --upscale-images      Resize images smaller than device's resolution
-                          [default=False]
-    --stretch-images      Stretch images to device's resolution [default=False]
-    --black-borders       Use black borders (instead of white ones) when not
-                          stretching and ratio is not like the device's one
-                          [default=False]
-    --no-cut-page-numbers
-                          Do not try to cut page numbering on images  
-                          [default=True]
-    --rotate              Disable page spliting. Instead rotate images  
-                          [default=False]
-    -o OUTPUT, --output=OUTPUT  
-                          Output directory or file for generated ePub
-```
 
-The script takes care of creating an *.epub* from your archive/folder, then:  
-1. Run `Kindlegen` on the generated *.epub*. Depending on how many images you have, this may take awhile. Once completed, the `.mobi` file should be in the directory.  
-2. (optionally) remove the SRCS record to reduce the `.mobi` filesize in half. You can use [Kindlestrip](http://www.mobileread.com/forums/showthread.php?t=96903).  
-3. Copy the `.mobi` file to your Kindle!
+Options:
+  --version                         Show program's version number and exit
+  -h, --help                        Show this help message and exit
+  -p PROFILE, --profile=PROFILE     Device profile (Choose one among K1, K2, K3, K4, KDX, KDXG or KHD) [Default=KHD]
+  -t TITLE, --title=TITLE           Comic title [Default=filename]
+  -m, --manga-style                 Manga style (Right-to-left reading and splitting) [Default=False]
+  --noprocessing                    Do not apply image preprocessing (Page splitting and optimizations) [Default=True]
+  --nodithering                     Disable image quantization [Default=False]
+  --gamma=GAMMA                     Apply gamma correction to linearize the image [Default=Auto]
+  --upscale                         Resize images smaller than device's resolution [Default=False]
+  --stretch                         Stretch images to device's resolution [Default=False]
+  --blackborders                    Use black borders (Instead of white ones) when not stretching and ratio is not like the device's one [Default=False]
+  --rotate                          Rotate landscape pages instead of splitting them [Default=False]
+  --nosplitrotate                   Disable splitting and rotation [Default=False]
+  --nocutpagenumbers                Do not try to cut page numbering on images [Default=True]
+  -o OUTPUT, --output=OUTPUT        Output generated EPUB to specified directory or file
+  -v, --verbose                     Verbose output [Default=False]
+```
 
 ## CREDITS
 KCC is made by [Ciro Mattia Gonano](http://github.com/ciromattia) and [Paweł Jastrzębski](http://github.com/AcidWeb)
