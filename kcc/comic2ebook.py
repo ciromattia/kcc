@@ -457,7 +457,7 @@ def main(argv=None):
     if options.title == 'defaulttitle':
         options.title = os.path.splitext(os.path.basename(args[0]))[0]
     if options.imgproc:
-        print "\nProcessing images..."
+        print "Processing images..."
         dirImgProcess(path + "/OEBPS/Images/")
     print "\nCreating ePub structure..."
     genEpubStruct(path)
