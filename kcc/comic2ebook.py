@@ -127,7 +127,7 @@ def buildNCX(dstdir, title, chapters):
 def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
     # read the first file resolution
-    profilelabel, deviceres, palette = image.ProfileData.Profiles[profile]
+    profilelabel, deviceres, palette, gamma = image.ProfileData.Profiles[profile]
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if righttoleft:
         writingmode = "horizontal-rl"
@@ -258,7 +258,7 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
         img.cutPageNumber()
     img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight)
     if not options.notquantize:
-	    img.quantizeImage()
+        img.quantizeImage()
 
 
 def dirImgProcess(path):
@@ -400,8 +400,8 @@ def main(argv=None):
                       help="Verbose output [default=False]")
     parser.add_option("--no-image-processing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (page splitting and optimizations) [default=True]")
-    parser.add_option("--gamma", type="float", dest="gamma", default=2.2,
-                      help="Apply gamma correction to linearize the image [default=2.2]")
+    parser.add_option("--gamma", type="float", dest="gamma", default="0.0",
+                      help="Apply gamma correction to linearize the image [default=auto]")
     parser.add_option("--nodithering", action="store_true", dest="notquantize", default=False,
                       help="Disable image quantization [default=False]")
     parser.add_option("--upscale-images", action="store_true", dest="upscale", default=False,

@@ -23,7 +23,6 @@ __docformat__ = 'restructuredtext en'
 from Tkinter import *
 import tkFileDialog
 import tkMessageBox
-import ttk
 import comic2ebook
 import kindlestrip
 from image import ProfileData
@@ -89,7 +88,7 @@ class MainWindow:
             'rotate': IntVar(None, 0),
             'cut_page_numbers': IntVar(None, 1),
             'mangastyle': IntVar(None, 0),
-            'image_gamma': DoubleVar(None, 2.2),
+            'image_gamma': DoubleVar(None, 0.0),
             'image_upscale': IntVar(None, 0),
             'image_stretch': IntVar(None, 0),
             'black_borders': IntVar(None, 0)
@@ -102,20 +101,20 @@ class MainWindow:
             'rotate': "Rotate landscape images instead of splitting them",
             'cut_page_numbers': "Cut page numbers",
             'mangastyle': "Manga mode",
-            'image_gamma': "Gamma",
+            'image_gamma': "Custom gamma\n(if 0.0 the default gamma for the profile will be used)",
             'image_upscale': "Allow image upscaling",
             'image_stretch': "Stretch images",
             'black_borders': "Use black borders"
         }
         for key in self.options:
-            if isinstance( self.options[key], IntVar ) or isinstance( self.options[key], BooleanVar ):
+            if isinstance(self.options[key], IntVar) or isinstance(self.options[key], BooleanVar):
                 aCheckButton = Checkbutton(self.master, text=self.optionlabels[key], variable=self.options[key])
                 aCheckButton.grid(columnspan=4, sticky=W + N + S)
-            elif isinstance( self.options[key], DoubleVar ):
-                aLabel = Label(self.master, text=self.optionlabels[key])
-                aLabel.grid(column=2, sticky=W + N + S)
+            elif isinstance(self.options[key], DoubleVar):
+                aLabel = Label(self.master, text=self.optionlabels[key], justify=RIGHT)
+                aLabel.grid(column=0, columnspan=3, sticky=W + N + S)
                 aEntry = Entry(self.master, textvariable=self.options[key])
-                aEntry.grid(column=3, row=(self.master.grid_size()[1]-1), sticky=W + N + S)          
+                aEntry.grid(column=3, row=(self.master.grid_size()[1] - 1), sticky=W + N + S)
 
         self.submit = Button(self.master, text="CONVERT", command=self.start_conversion, fg="red")
         self.submit.grid(columnspan=4, sticky=W + E + N + S)
@@ -129,8 +128,9 @@ class MainWindow:
             return
         profilekey = ProfileData.ProfileLabels[self.profile.get()]
         argv = ["-p", profilekey]
-        argv.append("--gamma")
-        argv.append(self.options['image_gamma'].get())
+        if self.options['image_gamma'].get() != 0.0:
+            argv.append("--gamma")
+            argv.append(self.options['image_gamma'].get())
         if self.options['image_preprocess'].get() == 0:
             argv.append("--no-image-processing")
         if self.options['notquantize'].get() == 1:
