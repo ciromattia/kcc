@@ -5,7 +5,7 @@ Will automatically ensure that all build prerequisites are available
 via ez_setup
 
 Usage (Mac OS X):
-    python setup.py build
+    python setup.py py2app
 
 Usage (Windows):
     python setup.py build
@@ -71,7 +71,7 @@ setup(
         'Intended Audience :: End Users/Desktop',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 2.7',
         'Topic :: Multimedia :: Graphics :: Graphics Conversion',
         'Topic :: Utilities'
     ],
