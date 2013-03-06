@@ -30,7 +30,7 @@ You can find the latest released binary at the following links:
 - `kindlegen` v2.7+ in a directory reachable by your PATH or in KCC directory *(For .mobi generation)*
 - [unrar](http://www.rarlab.com/download.htm) *(For CBR support)*
 
-### for compiling/running from source:
+### For compiling/running from source:
 - Python 2.7+ (Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows)
 - [Pillow](http://pypi.python.org/pypi/Pillow/) for comic optimizations like split double pages, resize to optimal resolution, improve contrast and palette, etc.
   Please refer to official documentation for installing into your system.
