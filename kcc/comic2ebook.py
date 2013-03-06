@@ -127,7 +127,7 @@ def buildNCX(dstdir, title, chapters):
 def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
     # read the first file resolution
-    profilelabel, deviceres, palette = image.ProfileData.Profiles[profile]
+    profilelabel, deviceres, palette, gamma = image.ProfileData.Profiles[profile]
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if righttoleft:
         writingmode = "horizontal-rl"
@@ -252,12 +252,13 @@ def isInFilelist(filename, filelist):
 
 
 def applyImgOptimization(img, isSplit=False, toRight=False):
-    img.optimizeImage()
+    img.optimizeImage(options.gamma)
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
     img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight)
-    img.quantizeImage()
+    if not options.notquantize:
+        img.quantizeImage()
 
 
 def dirImgProcess(path):
@@ -277,7 +278,10 @@ def dirImgProcess(path):
                 else:
                     print ".",
                 img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
-                split = img.splitPage(dirpath, options.righttoleft, options.rotate)
+                if options.nosplitrotate:
+                    split = None
+                else:
+                    split = img.splitPage(dirpath, options.righttoleft, options.rotate)
                 if split is not None:
                     if options.verbose:
                         print "Splitted " + afile
@@ -297,17 +301,17 @@ def dirImgProcess(path):
                         facing = "left"
                     img0 = image.ComicPage(split[0], options.profile)
                     applyImgOptimization(img0, True, toRight1)
-                    img0.saveToDir(dirpath)
+                    img0.saveToDir(dirpath, options.notquantize)
                     img1 = image.ComicPage(split[1], options.profile)
                     applyImgOptimization(img1, True, toRight2)
-                    img1.saveToDir(dirpath)
+                    img1.saveToDir(dirpath, options.notquantize)
                 else:
                     if facing == "right":
                         facing = "left"
                     else:
                         facing = "right"
                     applyImgOptimization(img)
-                    img.saveToDir(dirpath)
+                    img.saveToDir(dirpath, options.notquantize)
 
 
 def genEpubStruct(path):
@@ -396,6 +400,10 @@ def main(argv=None):
                       help="Verbose output [default=False]")
     parser.add_option("--no-image-processing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (page splitting and optimizations) [default=True]")
+    parser.add_option("--gamma", type="float", dest="gamma", default="0.0",
+                      help="Apply gamma correction to linearize the image [default=auto]")
+    parser.add_option("--nodithering", action="store_true", dest="notquantize", default=False,
+                      help="Disable image quantization [default=False]")
     parser.add_option("--upscale-images", action="store_true", dest="upscale", default=False,
                       help="Resize images smaller than device's resolution [default=False]")
     parser.add_option("--stretch-images", action="store_true", dest="stretch", default=False,
@@ -405,6 +413,8 @@ def main(argv=None):
                       + "is not like the device's one [default=False]")
     parser.add_option("--no-cut-page-numbers", action="store_false", dest="cutpagenumbers", default=True,
                       help="Do not try to cut page numbering on images [default=True]")
+    parser.add_option("--nosplitrotate", action="store_true", dest="nosplitrotate", default=False,
+                      help="Disable splitting and rotation [default=False]")
     parser.add_option("--rotate", action="store_true", dest="rotate", default=False,
                       help="Rotate landscape pages instead of splitting them [default=False]")
     parser.add_option("-o", "--output", action="store", dest="output", default=None,
