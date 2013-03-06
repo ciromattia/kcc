@@ -42,10 +42,10 @@ class MainWindow:
 
     def change_gamma(self):
         if self.aEntry['state'] == DISABLED:
-	         self.aEntry['state'] = NORMAL
+            self.aEntry['state'] = NORMAL
         else:
-	         self.aEntry['state'] = DISABLED
-		
+            self.aEntry['state'] = DISABLED
+
     def open_files(self):
         filetypes = [('All files', '.*'), ('Comic files', ('*.cbr', '*.cbz', '*.zip', '*.rar', '*.pdf'))]
         f = tkFileDialog.askopenfilenames(title="Choose files", filetypes=filetypes)
@@ -117,10 +117,12 @@ class MainWindow:
         self.optionsButtons = {}
         for key in sorted(self.options):
             if isinstance(self.options[key], IntVar) or isinstance(self.options[key], BooleanVar):
-                self.optionsButtons[key] = Checkbutton(self.master, text=self.optionlabels[key], variable=self.options[key])
+                self.optionsButtons[key] = Checkbutton(self.master, text=self.optionlabels[key],
+                                                       variable=self.options[key])
                 self.optionsButtons[key].grid(columnspan=4, sticky=W + N + S)
             elif isinstance(self.options[key], DoubleVar):
-                self.optionsButtons[key] = Checkbutton(self.master, text=self.optionlabels[key], command=self.change_gamma)
+                self.optionsButtons[key] = Checkbutton(self.master, text=self.optionlabels[key],
+                                                       command=self.change_gamma)
                 self.optionsButtons[key].grid(columnspan=4, sticky=W + N + S)
                 self.aEntry = Entry(self.master, textvariable=self.options[key])
                 self.aEntry['state'] = DISABLED
@@ -193,7 +195,8 @@ class MainWindow:
                 self.master.update()
             except Exception as err:
                 type_, value_, traceback_ = sys.exc_info()
-                tkMessageBox.showerror('KCC Error', "Error on file %s:\n%s\nTraceback:\n%s" (subargv[-1], str(err), traceback.format_tb(traceback_)))
+                tkMessageBox.showerror('KCC Error', "Error on file %s:\n%s\nTraceback:\n%s" %
+                                                    (subargv[-1], str(err), traceback.format_tb(traceback_)))
                 errors = True
                 continue
             if self.options['Aepub_only'].get() == 0:
