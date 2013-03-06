@@ -60,10 +60,12 @@ def buildHTML(path, imgfile):
                       "<head>\n",
                       "<title>", filename[0], "</title>\n",
                       "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
+                      "<link href=\"stylesheet.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
+                      "<link href=\"page_styles.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
                       "</head>\n",
-                      "<body>\n",
-                      "<div><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
-                      imgfile, "\" class=\"singlePage\"/></div>\n",
+                      "<body class=\"kcc\">\n",
+                      "<div class=\"kcc1\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                      imgfile, "\" class=\"kcc2\"/></div>\n",
                       #"<div id=\"", filename[0], "-1\">\n",
                       #"<a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"", filename[0],
                       #"-1-magTargetParent\", \"ordinal\":1}'></a>\n",
@@ -319,6 +321,34 @@ def genEpubStruct(path):
     chapterlist = []
     cover = None
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
+    f = open(os.path.join(path, 'OEBPS', 'Text', 'page_styles.css'), 'w')
+    f.writelines(["@page {\n",
+                  "    margin-bottom: 0;\n",
+                  "    margin-top: 0\n",
+                  "    }\n"])
+    f.close()
+    f = open(os.path.join(path, 'OEBPS', 'Text', 'stylesheet.css'), 'w')
+    f.writelines([".kcc {\n",
+                  "    display: block;\n",
+                  "    margin-bottom: 0;\n",
+                  "    margin-left: 0;\n",
+                  "    margin-right: 0;\n",
+                  "    margin-top: 0;\n",
+                  "    padding-bottom: 0;\n",
+                  "    padding-left: 0;\n",
+                  "    padding-right: 0;\n",
+                  "    padding-top: 0;\n",
+                  "    text-align: left\n",
+                  "    }\n",
+                  ".kcc1 {\n",
+                  "    display: block;\n",
+                  "    text-align: center\n",
+                  "    }\n",
+                  ".kcc2 {\n",
+                  "    height: auto;\n",
+                  "    width: auto\n",
+                  "    }\n"])
+    f.close()
     for (dirpath, dirnames, filenames) in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
         for afile in filenames:
