@@ -324,31 +324,31 @@ def genEpubStruct(path):
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'page_styles.css'), 'w')
     f.writelines(["@page {\n",
-                  "    margin-bottom: 0;\n",
-                  "    margin-top: 0\n",
-                  "    }\n"])
+                  "  margin-bottom: 0;\n",
+                  "  margin-top: 0\n",
+                  "}\n"])
     f.close()
     f = open(os.path.join(path, 'OEBPS', 'Text', 'stylesheet.css'), 'w')
     f.writelines([".kcc {\n",
-                  "    display: block;\n",
-                  "    margin-bottom: 0;\n",
-                  "    margin-left: 0;\n",
-                  "    margin-right: 0;\n",
-                  "    margin-top: 0;\n",
-                  "    padding-bottom: 0;\n",
-                  "    padding-left: 0;\n",
-                  "    padding-right: 0;\n",
-                  "    padding-top: 0;\n",
-                  "    text-align: left\n",
-                  "    }\n",
+                  "  display: block;\n",
+                  "  margin-bottom: 0;\n",
+                  "  margin-left: 0;\n",
+                  "  margin-right: 0;\n",
+                  "  margin-top: 0;\n",
+                  "  padding-bottom: 0;\n",
+                  "  padding-left: 0;\n",
+                  "  padding-right: 0;\n",
+                  "  padding-top: 0;\n",
+                  "  text-align: left\n",
+                  "}\n",
                   ".kcc1 {\n",
-                  "    display: block;\n",
-                  "    text-align: center\n",
-                  "    }\n",
+                  "  display: block;\n",
+                  "  text-align: center\n",
+                  "}\n",
                   ".kcc2 {\n",
-                  "    height: auto;\n",
-                  "    width: auto\n",
-                  "    }\n"])
+                  "  height: auto;\n",
+                  "  width: auto\n",
+                  "}\n"])
     f.close()
     for (dirpath, dirnames, filenames) in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
