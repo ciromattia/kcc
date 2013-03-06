@@ -29,6 +29,8 @@ import os
 if platform == 'darwin':
     os.environ['PATH'] = '/usr/local/bin:' + os.environ['PATH']
 root = Tk()
-app = gui.MainWindow(master=root,title="Kindle Comic Converter v" + __version__)
+root.resizable(width=FALSE, height=FALSE)
+root.config(padx=5, pady=5)
+gui.MainWindow(master=root,title="Kindle Comic Converter v" + __version__)
 root.tkraise()
 root.mainloop()

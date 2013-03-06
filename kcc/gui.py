@@ -40,6 +40,12 @@ class MainWindow:
         self.filelist = []
         self.refresh_list()
 
+    def change_gamma(self):
+        if self.aEntry['state'] == DISABLED:
+	         self.aEntry['state'] = NORMAL
+        else:
+	         self.aEntry['state'] = DISABLED
+		
     def open_files(self):
         filetypes = [('All files', '.*'), ('Comic files', ('*.cbr', '*.cbz', '*.zip', '*.rar', '*.pdf'))]
         f = tkFileDialog.askopenfilenames(title="Choose files", filetypes=filetypes)
@@ -70,11 +76,11 @@ class MainWindow:
         self.refresh_list()
 
         self.clear_file = Button(self.master, text="Clear files", command=self.clear_files)
-        self.clear_file.grid(row=4, column=0, rowspan=3)
+        self.clear_file.grid(row=4, column=0, sticky=W + E + N + S)
         self.open_file = Button(self.master, text="Add files", command=self.open_files)
-        self.open_file.grid(row=4, column=1, rowspan=3)
+        self.open_file.grid(row=4, column=1, sticky=W + E + N + S)
         self.open_folder = Button(self.master, text="Add folder", command=self.open_folder)
-        self.open_folder.grid(row=4, column=2, rowspan=3)
+        self.open_folder.grid(row=4, column=2, sticky=W + E + N + S)
 
         self.profile = StringVar()
         profiles = sorted(ProfileData.ProfileLabels.iterkeys())
@@ -83,48 +89,49 @@ class MainWindow:
         w.grid(row=4, column=3, sticky=W + E + N + S)
 
         self.options = {
-            'epub_only': IntVar(None, 0),
-            'image_preprocess': IntVar(None, 1),
-            'notquantize': IntVar(None, 0),
-            'nosplitrotate': IntVar(None, 0),
-            'rotate': IntVar(None, 0),
-            'cut_page_numbers': IntVar(None, 1),
-            'mangastyle': IntVar(None, 0),
-            'image_gamma': DoubleVar(None, 0.0),
-            'image_upscale': IntVar(None, 0),
-            'image_stretch': IntVar(None, 0),
-            'black_borders': IntVar(None, 0)
+            'Aepub_only': IntVar(None, 0),
+            'Bmangastyle': IntVar(None, 0),
+            'Cimage_preprocess': IntVar(None, 0),
+            'Dnotquantize': IntVar(None, 0),
+            'Eimage_gamma': DoubleVar(None, 0.0),
+            'Fimage_upscale': IntVar(None, 0),
+            'Gimage_stretch': IntVar(None, 0),
+            'Hblack_borders': IntVar(None, 0),
+            'Irotate': IntVar(None, 0),
+            'Jnosplitrotate': IntVar(None, 0),
+            'Kcut_page_numbers': IntVar(None, 0)
         }
         self.optionlabels = {
-            'epub_only': "Generate EPUB only",
-            'image_preprocess': "Apply image optimizations",
-            'notquantize': "Disable image quantization",
-            'nosplitrotate': "Disable splitting and rotation",
-            'rotate': "Rotate landscape images instead of splitting them",
-            'cut_page_numbers': "Cut page numbers",
-            'mangastyle': "Manga mode",
-            'image_gamma': "Custom gamma\n(if 0.0 the default gamma for the profile will be used)",
-            'image_upscale': "Allow image upscaling",
-            'image_stretch': "Stretch images",
-            'black_borders': "Use black borders"
+            'Aepub_only': "Generate EPUB only",
+            'Cimage_preprocess': "Disable image optimizations",
+            'Dnotquantize': "Disable image quantization",
+            'Jnosplitrotate': "Disable splitting and rotation",
+            'Irotate': "Rotate images instead splitting them",
+            'Kcut_page_numbers': "Disable page numbers cutting",
+            'Bmangastyle': "Manga mode",
+            'Eimage_gamma': "Custom gamma correction",
+            'Fimage_upscale': "Allow image upscaling",
+            'Gimage_stretch': "Stretch images",
+            'Hblack_borders': "Use black borders"
         }
-        for key in self.options:
+        for key in sorted(self.options):
             if isinstance(self.options[key], IntVar) or isinstance(self.options[key], BooleanVar):
                 aCheckButton = Checkbutton(self.master, text=self.optionlabels[key], variable=self.options[key])
                 aCheckButton.grid(columnspan=4, sticky=W + N + S)
             elif isinstance(self.options[key], DoubleVar):
-                aLabel = Label(self.master, text=self.optionlabels[key], justify=RIGHT)
-                aLabel.grid(column=0, columnspan=3, sticky=W + N + S)
-                aEntry = Entry(self.master, textvariable=self.options[key])
-                aEntry.grid(column=3, row=(self.master.grid_size()[1] - 1), sticky=W + N + S)
+                aCheckButton = Checkbutton(self.master, text=self.optionlabels[key], command=self.change_gamma)
+                aCheckButton.grid(columnspan=4, sticky=W + N + S)
+                self.aEntry = Entry(self.master, textvariable=self.options[key])
+                self.aEntry['state'] = DISABLED
+                self.aEntry.grid(column=3, row=(self.master.grid_size()[1] - 1), sticky=W + N + S)
 
         self.submit = Button(self.master, text="CONVERT", command=self.start_conversion, fg="red")
         self.submit.grid(columnspan=4, sticky=W + E + N + S)
-        aLabel = Label(self.master, text="file progress", justify=RIGHT)
+        aLabel = Label(self.master, text="File progress:", anchor=W, justify=LEFT)
         aLabel.grid(column=0, sticky=E)
         self.progress_file = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate', maximum=4)
         self.progress_file.grid(column=1, columnspan=3, row=(self.master.grid_size()[1] - 1), sticky=W + E + N + S)
-        aLabel = Label(self.master, text="overall progress", justify=RIGHT)
+        aLabel = Label(self.master, text="Overall progress:", anchor=W, justify=LEFT)
         aLabel.grid(column=0, sticky=E)
         self.progress_overall = ttk.Progressbar(orient=HORIZONTAL, length=200, mode='determinate')
         self.progress_overall.grid(column=1, columnspan=3, row=(self.master.grid_size()[1] - 1), sticky=W + E + N + S)
@@ -142,26 +149,26 @@ class MainWindow:
             return
         profilekey = ProfileData.ProfileLabels[self.profile.get()]
         argv = ["-p", profilekey]
-        if self.options['image_gamma'].get() != 0.0:
+        if self.options['Eimage_gamma'].get() != 0.0:
             argv.append("--gamma")
-            argv.append(self.options['image_gamma'].get())
-        if self.options['image_preprocess'].get() == 0:
+            argv.append(self.options['Eimage_gamma'].get())
+        if self.options['Cimage_preprocess'].get() == 1:
             argv.append("--noprocessing")
-        if self.options['notquantize'].get() == 1:
+        if self.options['Dnotquantize'].get() == 1:
             argv.append("--nodithering")
-        if self.options['nosplitrotate'].get() == 1:
+        if self.options['Jnosplitrotate'].get() == 1:
             argv.append("--nosplitrotate")
-        if self.options['rotate'].get() == 1:
+        if self.options['Irotate'].get() == 1:
             argv.append("--rotate")
-        if self.options['cut_page_numbers'].get() == 0:
+        if self.options['Kcut_page_numbers'].get() == 1:
             argv.append("--nocutpagenumbers")
-        if self.options['mangastyle'].get() == 1:
+        if self.options['Bmangastyle'].get() == 1:
             argv.append("-m")
-        if self.options['image_upscale'].get() == 1:
+        if self.options['Fimage_upscale'].get() == 1:
             argv.append("--upscale")
-        if self.options['image_stretch'].get() == 1:
+        if self.options['Gimage_stretch'].get() == 1:
             argv.append("--stretch")
-        if self.options['black_borders'].get() == 1:
+        if self.options['Hblack_borders'].get() == 1:
             argv.append("--blackborders")
         errors = False
         left_files = len(self.filelist)
@@ -180,35 +187,36 @@ class MainWindow:
                 self.master.update()
             except Exception as err:
                 type_, value_, traceback_ = sys.exc_info()
-                tkMessageBox.showerror('KCC Error', "Error on file %s:\n%s\nTraceback:\n%s" %
-                                                    (subargv[-1], str(err), traceback.format_tb(traceback_)))
+                tkMessageBox.showerror('KCC Error', "Error on file %s:\n%s\nTraceback:\n%s" (subargv[-1], str(err), traceback.format_tb(traceback_)))
                 errors = True
                 continue
-            if self.options['epub_only'] == 1:
-                continue
-            try:
-                retcode = call("kindlegen \"" + epub_path + "\"", shell=True)
-                if retcode < 0:
-                    print >>sys.stderr, "Child was terminated by signal", -retcode
-                else:
-                    print >>sys.stderr, "Child returned", retcode
-                self.progress_file['value'] = 3
-                self.master.update()
-            except OSError as e:
-                tkMessageBox.showerror('KindleGen Error', "Error on file %s:\n%s" % (epub_path, e))
-                errors = True
-                continue
-            mobifile = epub_path.replace('.epub', '.mobi')
-            try:
-                shutil.move(mobifile, mobifile + '_tostrip')
-                kindlestrip.main((mobifile + '_tostrip', mobifile))
-                os.remove(mobifile + '_tostrip')
-                self.progress_file['value'] = 4
-                self.master.update()
-            except Exception, err:
-                tkMessageBox.showerror('Error', "Error on file %s:\n%s" % (mobifile, str(err)))
-                errors = True
-                continue
+            if self.options['Aepub_only'].get() == 0:
+                try:
+                    retcode = call("kindlegen \"" + epub_path + "\"", shell=True)
+                    if retcode < 0:
+                        print >>sys.stderr, "Child was terminated by signal", -retcode
+                    else:
+                        print >>sys.stderr, "Child returned", retcode
+                    self.progress_file['value'] = 3
+                    self.master.update()
+                except OSError as e:
+                    tkMessageBox.showerror('KindleGen Error', "Error on file %s:\n%s" % (epub_path, e))
+                    errors = True
+                    continue
+                mobifile = epub_path.replace('.epub', '.mobi')
+                try:
+                    shutil.move(mobifile, mobifile + '_tostrip')
+                    kindlestrip.main((mobifile + '_tostrip', mobifile))
+                    os.remove(mobifile + '_tostrip')
+                    self.progress_file['value'] = 4
+                    self.master.update()
+                except Exception, err:
+                    tkMessageBox.showerror('KindleStrip Error', "Error on file %s:\n%s" % (mobifile, str(err)))
+                    errors = True
+                    continue
+            else:
+                    self.progress_file['value'] = 4
+                    self.master.update()			
             self.progress_overall['value'] = filenum
             self.master.update()
         if errors:
