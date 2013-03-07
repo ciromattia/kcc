@@ -17,7 +17,7 @@ import sys
 from setuptools import setup
 
 NAME = 'KindleComicConverter'
-VERSION = "2.6"
+VERSION = "2.7"
 mainscript = 'kcc.py'
 
 if sys.platform == 'darwin':
