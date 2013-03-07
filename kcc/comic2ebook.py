@@ -399,7 +399,11 @@ def getWorkFolder(afile):
     else:
         cbx = cbxarchive.CBxArchive(afile)
         if cbx.isCbxFile():
-            path = cbx.extract(workdir)
+            try:
+                path = cbx.extract(workdir)
+            except OSError:
+                print 'Unrar not found, please download from http://www.rarlab.com/download.htm and put into your PATH.'
+                sys.exit(21)
         else:
             raise TypeError
     move(path, path + "_temp")
