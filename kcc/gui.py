@@ -206,10 +206,10 @@ class MainWindow:
                 continue
             if self.options['Aepub_only'].get() == 0:
                 try:
-                    if os.path.getsize(epub_path) > 314572800:
-                        # do not call kindlegen if source is bigger than 300MB
+                    if os.path.getsize(epub_path) > 335544320:
+                        # do not call kindlegen if source is bigger than 320MB
                         tkMessageBox.showwarning('KindleGen Warning',
-                                                 "ePub file %s is bigger than 300MB, not suitable for kindlegen" %
+                                                 "ePub file %s is bigger than 320MB, not suitable for kindlegen" %
                                                  epub_path)
                         continue
                     retcode = call("kindlegen \"" + epub_path + "\"", shell=True)
