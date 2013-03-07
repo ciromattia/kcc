@@ -251,9 +251,7 @@ class MainWindow:
             os.chmod(path, stat.S_IWRITE)
             os.remove(path)
 
-    def __init__(self, master, title):
+    def __init__(self, master):
         self.filelist = []
         self.master = master
-        self.master.title(title)
-        self.master.iconbitmap(default='resources/comic2ebook.ico')
         self.initialize()

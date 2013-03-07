@@ -27,7 +27,7 @@ if sys.platform == 'darwin':
         options=dict(
             py2app=dict(
                 argv_emulation=True,
-                iconfile='resources/comic2ebook.icns',
+                iconfile='comic2ebook.icns',
                 plist=dict(
                     CFBundleName=NAME,
                     CFBundleShortVersionString=VERSION,
@@ -43,7 +43,7 @@ elif sys.platform == 'win32':
     from cx_Freeze import setup, Executable
     base = "Win32GUI"
     extra_options = dict(
-        executables=[Executable("kcc.py", base=base, icon='resources/comic2ebook.ico',
+        executables=[Executable("kcc.py", base=base, icon='comic2ebook.ico',
                                 appendScriptToExe=True, appendScriptToLibrary=False)],
         options=dict(
             build_exe=dict(

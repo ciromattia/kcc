@@ -26,11 +26,14 @@ from kcc import gui
 from sys import platform
 import os
 
+root = Tk()
+root.resizable(width=False, height=False)
+root.config(padx=5, pady=5, takefocus=True)
+root.title("Kindle Comic Converter v" + __version__)
+root.wm_attributes("-topmost", 1)
 if platform == 'darwin':
     os.environ['PATH'] = '/usr/local/bin:' + os.environ['PATH']
-root = Tk()
-root.resizable(width=FALSE, height=FALSE)
-root.config(padx=5, pady=5)
-gui.MainWindow(master=root, title="Kindle Comic Converter v" + __version__)
-root.tkraise()
+elif platform == 'win32':
+    root.iconbitmap(default='comic2ebook.ico')
+gui.MainWindow(master=root)
 root.mainloop()
