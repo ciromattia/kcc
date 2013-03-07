@@ -19,16 +19,22 @@ __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
 
 import os
+import magic
 
 
 class CBxArchive:
     def __init__(self, origFileName):
-        self.cbxexts = ['.zip', '.cbz', '.rar', '.cbr']
         self.origFileName = origFileName
-        self.filename = os.path.splitext(origFileName)
+        mime = magic.from_buffer(open(origFileName).read(1024), mime=True)
+        if mime == 'application/x-rar':
+            self.compressor = 'rar'
+        elif mime == 'application/zip':
+            self.compressor = 'zip'
+        else:
+            self.compressor = None
 
     def isCbxFile(self):
-        return self.filename[1].lower() in self.cbxexts
+        return self.compressor is not None
 
     def extractCBZ(self, targetdir):
         try:
@@ -38,7 +44,7 @@ class CBxArchive:
         cbzFile = ZipFile(self.origFileName)
         for f in cbzFile.namelist():
             if f.startswith('__MACOSX') or f.endswith('.DS_Store'):
-                pass # skip MacOS special files
+                pass    # skip MacOS special files
             elif f.endswith('/'):
                 try:
                     os.makedirs(os.path.join(targetdir, f))
@@ -59,16 +65,16 @@ class CBxArchive:
                 pass  # skip MacOS special files
             elif f.endswith('/'):
                 try:
-                    os.makedirs(os.path.join(targetdir,f))
+                    os.makedirs(os.path.join(targetdir, f))
                 except:
                     pass  # the dir exists so we are going to extract the images only.
             else:
                 cbrFile.extract(f, targetdir)
 
     def extract(self, targetdir):
-        if '.cbr' == self.filename[1].lower() or '.rar' == self.filename[1].lower():
+        if self.compressor == 'rar':
             self.extractCBR(targetdir)
-        elif '.cbz' == self.filename[1].lower() or '.zip' == self.filename[1].lower():
+        elif self.compressor == 'zip':
             self.extractCBZ(targetdir)
         adir = os.listdir(targetdir)
         if len(adir) == 1 and os.path.isdir(os.path.join(targetdir, adir[0])):
