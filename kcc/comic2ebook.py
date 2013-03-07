@@ -439,7 +439,7 @@ def main(argv=None):
     parser.add_option("--stretch", action="store_true", dest="stretch", default=False,
                       help="Stretch images to device's resolution [Default=False]")
     parser.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
-                      help="Use black borders (Instead of white ones) when not stretching and ratio "
+                      help="Use black borders instead of white ones when not stretching and ratio "
                       + "is not like the device's one [Default=False]")
     parser.add_option("--rotate", action="store_true", dest="rotate", default=False,
                       help="Rotate landscape pages instead of splitting them [Default=False]")
