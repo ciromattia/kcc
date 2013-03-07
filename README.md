@@ -46,25 +46,28 @@ Conversion being done, you should find an .epub and a .mobi files alongside the 
 ### Standalone `comic2ebook.py` usage:
 
 ```
-comic2ebook.py [options] comic_file|comic_folder
+Usage: comic2ebook.py [options] comic_file|comic_folder
 
 Options:
-  --version                         Show program's version number and exit
-  -h, --help                        Show this help message and exit
-  -p PROFILE, --profile=PROFILE     Device profile (Choose one among K1, K2, K3, K4, KDX, KDXG or KHD) [Default=KHD]
-  -t TITLE, --title=TITLE           Comic title [Default=filename]
-  -m, --manga-style                 Manga style (Right-to-left reading and splitting) [Default=False]
-  --noprocessing                    Do not apply image preprocessing (Page splitting and optimizations) [Default=True]
-  --nodithering                     Disable image quantization [Default=False]
-  --gamma=GAMMA                     Apply gamma correction to linearize the image [Default=Auto]
-  --upscale                         Resize images smaller than device's resolution [Default=False]
-  --stretch                         Stretch images to device's resolution [Default=False]
-  --blackborders                    Use black borders (Instead of white ones) when not stretching and ratio is not like the device's one [Default=False]
-  --rotate                          Rotate landscape pages instead of splitting them [Default=False]
-  --nosplitrotate                   Disable splitting and rotation [Default=False]
-  --nocutpagenumbers                Do not try to cut page numbering on images [Default=True]
-  -o OUTPUT, --output=OUTPUT        Output generated EPUB to specified directory or file
-  -v, --verbose                     Verbose output [Default=False]
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -p PROFILE, --profile=PROFILE
+                        Device profile (Choose one among K1, K2, K3, K4, KDX, KDXG or KHD) [Default=KHD]
+  -t TITLE, --title=TITLE
+                        Comic title [Default=filename]
+  -m, --manga-style     Manga style (Right-to-left reading and splitting) [Default=False]
+  --noprocessing        Do not apply image preprocessing (Page splitting and optimizations) [Default=True]
+  --nodithering         Disable image quantization [Default=False]
+  --gamma=GAMMA         Apply gamma correction to linearize the image [Default=Auto]
+  --upscale             Resize images smaller than device's resolution [Default=False]
+  --stretch             Stretch images to device's resolution [Default=False]
+  --blackborders        Use black borders instead of white ones when not stretching and ratio is not like the device's one [Default=False]
+  --rotate              Rotate landscape pages instead of splitting them [Default=False]
+  --nosplitrotate       Disable splitting and rotation [Default=False]
+  --nocutpagenumbers    Do not try to cut page numbering on images [Default=True]
+  -o OUTPUT, --output=OUTPUT
+                        Output generated EPUB to specified directory or file
+  -v, --verbose         Verbose output [Default=False]
 ```
 
 ## CREDITS
@@ -79,6 +82,7 @@ The app relies and includes the following scripts/binaries:
  - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>, released with ISC License
  - the icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC Attribution-NonCommercial-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
  - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches
+ - `magic.py` from [python-magic](https://github.com/ahupp/python-magic) library
 
 ## CHANGELOG
   - 1.00: Initial version
@@ -101,10 +105,20 @@ The app relies and includes the following scripts/binaries:
   - 2.4: Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)  
         Fixed "add folders" from GUI.
   - 2.5: Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).  
-        Fixes epub containing zipped itself (#10).  
-  - 2.6: Added --rotate option to rotate landscape images instead of splitting them.  
-        Added --output option to customize ePub output dir/file.  
+        Fixes epub containing zipped itself (#10)  
+  - 2.6: Added --rotate option to rotate landscape images instead of splitting them (#16, #24)  
+        Added --output option to customize ePub output dir/file (#22)  
         Add rendition:layout and rendition:orientation ePub meta tags (supported by new kindlegen 2.8)  
+        Fixed natural sorting for files (#18)
+  - 2.7: Lots of GUI improvements (#27, #13)  
+        Added gamma support within --gamma option (defaults to profile-specified gamma) (#26, #27)  
+        Added --nodithering option to prevent dithering optimizations (#27)  
+        Epub margins support (#30)  
+        Fixed no file added if file has no spaces on Windows (#25)  
+        Gracefully exit if unrar missing (#15)  
+        Do not call kindlegen if source epub is bigger than 300MB (#17)  
+        Get filetype from magic number (#14)   
+        PDF conversion works again  
 
 ## COPYRIGHT
 
