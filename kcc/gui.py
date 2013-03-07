@@ -188,9 +188,10 @@ class MainWindow:
         self.progress_overall['value'] = 0
         self.progress_overall['maximum'] = left_files
         for entry in self.filelist:
-            filenum += 1
+            self.progress_overall['value'] = filenum
             self.progress_file['value'] = 1
             self.master.update()
+            filenum += 1
             subargv = list(argv)
             try:
                 subargv.append(entry)
@@ -205,6 +206,12 @@ class MainWindow:
                 continue
             if self.options['Aepub_only'].get() == 0:
                 try:
+                    if os.path.getsize(epub_path) > 314572800:
+                        # do not call kindlegen if source is bigger than 300MB
+                        tkMessageBox.showwarning('KindleGen Warning',
+                                                 "ePub file %s is bigger than 300MB, not suitable for kindlegen" %
+                                                 epub_path)
+                        continue
                     retcode = call("kindlegen \"" + epub_path + "\"", shell=True)
                     if retcode < 0:
                         print >>sys.stderr, "Child was terminated by signal", -retcode
@@ -229,19 +236,15 @@ class MainWindow:
                     continue
             else:
                     self.progress_file['value'] = 4
-                    self.master.update()			
-            self.progress_overall['value'] = filenum
-            self.master.update()
+                    self.master.update()
         if errors:
-            tkMessageBox.showinfo(
-                "Done",
-                "Conversion failed. Errors have been reported."
-            )
+            tkMessageBox.showwarning("Done", "Conversion completed with errors.")
         else:
-            tkMessageBox.showinfo(
-                "Done",
-                "Conversion successful!"
-            )
+            tkMessageBox.showinfo("Done", "Conversion successful!")
+        # reset progressbars
+        self.progress_overall['value'] = 0
+        self.progress_file['value'] = 0
+        self.master.update()
 
     def remove_readonly(self, fn, path):
         if fn is os.rmdir:
