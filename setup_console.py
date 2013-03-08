@@ -8,15 +8,15 @@ import sys
 from cx_Freeze import setup, Executable
 sys.path.insert(0, 'kcc')
 
-setup(  name = "KindleComicConverter",
-        version = "2.7",
-        author = "Ciro Mattia Gonano",
-        author_email = "ciromattia@gmail.com",
-        description = "A tool to convert comics (CBR/CBZ/PDFs/image folders) to MOBI.",
-        license= " ISC License (ISCL)",
-        keywords= "kindle comic mobipocket mobi cbz cbr manga",
-        url = "http://github.com/ciromattia/kcc",
-        options = {"build_exe": {}},
-        executables = [Executable("kcc/comic2ebook.py", appendScriptToExe=True, appendScriptToLibrary=False),
-		               Executable("kcc/kindlestrip.py", appendScriptToExe=True, appendScriptToLibrary=False)]
-        )
+setup(
+    name = "KindleComicConverter",
+    version = "2.7",
+    author = "Ciro Mattia Gonano",
+    author_email = "ciromattia@gmail.com",
+    description = "A tool to convert comics (CBR/CBZ/PDFs/image folders) to MOBI.",
+    license= "ISC License (ISCL)",
+    keywords= "kindle comic mobipocket mobi cbz cbr manga",
+    url = "http://github.com/ciromattia/kcc",
+    executables = [Executable("kcc/comic2ebook.py", appendScriptToExe=True, appendScriptToLibrary=False),
+                   Executable("kcc/kindlestrip.py", appendScriptToExe=True, appendScriptToLibrary=False)]
+)
