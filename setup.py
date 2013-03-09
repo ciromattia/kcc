@@ -46,16 +46,6 @@ elif sys.platform == 'win32':
     from cx_Freeze import setup, Executable
     base = "Win32GUI"
     extra_options = dict(
-        executables=[Executable("kcc.py", base=base, icon='comic2ebook.ico',
-                                appendScriptToExe=True, appendScriptToLibrary=False)],
-        options=dict(
-            build_exe=dict(
-                compressed=True
-            )
-        )
-    )
-    base = "Win32GUI"
-    extra_options = dict(
         options={"build_exe": {"include_files": includefiles, 'excludes': excludes, 'compressed': True}},
         executables=[Executable(MAIN,
                                 base='WIN32GUI',
