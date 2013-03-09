@@ -17,6 +17,6 @@ setup(
     license= "ISC License (ISCL)",
     keywords= "kindle comic mobipocket mobi cbz cbr manga",
     url = "http://github.com/ciromattia/kcc",
-    executables = [Executable("kcc/comic2ebook.py", appendScriptToExe=True, appendScriptToLibrary=False),
-                   Executable("kcc/kindlestrip.py", appendScriptToExe=True, appendScriptToLibrary=False)]
+    executables = [Executable("kcc/comic2ebook.py", compress=True, copyDependentFiles=True, appendScriptToExe=True, appendScriptToLibrary=False),
+                   Executable("kcc/kindlestrip.py", compress=True, copyDependentFiles=True, appendScriptToExe=True, appendScriptToLibrary=False)]
 )

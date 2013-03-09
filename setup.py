@@ -48,7 +48,7 @@ elif sys.platform == 'win32':
     extra_options = dict(
         options={"build_exe": {"include_files": includefiles, 'excludes': excludes, 'compressed': True}},
         executables=[Executable(MAIN,
-                                base='WIN32GUI',
+                                base=base,
                                 icon="comic2ebook.ico",
                                 copyDependentFiles=True,
                                 appendScriptToExe=True,
