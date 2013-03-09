@@ -266,9 +266,7 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
 
 
 def dirImgProcess(path):
-    global options
-    global splitCount
-    splitCount = 0
+    global options, splitCount
     if options.righttoleft:
         facing = "right"
     else:
@@ -423,7 +421,7 @@ def Usage():
 
 
 def main(argv=None):
-    global parser, options, epub_path
+    global parser, options, epub_path, splitCount
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
@@ -462,6 +460,7 @@ def main(argv=None):
     path = getWorkFolder(args[0])
     if options.title == 'defaulttitle':
         options.title = os.path.splitext(os.path.basename(args[0]))[0]
+    splitCount = 0
     if options.imgproc:
         print "Processing images..."
         dirImgProcess(path + "/OEBPS/Images/")

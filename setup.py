@@ -1,29 +1,28 @@
 """
-py2app/py2exe build script for KCC.
+cx_freeze/py2app build script for KCC.
 
-Will automatically ensure that all build prerequisites are available
-via ez_setup
-
-Usage (Mac OS X):
-    python setup.py py2app
+Will automatically ensure that all build prerequisites are available via ez_setup
 
 Usage (Windows):
     python setup.py build
+
+Usage (OS X):
+    python setup.py py2app
 """
 from ez_setup import use_setuptools
 use_setuptools()
 
 import sys
-from setuptools import setup
 
-NAME = 'KindleComicConverter'
+NAME = "KindleComicConverter"
 VERSION = "2.7"
-mainscript = 'kcc.py'
+MAIN = "kcc.py"
 
-if sys.platform == 'darwin':
+if sys.platform == "darwin":
+    from setuptools import setup
     extra_options = dict(
         setup_requires=['py2app'],
-        app=[mainscript],
+        app=[MAIN],
         options=dict(
             py2app=dict(
                 argv_emulation=True,
@@ -39,50 +38,42 @@ if sys.platform == 'darwin':
             )
         )
     )
-elif sys.platform == 'win32':
+elif sys.platform == "win32":
     from cx_Freeze import setup, Executable
     base = "Win32GUI"
     extra_options = dict(
-        executables=[Executable("kcc.py", base=base, icon='comic2ebook.ico',
-                                appendScriptToExe=True, appendScriptToLibrary=False)],
-        options=dict(
-            build_exe=dict(
-                compressed=True
-            )
-        )
+        options = {"build_exe": {"include_files": ["comic2ebook.ico"]}},
+        executables=[Executable(MAIN, base=base, icon="comic2ebook.ico", appendScriptToExe=True, appendScriptToLibrary=False, compress=True)]
     )
 else:
     extra_options = dict(
-        # Normally unix-like platforms will use "setup.py install"
-        # and install the main script as such
-        scripts=[mainscript],
+        scripts=[MAIN],
     )
 
 setup(
-    name=NAME,
-    version=VERSION,
-    author="Ciro Mattia Gonano",
-    author_email="ciromattia@gmail.com",
-    description="A tool to convert comics (CBR/CBZ/PDFs/image folders) to Mobipocket.",
-    license="ISC License (ISCL)",
-    keywords="kindle comic mobipocket mobi cbz cbr manga",
-    url="http://github.com/ciromattia/kcc",
+    name = NAME,
+    version = VERSION,
+    author = "Ciro Mattia Gonano",
+    author_email = "ciromattia@gmail.com",
+    description = "A tool to convert comics (CBR/CBZ/PDFs/image folders) to MOBI.",
+    license = "ISC License (ISCL)",
+    keywords = "kindle comic mobipocket mobi cbz cbr manga",
+    url = "http://github.com/ciromattia/kcc",
     classifiers=[
-        'Development Status :: 4 - Beta'
-        'License :: OSI Approved :: ISC License (ISCL)',
-        'Environment :: Console',
-        'Environment :: MacOS X',
-        'Environment :: Win32 (MS Windows)',
-        'Environment :: X11 Applications',
-        'Intended Audience :: End Users/Desktop',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Topic :: Multimedia :: Graphics :: Graphics Conversion',
-        'Topic :: Utilities'
+       'Development Status :: 4 - Beta'
+       'License :: OSI Approved :: ISC License (ISCL)',
+       'Environment :: Console',
+       'Environment :: MacOS X',
+       'Environment :: Win32 (MS Windows)',
+       'Environment :: X11 Applications',
+       'Intended Audience :: End Users/Desktop',
+       'Operating System :: OS Independent',
+       'Programming Language :: Python',
+       'Programming Language :: Python :: 3',
+       'Topic :: Multimedia :: Graphics :: Graphics Conversion',
+       'Topic :: Utilities'
     ],
     packages=['kcc'],
-    # make sure to add custom_fixers to the MANIFEST.in
     include_package_data=True,
     **extra_options
 )

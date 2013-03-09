@@ -3,6 +3,5 @@
 *.cbr
 .idea
 build
-KindleComicConverter.egg-info
 awkcc
-dist
+.DS_Store
