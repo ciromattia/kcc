@@ -116,7 +116,7 @@ The app relies and includes the following scripts/binaries:
         Epub margins support (#30)  
         Fixed no file added if file has no spaces on Windows (#25)  
         Gracefully exit if unrar missing (#15)  
-        Do not call kindlegen if source epub is bigger than 300MB (#17)  
+        Do not call kindlegen if source epub is bigger than 320MB (#17)  
         Get filetype from magic number (#14)   
         PDF conversion works again  
 

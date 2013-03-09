@@ -392,23 +392,18 @@ def getWorkFolder(afile):
             path = workdir
         except OSError:
             raise
+    elif afile.lower().endswith('.pdf'):
+        pdf = pdfjpgextract.PdfJpgExtract(afile)
+        path = pdf.extract()
     else:
-        import magic
-        mime = magic.from_buffer(open(afile).read(1024), mime=True)
-        if mime == 'application/pdf':
-            pdf = pdfjpgextract.PdfJpgExtract(afile)
-            path = pdf.extract()
-        elif mime == 'application/x-rar' or mime == 'application/zip':
-            cbx = cbxarchive.CBxArchive(afile)
-            if cbx.isCbxFile():
-                try:
-                    path = cbx.extract(workdir)
-                except OSError:
-                    print 'Unrar not found, please download from ' + \
-                          'http://www.rarlab.com/download.htm and put into your PATH.'
-                    sys.exit(21)
-            else:
-                raise TypeError
+        cbx = cbxarchive.CBxArchive(afile)
+        if cbx.isCbxFile():
+            try:
+                path = cbx.extract(workdir)
+            except OSError:
+                print 'Unrar not found, please download from ' + \
+                      'http://www.rarlab.com/download.htm and put into your PATH.'
+                sys.exit(21)
         else:
             raise TypeError
     move(path, path + "_temp")
