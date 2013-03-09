@@ -13,9 +13,9 @@ It also optimizes comic images by:
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:  
-- OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.6.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.6.zip)
-- Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.6.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.6.zip)
-- Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.6.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.6.zip) *(thanks to [AcidWeb](https://github.com/AcidWeb))*
+- OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.7.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.7.zip)
+- Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.7.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.7.zip)
+- Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.7.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.7.zip) *(thanks to [AcidWeb](https://github.com/AcidWeb))*
 - Linux: Just download sourcecode and launch `python kcc.py` *(Provided you have Python and Pillow installed)*
 
 ## INPUT FORMATS
