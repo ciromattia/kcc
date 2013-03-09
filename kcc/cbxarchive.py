@@ -19,17 +19,17 @@ __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
 
 import os
-import magic
+import zipfile
+import rarfile
 
 
 class CBxArchive:
     def __init__(self, origFileName):
         self.origFileName = origFileName
-        mime = magic.from_buffer(open(origFileName).read(1024), mime=True)
-        if mime == 'application/x-rar':
-            self.compressor = 'rar'
-        elif mime == 'application/zip':
+        if zipfile.is_zipfile(origFileName):
             self.compressor = 'zip'
+        elif rarfile.is_rarfile(origFileName):
+            self.compressor = 'rar'
         else:
             self.compressor = None
 
@@ -37,11 +37,7 @@ class CBxArchive:
         return self.compressor is not None
 
     def extractCBZ(self, targetdir):
-        try:
-            from zipfile import ZipFile
-        except ImportError:
-            self.cbzFile = None
-        cbzFile = ZipFile(self.origFileName)
+        cbzFile = zipfile.ZipFile(self.origFileName)
         for f in cbzFile.namelist():
             if f.startswith('__MACOSX') or f.endswith('.DS_Store'):
                 pass    # skip MacOS special files
@@ -54,11 +50,6 @@ class CBxArchive:
                 cbzFile.extract(f, targetdir)
 
     def extractCBR(self, targetdir):
-        try:
-            import rarfile
-        except ImportError:
-            self.cbrFile = None
-            return
         cbrFile = rarfile.RarFile(self.origFileName)
         for f in cbrFile.namelist():
             if f.startswith('__MACOSX') or f.endswith('.DS_Store'):
