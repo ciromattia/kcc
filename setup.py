@@ -1,8 +1,7 @@
 """
-py2app/py2exe build script for KCC.
+py2app/cx_Freeze build script for KCC.
 
-Will automatically ensure that all build prerequisites are available
-via ez_setup
+Will automatically ensure that all build prerequisites are available via ez_setup
 
 Usage (Mac OS X):
     python setup.py py2app
