@@ -130,7 +130,6 @@ def buildNCX(dstdir, title, chapters):
 
 def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
-    # read the first file resolution
     profilelabel, deviceres, palette, gamma = image.ProfileData.Profiles[profile]
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if righttoleft:
@@ -159,16 +158,22 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
                   "<meta name=\"book-type\" content=\"comic\"/>\n",
                   "<meta name=\"zero-gutter\" content=\"true\"/>\n",
                   "<meta name=\"zero-margin\" content=\"true\"/>\n",
-                  "<meta name=\"fixed-layout\" content=\"true\"/>\n",
-                  "<meta name=\"orientation-lock\" content=\"none\"/>\n",
-                  "<meta name=\"original-resolution\" content=\"", imgres, "\"/>\n",
+                  "<meta name=\"fixed-layout\" content=\"true\"/>\n"
+                  ])
+    if options.landscapemode:
+        f.writelines(["<meta name=\"rendition:orientation\" content=\"auto\"/>\n",
+                      "<meta name=\"orientation-lock\" content=\"none\"/>\n"
+                      ])
+    else:
+        f.writelines(["<meta name=\"rendition:orientation\" content=\"portrait\"/>\n",
+                      "<meta name=\"orientation-lock\" content=\"portrait\"/>\n"
+                     ])	
+    f.writelines(["<meta name=\"original-resolution\" content=\"", imgres, "\"/>\n",
                   "<meta name=\"primary-writing-mode\" content=\"", writingmode, "\"/>\n",
                   "<meta name=\"rendition:layout\" content=\"pre-paginated\"/>\n",
-                  "<meta name=\"rendition:orientation\" content=\"auto\"/>\n",
                   "</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
                   "media-type=\"application/x-dtbncx+xml\"/>\n"
                   ])
-    # set cover
     if cover is not None:
         filename = getImageFileName(cover.replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\'))
         if '.png' == filename[1]:
@@ -191,7 +196,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
             mt = 'image/jpeg'
         f.write("<item id=\"img_" + uniqueid + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\""
                 + mt + "\"/>\n")
-    if (options.profile == 'K4' or options.profile == 'KHD') and splitCount > 0:
+    if options.landscapemode and splitCount > 0:
         splitCountUsed = 1
         while splitCountUsed <= splitCount:
             f.write("<item id=\"blank-page" + str(splitCountUsed) +
@@ -201,26 +206,33 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     splitCountUsed = 1
     for entry in reflist:
         if entry.endswith("-1"):
-            if ((righttoleft and facing == 'left') or (not righttoleft and facing == 'right')) and \
-                    (options.profile == 'K4' or options.profile == 'KHD'):
+            if ((righttoleft and facing == 'left') or (not righttoleft and facing == 'right')) and options.landscapemode:
                 f.write("<itemref idref=\"blank-page" + str(splitCountUsed) + "\" properties=\"layout-blank\"/>\n")
                 splitCountUsed += 1
-            f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
+            if options.landscapemode:
+                f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
+            else:
+                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
         elif entry.endswith("-2"):
-            f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
+            if options.landscapemode:
+                f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
+            else:
+                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
             if righttoleft:
                 facing = "right"
             else:
                 facing = "left"
         else:
-            f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing + "\"/>\n")
+            if options.landscapemode:
+                f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing + "\"/>\n")
+            else:
+                f.write("<itemref idref=\"page_" + entry + "\"/>\n")		
             if facing == 'right':
                 facing = 'left'
             else:
                 facing = 'right'
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
     f.close()
-    # finish with standard ePub folders
     os.mkdir(os.path.join(dstdir, 'META-INF'))
     f = open(os.path.join(dstdir, 'mimetype'), 'w')
     f.write('application/epub+zip')
@@ -355,7 +367,6 @@ def genEpubStruct(path):
         for afile in filenames:
             filename = getImageFileName(afile)
             if filename is not None:
-                # put credits at the end
                 if "credit" in afile.lower():
                     os.rename(os.path.join(dirpath, afile), os.path.join(dirpath, 'ZZZ999_' + afile))
                     afile = 'ZZZ999_' + afile
@@ -371,12 +382,11 @@ def genEpubStruct(path):
                     cover = os.path.join(filelist[-1][0], 'cover' + getImageFileName(filelist[-1][1])[1])
                     copyfile(os.path.join(filelist[-1][0], filelist[-1][1]), cover)
     buildNCX(path, options.title, chapterlist)
-    # ensure we're sorting files alphabetically
     convert = lambda text: int(text) if text.isdigit() else text
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(options.profile, path, options.title, filelist, cover, options.righttoleft)
-    if (options.profile == 'K4' or options.profile == 'KHD') and splitCount > 0:
+    if options.landscapemode and splitCount > 0:
         filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
 
 
@@ -456,8 +466,7 @@ def main(argv=None):
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="Verbose output [Default=False]")
     options, args = parser.parse_args(argv)
-    if options.fakepanelview = True and options.profile = "KHD":
-        options.fakepanelview = False
+    checkOptions()
     if len(args) != 1:
         parser.print_help()
         return
@@ -470,7 +479,6 @@ def main(argv=None):
         dirImgProcess(path + "/OEBPS/Images/")
     print "\nCreating ePub structure..."
     genEpubStruct(path)
-    # actually zip the ePub
     if options.output is not None:
         if options.output.endswith('.epub'):
             epubpath = os.path.abspath(options.output)
@@ -487,6 +495,21 @@ def main(argv=None):
     move(path + '_comic.zip', epubpath)
     rmtree(path)
     return epubpath
+
+def checkOptions():
+    global options
+    if options.profile == 'K4' or options.profile == 'KHD':
+        options.landscapemode = True
+    else:
+        options.landscapemode = False
+    if options.fakepanelview and options.profile == 'KHD':
+        options.fakepanelview = False
+    if options.fakepanelview and options.landscapemode:
+        options.landscapemode = False
+    if options.fakepanelview:
+        options.imgproc = True
+        options.rotate = False
+        options.nosplitrotate = False
 
 
 def getEpubPath():

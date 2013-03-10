@@ -147,7 +147,7 @@ class ComicPage:
             fill = 'white'
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
-                if isSplit and (self.profile == 'K4' or self.profile == 'KHD'):
+                if isSplit and options.landscapemode:
                     borderw = (self.size[0] - self.image.size[0])
                     borderh = (self.size[1] - self.image.size[1]) / 2
                     self.image = ImageOps.expand(self.image, border=(0, borderh), fill=fill)
@@ -165,14 +165,14 @@ class ComicPage:
             else:
                 method = Image.NEAREST
 
-        if stretch:  # if stretching call directly resize() without other considerations.
+        if stretch:
             self.image = self.image.resize(self.size, method)
             return self.image
 
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-            if isSplit and (self.profile == 'K4' or self.profile == 'KHD'):
+            if isSplit and options.landscapemode:
                 diff = 2
             self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
