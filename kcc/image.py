@@ -221,10 +221,10 @@ class ComicPage:
 
     def splitPageFakePanelView(self, targetdir, righttoleft=False):
         width, height = self.image.size
-        topleftbox = (0, 0, width / 2, height / 2)
-        toprightbox = (width / 2, 0, width, height / 2)
-        bottomleftbox = (0, height / 2, width / 2, height)
-        bototmrightbox = (width / 2, height / 2, width, height)
+        topleftbox = (0, 0, ((width / 2) + (width/9)), ((height / 2) + (height/9)))
+        toprightbox = ((width / 2) - (width/9)), 0, width, ((height / 2) + (height/9))
+        bottomleftbox = (0, ((height / 2) - (height/9)), ((width / 2) + (width/9)), height)
+        bototmrightbox = (((width / 2) - (width/9)), ((height / 2) - (height/9)), width, height)
         filename = os.path.splitext(os.path.basename(self.origFileName))
         file0 = targetdir + '/' + filename[0] + '-0' + filename[1]
         file1 = targetdir + '/' + filename[0] + '-1' + filename[1]
