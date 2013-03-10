@@ -272,7 +272,7 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
-    img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight)
+    img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight, options.landscapemode)
     if not options.notquantize:
         img.quantizeImage()
 
@@ -313,19 +313,61 @@ def dirImgProcess(path):
                         if facing == "right":
                             splitCount += 1
                         facing = "left"
-                    img0 = image.ComicPage(split[0], options.profile)
-                    applyImgOptimization(img0, True, toRight1)
-                    img0.saveToDir(dirpath, options.notquantize)
-                    img1 = image.ComicPage(split[1], options.profile)
-                    applyImgOptimization(img1, True, toRight2)
-                    img1.saveToDir(dirpath, options.notquantize)
+                    if options.fakepanelview:
+                        img0 = image.ComicPage(split[0], options.profile)
+                        applyImgOptimization(img0, True)
+                        splitA = img0.splitPageFakePanelView(dirpath, options.righttoleft)
+                        img00 = image.ComicPage(splitA[0], options.profile)
+                        img00.saveToDir(dirpath, options.notquantize)
+                        img01 = image.ComicPage(splitA[1], options.profile)
+                        img01.saveToDir(dirpath, options.notquantize)
+                        img02 = image.ComicPage(splitA[2], options.profile)
+                        img02.saveToDir(dirpath, options.notquantize)
+                        img03 = image.ComicPage(splitA[3], options.profile)
+                        img03.saveToDir(dirpath, options.notquantize)
+                        img04 = image.ComicPage(splitA[4], options.profile)
+                        img04.saveToDir(dirpath, options.notquantize)
+                        img1 = image.ComicPage(split[1], options.profile)
+                        applyImgOptimization(img1, True)
+                        splitB = img1.splitPageFakePanelView(dirpath, options.righttoleft)
+                        img10 = image.ComicPage(splitB[0], options.profile)
+                        img10.saveToDir(dirpath, options.notquantize)
+                        img11 = image.ComicPage(splitB[1], options.profile)
+                        img11.saveToDir(dirpath, options.notquantize)
+                        img12 = image.ComicPage(splitB[2], options.profile)
+                        img12.saveToDir(dirpath, options.notquantize)
+                        img13 = image.ComicPage(splitB[3], options.profile)
+                        img13.saveToDir(dirpath, options.notquantize)
+                        img14 = image.ComicPage(splitB[4], options.profile)
+                        img14.saveToDir(dirpath, options.notquantize)
+                    else:
+                        img0 = image.ComicPage(split[0], options.profile)
+                        applyImgOptimization(img0, True, toRight1)
+                        img0.saveToDir(dirpath, options.notquantize)
+                        img1 = image.ComicPage(split[1], options.profile)
+                        applyImgOptimization(img1, True, toRight2)
+                        img1.saveToDir(dirpath, options.notquantize)
                 else:
                     if facing == "right":
                         facing = "left"
                     else:
                         facing = "right"
-                    applyImgOptimization(img)
-                    img.saveToDir(dirpath, options.notquantize)
+                    if options.fakepanelview:
+                        applyImgOptimization(img)
+                        split = img.splitPageFakePanelView(dirpath, options.righttoleft)
+                        img0 = image.ComicPage(split[0], options.profile)
+                        img0.saveToDir(dirpath, options.notquantize)
+                        img1 = image.ComicPage(split[1], options.profile)
+                        img1.saveToDir(dirpath, options.notquantize)
+                        img2 = image.ComicPage(split[2], options.profile)
+                        img2.saveToDir(dirpath, options.notquantize)
+                        img3 = image.ComicPage(split[3], options.profile)
+                        img3.saveToDir(dirpath, options.notquantize)
+                        img4 = image.ComicPage(split[4], options.profile)
+                        img4.saveToDir(dirpath, options.notquantize)
+                    else:
+                        applyImgOptimization(img)
+                        img.saveToDir(dirpath, options.notquantize)
 
 
 def genEpubStruct(path):

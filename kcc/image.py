@@ -139,7 +139,7 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False):
+    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False, landscapeMode=False):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
@@ -147,7 +147,7 @@ class ComicPage:
             fill = 'white'
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
-                if isSplit and options.landscapemode:
+                if isSplit and landscapeMode:
                     borderw = (self.size[0] - self.image.size[0])
                     borderh = (self.size[1] - self.image.size[1]) / 2
                     self.image = ImageOps.expand(self.image, border=(0, borderh), fill=fill)
@@ -172,7 +172,7 @@ class ComicPage:
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-            if isSplit and options.landscapemode:
+            if isSplit and landscapeMode:
                 diff = 2
             self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
@@ -217,6 +217,50 @@ class ComicPage:
                 return fileone, filetwo
         else:
             return None
+
+
+    def splitPageFakePanelView(self, targetdir, righttoleft=False):
+        width, height = self.image.size
+        topleftbox = (0, 0, width / 2, height / 2)
+        toprightbox = (width / 2, 0, width, height / 2)
+        bottomleftbox = (0, height / 2, width / 2, height)
+        bototmrightbox = (width / 2, height / 2, width, height)
+        filename = os.path.splitext(os.path.basename(self.origFileName))
+        file0 = targetdir + '/' + filename[0] + '-0' + filename[1]
+        file1 = targetdir + '/' + filename[0] + '-1' + filename[1]
+        file2 = targetdir + '/' + filename[0] + '-2' + filename[1]
+        file3 = targetdir + '/' + filename[0] + '-3' + filename[1]
+        file4 = targetdir + '/' + filename[0] + '-4' + filename[1]
+        try:
+            if righttoleft:
+                page0 = self.image
+                page1 = self.image.crop(toprightbox)
+                page2 = self.image.crop(topleftbox)
+                page3 = self.image.crop(bototmrightbox)
+                page4 = self.image.crop(bottomleftbox)
+            else:
+                page0 = self.image
+                page1 = self.image.crop(topleftbox)
+                page2 = self.image.crop(toprightbox)
+                page3 = self.image.crop(bottomleftbox)
+                page4 = self.image.crop(bototmrightbox)
+            if page0.mode == "P":
+                page0.save(file0, "PNG")
+                page1.save(file1, "PNG")
+                page2.save(file2, "PNG")
+                page3.save(file3, "PNG")
+                page4.save(file4, "PNG")
+            else:
+                page0.save(file0)
+                page1.save(file1)
+                page2.save(file2)
+                page3.save(file3)
+                page4.save(file4)
+            os.remove(self.origFileName)
+        except IOError as e:
+            raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
+        return file0, file1, file2, file3, file4
+
 
     def frameImage(self):
         foreground = tuple(self.palette[:3])
