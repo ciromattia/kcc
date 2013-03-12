@@ -139,12 +139,14 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False, landscapeMode=False):
+    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False, landscapeMode=False, fakepanelviewlandscape=False):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
         else:
             fill = 'white'
+        if fakepanelviewlandscape:
+            self.image = self.image.rotate(90)
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
                 if isSplit and landscapeMode:
@@ -260,6 +262,28 @@ class ComicPage:
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
         return file0, file1, file2, file3, file4
+
+
+    def splitPageFakePanelViewLandscape(self, targetdir, righttoleft=False):
+        width, height = self.image.size
+        topbox = (0, 0, width, ((height / 2) + (height/9)))
+        bottombox = (0, ((height / 2) - (height/9)), width, height)
+        filename = os.path.splitext(os.path.basename(self.origFileName))
+        file1 = targetdir + '/' + filename[0] + '-1' + filename[1]
+        file2 = targetdir + '/' + filename[0] + '-2' + filename[1]
+        try:
+            page1 = self.image.crop(topbox)
+            page2 = self.image.crop(bottombox)
+            if page1.mode == "P":
+                page1.save(file1, "PNG")
+                page2.save(file2, "PNG")
+            else:
+                page1.save(file1)
+                page2.save(file2)
+            os.remove(self.origFileName)
+        except IOError as e:
+            raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
+        return file1, file2
 
 
     def frameImage(self):
