@@ -15,7 +15,7 @@ use_setuptools()
 import sys
 
 NAME = "KindleComicConverter"
-VERSION = "2.7"
+VERSION = "2.8-dev"
 MAIN = "kcc.py"
 
 includefiles = ['README.md', 'MANIFEST.in', 'LICENSE.txt', 'comic2ebook.ico', 'comic2ebook.icns']
