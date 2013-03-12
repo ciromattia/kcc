@@ -141,7 +141,8 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False, fakePanelViewLandscape=False, isSplit=False, toRight=False, landscapeMode=False):
+    def resizeImage(self, upscale=False, stretch=False, black_borders=False, fakePanelViewLandscape=False,
+                    isSplit=False, toRight=False, landscapeMode=False):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
@@ -222,12 +223,11 @@ class ComicPage:
         else:
             return None
 
-
     def splitPageFakePanelView(self, targetdir, righttoleft=False, fakePanelWiewLandscape=False):
         width, height = self.image.size
         if fakePanelWiewLandscape:
-            topbox = (0, 0, width, ((height / 2) + (height/9)))
-            bottombox = (0, ((height / 2) - (height/9)), width, height)
+            topbox = (0, 0, width, ((height / 2) + (height / 9)))
+            bottombox = (0, ((height / 2) - (height / 9)), width, height)
             filename = os.path.splitext(os.path.basename(self.origFileName))
             file1 = targetdir + '/' + filename[0] + '-1' + filename[1]
             file2 = targetdir + '/' + filename[0] + '-2' + filename[1]
@@ -241,10 +241,10 @@ class ComicPage:
                 raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
             return file1, file2
         else:
-            topleftbox = (0, 0, ((width / 2) + (width/9)), ((height / 2) + (height/9)))
-            toprightbox = ((width / 2) - (width/9)), 0, width, ((height / 2) + (height/9))
-            bottomleftbox = (0, ((height / 2) - (height/9)), ((width / 2) + (width/9)), height)
-            bototmrightbox = (((width / 2) - (width/9)), ((height / 2) - (height/9)), width, height)
+            topleftbox = (0, 0, ((width / 2) + (width / 9)), ((height / 2) + (height / 9)))
+            toprightbox = ((width / 2) - (width / 9)), 0, width, ((height / 2) + (height / 9))
+            bottomleftbox = (0, ((height / 2) - (height / 9)), ((width / 2) + (width / 9)), height)
+            bototmrightbox = (((width / 2) - (width / 9)), ((height / 2) - (height / 9)), width, height)
             filename = os.path.splitext(os.path.basename(self.origFileName))
             file0 = targetdir + '/' + filename[0] + '-0' + filename[1]
             file1 = targetdir + '/' + filename[0] + '-1' + filename[1]
@@ -273,7 +273,6 @@ class ComicPage:
             except IOError as e:
                 raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
             return file0, file1, file2, file3, file4
-
 
     # def frameImage(self):
         # foreground = tuple(self.palette[:3])

@@ -163,18 +163,15 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
                   ])
     if options.landscapemode:
         f.writelines(["<meta name=\"rendition:orientation\" content=\"auto\"/>\n",
-                      "<meta name=\"orientation-lock\" content=\"none\"/>\n"
-                      ])
+                      "<meta name=\"orientation-lock\" content=\"none\"/>\n"])
     else:
         f.writelines(["<meta name=\"rendition:orientation\" content=\"portrait\"/>\n",
-                      "<meta name=\"orientation-lock\" content=\"portrait\"/>\n"
-                     ])	
+                      "<meta name=\"orientation-lock\" content=\"portrait\"/>\n"])
     f.writelines(["<meta name=\"original-resolution\" content=\"", imgres, "\"/>\n",
                   "<meta name=\"primary-writing-mode\" content=\"", writingmode, "\"/>\n",
                   "<meta name=\"rendition:layout\" content=\"pre-paginated\"/>\n",
                   "</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
-                  "media-type=\"application/x-dtbncx+xml\"/>\n"
-                  ])
+                  "media-type=\"application/x-dtbncx+xml\"/>\n"])
     if cover is not None:
         filename = getImageFileName(cover.replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\'))
         if '.png' == filename[1]:
@@ -207,7 +204,8 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     splitCountUsed = 1
     for entry in reflist:
         if entry.endswith("-1"):
-            if ((righttoleft and facing == 'left') or (not righttoleft and facing == 'right')) and options.landscapemode:
+            if ((righttoleft and facing == 'left') or (not righttoleft and facing == 'right')) and\
+                    options.landscapemode:
                 f.write("<itemref idref=\"blank-page" + str(splitCountUsed) + "\" properties=\"layout-blank\"/>\n")
                 splitCountUsed += 1
             if options.landscapemode:
@@ -227,7 +225,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
             if options.landscapemode:
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing + "\"/>\n")
             else:
-                f.write("<itemref idref=\"page_" + entry + "\"/>\n")		
+                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
             if facing == 'right':
                 facing = 'left'
             else:
@@ -317,8 +315,10 @@ def dirImgProcess(path):
                     if options.fakepanelview or options.fakepanelviewlandscape:
                         img0 = image.ComicPage(split[0], options.profile)
                         img1 = image.ComicPage(split[1], options.profile)
-                        splitA = img0.splitPageFakePanelView(dirpath, options.righttoleft, options.fakepanelviewlandscape)
-                        splitB = img1.splitPageFakePanelView(dirpath, options.righttoleft, options.fakepanelviewlandscape)						
+                        splitA = img0.splitPageFakePanelView(dirpath, options.righttoleft,
+                                                             options.fakepanelviewlandscape)
+                        splitB = img1.splitPageFakePanelView(dirpath, options.righttoleft,
+                                                             options.fakepanelviewlandscape)
                         for img in splitA:
                             tempImg = image.ComicPage(img, options.profile)
                             applyImgOptimization(tempImg)
@@ -326,7 +326,7 @@ def dirImgProcess(path):
                         for img in splitB:
                             tempImg = image.ComicPage(img, options.profile)
                             applyImgOptimization(tempImg)
-                            tempImg.saveToDir(dirpath, options.notquantize)						
+                            tempImg.saveToDir(dirpath, options.notquantize)
                     else:
                         img0 = image.ComicPage(split[0], options.profile)
                         applyImgOptimization(img0, True, toRight1)
@@ -521,6 +521,7 @@ def main(argv=None):
     move(path + '_comic.zip', epubpath)
     rmtree(path)
     return epubpath
+
 
 def checkOptions():
     global options
