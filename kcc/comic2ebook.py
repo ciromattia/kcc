@@ -256,11 +256,11 @@ def isInFilelist(filename, filelist):
 
 
 def applyImgOptimization(img, isSplit=False, toRight=False):
-    img.optimizeImage(options.gamma)
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
     img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight)
+    img.optimizeImage(options.gamma)
     if not options.notquantize:
         img.quantizeImage()
 
