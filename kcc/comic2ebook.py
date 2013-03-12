@@ -461,9 +461,9 @@ def main(argv=None):
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                       help="Manga style (Right-to-left reading and splitting) [Default=False]")
-    parser.add_option("--fakepanelview", action="store_true", dest="fakepanelview", default=False,
+    parser.add_option("--panelview", action="store_true", dest="fakepanelview", default=False,
                       help="Emulate Panel View feature (For Kindle 4 NT or older) [Default=False]")
-    parser.add_option("--fakepanelviewlandscape", action="store_true", dest="fakepanelviewlandscape", default=False,
+    parser.add_option("--panelviewlandscape", action="store_true", dest="fakepanelviewlandscape", default=False,
                       help="Emulate Panel View feature - Landscape mode (For Kindle 4 NT or older) [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
