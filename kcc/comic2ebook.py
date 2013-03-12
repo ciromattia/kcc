@@ -274,6 +274,8 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
         img.cutPageNumber()
     if options.fakepanelview:
         img.resizeImage(True, False, options.black_borders, False, False, False)
+    elif options.fakepanelviewlandscape:
+        img.resizeImage(False, False, options.black_borders, False, False, False, True)
     else:
         img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight, options.landscapemode)	
     if not options.notquantize:
@@ -351,6 +353,23 @@ def dirImgProcess(path):
                         img14 = image.ComicPage(splitB[4], options.profile)
                         applyImgOptimization(img14)
                         img14.saveToDir(dirpath, options.notquantize)
+                    elif options.fakepanelviewlandscape:
+                        img0 = image.ComicPage(split[0], options.profile)
+                        splitA = img0.splitPageFakePanelViewLandscape(dirpath, options.righttoleft)
+                        img01 = image.ComicPage(splitA[0], options.profile)
+                        applyImgOptimization(img01)
+                        img01.saveToDir(dirpath, options.notquantize)
+                        img02 = image.ComicPage(splitA[1], options.profile)
+                        applyImgOptimization(img02)
+                        img02.saveToDir(dirpath, options.notquantize)
+                        img1 = image.ComicPage(split[1], options.profile)
+                        splitB = img1.splitPageFakePanelViewLandscape(dirpath, options.righttoleft)
+                        img11 = image.ComicPage(splitB[0], options.profile)
+                        applyImgOptimization(img11)
+                        img11.saveToDir(dirpath, options.notquantize)
+                        img12 = image.ComicPage(splitB[1], options.profile)
+                        applyImgOptimization(img12)
+                        img12.saveToDir(dirpath, options.notquantize)
                     else:
                         img0 = image.ComicPage(split[0], options.profile)
                         applyImgOptimization(img0, True, toRight1)
@@ -380,6 +399,14 @@ def dirImgProcess(path):
                         img4 = image.ComicPage(split[4], options.profile)
                         applyImgOptimization(img4)
                         img4.saveToDir(dirpath, options.notquantize)
+                    elif options.fakepanelviewlandscape:
+                        split = img.splitPageFakePanelViewLandscape(dirpath, options.righttoleft)
+                        img1 = image.ComicPage(split[0], options.profile)
+                        applyImgOptimization(img1)
+                        img1.saveToDir(dirpath, options.notquantize)
+                        img2 = image.ComicPage(split[1], options.profile)
+                        applyImgOptimization(img2)
+                        img2.saveToDir(dirpath, options.notquantize)
                     else:
                         applyImgOptimization(img)
                         img.saveToDir(dirpath, options.notquantize)
@@ -499,6 +526,8 @@ def main(argv=None):
                       help="Manga style (Right-to-left reading and splitting) [Default=False]")
     parser.add_option("--fakepanelview", action="store_true", dest="fakepanelview", default=False,
                       help="Emulate Panel View feature (For Kindle 4 NT or older) [Default=False]")
+    parser.add_option("--fakepanelviewlandscape", action="store_true", dest="fakepanelviewlandscape", default=False,
+                      help="Emulate Panel View feature - Landscape mode (For Kindle 4 NT or older) [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--nodithering", action="store_true", dest="notquantize", default=False,
@@ -559,14 +588,17 @@ def checkOptions():
         options.landscapemode = True
     else:
         options.landscapemode = False
-    if options.fakepanelview and options.profile == 'KHD':
+    if (options.fakepanelview or options.fakepanelviewlandscape) and options.profile == 'KHD':
         options.fakepanelview = False
-    if options.fakepanelview and options.landscapemode:
+        options.fakepanelviewlandscape = False
+    if (options.fakepanelview or options.fakepanelviewlandscape) and options.landscapemode:
         options.landscapemode = False
-    if options.fakepanelview:
+    if options.fakepanelview or options.fakepanelviewlandscape:
         options.imgproc = True
         options.rotate = False
         options.nosplitrotate = False
+    if options.fakepanelview and options.fakepanelviewlandscape:
+        options.fakepanelviewlandscape = False
 
 
 def getEpubPath():
