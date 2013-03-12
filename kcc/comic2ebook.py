@@ -130,6 +130,7 @@ def buildNCX(dstdir, title, chapters):
 
 def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
+    # read the first file resolution
     profilelabel, deviceres, palette, gamma = image.ProfileData.Profiles[profile]
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if righttoleft:
@@ -268,11 +269,11 @@ def isInFilelist(filename, filelist):
 
 
 def applyImgOptimization(img, isSplit=False, toRight=False):
-    img.optimizeImage(options.gamma)
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
-    img.resizeImage(options.upscale, options.stretch, options.black_borders, options.fakepanelviewlandscape, isSplit, toRight, options.landscapemode)	
+    img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight)
+    img.optimizeImage(options.gamma)
     if not options.notquantize:
         img.quantizeImage()
 
@@ -403,6 +404,7 @@ def genEpubStruct(path):
                     cover = os.path.join(filelist[-1][0], 'cover' + getImageFileName(filelist[-1][1])[1])
                     copyfile(os.path.join(filelist[-1][0], filelist[-1][1]), cover)
     buildNCX(path, options.title, chapterlist)
+    # ensure we're sorting files alphabetically
     convert = lambda text: int(text) if text.isdigit() else text
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
@@ -502,6 +504,7 @@ def main(argv=None):
         dirImgProcess(path + "/OEBPS/Images/")
     print "\nCreating ePub structure..."
     genEpubStruct(path)
+    # actually zip the ePub
     if options.output is not None:
         if options.output.endswith('.epub'):
             epubpath = os.path.abspath(options.output)
