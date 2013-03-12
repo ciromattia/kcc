@@ -30,7 +30,7 @@ root = Tk()
 root.resizable(width=False, height=False)
 root.config(padx=5, pady=5, takefocus=True)
 root.title("Kindle Comic Converter v" + __version__)
-root.wm_attributes("-topmost", 1)
+#root.wm_attributes("-topmost", 1)
 if platform == 'darwin':
     os.environ['PATH'] = '/usr/local/bin:' + os.environ['PATH']
 elif platform == 'win32':

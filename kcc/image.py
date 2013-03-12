@@ -132,6 +132,8 @@ class ComicPage:
             self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: 255 * (a / 255.) ** gamma))
 
     def quantizeImage(self):
+        self.image = self.image.convert('L')    # convert to grayscale
+        self.image = self.image.convert("RGB")    # convert back to RGB
         colors = len(self.palette) / 3
         if colors < 256:
             self.palette += self.palette[:3] * (256 - colors)
