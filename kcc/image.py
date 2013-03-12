@@ -139,13 +139,13 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False, landscapeMode=False, fakepanelviewlandscape=False):
+    def resizeImage(self, upscale=False, stretch=False, black_borders=False, fakePanelViewLandscape=False, isSplit=False, toRight=False, landscapeMode=False):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
         else:
             fill = 'white'
-        if fakepanelviewlandscape:
+        if fakePanelViewLandscape:
             self.image = self.image.rotate(90)
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
@@ -221,69 +221,56 @@ class ComicPage:
             return None
 
 
-    def splitPageFakePanelView(self, targetdir, righttoleft=False):
+    def splitPageFakePanelView(self, targetdir, righttoleft=False, fakePanelWiewLandscape=False):
         width, height = self.image.size
-        topleftbox = (0, 0, ((width / 2) + (width/9)), ((height / 2) + (height/9)))
-        toprightbox = ((width / 2) - (width/9)), 0, width, ((height / 2) + (height/9))
-        bottomleftbox = (0, ((height / 2) - (height/9)), ((width / 2) + (width/9)), height)
-        bototmrightbox = (((width / 2) - (width/9)), ((height / 2) - (height/9)), width, height)
-        filename = os.path.splitext(os.path.basename(self.origFileName))
-        file0 = targetdir + '/' + filename[0] + '-0' + filename[1]
-        file1 = targetdir + '/' + filename[0] + '-1' + filename[1]
-        file2 = targetdir + '/' + filename[0] + '-2' + filename[1]
-        file3 = targetdir + '/' + filename[0] + '-3' + filename[1]
-        file4 = targetdir + '/' + filename[0] + '-4' + filename[1]
-        try:
-            if righttoleft:
-                page0 = self.image
-                page1 = self.image.crop(toprightbox)
-                page2 = self.image.crop(topleftbox)
-                page3 = self.image.crop(bototmrightbox)
-                page4 = self.image.crop(bottomleftbox)
-            else:
-                page0 = self.image
-                page1 = self.image.crop(topleftbox)
-                page2 = self.image.crop(toprightbox)
-                page3 = self.image.crop(bottomleftbox)
-                page4 = self.image.crop(bototmrightbox)
-            if page0.mode == "P":
-                page0.save(file0, "PNG")
-                page1.save(file1, "PNG")
-                page2.save(file2, "PNG")
-                page3.save(file3, "PNG")
-                page4.save(file4, "PNG")
-            else:
+        if fakePanelWiewLandscape:
+            topbox = (0, 0, width, ((height / 2) + (height/9)))
+            bottombox = (0, ((height / 2) - (height/9)), width, height)
+            filename = os.path.splitext(os.path.basename(self.origFileName))
+            file1 = targetdir + '/' + filename[0] + '-1' + filename[1]
+            file2 = targetdir + '/' + filename[0] + '-2' + filename[1]
+            try:
+                page1 = self.image.crop(topbox)
+                page2 = self.image.crop(bottombox)
+                page1.save(file1)
+                page2.save(file2)
+                os.remove(self.origFileName)
+            except IOError as e:
+                raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
+            return file1, file2
+        else:
+            topleftbox = (0, 0, ((width / 2) + (width/9)), ((height / 2) + (height/9)))
+            toprightbox = ((width / 2) - (width/9)), 0, width, ((height / 2) + (height/9))
+            bottomleftbox = (0, ((height / 2) - (height/9)), ((width / 2) + (width/9)), height)
+            bototmrightbox = (((width / 2) - (width/9)), ((height / 2) - (height/9)), width, height)
+            filename = os.path.splitext(os.path.basename(self.origFileName))
+            file0 = targetdir + '/' + filename[0] + '-0' + filename[1]
+            file1 = targetdir + '/' + filename[0] + '-1' + filename[1]
+            file2 = targetdir + '/' + filename[0] + '-2' + filename[1]
+            file3 = targetdir + '/' + filename[0] + '-3' + filename[1]
+            file4 = targetdir + '/' + filename[0] + '-4' + filename[1]
+            try:
+                if righttoleft:
+                    page0 = self.image
+                    page1 = self.image.crop(toprightbox)
+                    page2 = self.image.crop(topleftbox)
+                    page3 = self.image.crop(bototmrightbox)
+                    page4 = self.image.crop(bottomleftbox)
+                else:
+                    page0 = self.image
+                    page1 = self.image.crop(topleftbox)
+                    page2 = self.image.crop(toprightbox)
+                    page3 = self.image.crop(bottomleftbox)
+                    page4 = self.image.crop(bototmrightbox)
                 page0.save(file0)
                 page1.save(file1)
                 page2.save(file2)
                 page3.save(file3)
                 page4.save(file4)
-            os.remove(self.origFileName)
-        except IOError as e:
-            raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
-        return file0, file1, file2, file3, file4
-
-
-    def splitPageFakePanelViewLandscape(self, targetdir, righttoleft=False):
-        width, height = self.image.size
-        topbox = (0, 0, width, ((height / 2) + (height/9)))
-        bottombox = (0, ((height / 2) - (height/9)), width, height)
-        filename = os.path.splitext(os.path.basename(self.origFileName))
-        file1 = targetdir + '/' + filename[0] + '-1' + filename[1]
-        file2 = targetdir + '/' + filename[0] + '-2' + filename[1]
-        try:
-            page1 = self.image.crop(topbox)
-            page2 = self.image.crop(bottombox)
-            if page1.mode == "P":
-                page1.save(file1, "PNG")
-                page2.save(file2, "PNG")
-            else:
-                page1.save(file1)
-                page2.save(file2)
-            os.remove(self.origFileName)
-        except IOError as e:
-            raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
-        return file1, file2
+                os.remove(self.origFileName)
+            except IOError as e:
+                raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
+            return file0, file1, file2, file3, file4
 
 
     # def frameImage(self):

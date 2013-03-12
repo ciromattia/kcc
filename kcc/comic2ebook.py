@@ -272,12 +272,7 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
-    if options.fakepanelview:
-        img.resizeImage(True, False, options.black_borders, False, False, False)
-    elif options.fakepanelviewlandscape:
-        img.resizeImage(False, False, options.black_borders, False, False, False, True)
-    else:
-        img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight, options.landscapemode)	
+    img.resizeImage(options.upscale, options.stretch, options.black_borders, options.fakepanelviewlandscape, isSplit, toRight, options.landscapemode)	
     if not options.notquantize:
         img.quantizeImage()
 
@@ -318,58 +313,19 @@ def dirImgProcess(path):
                         if facing == "right":
                             splitCount += 1
                         facing = "left"
-                    if options.fakepanelview:
+                    if options.fakepanelview or options.fakepanelviewlandscape:
                         img0 = image.ComicPage(split[0], options.profile)
-                        splitA = img0.splitPageFakePanelView(dirpath, options.righttoleft)
-                        img00 = image.ComicPage(splitA[0], options.profile)
-                        applyImgOptimization(img00)
-                        img00.saveToDir(dirpath, options.notquantize)
-                        img01 = image.ComicPage(splitA[1], options.profile)
-                        applyImgOptimization(img01)
-                        img01.saveToDir(dirpath, options.notquantize)
-                        img02 = image.ComicPage(splitA[2], options.profile)
-                        applyImgOptimization(img02)
-                        img02.saveToDir(dirpath, options.notquantize)
-                        img03 = image.ComicPage(splitA[3], options.profile)
-                        applyImgOptimization(img03)
-                        img03.saveToDir(dirpath, options.notquantize)
-                        img04 = image.ComicPage(splitA[4], options.profile)
-                        applyImgOptimization(img04)
-                        img04.saveToDir(dirpath, options.notquantize)
                         img1 = image.ComicPage(split[1], options.profile)
-                        splitB = img1.splitPageFakePanelView(dirpath, options.righttoleft)
-                        img10 = image.ComicPage(splitB[0], options.profile)
-                        applyImgOptimization(img10)
-                        img10.saveToDir(dirpath, options.notquantize)
-                        img11 = image.ComicPage(splitB[1], options.profile)
-                        applyImgOptimization(img11)
-                        img11.saveToDir(dirpath, options.notquantize)
-                        img12 = image.ComicPage(splitB[2], options.profile)
-                        applyImgOptimization(img12)
-                        img12.saveToDir(dirpath, options.notquantize)
-                        img13 = image.ComicPage(splitB[3], options.profile)
-                        applyImgOptimization(img13)
-                        img13.saveToDir(dirpath, options.notquantize)
-                        img14 = image.ComicPage(splitB[4], options.profile)
-                        applyImgOptimization(img14)
-                        img14.saveToDir(dirpath, options.notquantize)
-                    elif options.fakepanelviewlandscape:
-                        img0 = image.ComicPage(split[0], options.profile)
-                        splitA = img0.splitPageFakePanelViewLandscape(dirpath, options.righttoleft)
-                        img01 = image.ComicPage(splitA[0], options.profile)
-                        applyImgOptimization(img01)
-                        img01.saveToDir(dirpath, options.notquantize)
-                        img02 = image.ComicPage(splitA[1], options.profile)
-                        applyImgOptimization(img02)
-                        img02.saveToDir(dirpath, options.notquantize)
-                        img1 = image.ComicPage(split[1], options.profile)
-                        splitB = img1.splitPageFakePanelViewLandscape(dirpath, options.righttoleft)
-                        img11 = image.ComicPage(splitB[0], options.profile)
-                        applyImgOptimization(img11)
-                        img11.saveToDir(dirpath, options.notquantize)
-                        img12 = image.ComicPage(splitB[1], options.profile)
-                        applyImgOptimization(img12)
-                        img12.saveToDir(dirpath, options.notquantize)
+                        splitA = img0.splitPageFakePanelView(dirpath, options.righttoleft, options.fakepanelviewlandscape)
+                        splitB = img1.splitPageFakePanelView(dirpath, options.righttoleft, options.fakepanelviewlandscape)						
+                        for img in splitA:
+                            tempImg = image.ComicPage(img, options.profile)
+                            applyImgOptimization(tempImg)
+                            tempImg.saveToDir(dirpath, options.notquantize)
+                        for img in splitB:
+                            tempImg = image.ComicPage(img, options.profile)
+                            applyImgOptimization(tempImg)
+                            tempImg.saveToDir(dirpath, options.notquantize)						
                     else:
                         img0 = image.ComicPage(split[0], options.profile)
                         applyImgOptimization(img0, True, toRight1)
@@ -382,31 +338,12 @@ def dirImgProcess(path):
                         facing = "left"
                     else:
                         facing = "right"
-                    if options.fakepanelview:
-                        split = img.splitPageFakePanelView(dirpath, options.righttoleft)
-                        img0 = image.ComicPage(split[0], options.profile)
-                        applyImgOptimization(img0)
-                        img0.saveToDir(dirpath, options.notquantize)
-                        img1 = image.ComicPage(split[1], options.profile)
-                        applyImgOptimization(img1)
-                        img1.saveToDir(dirpath, options.notquantize)
-                        img2 = image.ComicPage(split[2], options.profile)
-                        applyImgOptimization(img2)
-                        img2.saveToDir(dirpath, options.notquantize)
-                        img3 = image.ComicPage(split[3], options.profile)
-                        applyImgOptimization(img3)
-                        img3.saveToDir(dirpath, options.notquantize)
-                        img4 = image.ComicPage(split[4], options.profile)
-                        applyImgOptimization(img4)
-                        img4.saveToDir(dirpath, options.notquantize)
-                    elif options.fakepanelviewlandscape:
-                        split = img.splitPageFakePanelViewLandscape(dirpath, options.righttoleft)
-                        img1 = image.ComicPage(split[0], options.profile)
-                        applyImgOptimization(img1)
-                        img1.saveToDir(dirpath, options.notquantize)
-                        img2 = image.ComicPage(split[1], options.profile)
-                        applyImgOptimization(img2)
-                        img2.saveToDir(dirpath, options.notquantize)
+                    if options.fakepanelview or options.fakepanelviewlandscape:
+                        split = img.splitPageFakePanelView(dirpath, options.righttoleft, options.fakepanelviewlandscape)
+                        for img in split:
+                            tempImg = image.ComicPage(img, options.profile)
+                            applyImgOptimization(tempImg)
+                            tempImg.saveToDir(dirpath, options.notquantize)
                     else:
                         applyImgOptimization(img)
                         img.saveToDir(dirpath, options.notquantize)
@@ -595,6 +532,7 @@ def checkOptions():
         options.landscapemode = False
     if options.fakepanelview or options.fakepanelviewlandscape:
         options.imgproc = True
+        options.upscale = True
         options.rotate = False
         options.nosplitrotate = False
     if options.fakepanelview and options.fakepanelviewlandscape:
