@@ -159,16 +159,19 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
                   "<meta name=\"book-type\" content=\"comic\"/>\n",
                   "<meta name=\"zero-gutter\" content=\"true\"/>\n",
                   "<meta name=\"zero-margin\" content=\"true\"/>\n",
-                  "<meta name=\"fixed-layout\" content=\"true\"/>\n",
-                  "<meta name=\"orientation-lock\" content=\"none\"/>\n",
-                  "<meta name=\"original-resolution\" content=\"", imgres, "\"/>\n",
+                  "<meta name=\"fixed-layout\" content=\"true\"/>\n"
+                  ])
+    if options.landscapemode:
+        f.writelines(["<meta name=\"rendition:orientation\" content=\"auto\"/>\n",
+                      "<meta name=\"orientation-lock\" content=\"none\"/>\n"])
+    else:
+        f.writelines(["<meta name=\"rendition:orientation\" content=\"portrait\"/>\n",
+                      "<meta name=\"orientation-lock\" content=\"portrait\"/>\n"])
+    f.writelines(["<meta name=\"original-resolution\" content=\"", imgres, "\"/>\n",
                   "<meta name=\"primary-writing-mode\" content=\"", writingmode, "\"/>\n",
                   "<meta name=\"rendition:layout\" content=\"pre-paginated\"/>\n",
-                  "<meta name=\"rendition:orientation\" content=\"auto\"/>\n",
                   "</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
-                  "media-type=\"application/x-dtbncx+xml\"/>\n"
-                  ])
-    # set cover
+                  "media-type=\"application/x-dtbncx+xml\"/>\n"])
     if cover is not None:
         filename = getImageFileName(cover.replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\'))
         if '.png' == filename[1]:
@@ -191,7 +194,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
             mt = 'image/jpeg'
         f.write("<item id=\"img_" + uniqueid + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\""
                 + mt + "\"/>\n")
-    if (options.profile == 'K4' or options.profile == 'KHD') and splitCount > 0:
+    if options.landscapemode and splitCount > 0:
         splitCountUsed = 1
         while splitCountUsed <= splitCount:
             f.write("<item id=\"blank-page" + str(splitCountUsed) +
@@ -201,26 +204,34 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     splitCountUsed = 1
     for entry in reflist:
         if entry.endswith("-1"):
-            if ((righttoleft and facing == 'left') or (not righttoleft and facing == 'right')) and \
-                    (options.profile == 'K4' or options.profile == 'KHD'):
+            if ((righttoleft and facing == 'left') or (not righttoleft and facing == 'right')) and\
+                    options.landscapemode:
                 f.write("<itemref idref=\"blank-page" + str(splitCountUsed) + "\" properties=\"layout-blank\"/>\n")
                 splitCountUsed += 1
-            f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
+            if options.landscapemode:
+                f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
+            else:
+                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
         elif entry.endswith("-2"):
-            f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
+            if options.landscapemode:
+                f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
+            else:
+                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
             if righttoleft:
                 facing = "right"
             else:
                 facing = "left"
         else:
-            f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing + "\"/>\n")
+            if options.landscapemode:
+                f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing + "\"/>\n")
+            else:
+                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
             if facing == 'right':
                 facing = 'left'
             else:
                 facing = 'right'
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
     f.close()
-    # finish with standard ePub folders
     os.mkdir(os.path.join(dstdir, 'META-INF'))
     f = open(os.path.join(dstdir, 'mimetype'), 'w')
     f.write('application/epub+zip')
@@ -259,7 +270,8 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
-    img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight)
+    img.resizeImage(options.upscale, options.stretch, options.black_borders, options.fakepanelviewlandscape, isSplit,
+                    toRight, options.landscapemode)
     img.optimizeImage(options.gamma)
     if not options.notquantize:
         img.quantizeImage()
@@ -301,19 +313,42 @@ def dirImgProcess(path):
                         if facing == "right":
                             splitCount += 1
                         facing = "left"
-                    img0 = image.ComicPage(split[0], options.profile)
-                    applyImgOptimization(img0, True, toRight1)
-                    img0.saveToDir(dirpath, options.notquantize)
-                    img1 = image.ComicPage(split[1], options.profile)
-                    applyImgOptimization(img1, True, toRight2)
-                    img1.saveToDir(dirpath, options.notquantize)
+                    if options.fakepanelview or options.fakepanelviewlandscape:
+                        img0 = image.ComicPage(split[0], options.profile)
+                        img1 = image.ComicPage(split[1], options.profile)
+                        splitA = img0.splitPageFakePanelView(dirpath, options.righttoleft,
+                                                             options.fakepanelviewlandscape)
+                        splitB = img1.splitPageFakePanelView(dirpath, options.righttoleft,
+                                                             options.fakepanelviewlandscape)
+                        for img in splitA:
+                            tempImg = image.ComicPage(img, options.profile)
+                            applyImgOptimization(tempImg)
+                            tempImg.saveToDir(dirpath, options.notquantize)
+                        for img in splitB:
+                            tempImg = image.ComicPage(img, options.profile)
+                            applyImgOptimization(tempImg)
+                            tempImg.saveToDir(dirpath, options.notquantize)
+                    else:
+                        img0 = image.ComicPage(split[0], options.profile)
+                        applyImgOptimization(img0, True, toRight1)
+                        img0.saveToDir(dirpath, options.notquantize)
+                        img1 = image.ComicPage(split[1], options.profile)
+                        applyImgOptimization(img1, True, toRight2)
+                        img1.saveToDir(dirpath, options.notquantize)
                 else:
                     if facing == "right":
                         facing = "left"
                     else:
                         facing = "right"
-                    applyImgOptimization(img)
-                    img.saveToDir(dirpath, options.notquantize)
+                    if options.fakepanelview or options.fakepanelviewlandscape:
+                        split = img.splitPageFakePanelView(dirpath, options.righttoleft, options.fakepanelviewlandscape)
+                        for img in split:
+                            tempImg = image.ComicPage(img, options.profile)
+                            applyImgOptimization(tempImg)
+                            tempImg.saveToDir(dirpath, options.notquantize)
+                    else:
+                        applyImgOptimization(img)
+                        img.saveToDir(dirpath, options.notquantize)
 
 
 def genEpubStruct(path):
@@ -355,7 +390,6 @@ def genEpubStruct(path):
         for afile in filenames:
             filename = getImageFileName(afile)
             if filename is not None:
-                # put credits at the end
                 if "credit" in afile.lower():
                     os.rename(os.path.join(dirpath, afile), os.path.join(dirpath, 'ZZZ999_' + afile))
                     afile = 'ZZZ999_' + afile
@@ -376,7 +410,7 @@ def genEpubStruct(path):
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(options.profile, path, options.title, filelist, cover, options.righttoleft)
-    if (options.profile == 'K4' or options.profile == 'KHD') and splitCount > 0:
+    if options.landscapemode and splitCount > 0:
         filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
 
 
@@ -430,6 +464,10 @@ def main(argv=None):
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                       help="Manga style (Right-to-left reading and splitting) [Default=False]")
+    parser.add_option("--panelview", action="store_true", dest="fakepanelview", default=False,
+                      help="Emulate Panel View feature (For Kindle 4 NT or older) [Default=False]")
+    parser.add_option("--panelviewlandscape", action="store_true", dest="fakepanelviewlandscape", default=False,
+                      help="Emulate Panel View feature - Landscape mode (For Kindle 4 NT or older) [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--nodithering", action="store_true", dest="notquantize", default=False,
@@ -454,6 +492,7 @@ def main(argv=None):
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="Verbose output [Default=False]")
     options, args = parser.parse_args(argv)
+    checkOptions()
     if len(args) != 1:
         parser.print_help()
         return
@@ -483,6 +522,26 @@ def main(argv=None):
     move(path + '_comic.zip', epubpath)
     rmtree(path)
     return epubpath
+
+
+def checkOptions():
+    global options
+    if options.profile == 'K4' or options.profile == 'KHD':
+        options.landscapemode = True
+    else:
+        options.landscapemode = False
+    if (options.fakepanelview or options.fakepanelviewlandscape) and options.profile == 'KHD':
+        options.fakepanelview = False
+        options.fakepanelviewlandscape = False
+    if (options.fakepanelview or options.fakepanelviewlandscape) and options.landscapemode:
+        options.landscapemode = False
+    if options.fakepanelview or options.fakepanelviewlandscape:
+        options.imgproc = True
+        options.upscale = True
+        options.rotate = False
+        options.nosplitrotate = False
+    if options.fakepanelview and options.fakepanelviewlandscape:
+        options.fakepanelviewlandscape = False
 
 
 def getEpubPath():
