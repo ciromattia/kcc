@@ -144,12 +144,16 @@ class ComicPage:
         self.image = self.image.quantize(palette=palImg)
 
     def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False,
-                    landscapeMode=False):
+                    landscapeMode=False, panelViewHQ=False):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
         else:
             fill = 'white'
+        if panelViewHQ:
+            size = (self.panelviewsize[0], self.panelviewsize[1])
+        else:
+            size = (self.size[0], self.size[1])
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
                 if isSplit and landscapeMode:
@@ -169,11 +173,9 @@ class ComicPage:
                 return self.image
             else:
                 method = Image.NEAREST
-
         if stretch:
             self.image = self.image.resize(self.size, method)
             return self.image
-
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
@@ -183,7 +185,7 @@ class ComicPage:
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
             self.image = ImageOps.expand(self.image, border=(0, diff / 2), fill=fill)
-        self.image = ImageOps.fit(self.image, self.size, method=method, centering=(0.5, 0.5))
+        self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
         return self.image
 
     def splitPage(self, targetdir, righttoleft=False, rotate=False):
