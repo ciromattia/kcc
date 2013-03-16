@@ -141,15 +141,13 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False, fakePanelViewLandscape=False,
-                    isSplit=False, toRight=False, landscapeMode=False):
+    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False,
+                    landscapeMode=False):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
         else:
             fill = 'white'
-        if fakePanelViewLandscape:
-            self.image = self.image.rotate(90)
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
                 if isSplit and landscapeMode:
@@ -222,80 +220,6 @@ class ComicPage:
                 return fileone, filetwo
         else:
             return None
-
-    def splitPageFakePanelView(self, targetdir, righttoleft=False, fakePanelWiewLandscape=False):
-        width, height = self.image.size
-        if fakePanelWiewLandscape:
-            topbox = (0, 0, width, ((height / 2) + (height / 9)))
-            bottombox = (0, ((height / 2) - (height / 9)), width, height)
-            filename = os.path.splitext(os.path.basename(self.origFileName))
-            file1 = targetdir + '/' + filename[0] + '-1' + filename[1]
-            file2 = targetdir + '/' + filename[0] + '-2' + filename[1]
-            try:
-                page1 = self.image.crop(topbox)
-                page2 = self.image.crop(bottombox)
-                page1.save(file1)
-                page2.save(file2)
-                os.remove(self.origFileName)
-            except IOError as e:
-                raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
-            return file1, file2
-        else:
-            topleftbox = (0, 0, ((width / 2) + (width / 9)), ((height / 2) + (height / 9)))
-            toprightbox = ((width / 2) - (width / 9)), 0, width, ((height / 2) + (height / 9))
-            bottomleftbox = (0, ((height / 2) - (height / 9)), ((width / 2) + (width / 9)), height)
-            bototmrightbox = (((width / 2) - (width / 9)), ((height / 2) - (height / 9)), width, height)
-            filename = os.path.splitext(os.path.basename(self.origFileName))
-            file0 = targetdir + '/' + filename[0] + '-0' + filename[1]
-            file1 = targetdir + '/' + filename[0] + '-1' + filename[1]
-            file2 = targetdir + '/' + filename[0] + '-2' + filename[1]
-            file3 = targetdir + '/' + filename[0] + '-3' + filename[1]
-            file4 = targetdir + '/' + filename[0] + '-4' + filename[1]
-            try:
-                if righttoleft:
-                    page0 = self.image
-                    page1 = self.image.crop(toprightbox)
-                    page2 = self.image.crop(topleftbox)
-                    page3 = self.image.crop(bototmrightbox)
-                    page4 = self.image.crop(bottomleftbox)
-                else:
-                    page0 = self.image
-                    page1 = self.image.crop(topleftbox)
-                    page2 = self.image.crop(toprightbox)
-                    page3 = self.image.crop(bottomleftbox)
-                    page4 = self.image.crop(bototmrightbox)
-                page0.save(file0)
-                page1.save(file1)
-                page2.save(file2)
-                page3.save(file3)
-                page4.save(file4)
-                os.remove(self.origFileName)
-            except IOError as e:
-                raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
-            return file0, file1, file2, file3, file4
-
-    # def frameImage(self):
-        # foreground = tuple(self.palette[:3])
-        # background = tuple(self.palette[-3:])
-        # widthDev, heightDev = self.size
-        # widthImg, heightImg = self.image.size
-        # pastePt = (
-            # max(0, (widthDev - widthImg) / 2),
-            # max(0, (heightDev - heightImg) / 2)
-        # )
-        # corner1 = (
-            # pastePt[0] - 1,
-            # pastePt[1] - 1
-        # )
-        # corner2 = (
-            # pastePt[0] + widthImg + 1,
-            # pastePt[1] + heightImg + 1
-        # )
-        # imageBg = Image.new(self.image.mode, self.size, background)
-        # imageBg.paste(self.image, pastePt)
-        # draw = ImageDraw.Draw(imageBg)
-        # draw.rectangle([corner1, corner2], outline=foreground)
-        # self.image = imageBg
 
     def cutPageNumber(self):
         widthImg, heightImg = self.image.size
@@ -390,36 +314,59 @@ class ComicPage:
         return self.image
 
     # def addProgressbar(self, file_number, files_totalnumber, size, howoften):
-        # if file_number // howoften != float(file_number) / howoften:
-            # return self.image
-        # white = (255, 255, 255)
-        # black = (0, 0, 0)
-        # widthDev, heightDev = size
-        # widthImg, heightImg = self.image.size
-        # pastePt = (
-            # max(0, (widthDev - widthImg) / 2),
-            # max(0, (heightDev - heightImg) / 2)
-        # )
-        # imageBg = Image.new('RGB', size, white)
-        # imageBg.paste(self.image, pastePt)
-        # self.image = imageBg
-        # widthImg, heightImg = self.image.size
-        # draw = ImageDraw.Draw(self.image)
-        # Black rectangle
-        # draw.rectangle([(0, heightImg - 3), (widthImg, heightImg)], outline=black, fill=black)
-        # White rectangle
-        # draw.rectangle([(widthImg * file_number / files_totalnumber, heightImg - 3), (widthImg - 1, heightImg)],
-                       # outline=black, fill=white)
-        # Making notches
-        # for i in range(1, 10):
-            # if i <= (10 * file_number / files_totalnumber):
-                # notch_colour = white  # White
-            # else:
-                # notch_colour = black  # Black
-            # draw.line([(widthImg * float(i) / 10, heightImg - 3), (widthImg * float(i) / 10, heightImg)],
-                      # fill=notch_colour)
-            # The 50%
-            # if i == 5:
-                # draw.rectangle([(widthImg / 2 - 1, heightImg - 5), (widthImg / 2 + 1, heightImg)],
-                               # outline=black, fill=notch_colour)
-        # return self.image
+    #     if file_number // howoften != float(file_number) / howoften:
+    #         return self.image
+    #     white = (255, 255, 255)
+    #     black = (0, 0, 0)
+    #     widthDev, heightDev = size
+    #     widthImg, heightImg = self.image.size
+    #     pastePt = (
+    #         max(0, (widthDev - widthImg) / 2),
+    #         max(0, (heightDev - heightImg) / 2)
+    #     )
+    #     imageBg = Image.new('RGB', size, white)
+    #     imageBg.paste(self.image, pastePt)
+    #     self.image = imageBg
+    #     widthImg, heightImg = self.image.size
+    #     draw = ImageDraw.Draw(self.image)
+    #     #Black rectangle
+    #     draw.rectangle([(0, heightImg - 3), (widthImg, heightImg)], outline=black, fill=black)
+    #     #White rectangle
+    #     draw.rectangle([(widthImg * file_number / files_totalnumber, heightImg - 3), (widthImg - 1, heightImg)],
+    #                    outline=black, fill=white)
+    #     #Making notches
+    #     for i in range(1, 10):
+    #         if i <= (10 * file_number / files_totalnumber):
+    #             notch_colour = white  # White
+    #         else:
+    #             notch_colour = black  # Black
+    #         draw.line([(widthImg * float(i) / 10, heightImg - 3), (widthImg * float(i) / 10, heightImg)],
+    #                   fill=notch_colour)
+    #         #The 50%
+    #         if i == 5:
+    #             draw.rectangle([(widthImg / 2 - 1, heightImg - 5), (widthImg / 2 + 1, heightImg)],
+    #                            outline=black, fill=notch_colour)
+    #     return self.image
+    #
+    # def frameImage(self):
+    #     foreground = tuple(self.palette[:3])
+    #     background = tuple(self.palette[-3:])
+    #     widthDev, heightDev = self.size
+    #     widthImg, heightImg = self.image.size
+    #     pastePt = (
+    #         max(0, (widthDev - widthImg) / 2),
+    #         max(0, (heightDev - heightImg) / 2)
+    #     )
+    #     corner1 = (
+    #         pastePt[0] - 1,
+    #         pastePt[1] - 1
+    #     )
+    #     corner2 = (
+    #         pastePt[0] + widthImg + 1,
+    #         pastePt[1] + heightImg + 1
+    #     )
+    #     imageBg = Image.new(self.image.mode, self.size, background)
+    #     imageBg.paste(self.image, pastePt)
+    #     draw = ImageDraw.Draw(imageBg)
+    #     draw.rectangle([corner1, corner2], outline=foreground)
+    #     self.image = imageBg

@@ -270,8 +270,7 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
-    img.resizeImage(options.upscale, options.stretch, options.black_borders, options.fakepanelviewlandscape, isSplit,
-                    toRight, options.landscapemode)
+    img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight, options.landscapemode)
     img.optimizeImage(options.gamma)
     if not options.notquantize:
         img.quantizeImage()
@@ -313,42 +312,19 @@ def dirImgProcess(path):
                         if facing == "right":
                             splitCount += 1
                         facing = "left"
-                    if options.fakepanelview or options.fakepanelviewlandscape:
-                        img0 = image.ComicPage(split[0], options.profile)
-                        img1 = image.ComicPage(split[1], options.profile)
-                        splitA = img0.splitPageFakePanelView(dirpath, options.righttoleft,
-                                                             options.fakepanelviewlandscape)
-                        splitB = img1.splitPageFakePanelView(dirpath, options.righttoleft,
-                                                             options.fakepanelviewlandscape)
-                        for img in splitA:
-                            tempImg = image.ComicPage(img, options.profile)
-                            applyImgOptimization(tempImg)
-                            tempImg.saveToDir(dirpath, options.notquantize)
-                        for img in splitB:
-                            tempImg = image.ComicPage(img, options.profile)
-                            applyImgOptimization(tempImg)
-                            tempImg.saveToDir(dirpath, options.notquantize)
-                    else:
-                        img0 = image.ComicPage(split[0], options.profile)
-                        applyImgOptimization(img0, True, toRight1)
-                        img0.saveToDir(dirpath, options.notquantize)
-                        img1 = image.ComicPage(split[1], options.profile)
-                        applyImgOptimization(img1, True, toRight2)
-                        img1.saveToDir(dirpath, options.notquantize)
+                    img0 = image.ComicPage(split[0], options.profile)
+                    applyImgOptimization(img0, True, toRight1)
+                    img0.saveToDir(dirpath, options.notquantize)
+                    img1 = image.ComicPage(split[1], options.profile)
+                    applyImgOptimization(img1, True, toRight2)
+                    img1.saveToDir(dirpath, options.notquantize)
                 else:
                     if facing == "right":
                         facing = "left"
                     else:
                         facing = "right"
-                    if options.fakepanelview or options.fakepanelviewlandscape:
-                        split = img.splitPageFakePanelView(dirpath, options.righttoleft, options.fakepanelviewlandscape)
-                        for img in split:
-                            tempImg = image.ComicPage(img, options.profile)
-                            applyImgOptimization(tempImg)
-                            tempImg.saveToDir(dirpath, options.notquantize)
-                    else:
-                        applyImgOptimization(img)
-                        img.saveToDir(dirpath, options.notquantize)
+                    applyImgOptimization(img)
+                    img.saveToDir(dirpath, options.notquantize)
 
 
 def genEpubStruct(path):
@@ -464,10 +440,8 @@ def main(argv=None):
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                       help="Manga style (Right-to-left reading and splitting) [Default=False]")
-    parser.add_option("--panelview", action="store_true", dest="fakepanelview", default=False,
-                      help="Emulate Panel View feature (For Kindle 4 NT or older) [Default=False]")
-    parser.add_option("--panelviewlandscape", action="store_true", dest="fakepanelviewlandscape", default=False,
-                      help="Emulate Panel View feature - Landscape mode (For Kindle 4 NT or older) [Default=False]")
+    parser.add_option("--panelview", action="store_true", dest="panelview", default=False,
+                      help="Add Panel View support (For Kindle Classic or older) [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--nodithering", action="store_true", dest="notquantize", default=False,
