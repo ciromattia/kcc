@@ -61,26 +61,48 @@ def buildHTML(path, imgfile):
                       "<title>", filename[0], "</title>\n",
                       "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
                       "<link href=\"", "../" * (backref - 1),
-                      "stylesheet.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
-                      "<link href=\"", "../" * (backref - 1),
-                      "page_styles.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
+                      "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
                       "</head>\n",
-                      "<body class=\"kcc\">\n",
-                      "<div class=\"kcc1\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
-                      imgfile, "\" class=\"kcc2\"/></div>\n",
-                      #"<div id=\"", filename[0], "-1\">\n",
-                      #"<a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"", filename[0],
-                      #"-1-magTargetParent\", \"ordinal\":1}'></a>\n",
-                      #"</div>\n",
-                      #"<div id=\"", filename[0], "-1-magTargetParent\" class=\"target-mag-parent\">\n",
-                      #"<div class=\"target-mag-lb\">\n",
-                      #"</div>\n",
-                      #"<div id=\"", filename[0], "-1-magTarget\" class=\"target-mag\">\n",
-                      #"<img src=\"../" * backref, "Images/", postfix, imgfile, "\" alt=\"", imgfile, "\"/>\n",
-                      #"</div></div>\n",
-                      "</body>\n",
-                      "</html>"
+                      "<body>\n",
+                      "<div class=\"fs\">\n",
+                      "<div><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                      imgfile, "\" class=\"singlePage\"/></div>\n"
                       ])
+        if options.panelview:
+            if options.righttoleft:
+                f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
+                              "BoxTL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
+                              "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
+                              "BoxTR-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
+                              "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
+                              "BoxBL-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
+                              "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
+                              "BoxBR-Panel-Parent\", \"ordinal\":3}'></a></div>\n"
+                              ])
+            else:
+                f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
+                              "BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
+                              "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
+                              "BoxTR-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
+                              "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
+                              "BoxBL-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
+                              "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
+                              "BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
+                              ])
+            f.writelines(["<div id=\"BoxTL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTL-Panel\" class=\"",
+                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                          imgfile, "\"/></div></div>\n",
+                          "<div id=\"BoxTR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTR-Panel\" class=\"",
+                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                          imgfile, "\"/></div></div>\n",
+                          "<div id=\"BoxBL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBL-Panel\" class=\"",
+                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                          imgfile, "\"/></div></div>\n",
+                          "<div id=\"BoxBR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBR-Panel\" class=\"",
+                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                          imgfile, "\"/></div></div>\n"
+                          ])
+        f.writelines(["</div>\n</body>\n</html>"])
         f.close()
         return path, imgfile
 
@@ -128,12 +150,12 @@ def buildNCX(dstdir, title, chapters):
     return
 
 
-def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
+def buildOPF(profile, dstdir, title, filelist, cover=None):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
     # read the first file resolution
     profilelabel, deviceres, palette, gamma, panelviewsize = image.ProfileData.Profiles[profile]
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
-    if righttoleft:
+    if options.righttoleft:
         writingmode = "horizontal-rl"
         facing = "right"
         facing1 = "right"
@@ -204,7 +226,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     splitCountUsed = 1
     for entry in reflist:
         if entry.endswith("-1"):
-            if ((righttoleft and facing == 'left') or (not righttoleft and facing == 'right')) and\
+            if ((options.righttoleft and facing == 'left') or (not options.righttoleft and facing == 'right')) and\
                     options.landscapemode:
                 f.write("<itemref idref=\"blank-page" + str(splitCountUsed) + "\" properties=\"layout-blank\"/>\n")
                 splitCountUsed += 1
@@ -217,7 +239,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
             else:
                 f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-            if righttoleft:
+            if options.righttoleft:
                 facing = "right"
             else:
                 facing = "left"
@@ -332,34 +354,127 @@ def genEpubStruct(path):
     filelist = []
     chapterlist = []
     cover = None
+    _, deviceres, _, _, panelviewsize = image.ProfileData.Profiles[options.profile]
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
-    f = open(os.path.join(path, 'OEBPS', 'Text', 'page_styles.css'), 'w')
+    f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w')
+    #DON'T COMPRESS CSS. KINDLE WILL FAIL TO PARSE IT.
+    #Generic Panel View support + Margins fix for Non-Kindle devices.
     f.writelines(["@page {\n",
-                  "  margin-bottom: 0;\n",
-                  "  margin-top: 0\n",
-                  "}\n"])
-    f.close()
-    f = open(os.path.join(path, 'OEBPS', 'Text', 'stylesheet.css'), 'w')
-    f.writelines([".kcc {\n",
-                  "  display: block;\n",
-                  "  margin-bottom: 0;\n",
-                  "  margin-left: 0;\n",
-                  "  margin-right: 0;\n",
-                  "  margin-top: 0;\n",
-                  "  padding-bottom: 0;\n",
-                  "  padding-left: 0;\n",
-                  "  padding-right: 0;\n",
-                  "  padding-top: 0;\n",
-                  "  text-align: left\n",
+                  "margin-bottom: 0;\n",
+                  "margin-top: 0\n",
                   "}\n",
-                  ".kcc1 {\n",
-                  "  display: block;\n",
-                  "  text-align: center\n",
+                  "body {\n",
+                  "display: block;\n",
+                  "margin-bottom: 0;\n",
+                  "margin-left: 0;\n",
+                  "margin-right: 0;\n",
+                  "margin-top: 0;\n",
+                  "padding-bottom: 0;\n",
+                  "padding-left: 0;\n",
+                  "padding-right: 0;\n",
+                  "padding-top: 0;\n",
+                  "text-align: left\n",
                   "}\n",
-                  ".kcc2 {\n",
-                  "  height: auto;\n",
-                  "  width: auto\n",
-                  "}\n"])
+                  "div.fs {\n",
+                  "height: ", str(deviceres[1]), "px;\n",
+                  "width: ", str(deviceres[0]), "px;\n",
+                  "position: relative;\n",
+                  "display: block;\n",
+                  "text-align: center\n",
+                  "}\n",
+                  "div.fs a {\n",
+                  "display: block;\n",
+                  "width : 100%;\n",
+                  "height: 100%;\n",
+                  "}\n",
+                  "div.fs div {\n",
+                  "position: absolute;\n",
+                  "}\n",
+                  "img.singlePage {\n",
+                  "position: absolute;\n",
+                  "height: ", str(deviceres[1]), "px;\n",
+                  "width: ", str(deviceres[0]), "px;\n",
+                  "}\n",
+                  "div.target-mag-parent {\n",
+                  "width:100%;\n",
+                  "height:100%;\n",
+                  "display:none;\n",
+                  "}\n",
+                  "div.target-mag {\n",
+                  "position: absolute;\n",
+                  "display: block;\n",
+                  "overflow: hidden;\n",
+                  "}\n",
+                  "div.target-mag img {\n",
+                  "position: absolute;\n",
+                  "height: ", str(panelviewsize[1]), "px;\n",
+                  "width: ", str(panelviewsize[0]), "px;\n",
+                  "}\n",
+                  "#BoxTL {\n",
+                  "top: 0;\n",
+                  "left: 0;\n",
+                  "height: 50%;\n",
+                  "width: 50%;\n",
+                  "}\n",
+                  "#BoxTR {\n",
+                  "top: 0;\n",
+                  "right: 0;\n",
+                  "height: 50%;\n",
+                  "width: 50%;\n",
+                  "}\n",
+                  "#BoxBL {\n",
+                  "bottom: 0;\n",
+                  "left: 0;\n",
+                  "height: 50%;\n",
+                  "width: 50%;\n",
+                  "}\n",
+                  "#BoxBR {\n",
+                  "bottom: 0;\n",
+                  "right: 0;\n",
+                  "height: 50%;\n",
+                  "width: 50%;\n",
+                  "}\n",
+                  "#BoxTL-Panel {\n",
+                  "top: 0;\n",
+                  "left: 0;\n",
+                  "height: 100%;\n",
+                  "width: 100%;\n",
+                  "}\n",
+                  "#BoxTL-Panel img {\n",
+                  "top: 0%;\n",
+                  "left: 0%;\n",
+                  "}\n",
+                  "#BoxTR-Panel {\n",
+                  "top: 0;\n",
+                  "right: 0;\n",
+                  "height: 100%;\n",
+                  "width: 100%;\n",
+                  "}\n",
+                  "#BoxTR-Panel img {\n",
+                  "top: 0%;\n",
+                  "right: 0%;\n",
+                  "}\n",
+                  "#BoxBL-Panel {\n",
+                  "bottom: 0;\n",
+                  "left: 0;\n",
+                  "height: 100%;\n",
+                  "width: 100%;\n",
+                  "}\n",
+                  "#BoxBL-Panel img {\n",
+                  "bottom: 0%;\n",
+                  "left: 0%;\n",
+                  "}\n",
+                  "#BoxBR-Panel {\n",
+                  "bottom: 0;\n",
+                  "right: 0;\n",
+                  "height: 100%;\n",
+                  "width: 100%;\n",
+                  "}\n",
+                  "#BoxBR-Panel img {\n",
+                  "bottom: 0%;\n",
+                  "right: 0%;\n",
+                  "}"
+                  ])
     f.close()
     for (dirpath, dirnames, filenames) in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
@@ -385,7 +500,7 @@ def genEpubStruct(path):
     convert = lambda text: int(text) if text.isdigit() else text
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
-    buildOPF(options.profile, path, options.title, filelist, cover, options.righttoleft)
+    buildOPF(options.profile, path, options.title, filelist, cover)
     if options.landscapemode and splitCount > 0:
         filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
 
@@ -440,8 +555,8 @@ def main(argv=None):
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                       help="Manga style (Right-to-left reading and splitting) [Default=False]")
-    parser.add_option("--panelview", action="store_true", dest="panelview", default=False,
-                      help="Add Panel View support (For Kindle Non-Touch and Kindle Keyboard) [Default=False]")
+    parser.add_option("--panelviewhq", action="store_true", dest="panelviewhq", default=False,
+                      help="Enable high quality Panel View [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--nodithering", action="store_true", dest="notquantize", default=False,
@@ -500,16 +615,16 @@ def main(argv=None):
 
 def checkOptions():
     global options
-    if options.profile == 'K4NT' or options.profile == 'K4T' or options.profile == 'KHD':
+    if options.profile == 'K4T' or options.profile == 'KHD':
         options.landscapemode = True
     else:
         options.landscapemode = False
-    if options.panelview and not (options.profile == 'K3' or options.profile == 'K4NT'):
+    if options.profile == 'K3' or options.profile == 'K4NT':
+        #Real Panel View
+        options.panelview = True
+    else:
+        #Virtual Panel View
         options.panelview = False
-    if options.panelview:
-        options.landscapemode = False
-        options.rotate = False
-        options.nosplitrotate = False
 
 
 def getEpubPath():
