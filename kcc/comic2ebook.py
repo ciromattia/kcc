@@ -441,7 +441,7 @@ def main(argv=None):
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                       help="Manga style (Right-to-left reading and splitting) [Default=False]")
     parser.add_option("--panelview", action="store_true", dest="panelview", default=False,
-                      help="Add Panel View support (For Kindle Classic or older) [Default=False]")
+                      help="Add Panel View support (For Kindle Classic and Kindle Keyboard) [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--nodithering", action="store_true", dest="notquantize", default=False,
