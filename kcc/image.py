@@ -20,7 +20,7 @@ __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
 
 import os
-from PIL import Image, ImageOps, ImageDraw, ImageStat
+from PIL import Image, ImageOps, ImageStat
 
 
 class ImageFlags:

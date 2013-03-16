@@ -28,7 +28,6 @@ import comic2ebook
 import kindlestrip
 from image import ProfileData
 from subprocess import call
-from subprocess import check_call
 import os
 import shutil
 import stat
