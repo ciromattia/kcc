@@ -226,6 +226,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
     splitCountUsed = 1
     for entry in reflist:
         if entry.endswith("-1"):
+            # noinspection PyRedundantParentheses
             if ((options.righttoleft and facing == 'left') or (not options.righttoleft and facing == 'right')) and\
                     options.landscapemode:
                 f.write("<itemref idref=\"blank-page" + str(splitCountUsed) + "\" properties=\"layout-blank\"/>\n")
