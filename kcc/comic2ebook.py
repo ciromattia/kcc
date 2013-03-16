@@ -131,7 +131,7 @@ def buildNCX(dstdir, title, chapters):
 def buildOPF(profile, dstdir, title, filelist, cover=None, righttoleft=False):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
     # read the first file resolution
-    profilelabel, deviceres, palette, gamma = image.ProfileData.Profiles[profile]
+    profilelabel, deviceres, palette, gamma, panelviewsize = image.ProfileData.Profiles[profile]
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if righttoleft:
         writingmode = "horizontal-rl"
@@ -435,13 +435,13 @@ def main(argv=None):
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                      help="Device profile (Choose one among K1, K2, K3, K4, KDX, KDXG or KHD) [Default=KHD]")
+                      help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG or KHD) [Default=KHD]")
     parser.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                       help="Manga style (Right-to-left reading and splitting) [Default=False]")
     parser.add_option("--panelview", action="store_true", dest="panelview", default=False,
-                      help="Add Panel View support (For Kindle Classic and Kindle Keyboard) [Default=False]")
+                      help="Add Panel View support (For Kindle Non-Touch and Kindle Keyboard) [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--nodithering", action="store_true", dest="notquantize", default=False,
@@ -500,22 +500,16 @@ def main(argv=None):
 
 def checkOptions():
     global options
-    if options.profile == 'K4' or options.profile == 'KHD':
+    if options.profile == 'K4NT' or options.profile == 'K4T' or options.profile == 'KHD':
         options.landscapemode = True
     else:
         options.landscapemode = False
-    if (options.fakepanelview or options.fakepanelviewlandscape) and options.profile == 'KHD':
-        options.fakepanelview = False
-        options.fakepanelviewlandscape = False
-    if (options.fakepanelview or options.fakepanelviewlandscape) and options.landscapemode:
+    if options.panelview and not (options.profile == 'K3' or options.profile == 'K4NT'):
+        options.panelview = False
+    if options.panelview:
         options.landscapemode = False
-    if options.fakepanelview or options.fakepanelviewlandscape:
-        options.imgproc = True
-        options.upscale = True
         options.rotate = False
         options.nosplitrotate = False
-    if options.fakepanelview and options.fakepanelviewlandscape:
-        options.fakepanelviewlandscape = False
 
 
 def getEpubPath():

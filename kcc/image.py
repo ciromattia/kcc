@@ -77,10 +77,10 @@ class ProfileData:
     ]
 
     Profiles = {
-        'K1': ("Kindle", (600, 800), Palette4, 1.8, (900, 1200)),
+        'K1': ("Kindle 1", (600, 800), Palette4, 1.8, (900, 1200)),
         'K2': ("Kindle 2", (600, 800), Palette15, 1.8, (900, 1200)),
         'K3': ("Kindle Keyboard", (600, 800), Palette16, 1.8, (900, 1200)),
-        'K4NT': ("Kindle Classic", (600, 800), Palette16, 1.8, (900, 1200)),
+        'K4NT': ("Kindle Non-Touch", (600, 800), Palette16, 1.8, (900, 1200)),
         'K4T': ("Kindle Touch", (600, 800), Palette16, 1.8, (900, 1200)),
         'KHD': ("Kindle Paperwhite", (758, 1024), Palette16, 1.8, (1137, 1536)),
         'KDX': ("Kindle DX", (824, 1200), Palette15, 1.8, (1236, 1800)),
@@ -88,10 +88,10 @@ class ProfileData:
     }
 
     ProfileLabels = {
-        "Kindle": 'K1',
+        "Kindle 1": 'K1',
         "Kindle 2": 'K2',
         "Kindle Keyboard": 'K3',
-        "Kindle Classic": 'K4NT',
+        "Kindle Non-Touch": 'K4NT',
         "Kindle Touch": 'K4T',
         "Kindle Paperwhite": 'KHD',
         "Kindle DX": 'KDX',
