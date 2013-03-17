@@ -159,10 +159,12 @@ class ComicPage:
                 if isSplit and landscapeMode:
                     borderh = (self.size[1] - self.image.size[1]) / 2
                     self.image = ImageOps.expand(self.image, border=(0, borderh), fill=fill)
+                    method = Image.BILINEAR
                 else:
                     borderw = (self.size[0] - self.image.size[0]) / 2
                     borderh = (self.size[1] - self.image.size[1]) / 2
                     self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
+                    return self.image
             else:
                 method = Image.BILINEAR
         if stretch:
