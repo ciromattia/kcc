@@ -222,6 +222,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
             f.write("<item id=\"blank-page" + str(splitCountUsed) +
                     "\" href=\"Text/blank.html\" media-type=\"application/xhtml+xml\"/>\n")
             splitCountUsed += 1
+    f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     splitCountUsed = 1
     for entry in reflist:
@@ -289,11 +290,11 @@ def isInFilelist(filename, filelist):
     return seen
 
 
-def applyImgOptimization(img, isSplit=False):
+def applyImgOptimization(img, isSplit=False, toRight=False):
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
-    img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, options.landscapemode,
+    img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight, options.landscapemode,
                     options.nopanelviewhq)
     img.optimizeImage(options.gamma)
     if not options.notquantize:
@@ -323,18 +324,22 @@ def dirImgProcess(path):
                     if options.verbose:
                         print "Splitted " + afile
                     if options.righttoleft:
+                        toRight1 = False
+                        toRight2 = True
                         if facing == "left":
                             splitCount += 1
                         facing = "right"
                     else:
+                        toRight1 = True
+                        toRight2 = False
                         if facing == "right":
                             splitCount += 1
                         facing = "left"
                     img0 = image.ComicPage(split[0], options.profile)
-                    applyImgOptimization(img0, True)
+                    applyImgOptimization(img0, True, toRight1)
                     img0.saveToDir(dirpath, options.notquantize)
                     img1 = image.ComicPage(split[1], options.profile)
-                    applyImgOptimization(img1, True)
+                    applyImgOptimization(img1, True, toRight2)
                     img1.saveToDir(dirpath, options.notquantize)
                 else:
                     if facing == "right":

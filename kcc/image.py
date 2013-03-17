@@ -143,39 +143,44 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, landscapeMode=False,
-                    noPanelViewHQ=False):
+    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False,
+                    landscapeMode=False, noPanelViewHQ=False):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
         else:
             fill = 'white'
-        if not noPanelViewHQ:
-            size = (self.panelviewsize[0], self.panelviewsize[1])
-        else:
+        if noPanelViewHQ:
             size = (self.size[0], self.size[1])
+        else:
+            size = (self.panelviewsize[0], self.panelviewsize[1])
+        if isSplit and landscapeMode:
+            upscale = True
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
-                if isSplit and landscapeMode:
-                    borderh = (self.size[1] - self.image.size[1]) / 2
-                    self.image = ImageOps.expand(self.image, border=(0, borderh), fill=fill)
-                    method = Image.BILINEAR
-                else:
-                    borderw = (self.size[0] - self.image.size[0]) / 2
-                    borderh = (self.size[1] - self.image.size[1]) / 2
-                    self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
-                    return self.image
+                borderw = (self.size[0] - self.image.size[0]) / 2
+                borderh = (self.size[1] - self.image.size[1]) / 2
+                self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
+                return self.image
             else:
                 method = Image.BILINEAR
-        if stretch:
-            self.image = self.image.resize(self.size, method)
+        if stretch:  # if stretching call directly resize() without other considerations.
+            self.image = self.image.resize(size, method)
             return self.image
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
-            diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
             if isSplit and landscapeMode:
-                diff = 2
-            self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
+                diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
+                self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
+                tempImg = Image.new(self.image.mode, (self.image.size[0] + diff, self.image.size[1]), fill)
+                if toRight:
+                    tempImg.paste(self.image, (diff, 0))
+                else:
+                    tempImg.paste(self.image, (0, 0))
+                self.image = tempImg
+            else:
+                diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
+                self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
             self.image = ImageOps.expand(self.image, border=(0, diff / 2), fill=fill)
