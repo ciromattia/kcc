@@ -94,28 +94,30 @@ class MainWindow:
         self.options = {
             'Aepub_only': IntVar(None, 0),
             'Bmangastyle': IntVar(None, 0),
-            'Cimage_preprocess': IntVar(None, 0),
-            'Dnotquantize': IntVar(None, 0),
-            'Eimage_gamma': DoubleVar(None, 0.0),
-            'Fimage_upscale': IntVar(None, 0),
-            'Gimage_stretch': IntVar(None, 0),
-            'Hblack_borders': IntVar(None, 0),
-            'Irotate': IntVar(None, 0),
-            'Jnosplitrotate': IntVar(None, 0),
-            'Kcut_page_numbers': IntVar(None, 0)
+            'Cnopanelviewhq': IntVar(None, 0),
+            'Dimage_preprocess': IntVar(None, 0),
+            'Enotquantize': IntVar(None, 0),
+            'Fimage_gamma': DoubleVar(None, 0.0),
+            'Gimage_upscale': IntVar(None, 0),
+            'Himage_stretch': IntVar(None, 0),
+            'Iblack_borders': IntVar(None, 0),
+            'Jrotate': IntVar(None, 0),
+            'Knosplitrotate': IntVar(None, 0),
+            'Lcut_page_numbers': IntVar(None, 0)
         }
         self.optionlabels = {
             'Aepub_only': "Generate EPUB only",
-            'Cimage_preprocess': "Disable image optimizations",
-            'Dnotquantize': "Disable image quantization",
-            'Jnosplitrotate': "Disable splitting and rotation",
-            'Irotate': "Rotate images instead splitting them",
-            'Kcut_page_numbers': "Disable page numbers cutting",
             'Bmangastyle': "Manga mode",
-            'Eimage_gamma': "Custom gamma correction",
-            'Fimage_upscale': "Allow image upscaling",
-            'Gimage_stretch': "Stretch images",
-            'Hblack_borders': "Use black borders"
+            'Cnopanelviewhq': "Disable high quality Panel View",
+            'Dimage_preprocess': "Disable image optimizations",
+            'Enotquantize': "Disable image quantization",
+            'Fimage_gamma': "Custom gamma correction",
+            'Gimage_upscale': "Allow image upscaling",
+            'Himage_stretch': "Stretch images",
+            'Iblack_borders': "Use black borders",
+            'Jrotate': "Rotate images instead splitting them",
+            'Knosplitrotate': "Disable splitting and rotation",
+            'Lcut_page_numbers': "Disable page numbers cutting"
         }
         self.optionsButtons = {}
         for key in sorted(self.options):
@@ -160,27 +162,29 @@ class MainWindow:
             return
         profilekey = ProfileData.ProfileLabels[self.profile.get()]
         argv = ["-p", profilekey]
-        if self.options['Eimage_gamma'].get() != 0.0:
-            argv.append("--gamma")
-            argv.append(self.options['Eimage_gamma'].get())
-        if self.options['Cimage_preprocess'].get() == 1:
-            argv.append("--noprocessing")
-        if self.options['Dnotquantize'].get() == 1:
-            argv.append("--nodithering")
-        if self.options['Jnosplitrotate'].get() == 1:
-            argv.append("--nosplitrotate")
-        if self.options['Irotate'].get() == 1:
-            argv.append("--rotate")
-        if self.options['Kcut_page_numbers'].get() == 1:
-            argv.append("--nocutpagenumbers")
         if self.options['Bmangastyle'].get() == 1:
             argv.append("-m")
-        if self.options['Fimage_upscale'].get() == 1:
+        if self.options['Cnopanelviewhq'].get() == 1:
+            argv.append("--nopanelviewhq")
+        if self.options['Dimage_preprocess'].get() == 1:
+            argv.append("--noprocessing")
+        if self.options['Enotquantize'].get() == 1:
+            argv.append("--nodithering")
+        if self.options['Fimage_gamma'].get() != 0.0:
+            argv.append("--gamma")
+            argv.append(self.options['Fimage_gamma'].get())
+        if self.options['Gimage_upscale'].get() == 1:
             argv.append("--upscale")
-        if self.options['Gimage_stretch'].get() == 1:
+        if self.options['Himage_stretch'].get() == 1:
             argv.append("--stretch")
-        if self.options['Hblack_borders'].get() == 1:
+        if self.options['Iblack_borders'].get() == 1:
             argv.append("--blackborders")
+        if self.options['Jrotate'].get() == 1:
+            argv.append("--rotate")
+        if self.options['Knosplitrotate'].get() == 1:
+            argv.append("--nosplitrotate")
+        if self.options['Lcut_page_numbers'].get() == 1:
+            argv.append("--nocutpagenumbers")
         errors = False
         left_files = len(self.filelist)
         filenum = 0

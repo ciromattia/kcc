@@ -294,7 +294,7 @@ def applyImgOptimization(img, isSplit=False):
     if options.cutpagenumbers:
         img.cutPageNumber()
     img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, options.landscapemode,
-                    options.panelviewhq)
+                    options.nopanelviewhq)
     img.optimizeImage(options.gamma)
     if not options.notquantize:
         img.quantizeImage()
@@ -551,8 +551,8 @@ def main(argv=None):
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                       help="Manga style (Right-to-left reading and splitting) [Default=False]")
-    parser.add_option("--panelviewhq", action="store_true", dest="panelviewhq", default=False,
-                      help="Enable high quality Panel View [Default=False]")
+    parser.add_option("--nopanelviewhq", action="store_true", dest="nopanelviewhq", default=False,
+                      help="Disable high quality Panel View [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--nodithering", action="store_true", dest="notquantize", default=False,
@@ -621,6 +621,8 @@ def checkOptions():
     else:
         #Virtual Panel View
         options.panelview = False
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
+        options.nopanelviewhq = True
 
 
 def getEpubPath():
