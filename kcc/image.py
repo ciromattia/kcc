@@ -90,9 +90,9 @@ class ProfileData:
     ProfileLabels = {
         "Kindle 1": 'K1',
         "Kindle 2": 'K2',
-        "Kindle Keyboard": 'K3',
-        "Kindle Non-Touch": 'K4NT',
-        "Kindle Touch": 'K4T',
+        "Kindle 3/Keyboard": 'K3',
+        "Kindle 4/Non-Touch": 'K4NT',
+        "Kindle 4/Touch": 'K4T',
         "Kindle Paperwhite": 'KHD',
         "Kindle DX": 'KDX',
         "Kindle DXG": 'KDXG'
@@ -144,13 +144,13 @@ class ComicPage:
         self.image = self.image.quantize(palette=palImg)
 
     def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, landscapeMode=False,
-                    panelViewHQ=False):
+                    noPanelViewHQ=False):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
         else:
             fill = 'white'
-        if panelViewHQ:
+        if not noPanelViewHQ:
             size = (self.panelviewsize[0], self.panelviewsize[1])
         else:
             size = (self.size[0], self.size[1])
@@ -164,7 +164,7 @@ class ComicPage:
                     borderh = (self.size[1] - self.image.size[1]) / 2
                     self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
             else:
-                method = Image.NEAREST
+                method = Image.BILINEAR
         if stretch:
             self.image = self.image.resize(self.size, method)
             return self.image
