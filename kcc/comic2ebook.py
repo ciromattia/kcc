@@ -289,11 +289,11 @@ def isInFilelist(filename, filelist):
     return seen
 
 
-def applyImgOptimization(img, isSplit=False, toRight=False):
+def applyImgOptimization(img, isSplit=False):
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
-    img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight, options.landscapemode,
+    img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, options.landscapemode,
                     options.panelviewhq)
     img.optimizeImage(options.gamma)
     if not options.notquantize:
@@ -323,12 +323,6 @@ def dirImgProcess(path):
                     if options.verbose:
                         print "Splitted " + afile
                     if options.righttoleft:
-                        toRight1 = False
-                        toRight2 = True
-                    else:
-                        toRight1 = True
-                        toRight2 = False
-                    if options.righttoleft:
                         if facing == "left":
                             splitCount += 1
                         facing = "right"
@@ -337,10 +331,10 @@ def dirImgProcess(path):
                             splitCount += 1
                         facing = "left"
                     img0 = image.ComicPage(split[0], options.profile)
-                    applyImgOptimization(img0, True, toRight1)
+                    applyImgOptimization(img0, True)
                     img0.saveToDir(dirpath, options.notquantize)
                     img1 = image.ComicPage(split[1], options.profile)
-                    applyImgOptimization(img1, True, toRight2)
+                    applyImgOptimization(img1, True)
                     img1.saveToDir(dirpath, options.notquantize)
                 else:
                     if facing == "right":
