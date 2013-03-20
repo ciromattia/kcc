@@ -73,7 +73,7 @@ __all__ = ['is_rarfile', 'RarInfo', 'RarFile', 'RarExtFile']
 ## Imports and compat - support both Python 2.x and 3.x
 ##
 
-import sys, os, struct
+import sys, os, struct, errno
 from struct import pack, unpack
 from binascii import crc32
 from tempfile import mkstemp
@@ -320,6 +320,8 @@ class RarMemoryError(RarExecError):
     """Memory error"""
 class RarCreateError(RarExecError):
     """Create error"""
+class RarNoFilesError(RarExecError):
+    """No files that match pattern were found"""
 class RarUserBreak(RarExecError):
     """User stop"""
 class RarUnknownError(RarExecError):
@@ -417,7 +419,7 @@ class RarInfo(object):
         'header_offset',
         'salt',
         'volume_file',
-        )
+    )
 
     def isdir(self):
         '''Returns True if the entry is a directory.'''
@@ -729,7 +731,7 @@ class RarFile(object):
                 # RAR 2.x does not write RAR_BLOCK_ENDARC
                 if h.flags & RAR_FILE_SPLIT_AFTER:
                     more_vols = 1
-                    # RAR 2.x does not set RAR_MAIN_FIRSTVOLUME
+                # RAR 2.x does not set RAR_MAIN_FIRSTVOLUME
                 if volume == 0 and h.flags & RAR_FILE_SPLIT_BEFORE:
                     raise NeedFirstVolume("Need to start from first volume")
 
@@ -950,7 +952,7 @@ class RarFile(object):
                 pos += S_COMMENT_HDR.size
                 data = hdata[pos : pos_next]
                 cmt = rar_decompress(ver, meth, data, declen, sflags,
-                    crc, self._password)
+                                     crc, self._password)
                 if not self._crc_check:
                     h.comment = self._decode_comment(cmt)
                 elif crc32(cmt) & 0xFFFF == crc:
@@ -1073,7 +1075,7 @@ class RarFile(object):
 
         # decompress
         cmt = rar_decompress(inf.extract_version, inf.compress_type, data,
-            inf.file_size, inf.flags, inf.CRC, psw, inf.salt)
+                             inf.file_size, inf.flags, inf.CRC, psw, inf.salt)
 
         # check crc
         if self._crc_check:
@@ -1668,7 +1670,7 @@ def rar_decompress(vers, meth, data, declen=0, flags=0, crc=0, psw=None, salt=No
     date = 0
     mode = 0x20
     fhdr = S_FILE_HDR.pack(len(data), declen, RAR_OS_MSDOS, crc,
-        date, vers, meth, len(fname), mode)
+                           date, vers, meth, len(fname), mode)
     fhdr += fname
     if flags & RAR_FILE_SALT:
         if not salt:
@@ -1757,8 +1759,15 @@ def custom_popen(cmd):
         creationflags = 0x08000000 # CREATE_NO_WINDOW
 
     # run command
-    p = Popen(cmd, bufsize = 0, stdout = PIPE, stdin = PIPE, stderr = STDOUT,
-        creationflags = creationflags)
+    try:
+        p = Popen(cmd, bufsize = 0,
+                  stdout = PIPE, stdin = PIPE, stderr = STDOUT,
+                  creationflags = creationflags)
+    except OSError:
+        ex = sys.exc_info()[1]
+        if ex.errno == errno.ENOENT:
+            raise RarExecError("Unrar not installed? (rarfile.UNRAR_TOOL=%r)" % UNRAR_TOOL)
+        raise
     return p
 
 def check_returncode(p, out):
@@ -1770,9 +1779,9 @@ def check_returncode(p, out):
 
     # map return code to exception class
     errmap = [None,
-              RarWarning, RarFatalError, RarCRCError, RarLockedArchiveError,
-              RarWriteError, RarOpenError, RarUserError, RarMemoryError,
-              RarCreateError] # codes from rar.txt
+        RarWarning, RarFatalError, RarCRCError, RarLockedArchiveError,
+        RarWriteError, RarOpenError, RarUserError, RarMemoryError,
+        RarCreateError, RarNoFilesError] # codes from rar.txt
     if code > 0 and code < len(errmap):
         exc = errmap[code]
     elif code == 255:
