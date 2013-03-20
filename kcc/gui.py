@@ -96,7 +96,7 @@ class MainWindow:
             'Bmangastyle': IntVar(None, 0),
             'Cnopanelviewhq': IntVar(None, 0),
             'Dimage_preprocess': IntVar(None, 0),
-            'Enotquantize': IntVar(None, 0),
+            'Eforcepng': IntVar(None, 0),
             'Fimage_gamma': DoubleVar(None, 0.0),
             'Gimage_upscale': IntVar(None, 0),
             'Himage_stretch': IntVar(None, 0),
@@ -110,7 +110,7 @@ class MainWindow:
             'Bmangastyle': "Manga mode",
             'Cnopanelviewhq': "Disable high quality Panel View",
             'Dimage_preprocess': "Disable image optimizations",
-            'Enotquantize': "Disable image quantization",
+            'Eforcepng': "Create PNG files instead JPEG",
             'Fimage_gamma': "Custom gamma correction",
             'Gimage_upscale': "Allow image upscaling",
             'Himage_stretch': "Stretch images",
@@ -168,8 +168,8 @@ class MainWindow:
             argv.append("--nopanelviewhq")
         if self.options['Dimage_preprocess'].get() == 1:
             argv.append("--noprocessing")
-        if self.options['Enotquantize'].get() == 1:
-            argv.append("--nodithering")
+        if self.options['Eforcepng'].get() == 1:
+            argv.append("--forcepng")
         if self.options['Fimage_gamma'].get() != 0.0:
             argv.append("--gamma")
             argv.append(self.options['Fimage_gamma'].get())
