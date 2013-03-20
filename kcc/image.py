@@ -113,15 +113,15 @@ class ComicPage:
             raise RuntimeError('Cannot read image file %s' % source)
         self.image = self.image.convert('RGB')
 
-    def saveToDir(self, targetdir, notquantize):
+    def saveToDir(self, targetdir, forcepng):
         filename = os.path.basename(self.origFileName)
         try:
             self.image = self.image.convert('L')    # convert to grayscale
             os.remove(os.path.join(targetdir, filename))
-            if notquantize:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + ".jpg"), "JPEG")
-            else:
+            if forcepng:
                 self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + ".png"), "PNG")
+            else:
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + ".jpg"), "JPEG", quality=95)
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
