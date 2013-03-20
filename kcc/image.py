@@ -121,7 +121,7 @@ class ComicPage:
             if forcepng:
                 self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + ".png"), "PNG")
             else:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + ".jpg"), "JPEG", quality=95)
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + ".jpg"), "JPEG")
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
