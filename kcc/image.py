@@ -20,7 +20,7 @@ __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
 
 import os
-from PIL import Image, ImageOps, ImageDraw, ImageStat
+from PIL import Image, ImageOps, ImageStat
 
 
 class ImageFlags:
@@ -77,20 +77,22 @@ class ProfileData:
     ]
 
     Profiles = {
-        'K1': ("Kindle", (600, 800), Palette4, 1.8),
-        'K2': ("Kindle 2", (600, 800), Palette15, 1.8),
-        'K3': ("Kindle 3/Keyboard", (600, 800), Palette16, 1.8),
-        'K4': ("Kindle 4/NT/Touch", (600, 800), Palette16, 1.8),
-        'KHD': ("Kindle Paperwhite", (758, 1024), Palette16, 1.8),
-        'KDX': ("Kindle DX", (824, 1200), Palette15, 1.8),
-        'KDXG': ("Kindle DXG", (824, 1200), Palette16, 1.8)
+        'K1': ("Kindle 1", (600, 800), Palette4, 1.8, (900, 1200)),
+        'K2': ("Kindle 2", (600, 800), Palette15, 1.8, (900, 1200)),
+        'K3': ("Kindle Keyboard", (600, 800), Palette16, 1.8, (900, 1200)),
+        'K4NT': ("Kindle Non-Touch", (600, 800), Palette16, 1.8, (900, 1200)),
+        'K4T': ("Kindle Touch", (600, 800), Palette16, 1.8, (900, 1200)),
+        'KHD': ("Kindle Paperwhite", (758, 1024), Palette16, 1.8, (1137, 1536)),
+        'KDX': ("Kindle DX", (824, 1200), Palette15, 1.8, (1236, 1800)),
+        'KDXG': ("Kindle DXG", (824, 1200), Palette16, 1.8, (1236, 1800))
     }
 
     ProfileLabels = {
-        "Kindle": 'K1',
+        "Kindle 1": 'K1',
         "Kindle 2": 'K2',
         "Kindle 3/Keyboard": 'K3',
-        "Kindle 4/NT/Touch": 'K4',
+        "Kindle 4/Non-Touch": 'K4NT',
+        "Kindle 4/Touch": 'K4T',
         "Kindle Paperwhite": 'KHD',
         "Kindle DX": 'KDX',
         "Kindle DXG": 'KDXG'
@@ -101,7 +103,7 @@ class ComicPage:
     def __init__(self, source, device):
         try:
             self.profile = device
-            self.profile_label, self.size, self.palette, self.gamma = ProfileData.Profiles[device]
+            self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = ProfileData.Profiles[device]
         except KeyError:
             raise RuntimeError('Unexpected output device %s' % device)
         try:
@@ -141,46 +143,48 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False):
+    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False,
+                    landscapeMode=False, noPanelViewHQ=False):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
         else:
             fill = 'white'
+        if noPanelViewHQ:
+            size = (self.size[0], self.size[1])
+        else:
+            size = (self.panelviewsize[0], self.panelviewsize[1])
+        if isSplit and landscapeMode:
+            upscale = True
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
-                if isSplit and (self.profile == 'K4' or self.profile == 'KHD'):
-                    borderw = (self.size[0] - self.image.size[0])
-                    borderh = (self.size[1] - self.image.size[1]) / 2
-                    self.image = ImageOps.expand(self.image, border=(0, borderh), fill=fill)
-                    tempImg = Image.new(self.image.mode, (self.image.size[0] + borderw, self.image.size[1]), fill)
-                    if toRight:
-                        tempImg.paste(self.image, (borderw, 0))
-                    else:
-                        tempImg.paste(self.image, (0, 0))
-                    self.image = tempImg
-                else:
-                    borderw = (self.size[0] - self.image.size[0]) / 2
-                    borderh = (self.size[1] - self.image.size[1]) / 2
-                    self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
+                borderw = (self.size[0] - self.image.size[0]) / 2
+                borderh = (self.size[1] - self.image.size[1]) / 2
+                self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
                 return self.image
             else:
-                method = Image.NEAREST
-
+                method = Image.BILINEAR
         if stretch:  # if stretching call directly resize() without other considerations.
-            self.image = self.image.resize(self.size, method)
+            self.image = self.image.resize(size, method)
             return self.image
-
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
-            diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-            if isSplit and (self.profile == 'K4' or self.profile == 'KHD'):
-                diff = 2
-            self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
+            if isSplit and landscapeMode:
+                diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
+                self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
+                tempImg = Image.new(self.image.mode, (self.image.size[0] + diff, self.image.size[1]), fill)
+                if toRight:
+                    tempImg.paste(self.image, (diff, 0))
+                else:
+                    tempImg.paste(self.image, (0, 0))
+                self.image = tempImg
+            else:
+                diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
+                self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
             self.image = ImageOps.expand(self.image, border=(0, diff / 2), fill=fill)
-        self.image = ImageOps.fit(self.image, self.size, method=method, centering=(0.5, 0.5))
+        self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
         return self.image
 
     def splitPage(self, targetdir, righttoleft=False, rotate=False):
@@ -219,29 +223,6 @@ class ComicPage:
                 return fileone, filetwo
         else:
             return None
-
-    def frameImage(self):
-        foreground = tuple(self.palette[:3])
-        background = tuple(self.palette[-3:])
-        widthDev, heightDev = self.size
-        widthImg, heightImg = self.image.size
-        pastePt = (
-            max(0, (widthDev - widthImg) / 2),
-            max(0, (heightDev - heightImg) / 2)
-        )
-        corner1 = (
-            pastePt[0] - 1,
-            pastePt[1] - 1
-        )
-        corner2 = (
-            pastePt[0] + widthImg + 1,
-            pastePt[1] + heightImg + 1
-        )
-        imageBg = Image.new(self.image.mode, self.size, background)
-        imageBg.paste(self.image, pastePt)
-        draw = ImageDraw.Draw(imageBg)
-        draw.rectangle([corner1, corner2], outline=foreground)
-        self.image = imageBg
 
     def cutPageNumber(self):
         widthImg, heightImg = self.image.size
@@ -335,37 +316,60 @@ class ComicPage:
         #    print "New size: %sx%s"%(self.image.size[0],self.image.size[1])
         return self.image
 
-    def addProgressbar(self, file_number, files_totalnumber, size, howoften):
-        if file_number // howoften != float(file_number) / howoften:
-            return self.image
-        white = (255, 255, 255)
-        black = (0, 0, 0)
-        widthDev, heightDev = size
-        widthImg, heightImg = self.image.size
-        pastePt = (
-            max(0, (widthDev - widthImg) / 2),
-            max(0, (heightDev - heightImg) / 2)
-        )
-        imageBg = Image.new('RGB', size, white)
-        imageBg.paste(self.image, pastePt)
-        self.image = imageBg
-        widthImg, heightImg = self.image.size
-        draw = ImageDraw.Draw(self.image)
-        #Black rectangle
-        draw.rectangle([(0, heightImg - 3), (widthImg, heightImg)], outline=black, fill=black)
-        #White rectangle
-        draw.rectangle([(widthImg * file_number / files_totalnumber, heightImg - 3), (widthImg - 1, heightImg)],
-                       outline=black, fill=white)
-        #Making notches
-        for i in range(1, 10):
-            if i <= (10 * file_number / files_totalnumber):
-                notch_colour = white  # White
-            else:
-                notch_colour = black  # Black
-            draw.line([(widthImg * float(i) / 10, heightImg - 3), (widthImg * float(i) / 10, heightImg)],
-                      fill=notch_colour)
-            #The 50%
-            if i == 5:
-                draw.rectangle([(widthImg / 2 - 1, heightImg - 5), (widthImg / 2 + 1, heightImg)],
-                               outline=black, fill=notch_colour)
-        return self.image
+    # def addProgressbar(self, file_number, files_totalnumber, size, howoften):
+    #     if file_number // howoften != float(file_number) / howoften:
+    #         return self.image
+    #     white = (255, 255, 255)
+    #     black = (0, 0, 0)
+    #     widthDev, heightDev = size
+    #     widthImg, heightImg = self.image.size
+    #     pastePt = (
+    #         max(0, (widthDev - widthImg) / 2),
+    #         max(0, (heightDev - heightImg) / 2)
+    #     )
+    #     imageBg = Image.new('RGB', size, white)
+    #     imageBg.paste(self.image, pastePt)
+    #     self.image = imageBg
+    #     widthImg, heightImg = self.image.size
+    #     draw = ImageDraw.Draw(self.image)
+    #     #Black rectangle
+    #     draw.rectangle([(0, heightImg - 3), (widthImg, heightImg)], outline=black, fill=black)
+    #     #White rectangle
+    #     draw.rectangle([(widthImg * file_number / files_totalnumber, heightImg - 3), (widthImg - 1, heightImg)],
+    #                    outline=black, fill=white)
+    #     #Making notches
+    #     for i in range(1, 10):
+    #         if i <= (10 * file_number / files_totalnumber):
+    #             notch_colour = white  # White
+    #         else:
+    #             notch_colour = black  # Black
+    #         draw.line([(widthImg * float(i) / 10, heightImg - 3), (widthImg * float(i) / 10, heightImg)],
+    #                   fill=notch_colour)
+    #         #The 50%
+    #         if i == 5:
+    #             draw.rectangle([(widthImg / 2 - 1, heightImg - 5), (widthImg / 2 + 1, heightImg)],
+    #                            outline=black, fill=notch_colour)
+    #     return self.image
+    #
+    # def frameImage(self):
+    #     foreground = tuple(self.palette[:3])
+    #     background = tuple(self.palette[-3:])
+    #     widthDev, heightDev = self.size
+    #     widthImg, heightImg = self.image.size
+    #     pastePt = (
+    #         max(0, (widthDev - widthImg) / 2),
+    #         max(0, (heightDev - heightImg) / 2)
+    #     )
+    #     corner1 = (
+    #         pastePt[0] - 1,
+    #         pastePt[1] - 1
+    #     )
+    #     corner2 = (
+    #         pastePt[0] + widthImg + 1,
+    #         pastePt[1] + heightImg + 1
+    #     )
+    #     imageBg = Image.new(self.image.mode, self.size, background)
+    #     imageBg.paste(self.image, pastePt)
+    #     draw = ImageDraw.Draw(imageBg)
+    #     draw.rectangle([corner1, corner2], outline=foreground)
+    #     self.image = imageBg
