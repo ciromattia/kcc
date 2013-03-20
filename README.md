@@ -1,19 +1,14 @@
 # KCC
 
 `KCC` (a.k.a. `KindleComicConverter`) is a Python app to convert comic files or folders to ePub or Panel View MOBI.  
-It was initally developed for Kindle but as of version 2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
+It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
 actually a comic 2 epub converter that every ereader owner can happily use**_.  
 
-It also optimizes comic images by:
-- Enhancing contrast.
-- Cutting page numbering.
-- Cropping white borders.
-- Resizing larger images to device's native resolution.
-- Quantizing images to device's palette.
+It can also optionally optimize images by applying a number of transformations.
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:  
-- OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.7.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.7.zip)
+- OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.8.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.8.zip)
 - Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.7.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.7.zip)
 - Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.7.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.7.zip) *(thanks to [AcidWeb](https://github.com/AcidWeb))*
 - Linux: Just download sourcecode and launch `python kcc.py` *(Provided you have Python and Pillow installed)*
@@ -52,10 +47,11 @@ Options:
   --version             show program's version number and exit
   -h, --help            show this help message and exit
   -p PROFILE, --profile=PROFILE
-                        Device profile (Choose one among K1, K2, K3, K4, KDX, KDXG or KHD) [Default=KHD]
+                        Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG or KHD) [Default=KHD]
   -t TITLE, --title=TITLE
                         Comic title [Default=filename]
   -m, --manga-style     Manga style (Right-to-left reading and splitting) [Default=False]
+  --nopanelviewhq       Disable high quality Panel View [Default=False]
   --noprocessing        Do not apply image preprocessing (Page splitting and optimizations) [Default=True]
   --nodithering         Disable image quantization [Default=False]
   --gamma=GAMMA         Apply gamma correction to linearize the image [Default=Auto]
@@ -119,6 +115,14 @@ The app relies and includes the following scripts/binaries:
         Do not call kindlegen if source epub is bigger than 320MB (#17)  
         Get filetype from magic number (#14)   
         PDF conversion works again  
+  - 2.8: updated rarfile library  
+        Panel View support + HQ support (#36) - new option: --nopanelviewhq
+        Split profiles for K4NT and K4T  
+        Rewrite of Landscape Mode support (huge readability improvement for KPW)  
+        Upscale use now BILINEAR method  
+        Added generic CSS file  
+        Optimized archive extraction for zip/rar files (#40) 
+        
 
 ## COPYRIGHT
 
