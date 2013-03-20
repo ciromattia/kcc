@@ -38,6 +38,7 @@ class CBxArchive:
 
     def extractCBZ(self, targetdir):
         cbzFile = zipfile.ZipFile(self.origFileName)
+        filelist = []
         for f in cbzFile.namelist():
             if f.startswith('__MACOSX') or f.endswith('.DS_Store'):
                 pass    # skip MacOS special files
@@ -47,10 +48,12 @@ class CBxArchive:
                 except:
                     pass  # the dir exists so we are going to extract the images only.
             else:
-                cbzFile.extract(f, targetdir)
+                filelist.append(f)
+        cbzFile.extractall(targetdir, filelist)
 
     def extractCBR(self, targetdir):
         cbrFile = rarfile.RarFile(self.origFileName)
+        filelist = []
         for f in cbrFile.namelist():
             if f.startswith('__MACOSX') or f.endswith('.DS_Store'):
                 pass  # skip MacOS special files
@@ -60,9 +63,11 @@ class CBxArchive:
                 except:
                     pass  # the dir exists so we are going to extract the images only.
             else:
-                cbrFile.extract(f, targetdir)
+                filelist.append(f)
+        cbrFile.extractall(targetdir, filelist)
 
     def extract(self, targetdir):
+        print "\n" + targetdir + "\n"
         if self.compressor == 'rar':
             self.extractCBR(targetdir)
         elif self.compressor == 'zip':
