@@ -53,7 +53,7 @@ Options:
   -m, --manga-style     Manga style (Right-to-left reading and splitting) [Default=False]
   --nopanelviewhq       Disable high quality Panel View [Default=False]
   --noprocessing        Do not apply image preprocessing (Page splitting and optimizations) [Default=True]
-  --nodithering         Disable image quantization [Default=False]
+  --forcepng            Create PNG files instead JPEG (For non-Kindle devices) [Default=False]
   --gamma=GAMMA         Apply gamma correction to linearize the image [Default=Auto]
   --upscale             Resize images smaller than device's resolution [Default=False]
   --stretch             Stretch images to device's resolution [Default=False]
