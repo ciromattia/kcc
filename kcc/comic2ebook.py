@@ -276,6 +276,10 @@ def getImageFileName(imgfile):
     if filename[0].startswith('.') or\
             (filename[1].lower() != '.png' and
              filename[1].lower() != '.jpg' and
+             filename[1].lower() != '.gif' and
+             filename[1].lower() != '.tif' and
+             filename[1].lower() != '.tiff' and
+             filename[1].lower() != '.bmp' and
              filename[1].lower() != '.jpeg'):
         return None
     return filename
