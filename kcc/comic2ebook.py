@@ -556,6 +556,8 @@ def main(argv=None):
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                       help="Manga style (Right-to-left reading and splitting) [Default=False]")
+    parser.add_option("-c", "--cbz-output", action="store_true", dest="cbzoutput", default=False,
+                      help="Outputs a CBZ archive and does not generate EPUB")
     parser.add_option("--nopanelviewhq", action="store_true", dest="nopanelviewhq", default=False,
                       help="Disable high quality Panel View [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
@@ -578,7 +580,7 @@ def main(argv=None):
     parser.add_option("--nocutpagenumbers", action="store_false", dest="cutpagenumbers", default=True,
                       help="Do not try to cut page numbering on images [Default=True]")
     parser.add_option("-o", "--output", action="store", dest="output", default=None,
-                      help="Output generated EPUB to specified directory or file")
+                      help="Output generated file (EPUB or CBZ) to specified directory or file")
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="Verbose output [Default=False]")
     options, args = parser.parse_args(argv)
@@ -593,25 +595,40 @@ def main(argv=None):
     if options.imgproc:
         print "Processing images..."
         dirImgProcess(path + "/OEBPS/Images/")
-    print "\nCreating ePub structure..."
-    genEpubStruct(path)
-    # actually zip the ePub
-    if options.output is not None:
-        if options.output.endswith('.epub'):
-            epubpath = os.path.abspath(options.output)
-        elif os.path.isdir(args[0]):
-            epubpath = os.path.abspath(options.output) + "/" + os.path.basename(args[0]) + '.epub'
-        else:
-            epubpath = os.path.abspath(options.output) + "/" \
-                + os.path.basename(os.path.splitext(args[0])[0]) + '.epub'
-    elif os.path.isdir(args[0]):
-        epubpath = args[0] + '.epub'
+    if options.cbzoutput:
+        # if CBZ output wanted, compress all images and return filepath
+        print "\nCreating CBZ file..."
+        filepath = getOutputFilename(args[0], options.output, '.cbz')
+        make_archive(path + '_comic', 'zip', path + '/OEBPS/Images')
     else:
-        epubpath = os.path.splitext(args[0])[0] + '.epub'
-    make_archive(path + '_comic', 'zip', path)
-    move(path + '_comic.zip', epubpath)
+        print "\nCreating ePub structure..."
+        genEpubStruct(path)
+        # actually zip the ePub
+        filepath = getOutputFilename(args[0], options.output, '.epub')
+        make_archive(path + '_comic', 'zip', path)
+    move(path + '_comic.zip', filepath)
     rmtree(path)
-    return epubpath
+    return filepath
+
+
+def getOutputFilename(srcpath, wantedname, ext):
+    if not ext.startswith('.'):
+        ext = '.' + ext
+    if wantedname is not None:
+        if wantedname.endswith(ext):
+            filename = os.path.abspath(wantedname)
+        elif os.path.isdir(srcpath):
+            filename = os.path.abspath(options.output) + "/" + os.path.basename(srcpath) + ext
+        else:
+            filename = os.path.abspath(options.output) + "/" \
+                       + os.path.basename(os.path.splitext(srcpath)[0]) + ext
+    elif os.path.isdir(srcpath):
+        filename = srcpath + ext
+    else:
+        filename = os.path.splitext(srcpath)[0] + ext
+    if os.path.isfile(filename):
+        filename = os.path.splitext(filename)[0] + '_kcc' + ext
+    return filename
 
 
 def checkOptions():

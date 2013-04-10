@@ -93,31 +93,33 @@ class MainWindow:
 
         self.options = {
             'Aepub_only': IntVar(None, 0),
-            'Bmangastyle': IntVar(None, 0),
-            'Cnopanelviewhq': IntVar(None, 0),
-            'Dimage_preprocess': IntVar(None, 0),
-            'Eforcepng': IntVar(None, 0),
-            'Fimage_gamma': DoubleVar(None, 0.0),
-            'Gimage_upscale': IntVar(None, 0),
-            'Himage_stretch': IntVar(None, 0),
-            'Iblack_borders': IntVar(None, 0),
-            'Jrotate': IntVar(None, 0),
-            'Knosplitrotate': IntVar(None, 0),
-            'Lcut_page_numbers': IntVar(None, 0)
+            'Bcbz_only': IntVar(None, 0),
+            'Cmangastyle': IntVar(None, 0),
+            'Dnopanelviewhq': IntVar(None, 0),
+            'Eimage_preprocess': IntVar(None, 0),
+            'Fforcepng': IntVar(None, 0),
+            'Gimage_gamma': DoubleVar(None, 0.0),
+            'Himage_upscale': IntVar(None, 0),
+            'Iimage_stretch': IntVar(None, 0),
+            'Jblack_borders': IntVar(None, 0),
+            'Krotate': IntVar(None, 0),
+            'Lnosplitrotate': IntVar(None, 0),
+            'Mcut_page_numbers': IntVar(None, 0)
         }
         self.optionlabels = {
             'Aepub_only': "Generate EPUB only",
-            'Bmangastyle': "Manga mode",
-            'Cnopanelviewhq': "Disable high quality Panel View",
-            'Dimage_preprocess': "Disable image optimizations",
-            'Eforcepng': "Create PNG files instead JPEG",
-            'Fimage_gamma': "Custom gamma correction",
-            'Gimage_upscale': "Allow image upscaling",
-            'Himage_stretch': "Stretch images",
-            'Iblack_borders': "Use black borders",
-            'Jrotate': "Rotate images instead splitting them",
-            'Knosplitrotate': "Disable splitting and rotation",
-            'Lcut_page_numbers': "Disable page numbers cutting"
+            'Bcbz_only': "Generate CBZ (skip EPUB/Mobi generation)",
+            'Cmangastyle': "Manga mode",
+            'Dnopanelviewhq': "Disable high quality Panel View",
+            'Eimage_preprocess': "Disable image optimizations",
+            'Fforcepng': "Create PNG files instead of JPEG",
+            'Gimage_gamma': "Custom gamma correction",
+            'Himage_upscale': "Allow image upscaling",
+            'Iimage_stretch': "Stretch images",
+            'Jblack_borders': "Use black borders (instead of white ones)",
+            'Krotate': "Rotate images (instead of splitting them)",
+            'Lnosplitrotate': "Disable both splitting and rotation",
+            'Mcut_page_numbers': "Disable page numbers cutting"
         }
         self.optionsButtons = {}
         for key in sorted(self.options):
@@ -162,28 +164,30 @@ class MainWindow:
             return
         profilekey = ProfileData.ProfileLabels[self.profile.get()]
         argv = ["-p", profilekey]
-        if self.options['Bmangastyle'].get() == 1:
+        if self.options['Bcbz_only'].get() == 1:
+            argv.append("-c")
+        if self.options['Cmangastyle'].get() == 1:
             argv.append("-m")
-        if self.options['Cnopanelviewhq'].get() == 1:
+        if self.options['Dnopanelviewhq'].get() == 1:
             argv.append("--nopanelviewhq")
-        if self.options['Dimage_preprocess'].get() == 1:
+        if self.options['Eimage_preprocess'].get() == 1:
             argv.append("--noprocessing")
-        if self.options['Eforcepng'].get() == 1:
+        if self.options['Fforcepng'].get() == 1:
             argv.append("--forcepng")
-        if self.options['Fimage_gamma'].get() != 0.0:
+        if self.options['Gimage_gamma'].get() != 0.0:
             argv.append("--gamma")
-            argv.append(self.options['Fimage_gamma'].get())
-        if self.options['Gimage_upscale'].get() == 1:
+            argv.append(self.options['Gimage_gamma'].get())
+        if self.options['Himage_upscale'].get() == 1:
             argv.append("--upscale")
-        if self.options['Himage_stretch'].get() == 1:
+        if self.options['Iimage_stretch'].get() == 1:
             argv.append("--stretch")
-        if self.options['Iblack_borders'].get() == 1:
+        if self.options['Jblack_borders'].get() == 1:
             argv.append("--blackborders")
-        if self.options['Jrotate'].get() == 1:
+        if self.options['Krotate'].get() == 1:
             argv.append("--rotate")
-        if self.options['Knosplitrotate'].get() == 1:
+        if self.options['Lnosplitrotate'].get() == 1:
             argv.append("--nosplitrotate")
-        if self.options['Lcut_page_numbers'].get() == 1:
+        if self.options['Mcut_page_numbers'].get() == 1:
             argv.append("--nocutpagenumbers")
         errors = False
         left_files = len(self.filelist)
@@ -207,7 +211,7 @@ class MainWindow:
                                                     (subargv[-1], str(err), traceback.format_tb(traceback_)))
                 errors = True
                 continue
-            if self.options['Aepub_only'].get() == 0:
+            if self.options['Aepub_only'].get() == 0 and self.options['Bcbz_only'].get() == 0:
                 try:
                     if os.path.getsize(epub_path) > 314572800:
                         # do not call kindlegen if source is bigger than 300MB

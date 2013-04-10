@@ -121,7 +121,9 @@ The app relies and includes the following scripts/binaries:
         Rewrite of Landscape Mode support (huge readability improvement for KPW)  
         Upscale use now BILINEAR method  
         Added generic CSS file  
-        Optimized archive extraction for zip/rar files (#40) 
+        Optimized archive extraction for zip/rar files (#40)  
+  - 2.9: Added support for generating a plain CBZ (skipping all the EPUB/Mobi generation) (#45)  
+        Prevent output file overwriting the source one: if a duplicate name is detected, append _kcc to the name
         
 
 ## COPYRIGHT
