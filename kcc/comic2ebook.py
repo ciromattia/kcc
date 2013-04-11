@@ -128,7 +128,7 @@ def buildNCX(dstdir, title, chapters):
     f = open(ncxfile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\" ",
-                  "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\n",
+                  "\"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\n",
                   "<ncx version=\"2005-1\" xml:lang=\"en-US\" xmlns=\"http://www.daisy.org/z3986/2005/ncx/\">\n",
                   "<head>\n",
                   "<meta name=\"dtb:uid\" content=\"015ffaec-9340-42f8-b163-a0c5ab7d0611\"/>\n",
@@ -356,6 +356,7 @@ def genEpubStruct(path):
     chapterlist = []
     cover = None
     _, deviceres, _, _, panelviewsize = image.ProfileData.Profiles[options.profile]
+    slugifyFileTree(path)
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w')
     #DON'T COMPRESS CSS. KINDLE WILL FAIL TO PARSE IT.
@@ -533,6 +534,29 @@ def getWorkFolder(afile):
     move(path, path + "_temp")
     move(path + "_temp", os.path.join(path, 'OEBPS', 'Images'))
     return path
+
+
+def slugify(value):
+    """
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+    """
+    import unicodedata
+    value = unicodedata.normalize('NFKD', unicode(value)).encode('ascii', 'ignore')
+    value = re.sub('[^\w\s-]', '', value).strip()
+    value = re.sub('[-\s]+', '-', value)
+    return value
+
+
+def slugifyFileTree(filetree):
+    for root, dirs, files in os.walk(filetree):
+        for name in files:
+            splitname = os.path.splitext(name)
+            os.rename(os.path.join(root, name),
+                      os.path.join(root, slugify(splitname[0]) + splitname[1]))
+        for name in dirs:
+            slugifyFileTree(os.path.join(root, name))
+            os.rename(os.path.join(root, name), os.path.join(root, slugify(name)))
 
 
 def Copyright():
