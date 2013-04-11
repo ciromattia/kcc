@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012 Ciro Mattia Gonano <ciromattia@gmail.com>
 #
@@ -546,7 +547,7 @@ def slugify(value):
     and converts spaces to hyphens.
     """
     import unicodedata
-    value = unicodedata.normalize('NFKD', unicode(value, 'UTF-8')).encode('ascii', 'ignore')
+    value = unicodedata.normalize('NFKD', unicode(value, 'latin1')).encode('ascii', 'ignore')
     value = re.sub('[^\w\s\.-]', '', value).strip().lower()
     value = re.sub('[-\.\s]+', '-', value)
     value = re.sub(r'([0-9]+)', r'00000\1', value)
@@ -567,7 +568,6 @@ def sanitizeTree(filetree):
             if name.startswith('.'):
                 os.remove(os.path.join(root, name))
             else:
-                sanitizeTree(os.path.join(root, name))
                 os.rename(os.path.join(root, name), os.path.join(root, slugify(name)))
 
 
@@ -578,7 +578,6 @@ def Copyright():
 
 def Usage():
     print "Generates HTML, NCX and OPF for a Comic ebook from a bunch of images."
-    print "Optimized for creating MOBI files to be read on Kindle Paperwhite."
     parser.print_help()
 
 
