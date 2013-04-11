@@ -1,6 +1,6 @@
 # rarfile.py
 #
-# Copyright (c) 2005-2012  Marko Kreen <markokr@gmail.com>
+# Copyright (c) 2005-2013  Marko Kreen <markokr@gmail.com>
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -17,7 +17,7 @@
 r"""RAR archive reader.
 
 This is Python module for Rar archive reading.  The interface
-is made as zipfile like as possible.
+is made as :mod:`zipfile`-like as possible.
 
 Basic logic:
  - Parse archive structure with Python.
@@ -34,7 +34,17 @@ Example::
     for f in rf.infolist():
         print f.filename, f.file_size
         if f.filename == 'README':
-            print rf.read(f)
+            print(rf.read(f))
+
+Archive files can also be accessed via file-like object returned
+by :meth:`RarFile.open`::
+
+    import rarfile
+
+    with rarfile.RarFile('archive.rar') as rf:
+        with rf.open('README') as f:
+            for ln in f:
+                print(ln.strip())
 
 There are few module-level parameters to tune behaviour,
 here they are with defaults, and reason to change it::
@@ -64,7 +74,7 @@ For more details, refer to source.
 
 """
 
-__version__ = '2.5'
+__version__ = '2.6'
 
 # export only interesting items
 __all__ = ['is_rarfile', 'RarInfo', 'RarFile', 'RarExtFile']
@@ -148,45 +158,45 @@ except ImportError:
 ## Module configuration.  Can be tuned after importing.
 ##
 
-# default fallback charset
+#: default fallback charset
 DEFAULT_CHARSET = "windows-1252"
 
-# list of encodings to try, with fallback to DEFAULT_CHARSET if none succeed
+#: list of encodings to try, with fallback to DEFAULT_CHARSET if none succeed
 TRY_ENCODINGS = ('utf8', 'utf-16le')
 
-# 'unrar', 'rar' or full path to either one
+#: 'unrar', 'rar' or full path to either one
 UNRAR_TOOL = "unrar"
 
-# Command line args to use for opening file for reading.
+#: Command line args to use for opening file for reading.
 OPEN_ARGS = ('p', '-inul')
 
-# Command line args to use for extracting file to disk.
+#: Command line args to use for extracting file to disk.
 EXTRACT_ARGS = ('x', '-y', '-idq')
 
-# args for testrar()
+#: args for testrar()
 TEST_ARGS = ('t', '-idq')
 
-# whether to speed up decompression by using tmp archive
+#: whether to speed up decompression by using tmp archive
 USE_EXTRACT_HACK = 1
 
-# limit the filesize for tmp archive usage
+#: limit the filesize for tmp archive usage
 HACK_SIZE_LIMIT = 20*1024*1024
 
-# whether to parse file/archive comments.
+#: whether to parse file/archive comments.
 NEED_COMMENTS = 1
 
-# whether to convert comments to unicode strings
+#: whether to convert comments to unicode strings
 UNICODE_COMMENTS = 0
 
-# When RAR is corrupt, stopping on bad header is better
-# On unknown/misparsed RAR headers reporting is better
+#: When RAR is corrupt, stopping on bad header is better
+#: On unknown/misparsed RAR headers reporting is better
 REPORT_BAD_HEADER = 0
 
-# Convert RAR time tuple into datetime() object
+#: Convert RAR time tuple into datetime() object
 USE_DATETIME = 0
 
-# Separator for path name components.  RAR internally uses '\\'.
-# Use '/' to be similar with zipfile.
+#: Separator for path name components.  RAR internally uses '\\'.
+#: Use '/' to be similar with zipfile.
 PATH_SEP = '\\'
 
 ##
@@ -337,49 +347,57 @@ def is_rarfile(fn):
 
 
 class RarInfo(object):
-    '''An entry in rar archive.
-    
-    @ivar filename:
-        File name with relative path.
-        Default path separator is '/', to change set rarfile.PATH_SEP.
-        Always unicode string.
-    @ivar date_time:
-        Modification time, tuple of (year, month, day, hour, minute, second).
-        Or datetime() object if USE_DATETIME is set.
-    @ivar file_size:
-        Uncompressed size.
-    @ivar compress_size:
-        Compressed size.
-    @ivar compress_type:
-        Compression method: 0x30 - 0x35.
-    @ivar extract_version:
-        Minimal Rar version needed for decompressing.
-    @ivar host_os:
-        Host OS type, one of RAR_OS_* constants.
-    @ivar mode:
-        File attributes. May be either dos-style or unix-style, depending on host_os.
-    @ivar CRC:
-        CRC-32 of uncompressed file, unsigned int.
-    @ivar volume:
-        Volume nr, starting from 0.
-    @ivar volume_file:
-        Volume file name, where file starts.
-    @ivar type:
-        One of RAR_BLOCK_* types.  Only entries with type==RAR_BLOCK_FILE are shown in .infolist().
-    @ivar flags:
-        For files, RAR_FILE_* bits.
-    @ivar comment:
-        File comment (unicode string or None).
+    r'''An entry in rar archive.
 
-    @ivar mtime:
-        Optional time field: Modification time, with float seconds.
-        Same as .date_time but with more precision.
-    @ivar ctime:
-        Optional time field: creation time, with float seconds.
-    @ivar atime:
-        Optional time field: last access time, with float seconds.
-    @ivar arctime:
-        Optional time field: archival time, with float seconds.
+    :mod:`zipfile`-compatible fields:
+    
+        filename
+            File name with relative path.
+            Default path separator is '\\', to change set rarfile.PATH_SEP.
+            Always unicode string.
+        date_time
+            Modification time, tuple of (year, month, day, hour, minute, second).
+            Or datetime() object if USE_DATETIME is set.
+        file_size
+            Uncompressed size.
+        compress_size
+            Compressed size.
+        CRC
+            CRC-32 of uncompressed file, unsigned int.
+        comment
+            File comment.  Byte string or None.  Use UNICODE_COMMENTS
+            to get automatic decoding to unicode.
+        volume
+            Volume nr, starting from 0.
+
+    RAR-specific fields:
+
+        compress_type
+            Compression method: 0x30 - 0x35.
+        extract_version
+            Minimal Rar version needed for decompressing.
+        host_os
+            Host OS type, one of RAR_OS_* constants.
+        mode
+            File attributes. May be either dos-style or unix-style, depending on host_os.
+        volume_file
+            Volume file name, where file starts.
+        mtime
+            Optional time field: Modification time, with float seconds.
+            Same as .date_time but with more precision.
+        ctime
+            Optional time field: creation time, with float seconds.
+        atime
+            Optional time field: last access time, with float seconds.
+        arctime
+            Optional time field: archival time, with float seconds.
+
+    Internal fields:
+
+        type
+            One of RAR_BLOCK_* types.  Only entries with type==RAR_BLOCK_FILE are shown in .infolist().
+        flags
+            For files, RAR_FILE_* bits.
     '''
 
     __slots__ = (
@@ -433,19 +451,27 @@ class RarInfo(object):
 
 class RarFile(object):
     '''Parse RAR structure, provide access to files in archive.
-
-    @ivar comment:
-        Archive comment (unicode string or None).
     '''
+
+    #: Archive comment.  Byte string or None.  Use UNICODE_COMMENTS
+    #: to get automatic decoding to unicode.
+    comment = None
 
     def __init__(self, rarfile, mode="r", charset=None, info_callback=None, crc_check = True):
         """Open and parse a RAR archive.
         
-        @param rarfile: archive file name
-        @param mode: only 'r' is supported.
-        @param charset: fallback charset to use, if filenames are not already Unicode-enabled.
-        @param info_callback: debug callback, gets to see all archive entries.
-        @param crc_check: set to False to disable CRC checks
+        Parameters:
+
+            rarfile
+                archive file name
+            mode
+                only 'r' is supported.
+            charset
+                fallback charset to use, if filenames are not already Unicode-enabled.
+            info_callback
+                debug callback, gets to see all archive entries.
+            crc_check
+                set to False to disable CRC checks
         """
         self.rarfile = rarfile
         self.comment = None
@@ -457,6 +483,7 @@ class RarFile(object):
         self._needs_password = False
         self._password = None
         self._crc_check = crc_check
+        self._vol_list = []
 
         self._main = None
 
@@ -489,6 +516,14 @@ class RarFile(object):
         '''Return RarInfo objects for all files/directories in archive.'''
         return self._info_list
 
+    def volumelist(self):
+        '''Returns filenames of archive volumes.
+
+        In case of single-volume archive, the list contains
+        just the name of main archive file.
+        '''
+        return self._vol_list
+
     def getinfo(self, fname):
         '''Return RarInfo for file.'''
 
@@ -510,7 +545,8 @@ class RarFile(object):
                 raise NoRarEntry("No such file: "+fname)
 
     def open(self, fname, mode = 'r', psw = None):
-        '''Return open file object, where the data can be read.
+        '''Returns file-like object (:class:`RarExtFile`),
+        from where the data can be read.
         
         The object implements io.RawIOBase interface, so it can
         be further wrapped with io.BufferedReader and io.TextIOWrapper.
@@ -522,9 +558,14 @@ class RarFile(object):
         uncompressed files, on compressed files the seeking is implemented
         by reading ahead and/or restarting the decompression.
 
-        @param fname: file name or RarInfo instance.
-        @param mode: must be 'r'
-        @param psw: password to use for extracting.
+        Parameters:
+
+            fname
+                file name or RarInfo instance.
+            mode
+                must be 'r'
+            psw
+                password to use for extracting.
         '''
 
         if mode != 'r':
@@ -571,8 +612,12 @@ class RarFile(object):
         
         For longer files using .open() may be better idea.
 
-        @param fname: filename or RarInfo instance
-        @param psw: password to use for extracting.
+        Parameters:
+
+            fname
+                filename or RarInfo instance
+            psw
+                password to use for extracting.
         """
 
         f = self.open(fname, 'r', psw)
@@ -593,9 +638,14 @@ class RarFile(object):
     def extract(self, member, path=None, pwd=None):
         """Extract single file into current directory.
         
-        @param member: filename or RarInfo instance
-        @param path: optional destination path
-        @param pwd: optional password to use
+        Parameters:
+
+            member
+                filename or RarInfo instance
+            path
+                optional destination path
+            pwd
+                optional password to use
         """
         if isinstance(member, RarInfo):
             fname = member.filename
@@ -606,9 +656,14 @@ class RarFile(object):
     def extractall(self, path=None, members=None, pwd=None):
         """Extract all files into current directory.
         
-        @param path: optional destination path
-        @param members: optional filename or RarInfo instance list to extract
-        @param pwd: optional password to use
+        Parameters:
+
+            path
+                optional destination path
+            members
+                optional filename or RarInfo instance list to extract
+            pwd
+                optional password to use
         """
         fnlist = []
         if members is not None:
@@ -693,6 +748,7 @@ class RarFile(object):
         more_vols = 0
         endarc = 0
         volfile = self.rarfile
+        self._vol_list = [self.rarfile]
         while 1:
             if endarc:
                 h = None    # don't read past ENDARC
@@ -707,6 +763,7 @@ class RarFile(object):
                     self._fd = fd
                     more_vols = 0
                     endarc = 0
+                    self._vol_list.append(volfile)
                     continue
                 break
             h.volume = volume
@@ -1210,7 +1267,7 @@ class UnicodeFilename:
 
 
 class RarExtFile(RawIOBase):
-    """Base class for 'file-like' object that RarFile.open() returns.
+    """Base class for file-like object that :meth:`RarFile.open` returns.
 
     Provides public methods and common crc checking.
 
@@ -1218,13 +1275,15 @@ class RarExtFile(RawIOBase):
      - no short reads - .read() and .readinfo() read as much as requested.
      - no internal buffer, use io.BufferedReader for that.
 
-    @ivar name:
-      filename of the archive entry.
+    If :mod:`io` module is available (Python 2.6+, 3.x), then this calls
+    will inherit from :class:`io.RawIOBase` class.  This makes line-based
+    access available: :meth:`RarExtFile.readline` and ``for ln in f``.
     """
 
-    def __init__(self, rf, inf):
-        """Fill common fields"""
+    #: Filename of the archive entry
+    name = None
 
+    def __init__(self, rf, inf):
         RawIOBase.__init__(self)
 
         # standard io.* properties
@@ -1325,7 +1384,13 @@ class RarExtFile(RawIOBase):
         return self.inf.file_size - self.remain
 
     def seek(self, ofs, whence = 0):
-        """Seek in data."""
+        """Seek in data.
+        
+        On uncompressed files, the seeking works by actual
+        seeks so it's fast.  On compresses files its slow
+        - forward seeking happends by reading ahead,
+        backwards by re-opening and decompressing from the start.
+        """
 
         # disable crc check when seeking
         self.crc_check = 0
@@ -1374,8 +1439,17 @@ class RarExtFile(RawIOBase):
         """Returns True"""
         return True
 
+    def writable(self):
+        """Returns False.
+        
+        Writing is not supported."""
+        return False
+
     def seekable(self):
-        """Returns True"""
+        """Returns True.
+        
+        Seeking is supported, although it's slow on compressed files.
+        """
         return True
 
     def readall(self):
