@@ -15,7 +15,7 @@ You can find the latest released binary at the following links:
 
 ## INPUT FORMATS
 `kcc` can understand and convert, at the moment, the following file types:
-- PNG, JPG
+- PNG, JPG, GIF, TIFF, BMP
 - Folders
 - CBZ, ZIP
 - CBR, RAR *(With `unrar` executable)*
@@ -125,8 +125,9 @@ The app relies and includes the following scripts/binaries:
   - 2.9: Added support for generating a plain CBZ (skipping all the EPUB/Mobi generation) (#45)  
         Prevent output file overwriting the source one: if a duplicate name is detected, append _kcc to the name  
         Rarfile library updated to 2.6  
+        Added GIF, TIFF and BMP to supported formats (#42)
         Filenames slugifications (#28, #31, #9, #8)
-        
+
 
 ## COPYRIGHT
 
