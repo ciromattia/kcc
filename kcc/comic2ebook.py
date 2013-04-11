@@ -360,7 +360,7 @@ def genEpubStruct(path):
     chapterlist = []
     cover = None
     _, deviceres, _, _, panelviewsize = image.ProfileData.Profiles[options.profile]
-    slugifyFileTree(path)
+    sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w')
     #DON'T COMPRESS CSS. KINDLE WILL FAIL TO PARSE IT.
@@ -540,32 +540,35 @@ def getWorkFolder(afile):
     return path
 
 
-def slugify(value, lower=True, digitpadding=True):
+def slugify(value):
     """
     Normalizes string, converts to lowercase, removes non-alpha characters,
     and converts spaces to hyphens.
     """
     import unicodedata
     value = unicodedata.normalize('NFKD', unicode(value, 'UTF-8')).encode('ascii', 'ignore')
-    value = re.sub('[^\w\s-]', '', value).strip()
-    value = re.sub('[-\s]+', '-', value)
-    if lower:
-        value = value.lower()
-    if digitpadding:
-        value = re.sub(r'([0-9]+)', r'00000\1', value)
-        value = re.sub(r'0*([0-9]{6,})', r'\1', value)
+    value = re.sub('[^\w\s\.-]', '', value).strip().lower()
+    value = re.sub('[-\.\s]+', '-', value)
+    value = re.sub(r'([0-9]+)', r'00000\1', value)
+    value = re.sub(r'0*([0-9]{6,})', r'\1', value)
     return value
 
 
-def slugifyFileTree(filetree):
+def sanitizeTree(filetree):
     for root, dirs, files in os.walk(filetree):
         for name in files:
-            splitname = os.path.splitext(name)
-            os.rename(os.path.join(root, name),
-                      os.path.join(root, slugify(splitname[0]) + splitname[1]))
+            if name.startswith('.'):
+                os.remove(os.path.join(root, name))
+            else:
+                splitname = os.path.splitext(name)
+                os.rename(os.path.join(root, name),
+                          os.path.join(root, slugify(splitname[0]) + splitname[1]))
         for name in dirs:
-            slugifyFileTree(os.path.join(root, name))
-            os.rename(os.path.join(root, name), os.path.join(root, slugify(name, False)))
+            if name.startswith('.'):
+                os.remove(os.path.join(root, name))
+            else:
+                sanitizeTree(os.path.join(root, name))
+                os.rename(os.path.join(root, name), os.path.join(root, slugify(name)))
 
 
 def Copyright():
