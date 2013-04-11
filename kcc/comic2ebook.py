@@ -557,7 +557,7 @@ def slugify(value):
 def sanitizeTree(filetree):
     for root, dirs, files in os.walk(filetree):
         for name in files:
-            if name.startswith('.'):
+            if name.startswith('.') or name.lower() == 'thumbs.db':
                 os.remove(os.path.join(root, name))
             else:
                 splitname = os.path.splitext(name)
