@@ -536,15 +536,20 @@ def getWorkFolder(afile):
     return path
 
 
-def slugify(value):
+def slugify(value, lower=True, digitpadding=True):
     """
     Normalizes string, converts to lowercase, removes non-alpha characters,
     and converts spaces to hyphens.
     """
     import unicodedata
-    value = unicodedata.normalize('NFKD', unicode(value)).encode('ascii', 'ignore')
+    value = unicodedata.normalize('NFKD', unicode(value, 'UTF-8')).encode('ascii', 'ignore')
     value = re.sub('[^\w\s-]', '', value).strip()
     value = re.sub('[-\s]+', '-', value)
+    if lower:
+        value = value.lower()
+    if digitpadding:
+        value = re.sub(r'([0-9]+)', r'00000\1', value)
+        value = re.sub(r'0*([0-9]{6,})', r'\1', value)
     return value
 
 
@@ -556,7 +561,7 @@ def slugifyFileTree(filetree):
                       os.path.join(root, slugify(splitname[0]) + splitname[1]))
         for name in dirs:
             slugifyFileTree(os.path.join(root, name))
-            os.rename(os.path.join(root, name), os.path.join(root, slugify(name)))
+            os.rename(os.path.join(root, name), os.path.join(root, slugify(name, False)))
 
 
 def Copyright():
