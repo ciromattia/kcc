@@ -108,7 +108,7 @@ class MainWindow:
         }
         self.optionlabels = {
             'Aepub_only': "Generate EPUB only",
-            'Bcbz_only': "Generate CBZ (skip EPUB/Mobi generation)",
+            'Bcbz_only': "Generate CBZ only (skip EPUB/Mobi generation)",
             'Cmangastyle': "Manga mode",
             'Dnopanelviewhq': "Disable high quality Panel View",
             'Eimage_preprocess': "Disable image optimizations",

@@ -10,7 +10,7 @@ sys.path.insert(0, 'kcc')
 
 setup(
     name = "KindleComicConverter",
-    version = "2.8",
+    version = "2.9",
     author = "Ciro Mattia Gonano",
     author_email = "ciromattia@gmail.com",
     description = "A tool to convert comics (CBR/CBZ/PDFs/image folders) to MOBI.",

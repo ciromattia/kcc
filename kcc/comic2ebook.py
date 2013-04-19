@@ -17,7 +17,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
-__version__ = '2.8'
+__version__ = '2.9'
 __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
