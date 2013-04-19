@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012 Ciro Mattia Gonano <ciromattia@gmail.com>
 #
@@ -128,7 +129,7 @@ def buildNCX(dstdir, title, chapters):
     f = open(ncxfile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\" ",
-                  "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\n",
+                  "\"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\n",
                   "<ncx version=\"2005-1\" xml:lang=\"en-US\" xmlns=\"http://www.daisy.org/z3986/2005/ncx/\">\n",
                   "<head>\n",
                   "<meta name=\"dtb:uid\" content=\"015ffaec-9340-42f8-b163-a0c5ab7d0611\"/>\n",
@@ -360,6 +361,7 @@ def genEpubStruct(path):
     chapterlist = []
     cover = None
     _, deviceres, _, _, panelviewsize = image.ProfileData.Profiles[options.profile]
+    sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w')
     #DON'T COMPRESS CSS. KINDLE WILL FAIL TO PARSE IT.
@@ -539,6 +541,36 @@ def getWorkFolder(afile):
     return path
 
 
+def slugify(value):
+    """
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+    """
+    import unicodedata
+    value = unicodedata.normalize('NFKD', unicode(value, 'latin1')).encode('ascii', 'ignore')
+    value = re.sub('[^\w\s\.-]', '', value).strip().lower()
+    value = re.sub('[-\.\s]+', '-', value)
+    value = re.sub(r'([0-9]+)', r'00000\1', value)
+    value = re.sub(r'0*([0-9]{6,})', r'\1', value)
+    return value
+
+
+def sanitizeTree(filetree):
+    for root, dirs, files in os.walk(filetree):
+        for name in files:
+            if name.startswith('.') or name.lower() == 'thumbs.db':
+                os.remove(os.path.join(root, name))
+            else:
+                splitname = os.path.splitext(name)
+                os.rename(os.path.join(root, name),
+                          os.path.join(root, slugify(splitname[0]) + splitname[1]))
+        for name in dirs:
+            if name.startswith('.'):
+                os.remove(os.path.join(root, name))
+            else:
+                os.rename(os.path.join(root, name), os.path.join(root, slugify(name)))
+
+
 def Copyright():
     print ('comic2ebook v%(__version__)s. '
            'Written 2012 by Ciro Mattia Gonano.' % globals())
@@ -546,7 +578,6 @@ def Copyright():
 
 def Usage():
     print "Generates HTML, NCX and OPF for a Comic ebook from a bunch of images."
-    print "Optimized for creating MOBI files to be read on Kindle Paperwhite."
     parser.print_help()
 
 
