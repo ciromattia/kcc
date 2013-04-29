@@ -70,26 +70,49 @@ def buildHTML(path, imgfile):
                       imgfile, "\" class=\"singlePage\"/></div>\n"
                       ])
         if options.panelview:
-            if options.righttoleft:
-                f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxTL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
-                              "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxTR-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
-                              "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxBL-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
-                              "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxBR-Panel-Parent\", \"ordinal\":3}'></a></div>\n"
-                              ])
+            if options.panelviewhorizontal:
+                if options.righttoleft:
+                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
+                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
+                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
+                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
+                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
+                                  ])
+                else:
+                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
+                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
+                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
+                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
+                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":2}'></a></div>\n"
+                                  ])
             else:
-                f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
-                              "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxTR-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
-                              "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxBL-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
-                              "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
-                              ])
+                if options.righttoleft:
+                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
+                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
+                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
+                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
+                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":3}'></a></div>\n"
+                                  ])
+                else:
+                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
+                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
+                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
+                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
+                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
+                                  ])
+
             f.writelines(["<div id=\"BoxTL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTL-Panel\" class=\"",
                           "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
                           imgfile, "\"/></div></div>\n",
