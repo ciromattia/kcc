@@ -342,17 +342,17 @@ def dirImgProcess(path):
                         facing = "left"
                     img0 = image.ComicPage(split[0], options.profile)
                     applyImgOptimization(img0, True, toRight1)
-                    img0.saveToDir(dirpath, options.forcepng)
+                    img0.saveToDir(dirpath, options.forcepng, options.forcecolor)
                     img1 = image.ComicPage(split[1], options.profile)
                     applyImgOptimization(img1, True, toRight2)
-                    img1.saveToDir(dirpath, options.forcepng)
+                    img1.saveToDir(dirpath, options.forcepng, options.forcecolor)
                 else:
                     if facing == "right":
                         facing = "left"
                     else:
                         facing = "right"
                     applyImgOptimization(img)
-                    img.saveToDir(dirpath, options.forcepng)
+                    img.saveToDir(dirpath, options.forcepng, options.forcecolor)
 
 
 def genEpubStruct(path):
@@ -678,8 +678,14 @@ def checkOptions():
     else:
         #Virtual Panel View
         options.panelview = False
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG' or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
         options.nopanelviewhq = True
+    if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
+        options.upscale = True
+        options.forcecolor = True
+        options.forcepng = False
+    else:
+        options.forcecolor = False
 
 
 def getEpubPath():
