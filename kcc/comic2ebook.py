@@ -586,7 +586,8 @@ def main(argv=None):
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                      help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG or KHD) [Default=KHD]")
+                      help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8) "
+                      "[Default=KHD]")
     parser.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
@@ -678,7 +679,8 @@ def checkOptions():
     else:
         #Virtual Panel View
         options.panelview = False
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG' or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG'\
+            or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
         options.nopanelviewhq = True
     if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
         options.upscale = True
