@@ -134,6 +134,7 @@ The app relies and includes the following scripts/binaries:
         Rarfile library updated to 2.6  
         Added GIF, TIFF and BMP to supported formats (#42)  
         Filenames slugifications (#28, #31, #9, #8)
+  - 2.10: Kindle Fire support (color ePub/Mobi)  
 
 
 ## COPYRIGHT
