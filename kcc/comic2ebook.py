@@ -683,6 +683,7 @@ def checkOptions():
         options.nopanelviewhq = True
     if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
         options.forcecolor = True
+        options.forcepng = False
     else:
         options.forcecolor = False
 
