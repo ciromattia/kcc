@@ -656,8 +656,7 @@ def getOutputFilename(srcpath, wantedname, ext):
         elif os.path.isdir(srcpath):
             filename = os.path.abspath(options.output) + "/" + os.path.basename(srcpath) + ext
         else:
-            filename = os.path.abspath(options.output) + "/" \
-                       + os.path.basename(os.path.splitext(srcpath)[0]) + ext
+            filename = os.path.abspath(options.output) + "/" + os.path.basename(os.path.splitext(srcpath)[0]) + ext
     elif os.path.isdir(srcpath):
         filename = srcpath + ext
     else:
@@ -683,9 +682,7 @@ def checkOptions():
             or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
         options.nopanelviewhq = True
     if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
-        options.upscale = True
         options.forcecolor = True
-        options.forcepng = False
     else:
         options.forcecolor = False
 
