@@ -707,6 +707,7 @@ def checkOptions():
         options.nopanelviewhq = True
     if options.panelviewhorizontal:
         options.panelview = True
+        options.landscapemode = False
 
 
 def getEpubPath():
