@@ -83,13 +83,13 @@ def buildHTML(path, imgfile):
                                   ])
                 else:
                     f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
+                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
                                   "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
+                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
                                   "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
+                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
                                   "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
-                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":2}'></a></div>\n"
+                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":3}'></a></div>\n"
                                   ])
             else:
                 if options.righttoleft:
@@ -618,6 +618,8 @@ def main(argv=None):
                       help="Outputs a CBZ archive and does not generate EPUB")
     parser.add_option("--nopanelviewhq", action="store_true", dest="nopanelviewhq", default=False,
                       help="Disable high quality Panel View [Default=False]")
+    parser.add_option("--panelviewhorizontal", action="store_true", dest="panelviewhorizontal", default=False,
+                      help="Enable horizontal Panel View [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
@@ -703,6 +705,8 @@ def checkOptions():
         options.panelview = False
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
         options.nopanelviewhq = True
+    if options.panelviewhorizontal:
+        options.panelview = True
 
 
 def getEpubPath():
