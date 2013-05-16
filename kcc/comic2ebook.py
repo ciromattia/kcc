@@ -70,26 +70,49 @@ def buildHTML(path, imgfile):
                       imgfile, "\" class=\"singlePage\"/></div>\n"
                       ])
         if options.panelview:
-            if options.righttoleft:
-                f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxTL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
-                              "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxTR-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
-                              "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxBL-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
-                              "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxBR-Panel-Parent\", \"ordinal\":3}'></a></div>\n"
-                              ])
+            if options.panelviewhorizontal:
+                if options.righttoleft:
+                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
+                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
+                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
+                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
+                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
+                                  ])
+                else:
+                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
+                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
+                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
+                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
+                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":3}'></a></div>\n"
+                                  ])
             else:
-                f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
-                              "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxTR-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
-                              "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxBL-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
-                              "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"",
-                              "BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
-                              ])
+                if options.righttoleft:
+                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
+                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
+                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
+                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
+                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":3}'></a></div>\n"
+                                  ])
+                else:
+                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
+                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
+                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
+                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
+                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
+                                  ])
+
             f.writelines(["<div id=\"BoxTL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTL-Panel\" class=\"",
                           "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
                           imgfile, "\"/></div></div>\n",
@@ -342,17 +365,17 @@ def dirImgProcess(path):
                         facing = "left"
                     img0 = image.ComicPage(split[0], options.profile)
                     applyImgOptimization(img0, True, toRight1)
-                    img0.saveToDir(dirpath, options.forcepng, options.forcecolor)
+                    img0.saveToDir(dirpath, options.forcepng)
                     img1 = image.ComicPage(split[1], options.profile)
                     applyImgOptimization(img1, True, toRight2)
-                    img1.saveToDir(dirpath, options.forcepng, options.forcecolor)
+                    img1.saveToDir(dirpath, options.forcepng)
                 else:
                     if facing == "right":
                         facing = "left"
                     else:
                         facing = "right"
                     applyImgOptimization(img)
-                    img.saveToDir(dirpath, options.forcepng, options.forcecolor)
+                    img.saveToDir(dirpath, options.forcepng)
 
 
 def genEpubStruct(path):
@@ -586,8 +609,7 @@ def main(argv=None):
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                      help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8) "
-                      "[Default=KHD]")
+                      help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG or KHD) [Default=KHD]")
     parser.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
@@ -596,6 +618,8 @@ def main(argv=None):
                       help="Outputs a CBZ archive and does not generate EPUB")
     parser.add_option("--nopanelviewhq", action="store_true", dest="nopanelviewhq", default=False,
                       help="Disable high quality Panel View [Default=False]")
+    parser.add_option("--panelviewhorizontal", action="store_true", dest="panelviewhorizontal", default=False,
+                      help="Enable horizontal Panel View [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
@@ -656,7 +680,8 @@ def getOutputFilename(srcpath, wantedname, ext):
         elif os.path.isdir(srcpath):
             filename = os.path.abspath(options.output) + "/" + os.path.basename(srcpath) + ext
         else:
-            filename = os.path.abspath(options.output) + "/" + os.path.basename(os.path.splitext(srcpath)[0]) + ext
+            filename = os.path.abspath(options.output) + "/" \
+                       + os.path.basename(os.path.splitext(srcpath)[0]) + ext
     elif os.path.isdir(srcpath):
         filename = srcpath + ext
     else:
@@ -678,14 +703,11 @@ def checkOptions():
     else:
         #Virtual Panel View
         options.panelview = False
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG'\
-            or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
         options.nopanelviewhq = True
-    if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
-        options.forcecolor = True
-        options.forcepng = False
-    else:
-        options.forcecolor = False
+    if options.panelviewhorizontal:
+        options.panelview = True
+        options.landscapemode = False
 
 
 def getEpubPath():
