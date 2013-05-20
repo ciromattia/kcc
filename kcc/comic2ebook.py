@@ -365,17 +365,17 @@ def dirImgProcess(path):
                         facing = "left"
                     img0 = image.ComicPage(split[0], options.profile)
                     applyImgOptimization(img0, True, toRight1)
-                    img0.saveToDir(dirpath, options.forcepng)
+                    img0.saveToDir(dirpath, options.forcepng, options.forcecolor)
                     img1 = image.ComicPage(split[1], options.profile)
                     applyImgOptimization(img1, True, toRight2)
-                    img1.saveToDir(dirpath, options.forcepng)
+                    img1.saveToDir(dirpath, options.forcepng, options.forcecolor)
                 else:
                     if facing == "right":
                         facing = "left"
                     else:
                         facing = "right"
                     applyImgOptimization(img)
-                    img.saveToDir(dirpath, options.forcepng)
+                    img.saveToDir(dirpath, options.forcepng, options.forcecolor)
 
 
 def genEpubStruct(path):
@@ -609,7 +609,8 @@ def main(argv=None):
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                      help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG or KHD) [Default=KHD]")
+                      help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8) "
+                      "[Default=KHD]")
     parser.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
@@ -703,8 +704,14 @@ def checkOptions():
     else:
         #Virtual Panel View
         options.panelview = False
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG'\
+            or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
         options.nopanelviewhq = True
+    if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
+        options.forcecolor = True
+        options.forcepng = False
+    else:
+        options.forcecolor = False
     if options.panelviewhorizontal:
         options.panelview = True
         options.landscapemode = False
