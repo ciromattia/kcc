@@ -119,7 +119,7 @@ class ComicPage:
             raise RuntimeError('Cannot read image file %s' % source)
         self.image = self.image.convert('RGB')
 
-    def saveToDir(self, targetdir, forcepng, color):
+    def saveToDir(self, targetdir, forcepng, color=False):
         filename = os.path.basename(self.origFileName)
         try:
             if not color:
