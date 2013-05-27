@@ -255,7 +255,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     splitCountUsed = 1
     for entry in reflist:
-        if entry.endswith("-1"):
+        if entry.endswith("-000001"):
             # noinspection PyRedundantParentheses
             if ((options.righttoleft and facing == 'left') or (not options.righttoleft and facing == 'right')) and\
                     options.landscapemode:
@@ -265,7 +265,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
             else:
                 f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-        elif entry.endswith("-2"):
+        elif entry.endswith("-000002"):
             if options.landscapemode:
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
             else:
@@ -336,14 +336,14 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
 
 def dirImgProcess(path):
     global options, splitCount
-    if options.righttoleft:
-        facing = "right"
-    else:
-        facing = "left"
+    pagenumber = 0
+    pagenumbermodifier = 0
+    splitpages = []
 
     for (dirpath, dirnames, filenames) in os.walk(path):
         for afile in filenames:
             if getImageFileName(afile) is not None:
+                pagenumber += 1
                 if options.verbose:
                     print "Optimizing " + afile + " for " + options.profile
                 else:
@@ -359,15 +359,11 @@ def dirImgProcess(path):
                     if options.righttoleft:
                         toRight1 = False
                         toRight2 = True
-                        if facing == "left":
-                            splitCount += 1
-                        facing = "right"
+                        splitpages.append(pagenumber)
                     else:
                         toRight1 = True
                         toRight2 = False
-                        if facing == "right":
-                            splitCount += 1
-                        facing = "left"
+                        splitpages.append(pagenumber)
                     img0 = image.ComicPage(split[0], options.profile)
                     applyImgOptimization(img0, True, toRight1)
                     img0.saveToDir(dirpath, options.forcepng, options.forcecolor, None)
@@ -375,12 +371,14 @@ def dirImgProcess(path):
                     applyImgOptimization(img1, True, toRight2)
                     img1.saveToDir(dirpath, options.forcepng, options.forcecolor, None)
                 else:
-                    if facing == "right":
-                        facing = "left"
-                    else:
-                        facing = "right"
                     applyImgOptimization(img)
                     img.saveToDir(dirpath, options.forcepng, options.forcecolor, split)
+
+    splitpages.sort()
+    for page in splitpages:
+        if (page + pagenumbermodifier) % 2 == 0:
+            splitCount += 1
+            pagenumbermodifier += 1
 
 
 def genEpubStruct(path):
