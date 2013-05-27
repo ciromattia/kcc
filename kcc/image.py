@@ -119,16 +119,20 @@ class ComicPage:
             raise RuntimeError('Cannot read image file %s' % source)
         self.image = self.image.convert('RGB')
 
-    def saveToDir(self, targetdir, forcepng, color):
+    def saveToDir(self, targetdir, forcepng, color, sufix):
         filename = os.path.basename(self.origFileName)
         try:
             if not color:
                 self.image = self.image.convert('L')    # convert to grayscale
+            if sufix == "R":
+                sufix = "_rotated"
+            else:
+                sufix = ""
             os.remove(os.path.join(targetdir, filename))
             if forcepng:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + ".png"), "PNG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + sufix + ".png"), "PNG")
             else:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + ".jpg"), "JPEG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + sufix + ".jpg"), "JPEG")
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
@@ -202,7 +206,7 @@ class ComicPage:
         if (width > height) != (dstwidth > dstheight):
             if rotate:
                 self.image = self.image.rotate(90)
-                return None
+                return "R"
             else:
                 if width > height:
                     # source is landscape, so split by the width
