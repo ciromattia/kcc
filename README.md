@@ -147,7 +147,7 @@ The app relies and includes the following scripts/binaries:
 * Add rendition:layout and rendition:orientation ePub meta tags (supported by new kindlegen 2.8)  
 * Fixed natural sorting for files (#18)
 
-####2.7:
+####2.7
 * Lots of GUI improvements (#27, #13)  
 * Added gamma support within --gamma option (defaults to profile-specified gamma) (#26, #27)  
 * Added --nodithering option to prevent dithering optimizations (#27)  
@@ -167,7 +167,7 @@ The app relies and includes the following scripts/binaries:
 * Added generic CSS file  
 * Optimized archive extraction for zip/rar files (#40)  
 
-####2.9:
+####2.9
 * Added support for generating a plain CBZ (skipping all the EPUB/Mobi generation) (#45)  
 * Prevent output file overwriting the source one: if a duplicate name is detected, append _kcc to the name  
 * Rarfile library updated to 2.6  
@@ -177,6 +177,7 @@ The app relies and includes the following scripts/binaries:
 ####2.10:
 * Kindle Fire support (color ePub/Mobi)
 * Panel View support for horizontal content
+* Fixed panel order for horizontal pages when --rotate is enabled
 
 ## COPYRIGHT
 

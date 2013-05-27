@@ -40,6 +40,10 @@ import pdfjpgextract
 def buildHTML(path, imgfile):
     filename = getImageFileName(imgfile)
     if filename is not None:
+        if "_rotated" in str(filename):
+            rotate = True
+        else:
+            rotate = False
         htmlpath = ''
         postfix = ''
         backref = 1
@@ -70,7 +74,7 @@ def buildHTML(path, imgfile):
                       imgfile, "\" class=\"singlePage\"/></div>\n"
                       ])
         if options.panelview:
-            if options.panelviewhorizontal:
+            if options.panelviewhorizontal or rotate:
                 if options.righttoleft:
                     f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
                                   "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
@@ -348,7 +352,7 @@ def dirImgProcess(path):
                     split = None
                 else:
                     split = img.splitPage(dirpath, options.righttoleft, options.rotate)
-                if split is not None:
+                if split is not None and split is not "R":
                     if options.verbose:
                         print "Splitted " + afile
                     if options.righttoleft:
@@ -365,17 +369,17 @@ def dirImgProcess(path):
                         facing = "left"
                     img0 = image.ComicPage(split[0], options.profile)
                     applyImgOptimization(img0, True, toRight1)
-                    img0.saveToDir(dirpath, options.forcepng, options.forcecolor)
+                    img0.saveToDir(dirpath, options.forcepng, options.forcecolor, split)
                     img1 = image.ComicPage(split[1], options.profile)
                     applyImgOptimization(img1, True, toRight2)
-                    img1.saveToDir(dirpath, options.forcepng, options.forcecolor)
+                    img1.saveToDir(dirpath, options.forcepng, options.forcecolor, split)
                 else:
                     if facing == "right":
                         facing = "left"
                     else:
                         facing = "right"
                     applyImgOptimization(img)
-                    img.saveToDir(dirpath, options.forcepng, options.forcecolor)
+                    img.saveToDir(dirpath, options.forcepng, options.forcecolor, split)
 
 
 def genEpubStruct(path):
@@ -712,7 +716,7 @@ def checkOptions():
         options.forcepng = False
     else:
         options.forcecolor = False
-    if options.panelviewhorizontal:
+    if options.panelviewhorizontal or options.rotate:
         options.panelview = True
         options.landscapemode = False
 
