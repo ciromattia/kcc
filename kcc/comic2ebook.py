@@ -40,6 +40,7 @@ import pdfjpgextract
 def buildHTML(path, imgfile):
     filename = getImageFileName(imgfile)
     if filename is not None:
+        # All files marked with this sufix need horizontal Panel View.
         if "_rotated" in str(filename):
             rotate = True
         else:
@@ -369,10 +370,10 @@ def dirImgProcess(path):
                         facing = "left"
                     img0 = image.ComicPage(split[0], options.profile)
                     applyImgOptimization(img0, True, toRight1)
-                    img0.saveToDir(dirpath, options.forcepng, options.forcecolor, split)
+                    img0.saveToDir(dirpath, options.forcepng, options.forcecolor, None)
                     img1 = image.ComicPage(split[1], options.profile)
                     applyImgOptimization(img1, True, toRight2)
-                    img1.saveToDir(dirpath, options.forcepng, options.forcecolor, split)
+                    img1.saveToDir(dirpath, options.forcepng, options.forcecolor, None)
                 else:
                     if facing == "right":
                         facing = "left"
