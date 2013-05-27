@@ -96,42 +96,57 @@ The app relies and includes the following scripts/binaries:
 ## CHANGELOG
 ####1.00
 * Initial version
+
 ####1.10
 * Added support for CBZ/CBR files in comic2ebook.py
+
 ####1.11
 * Added support for CBZ/CBR files in KindleComicConverter
+
 ####1.20
 * Comic optimizations! Split pages not target-oriented (landscape with portrait target or portrait with landscape target), add palette and other image optimizations from Mangle. WARNING: PIL is required for all image mangling!
+
 ####1.30
 * Fixed an issue in OPF generation for device resolution  
 * Reworked options system (call with -h option to get the inline help)
+
 ####1.40
 * Added some options for controlling image optimization  
 * Further optimization (ImageOps, page numbering cut, autocontrast)
+
 ####1.41
 * Fixed a serious bug on resizing when img ratio was bigger than device one
+
 ####1.50
 * Added subfolder support for multiple chapters.
+
 ####2.0
 * GUI! AppleScript is gone and Tk is used to provide cross-platform GUI support.
+
 ####2.1
 * Added basic error reporting
+
 #### 2.2:
 * Added (valid!) ePub 2.0 output  
 * Rename .zip files to .cbz to avoid overwriting
+
 ####2.3
 * Fixed win32 ePub generation, folder handling, filenames with spaces and subfolders
+
 ####2.4
 * Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)  
 * Fixed "add folders" from GUI.
+
 ####2.5
 * Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).  
 * Fixes epub containing zipped itself (#10)  
+
 ####2.6
 * Added --rotate option to rotate landscape images instead of splitting them (#16, #24)  
 * Added --output option to customize ePub output dir/file (#22)  
 * Add rendition:layout and rendition:orientation ePub meta tags (supported by new kindlegen 2.8)  
 * Fixed natural sorting for files (#18)
+
 ####2.7:
 * Lots of GUI improvements (#27, #13)  
 * Added gamma support within --gamma option (defaults to profile-specified gamma) (#26, #27)  
@@ -142,6 +157,7 @@ The app relies and includes the following scripts/binaries:
 * Do not call kindlegen if source epub is bigger than 320MB (#17)  
 * Get filetype from magic number (#14)   
 * PDF conversion works again  
+
 ####2.8
 * Updated rarfile library  
 * Panel View support + HQ support (#36) - new option: --nopanelviewhq
@@ -150,12 +166,14 @@ The app relies and includes the following scripts/binaries:
 * Upscale use now BILINEAR method  
 * Added generic CSS file  
 * Optimized archive extraction for zip/rar files (#40)  
+
 ####2.9:
 * Added support for generating a plain CBZ (skipping all the EPUB/Mobi generation) (#45)  
 * Prevent output file overwriting the source one: if a duplicate name is detected, append _kcc to the name  
 * Rarfile library updated to 2.6  
 * Added GIF, TIFF and BMP to supported formats (#42)  
 * Filenames slugifications (#28, #31, #9, #8)
+
 ####2.10:
 * Kindle Fire support (color ePub/Mobi)
 * Panel View support for horizontal content
