@@ -124,6 +124,7 @@ class ComicPage:
         try:
             if not color:
                 self.image = self.image.convert('L')    # convert to grayscale
+            # Sufix is used to recognise which files need horizontal Panel View.
             if sufix == "R":
                 sufix = "_rotated"
             else:

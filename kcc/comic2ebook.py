@@ -696,24 +696,32 @@ def getOutputFilename(srcpath, wantedname, ext):
 
 def checkOptions():
     global options
+    # Landscape mode is only supported by Kindle Touch and Paperwhite.
     if options.profile == 'K4T' or options.profile == 'KHD':
         options.landscapemode = True
     else:
         options.landscapemode = False
+    # Older Kindle don't support Virtual Panel View. We providing them configuration that will fake that feature.
     if options.profile == 'K3' or options.profile == 'K4NT':
-        #Real Panel View
+        # Real Panel View
         options.panelview = True
     else:
-        #Virtual Panel View
+        # Virtual Panel View
         options.panelview = False
+    # Older Kindle don't need higher resolution files due lack of Panel View.
+    # Kindle Fire family have very high resolution. Bigger images are not needed.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG'\
             or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
         options.nopanelviewhq = True
+    # Disabling grayscale conversion for Kindle Fire family.
+    # Forcing JPEG output. For now code can't provide color PNG files.
     if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
         options.forcecolor = True
         options.forcepng = False
     else:
         options.forcecolor = False
+    # Mixing vertical and horizontal pages require real Panel View.
+    # Landscape mode don't work correcly without Virtual Panel View.
     if options.rotate:
         options.panelview = True
         options.landscapemode = False
