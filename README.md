@@ -21,8 +21,8 @@ You can find the latest released binary at the following links:
 
 ## AWKCC .NET GUI
 ![AWKCC](http://pawelj.vulturis.eu/Shared/CurrentAWKCC.png)
-All-in-one package for Windows users:
-[Mobileread thread](http://www.mobileread.com/forums/showpost.php?p=2444957&postcount=3)
+
+[All-in-one package for Windows users](http://www.mobileread.com/forums/showpost.php?p=2444957&postcount=3)
 
 ## INPUT FORMATS
 `kcc` can understand and convert, at the moment, the following file types:
@@ -142,7 +142,6 @@ The app relies and includes the following scripts/binaries:
         Filenames slugifications (#28, #31, #9, #8)
   - 2.10: Kindle Fire support (color ePub/Mobi)
         Panel View support for horizontal content
-
 
 ## COPYRIGHT
 
