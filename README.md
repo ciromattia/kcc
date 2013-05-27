@@ -1,4 +1,4 @@
-# KCC
+﻿# KCC
 
 `KCC` (a.k.a. `KindleComicConverter`) is a Python app to convert comic files or folders to ePub or Panel View MOBI.  
 It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
@@ -16,8 +16,13 @@ _kc2_ in no way is a replacement for **KCC** so you can be quite confident we'll
 You can find the latest released binary at the following links:  
 - OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.9.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.9.zip)
 - Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.9.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.9.zip)
-- Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.9.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.9.zip) *(thanks to [AcidWeb](https://github.com/AcidWeb))*
+- Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.9.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.9.zip)
 - Linux: Just download sourcecode and launch `python kcc.py` *(Provided you have Python and Pillow installed)*
+
+## AWKCC .NET GUI
+![AWKCC](http://pawelj.vulturis.eu/Shared/CurrentAWKCC.png)
+All-in-one package for Windows users:
+[Mobileread thread](http://www.mobileread.com/forums/showpost.php?p=2444957&postcount=3)
 
 ## INPUT FORMATS
 `kcc` can understand and convert, at the moment, the following file types:
@@ -53,12 +58,13 @@ Options:
   --version             show program's version number and exit
   -h, --help            show this help message and exit
   -p PROFILE, --profile=PROFILE
-                        Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG or KHD) [Default=KHD]
+                        Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8) [Default=KHD]
   -t TITLE, --title=TITLE
                         Comic title [Default=filename]
   -m, --manga-style     Manga style (Right-to-left reading and splitting) [Default=False]
   -c, --cbz-output      Outputs a CBZ archive and does not generate EPUB
   --nopanelviewhq       Disable high quality Panel View [Default=False]
+  --panelviewhorizontal Enable horizontal Panel View [Default=False]
   --noprocessing        Do not apply image preprocessing (Page splitting and optimizations) [Default=True]
   --forcepng            Create PNG files instead JPEG (For non-Kindle devices) [Default=False]
   --gamma=GAMMA         Apply gamma correction to linearize the image [Default=Auto]
