@@ -74,7 +74,7 @@ def buildHTML(path, imgfile):
                       imgfile, "\" class=\"singlePage\"/></div>\n"
                       ])
         if options.panelview:
-            if options.panelviewhorizontal or rotate:
+            if rotate:
                 if options.righttoleft:
                     f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
                                   "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
@@ -623,8 +623,6 @@ def main(argv=None):
                       help="Outputs a CBZ archive and does not generate EPUB")
     parser.add_option("--nopanelviewhq", action="store_true", dest="nopanelviewhq", default=False,
                       help="Disable high quality Panel View [Default=False]")
-    parser.add_option("--panelviewhorizontal", action="store_true", dest="panelviewhorizontal", default=False,
-                      help="Enable horizontal Panel View [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
@@ -716,7 +714,7 @@ def checkOptions():
         options.forcepng = False
     else:
         options.forcecolor = False
-    if options.panelviewhorizontal or options.rotate:
+    if options.rotate:
         options.panelview = True
         options.landscapemode = False
 

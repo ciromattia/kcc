@@ -64,7 +64,6 @@ Options:
   -m, --manga-style     Manga style (Right-to-left reading and splitting) [Default=False]
   -c, --cbz-output      Outputs a CBZ archive and does not generate EPUB
   --nopanelviewhq       Disable high quality Panel View [Default=False]
-  --panelviewhorizontal Enable horizontal Panel View [Default=False]
   --noprocessing        Do not apply image preprocessing (Page splitting and optimizations) [Default=True]
   --forcepng            Create PNG files instead JPEG (For non-Kindle devices) [Default=False]
   --gamma=GAMMA         Apply gamma correction to linearize the image [Default=Auto]
