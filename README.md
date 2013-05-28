@@ -14,9 +14,9 @@ _kc2_ in no way is a replacement for **KCC** so you can be quite confident we'll
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:  
-- OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.9.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.9.zip)
-- Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.9.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.9.zip)
-- Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.9.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.9.zip)
+- OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.10.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.10.zip)
+- Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.10.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.10.zip)
+- Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.10.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.10.zip)
 - Linux: Just download sourcecode and launch `python kcc.py` *(Provided you have Python and Pillow installed)*
 
 ## AWKCC .NET GUI
@@ -179,7 +179,7 @@ The app relies and includes the following scripts/binaries:
 * Panel View support for horizontal content
 * Fixed panel order for horizontal pages when --rotate is enabled
 * Disabled cropping and page number cutting for blank pages
-* Fixed some slugify issues with specific file naming conventions (#50) 
+* Fixed some slugify issues with specific file naming conventions (#50, #51) 
 
 ## COPYRIGHT
 
