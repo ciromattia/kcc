@@ -32,6 +32,7 @@ from shutil import copytree
 from shutil import rmtree
 from shutil import make_archive
 from optparse import OptionParser
+from multiprocessing import Pool
 import image
 import cbxarchive
 import pdfjpgextract
@@ -255,7 +256,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     splitCountUsed = 1
     for entry in reflist:
-        if entry.endswith("-000001"):
+        if entry.endswith("-000001") or entry.endswith("-1"):
             # noinspection PyRedundantParentheses
             if ((options.righttoleft and facing == 'left') or (not options.righttoleft and facing == 'right')) and\
                     options.landscapemode:
@@ -265,7 +266,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
             else:
                 f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-        elif entry.endswith("-000002"):
+        elif entry.endswith("-000002") or entry.endswith("-2"):
             if options.landscapemode:
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
             else:
@@ -323,7 +324,7 @@ def isInFilelist(filename, filelist):
     return seen
 
 
-def applyImgOptimization(img, isSplit=False, toRight=False):
+def applyImgOptimization(img, isSplit, toRight, options):
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
@@ -336,49 +337,61 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
 
 def dirImgProcess(path):
     global options, splitCount
+    work = []
     pagenumber = 0
     pagenumbermodifier = 0
-    splitpages = []
-
+    pool = Pool()
     for (dirpath, dirnames, filenames) in os.walk(path):
         for afile in filenames:
             if getImageFileName(afile) is not None:
                 pagenumber += 1
-                if options.verbose:
-                    print "Optimizing " + afile + " for " + options.profile
-                else:
-                    print ".",
-                img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
-                if options.nosplitrotate:
-                    split = None
-                else:
-                    split = img.splitPage(dirpath, options.righttoleft, options.rotate)
-                if split is not None and split is not "R":
-                    if options.verbose:
-                        print "Splitted " + afile
-                    if options.righttoleft:
-                        toRight1 = False
-                        toRight2 = True
-                        splitpages.append(pagenumber)
-                    else:
-                        toRight1 = True
-                        toRight2 = False
-                        splitpages.append(pagenumber)
-                    img0 = image.ComicPage(split[0], options.profile)
-                    applyImgOptimization(img0, True, toRight1)
-                    img0.saveToDir(dirpath, options.forcepng, options.forcecolor, None)
-                    img1 = image.ComicPage(split[1], options.profile)
-                    applyImgOptimization(img1, True, toRight2)
-                    img1.saveToDir(dirpath, options.forcepng, options.forcecolor, None)
-                else:
-                    applyImgOptimization(img)
-                    img.saveToDir(dirpath, options.forcepng, options.forcecolor, split)
-
+                work.append([afile, dirpath, pagenumber, options])
+    splitpages = pool.map(fileImgProcess, work)
+    pool.close()
+    pool.join()
+    splitpages = filter(None, splitpages)
     splitpages.sort()
     for page in splitpages:
         if (page + pagenumbermodifier) % 2 == 0:
             splitCount += 1
             pagenumbermodifier += 1
+
+
+def fileImgProcess(work):
+    afile = work[0]
+    dirpath = work[1]
+    pagenumber = work[2]
+    options = work[3]
+    output = None
+    if options.verbose:
+        print "Optimizing " + afile + " for " + options.profile
+    else:
+        print ".",
+    img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
+    if options.nosplitrotate:
+        split = None
+    else:
+        split = img.splitPage(dirpath, options.righttoleft, options.rotate)
+    if split is not None and split is not "R":
+        if options.verbose:
+            print "Splitted " + afile
+        if options.righttoleft:
+            toRight1 = False
+            toRight2 = True
+        else:
+            toRight1 = True
+            toRight2 = False
+        output = pagenumber
+        img0 = image.ComicPage(split[0], options.profile)
+        applyImgOptimization(img0, True, toRight1, options)
+        img0.saveToDir(dirpath, options.forcepng, options.forcecolor)
+        img1 = image.ComicPage(split[1], options.profile)
+        applyImgOptimization(img1, True, toRight2, options)
+        img1.saveToDir(dirpath, options.forcepng, options.forcecolor)
+    else:
+        applyImgOptimization(img, False, False, options)
+        img.saveToDir(dirpath, options.forcepng, options.forcecolor, split)
+    return output
 
 
 def genEpubStruct(path):
