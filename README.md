@@ -178,6 +178,7 @@ The app relies and includes the following scripts/binaries:
 * Kindle Fire support (color ePub/Mobi)
 * Panel View support for horizontal content
 * Fixed panel order for horizontal pages when --rotate is enabled
+* Disabled cropping and page number cutting for blank pages
 
 ## COPYRIGHT
 
