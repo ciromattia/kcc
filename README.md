@@ -1,4 +1,4 @@
-# KCC
+﻿# KCC
 
 `KCC` (a.k.a. `KindleComicConverter`) is a Python app to convert comic files or folders to ePub or Panel View MOBI.  
 It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
@@ -16,8 +16,13 @@ _kc2_ in no way is a replacement for **KCC** so you can be quite confident we'll
 You can find the latest released binary at the following links:  
 - OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.9.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.9.zip)
 - Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.9.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.9.zip)
-- Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.9.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.9.zip) *(thanks to [AcidWeb](https://github.com/AcidWeb))*
+- Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.9.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.9.zip)
 - Linux: Just download sourcecode and launch `python kcc.py` *(Provided you have Python and Pillow installed)*
+
+## AWKCC .NET GUI
+![AWKCC](http://pawelj.vulturis.eu/Shared/CurrentAWKCC.png)
+
+[All-in-one package for Windows users](http://www.mobileread.com/forums/showpost.php?p=2444957&postcount=3)
 
 ## INPUT FORMATS
 `kcc` can understand and convert, at the moment, the following file types:
@@ -53,7 +58,7 @@ Options:
   --version             show program's version number and exit
   -h, --help            show this help message and exit
   -p PROFILE, --profile=PROFILE
-                        Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG or KHD) [Default=KHD]
+                        Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8) [Default=KHD]
   -t TITLE, --title=TITLE
                         Comic title [Default=filename]
   -m, --manga-style     Manga style (Right-to-left reading and splitting) [Default=False]
@@ -88,55 +93,92 @@ The app relies and includes the following scripts/binaries:
  - `magic.py` from [python-magic](https://github.com/ahupp/python-magic) library
 
 ## CHANGELOG
-  - 1.00: Initial version
-  - 1.10: Added support for CBZ/CBR files in comic2ebook.py
-  - 1.11: Added support for CBZ/CBR files in KindleComicConverter
-  - 1.20: Comic optimizations! Split pages not target-oriented (landscape with portrait target or portrait
-   with landscape target), add palette and other image optimizations from Mangle.  
-   WARNING: PIL is required for all image mangling!
-  - 1.30: Fixed an issue in OPF generation for device resolution  
-   Reworked options system (call with -h option to get the inline help)
-  - 1.40: Added some options for controlling image optimization  
-        Further optimization (ImageOps, page numbering cut, autocontrast)
-  - 1.41: Fixed a serious bug on resizing when img ratio was bigger than device one
-  - 1.50: Added subfolder support for multiple chapters.
-  - 2.0: GUI! AppleScript is gone and Tk is used to provide cross-platform GUI support.
-  - 2.1: Added basic error reporting
-  - 2.2: Added (valid!) ePub 2.0 output  
-        Rename .zip files to .cbz to avoid overwriting
-  - 2.3: Fixed win32 ePub generation, folder handling, filenames with spaces and subfolders
-  - 2.4: Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)  
-        Fixed "add folders" from GUI.
-  - 2.5: Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).  
-        Fixes epub containing zipped itself (#10)  
-  - 2.6: Added --rotate option to rotate landscape images instead of splitting them (#16, #24)  
-        Added --output option to customize ePub output dir/file (#22)  
-        Add rendition:layout and rendition:orientation ePub meta tags (supported by new kindlegen 2.8)  
-        Fixed natural sorting for files (#18)
-  - 2.7: Lots of GUI improvements (#27, #13)  
-        Added gamma support within --gamma option (defaults to profile-specified gamma) (#26, #27)  
-        Added --nodithering option to prevent dithering optimizations (#27)  
-        Epub margins support (#30)  
-        Fixed no file added if file has no spaces on Windows (#25)  
-        Gracefully exit if unrar missing (#15)  
-        Do not call kindlegen if source epub is bigger than 320MB (#17)  
-        Get filetype from magic number (#14)   
-        PDF conversion works again  
-  - 2.8: updated rarfile library  
-        Panel View support + HQ support (#36) - new option: --nopanelviewhq
-        Split profiles for K4NT and K4T  
-        Rewrite of Landscape Mode support (huge readability improvement for KPW)  
-        Upscale use now BILINEAR method  
-        Added generic CSS file  
-        Optimized archive extraction for zip/rar files (#40)  
-  - 2.9: Added support for generating a plain CBZ (skipping all the EPUB/Mobi generation) (#45)  
-        Prevent output file overwriting the source one: if a duplicate name is detected, append _kcc to the name  
-        Rarfile library updated to 2.6  
-        Added GIF, TIFF and BMP to supported formats (#42)  
-        Filenames slugifications (#28, #31, #9, #8)
-  - 2.10: Kindle Fire support (color ePub/Mobi)
-        Panel View support for horizontal content
+####1.00
+* Initial version
 
+####1.10
+* Added support for CBZ/CBR files in comic2ebook.py
+
+####1.11
+* Added support for CBZ/CBR files in KindleComicConverter
+
+####1.20
+* Comic optimizations! Split pages not target-oriented (landscape with portrait target or portrait with landscape target), add palette and other image optimizations from Mangle. WARNING: PIL is required for all image mangling!
+
+####1.30
+* Fixed an issue in OPF generation for device resolution  
+* Reworked options system (call with -h option to get the inline help)
+
+####1.40
+* Added some options for controlling image optimization  
+* Further optimization (ImageOps, page numbering cut, autocontrast)
+
+####1.41
+* Fixed a serious bug on resizing when img ratio was bigger than device one
+
+####1.50
+* Added subfolder support for multiple chapters.
+
+####2.0
+* GUI! AppleScript is gone and Tk is used to provide cross-platform GUI support.
+
+####2.1
+* Added basic error reporting
+
+#### 2.2:
+* Added (valid!) ePub 2.0 output  
+* Rename .zip files to .cbz to avoid overwriting
+
+####2.3
+* Fixed win32 ePub generation, folder handling, filenames with spaces and subfolders
+
+####2.4
+* Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)  
+* Fixed "add folders" from GUI.
+
+####2.5
+* Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).  
+* Fixes epub containing zipped itself (#10)  
+
+####2.6
+* Added --rotate option to rotate landscape images instead of splitting them (#16, #24)  
+* Added --output option to customize ePub output dir/file (#22)  
+* Add rendition:layout and rendition:orientation ePub meta tags (supported by new kindlegen 2.8)  
+* Fixed natural sorting for files (#18)
+
+####2.7
+* Lots of GUI improvements (#27, #13)  
+* Added gamma support within --gamma option (defaults to profile-specified gamma) (#26, #27)  
+* Added --nodithering option to prevent dithering optimizations (#27)  
+* Epub margins support (#30)  
+* Fixed no file added if file has no spaces on Windows (#25)  
+* Gracefully exit if unrar missing (#15)  
+* Do not call kindlegen if source epub is bigger than 320MB (#17)  
+* Get filetype from magic number (#14)   
+* PDF conversion works again  
+
+####2.8
+* Updated rarfile library  
+* Panel View support + HQ support (#36) - new option: --nopanelviewhq
+* Split profiles for K4NT and K4T  
+* Rewrite of Landscape Mode support (huge readability improvement for KPW)  
+* Upscale use now BILINEAR method  
+* Added generic CSS file  
+* Optimized archive extraction for zip/rar files (#40)  
+
+####2.9
+* Added support for generating a plain CBZ (skipping all the EPUB/Mobi generation) (#45)  
+* Prevent output file overwriting the source one: if a duplicate name is detected, append _kcc to the name  
+* Rarfile library updated to 2.6  
+* Added GIF, TIFF and BMP to supported formats (#42)  
+* Filenames slugifications (#28, #31, #9, #8)
+
+####2.10:
+* Multiprocessing support
+* Kindle Fire support (color ePub/Mobi)
+* Panel View support for horizontal content
+* Fixed panel order for horizontal pages when --rotate is enabled
+* Disabled cropping and page number cutting for blank pages
 
 ## COPYRIGHT
 

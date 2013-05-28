@@ -32,6 +32,7 @@ from shutil import copytree
 from shutil import rmtree
 from shutil import make_archive
 from optparse import OptionParser
+from multiprocessing import Pool
 import image
 import cbxarchive
 import pdfjpgextract
@@ -40,6 +41,11 @@ import pdfjpgextract
 def buildHTML(path, imgfile):
     filename = getImageFileName(imgfile)
     if filename is not None:
+        # All files marked with this sufix need horizontal Panel View.
+        if "_rotated" in str(filename):
+            rotate = True
+        else:
+            rotate = False
         htmlpath = ''
         postfix = ''
         backref = 1
@@ -70,7 +76,7 @@ def buildHTML(path, imgfile):
                       imgfile, "\" class=\"singlePage\"/></div>\n"
                       ])
         if options.panelview:
-            if options.panelviewhorizontal:
+            if rotate:
                 if options.righttoleft:
                     f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
                                   "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
@@ -250,7 +256,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     splitCountUsed = 1
     for entry in reflist:
-        if entry.endswith("-1"):
+        if entry.endswith("-000001") or entry.endswith("-1"):
             # noinspection PyRedundantParentheses
             if ((options.righttoleft and facing == 'left') or (not options.righttoleft and facing == 'right')) and\
                     options.landscapemode:
@@ -260,7 +266,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
             else:
                 f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-        elif entry.endswith("-2"):
+        elif entry.endswith("-000002") or entry.endswith("-2"):
             if options.landscapemode:
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
             else:
@@ -309,16 +315,7 @@ def getImageFileName(imgfile):
     return filename
 
 
-def isInFilelist(filename, filelist):
-    filename = os.path.splitext(filename)
-    seen = False
-    for item in filelist:
-        if filename[0] == item[0]:
-            seen = True
-    return seen
-
-
-def applyImgOptimization(img, isSplit=False, toRight=False):
+def applyImgOptimization(img, isSplit, toRight, options):
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
@@ -331,51 +328,62 @@ def applyImgOptimization(img, isSplit=False, toRight=False):
 
 def dirImgProcess(path):
     global options, splitCount
-    if options.righttoleft:
-        facing = "right"
-    else:
-        facing = "left"
-
+    work = []
+    pagenumber = 0
+    pagenumbermodifier = 0
+    pool = Pool()
     for (dirpath, dirnames, filenames) in os.walk(path):
         for afile in filenames:
             if getImageFileName(afile) is not None:
-                if options.verbose:
-                    print "Optimizing " + afile + " for " + options.profile
-                else:
-                    print ".",
-                img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
-                if options.nosplitrotate:
-                    split = None
-                else:
-                    split = img.splitPage(dirpath, options.righttoleft, options.rotate)
-                if split is not None:
-                    if options.verbose:
-                        print "Splitted " + afile
-                    if options.righttoleft:
-                        toRight1 = False
-                        toRight2 = True
-                        if facing == "left":
-                            splitCount += 1
-                        facing = "right"
-                    else:
-                        toRight1 = True
-                        toRight2 = False
-                        if facing == "right":
-                            splitCount += 1
-                        facing = "left"
-                    img0 = image.ComicPage(split[0], options.profile)
-                    applyImgOptimization(img0, True, toRight1)
-                    img0.saveToDir(dirpath, options.forcepng, options.forcecolor)
-                    img1 = image.ComicPage(split[1], options.profile)
-                    applyImgOptimization(img1, True, toRight2)
-                    img1.saveToDir(dirpath, options.forcepng, options.forcecolor)
-                else:
-                    if facing == "right":
-                        facing = "left"
-                    else:
-                        facing = "right"
-                    applyImgOptimization(img)
-                    img.saveToDir(dirpath, options.forcepng, options.forcecolor)
+                pagenumber += 1
+                work.append([afile, dirpath, pagenumber, options])
+    splitpages = pool.map(fileImgProcess, work)
+    pool.close()
+    pool.join()
+    splitpages = filter(None, splitpages)
+    splitpages.sort()
+    for page in splitpages:
+        if (page + pagenumbermodifier) % 2 == 0:
+            splitCount += 1
+            pagenumbermodifier += 1
+        pagenumbermodifier += 1
+
+
+def fileImgProcess(work):
+    afile = work[0]
+    dirpath = work[1]
+    pagenumber = work[2]
+    options = work[3]
+    output = None
+    if options.verbose:
+        print "Optimizing " + afile + " for " + options.profile
+    else:
+        print ".",
+    img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
+    if options.nosplitrotate:
+        split = None
+    else:
+        split = img.splitPage(dirpath, options.righttoleft, options.rotate)
+    if split is not None and split is not "R":
+        if options.verbose:
+            print "Splitted " + afile
+        if options.righttoleft:
+            toRight1 = False
+            toRight2 = True
+        else:
+            toRight1 = True
+            toRight2 = False
+        output = pagenumber
+        img0 = image.ComicPage(split[0], options.profile)
+        applyImgOptimization(img0, True, toRight1, options)
+        img0.saveToDir(dirpath, options.forcepng, options.forcecolor)
+        img1 = image.ComicPage(split[1], options.profile)
+        applyImgOptimization(img1, True, toRight2, options)
+        img1.saveToDir(dirpath, options.forcepng, options.forcecolor)
+    else:
+        applyImgOptimization(img, False, False, options)
+        img.saveToDir(dirpath, options.forcepng, options.forcecolor, split)
+    return output
 
 
 def genEpubStruct(path):
@@ -387,8 +395,8 @@ def genEpubStruct(path):
     sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w')
-    #DON'T COMPRESS CSS. KINDLE WILL FAIL TO PARSE IT.
-    #Generic Panel View support + Margins fix for Non-Kindle devices.
+    # DON'T COMPRESS CSS. KINDLE WILL FAIL TO PARSE IT.
+    # Generic Panel View support + Margins fix for Non-Kindle devices.
     f.writelines(["@page {\n",
                   "margin-bottom: 0;\n",
                   "margin-top: 0\n",
@@ -511,13 +519,6 @@ def genEpubStruct(path):
         for afile in filenames:
             filename = getImageFileName(afile)
             if filename is not None:
-                if "credit" in afile.lower():
-                    os.rename(os.path.join(dirpath, afile), os.path.join(dirpath, 'ZZZ999_' + afile))
-                    afile = 'ZZZ999_' + afile
-                if "+" in afile.lower() or "#" in afile.lower():
-                    newfilename = afile.replace('+', '_').replace('#', '_')
-                    os.rename(os.path.join(dirpath, afile), os.path.join(dirpath, newfilename))
-                    afile = newfilename
                 filelist.append(buildHTML(dirpath, afile))
                 if not chapter:
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
@@ -598,11 +599,11 @@ def sanitizeTree(filetree):
 
 def Copyright():
     print ('comic2ebook v%(__version__)s. '
-           'Written 2012 by Ciro Mattia Gonano.' % globals())
+           'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals())
 
 
 def Usage():
-    print "Generates HTML, NCX and OPF for a Comic ebook from a bunch of images."
+    print "Generates EPUB/CBZ comic ebook from a bunch of images."
     parser.print_help()
 
 
@@ -621,8 +622,6 @@ def main(argv=None):
                       help="Outputs a CBZ archive and does not generate EPUB")
     parser.add_option("--nopanelviewhq", action="store_true", dest="nopanelviewhq", default=False,
                       help="Disable high quality Panel View [Default=False]")
-    parser.add_option("--panelviewhorizontal", action="store_true", dest="panelviewhorizontal", default=False,
-                      help="Enable horizontal Panel View [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
@@ -696,25 +695,33 @@ def getOutputFilename(srcpath, wantedname, ext):
 
 def checkOptions():
     global options
+    # Landscape mode is only supported by Kindle Touch and Paperwhite.
     if options.profile == 'K4T' or options.profile == 'KHD':
         options.landscapemode = True
     else:
         options.landscapemode = False
+    # Older Kindle don't support Virtual Panel View. We providing them configuration that will fake that feature.
     if options.profile == 'K3' or options.profile == 'K4NT':
-        #Real Panel View
+        # Real Panel View
         options.panelview = True
     else:
-        #Virtual Panel View
+        # Virtual Panel View
         options.panelview = False
+    # Older Kindle don't need higher resolution files due lack of Panel View.
+    # Kindle Fire family have very high resolution. Bigger images are not needed.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG'\
             or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
         options.nopanelviewhq = True
+    # Disabling grayscale conversion for Kindle Fire family.
+    # Forcing JPEG output. For now code can't provide color PNG files.
     if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
         options.forcecolor = True
         options.forcepng = False
     else:
         options.forcecolor = False
-    if options.panelviewhorizontal:
+    # Mixing vertical and horizontal pages require real Panel View.
+    # Landscape mode don't work correcly without Virtual Panel View.
+    if options.rotate:
         options.panelview = True
         options.landscapemode = False
 
@@ -722,6 +729,7 @@ def checkOptions():
 def getEpubPath():
     global epub_path
     return epub_path
+
 
 if __name__ == "__main__":
     Copyright()
