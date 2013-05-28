@@ -218,8 +218,8 @@ class ComicPage:
                     leftbox = (0, 0, width, height / 2)
                     rightbox = (0, height / 2, width, height)
                 filename = os.path.splitext(os.path.basename(self.origFileName))
-                fileone = targetdir + '/' + filename[0] + '-1' + filename[1]
-                filetwo = targetdir + '/' + filename[0] + '-2' + filename[1]
+                fileone = targetdir + '/' + filename[0] + '-kcca' + filename[1]
+                filetwo = targetdir + '/' + filename[0] + '-kccb' + filename[1]
                 try:
                     if righttoleft:
                         pageone = self.image.crop(rightbox)
