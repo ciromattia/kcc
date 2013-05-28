@@ -43,7 +43,14 @@ You can find the latest released binary at the following links:
 
 ## USAGE
 
-### GUI
+### Important tips:
+* Disabling **HQ Panel View** will highly decrease size of output file. Consider it when Panel View support is not needed.
+* The first image found will be set as the comic's cover.
+* All files/directories will be added to EPUB in alphabetical order.
+* Output MOBI file should be sideuploaded via USB. Other methods (e.g. via Calibre) will corrupt it.
+* If you're converting color images and the end result is not satisfactory, experiment with Gamma correction option (first try 1.0 setting).
+
+### GUI 
 
 Should be pretty self-explanatory, just keep in mind that it's still in development ;)
 While working it seems frozen, I'll try to fix the aesthetics later.
