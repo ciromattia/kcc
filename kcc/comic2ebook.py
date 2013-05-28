@@ -579,14 +579,16 @@ def slugify(value):
 
 
 def sanitizeTree(filetree):
-    for root, dirs, files in os.walk(filetree):
+    for root, dirs, files in os.walk(filetree, False):
         for name in files:
             if name.startswith('.') or name.lower() == 'thumbs.db':
                 os.remove(os.path.join(root, name))
             else:
                 splitname = os.path.splitext(name)
-                os.rename(os.path.join(root, name),
-                          os.path.join(root, slugify(splitname[0]) + splitname[1]))
+                slugified = slugify(splitname[0])
+                while os.path.exists(os.path.join(root, slugified + splitname[1])):
+                    slugified += "1"
+                os.rename(os.path.join(root, name), os.path.join(root, slugified + splitname[1]))
         for name in dirs:
             if name.startswith('.'):
                 os.remove(os.path.join(root, name))
