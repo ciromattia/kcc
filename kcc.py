@@ -24,8 +24,10 @@ __docformat__ = 'restructuredtext en'
 from Tkinter import *
 from kcc import gui
 from sys import platform
+from multiprocessing import freeze_support
 import os
 
+freeze_support()
 root = Tk()
 root.resizable(width=False, height=False)
 root.config(padx=5, pady=5, takefocus=True)
