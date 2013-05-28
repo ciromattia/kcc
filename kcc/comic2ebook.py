@@ -256,7 +256,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     splitCountUsed = 1
     for entry in reflist:
-        if entry.endswith("-000001") or entry.endswith("-1"):
+        if entry.endswith("-kcca"):
             # noinspection PyRedundantParentheses
             if ((options.righttoleft and facing == 'left') or (not options.righttoleft and facing == 'right')) and\
                     options.landscapemode:
@@ -266,7 +266,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
             else:
                 f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-        elif entry.endswith("-000002") or entry.endswith("-2"):
+        elif entry.endswith("-kccb"):
             if options.landscapemode:
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
             else:
