@@ -179,8 +179,9 @@ The app relies and includes the following scripts/binaries:
 * Panel View support for horizontal content
 * Fixed panel order for horizontal pages when --rotate is enabled
 * Disabled cropping and page number cutting for blank pages
+* Fixed some slugify issues with specific file naming conventions (#50) 
 
 ## COPYRIGHT
 
-Copyright (c) 2012-2013 Ciro Mattia Gonano with further contributions by Paweł Jastrzębski.  
+Copyright (c) 2012-2013 Ciro Mattia Gonano and Paweł Jastrzębski.  
 KCC is released under ISC LICENSE; see LICENSE.txt for further details.
