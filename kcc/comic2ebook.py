@@ -32,7 +32,7 @@ from shutil import copytree
 from shutil import rmtree
 from shutil import make_archive
 from optparse import OptionParser
-from multiprocessing import Pool
+from multiprocessing import Pool, freeze_support
 import image
 import cbxarchive
 import pdfjpgextract
@@ -732,6 +732,7 @@ def getEpubPath():
 
 
 if __name__ == "__main__":
+    freeze_support()
     Copyright()
     main(sys.argv[1:])
     sys.exit(0)
