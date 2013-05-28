@@ -12,6 +12,13 @@ Amazon's tool is for comic _publishers_ and involves a lot of manual effort, whi
 If you want to read some comments over *Amazon's kc2* you can take a look at [this](http://www.mobileread.com/forums/showthread.php?t=207461&page=7#96) and [that](http://www.mobileread.com/forums/showthread.php?t=211047) threads on Mobileread.  
 _kc2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;)  
 
+
+### Donations
+If you find KCC valuable you can consider donating to the authors:
+
+* Ciro Mattia Gonano [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D8WNYNPBGDAS2)
+* Paweł Jastrzębski [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
+
 ## BINARY RELEASES
 You can find the latest released binary at the following links:  
 - OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.10.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.10.zip)
