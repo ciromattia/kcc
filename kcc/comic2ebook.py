@@ -315,15 +315,6 @@ def getImageFileName(imgfile):
     return filename
 
 
-def isInFilelist(filename, filelist):
-    filename = os.path.splitext(filename)
-    seen = False
-    for item in filelist:
-        if filename[0] == item[0]:
-            seen = True
-    return seen
-
-
 def applyImgOptimization(img, isSplit, toRight, options):
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
@@ -355,6 +346,7 @@ def dirImgProcess(path):
         if (page + pagenumbermodifier) % 2 == 0:
             splitCount += 1
             pagenumbermodifier += 1
+        pagenumbermodifier += 1
 
 
 def fileImgProcess(work):
@@ -403,8 +395,8 @@ def genEpubStruct(path):
     sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w')
-    #DON'T COMPRESS CSS. KINDLE WILL FAIL TO PARSE IT.
-    #Generic Panel View support + Margins fix for Non-Kindle devices.
+    # DON'T COMPRESS CSS. KINDLE WILL FAIL TO PARSE IT.
+    # Generic Panel View support + Margins fix for Non-Kindle devices.
     f.writelines(["@page {\n",
                   "margin-bottom: 0;\n",
                   "margin-top: 0\n",
@@ -527,13 +519,6 @@ def genEpubStruct(path):
         for afile in filenames:
             filename = getImageFileName(afile)
             if filename is not None:
-                if "credit" in afile.lower():
-                    os.rename(os.path.join(dirpath, afile), os.path.join(dirpath, 'ZZZ999_' + afile))
-                    afile = 'ZZZ999_' + afile
-                if "+" in afile.lower() or "#" in afile.lower():
-                    newfilename = afile.replace('+', '_').replace('#', '_')
-                    os.rename(os.path.join(dirpath, afile), os.path.join(dirpath, newfilename))
-                    afile = newfilename
                 filelist.append(buildHTML(dirpath, afile))
                 if not chapter:
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
@@ -612,11 +597,11 @@ def sanitizeTree(filetree):
 
 def Copyright():
     print ('comic2ebook v%(__version__)s. '
-           'Written 2012 by Ciro Mattia Gonano.' % globals())
+           'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals())
 
 
 def Usage():
-    print "Generates HTML, NCX and OPF for a Comic ebook from a bunch of images."
+    print "Generates EPUB/CBZ comic ebook from a bunch of images."
     parser.print_help()
 
 
@@ -742,6 +727,7 @@ def checkOptions():
 def getEpubPath():
     global epub_path
     return epub_path
+
 
 if __name__ == "__main__":
     Copyright()

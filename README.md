@@ -174,6 +174,7 @@ The app relies and includes the following scripts/binaries:
 * Filenames slugifications (#28, #31, #9, #8)
 
 ####2.10:
+* Multiprocessing support
 * Kindle Fire support (color ePub/Mobi)
 * Panel View support for horizontal content
 * Fixed panel order for horizontal pages when --rotate is enabled
