@@ -20,7 +20,7 @@ __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
 __docformat__ = 'restructuredtext en'
 
 import os
-from PIL import Image, ImageOps, ImageStat
+from PIL import Image, ImageOps, ImageStat, ImageChops
 
 
 class ImageFlags:
@@ -237,93 +237,95 @@ class ComicPage:
             return None
 
     def cutPageNumber(self):
-        widthImg, heightImg = self.image.size
-        delta = 2
-        diff = delta
-        fixedThreshold = 5
-        if ImageStat.Stat(self.image).var[0] < 2 * fixedThreshold:
-            return self.image
-        while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] < fixedThreshold\
-                and diff < heightImg:
-            diff += delta
-        diff -= delta
-        pageNumberCut1 = diff
-        if diff < delta:
+        if ImageChops.invert(self.image).getbbox() is not None:
+            widthImg, heightImg = self.image.size
+            delta = 2
             diff = delta
-        oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0]
-        diff += delta
-        while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] - oldStat > 0\
-                and diff < heightImg / 4:
+            fixedThreshold = 5
+            if ImageStat.Stat(self.image).var[0] < 2 * fixedThreshold:
+                return self.image
+            while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] < fixedThreshold\
+                    and diff < heightImg:
+                diff += delta
+            diff -= delta
+            pageNumberCut1 = diff
+            if diff < delta:
+                diff = delta
             oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0]
             diff += delta
-        diff -= delta
-        pageNumberCut2 = diff
-        diff += delta
-        oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg - pageNumberCut2))).var[0]
-        while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg - pageNumberCut2))).var[0]\
-                < fixedThreshold + oldStat and diff < heightImg / 4:
+            while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] - oldStat > 0\
+                    and diff < heightImg / 4:
+                oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0]
+                diff += delta
+            diff -= delta
+            pageNumberCut2 = diff
             diff += delta
-        diff -= delta
-        pageNumberCut3 = diff
-        delta = 5
-        diff = delta
-        while ImageStat.Stat(self.image.crop((0, heightImg - pageNumberCut2, diff, heightImg))).var[0] < fixedThreshold\
-                and diff < widthImg:
-            diff += delta
-        diff -= delta
-        pageNumberX1 = diff
-        diff = delta
-        while ImageStat.Stat(self.image.crop((widthImg - diff, heightImg - pageNumberCut2,
-                                              widthImg, heightImg))).var[0] < fixedThreshold and diff < widthImg:
-            diff += delta
-        diff -= delta
-        pageNumberX2 = widthImg - diff
-        if pageNumberCut3 - pageNumberCut1 > 2 * delta\
-                and float(pageNumberX2 - pageNumberX1) / float(pageNumberCut2 - pageNumberCut1) <= 9.0\
-                and ImageStat.Stat(self.image.crop((0, heightImg - pageNumberCut3, widthImg, heightImg))).var[0]\
-                / ImageStat.Stat(self.image).var[0] < 0.1\
-                and pageNumberCut3 < heightImg / 4 - delta:
-            diff = pageNumberCut3
-        else:
-            diff = pageNumberCut1
-        self.image = self.image.crop((0, 0, widthImg, heightImg - diff))
+            oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg - pageNumberCut2))).var[0]
+            while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg - pageNumberCut2))).var[0]\
+                    < fixedThreshold + oldStat and diff < heightImg / 4:
+                diff += delta
+            diff -= delta
+            pageNumberCut3 = diff
+            delta = 5
+            diff = delta
+            while ImageStat.Stat(self.image.crop((0, heightImg - pageNumberCut2, diff, heightImg))).var[0] < fixedThreshold\
+                    and diff < widthImg:
+                diff += delta
+            diff -= delta
+            pageNumberX1 = diff
+            diff = delta
+            while ImageStat.Stat(self.image.crop((widthImg - diff, heightImg - pageNumberCut2,
+                                                  widthImg, heightImg))).var[0] < fixedThreshold and diff < widthImg:
+                diff += delta
+            diff -= delta
+            pageNumberX2 = widthImg - diff
+            if pageNumberCut3 - pageNumberCut1 > 2 * delta\
+                    and float(pageNumberX2 - pageNumberX1) / float(pageNumberCut2 - pageNumberCut1) <= 9.0\
+                    and ImageStat.Stat(self.image.crop((0, heightImg - pageNumberCut3, widthImg, heightImg))).var[0]\
+                    / ImageStat.Stat(self.image).var[0] < 0.1\
+                    and pageNumberCut3 < heightImg / 4 - delta:
+                diff = pageNumberCut3
+            else:
+                diff = pageNumberCut1
+            self.image = self.image.crop((0, 0, widthImg, heightImg - diff))
         return self.image
 
     def cropWhiteSpace(self, threshold):
-        widthImg, heightImg = self.image.size
-        delta = 10
-        diff = delta
-        # top
-        while ImageStat.Stat(self.image.crop((0, 0, widthImg, diff))).var[0] < threshold and diff < heightImg:
-            diff += delta
-        diff -= delta
-        #    print "Top crop: %s"%diff
-        self.image = self.image.crop((0, diff, widthImg, heightImg))
-        widthImg, heightImg = self.image.size
-        diff = delta
-        # left
-        while ImageStat.Stat(self.image.crop((0, 0, diff, heightImg))).var[0] < threshold and diff < widthImg:
-            diff += delta
-        diff -= delta
-        #    print "Left crop: %s"%diff
-        self.image = self.image.crop((diff, 0, widthImg, heightImg))
-        widthImg, heightImg = self.image.size
-        diff = delta
-        # down
-        while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] < threshold\
-                and diff < heightImg:
-            diff += delta
-        diff -= delta
-        #    print "Down crop: %s"%diff
-        self.image = self.image.crop((0, 0, widthImg, heightImg - diff))
-        widthImg, heightImg = self.image.size
-        diff = delta
-        # right
-        while ImageStat.Stat(self.image.crop((widthImg - diff, 0, widthImg, heightImg))).var[0] < threshold\
-                and diff < widthImg:
-            diff += delta
-        diff -= delta
-        #    print "Right crop: %s"%diff
-        self.image = self.image.crop((0, 0, widthImg - diff, heightImg))
-        #    print "New size: %sx%s"%(self.image.size[0],self.image.size[1])
+        if ImageChops.invert(self.image).getbbox() is not None:
+            widthImg, heightImg = self.image.size
+            delta = 10
+            diff = delta
+            # top
+            while ImageStat.Stat(self.image.crop((0, 0, widthImg, diff))).var[0] < threshold and diff < heightImg:
+                diff += delta
+            diff -= delta
+            #    print "Top crop: %s"%diff
+            self.image = self.image.crop((0, diff, widthImg, heightImg))
+            widthImg, heightImg = self.image.size
+            diff = delta
+            # left
+            while ImageStat.Stat(self.image.crop((0, 0, diff, heightImg))).var[0] < threshold and diff < widthImg:
+                diff += delta
+            diff -= delta
+            #    print "Left crop: %s"%diff
+            self.image = self.image.crop((diff, 0, widthImg, heightImg))
+            widthImg, heightImg = self.image.size
+            diff = delta
+            # down
+            while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] < threshold\
+                    and diff < heightImg:
+                diff += delta
+            diff -= delta
+            #    print "Down crop: %s"%diff
+            self.image = self.image.crop((0, 0, widthImg, heightImg - diff))
+            widthImg, heightImg = self.image.size
+            diff = delta
+            # right
+            while ImageStat.Stat(self.image.crop((widthImg - diff, 0, widthImg, heightImg))).var[0] < threshold\
+                    and diff < widthImg:
+                diff += delta
+            diff -= delta
+            #    print "Right crop: %s"%diff
+            self.image = self.image.crop((0, 0, widthImg - diff, heightImg))
+            #    print "New size: %sx%s"%(self.image.size[0],self.image.size[1])
         return self.image
