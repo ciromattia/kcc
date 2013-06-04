@@ -26,6 +26,10 @@ You can find the latest released binary at the following links:
 - Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.10.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.10.zip)
 - Linux: Just download sourcecode and launch `python kcc.py` *(Provided you have Python and Pillow installed)*
 
+_It has been reported by a couple of users 2.10 crashing on OSX at start. If it happens to you please append
+your message to [Issue #52](https://github.com/ciromattia/kcc/issues/52).  
+In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.10.zip)_
+
 ## AWKCC .NET GUI
 ![AWKCC](http://pawelj.vulturis.eu/Shared/CurrentAWKCC.png)
 
