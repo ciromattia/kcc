@@ -28,7 +28,7 @@ You can find the latest released binary at the following links:
 
 _It has been reported by a couple of users 2.10 crashing on OSX at start. If it happens to you please append
 your message to [Issue #52](https://github.com/ciromattia/kcc/issues/52).  
-In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.10.zip)_
+In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.9.zip)_
 
 ## AWKCC .NET GUI
 ![AWKCC](http://pawelj.vulturis.eu/Shared/CurrentAWKCC.png)
@@ -56,6 +56,8 @@ In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/1680610
 
 ### Important tips:
 * Disabling **HQ Panel View** will highly decrease size of output file. Consider it when Panel View support is not needed.
+* Disabling **HQ Panel View** might improve sharpness of image when it is not zoomed. But disabling it will decrease quality of Panel View.
+* Use high quality source files. This little detail have a major impact on the final result.
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
 * Output MOBI file should be sideuploaded via USB. Other methods (e.g. via Calibre) will corrupt it.
