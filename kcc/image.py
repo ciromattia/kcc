@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
+__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import os
@@ -329,61 +329,3 @@ class ComicPage:
             self.image = self.image.crop((0, 0, widthImg - diff, heightImg))
             #    print "New size: %sx%s"%(self.image.size[0],self.image.size[1])
         return self.image
-
-    # def addProgressbar(self, file_number, files_totalnumber, size, howoften):
-    #     if file_number // howoften != float(file_number) / howoften:
-    #         return self.image
-    #     white = (255, 255, 255)
-    #     black = (0, 0, 0)
-    #     widthDev, heightDev = size
-    #     widthImg, heightImg = self.image.size
-    #     pastePt = (
-    #         max(0, (widthDev - widthImg) / 2),
-    #         max(0, (heightDev - heightImg) / 2)
-    #     )
-    #     imageBg = Image.new('RGB', size, white)
-    #     imageBg.paste(self.image, pastePt)
-    #     self.image = imageBg
-    #     widthImg, heightImg = self.image.size
-    #     draw = ImageDraw.Draw(self.image)
-    #     #Black rectangle
-    #     draw.rectangle([(0, heightImg - 3), (widthImg, heightImg)], outline=black, fill=black)
-    #     #White rectangle
-    #     draw.rectangle([(widthImg * file_number / files_totalnumber, heightImg - 3), (widthImg - 1, heightImg)],
-    #                    outline=black, fill=white)
-    #     #Making notches
-    #     for i in range(1, 10):
-    #         if i <= (10 * file_number / files_totalnumber):
-    #             notch_colour = white  # White
-    #         else:
-    #             notch_colour = black  # Black
-    #         draw.line([(widthImg * float(i) / 10, heightImg - 3), (widthImg * float(i) / 10, heightImg)],
-    #                   fill=notch_colour)
-    #         #The 50%
-    #         if i == 5:
-    #             draw.rectangle([(widthImg / 2 - 1, heightImg - 5), (widthImg / 2 + 1, heightImg)],
-    #                            outline=black, fill=notch_colour)
-    #     return self.image
-    #
-    # def frameImage(self):
-    #     foreground = tuple(self.palette[:3])
-    #     background = tuple(self.palette[-3:])
-    #     widthDev, heightDev = self.size
-    #     widthImg, heightImg = self.image.size
-    #     pastePt = (
-    #         max(0, (widthDev - widthImg) / 2),
-    #         max(0, (heightDev - heightImg) / 2)
-    #     )
-    #     corner1 = (
-    #         pastePt[0] - 1,
-    #         pastePt[1] - 1
-    #     )
-    #     corner2 = (
-    #         pastePt[0] + widthImg + 1,
-    #         pastePt[1] + heightImg + 1
-    #     )
-    #     imageBg = Image.new(self.image.mode, self.size, background)
-    #     imageBg.paste(self.image, pastePt)
-    #     draw = ImageDraw.Draw(imageBg)
-    #     draw.rectangle([corner1, corner2], outline=foreground)
-    #     self.image = imageBg
