@@ -2,7 +2,7 @@
 
 `KCC` (a.k.a. `KindleComicConverter`) is a Python app to convert comic files or folders to ePub or Panel View MOBI.  
 It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
-actually a comic 2 epub converter that every ereader owner can happily use**_.  
+actually a comic to EPUB converter that every ereader owner can happily use**_.
 
 It can also optionally optimize images by applying a number of transformations.
 
@@ -11,7 +11,6 @@ It can also optionally optimize images by applying a number of transformations.
 Amazon's tool is for comic _publishers_ and involves a lot of manual effort, while **KCC** is for comic _readers_.  
 If you want to read some comments over *Amazon's kc2* you can take a look at [this](http://www.mobileread.com/forums/showthread.php?t=207461&page=7#96) and [that](http://www.mobileread.com/forums/showthread.php?t=211047) threads on Mobileread.  
 _kc2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;)  
-
 
 ### Donations
 If you find KCC valuable you can consider donating to the authors:
@@ -24,16 +23,11 @@ You can find the latest released binary at the following links:
 - OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.10.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.10.zip)
 - Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.10.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.10.zip)
 - Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.10.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.10.zip)
-- Linux: Just download sourcecode and launch `python kcc.py` *(Provided you have Python and Pillow installed)*
+- Linux: Just download sourcecode and launch `python kcc.py` *(Provided you have Python, Pillow and PyQt4 installed)*
 
-_It has been reported by a couple of users 2.10 crashing on OSX at start. If it happens to you please append
-your message to [Issue #52](https://github.com/ciromattia/kcc/issues/52).  
+_It has been reported by a couple of users 2.10 crashing on OSX at start.
+If it happens to you please append your message to [Issue #52](https://github.com/ciromattia/kcc/issues/52).
 In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.9.zip)_
-
-## AWKCC .NET GUI
-![AWKCC](http://pawelj.vulturis.eu/Shared/CurrentAWKCC.png)
-
-[All-in-one package for Windows users](http://www.mobileread.com/forums/showpost.php?p=2444957&postcount=3)
 
 ## INPUT FORMATS
 `kcc` can understand and convert, at the moment, the following file types:
@@ -49,6 +43,7 @@ In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/1680610
 
 ### For compiling/running from source:
 - Python 2.7+ (Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows)
+- PyQt4 4.10+
 - [Pillow](http://pypi.python.org/pypi/Pillow/) for comic optimizations like split double pages, resize to optimal resolution, improve contrast and palette, etc.
   Please refer to official documentation for installing into your system.
 
@@ -65,9 +60,8 @@ In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/1680610
 
 ### GUI 
 
-Should be pretty self-explanatory, just keep in mind that it's still in development ;)
-While working it seems frozen, I'll try to fix the aesthetics later.
-Conversion being done, you should find an .epub and a .mobi files alongside the original input file (same directory)
+Should be pretty self-explanatory.
+After completed onversion, you should find an .epub and a .mobi files alongside the original input file (same directory).
 
 ### Standalone `comic2ebook.py` usage:
 
@@ -108,9 +102,9 @@ The app relies and includes the following scripts/binaries:
  - `KindleStrip` script &copy; 2010-2012 by **Paul Durrant** and released in public domain
 ([mobileread forum thread](http://www.mobileread.com/forums/showthread.php?t=96903))
  - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>, released with ISC License
- - the icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC Attribution-NonCommercial-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
  - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches
- - `magic.py` from [python-magic](https://github.com/ahupp/python-magic) library
+ - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC Attribution-NonCommercial-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
+
 
 ## CHANGELOG
 ####1.00
@@ -199,7 +193,11 @@ The app relies and includes the following scripts/binaries:
 * Panel View support for horizontal content
 * Fixed panel order for horizontal pages when --rotate is enabled
 * Disabled cropping and page number cutting for blank pages
-* Fixed some slugify issues with specific file naming conventions (#50, #51) 
+* Fixed some slugify issues with specific file naming conventions (#50, #51)
+
+####3.0:
+* New QT GUI
+* Merge with AWKCC
 
 ## COPYRIGHT
 
