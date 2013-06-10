@@ -180,7 +180,10 @@ class Ui_KCC(object):
             except Exception as err:
                 errors = True
                 type_, value_, traceback_ = sys.exc_info()
-                tkMessageBox.showerror('KCC Error', "Error on file %s:\n%s\nTraceback:\n%s" % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
+                QtGui.QMessageBox.critical(MainWindow, 'KCC Error',
+                                           "Error on file %s:\n%s\nTraceback:\n%s"
+                                           % (jobargv[-1], str(err),traceback.format_tb(traceback_)),
+                                           QtGui.QMessageBox.Ok)
                 self.addMessage('KCC failed to create EPUB!', self.errorIcon)
                 continue
             MainWindow.repaint()
