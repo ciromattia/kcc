@@ -10,7 +10,7 @@ It can also optionally optimize images by applying a number of transformations.
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.  
 Amazon's tool is for comic _publishers_ and involves a lot of manual effort, while **KCC** is for comic _readers_.  
 If you want to read some comments over *Amazon's kc2* you can take a look at [this](http://www.mobileread.com/forums/showthread.php?t=207461&page=7#96) and [that](http://www.mobileread.com/forums/showthread.php?t=211047) threads on Mobileread.  
-_kc2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;)  
+_KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;)
 
 ### Donations
 If you find KCC valuable you can consider donating to the authors:
@@ -38,30 +38,29 @@ In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/1680610
 - PDF *(Extracting only contained JPG images)*
 
 ## OPTIONAL REQUIREMENTS
-- `kindlegen` v2.7+ in a directory reachable by your PATH or in KCC directory *(For .mobi generation)*
+- [kindlegen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.8+ in a directory reachable by your PATH or in KCC directory *(For .mobi generation)*
 - [unrar](http://www.rarlab.com/download.htm) *(For CBR support)*
 
 ### For compiling/running from source:
-- Python 2.7+ (Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows)
-- PyQt4 4.10+
-- [Pillow](http://pypi.python.org/pypi/Pillow/) for comic optimizations like split double pages, resize to optimal resolution, improve contrast and palette, etc.
-  Please refer to official documentation for installing into your system.
+- Python 2.7+ - Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows)
+- PyQt4 4.10+ - Please refer to official documentation for installing into your system.
+- [Pillow](http://pypi.python.org/pypi/Pillow/) - For comic optimizations. Please refer to official documentation for installing into your system.
 
 ## USAGE
 
 ### Important tips:
 * Disabling **HQ Panel View** will highly decrease size of output file. Consider it when Panel View support is not needed.
-* Disabling **HQ Panel View** might improve sharpness of image when it is not zoomed. But disabling it will decrease quality of Panel View.
+* Disabling **HQ Panel View** might improve sharpness of image when it is not zoomed.
 * Use high quality source files. This little detail have a major impact on the final result.
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
 * Output MOBI file should be sideuploaded via USB. Other methods (e.g. via Calibre) will corrupt it.
-* If you're converting color images and the end result is not satisfactory, experiment with Gamma correction option (first try 1.0 setting).
+* If you're converting color images and the end result is not satisfactory, experiment with gamma correction option (first try 1.0 setting).
 
 ### GUI 
 
 Should be pretty self-explanatory.
-After completed onversion, you should find an .epub and a .mobi files alongside the original input file (same directory).
+After completed conversion you should find ready file alongside the original input file (same directory).
 
 ### Standalone `comic2ebook.py` usage:
 
