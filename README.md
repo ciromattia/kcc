@@ -197,6 +197,7 @@ The app relies and includes the following scripts/binaries:
 ####3.0:
 * New QT GUI
 * Merge with AWKCC
+* Added support for custom width/height
 
 ## COPYRIGHT
 
