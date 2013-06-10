@@ -8,8 +8,8 @@ It can also optionally optimize images by applying a number of transformations.
 
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.  
-Amazon's tool is for comic _publishers_ and involves a lot of manual effort, while **KCC** is for comic _readers_.  
-If you want to read some comments over *Amazon's kc2* you can take a look at [this](http://www.mobileread.com/forums/showthread.php?t=207461&page=7#96) and [that](http://www.mobileread.com/forums/showthread.php?t=211047) threads on Mobileread.  
+Amazon's tool is for comic **publishers** and involves a lot of manual effort, while **KCC** is for comic **readers**.
+If you want to read some comments over *Amazon's KC2* you can take a look at [this](http://www.mobileread.com/forums/showthread.php?t=207461&page=7#96) and [that](http://www.mobileread.com/forums/showthread.php?t=211047) threads on Mobileread.
 _KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;)
 
 ### Donations
@@ -42,7 +42,7 @@ In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/1680610
 - [unrar](http://www.rarlab.com/download.htm) *(For CBR support)*
 
 ### For compiling/running from source:
-- Python 2.7+ - Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows)
+- Python 2.7+ - Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows.
 - PyQt4 4.10+ - Please refer to official documentation for installing into your system.
 - [Pillow](http://pypi.python.org/pypi/Pillow/) - For comic optimizations. Please refer to official documentation for installing into your system.
 
