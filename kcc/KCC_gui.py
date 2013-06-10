@@ -127,6 +127,7 @@ class Ui_KCC(object):
         GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
         GUI.ExpertModeButton.setStyleSheet('font-weight:Bold;')
         GUI.OptionsExpert.setEnabled(True)
+        self.addMessage('WARNING! Options in this mode are highly experimental!', self.warningIcon)
 
     def modeConvert(self, enable):
         GUI.BasicModeButton.setEnabled(enable)
@@ -141,6 +142,7 @@ class Ui_KCC(object):
         GUI.OptionsBasic.setEnabled(enable)
         GUI.OptionsAdvanced.setEnabled(enable)
         GUI.OptionsAdvancedGamma.setEnabled(enable)
+        GUI.OptionsExpert.setEnabled(enable)
 
     def changeGamma(self, value):
         if value <= 9:
@@ -196,6 +198,10 @@ class Ui_KCC(object):
             argv.append("--gamma=" + self.GammaValue)
         if str(GUI.FormatBox.currentText()) == 'CBZ':
             argv.append("--cbz-output")
+        if str(GUI.customWidth.text()) != '':
+            argv.append("--customwidth=" + str(GUI.customWidth.text()))
+        if str(GUI.customHeight.text()) != '':
+            argv.append("--customheight=" + str(GUI.customHeight.text()))
         for i in range(GUI.JobList.count()):
             currentJobs.append(str(GUI.JobList.item(i).text()))
         GUI.JobList.clear()
@@ -281,7 +287,7 @@ class Ui_KCC(object):
         self.errorIcon.addPixmap(QtGui.QPixmap(":/Status/icons/error.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
         self.addMessage('Welcome!', self.infoIcon)
-        self.addMessage('Most of options have additional informations in their tooltips.', self.infoIcon)
+        self.addMessage('All of options have additional informations in their tooltips.', self.infoIcon)
         if call('kindlegen', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
             self.KindleGen = True
             formats = ['MOBI', 'EPUB', 'CBZ']
