@@ -21,21 +21,19 @@ __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
-from Tkinter import *
-from kcc import gui
-from sys import platform
-from multiprocessing import freeze_support
+import sys
 import os
+from PyQt4 import QtGui
+from kcc import KCC_gui, KCC_ui
 
-freeze_support()
-root = Tk()
-root.resizable(width=False, height=False)
-root.config(padx=5, pady=5, takefocus=True)
-root.title("Kindle Comic Converter v" + __version__)
-#root.wm_attributes("-topmost", 1)
-if platform == 'darwin':
+if sys.platform == 'darwin':
     os.environ['PATH'] = '/usr/local/bin:' + os.environ['PATH']
-elif platform == 'win32':
-    root.iconbitmap(default='comic2ebook.ico')
-gui.MainWindow(master=root)
-root.mainloop()
+app = QtGui.QApplication(sys.argv)
+KCC = QtGui.QMainWindow()
+ui = KCC_ui.Ui_KCC()
+ui.setupUi(KCC)
+gui = KCC_gui.Ui_KCC(ui, KCC)
+KCC.setWindowTitle("Kindle Comic Converter " + __version__)
+KCC.show()
+sys.exit(app.exec_())
+
