@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2013 Ciro Mattia Gonano <ciromattia@gmail.com>
 #
@@ -39,7 +40,15 @@ class Ui_KCC(object):
             self.firstStart = False
             GUI.JobList.clear()
         dname = QtGui.QFileDialog.getExistingDirectory(MainWindow, 'Select directory', '')
+        # Lame UTF-8 security measure
+        try:
+            str(dname)
+        except Exception:
+            QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
+                                       QtGui.QMessageBox.Ok)
+            return
         GUI.JobList.addItem(dname)
+        self.clearEmptyJobs()
 
     def selectFile(self):
         if self.firstStart:
@@ -49,10 +58,23 @@ class Ui_KCC(object):
             fname = QtGui.QFileDialog.getOpenFileName(MainWindow, 'Select file', '', '*.cbz *.cbr *.zip *.rar *.pdf')
         else:
             fname = QtGui.QFileDialog.getOpenFileName(MainWindow, 'Select file', '', '*.cbz *.zip *.pdf')
+        # Lame UTF-8 security measure
+        try:
+            str(fname)
+        except Exception:
+            QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
+                                       QtGui.QMessageBox.Ok)
+            return
         GUI.JobList.addItem(fname)
+        self.clearEmptyJobs()
 
     def clearJobs(self):
         GUI.JobList.clear()
+
+    def clearEmptyJobs(self):
+        for i in range(GUI.JobList.count()):
+            if str(GUI.JobList.item(i).text()) == '':
+                GUI.JobList.takeItem(i)
 
     def modeBasic(self):
         MainWindow.setMinimumSize(QtCore.QSize(420, 270))
@@ -139,6 +161,7 @@ class Ui_KCC(object):
         profile = ProfileData.ProfileLabels[str(GUI.DeviceBox.currentText())]
         argv = ["--profile=" + profile]
         currentJobs = []
+        global errors
         if GUI.MangaBox.isChecked():
             argv.append("--manga-style")
         if GUI.RotateBox.isChecked():
@@ -162,7 +185,6 @@ class Ui_KCC(object):
         if str(GUI.FormatBox.currentText()) == 'CBZ':
             argv.append("--cbz-output")
         for i in range(GUI.JobList.count()):
-            #TODO UTF8!
             currentJobs.append(str(GUI.JobList.item(i).text()))
         GUI.JobList.clear()
         for job in currentJobs:
@@ -182,7 +204,7 @@ class Ui_KCC(object):
                 type_, value_, traceback_ = sys.exc_info()
                 QtGui.QMessageBox.critical(MainWindow, 'KCC Error',
                                            "Error on file %s:\n%s\nTraceback:\n%s"
-                                           % (jobargv[-1], str(err),traceback.format_tb(traceback_)),
+                                           % (jobargv[-1], str(err), traceback.format_tb(traceback_)),
                                            QtGui.QMessageBox.Ok)
                 self.addMessage('KCC failed to create EPUB!', self.errorIcon)
                 continue
