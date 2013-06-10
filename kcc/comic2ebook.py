@@ -337,16 +337,17 @@ def dirImgProcess(path):
             if getImageFileName(afile) is not None:
                 pagenumber += 1
                 work.append([afile, dirpath, pagenumber, options])
-    splitpages = pool.map(fileImgProcess, work)
-    pool.close()
-    pool.join()
-    splitpages = filter(None, splitpages)
-    splitpages.sort()
-    for page in splitpages:
-        if (page + pagenumbermodifier) % 2 == 0:
-            splitCount += 1
+    if len(work) > 0:
+        splitpages = pool.map(fileImgProcess, work)
+        pool.close()
+        pool.join()
+        splitpages = filter(None, splitpages)
+        splitpages.sort()
+        for page in splitpages:
+            if (page + pagenumbermodifier) % 2 == 0:
+                splitCount += 1
+                pagenumbermodifier += 1
             pagenumbermodifier += 1
-        pagenumbermodifier += 1
 
 
 def fileImgProcess(work):
