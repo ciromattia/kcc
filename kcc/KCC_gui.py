@@ -36,8 +36,8 @@ from PyQt4 import QtGui, QtCore
 # noinspection PyBroadException
 class Ui_KCC(object):
     def selectDir(self):
-        if self.firstStart:
-            self.firstStart = False
+        if self.needClean:
+            self.needClean = False
             GUI.JobList.clear()
         dname = QtGui.QFileDialog.getExistingDirectory(MainWindow, 'Select directory', '')
         # Lame UTF-8 security measure
@@ -51,8 +51,8 @@ class Ui_KCC(object):
         self.clearEmptyJobs()
 
     def selectFile(self):
-        if self.firstStart:
-            self.firstStart = False
+        if self.needClean:
+            self.needClean = False
             GUI.JobList.clear()
         if self.UnRAR:
             fname = QtGui.QFileDialog.getOpenFileName(MainWindow, 'Select file', '', '*.cbz *.cbr *.zip *.rar *.pdf')
@@ -87,6 +87,7 @@ class Ui_KCC(object):
         GUI.FormatBox.setEnabled(False)
         GUI.OptionsAdvanced.setEnabled(False)
         GUI.OptionsAdvancedGamma.setEnabled(False)
+        GUI.OptionsExpert.setEnabled(False)
         GUI.ProcessingBox.hide()
         GUI.UpscaleBox.hide()
         GUI.NoRotateBox.hide()
@@ -97,6 +98,8 @@ class Ui_KCC(object):
         GUI.StretchBox.setChecked(False)
         GUI.NoDitheringBox.setChecked(False)
         GUI.GammaSlider.setValue(0)
+        GUI.customWidth.setText('')
+        GUI.customHeight.setText('')
 
     def modeAdvanced(self):
         MainWindow.setMinimumSize(QtCore.QSize(420, 345))
@@ -111,10 +114,19 @@ class Ui_KCC(object):
         GUI.NoRotateBox.show()
         GUI.OptionsAdvancedGamma.setEnabled(True)
         GUI.OptionsAdvanced.setEnabled(True)
+        GUI.OptionsExpert.setEnabled(False)
+        GUI.customWidth.setText('')
+        GUI.customHeight.setText('')
 
     def modeExpert(self):
-        #TODO
-        pass
+        self.modeAdvanced()
+        MainWindow.setMinimumSize(QtCore.QSize(420, 380))
+        MainWindow.setMaximumSize(QtCore.QSize(420, 380))
+        MainWindow.resize(420, 380)
+        GUI.BasicModeButton.setStyleSheet('font-weight:Normal;')
+        GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
+        GUI.ExpertModeButton.setStyleSheet('font-weight:Bold;')
+        GUI.OptionsExpert.setEnabled(True)
 
     def modeConvert(self, enable):
         GUI.BasicModeButton.setEnabled(enable)
@@ -150,12 +162,12 @@ class Ui_KCC(object):
         MainWindow.repaint()
 
     def convertStart(self):
-        if self.firstStart:
-            self.firstStart = False
+        if self.needClean:
+            self.needClean = False
             GUI.JobList.clear()
         if GUI.JobList.count() == 0:
             self.addMessage('No files selected! Please choose files to convert.', self.errorIcon)
-            self.firstStart = True
+            self.needClean = True
             return
         self.modeConvert(False)
         profile = ProfileData.ProfileLabels[str(GUI.DeviceBox.currentText())]
@@ -248,7 +260,7 @@ class Ui_KCC(object):
                         os.remove(outputPath)
                         self.addMessage('Created EPUB file is too big for KindleGen!', self.errorIcon)
                         self.addMessage('Try converting smaller batch.', self.errorIcon)
-        self.firstStart = True
+        self.needClean = True
         self.addMessage('All jobs completed.', self.warningIcon)
         self.modeConvert(True)
 
@@ -259,7 +271,7 @@ class Ui_KCC(object):
         profiles = sorted(ProfileData.ProfileLabels.iterkeys())
         kindleIcon = QtGui.QIcon()
         kindleIcon.addPixmap(QtGui.QPixmap(":/Devices/icons/Kindle.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.firstStart = True
+        self.needClean = True
         self.GammaValue = 0
         self.infoIcon = QtGui.QIcon()
         self.infoIcon.addPixmap(QtGui.QPixmap(":/Status/icons/info.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)

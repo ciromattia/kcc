@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Mon Jun 10 17:51:15 2013
+# Created: Mon Jun 10 20:06:36 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,9 +26,9 @@ except AttributeError:
 class Ui_KCC(object):
     def setupUi(self, KCC):
         KCC.setObjectName(_fromUtf8("KCC"))
-        KCC.resize(420, 345)
-        KCC.setMinimumSize(QtCore.QSize(420, 345))
-        KCC.setMaximumSize(QtCore.QSize(420, 345))
+        KCC.resize(420, 380)
+        KCC.setMinimumSize(QtCore.QSize(420, 380))
+        KCC.setMaximumSize(QtCore.QSize(420, 380))
         font = QtGui.QFont()
         font.setPointSize(9)
         KCC.setFont(font)
@@ -167,7 +167,6 @@ class Ui_KCC(object):
         self.AdvModeButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.AdvModeButton.setObjectName(_fromUtf8("AdvModeButton"))
         self.ExpertModeButton = QtGui.QPushButton(self.Form)
-        self.ExpertModeButton.setEnabled(False)
         self.ExpertModeButton.setGeometry(QtCore.QRect(260, 10, 151, 32))
         font = QtGui.QFont()
         font.setPointSize(9)
@@ -186,11 +185,36 @@ class Ui_KCC(object):
         self.GammaLabel.setObjectName(_fromUtf8("GammaLabel"))
         self.GammaSlider = QtGui.QSlider(self.OptionsAdvancedGamma)
         self.GammaSlider.setGeometry(QtCore.QRect(140, 10, 261, 22))
-        self.GammaSlider.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.GammaSlider.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.GammaSlider.setMaximum(500)
         self.GammaSlider.setSingleStep(5)
         self.GammaSlider.setOrientation(QtCore.Qt.Horizontal)
         self.GammaSlider.setObjectName(_fromUtf8("GammaSlider"))
+        self.OptionsExpert = QtGui.QFrame(self.Form)
+        self.OptionsExpert.setGeometry(QtCore.QRect(20, 340, 381, 40))
+        self.OptionsExpert.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.OptionsExpert.setFrameShadow(QtGui.QFrame.Raised)
+        self.OptionsExpert.setObjectName(_fromUtf8("OptionsExpert"))
+        self.gridLayout_2 = QtGui.QGridLayout(self.OptionsExpert)
+        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
+        self.wLabel = QtGui.QLabel(self.OptionsExpert)
+        self.wLabel.setObjectName(_fromUtf8("wLabel"))
+        self.gridLayout_2.addWidget(self.wLabel, 0, 0, 1, 1)
+        self.customWidth = QtGui.QLineEdit(self.OptionsExpert)
+        self.customWidth.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.customWidth.setAcceptDrops(False)
+        self.customWidth.setMaxLength(4)
+        self.customWidth.setObjectName(_fromUtf8("customWidth"))
+        self.gridLayout_2.addWidget(self.customWidth, 0, 1, 1, 1)
+        self.hLabel = QtGui.QLabel(self.OptionsExpert)
+        self.hLabel.setObjectName(_fromUtf8("hLabel"))
+        self.gridLayout_2.addWidget(self.hLabel, 0, 2, 1, 1)
+        self.customHeight = QtGui.QLineEdit(self.OptionsExpert)
+        self.customHeight.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.customHeight.setAcceptDrops(False)
+        self.customHeight.setMaxLength(4)
+        self.customHeight.setObjectName(_fromUtf8("customHeight"))
+        self.gridLayout_2.addWidget(self.customHeight, 0, 3, 1, 1)
         KCC.setCentralWidget(self.Form)
         self.ActionBasic = QtGui.QAction(KCC)
         self.ActionBasic.setCheckable(True)
@@ -241,6 +265,14 @@ class Ui_KCC(object):
         self.GammaLabel.setToolTip(_translate("KCC", "When converting color images setting this option to 1.0 MIGHT improve readability.", None))
         self.GammaLabel.setText(_translate("KCC", "Gamma correction: Auto", None))
         self.GammaSlider.setToolTip(_translate("KCC", "<html><head/><body><p>When converting color images setting this option to 1.0 <span style=\" font-weight:600;\">might</span> improve readability.</p></body></html>", None))
+        self.wLabel.setToolTip(_translate("KCC", "Device profile width will be overwritten by this value.", None))
+        self.wLabel.setText(_translate("KCC", "Custom width: ", None))
+        self.customWidth.setToolTip(_translate("KCC", "Device profile width will be overwritten by this value.", None))
+        self.customWidth.setInputMask(_translate("KCC", "0000; ", None))
+        self.hLabel.setToolTip(_translate("KCC", "Device profile height will be overwritten by this value.", None))
+        self.hLabel.setText(_translate("KCC", "Custom height: ", None))
+        self.customHeight.setToolTip(_translate("KCC", "Device profile height will be overwritten by this value.", None))
+        self.customHeight.setInputMask(_translate("KCC", "0000; ", None))
         self.ActionBasic.setText(_translate("KCC", "Basic", None))
         self.ActionAdvanced.setText(_translate("KCC", "Advanced", None))
 
