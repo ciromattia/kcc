@@ -41,7 +41,7 @@ class CBxArchive:
         cbzFile = zipfile.ZipFile(self.origFileName)
         filelist = []
         for f in cbzFile.namelist():
-            if f.startswith('__MACOSX') or f.endswith('.DS_Store'):
+            if f.startswith('__MACOSX') or f.endswith('.DS_Store') or f.endswith('thumbs.db'):
                 pass    # skip MacOS special files
             elif f.endswith('/'):
                 try:
@@ -56,7 +56,7 @@ class CBxArchive:
         cbrFile = rarfile.RarFile(self.origFileName)
         filelist = []
         for f in cbrFile.namelist():
-            if f.startswith('__MACOSX') or f.endswith('.DS_Store'):
+            if f.startswith('__MACOSX') or f.endswith('.DS_Store') or f.endswith('thumbs.db'):
                 pass  # skip MacOS special files
             elif f.endswith('/'):
                 try:
