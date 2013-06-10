@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="Icon">
+    <file>icons/comic2ebook.icns</file>
     <file>icons/comic2ebook.ico</file>
   </qresource>
   <qresource prefix="Devices">
