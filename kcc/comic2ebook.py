@@ -673,6 +673,7 @@ def main(argv=None, qtGUI=None):
     if qtGUI:
         global GUI
         GUI = qtGUI
+        GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
     if len(args) != 1:
         parser.print_help()
         return
@@ -682,14 +683,18 @@ def main(argv=None, qtGUI=None):
     splitCount = 0
     if options.imgproc:
         print "Processing images..."
+        if GUI:
+            GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Processing images')
         dirImgProcess(path + "/OEBPS/Images/")
+    if GUI:
+        GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
     if options.cbzoutput:
         # if CBZ output wanted, compress all images and return filepath
         print "\nCreating CBZ file..."
         filepath = getOutputFilename(args[0], options.output, '.cbz')
         make_archive(path + '_comic', 'zip', path + '/OEBPS/Images')
     else:
-        print "\nCreating ePub structure..."
+        print "\nCreating EPUB structure..."
         genEpubStruct(path)
         # actually zip the ePub
         filepath = getOutputFilename(args[0], options.output, '.epub')
