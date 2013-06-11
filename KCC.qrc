@@ -18,7 +18,8 @@
   </qresource>
   <qresource prefix="Other">
     <file>icons/convert.ico</file>
-    <file>icons/minus.ico</file>
-    <file>icons/plus.ico</file>
+    <file>icons/clear.ico</file>
+    <file>icons/document_new.ico</file>
+    <file>icons/folder_new.ico</file>
   </qresource>
 </RCC>
