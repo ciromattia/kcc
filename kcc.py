@@ -26,7 +26,9 @@ import sys
 import os
 from PyQt4 import QtGui
 from kcc import KCC_gui, KCC_ui
+from multiprocessing import freeze_support
 
+freeze_support()
 if sys.platform == 'darwin':
     os.environ['PATH'] = '/usr/local/bin:' + os.environ['PATH']
 app = QtGui.QApplication(sys.argv)
