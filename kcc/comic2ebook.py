@@ -345,10 +345,11 @@ def dirImgProcess(path):
         splitpages = pool.map_async(fileImgProcess, work)
         pool.close()
         if GUI:
+            # This solution is far from perfect. Progress bar might break but it will not crash application.
             while True:
                 # noinspection PyBroadException
                 try:
-                    queue.get(True, 1)
+                    queue.get(True, 2)
                 except:
                     break
                 GUI.emit(QtCore.SIGNAL("progressBarTick"))
