@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Tue Jun 11 20:08:06 2013
+# Created: Tue Jun 11 23:27:52 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -140,12 +140,12 @@ class Ui_KCC(object):
         self.MangaBox.setChecked(True)
         self.MangaBox.setObjectName(_fromUtf8("MangaBox"))
         self.HQPVBox = QtGui.QCheckBox(self.OptionsBasic)
-        self.HQPVBox.setGeometry(QtCore.QRect(282, 10, 104, 18))
+        self.HQPVBox.setGeometry(QtCore.QRect(282, 10, 130, 18))
         self.HQPVBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.HQPVBox.setChecked(True)
         self.HQPVBox.setObjectName(_fromUtf8("HQPVBox"))
         self.RotateBox = QtGui.QCheckBox(self.OptionsBasic)
-        self.RotateBox.setGeometry(QtCore.QRect(145, 10, 111, 18))
+        self.RotateBox.setGeometry(QtCore.QRect(145, 10, 130, 18))
         self.RotateBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.RotateBox.setObjectName(_fromUtf8("RotateBox"))
         self.JobList = QtGui.QListWidget(self.Form)
@@ -183,10 +183,10 @@ class Ui_KCC(object):
         self.OptionsAdvancedGamma.setFont(font)
         self.OptionsAdvancedGamma.setObjectName(_fromUtf8("OptionsAdvancedGamma"))
         self.GammaLabel = QtGui.QLabel(self.OptionsAdvancedGamma)
-        self.GammaLabel.setGeometry(QtCore.QRect(0, 0, 161, 41))
+        self.GammaLabel.setGeometry(QtCore.QRect(8, 0, 100, 40))
         self.GammaLabel.setObjectName(_fromUtf8("GammaLabel"))
         self.GammaSlider = QtGui.QSlider(self.OptionsAdvancedGamma)
-        self.GammaSlider.setGeometry(QtCore.QRect(140, 10, 261, 22))
+        self.GammaSlider.setGeometry(QtCore.QRect(110, 10, 271, 22))
         self.GammaSlider.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.GammaSlider.setMaximum(500)
         self.GammaSlider.setSingleStep(5)
@@ -194,8 +194,6 @@ class Ui_KCC(object):
         self.GammaSlider.setObjectName(_fromUtf8("GammaSlider"))
         self.OptionsExpert = QtGui.QFrame(self.Form)
         self.OptionsExpert.setGeometry(QtCore.QRect(20, 340, 381, 40))
-        self.OptionsExpert.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.OptionsExpert.setFrameShadow(QtGui.QFrame.Raised)
         self.OptionsExpert.setObjectName(_fromUtf8("OptionsExpert"))
         self.gridLayout_2 = QtGui.QGridLayout(self.OptionsExpert)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
@@ -276,7 +274,7 @@ class Ui_KCC(object):
         self.AdvModeButton.setText(_translate("KCC", "Advanced", None))
         self.ExpertModeButton.setText(_translate("KCC", "Expert", None))
         self.GammaLabel.setToolTip(_translate("KCC", "When converting color images setting this option to 1.0 MIGHT improve readability.", None))
-        self.GammaLabel.setText(_translate("KCC", "Gamma correction: Auto", None))
+        self.GammaLabel.setText(_translate("KCC", "Gamma: Auto", None))
         self.GammaSlider.setToolTip(_translate("KCC", "<html><head/><body><p>When converting color images setting this option to 1.0 <span style=\" font-weight:600;\">might</span> improve readability.</p></body></html>", None))
         self.wLabel.setToolTip(_translate("KCC", "Device profile width will be overwritten by this value.", None))
         self.wLabel.setText(_translate("KCC", "Custom width: ", None))
