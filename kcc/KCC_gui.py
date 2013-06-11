@@ -63,7 +63,8 @@ class WorkerThread(QtCore.QThread):
         self.wait()
 
     def run(self):
-        self.parent.modeConvert(False)
+        self.emit(QtCore.SIGNAL("modeConvert"), False)
+        #self.parent.modeConvert(False)
         profile = ProfileData.ProfileLabels[str(GUI.DeviceBox.currentText())]
         argv = ["--profile=" + profile]
         currentJobs = []
@@ -158,7 +159,8 @@ class WorkerThread(QtCore.QThread):
                         self.parent.addMessage('Try converting smaller batch.', icons.error)
         self.parent.needClean = True
         self.parent.addMessage('All jobs completed.', icons.warning)
-        self.parent.modeConvert(True)
+        self.emit(QtCore.SIGNAL("modeConvert"), True)
+        #self.parent.modeConvert(True)
 
 
 # noinspection PyBroadException
@@ -211,6 +213,7 @@ class Ui_KCC(object):
                 GUI.JobList.takeItem(i)
 
     def modeBasic(self):
+        self.currentMode = 1
         MainWindow.setMinimumSize(QtCore.QSize(420, 270))
         MainWindow.setMaximumSize(QtCore.QSize(420, 270))
         MainWindow.resize(420, 270)
@@ -236,6 +239,7 @@ class Ui_KCC(object):
         GUI.customHeight.setText('')
 
     def modeAdvanced(self):
+        self.currentMode = 2
         MainWindow.setMinimumSize(QtCore.QSize(420, 345))
         MainWindow.setMaximumSize(QtCore.QSize(420, 345))
         MainWindow.resize(420, 345)
@@ -254,6 +258,7 @@ class Ui_KCC(object):
 
     def modeExpert(self):
         self.modeAdvanced()
+        self.currentMode = 3
         MainWindow.setMinimumSize(QtCore.QSize(420, 380))
         MainWindow.setMaximumSize(QtCore.QSize(420, 380))
         MainWindow.resize(420, 380)
@@ -263,7 +268,6 @@ class Ui_KCC(object):
         GUI.OptionsExpert.setEnabled(True)
 
     def modeConvert(self, enable):
-        # TODO: mode levels
         GUI.BasicModeButton.setEnabled(enable)
         GUI.AdvModeButton.setEnabled(enable)
         GUI.ExpertModeButton.setEnabled(enable)
@@ -277,6 +281,13 @@ class Ui_KCC(object):
         GUI.OptionsAdvanced.setEnabled(enable)
         GUI.OptionsAdvancedGamma.setEnabled(enable)
         GUI.OptionsExpert.setEnabled(enable)
+        if enable:
+            if self.currentMode == 1:
+                self.modeBasic()
+            if self.currentMode == 2:
+                self.modeAdvanced()
+            if self.currentMode == 3:
+                self.modeExpert()
 
     def changeGamma(self, value):
         if value <= 9:
@@ -324,6 +335,7 @@ class Ui_KCC(object):
         self.needClean = True
         self.GammaValue = 0
         self.lastPath = ''
+        self.currentMode = 1
 
         self.addMessage('Welcome!', icons.info)
         self.addMessage('Remember: All options have additional informations in tooltips.', icons.info)
@@ -349,6 +361,7 @@ class Ui_KCC(object):
         GUI.ConvertButton.clicked.connect(self.convertStart)
         GUI.GammaSlider.valueChanged.connect(self.changeGamma)
         self.thread.connect(self.thread, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
+        self.thread.connect(self.thread, QtCore.SIGNAL("modeConvert"), self.modeConvert)
 
         for profile in profiles:
             GUI.DeviceBox.addItem(icons.deviceKindle, profile)
