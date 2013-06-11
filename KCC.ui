@@ -230,7 +230,7 @@
     </property>
     <property name="icon">
      <iconset resource="KCC.qrc">
-      <normaloff>:/Other/icons/plus.ico</normaloff>:/Other/icons/plus.ico</iconset>
+      <normaloff>:/Other/icons/folder_new.ico</normaloff>:/Other/icons/folder_new.ico</iconset>
     </property>
    </widget>
    <widget class="QPushButton" name="FileButton">
@@ -255,7 +255,7 @@
     </property>
     <property name="icon">
      <iconset resource="KCC.qrc">
-      <normaloff>:/Other/icons/plus.ico</normaloff>:/Other/icons/plus.ico</iconset>
+      <normaloff>:/Other/icons/document_new.ico</normaloff>:/Other/icons/document_new.ico</iconset>
     </property>
    </widget>
    <widget class="QPushButton" name="ClearButton">
@@ -280,7 +280,7 @@
     </property>
     <property name="icon">
      <iconset resource="KCC.qrc">
-      <normaloff>:/Other/icons/minus.ico</normaloff>:/Other/icons/minus.ico</iconset>
+      <normaloff>:/Other/icons/clear.ico</normaloff>:/Other/icons/clear.ico</iconset>
     </property>
    </widget>
    <widget class="QFrame" name="OptionsBasic">

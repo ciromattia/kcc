@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Tue Jun 11 16:42:31 2013
+# Created: Tue Jun 11 20:08:06 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -105,7 +105,7 @@ class Ui_KCC(object):
         self.DirectoryButton.setFont(font)
         self.DirectoryButton.setFocusPolicy(QtCore.Qt.NoFocus)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/plus.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/folder_new.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.DirectoryButton.setIcon(icon2)
         self.DirectoryButton.setObjectName(_fromUtf8("DirectoryButton"))
         self.FileButton = QtGui.QPushButton(self.Form)
@@ -114,7 +114,9 @@ class Ui_KCC(object):
         font.setPointSize(8)
         self.FileButton.setFont(font)
         self.FileButton.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.FileButton.setIcon(icon2)
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/document_new.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.FileButton.setIcon(icon3)
         self.FileButton.setObjectName(_fromUtf8("FileButton"))
         self.ClearButton = QtGui.QPushButton(self.Form)
         self.ClearButton.setGeometry(QtCore.QRect(160, 160, 91, 32))
@@ -122,9 +124,9 @@ class Ui_KCC(object):
         font.setPointSize(8)
         self.ClearButton.setFont(font)
         self.ClearButton.setFocusPolicy(QtCore.Qt.NoFocus)
-        icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/minus.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.ClearButton.setIcon(icon3)
+        icon4 = QtGui.QIcon()
+        icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/clear.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.ClearButton.setIcon(icon4)
         self.ClearButton.setObjectName(_fromUtf8("ClearButton"))
         self.OptionsBasic = QtGui.QFrame(self.Form)
         self.OptionsBasic.setGeometry(QtCore.QRect(10, 230, 421, 41))
