@@ -324,7 +324,7 @@
       <rect>
        <x>282</x>
        <y>10</y>
-       <width>104</width>
+       <width>130</width>
        <height>18</height>
       </rect>
      </property>
@@ -346,7 +346,7 @@
       <rect>
        <x>145</x>
        <y>10</y>
-       <width>111</width>
+       <width>130</width>
        <height>18</height>
       </rect>
      </property>
@@ -466,25 +466,25 @@
     <widget class="QLabel" name="GammaLabel">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>8</x>
        <y>0</y>
-       <width>161</width>
-       <height>41</height>
+       <width>100</width>
+       <height>40</height>
       </rect>
      </property>
      <property name="toolTip">
       <string>When converting color images setting this option to 1.0 MIGHT improve readability.</string>
      </property>
      <property name="text">
-      <string>Gamma correction: Auto</string>
+      <string>Gamma: Auto</string>
      </property>
     </widget>
     <widget class="QSlider" name="GammaSlider">
      <property name="geometry">
       <rect>
-       <x>140</x>
+       <x>110</x>
        <y>10</y>
-       <width>261</width>
+       <width>271</width>
        <height>22</height>
       </rect>
      </property>
@@ -513,12 +513,6 @@
       <width>381</width>
       <height>40</height>
      </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">

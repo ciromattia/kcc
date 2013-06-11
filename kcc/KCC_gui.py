@@ -304,7 +304,7 @@ class Ui_KCC(object):
             value = float(value)
             value = '%.2f' % (value/100)
             self.GammaValue = value
-        GUI.GammaLabel.setText('Gamma correction: ' + str(value))
+        GUI.GammaLabel.setText('Gamma: ' + str(value))
 
     def addMessage(self, message, icon=None, replace=False):
         if icon:
