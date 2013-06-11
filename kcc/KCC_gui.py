@@ -33,6 +33,26 @@ from subprocess import call, STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
 
 
+class Icons:
+    def __init__(self):
+        self.deviceKindle = QtGui.QIcon()
+        self.deviceKindle.addPixmap(QtGui.QPixmap(":/Devices/icons/Kindle.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+
+        self.MOBIFormat = QtGui.QIcon()
+        self.MOBIFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.CBZFormat = QtGui.QIcon()
+        self.CBZFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/CBZ.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.EPUBFormat = QtGui.QIcon()
+        self.EPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/EPUB.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+
+        self.info = QtGui.QIcon()
+        self.info.addPixmap(QtGui.QPixmap(":/Status/icons/info.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.warning = QtGui.QIcon()
+        self.warning.addPixmap(QtGui.QPixmap(":/Status/icons/warning.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.error = QtGui.QIcon()
+        self.error.addPixmap(QtGui.QPixmap(":/Status/icons/error.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+
+
 # noinspection PyBroadException
 class WorkerThread(QtCore.QThread):
     def __init__(self, parent):
@@ -79,11 +99,11 @@ class WorkerThread(QtCore.QThread):
         GUI.JobList.clear()
         for job in currentJobs:
             errors = False
-            self.parent.addMessage('Source: ' + job, self.parent.infoIcon)
+            self.parent.addMessage('Source: ' + job, icons.info)
             if str(GUI.FormatBox.currentText()) == 'CBZ':
-                self.parent.addMessage('Creating CBZ file...', self.parent.infoIcon)
+                self.parent.addMessage('Creating CBZ file...', icons.info)
             else:
-                self.parent.addMessage('Creating EPUB file...', self.parent.infoIcon)
+                self.parent.addMessage('Creating EPUB file...', icons.info)
             jobargv = list(argv)
             jobargv.append(job)
             try:
@@ -96,20 +116,20 @@ class WorkerThread(QtCore.QThread):
                                            "Error on file %s:\n%s\nTraceback:\n%s"
                                            % (jobargv[-1], str(err), traceback.format_tb(traceback_)),
                                            QtGui.QMessageBox.Ok)
-                self.parent.addMessage('KCC failed to create EPUB!', self.parent.errorIcon)
+                self.parent.addMessage('KCC failed to create EPUB!', icons.error)
                 continue
             if not errors:
                 if str(GUI.FormatBox.currentText()) == 'CBZ':
-                    self.parent.addMessage('Creating CBZ file... Done!', self.parent.infoIcon, True)
+                    self.parent.addMessage('Creating CBZ file... Done!', icons.info, True)
                 else:
-                    self.parent.addMessage('Creating EPUB file... Done!', self.parent.infoIcon, True)
+                    self.parent.addMessage('Creating EPUB file... Done!', icons.info, True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
                     if not os.path.getsize(outputPath) > 314572800:
-                        self.parent.addMessage('Creating MOBI file...', self.parent.infoIcon)
+                        self.parent.addMessage('Creating MOBI file...', icons.info)
                         retcode = call('kindlegen "' + outputPath + '"', shell=True)
                         if retcode == 0:
-                            self.parent.addMessage('Creating MOBI file... Done!', self.parent.infoIcon, True)
-                            self.parent.addMessage('Removing SRCS header...', self.parent.infoIcon)
+                            self.parent.addMessage('Creating MOBI file... Done!', icons.info, True)
+                            self.parent.addMessage('Removing SRCS header...', icons.info)
                             os.remove(outputPath)
                             mobiPath = outputPath.replace('.epub', '.mobi')
                             shutil.move(mobiPath, mobiPath + '_tostrip')
@@ -120,30 +140,31 @@ class WorkerThread(QtCore.QThread):
                                 continue
                             if not errors:
                                 os.remove(mobiPath + '_tostrip')
-                                self.parent.addMessage('Removing SRCS header... Done!', self.parent.infoIcon, True)
+                                self.parent.addMessage('Removing SRCS header... Done!', icons.info, True)
                             else:
                                 shutil.move(mobiPath + '_tostrip', mobiPath)
                                 self.parent.addMessage('KindleStrip failed to remove SRCS header!',
-                                                       self.parent.warningIcon)
+                                                       icons.warning)
                                 self.parent.addMessage('MOBI file will work correctly but it will be highly oversized.',
-                                                       self.parent.warningIcon)
+                                                       icons.warning)
                         else:
                             os.remove(outputPath)
                             os.remove(outputPath.replace('.epub', '.mobi'))
-                            self.parent.addMessage('KindleGen failed to create MOBI!', self.parent.errorIcon)
-                            self.parent.addMessage('Try converting smaller batch.', self.parent.errorIcon)
+                            self.parent.addMessage('KindleGen failed to create MOBI!', icons.error)
+                            self.parent.addMessage('Try converting smaller batch.', icons.error)
                     else:
                         os.remove(outputPath)
-                        self.parent.addMessage('Created EPUB file is too big for KindleGen!', self.parent.errorIcon)
-                        self.parent.addMessage('Try converting smaller batch.', self.parent.errorIcon)
+                        self.parent.addMessage('Created EPUB file is too big for KindleGen!', icons.error)
+                        self.parent.addMessage('Try converting smaller batch.', icons.error)
         self.parent.needClean = True
-        self.parent.addMessage('All jobs completed.', self.parent.warningIcon)
+        self.parent.addMessage('All jobs completed.', icons.warning)
         self.parent.modeConvert(True)
 
 
 # noinspection PyBroadException
 class Ui_KCC(object):
     def selectDir(self):
+        # Dialog allow to select multiple directories but we can't parse that. QT Bug.
         if self.needClean:
             self.needClean = False
             GUI.JobList.clear()
@@ -180,6 +201,7 @@ class Ui_KCC(object):
         GUI.JobList.clear()
 
     def clearEmptyJobs(self):
+        # Sometimes empty records appear. Dirty workaround.
         for i in range(GUI.JobList.count()):
             if str(GUI.JobList.item(i).text()) == '':
                 GUI.JobList.takeItem(i)
@@ -282,42 +304,35 @@ class Ui_KCC(object):
             self.needClean = False
             GUI.JobList.clear()
         if GUI.JobList.count() == 0:
-            self.addMessage('No files selected! Please choose files to convert.', self.errorIcon)
+            self.addMessage('No files selected! Please choose files to convert.', icons.error)
             self.needClean = True
             return
         self.thread.start()
 
     def __init__(self, ui, KCC):
-        global GUI, MainWindow
+        global GUI, MainWindow, icons
         GUI = ui
         MainWindow = KCC
         profiles = sorted(ProfileData.ProfileLabels.iterkeys())
-        kindleIcon = QtGui.QIcon()
-        kindleIcon.addPixmap(QtGui.QPixmap(":/Devices/icons/Kindle.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icons = Icons()
         self.thread = WorkerThread(self)
         self.needClean = True
         self.GammaValue = 0
-        self.infoIcon = QtGui.QIcon()
-        self.infoIcon.addPixmap(QtGui.QPixmap(":/Status/icons/info.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.warningIcon = QtGui.QIcon()
-        self.warningIcon.addPixmap(QtGui.QPixmap(":/Status/icons/warning.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.errorIcon = QtGui.QIcon()
-        self.errorIcon.addPixmap(QtGui.QPixmap(":/Status/icons/error.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
-        self.addMessage('Welcome!', self.infoIcon)
-        self.addMessage('Remember: All options have additional informations in tooltips.', self.infoIcon)
+        self.addMessage('Welcome!', icons.info)
+        self.addMessage('Remember: All options have additional informations in tooltips.', icons.info)
         if call('kindlegen', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
             self.KindleGen = True
             formats = ['MOBI', 'EPUB', 'CBZ']
         else:
             self.KindleGen = False
             formats = ['EPUB', 'CBZ']
-            self.addMessage('Not found KindleGen! Creating MOBI files is disabled.', self.warningIcon)
+            self.addMessage('Not found KindleGen! Creating MOBI files is disabled.', icons.warning)
         if call('unrar', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
             self.UnRAR = True
         else:
             self.UnRAR = False
-            self.addMessage('Not found UnRAR! Processing of CBR/RAR files is disabled.', self.warningIcon)
+            self.addMessage('Not found UnRAR! Processing of CBR/RAR files is disabled.', icons.warning)
 
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
@@ -330,17 +345,11 @@ class Ui_KCC(object):
         self.thread.connect(self.thread, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
 
         for profile in profiles:
-            GUI.DeviceBox.addItem(kindleIcon, profile)
+            GUI.DeviceBox.addItem(icons.deviceKindle, profile)
         GUI.DeviceBox.setCurrentIndex(10)
         for f in formats:
-            formatIcon = QtGui.QIcon()
-            formatIcon.addPixmap(QtGui.QPixmap(":/Formats/icons/" + f + ".png"), QtGui.QIcon.Normal,
-                                 QtGui.QIcon.Off)
-            GUI.FormatBox.addItem(formatIcon, f)
+            GUI.FormatBox.addItem(eval('icons.' + f + 'Format'), f)
         GUI.FormatBox.setCurrentIndex(0)
 
         self.modeBasic()
         GUI.ProgressBar.hide()
-
-
-
