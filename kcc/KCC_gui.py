@@ -64,7 +64,6 @@ class WorkerThread(QtCore.QThread):
 
     def run(self):
         self.emit(QtCore.SIGNAL("modeConvert"), False)
-        #self.parent.modeConvert(False)
         profile = ProfileData.ProfileLabels[str(GUI.DeviceBox.currentText())]
         argv = ["--profile=" + profile]
         currentJobs = []
@@ -100,16 +99,16 @@ class WorkerThread(QtCore.QThread):
         GUI.JobList.clear()
         for job in currentJobs:
             errors = False
-            self.parent.addMessage('Source: ' + job, icons.info)
+            self.emit(QtCore.SIGNAL("addMessage"), 'Source: ' + job, icons.info)
             if str(GUI.FormatBox.currentText()) == 'CBZ':
-                self.parent.addMessage('Creating CBZ file...', icons.info)
+                self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file...', icons.info)
             else:
-                self.parent.addMessage('Creating EPUB file...', icons.info)
+                self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file...', icons.info)
             jobargv = list(argv)
             jobargv.append(job)
             try:
                 outputPath = comic2ebook.main(jobargv, self)
-                GUI.ProgressBar.hide()
+                self.emit(QtCore.SIGNAL("hideProgressBar"))
             except Exception as err:
                 errors = True
                 type_, value_, traceback_ = sys.exc_info()
@@ -117,20 +116,25 @@ class WorkerThread(QtCore.QThread):
                                            "Error on file %s:\n%s\nTraceback:\n%s"
                                            % (jobargv[-1], str(err), traceback.format_tb(traceback_)),
                                            QtGui.QMessageBox.Ok)
-                self.parent.addMessage('KCC failed to create EPUB!', icons.error)
+                self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create EPUB!', icons.error)
                 continue
             if not errors:
                 if str(GUI.FormatBox.currentText()) == 'CBZ':
-                    self.parent.addMessage('Creating CBZ file... Done!', icons.info, True)
+                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file... Done!', icons.info, True)
                 else:
-                    self.parent.addMessage('Creating EPUB file... Done!', icons.info, True)
+                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file... Done!', icons.info, True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
                     if not os.path.getsize(outputPath) > 314572800:
-                        self.parent.addMessage('Creating MOBI file...', icons.info)
-                        retcode = call('kindlegen "' + outputPath + '"', shell=True)
+                        self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file...', icons.info)
+                        self.emit(QtCore.SIGNAL("progressBarTick"), 1)
+                        try:
+                            retcode = call('kindlegen "' + outputPath + '"', shell=True)
+                        except:
+                            continue
+                        self.emit(QtCore.SIGNAL("hideProgressBar"))
                         if retcode == 0:
-                            self.parent.addMessage('Creating MOBI file... Done!', icons.info, True)
-                            self.parent.addMessage('Removing SRCS header...', icons.info)
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... Done!', icons.info, True)
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header...', icons.info)
                             os.remove(outputPath)
                             mobiPath = outputPath.replace('.epub', '.mobi')
                             shutil.move(mobiPath, mobiPath + '_tostrip')
@@ -141,26 +145,29 @@ class WorkerThread(QtCore.QThread):
                                 continue
                             if not errors:
                                 os.remove(mobiPath + '_tostrip')
-                                self.parent.addMessage('Removing SRCS header... Done!', icons.info, True)
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header... Done!',
+                                          icons.info, True)
                             else:
                                 shutil.move(mobiPath + '_tostrip', mobiPath)
-                                self.parent.addMessage('KindleStrip failed to remove SRCS header!',
-                                                       icons.warning)
-                                self.parent.addMessage('MOBI file will work correctly but it will be highly oversized.',
-                                                       icons.warning)
+                                self.emit(QtCore.SIGNAL("addMessage"),
+                                          'KindleStrip failed to remove SRCS header!', icons.warning)
+                                self.emit(QtCore.SIGNAL("addMessage"),
+                                          'MOBI file will work correctly but it will be highly oversized.',
+                                          icons.warning)
                         else:
                             os.remove(outputPath)
                             os.remove(outputPath.replace('.epub', '.mobi'))
-                            self.parent.addMessage('KindleGen failed to create MOBI!', icons.error)
-                            self.parent.addMessage('Try converting smaller batch.', icons.error)
+                            self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', icons.error)
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Try converting smaller batch.', icons.error)
                     else:
                         os.remove(outputPath)
-                        self.parent.addMessage('Created EPUB file is too big for KindleGen!', icons.error)
-                        self.parent.addMessage('Try converting smaller batch.', icons.error)
+                        self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file is too big for KindleGen!',
+                                  icons.error)
+                        self.emit(QtCore.SIGNAL("addMessage"), 'Try converting smaller batch.',
+                                  icons.error)
         self.parent.needClean = True
-        self.parent.addMessage('All jobs completed.', icons.warning)
+        self.emit(QtCore.SIGNAL("addMessage"), 'All jobs completed.', icons.warning)
         self.emit(QtCore.SIGNAL("modeConvert"), True)
-        #self.parent.modeConvert(True)
 
 
 # noinspection PyBroadException
@@ -211,6 +218,7 @@ class Ui_KCC(object):
         for i in range(GUI.JobList.count()):
             if str(GUI.JobList.item(i).text()) == '':
                 GUI.JobList.takeItem(i)
+        GUI.JobList.scrollToBottom()
 
     def modeBasic(self):
         self.currentMode = 1
@@ -306,9 +314,13 @@ class Ui_KCC(object):
         if replace:
             GUI.JobList.takeItem(GUI.JobList.count()-1)
         GUI.JobList.addItem(item)
+        GUI.JobList.scrollToBottom()
 
-    def updateProgressbar(self, new=False):
-        if new:
+    def updateProgressbar(self, new=False, status=False):
+        if new == "status":
+            pass
+            GUI.ProgressBar.setFormat(status)
+        elif new:
             GUI.ProgressBar.setMaximum(new - 1)
             GUI.ProgressBar.reset()
             GUI.ProgressBar.show()
@@ -325,17 +337,27 @@ class Ui_KCC(object):
             return
         self.thread.start()
 
+    def hideProgressBar(self):
+        GUI.ProgressBar.hide()
+
+    # noinspection PyUnusedLocal
+    def saveSettings(self, event):
+        self.settings.setValue('lastPath', self.lastPath)
+        self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
+        self.settings.sync()
+
     def __init__(self, ui, KCC):
         global GUI, MainWindow, icons
         GUI = ui
         MainWindow = KCC
         profiles = sorted(ProfileData.ProfileLabels.iterkeys())
         icons = Icons()
+        self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
+        self.lastPath = self.settings.value('lastPath', '', type=str)
+        self.lastDevice = self.settings.value('lastDevice', 10, type=int)
         self.thread = WorkerThread(self)
         self.needClean = True
         self.GammaValue = 0
-        self.lastPath = ''
-        self.currentMode = 1
 
         self.addMessage('Welcome!', icons.info)
         self.addMessage('Remember: All options have additional informations in tooltips.', icons.info)
@@ -360,12 +382,15 @@ class Ui_KCC(object):
         GUI.FileButton.clicked.connect(self.selectFile)
         GUI.ConvertButton.clicked.connect(self.convertStart)
         GUI.GammaSlider.valueChanged.connect(self.changeGamma)
-        self.thread.connect(self.thread, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
-        self.thread.connect(self.thread, QtCore.SIGNAL("modeConvert"), self.modeConvert)
+        KCC.connect(self.thread, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
+        KCC.connect(self.thread, QtCore.SIGNAL("modeConvert"), self.modeConvert)
+        KCC.connect(self.thread, QtCore.SIGNAL("addMessage"), self.addMessage)
+        KCC.connect(self.thread, QtCore.SIGNAL("hideProgressBar"), self.hideProgressBar)
+        KCC.closeEvent = self.saveSettings
 
         for profile in profiles:
             GUI.DeviceBox.addItem(icons.deviceKindle, profile)
-        GUI.DeviceBox.setCurrentIndex(10)
+        GUI.DeviceBox.setCurrentIndex(self.lastDevice)
         for f in formats:
             GUI.FormatBox.addItem(eval('icons.' + f + 'Format'), f)
         GUI.FormatBox.setCurrentIndex(0)
