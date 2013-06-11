@@ -168,7 +168,7 @@ class Ui_KCC(object):
         if self.needClean:
             self.needClean = False
             GUI.JobList.clear()
-        dname = QtGui.QFileDialog.getExistingDirectory(MainWindow, 'Select directory', '')
+        dname = QtGui.QFileDialog.getExistingDirectory(MainWindow, 'Select directory', self.lastPath)
         # Lame UTF-8 security measure
         try:
             str(dname)
@@ -176,6 +176,7 @@ class Ui_KCC(object):
             QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
                                        QtGui.QMessageBox.Ok)
             return
+        self.lastPath = os.path.abspath(os.path.join(str(dname), os.pardir))
         GUI.JobList.addItem(dname)
         self.clearEmptyJobs()
 
@@ -184,9 +185,11 @@ class Ui_KCC(object):
             self.needClean = False
             GUI.JobList.clear()
         if self.UnRAR:
-            fname = QtGui.QFileDialog.getOpenFileName(MainWindow, 'Select file', '', '*.cbz *.cbr *.zip *.rar *.pdf')
+            fname = QtGui.QFileDialog.getOpenFileName(MainWindow, 'Select file', self.lastPath,
+                                                      '*.cbz *.cbr *.zip *.rar *.pdf')
         else:
-            fname = QtGui.QFileDialog.getOpenFileName(MainWindow, 'Select file', '', '*.cbz *.zip *.pdf')
+            fname = QtGui.QFileDialog.getOpenFileName(MainWindow, 'Select file', self.lastPath,
+                                                      '*.cbz *.zip *.pdf')
         # Lame UTF-8 security measure
         try:
             str(fname)
@@ -194,6 +197,7 @@ class Ui_KCC(object):
             QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
                                        QtGui.QMessageBox.Ok)
             return
+        self.lastPath = os.path.abspath(os.path.join(str(fname), os.pardir))
         GUI.JobList.addItem(fname)
         self.clearEmptyJobs()
 
@@ -259,6 +263,7 @@ class Ui_KCC(object):
         GUI.OptionsExpert.setEnabled(True)
 
     def modeConvert(self, enable):
+        # TODO: mode levels
         GUI.BasicModeButton.setEnabled(enable)
         GUI.AdvModeButton.setEnabled(enable)
         GUI.ExpertModeButton.setEnabled(enable)
@@ -318,6 +323,7 @@ class Ui_KCC(object):
         self.thread = WorkerThread(self)
         self.needClean = True
         self.GammaValue = 0
+        self.lastPath = ''
 
         self.addMessage('Welcome!', icons.info)
         self.addMessage('Remember: All options have additional informations in tooltips.', icons.info)

@@ -39,4 +39,3 @@ gui = KCC_gui.Ui_KCC(ui, KCC)
 KCC.setWindowTitle("Kindle Comic Converter " + __version__)
 KCC.show()
 sys.exit(app.exec_())
-
