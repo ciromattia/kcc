@@ -43,13 +43,6 @@ class WorkerThread(QtCore.QThread):
         self.wait()
 
     def run(self):
-        if self.parent.needClean:
-            self.parent.needClean = False
-            GUI.JobList.clear()
-        if GUI.JobList.count() == 0:
-            self.parent.addMessage('No files selected! Please choose files to convert.', self.parent.errorIcon)
-            self.parent.needClean = True
-            return
         self.parent.modeConvert(False)
         profile = ProfileData.ProfileLabels[str(GUI.DeviceBox.currentText())]
         argv = ["--profile=" + profile]
@@ -94,7 +87,8 @@ class WorkerThread(QtCore.QThread):
             jobargv = list(argv)
             jobargv.append(job)
             try:
-                outputPath = comic2ebook.main(jobargv)
+                outputPath = comic2ebook.main(jobargv, self)
+                GUI.ProgressBar.hide()
             except Exception as err:
                 errors = True
                 type_, value_, traceback_ = sys.exc_info()
@@ -112,7 +106,7 @@ class WorkerThread(QtCore.QThread):
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
                     if not os.path.getsize(outputPath) > 314572800:
                         self.parent.addMessage('Creating MOBI file...', self.parent.infoIcon)
-                        retcode = call('kindlegen "' + outputPath + '"', stdout=PIPE, stderr=STDOUT, shell=True)
+                        retcode = call('kindlegen "' + outputPath + '"', shell=True)
                         if retcode == 0:
                             self.parent.addMessage('Creating MOBI file... Done!', self.parent.infoIcon, True)
                             self.parent.addMessage('Removing SRCS header...', self.parent.infoIcon)
@@ -275,7 +269,22 @@ class Ui_KCC(object):
             GUI.JobList.takeItem(GUI.JobList.count()-1)
         GUI.JobList.addItem(item)
 
+    def updateProgressbar(self, new=False):
+        if new:
+            GUI.ProgressBar.setMaximum(new - 1)
+            GUI.ProgressBar.reset()
+            GUI.ProgressBar.show()
+        else:
+            GUI.ProgressBar.setValue(GUI.ProgressBar.value() + 1)
+
     def convertStart(self):
+        if self.needClean:
+            self.needClean = False
+            GUI.JobList.clear()
+        if GUI.JobList.count() == 0:
+            self.addMessage('No files selected! Please choose files to convert.', self.errorIcon)
+            self.needClean = True
+            return
         self.thread.start()
 
     def __init__(self, ui, KCC):
@@ -318,6 +327,7 @@ class Ui_KCC(object):
         GUI.FileButton.clicked.connect(self.selectFile)
         GUI.ConvertButton.clicked.connect(self.convertStart)
         GUI.GammaSlider.valueChanged.connect(self.changeGamma)
+        self.thread.connect(self.thread, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
 
         for profile in profiles:
             GUI.DeviceBox.addItem(kindleIcon, profile)
@@ -330,6 +340,7 @@ class Ui_KCC(object):
         GUI.FormatBox.setCurrentIndex(0)
 
         self.modeBasic()
+        GUI.ProgressBar.hide()
 
 
 

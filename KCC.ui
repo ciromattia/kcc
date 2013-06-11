@@ -504,10 +504,6 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <zorder>GammaLabel</zorder>
-    <zorder>GammaSlider</zorder>
-    <zorder>OptionsExpert</zorder>
-    <zorder>OptionsExpert</zorder>
    </widget>
    <widget class="QFrame" name="OptionsExpert">
     <property name="geometry">
@@ -584,6 +580,22 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QProgressBar" name="ProgressBar">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>401</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>false</bool>
+    </property>
    </widget>
   </widget>
   <action name="ActionBasic">

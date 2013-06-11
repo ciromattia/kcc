@@ -32,7 +32,8 @@ from shutil import copytree
 from shutil import rmtree
 from shutil import make_archive
 from optparse import OptionParser
-from multiprocessing import Pool, freeze_support
+from multiprocessing import Pool, Queue, freeze_support
+from PyQt4 import QtCore
 import image
 import cbxarchive
 import pdfjpgextract
@@ -331,16 +332,29 @@ def dirImgProcess(path):
     work = []
     pagenumber = 0
     pagenumbermodifier = 0
-    pool = Pool()
+    queue = Queue()
+    pool = Pool(None, fileImgProcess_init, [queue, options])
     for (dirpath, dirnames, filenames) in os.walk(path):
         for afile in filenames:
             if getImageFileName(afile) is not None:
                 pagenumber += 1
-                work.append([afile, dirpath, pagenumber, options])
+                work.append([afile, dirpath, pagenumber])
+    if GUI:
+        GUI.emit(QtCore.SIGNAL("progressBarTick"), pagenumber)
     if len(work) > 0:
-        splitpages = pool.map(fileImgProcess, work)
+        splitpages = pool.map_async(fileImgProcess, work)
         pool.close()
+        if GUI:
+            while True:
+                # noinspection PyBroadException
+                try:
+                    queue.get(True, 1)
+                except:
+                    break
+                GUI.emit(QtCore.SIGNAL("progressBarTick"))
         pool.join()
+        queue.close()
+        splitpages = splitpages.get()
         splitpages = filter(None, splitpages)
         splitpages.sort()
         for page in splitpages:
@@ -350,16 +364,23 @@ def dirImgProcess(path):
             pagenumbermodifier += 1
 
 
+def fileImgProcess_init(queue, options):
+    fileImgProcess.queue = queue
+    fileImgProcess.options = options
+
+
+# noinspection PyUnresolvedReferences
 def fileImgProcess(work):
     afile = work[0]
     dirpath = work[1]
     pagenumber = work[2]
-    options = work[3]
+    options = fileImgProcess.options
     output = None
     if options.verbose:
         print "Optimizing " + afile + " for " + options.profile
     else:
         print ".",
+    fileImgProcess.queue.put(".")
     img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
     if options.nosplitrotate:
         split = None
@@ -608,7 +629,7 @@ def Usage():
     parser.print_help()
 
 
-def main(argv=None):
+def main(argv=None, qtGUI=None):
     global parser, options, epub_path, splitCount
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
@@ -648,6 +669,9 @@ def main(argv=None):
                       help="Verbose output [Default=False]")
     options, args = parser.parse_args(argv)
     checkOptions()
+    if qtGUI:
+        global GUI
+        GUI = qtGUI
     if len(args) != 1:
         parser.print_help()
         return
