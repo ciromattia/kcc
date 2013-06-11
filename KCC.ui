@@ -590,11 +590,21 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
     <property name="value">
      <number>0</number>
     </property>
-    <property name="textVisible">
-     <bool>false</bool>
+    <property name="alignment">
+     <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+    </property>
+    <property name="format">
+     <string/>
     </property>
    </widget>
   </widget>

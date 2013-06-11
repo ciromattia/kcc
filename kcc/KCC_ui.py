@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Tue Jun 11 08:49:21 2013
+# Created: Tue Jun 11 16:42:31 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -217,8 +217,14 @@ class Ui_KCC(object):
         self.gridLayout_2.addWidget(self.customHeight, 0, 3, 1, 1)
         self.ProgressBar = QtGui.QProgressBar(self.Form)
         self.ProgressBar.setGeometry(QtCore.QRect(10, 10, 401, 31))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+        self.ProgressBar.setFont(font)
         self.ProgressBar.setProperty("value", 0)
-        self.ProgressBar.setTextVisible(False)
+        self.ProgressBar.setAlignment(QtCore.Qt.AlignJustify|QtCore.Qt.AlignVCenter)
+        self.ProgressBar.setFormat(_fromUtf8(""))
         self.ProgressBar.setObjectName(_fromUtf8("ProgressBar"))
         KCC.setCentralWidget(self.Form)
         self.ActionBasic = QtGui.QAction(KCC)
