@@ -1,8 +1,6 @@
 """
 cx_Freeze build script for KCC.
 
-Will automatically ensure that all build prerequisites are available via ez_setup
-
 Usage (Mac OS X):
     python setup.py bdist_mac
 
@@ -10,8 +8,6 @@ Usage (Windows):
     python setup.py build
 """
 from sys import platform
-from ez_setup import use_setuptools
-use_setuptools()
 from cx_Freeze import setup, Executable
 
 NAME = "KindleComicConverter"
@@ -44,9 +40,7 @@ elif platform == "win32":
                                 appendScriptToLibrary=False,
                                 compress=True)])
 else:
-    extra_options = dict(
-        scripts=[MAIN],
-    )
+    exit(0)
 
 setup(
     name=NAME,
@@ -57,6 +51,6 @@ setup(
     license="ISC License (ISCL)",
     keywords="kindle comic mobipocket mobi cbz cbr manga",
     url="http://github.com/ciromattia/kcc",
-    packages=['KCC'], requires=['PIL', 'cx_Freeze'],
+    packages=['KCC'], requires=['PIL'],
     **extra_options
 )
