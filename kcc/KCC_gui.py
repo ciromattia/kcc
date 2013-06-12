@@ -292,9 +292,9 @@ class Ui_KCC(object):
         if enable:
             if self.currentMode == 1:
                 self.modeBasic()
-            if self.currentMode == 2:
+            elif self.currentMode == 2:
                 self.modeAdvanced()
-            if self.currentMode == 3:
+            elif self.currentMode == 3:
                 self.modeExpert()
 
     def changeGamma(self, value):
