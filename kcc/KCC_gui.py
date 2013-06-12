@@ -36,7 +36,7 @@ from PyQt4 import QtGui, QtCore
 class Icons:
     def __init__(self):
         self.deviceKindle = QtGui.QIcon()
-        self.deviceKindle.addPixmap(QtGui.QPixmap(":/Devices/icons/Kindle.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.deviceKindle.addPixmap(QtGui.QPixmap(":/Devices/icons/Kindle.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
         self.MOBIFormat = QtGui.QIcon()
         self.MOBIFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -46,11 +46,11 @@ class Icons:
         self.EPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/EPUB.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
         self.info = QtGui.QIcon()
-        self.info.addPixmap(QtGui.QPixmap(":/Status/icons/info.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.info.addPixmap(QtGui.QPixmap(":/Status/icons/info.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.warning = QtGui.QIcon()
-        self.warning.addPixmap(QtGui.QPixmap(":/Status/icons/warning.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.warning.addPixmap(QtGui.QPixmap(":/Status/icons/warning.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.error = QtGui.QIcon()
-        self.error.addPixmap(QtGui.QPixmap(":/Status/icons/error.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.error.addPixmap(QtGui.QPixmap(":/Status/icons/error.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
 
 # noinspection PyBroadException

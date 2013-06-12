@@ -4,7 +4,7 @@
     <file>icons/comic2ebook.ico</file>
   </qresource>
   <qresource prefix="Devices">
-    <file>icons/Kindle.ico</file>
+    <file>icons/Kindle.png</file>
   </qresource>
   <qresource prefix="Formats">
     <file>icons/CBZ.png</file>
@@ -12,14 +12,14 @@
     <file>icons/MOBI.png</file>
   </qresource>
   <qresource prefix="Status">
-    <file>icons/error.ico</file>
-    <file>icons/info.ico</file>
-    <file>icons/warning.ico</file>
+    <file>icons/error.png</file>
+    <file>icons/info.png</file>
+    <file>icons/warning.png</file>
   </qresource>
   <qresource prefix="Other">
-    <file>icons/convert.ico</file>
-    <file>icons/clear.ico</file>
-    <file>icons/document_new.ico</file>
-    <file>icons/folder_new.ico</file>
+    <file>icons/clear.png</file>
+    <file>icons/convert.png</file>
+    <file>icons/document_new.png</file>
+    <file>icons/folder_new.png</file>
   </qresource>
 </RCC>

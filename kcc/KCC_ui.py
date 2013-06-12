@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Tue Jun 11 23:27:52 2013
+# Created: Wed Jun 12 07:53:31 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -95,7 +95,7 @@ class Ui_KCC(object):
         self.ConvertButton.setFont(font)
         self.ConvertButton.setFocusPolicy(QtCore.Qt.NoFocus)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/convert.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/convert.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ConvertButton.setIcon(icon1)
         self.ConvertButton.setObjectName(_fromUtf8("ConvertButton"))
         self.DirectoryButton = QtGui.QPushButton(self.Form)
@@ -105,7 +105,7 @@ class Ui_KCC(object):
         self.DirectoryButton.setFont(font)
         self.DirectoryButton.setFocusPolicy(QtCore.Qt.NoFocus)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/folder_new.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/folder_new.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.DirectoryButton.setIcon(icon2)
         self.DirectoryButton.setObjectName(_fromUtf8("DirectoryButton"))
         self.FileButton = QtGui.QPushButton(self.Form)
@@ -115,7 +115,7 @@ class Ui_KCC(object):
         self.FileButton.setFont(font)
         self.FileButton.setFocusPolicy(QtCore.Qt.NoFocus)
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/document_new.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/document_new.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.FileButton.setIcon(icon3)
         self.FileButton.setObjectName(_fromUtf8("FileButton"))
         self.ClearButton = QtGui.QPushButton(self.Form)
@@ -125,7 +125,7 @@ class Ui_KCC(object):
         self.ClearButton.setFont(font)
         self.ClearButton.setFocusPolicy(QtCore.Qt.NoFocus)
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/clear.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/Other/icons/clear.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ClearButton.setIcon(icon4)
         self.ClearButton.setObjectName(_fromUtf8("ClearButton"))
         self.OptionsBasic = QtGui.QFrame(self.Form)
