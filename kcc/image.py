@@ -108,8 +108,7 @@ class ProfileData:
 class ComicPage:
     def __init__(self, source, device):
         try:
-            self.profile = device
-            self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = ProfileData.Profiles[device]
+            self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = device
         except KeyError:
             raise RuntimeError('Unexpected output device %s' % device)
         try:
