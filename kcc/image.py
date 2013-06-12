@@ -260,7 +260,8 @@ class ComicPage:
             diff -= delta
             pageNumberCut2 = diff
             diff += delta
-            oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg - pageNumberCut2))).var[0]
+            oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg,
+                                                      heightImg - pageNumberCut2))).var[0]
             while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg - pageNumberCut2))).var[0]\
                     < fixedThreshold + oldStat and diff < heightImg / 4:
                 diff += delta
@@ -268,8 +269,8 @@ class ComicPage:
             pageNumberCut3 = diff
             delta = 5
             diff = delta
-            while ImageStat.Stat(self.image.crop((0, heightImg - pageNumberCut2, diff, heightImg))).var[0] < fixedThreshold\
-                    and diff < widthImg:
+            while ImageStat.Stat(self.image.crop((0, heightImg - pageNumberCut2, diff, heightImg))).var[0]\
+                    < fixedThreshold and diff < widthImg:
                 diff += delta
             diff -= delta
             pageNumberX1 = diff
