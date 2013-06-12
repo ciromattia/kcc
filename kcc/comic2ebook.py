@@ -181,10 +181,10 @@ def buildNCX(dstdir, title, chapters):
     return
 
 
-def buildOPF(profile, dstdir, title, filelist, cover=None):
+def buildOPF(dstdir, title, filelist, cover=None):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
     # read the first file resolution
-    profilelabel, deviceres, palette, gamma, panelviewsize = image.ProfileData.Profiles[profile]
+    profilelabel, deviceres, palette, gamma, panelviewsize = options.profileData
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if options.righttoleft:
         writingmode = "horizontal-rl"
@@ -381,7 +381,7 @@ def fileImgProcess(work):
     else:
         print ".",
     fileImgProcess.queue.put(".")
-    img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
+    img = image.ComicPage(os.path.join(dirpath, afile), options.profileData)
     if options.nosplitrotate:
         split = None
     else:
@@ -396,10 +396,10 @@ def fileImgProcess(work):
             toRight1 = True
             toRight2 = False
         output = pagenumber
-        img0 = image.ComicPage(split[0], options.profile)
+        img0 = image.ComicPage(split[0], options.profileData)
         applyImgOptimization(img0, True, toRight1, options)
         img0.saveToDir(dirpath, options.forcepng, options.forcecolor)
-        img1 = image.ComicPage(split[1], options.profile)
+        img1 = image.ComicPage(split[1], options.profileData)
         applyImgOptimization(img1, True, toRight2, options)
         img1.saveToDir(dirpath, options.forcepng, options.forcecolor)
     else:
@@ -413,7 +413,7 @@ def genEpubStruct(path):
     filelist = []
     chapterlist = []
     cover = None
-    _, deviceres, _, _, panelviewsize = image.ProfileData.Profiles[options.profile]
+    _, deviceres, _, _, panelviewsize = options.profileData
     sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w')
@@ -553,7 +553,7 @@ def genEpubStruct(path):
     convert = lambda text: int(text) if text.isdigit() else text
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
-    buildOPF(options.profile, path, options.title, filelist, cover)
+    buildOPF(path, options.title, filelist, cover)
     if options.landscapemode and splitCount > 0:
         filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
 
@@ -665,6 +665,10 @@ def main(argv=None, qtGUI=None):
                       help="Do not try to cut page numbering on images [Default=True]")
     parser.add_option("-o", "--output", action="store", dest="output", default=None,
                       help="Output generated file (EPUB or CBZ) to specified directory or file")
+    parser.add_option("--customwidth", type="int", dest="customwidth", default=0,
+                      help="Replace screen width provided by device profile [Default=0]")
+    parser.add_option("--customheight", type="int", dest="customheight", default=0,
+                      help="Replace screen height provided by device profile [Default=0]")
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="Verbose output [Default=False]")
     options, args = parser.parse_args(argv)
@@ -754,6 +758,19 @@ def checkOptions():
     if options.rotate:
         options.panelview = True
         options.landscapemode = False
+    # Override profile data
+    if options.customwidth != 0 or options.customheight != 0:
+        X = image.ProfileData.Profiles[options.profile][1][0]
+        Y = image.ProfileData.Profiles[options.profile][1][1]
+        if options.customwidth != 0:
+            X = options.customwidth
+        if options.customheight != 0:
+            Y = options.customheight
+        newProfile = ("Custom", (X, Y), image.ProfileData.Palette16, image.ProfileData.Profiles[options.profile][3],
+                      (int(X*1.5), int(Y*1.5)))
+        image.ProfileData.Profiles["Custom"] = newProfile
+        options.profile = "Custom"
+    options.profileData = image.ProfileData.Profiles[options.profile]
 
 
 def getEpubPath():
