@@ -33,7 +33,10 @@ from shutil import rmtree
 from shutil import make_archive
 from optparse import OptionParser
 from multiprocessing import Pool, Queue, freeze_support
-from PyQt4 import QtCore
+try:
+    from PyQt4 import QtCore
+except ImportError:
+    QtCore = None
 import image
 import cbxarchive
 import pdfjpgextract
@@ -630,7 +633,7 @@ def Usage():
 
 
 def main(argv=None, qtGUI=None):
-    global parser, options, epub_path, splitCount
+    global parser, options, epub_path, splitCount, GUI
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
@@ -674,9 +677,10 @@ def main(argv=None, qtGUI=None):
     options, args = parser.parse_args(argv)
     checkOptions()
     if qtGUI:
-        global GUI
         GUI = qtGUI
         GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
+    else:
+        GUI = None
     if len(args) != 1:
         parser.print_help()
         return
