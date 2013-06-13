@@ -58,6 +58,6 @@ setup(
     license="ISC License (ISCL)",
     keywords="kindle comic mobipocket mobi cbz cbr manga",
     url="http://github.com/ciromattia/kcc",
-    packages=['KCC'], requires=['Pillow'],
+    packages=['kcc'], requires=['Pillow'],
     **extra_options
 )
