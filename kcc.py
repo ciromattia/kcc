@@ -25,12 +25,16 @@ __docformat__ = 'restructuredtext en'
 import sys
 import os
 from PyQt4 import QtGui
-from kcc import KCC_gui, KCC_ui
+from kcc import KCC_gui
 from multiprocessing import freeze_support
 
-freeze_support()
 if sys.platform == 'darwin':
     os.environ['PATH'] = '/usr/local/bin:' + os.environ['PATH']
+    from kcc import KCC_ui_osx as KCC_ui
+else:
+    from kcc import KCC_ui
+
+freeze_support()
 app = QtGui.QApplication(sys.argv)
 KCC = QtGui.QMainWindow()
 ui = KCC_ui.Ui_KCC()

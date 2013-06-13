@@ -47,8 +47,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>254</y>
+      <x>9</x>
+      <y>250</y>
       <width>421</width>
       <height>61</height>
      </rect>
@@ -61,6 +61,11 @@
     <layout class="QGridLayout" name="gridLayout">
      <item row="1" column="0">
       <widget class="QCheckBox" name="ProcessingBox">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -74,6 +79,11 @@
      </item>
      <item row="1" column="1">
       <widget class="QCheckBox" name="UpscaleBox">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -87,6 +97,11 @@
      </item>
      <item row="3" column="1">
       <widget class="QCheckBox" name="StretchBox">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -100,6 +115,11 @@
      </item>
      <item row="3" column="2">
       <widget class="QCheckBox" name="NoDitheringBox">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -113,6 +133,11 @@
      </item>
      <item row="3" column="0">
       <widget class="QCheckBox" name="BorderBox">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -126,6 +151,11 @@
      </item>
      <item row="1" column="2">
       <widget class="QCheckBox" name="NoRotateBox">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -144,13 +174,13 @@
      <rect>
       <x>10</x>
       <y>200</y>
-      <width>141</width>
+      <width>151</width>
       <height>31</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>8</pointsize>
+      <pointsize>11</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
@@ -171,7 +201,7 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>8</pointsize>
+      <pointsize>11</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
@@ -186,13 +216,13 @@
      <rect>
       <x>160</x>
       <y>200</y>
-      <width>91</width>
-      <height>32</height>
+      <width>101</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>9</pointsize>
+      <pointsize>11</pointsize>
       <weight>75</weight>
       <bold>true</bold>
      </font>
@@ -213,13 +243,13 @@
      <rect>
       <x>10</x>
       <y>160</y>
-      <width>141</width>
-      <height>32</height>
+      <width>151</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>8</pointsize>
+      <pointsize>11</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
@@ -239,12 +269,12 @@
       <x>260</x>
       <y>160</y>
       <width>151</width>
-      <height>32</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>8</pointsize>
+      <pointsize>11</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
@@ -263,13 +293,13 @@
      <rect>
       <x>160</x>
       <y>160</y>
-      <width>91</width>
-      <height>32</height>
+      <width>101</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>8</pointsize>
+      <pointsize>11</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
@@ -306,6 +336,11 @@
        <height>18</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
@@ -328,6 +363,11 @@
        <height>18</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
@@ -349,6 +389,11 @@
        <width>130</width>
        <height>18</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
      </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
@@ -373,6 +418,11 @@
       <height>101</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
     <property name="focusPolicy">
      <enum>Qt::NoFocus</enum>
     </property>
@@ -388,13 +438,15 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>141</width>
-      <height>32</height>
+      <width>151</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>9</pointsize>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
      </font>
     </property>
     <property name="focusPolicy">
@@ -409,13 +461,15 @@
      <rect>
       <x>160</x>
       <y>10</y>
-      <width>91</width>
-      <height>32</height>
+      <width>101</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>9</pointsize>
+      <pointsize>12</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
      </font>
     </property>
     <property name="focusPolicy">
@@ -431,12 +485,12 @@
       <x>260</x>
       <y>10</y>
       <width>151</width>
-      <height>32</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>9</pointsize>
+      <pointsize>12</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
@@ -471,6 +525,13 @@
        <width>100</width>
        <height>40</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
      </property>
      <property name="toolTip">
       <string>When converting color images setting this option to 1.0 MIGHT improve readability.</string>
@@ -517,6 +578,13 @@
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
       <widget class="QLabel" name="wLabel">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
        <property name="toolTip">
         <string>Device profile width will be overwritten by this value.</string>
        </property>
@@ -527,6 +595,11 @@
      </item>
      <item row="0" column="1">
       <widget class="QLineEdit" name="customWidth">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="focusPolicy">
         <enum>Qt::ClickFocus</enum>
        </property>
@@ -546,6 +619,13 @@
      </item>
      <item row="0" column="2">
       <widget class="QLabel" name="hLabel">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
        <property name="toolTip">
         <string>Device profile height will be overwritten by this value.</string>
        </property>
@@ -556,6 +636,11 @@
      </item>
      <item row="0" column="3">
       <widget class="QLineEdit" name="customHeight">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="focusPolicy">
         <enum>Qt::ClickFocus</enum>
        </property>
@@ -581,7 +666,7 @@
       <x>10</x>
       <y>10</y>
       <width>401</width>
-      <height>31</height>
+      <height>35</height>
      </rect>
     </property>
     <property name="font">
@@ -590,6 +675,9 @@
       <weight>75</weight>
       <bold>true</bold>
      </font>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
     </property>
     <property name="value">
      <number>0</number>
@@ -601,6 +689,21 @@
      <string/>
     </property>
    </widget>
+   <zorder>ExpertModeButton</zorder>
+   <zorder>AdvModeButton</zorder>
+   <zorder>BasicModeButton</zorder>
+   <zorder>ProgressBar</zorder>
+   <zorder>JobList</zorder>
+   <zorder>OptionsAdvanced</zorder>
+   <zorder>DeviceBox</zorder>
+   <zorder>FormatBox</zorder>
+   <zorder>ConvertButton</zorder>
+   <zorder>DirectoryButton</zorder>
+   <zorder>FileButton</zorder>
+   <zorder>ClearButton</zorder>
+   <zorder>OptionsBasic</zorder>
+   <zorder>OptionsAdvancedGamma</zorder>
+   <zorder>OptionsExpert</zorder>
   </widget>
   <action name="ActionBasic">
    <property name="checkable">
