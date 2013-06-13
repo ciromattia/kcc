@@ -40,7 +40,14 @@ elif platform == "win32":
                                 appendScriptToLibrary=False,
                                 compress=True)])
 else:
-    exit(0)
+    extra_options = dict(
+        options={"build_exe": {"include_files": includefiles, "excludes": excludes, "compressed": True}},
+        executables=[Executable(MAIN,
+                                icon="icons/comic2ebook.png",
+                                copyDependentFiles=True,
+                                appendScriptToExe=True,
+                                appendScriptToLibrary=False,
+                                compress=True)])
 
 setup(
     name=NAME,

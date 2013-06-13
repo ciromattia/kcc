@@ -99,11 +99,11 @@ class WorkerThread(QtCore.QThread):
         GUI.JobList.clear()
         for job in currentJobs:
             errors = False
-            self.emit(QtCore.SIGNAL("addMessage"), 'Source: ' + job, icons.info)
+            self.emit(QtCore.SIGNAL("addMessage"), 'Source: ' + job, 'info')
             if str(GUI.FormatBox.currentText()) == 'CBZ':
-                self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file...', icons.info)
+                self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file...', 'info')
             else:
-                self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file...', icons.info)
+                self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file...', 'info')
             jobargv = list(argv)
             jobargv.append(job)
             try:
@@ -116,16 +116,16 @@ class WorkerThread(QtCore.QThread):
                                            "Error on file %s:\n%s\nTraceback:\n%s"
                                            % (jobargv[-1], str(err), traceback.format_tb(traceback_)),
                                            QtGui.QMessageBox.Ok)
-                self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create EPUB!', icons.error)
+                self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create EPUB!', 'error')
                 continue
             if not errors:
                 if str(GUI.FormatBox.currentText()) == 'CBZ':
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file... Done!', icons.info, True)
+                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file... Done!', 'info', True)
                 else:
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file... Done!', icons.info, True)
+                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file... Done!', 'info', True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
                     if not os.path.getsize(outputPath) > 314572800:
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file...', icons.info)
+                        self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file...', 'info')
                         self.emit(QtCore.SIGNAL("progressBarTick"), 1)
                         try:
                             retcode = call('kindlegen "' + outputPath + '"', shell=True)
@@ -133,8 +133,8 @@ class WorkerThread(QtCore.QThread):
                             continue
                         self.emit(QtCore.SIGNAL("hideProgressBar"))
                         if retcode == 0:
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... Done!', icons.info, True)
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header...', icons.info)
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... Done!', 'info', True)
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header...', 'info')
                             os.remove(outputPath)
                             mobiPath = outputPath.replace('.epub', '.mobi')
                             shutil.move(mobiPath, mobiPath + '_tostrip')
@@ -146,27 +146,27 @@ class WorkerThread(QtCore.QThread):
                             if not errors:
                                 os.remove(mobiPath + '_tostrip')
                                 self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header... Done!',
-                                          icons.info, True)
+                                          'info', True)
                             else:
                                 shutil.move(mobiPath + '_tostrip', mobiPath)
                                 self.emit(QtCore.SIGNAL("addMessage"),
-                                          'KindleStrip failed to remove SRCS header!', icons.warning)
+                                          'KindleStrip failed to remove SRCS header!', 'warning')
                                 self.emit(QtCore.SIGNAL("addMessage"),
                                           'MOBI file will work correctly but it will be highly oversized.',
-                                          icons.warning)
+                                          'warning')
                         else:
                             os.remove(outputPath)
                             os.remove(outputPath.replace('.epub', '.mobi'))
-                            self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', icons.error)
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Try converting smaller batch.', icons.error)
+                            self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', 'error')
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Try converting smaller batch.', 'error')
                     else:
                         os.remove(outputPath)
                         self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file is too big for KindleGen!',
-                                  icons.error)
+                                  'error')
                         self.emit(QtCore.SIGNAL("addMessage"), 'Try converting smaller batch.',
-                                  icons.error)
+                                  'error')
         self.parent.needClean = True
-        self.emit(QtCore.SIGNAL("addMessage"), 'All jobs completed.', icons.warning)
+        self.emit(QtCore.SIGNAL("addMessage"), 'All jobs completed.', 'warning')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
 
 
@@ -308,6 +308,7 @@ class Ui_KCC(object):
 
     def addMessage(self, message, icon=None, replace=False):
         if icon:
+            icon = eval('self.icons.' + icon)
             item = QtGui.QListWidgetItem(icon, message)
         else:
             item = QtGui.QListWidgetItem(message)
@@ -332,7 +333,7 @@ class Ui_KCC(object):
             self.needClean = False
             GUI.JobList.clear()
         if GUI.JobList.count() == 0:
-            self.addMessage('No files selected! Please choose files to convert.', icons.error)
+            self.addMessage('No files selected! Please choose files to convert.', 'error')
             self.needClean = True
             return
         self.thread.start()
@@ -347,11 +348,11 @@ class Ui_KCC(object):
         self.settings.sync()
 
     def __init__(self, ui, KCC):
-        global GUI, MainWindow, icons
+        global GUI, MainWindow
         GUI = ui
         MainWindow = KCC
         profiles = sorted(ProfileData.ProfileLabels.iterkeys())
-        icons = Icons()
+        self.icons = Icons()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.lastDevice = self.settings.value('lastDevice', 10, type=int)
@@ -359,20 +360,20 @@ class Ui_KCC(object):
         self.needClean = True
         self.GammaValue = 0
 
-        self.addMessage('Welcome!', icons.info)
-        self.addMessage('Remember: All options have additional informations in tooltips.', icons.info)
+        self.addMessage('Welcome!', 'info')
+        self.addMessage('Remember: All options have additional informations in tooltips.', 'info')
         if call('kindlegen', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
             self.KindleGen = True
             formats = ['MOBI', 'EPUB', 'CBZ']
         else:
             self.KindleGen = False
             formats = ['EPUB', 'CBZ']
-            self.addMessage('Not found KindleGen! Creating MOBI files is disabled.', icons.warning)
+            self.addMessage('Not found KindleGen! Creating MOBI files is disabled.', 'warning')
         if call('unrar', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
             self.UnRAR = True
         else:
             self.UnRAR = False
-            self.addMessage('Not found UnRAR! Processing of CBR/RAR files is disabled.', icons.warning)
+            self.addMessage('Not found UnRAR! Processing of CBR/RAR files is disabled.', 'warning')
 
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
@@ -389,10 +390,10 @@ class Ui_KCC(object):
         KCC.closeEvent = self.saveSettings
 
         for profile in profiles:
-            GUI.DeviceBox.addItem(icons.deviceKindle, profile)
+            GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
         GUI.DeviceBox.setCurrentIndex(self.lastDevice)
         for f in formats:
-            GUI.FormatBox.addItem(eval('icons.' + f + 'Format'), f)
+            GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
         GUI.FormatBox.setCurrentIndex(0)
 
         self.modeBasic()
