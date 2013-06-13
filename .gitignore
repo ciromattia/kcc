@@ -6,3 +6,4 @@ build
 dist
 kindlegen*
 .DS_Store
+Thumbs.db
