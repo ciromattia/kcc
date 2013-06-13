@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Wed Jun 12 07:53:31 2013
+# Created: Thu Jun 13 12:01:26 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -75,21 +75,21 @@ class Ui_KCC(object):
         self.DeviceBox = QtGui.QComboBox(self.Form)
         self.DeviceBox.setGeometry(QtCore.QRect(10, 200, 141, 31))
         font = QtGui.QFont()
-        font.setPointSize(8)
+        font.setPointSize(10)
         self.DeviceBox.setFont(font)
         self.DeviceBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.DeviceBox.setObjectName(_fromUtf8("DeviceBox"))
         self.FormatBox = QtGui.QComboBox(self.Form)
         self.FormatBox.setGeometry(QtCore.QRect(260, 200, 151, 31))
         font = QtGui.QFont()
-        font.setPointSize(8)
+        font.setPointSize(10)
         self.FormatBox.setFont(font)
         self.FormatBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.FormatBox.setObjectName(_fromUtf8("FormatBox"))
         self.ConvertButton = QtGui.QPushButton(self.Form)
         self.ConvertButton.setGeometry(QtCore.QRect(160, 200, 91, 32))
         font = QtGui.QFont()
-        font.setPointSize(9)
+        font.setPointSize(11)
         font.setBold(True)
         font.setWeight(75)
         self.ConvertButton.setFont(font)
@@ -101,7 +101,7 @@ class Ui_KCC(object):
         self.DirectoryButton = QtGui.QPushButton(self.Form)
         self.DirectoryButton.setGeometry(QtCore.QRect(10, 160, 141, 32))
         font = QtGui.QFont()
-        font.setPointSize(8)
+        font.setPointSize(10)
         self.DirectoryButton.setFont(font)
         self.DirectoryButton.setFocusPolicy(QtCore.Qt.NoFocus)
         icon2 = QtGui.QIcon()
@@ -111,7 +111,7 @@ class Ui_KCC(object):
         self.FileButton = QtGui.QPushButton(self.Form)
         self.FileButton.setGeometry(QtCore.QRect(260, 160, 151, 32))
         font = QtGui.QFont()
-        font.setPointSize(8)
+        font.setPointSize(10)
         self.FileButton.setFont(font)
         self.FileButton.setFocusPolicy(QtCore.Qt.NoFocus)
         icon3 = QtGui.QIcon()
@@ -121,7 +121,7 @@ class Ui_KCC(object):
         self.ClearButton = QtGui.QPushButton(self.Form)
         self.ClearButton.setGeometry(QtCore.QRect(160, 160, 91, 32))
         font = QtGui.QFont()
-        font.setPointSize(8)
+        font.setPointSize(10)
         self.ClearButton.setFont(font)
         self.ClearButton.setFocusPolicy(QtCore.Qt.NoFocus)
         icon4 = QtGui.QIcon()
