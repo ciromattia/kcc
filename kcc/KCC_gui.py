@@ -308,7 +308,7 @@ class Ui_KCC(object):
 
     def addMessage(self, message, icon=None, replace=False):
         if icon:
-            icon = eval('icons.' + icon)
+            icon = eval('self.icons.' + icon)
             item = QtGui.QListWidgetItem(icon, message)
         else:
             item = QtGui.QListWidgetItem(message)
@@ -348,11 +348,11 @@ class Ui_KCC(object):
         self.settings.sync()
 
     def __init__(self, ui, KCC):
-        global GUI, MainWindow, icons
+        global GUI, MainWindow
         GUI = ui
         MainWindow = KCC
         profiles = sorted(ProfileData.ProfileLabels.iterkeys())
-        icons = Icons()
+        self.icons = Icons()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.lastDevice = self.settings.value('lastDevice', 10, type=int)
@@ -390,10 +390,10 @@ class Ui_KCC(object):
         KCC.closeEvent = self.saveSettings
 
         for profile in profiles:
-            GUI.DeviceBox.addItem(icons.deviceKindle, profile)
+            GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
         GUI.DeviceBox.setCurrentIndex(self.lastDevice)
         for f in formats:
-            GUI.FormatBox.addItem(eval('icons.' + f + 'Format'), f)
+            GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
         GUI.FormatBox.setCurrentIndex(0)
 
         self.modeBasic()
