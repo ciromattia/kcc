@@ -48,7 +48,7 @@
     <property name="geometry">
      <rect>
       <x>9</x>
-      <y>250</y>
+      <y>253</y>
       <width>421</width>
       <height>61</height>
      </rect>
@@ -172,10 +172,10 @@
    <widget class="QComboBox" name="DeviceBox">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>8</x>
       <y>200</y>
       <width>151</width>
-      <height>31</height>
+      <height>34</height>
      </rect>
     </property>
     <property name="font">
@@ -193,10 +193,10 @@
    <widget class="QComboBox" name="FormatBox">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>262</x>
       <y>200</y>
-      <width>151</width>
-      <height>31</height>
+      <width>152</width>
+      <height>34</height>
      </rect>
     </property>
     <property name="font">
@@ -241,9 +241,9 @@
    <widget class="QPushButton" name="DirectoryButton">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>5</x>
       <y>160</y>
-      <width>151</width>
+      <width>156</width>
       <height>41</height>
      </rect>
     </property>
@@ -268,7 +268,7 @@
      <rect>
       <x>260</x>
       <y>160</y>
-      <width>151</width>
+      <width>157</width>
       <height>41</height>
      </rect>
     </property>
@@ -317,7 +317,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>230</y>
+      <y>233</y>
       <width>421</width>
       <height>41</height>
      </rect>
@@ -436,9 +436,9 @@
    <widget class="QPushButton" name="BasicModeButton">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>5</x>
       <y>10</y>
-      <width>151</width>
+      <width>156</width>
       <height>41</height>
      </rect>
     </property>
@@ -484,7 +484,7 @@
      <rect>
       <x>260</x>
       <y>10</y>
-      <width>151</width>
+      <width>157</width>
       <height>41</height>
      </rect>
     </property>
@@ -689,10 +689,9 @@
      <string/>
     </property>
    </widget>
+   <zorder>BasicModeButton</zorder>
    <zorder>ExpertModeButton</zorder>
    <zorder>AdvModeButton</zorder>
-   <zorder>BasicModeButton</zorder>
-   <zorder>ProgressBar</zorder>
    <zorder>JobList</zorder>
    <zorder>OptionsAdvanced</zorder>
    <zorder>DeviceBox</zorder>
@@ -704,6 +703,7 @@
    <zorder>OptionsBasic</zorder>
    <zorder>OptionsAdvancedGamma</zorder>
    <zorder>OptionsExpert</zorder>
+   <zorder>ProgressBar</zorder>
   </widget>
   <action name="ActionBasic">
    <property name="checkable">

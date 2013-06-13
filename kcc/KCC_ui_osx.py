@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-OSX.ui'
 #
-# Created: Thu Jun 13 18:32:09 2013
+# Created: Thu Jun 13 18:52:47 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -41,7 +41,7 @@ class Ui_KCC(object):
         self.Form.setObjectName(_fromUtf8("Form"))
         self.OptionsAdvanced = QtGui.QFrame(self.Form)
         self.OptionsAdvanced.setEnabled(True)
-        self.OptionsAdvanced.setGeometry(QtCore.QRect(9, 250, 421, 61))
+        self.OptionsAdvanced.setGeometry(QtCore.QRect(9, 253, 421, 61))
         font = QtGui.QFont()
         font.setPointSize(9)
         self.OptionsAdvanced.setFont(font)
@@ -91,14 +91,14 @@ class Ui_KCC(object):
         self.NoRotateBox.setObjectName(_fromUtf8("NoRotateBox"))
         self.gridLayout.addWidget(self.NoRotateBox, 1, 2, 1, 1)
         self.DeviceBox = QtGui.QComboBox(self.Form)
-        self.DeviceBox.setGeometry(QtCore.QRect(10, 200, 151, 31))
+        self.DeviceBox.setGeometry(QtCore.QRect(8, 200, 151, 34))
         font = QtGui.QFont()
         font.setPointSize(11)
         self.DeviceBox.setFont(font)
         self.DeviceBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.DeviceBox.setObjectName(_fromUtf8("DeviceBox"))
         self.FormatBox = QtGui.QComboBox(self.Form)
-        self.FormatBox.setGeometry(QtCore.QRect(260, 200, 151, 31))
+        self.FormatBox.setGeometry(QtCore.QRect(262, 200, 152, 34))
         font = QtGui.QFont()
         font.setPointSize(11)
         self.FormatBox.setFont(font)
@@ -117,7 +117,7 @@ class Ui_KCC(object):
         self.ConvertButton.setIcon(icon1)
         self.ConvertButton.setObjectName(_fromUtf8("ConvertButton"))
         self.DirectoryButton = QtGui.QPushButton(self.Form)
-        self.DirectoryButton.setGeometry(QtCore.QRect(10, 160, 151, 41))
+        self.DirectoryButton.setGeometry(QtCore.QRect(5, 160, 156, 41))
         font = QtGui.QFont()
         font.setPointSize(11)
         self.DirectoryButton.setFont(font)
@@ -127,7 +127,7 @@ class Ui_KCC(object):
         self.DirectoryButton.setIcon(icon2)
         self.DirectoryButton.setObjectName(_fromUtf8("DirectoryButton"))
         self.FileButton = QtGui.QPushButton(self.Form)
-        self.FileButton.setGeometry(QtCore.QRect(260, 160, 151, 41))
+        self.FileButton.setGeometry(QtCore.QRect(260, 160, 157, 41))
         font = QtGui.QFont()
         font.setPointSize(11)
         self.FileButton.setFont(font)
@@ -147,7 +147,7 @@ class Ui_KCC(object):
         self.ClearButton.setIcon(icon4)
         self.ClearButton.setObjectName(_fromUtf8("ClearButton"))
         self.OptionsBasic = QtGui.QFrame(self.Form)
-        self.OptionsBasic.setGeometry(QtCore.QRect(10, 230, 421, 41))
+        self.OptionsBasic.setGeometry(QtCore.QRect(10, 233, 421, 41))
         font = QtGui.QFont()
         font.setPointSize(9)
         self.OptionsBasic.setFont(font)
@@ -185,7 +185,7 @@ class Ui_KCC(object):
         self.JobList.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.JobList.setObjectName(_fromUtf8("JobList"))
         self.BasicModeButton = QtGui.QPushButton(self.Form)
-        self.BasicModeButton.setGeometry(QtCore.QRect(10, 10, 151, 41))
+        self.BasicModeButton.setGeometry(QtCore.QRect(5, 10, 156, 41))
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(False)
@@ -203,7 +203,7 @@ class Ui_KCC(object):
         self.AdvModeButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.AdvModeButton.setObjectName(_fromUtf8("AdvModeButton"))
         self.ExpertModeButton = QtGui.QPushButton(self.Form)
-        self.ExpertModeButton.setGeometry(QtCore.QRect(260, 10, 151, 41))
+        self.ExpertModeButton.setGeometry(QtCore.QRect(260, 10, 157, 41))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.ExpertModeButton.setFont(font)
