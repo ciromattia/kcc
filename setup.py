@@ -15,12 +15,12 @@ VERSION = "3.0"
 MAIN = "kcc.py"
 
 includefiles = ['LICENSE.txt']
-includes = ['sip', 'atexit', 'PyQt4.QtCore']
-excludes = ['curses', 'email', 'tcl', 'ttk']
+includes = []
+excludes = []
 
 if platform == "darwin":
     extra_options = dict(
-        options={"build_exe": {"include_files": includefiles, "includes": includes, "excludes": excludes, "compressed": True},
+        options={"build_exe": {"include_files": includefiles, "excludes": excludes, "compressed": True},
                  "bdist_mac": {"iconfile": "icons/comic2ebook.icns"}},
         executables=[Executable(MAIN,
                                 copyDependentFiles=True,
@@ -30,7 +30,7 @@ if platform == "darwin":
 elif platform == "win32":
     base = "Win32GUI"
     extra_options = dict(
-        options={"build_exe": {"include_files": includefiles, "includes": includes, "excludes": excludes, "compressed": True}},
+        options={"build_exe": {"include_files": includefiles, "excludes": excludes, "compressed": True}},
         executables=[Executable(MAIN,
                                 base=base,
                                 targetName="KCC.exe",
