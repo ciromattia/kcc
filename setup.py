@@ -1,11 +1,14 @@
 """
 cx_Freeze build script for KCC.
 
-Usage (Mac OS X):
-    python setup.py bdist_mac
-
 Usage (Windows):
     python setup.py build
+
+Usage (Linux):
+    python setup.py build
+
+Usage (OS X):
+    python setup.py bdist_mac
 """
 from sys import platform
 from cx_Freeze import setup, Executable
@@ -40,7 +43,14 @@ elif platform == "win32":
                                 appendScriptToLibrary=False,
                                 compress=True)])
 else:
-    exit(0)
+    extra_options = dict(
+        options={"build_exe": {"include_files": includefiles, "excludes": excludes, "compressed": True}},
+        executables=[Executable(MAIN,
+                                icon="icons/comic2ebook.png",
+                                copyDependentFiles=True,
+                                appendScriptToExe=True,
+                                appendScriptToLibrary=False,
+                                compress=True)])
 
 setup(
     name=NAME,
@@ -51,6 +61,6 @@ setup(
     license="ISC License (ISCL)",
     keywords="kindle comic mobipocket mobi cbz cbr manga",
     url="http://github.com/ciromattia/kcc",
-    packages=['KCC'], requires=['PIL'],
+    packages=['kcc'], requires=['PIL'],
     **extra_options
 )
