@@ -39,7 +39,7 @@ In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/1680610
 
 ## OPTIONAL REQUIREMENTS
 - [kindlegen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.8+ in a directory reachable by your PATH or in KCC directory *(For .mobi generation)*
-- [unrar](http://www.rarlab.com/download.htm) *(For CBR support)*
+- [unrar](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
 
 ### For compiling/running from source:
 - Python 2.7+ - Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows.
@@ -54,7 +54,7 @@ In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/1680610
 * Use high quality source files. This little detail have a major impact on the final result.
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
-* Output MOBI file should be sideuploaded via USB. Other methods (e.g. via Calibre) will corrupt it.
+* Output MOBI file should be uploaded via USB. Other methods (e.g. via Calibre) will corrupt it.
 * If you're converting color images and the end result is not satisfactory, experiment with gamma correction option (first try 1.0 setting).
 
 ### GUI 
@@ -106,6 +106,16 @@ The app relies and includes the following scripts/binaries:
  - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC Attribution-NonCommercial-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
 
+## SAMPLE FILES CREATED BY KCC
+* [Kindle Keyboard](http://kcc.vulturis.eu/Samples/Ubunchu!-K3.mobi)
+* [Kindle DX](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
+* [Kindle DXG](http://kcc.vulturis.eu/Samples/Ubunchu!-KDXG.mobi)
+* [Kindle Non-Touch](http://kcc.vulturis.eu/Samples/Ubunchu!-K4NT.mobi)
+* [Kindle Touch](http://kcc.vulturis.eu/Samples/Ubunchu!-K4T.mobi)
+* [Kindle Paperwhite](http://kcc.vulturis.eu/Samples/Ubunchu!-KPW.mobi)
+* [Kindle Fire](http://kcc.vulturis.eu/Samples/Ubunchu!-KF.mobi)
+* [Kindle Fire HD](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD.mobi)
+* [Kindle Fire HD 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD8.mobi)
 
 ## CHANGELOG
 ####1.00
