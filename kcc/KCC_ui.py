@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Thu Jun 13 18:31:57 2013
+# Created: Fri Jun 14 15:02:30 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -34,7 +34,7 @@ class Ui_KCC(object):
         KCC.setFont(font)
         KCC.setFocusPolicy(QtCore.Qt.NoFocus)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icon/icons/comic2ebook.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icon/icons/comic2ebook.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         KCC.setWindowIcon(icon)
         KCC.setLocale(QtCore.QLocale(QtCore.QLocale.C, QtCore.QLocale.AnyCountry))
         self.Form = QtGui.QWidget(KCC)

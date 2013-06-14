@@ -35,7 +35,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="KCC.qrc">
-    <normaloff>:/Icon/icons/comic2ebook.ico</normaloff>:/Icon/icons/comic2ebook.ico</iconset>
+    <normaloff>:/Icon/icons/comic2ebook.png</normaloff>:/Icon/icons/comic2ebook.png</iconset>
   </property>
   <property name="locale">
    <locale language="C" country="AnyCountry"/>
