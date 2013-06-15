@@ -26,11 +26,13 @@ import os
 import sys
 import shutil
 import traceback
+import urllib2
 import comic2ebook
 import kindlestrip
 from image import ProfileData
 from subprocess import call, STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
+from xml.dom.minidom import parse
 
 
 class Icons:
@@ -51,6 +53,26 @@ class Icons:
         self.warning.addPixmap(QtGui.QPixmap(":/Status/icons/warning.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.error = QtGui.QIcon()
         self.error.addPixmap(QtGui.QPixmap(":/Status/icons/error.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+
+
+# noinspection PyBroadException
+class VersionThread(QtCore.QThread):
+    def __init__(self, parent):
+        QtCore.QThread.__init__(self)
+        self.parent = parent
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        try:
+            XML = urllib2.urlopen('http://kcc.vulturis.eu/Version.xml')
+            XML = parse(XML)
+        except Exception:
+            return
+        latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
+        if latestVersion != __version__:
+            self.emit(QtCore.SIGNAL("addMessage"), 'New version is available!', 'warning')
 
 
 # noinspection PyBroadException
@@ -332,7 +354,7 @@ class Ui_KCC(object):
             self.addMessage('No files selected! Please choose files to convert.', 'error')
             self.needClean = True
             return
-        self.thread.start()
+        self.worker.start()
 
     def hideProgressBar(self):
         GUI.ProgressBar.hide()
@@ -352,7 +374,8 @@ class Ui_KCC(object):
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.lastDevice = self.settings.value('lastDevice', 10, type=int)
-        self.thread = WorkerThread(self)
+        self.worker = WorkerThread(self)
+        self.versionCheck = VersionThread(self)
         self.needClean = True
         self.GammaValue = 0
 
@@ -379,10 +402,11 @@ class Ui_KCC(object):
         GUI.FileButton.clicked.connect(self.selectFile)
         GUI.ConvertButton.clicked.connect(self.convertStart)
         GUI.GammaSlider.valueChanged.connect(self.changeGamma)
-        KCC.connect(self.thread, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
-        KCC.connect(self.thread, QtCore.SIGNAL("modeConvert"), self.modeConvert)
-        KCC.connect(self.thread, QtCore.SIGNAL("addMessage"), self.addMessage)
-        KCC.connect(self.thread, QtCore.SIGNAL("hideProgressBar"), self.hideProgressBar)
+        KCC.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
+        KCC.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
+        KCC.connect(self.worker, QtCore.SIGNAL("addMessage"), self.addMessage)
+        KCC.connect(self.worker, QtCore.SIGNAL("hideProgressBar"), self.hideProgressBar)
+        KCC.connect(self.versionCheck, QtCore.SIGNAL("addMessage"), self.addMessage)
         KCC.closeEvent = self.saveSettings
 
         for profile in profiles:
@@ -393,4 +417,5 @@ class Ui_KCC(object):
         GUI.FormatBox.setCurrentIndex(0)
 
         self.modeBasic()
-        GUI.ProgressBar.hide()
+        self.versionCheck.start()
+        self.hideProgressBar()
