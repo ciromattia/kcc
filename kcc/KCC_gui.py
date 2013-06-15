@@ -145,15 +145,13 @@ class WorkerThread(QtCore.QThread):
                                 continue
                             if not errors:
                                 os.remove(mobiPath + '_tostrip')
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header... Done!',
-                                          'info', True)
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header... Done!', 'info', True)
                             else:
                                 shutil.move(mobiPath + '_tostrip', mobiPath)
                                 self.emit(QtCore.SIGNAL("addMessage"),
                                           'KindleStrip failed to remove SRCS header!', 'warning')
                                 self.emit(QtCore.SIGNAL("addMessage"),
-                                          'MOBI file will work correctly but it will be highly oversized.',
-                                          'warning')
+                                          'MOBI file will work correctly but it will be highly oversized.', 'warning')
                         else:
                             os.remove(outputPath)
                             os.remove(outputPath.replace('.epub', '.mobi'))
@@ -161,10 +159,8 @@ class WorkerThread(QtCore.QThread):
                             self.emit(QtCore.SIGNAL("addMessage"), 'Try converting smaller batch.', 'error')
                     else:
                         os.remove(outputPath)
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file is too big for KindleGen!',
-                                  'error')
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Try converting smaller batch.',
-                                  'error')
+                        self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file is too big for KindleGen!', 'error')
+                        self.emit(QtCore.SIGNAL("addMessage"), 'Try converting smaller batch.', 'error')
         self.parent.needClean = True
         self.emit(QtCore.SIGNAL("addMessage"), 'All jobs completed.', 'warning')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
@@ -347,9 +343,9 @@ class Ui_KCC(object):
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
         self.settings.sync()
 
-    def __init__(self, ui, KCC):
+    def __init__(self, UI, KCC):
         global GUI, MainWindow
-        GUI = ui
+        GUI = UI
         MainWindow = KCC
         profiles = sorted(ProfileData.ProfileLabels.iterkeys())
         self.icons = Icons()
