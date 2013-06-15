@@ -35,12 +35,12 @@ else:
     from kcc import KCC_ui
 
 freeze_support()
-app = QtGui.QApplication(sys.argv)
+APP = QtGui.QApplication(sys.argv)
 KCC = QtGui.QMainWindow()
-ui = KCC_ui.Ui_KCC()
-ui.setupUi(KCC)
-gui = KCC_gui.Ui_KCC(ui, KCC)
+UI = KCC_ui.Ui_KCC()
+UI.setupUi(KCC)
+GUI = KCC_gui.Ui_KCC(UI, KCC)
 KCC.setWindowTitle("Kindle Comic Converter " + __version__)
 KCC.show()
 KCC.raise_()
-sys.exit(app.exec_())
+sys.exit(APP.exec_())
