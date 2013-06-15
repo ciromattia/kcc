@@ -66,7 +66,7 @@ class VersionThread(QtCore.QThread):
 
     def run(self):
         try:
-            XML = urllib2.urlopen('http://kcc.vulturis.eu/Version.xml')
+            XML = urllib2.urlopen('http://kcc.vulturis.eu/Version.php')
             XML = parse(XML)
         except Exception:
             return
