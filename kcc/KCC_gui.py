@@ -116,6 +116,8 @@ class WorkerThread(QtCore.QThread):
             argv.append("--customwidth=" + str(GUI.customWidth.text()))
         if str(GUI.customHeight.text()) != '':
             argv.append("--customheight=" + str(GUI.customHeight.text()))
+        if GUI.ColorBox.isChecked():
+            argv.append("--forcecolor")
         for i in range(GUI.JobList.count()):
             currentJobs.append(str(GUI.JobList.item(i).text()))
         GUI.JobList.clear()
@@ -263,6 +265,7 @@ class Ui_KCC(object):
         GUI.GammaSlider.setValue(0)
         GUI.customWidth.setText('')
         GUI.customHeight.setText('')
+        GUI.ColorBox.setChecked(False)
 
     def modeAdvanced(self):
         self.currentMode = 2
@@ -281,9 +284,9 @@ class Ui_KCC(object):
         GUI.OptionsExpert.setEnabled(False)
         GUI.customWidth.setText('')
         GUI.customHeight.setText('')
+        GUI.ColorBox.setChecked(False)
 
     def modeExpert(self):
-        self.modeAdvanced()
         self.currentMode = 3
         MainWindow.setMinimumSize(QtCore.QSize(420, 380))
         MainWindow.setMaximumSize(QtCore.QSize(420, 380))
@@ -291,6 +294,12 @@ class Ui_KCC(object):
         GUI.BasicModeButton.setStyleSheet('font-weight:Normal;')
         GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
         GUI.ExpertModeButton.setStyleSheet('font-weight:Bold;')
+        GUI.FormatBox.setEnabled(True)
+        GUI.ProcessingBox.show()
+        GUI.UpscaleBox.show()
+        GUI.NoRotateBox.show()
+        GUI.OptionsAdvancedGamma.setEnabled(True)
+        GUI.OptionsAdvanced.setEnabled(True)
         GUI.OptionsExpert.setEnabled(True)
 
     def modeConvert(self, enable):

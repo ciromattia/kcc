@@ -466,7 +466,7 @@
     <widget class="QLabel" name="GammaLabel">
      <property name="geometry">
       <rect>
-       <x>8</x>
+       <x>15</x>
        <y>0</y>
        <width>100</width>
        <height>40</height>
@@ -484,7 +484,7 @@
       <rect>
        <x>110</x>
        <y>10</y>
-       <width>271</width>
+       <width>270</width>
        <height>22</height>
       </rect>
      </property>
@@ -504,76 +504,6 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-   </widget>
-   <widget class="QFrame" name="OptionsExpert">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>340</y>
-      <width>381</width>
-      <height>40</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QLabel" name="wLabel">
-       <property name="toolTip">
-        <string>Device profile width will be overwritten by this value.</string>
-       </property>
-       <property name="text">
-        <string>Custom width: </string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="customWidth">
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
-       <property name="acceptDrops">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Device profile width will be overwritten by this value.</string>
-       </property>
-       <property name="inputMask">
-        <string>0000; </string>
-       </property>
-       <property name="maxLength">
-        <number>4</number>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="hLabel">
-       <property name="toolTip">
-        <string>Device profile height will be overwritten by this value.</string>
-       </property>
-       <property name="text">
-        <string>Custom height: </string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QLineEdit" name="customHeight">
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
-       <property name="acceptDrops">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Device profile height will be overwritten by this value.</string>
-       </property>
-       <property name="inputMask">
-        <string>0000; </string>
-       </property>
-       <property name="maxLength">
-        <number>4</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </widget>
    <widget class="QProgressBar" name="ProgressBar">
     <property name="geometry">
@@ -600,6 +530,134 @@
     <property name="format">
      <string/>
     </property>
+   </widget>
+   <widget class="QFrame" name="OptionsExpert">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>337</y>
+      <width>421</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <widget class="QCheckBox" name="ColorBox">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>11</y>
+       <width>130</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>Do not convert images to grayscale.</string>
+     </property>
+     <property name="text">
+      <string>Color mode</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="OptionsExpertInternal">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>0</y>
+       <width>295</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="wLabel">
+        <property name="toolTip">
+         <string>Device profile width will be overwritten by this value.</string>
+        </property>
+        <property name="text">
+         <string>Custom width: </string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="customWidth">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="acceptDrops">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Device profile width will be overwritten by this value.</string>
+        </property>
+        <property name="inputMask">
+         <string>0000; </string>
+        </property>
+        <property name="maxLength">
+         <number>4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="hLabel">
+        <property name="toolTip">
+         <string>Device profile height will be overwritten by this value.</string>
+        </property>
+        <property name="text">
+         <string>Custom height: </string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="customHeight">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="acceptDrops">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Device profile height will be overwritten by this value.</string>
+        </property>
+        <property name="inputMask">
+         <string>0000; </string>
+        </property>
+        <property name="maxLength">
+         <number>4</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </widget>
   </widget>
   <action name="ActionBasic">
