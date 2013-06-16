@@ -668,6 +668,8 @@ def main(argv=None, qtGUI=None):
                       help="Do not try to cut page numbering on images [Default=True]")
     parser.add_option("-o", "--output", action="store", dest="output", default=None,
                       help="Output generated file (EPUB or CBZ) to specified directory or file")
+    parser.add_option("--forcecolor", action="store_true", dest="forcecolor", default=False,
+                      help="Do not convert images to grayscale [Default=False]")
     parser.add_option("--customwidth", type="int", dest="customwidth", default=0,
                       help="Replace screen width provided by device profile [Default=0]")
     parser.add_option("--customheight", type="int", dest="customheight", default=0,
@@ -752,7 +754,7 @@ def checkOptions():
         options.nopanelviewhq = True
     # Disabling grayscale conversion for Kindle Fire family.
     # Forcing JPEG output. For now code can't provide color PNG files.
-    if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
+    if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8' or options.forcecolor:
         options.forcecolor = True
         options.forcepng = False
     else:

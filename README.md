@@ -88,6 +88,7 @@ Options:
   --nocutpagenumbers    Do not try to cut page numbering on images [Default=True]
   -o OUTPUT, --output=OUTPUT
                         Output generated file (EPUB or CBZ) to specified directory or file
+  --forcecolor          Do not convert images to grayscale [Default=False]
   --customwidth=WIDTH   Replace screen width provided by device profile [Default=0]
   --customheight=HEIGHT Replace screen height provided by device profile [Default=0]
   -v, --verbose         Verbose output [Default=False]
@@ -210,6 +211,7 @@ The app relies and includes the following scripts/binaries:
 * New QT GUI
 * Merge with AWKCC
 * Added support for custom width/height
+* Added option to disable color conversion
 
 ## COPYRIGHT
 
