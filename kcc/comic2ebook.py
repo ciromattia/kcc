@@ -569,7 +569,8 @@ def getWorkFolder(afile):
             os.rmdir(workdir)   # needed for copytree() fails if dst already exists
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
             copytree(afile, fullPath)
-            sanitizeTreeReadOnly(fullPath)
+            if sys.platform == 'win32':
+                sanitizeTreeReadOnly(fullPath)
             return workdir
         except OSError:
             raise
