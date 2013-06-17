@@ -31,6 +31,7 @@ from shutil import copyfile
 from shutil import copytree
 from shutil import rmtree
 from shutil import make_archive
+from stat import S_IWRITE
 from optparse import OptionParser
 from multiprocessing import Pool, Queue, freeze_support
 try:
@@ -565,10 +566,11 @@ def getWorkFolder(afile):
     workdir = tempfile.mkdtemp()
     if os.path.isdir(afile):
         try:
-            import shutil
             os.rmdir(workdir)   # needed for copytree() fails if dst already exists
-            copytree(afile, workdir)
-            path = workdir
+            fullPath = os.path.join(workdir, 'OEBPS', 'Images')
+            copytree(afile, fullPath)
+            sanitizeTreeReadOnly(fullPath)
+            return workdir
         except OSError:
             raise
     elif afile.lower().endswith('.pdf'):
@@ -620,6 +622,14 @@ def sanitizeTree(filetree):
                 os.remove(os.path.join(root, name))
             else:
                 os.rename(os.path.join(root, name), os.path.join(root, slugify(name)))
+
+
+def sanitizeTreeReadOnly(filetree):
+    for root, dirs, files in os.walk(filetree, False):
+        for name in files:
+            os.chmod(os.path.join(root, name), S_IWRITE)
+        for name in dirs:
+            os.chmod(os.path.join(root, name), S_IWRITE)
 
 
 def Copyright():
