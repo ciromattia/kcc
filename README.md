@@ -213,6 +213,10 @@ The app relies and includes the following scripts/binaries:
 * Added support for custom width/height
 * Added option to disable color conversion
 
+## KNOWN ISSUES
+* _Add directory_ dialog allow to select multiple directories but they are not added to job list. [QT bug.](https://bugreports.qt-project.org/browse/QTBUG-21372)
+* Removing SRCS headers sometimes fail in 32bit enviroments. Due to memory limitations.
+
 ## COPYRIGHT
 
 Copyright (c) 2012-2013 Ciro Mattia Gonano and Paweł Jastrzębski.  

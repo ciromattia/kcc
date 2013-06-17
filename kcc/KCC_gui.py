@@ -89,7 +89,6 @@ class WorkerThread(QtCore.QThread):
         profile = ProfileData.ProfileLabels[str(GUI.DeviceBox.currentText())]
         argv = ["--profile=" + profile]
         currentJobs = []
-        global errors
         if GUI.MangaBox.isChecked():
             argv.append("--manga-style")
         if GUI.RotateBox.isChecked():
@@ -122,7 +121,7 @@ class WorkerThread(QtCore.QThread):
             currentJobs.append(str(GUI.JobList.item(i).text()))
         GUI.JobList.clear()
         for job in currentJobs:
-            errors = False
+            self.errors = False
             self.emit(QtCore.SIGNAL("addMessage"), 'Source: ' + job, 'info')
             if str(GUI.FormatBox.currentText()) == 'CBZ':
                 self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file...', 'info')
@@ -134,15 +133,14 @@ class WorkerThread(QtCore.QThread):
                 outputPath = comic2ebook.main(jobargv, self)
                 self.emit(QtCore.SIGNAL("hideProgressBar"))
             except Exception as err:
-                errors = True
+                self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
                 QtGui.QMessageBox.critical(MainWindow, 'KCC Error',
                                            "Error on file %s:\n%s\nTraceback:\n%s"
                                            % (jobargv[-1], str(err), traceback.format_tb(traceback_)),
                                            QtGui.QMessageBox.Ok)
                 self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create EPUB!', 'error')
-                continue
-            if not errors:
+            if not self.errors:
                 if str(GUI.FormatBox.currentText()) == 'CBZ':
                     self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file... Done!', 'info', True)
                 else:
@@ -165,9 +163,8 @@ class WorkerThread(QtCore.QThread):
                             try:
                                 kindlestrip.main((mobiPath + '_tostrip', mobiPath))
                             except Exception:
-                                errors = True
-                                continue
-                            if not errors:
+                                self.errors = True
+                            if not self.errors:
                                 os.remove(mobiPath + '_tostrip')
                                 self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header... Done!', 'info', True)
                             else:
@@ -180,13 +177,15 @@ class WorkerThread(QtCore.QThread):
                             os.remove(outputPath)
                             os.remove(outputPath.replace('.epub', '.mobi'))
                             self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', 'error')
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Try converting smaller batch.', 'error')
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Try converting a bit smaller batch.', 'error')
                     else:
+                        excess = (os.path.getsize(outputPath) - 314572800)/1024/1024
                         os.remove(outputPath)
                         self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file is too big for KindleGen!', 'error')
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Try converting smaller batch.', 'error')
+                        self.emit(QtCore.SIGNAL("addMessage"), 'Limit exceeded by ' + str(excess) +
+                                                               ' MB. Try converting smaller batch.', 'error')
         self.parent.needClean = True
-        self.emit(QtCore.SIGNAL("addMessage"), 'All jobs completed.', 'warning')
+        self.emit(QtCore.SIGNAL("addMessage"), 'All jobs completed.', 'info')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
 
 
