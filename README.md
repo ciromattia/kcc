@@ -49,8 +49,7 @@ In the meanwhile you can download [version 2.9](http://kcc.vulturis.eu/OSX/Kindl
 
 ### Important tips:
 * Use high quality source files. **This little detail have a major impact on the final result.**
-* Disabling **HQ Panel View** might improve sharpness of image when it is not zoomed.
-* Disabling **HQ Panel View** will highly decrease size of output file.
+* Read tooltip of _High/Ultra quality_ option. There are many important informations there.
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
 * Output MOBI file should be uploaded via USB. Other methods (e.g. via Calibre) might corrupt it.
@@ -74,8 +73,8 @@ Options:
   -t TITLE, --title=TITLE
                         Comic title [Default=filename]
   -m, --manga-style     Manga style (Right-to-left reading and splitting) [Default=False]
+  --quality=QUALITY     Output quality. 0 - Normal 1 - High 2 - Ultra [Default=0]
   -c, --cbz-output      Outputs a CBZ archive and does not generate EPUB
-  --nopanelviewhq       Disable high quality Panel View [Default=False]
   --noprocessing        Do not apply image preprocessing (Page splitting and optimizations) [Default=True]
   --forcepng            Create PNG files instead JPEG (For non-Kindle devices) [Default=False]
   --gamma=GAMMA         Apply gamma correction to linearize the image [Default=Auto]
@@ -209,6 +208,7 @@ The app relies and includes the following scripts/binaries:
 ####3.0:
 * New QT GUI
 * Merge with AWKCC
+* Added ultra quality mode
 * Added support for custom width/height
 * Added option to disable color conversion
 
