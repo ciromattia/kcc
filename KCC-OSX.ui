@@ -88,7 +88,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable image upscaling.&lt;/p&gt;&lt;p&gt;Aspect ratio will be preserved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable image upscaling.&lt;br/&gt;Aspect ratio will be preserved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>Upscale images</string>
@@ -106,7 +106,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable image stretching.&lt;/p&gt;&lt;p&gt;Aspect ratio will be not preserved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable image stretching.&lt;br/&gt;Aspect ratio will be not preserved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>Stretch images</string>
@@ -124,7 +124,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create PNG files instead JPEG.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Only for non-Kindle devices!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create PNG files instead JPEG.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Only for non-Kindle devices!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>PNG output</string>
@@ -354,7 +354,7 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="HQPVBox">
+    <widget class="QCheckBox" name="QualityBox">
      <property name="geometry">
       <rect>
        <x>282</x>
@@ -372,12 +372,18 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable high quality zoom.&lt;/p&gt;&lt;p&gt;Enabling it will &lt;span style=&quot; font-weight:600;&quot;&gt;highly&lt;/span&gt; increase size of output file and &lt;span style=&quot; font-weight:600;&quot;&gt;slightly&lt;/span&gt; reduce sharpness of not zoomed images.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Normal quality mode&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Use it when Panel View support is not needed.&lt;/span&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/span&gt;- Maximum quality when zoom is not enabled.&lt;br /&gt;- Poor quality when zoom is enabled.&lt;br /&gt;- Lowest file size.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - High quality mode&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Not zoomed image &lt;/span&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;might &lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;be &lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;a little blurry.&lt;/span&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/span&gt;- Medium/High quality when zoom is not enabled.&lt;br /&gt;- Maximum quality when zoom is enabled.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Ultra quality mode&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Maximum possible quality.&lt;/span&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/span&gt;- Maximum quality when zoom is not enabled.&lt;br /&gt;- Maximum quality when zoom is enabled.&lt;br /&gt;- Very high file size.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
-      <string>HQ Panel View</string>
+      <string>High/Ultra quality</string>
      </property>
-     <property name="checked">
+     <property name="tristate">
       <bool>true</bool>
      </property>
     </widget>
@@ -399,7 +405,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disable page spliting.&lt;/p&gt;&lt;p&gt;They will be rotated instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disable page spliting.&lt;br/&gt;They will be rotated instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Horizontal mode</string>
@@ -407,7 +413,7 @@
     </widget>
     <zorder>RotateBox</zorder>
     <zorder>MangaBox</zorder>
-    <zorder>HQPVBox</zorder>
+    <zorder>QualityBox</zorder>
    </widget>
    <widget class="QListWidget" name="JobList">
     <property name="geometry">

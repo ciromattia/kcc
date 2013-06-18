@@ -27,6 +27,7 @@ import sys
 import tempfile
 import re
 import stat
+import string
 from shutil import move
 from shutil import copyfile
 from shutil import copytree
@@ -47,7 +48,7 @@ def buildHTML(path, imgfile):
     filename = getImageFileName(imgfile)
     if filename is not None:
         # All files marked with this sufix need horizontal Panel View.
-        if "_rotated" in str(filename):
+        if "_kccrotated" in str(filename):
             rotate = True
         else:
             rotate = False
@@ -123,18 +124,23 @@ def buildHTML(path, imgfile):
                                   "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
                                   "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
                                   ])
-
+            if options.quality == 2:
+                imgfilepv = string.split(imgfile, ".")
+                imgfilepv[0] += "_kcchq"
+                imgfilepv = string.join(imgfilepv, ".")
+            else:
+                imgfilepv = imgfile
             f.writelines(["<div id=\"BoxTL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTL-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
                           imgfile, "\"/></div></div>\n",
                           "<div id=\"BoxTR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTR-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
                           imgfile, "\"/></div></div>\n",
                           "<div id=\"BoxBL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBL-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
                           imgfile, "\"/></div></div>\n",
                           "<div id=\"BoxBR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBR-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
                           imgfile, "\"/></div></div>\n"
                           ])
         f.writelines(["</div>\n</body>\n</html>"])
@@ -261,7 +267,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     splitCountUsed = 1
     for entry in reflist:
-        if entry.endswith("-kcca"):
+        if "_kcca" in str(entry):
             # noinspection PyRedundantParentheses
             if ((options.righttoleft and facing == 'left') or (not options.righttoleft and facing == 'right')) and\
                     options.landscapemode:
@@ -271,7 +277,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
             else:
                 f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-        elif entry.endswith("-kccb"):
+        elif "_kccb" in str(entry):
             if options.landscapemode:
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
             else:
@@ -320,12 +326,16 @@ def getImageFileName(imgfile):
     return filename
 
 
-def applyImgOptimization(img, isSplit, toRight, options):
+def applyImgOptimization(img, isSplit, toRight, options, overrideQuality=5):
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
-    img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight, options.landscapemode,
-                    options.nopanelviewhq)
+    if overrideQuality != 5:
+        img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight,
+                        options.landscapemode, overrideQuality)
+    else:
+        img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight,
+                        options.landscapemode, options.quality)
     img.optimizeImage(options.gamma)
     if options.forcepng:
         img.quantizeImage()
@@ -390,10 +400,14 @@ def fileImgProcess(work):
         print ".",
     fileImgProcess.queue.put(".")
     img = image.ComicPage(os.path.join(dirpath, afile), options.profileData)
+    if options.quality == 2:
+        wipe = False
+    else:
+        wipe = True
     if options.nosplitrotate:
         split = None
     else:
-        split = img.splitPage(dirpath, options.righttoleft, options.rotate)
+        split = img.splitPage(dirpath, options.righttoleft, options.rotate, wipe)
     if split is not None and split is not "R":
         if options.verbose:
             print "Splitted " + afile
@@ -406,13 +420,25 @@ def fileImgProcess(work):
         output = pagenumber
         img0 = image.ComicPage(split[0], options.profileData)
         applyImgOptimization(img0, True, toRight1, options)
-        img0.saveToDir(dirpath, options.forcepng, options.forcecolor)
+        img0.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
         img1 = image.ComicPage(split[1], options.profileData)
         applyImgOptimization(img1, True, toRight2, options)
-        img1.saveToDir(dirpath, options.forcepng, options.forcecolor)
+        img1.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
+        if options.quality == 2:
+            split2 = img.splitPage(dirpath, options.righttoleft, options.rotate, True)
+            img3 = image.ComicPage(split2[0], options.profileData)
+            applyImgOptimization(img3, True, toRight1, options, 0)
+            img3.saveToDir(dirpath, options.forcepng, options.forcecolor, True, "LQ")
+            img4 = image.ComicPage(split2[1], options.profileData)
+            applyImgOptimization(img4, True, toRight2, options, 0)
+            img4.saveToDir(dirpath, options.forcepng, options.forcecolor, True, "LQ")
     else:
         applyImgOptimization(img, False, False, options)
-        img.saveToDir(dirpath, options.forcepng, options.forcecolor, split)
+        img.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe, split)
+        if options.quality == 2:
+            img2 = image.ComicPage(os.path.join(dirpath, afile), options.profileData)
+            applyImgOptimization(img2, False, False, options, 0)
+            img2.saveToDir(dirpath, options.forcepng, options.forcecolor, True, str(split) + "LQ")
     return output
 
 
@@ -548,7 +574,7 @@ def genEpubStruct(path):
         chapter = False
         for afile in filenames:
             filename = getImageFileName(afile)
-            if filename is not None:
+            if filename is not None and not "_kcchq" in filename[0]:
                 filelist.append(buildHTML(dirpath, afile))
                 if not chapter:
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
@@ -663,10 +689,10 @@ def main(argv=None, qtGUI=None):
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                       help="Manga style (Right-to-left reading and splitting) [Default=False]")
+    parser.add_option("--quality", type="int", dest="quality", default="0",
+                      help="Output quality. 0 - Normal 1 - High 2 - Ultra [Default=0]")
     parser.add_option("-c", "--cbz-output", action="store_true", dest="cbzoutput", default=False,
                       help="Outputs a CBZ archive and does not generate EPUB")
-    parser.add_option("--nopanelviewhq", action="store_true", dest="nopanelviewhq", default=False,
-                      help="Disable high quality Panel View [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
@@ -761,9 +787,11 @@ def checkOptions():
     else:
         options.landscapemode = False
     # Older Kindle don't support Virtual Panel View. We providing them configuration that will fake that feature.
-    if options.profile == 'K3' or options.profile == 'K4NT':
+    # Ultra quality mode require Real Panel View. Landscape mode don't work correcly without Virtual Panel View.
+    if options.profile == 'K3' or options.profile == 'K4NT' or options.quality == 2:
         # Real Panel View
         options.panelview = True
+        options.landscapemode = False
     else:
         # Virtual Panel View
         options.panelview = False
@@ -771,7 +799,7 @@ def checkOptions():
     # Kindle Fire family have very high resolution. Bigger images are not needed.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG'\
             or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
-        options.nopanelviewhq = True
+        options.quality = 0
     # Disabling grayscale conversion for Kindle Fire family.
     # Forcing JPEG output. For now code can't provide color PNG files.
     if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8' or options.forcecolor:

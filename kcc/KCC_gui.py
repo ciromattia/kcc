@@ -93,8 +93,10 @@ class WorkerThread(QtCore.QThread):
             argv.append("--manga-style")
         if GUI.RotateBox.isChecked():
             argv.append("--rotate")
-        if not GUI.HQPVBox.isChecked():
-            argv.append("--nopanelviewhq")
+        if GUI.QualityBox.checkState() == 1:
+            argv.append("--quality=1")
+        elif GUI.QualityBox.checkState() == 2:
+            argv.append("--quality=2")
         if GUI.ProcessingBox.isChecked():
             argv.append("--noprocessing")
         if GUI.UpscaleBox.isChecked() and not GUI.StretchBox.isChecked():
@@ -135,7 +137,7 @@ class WorkerThread(QtCore.QThread):
             except Exception as err:
                 self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
-                self.emit(QtCore.SIGNAL("showDialog"), "Error on file %s:\n%s\nTraceback:\n%s"
+                self.emit(QtCore.SIGNAL("showDialog"), "Error during convertion %s:\n\n%s\n\nTraceback:\n%s"
                                                        % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
                 self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create EPUB!', 'error')
             if not self.errors:
