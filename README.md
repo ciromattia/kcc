@@ -1,7 +1,7 @@
 ﻿# KCC
 
 **KindleComicConverter** is a Python app to convert comic files or folders to ePub or Panel View MOBI.
-It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, **KCC** is
+It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
 actually a comic to EPUB converter that every e-reader owner can happily use**_.
 It can also optionally optimize images by applying a number of transformations.
 
@@ -22,8 +22,7 @@ You can find the latest released binary at the following links:
 - Windows64: [http://kcc.vulturis.eu/Win64/](http://kcc.vulturis.eu/Win64/)
 - Windows32: [http://kcc.vulturis.eu/Win32/](http://kcc.vulturis.eu/Win32/)
 - OS X: [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
-- Linux64: [http://kcc.vulturis.eu/Linux64/](http://kcc.vulturis.eu/Linux64/)
-- Linux32: [http://kcc.vulturis.eu/Linux32/](http://kcc.vulturis.eu/Linux32/)
+- Linux: Just download sourcecode and launch: `python kcc.py`
 
 _It has been reported by a couple of users 2.10 crashing on OSX at start.
 If it happens to you please append your message to [Issue #52](https://github.com/ciromattia/kcc/issues/52).
@@ -38,7 +37,7 @@ In the meanwhile you can download [version 2.9](http://kcc.vulturis.eu/OSX/Kindl
 - PDF *(Extracting only contained JPG images)*
 
 ## OPTIONAL REQUIREMENTS
-- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.8+ in a directory reachable by your PATH or in **KCC** directory *(For .mobi generation)*
+- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.8+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For .mobi generation)*
 - [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
 
 ### For compiling/running from source:
@@ -55,7 +54,7 @@ In the meanwhile you can download [version 2.9](http://kcc.vulturis.eu/OSX/Kindl
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
 * Output MOBI file should be uploaded via USB. Other methods (e.g. via Calibre) might corrupt it.
-* If you're converting color images and the end result is not satisfactory, experiment with gamma correction option.
+* If you're converting color images and the end result is not satisfactory, experiment with gamma correction option (Check 1.0 setting first).
 
 ### GUI 
 
@@ -97,12 +96,12 @@ Options:
 ## CREDITS
 **KCC** is made by [Ciro Mattia Gonano](http://github.com/ciromattia) and [Paweł Jastrzębski](http://github.com/AcidWeb)
 
-This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published in [this mobileread forum thread](http://www.mobileread.com/forums/showthread.php?t=192783))
+This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published [here](http://www.mobileread.com/forums/showthread.php?t=192783))
 
 The app relies and includes the following scripts/binaries:
 
  - `KindleStrip` script &copy; 2010-2012 by **Paul Durrant** and released in public domain
-([mobileread forum thread](http://www.mobileread.com/forums/showthread.php?t=96903))
+([forum thread](http://www.mobileread.com/forums/showthread.php?t=96903))
  - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>, released with ISC License
  - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC Attribution-NonCommercial-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
