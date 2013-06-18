@@ -24,7 +24,12 @@ __docformat__ = 'restructuredtext en'
 
 import sys
 import os
-from PyQt4 import QtGui
+try:
+    # noinspection PyUnresolvedReferences
+    from PyQt4 import QtGui
+except ImportError:
+    print "ERROR: PyQT4 is not installed!"
+    exit(1)
 from kcc import KCC_gui
 from multiprocessing import freeze_support
 
