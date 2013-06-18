@@ -19,10 +19,10 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
-- Windows64: [http://kcc.vulturis.eu/Win64/](http://kcc.vulturis.eu/Win64/)
-- Windows32: [http://kcc.vulturis.eu/Win32/](http://kcc.vulturis.eu/Win32/)
-- OS X: [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
-- Linux: Just download sourcecode and launch: `python kcc.py`
+- **Win64:** [http://kcc.vulturis.eu/Win64/](http://kcc.vulturis.eu/Win64/)
+- **Win32:** [http://kcc.vulturis.eu/Win32/](http://kcc.vulturis.eu/Win32/)
+- **OS X:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
+- **Linux:** Just download sourcecode and launch: `python kcc.py`
 
 _It has been reported by a couple of users 2.10 crashing on OSX at start.
 If it happens to you please append your message to [Issue #52](https://github.com/ciromattia/kcc/issues/52).
@@ -54,7 +54,7 @@ In the meanwhile you can download [version 2.9](http://kcc.vulturis.eu/OSX/Kindl
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
 * Output MOBI file should be uploaded via USB. Other methods (e.g. via Calibre) might corrupt it.
-* If you're converting color images and the end result is not satisfactory, experiment with gamma correction option (Check 1.0 setting first).
+* If you're converting color images and the end result is not satisfactory, experiment with gamma correction option (check 1.0 setting first).
 
 ### GUI 
 
@@ -104,7 +104,7 @@ The app relies and includes the following scripts/binaries:
 ([forum thread](http://www.mobileread.com/forums/showthread.php?t=96903))
  - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>, released with ISC License
  - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches
- - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC Attribution-NonCommercial-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
+ - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
 
 ## SAMPLE FILES CREATED BY KCC
 * [Kindle Keyboard](http://kcc.vulturis.eu/Samples/Ubunchu!-K3.mobi)
