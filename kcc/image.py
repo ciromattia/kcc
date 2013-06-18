@@ -20,7 +20,12 @@ __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jas
 __docformat__ = 'restructuredtext en'
 
 import os
-from PIL import Image, ImageOps, ImageStat, ImageChops
+try:
+    # noinspection PyUnresolvedReferences
+    from PIL import Image, ImageOps, ImageStat, ImageChops
+except ImportError:
+    print "ERROR: Pillow is not installed!"
+    exit(1)
 
 
 class ImageFlags:
