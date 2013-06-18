@@ -1,36 +1,36 @@
 ﻿# KCC
 
-`KCC` (a.k.a. `KindleComicConverter`) is a Python app to convert comic files or folders to ePub or Panel View MOBI.  
-It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
-actually a comic to EPUB converter that every ereader owner can happily use**_.
-
+**KindleComicConverter** is a Python app to convert comic files or folders to ePub or Panel View MOBI.
+It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, **KCC** is
+actually a comic to EPUB converter that every e-reader owner can happily use**_.
 It can also optionally optimize images by applying a number of transformations.
 
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.  
-Amazon's tool is for comic **publishers** and involves a lot of manual effort, while **KCC** is for comic **readers**.
+Amazon's tool is for comic publishers and involves a lot of manual effort, while **KCC** is for comic readers.
 If you want to read some comments over *Amazon's KC2* you can take a look at [this](http://www.mobileread.com/forums/showthread.php?t=207461&page=7#96) and [that](http://www.mobileread.com/forums/showthread.php?t=211047) threads on Mobileread.
 _KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;)
 
 ### Donations
-If you find KCC valuable you can consider donating to the authors:
+If you find **KCC** valuable you can consider donating to the authors:
 
 * Ciro Mattia Gonano [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D8WNYNPBGDAS2)
 * Paweł Jastrzębski [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
 
 ## BINARY RELEASES
-You can find the latest released binary at the following links:  
-- OS X: [https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.10.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.10.zip)
-- Win64: [https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.10.zip](https://dl.dropbox.com/u/16806101/KindleComicConverter_win-amd64_2.10.zip)
-- Win32: [http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.10.zip](http://pawelj.vulturis.eu/Shared/KindleComicConverter_win-x86_2.10.zip)
-- Linux: Just download sourcecode and launch `python kcc.py` *(Provided you have Python, Pillow and PyQt4 installed)*
+You can find the latest released binary at the following links:
+- Windows64: [http://kcc.vulturis.eu/Win64/](http://kcc.vulturis.eu/Win64/)
+- Windows32: [http://kcc.vulturis.eu/Win32/](http://kcc.vulturis.eu/Win32/)
+- OS X: [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
+- Linux64: [http://kcc.vulturis.eu/Linux64/](http://kcc.vulturis.eu/Linux64/)
+- Linux32: [http://kcc.vulturis.eu/Linux32/](http://kcc.vulturis.eu/Linux32/)
 
 _It has been reported by a couple of users 2.10 crashing on OSX at start.
 If it happens to you please append your message to [Issue #52](https://github.com/ciromattia/kcc/issues/52).
-In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/16806101/KindleComicConverter_osx_2.9.zip)_
+In the meanwhile you can download [version 2.9](http://kcc.vulturis.eu/OSX/KindleComicConverter_osx_2.9.zip)._
 
 ## INPUT FORMATS
-`kcc` can understand and convert, at the moment, the following file types:
+**KCC** can understand and convert, at the moment, the following file types:
 - PNG, JPG, GIF, TIFF, BMP
 - Folders
 - CBZ, ZIP
@@ -38,24 +38,24 @@ In the meanwhile you can download [version 2.9](https://dl.dropbox.com/u/1680610
 - PDF *(Extracting only contained JPG images)*
 
 ## OPTIONAL REQUIREMENTS
-- [kindlegen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.8+ in a directory reachable by your PATH or in KCC directory *(For .mobi generation)*
-- [unrar](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
+- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.8+ in a directory reachable by your PATH or in **KCC** directory *(For .mobi generation)*
+- [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
 
 ### For compiling/running from source:
-- Python 2.7+ - Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows.
-- PyQt4 4.10+ - Please refer to official documentation for installing into your system.
+- Python 2.7 - Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows.
+- PyQt4 - Please refer to official documentation for installing into your system.
 - [Pillow](http://pypi.python.org/pypi/Pillow/) - For comic optimizations. Please refer to official documentation for installing into your system.
 
 ## USAGE
 
 ### Important tips:
-* Disabling **HQ Panel View** will highly decrease size of output file. Consider it when Panel View support is not needed.
+* Use high quality source files. **This little detail have a major impact on the final result.**
 * Disabling **HQ Panel View** might improve sharpness of image when it is not zoomed.
-* Use high quality source files. This little detail have a major impact on the final result.
+* Disabling **HQ Panel View** will highly decrease size of output file.
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
-* Output MOBI file should be uploaded via USB. Other methods (e.g. via Calibre) will corrupt it.
-* If you're converting color images and the end result is not satisfactory, experiment with gamma correction option (first try 1.0 setting).
+* Output MOBI file should be uploaded via USB. Other methods (e.g. via Calibre) might corrupt it.
+* If you're converting color images and the end result is not satisfactory, experiment with gamma correction option.
 
 ### GUI 
 
@@ -95,7 +95,7 @@ Options:
 ```
 
 ## CREDITS
-KCC is made by [Ciro Mattia Gonano](http://github.com/ciromattia) and [Paweł Jastrzębski](http://github.com/AcidWeb)
+**KCC** is made by [Ciro Mattia Gonano](http://github.com/ciromattia) and [Paweł Jastrzębski](http://github.com/AcidWeb)
 
 This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published in [this mobileread forum thread](http://www.mobileread.com/forums/showthread.php?t=192783))
 
@@ -220,4 +220,4 @@ The app relies and includes the following scripts/binaries:
 ## COPYRIGHT
 
 Copyright (c) 2012-2013 Ciro Mattia Gonano and Paweł Jastrzębski.  
-KCC is released under ISC LICENSE; see LICENSE.txt for further details.
+**KCC** is released under ISC LICENSE; see LICENSE.txt for further details.
