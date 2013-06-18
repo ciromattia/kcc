@@ -26,12 +26,12 @@ import os
 import sys
 import tempfile
 import re
+import stat
 from shutil import move
 from shutil import copyfile
 from shutil import copytree
 from shutil import rmtree
 from shutil import make_archive
-from stat import S_IWRITE
 from optparse import OptionParser
 from multiprocessing import Pool, Queue, freeze_support
 try:
@@ -569,8 +569,7 @@ def getWorkFolder(afile):
             os.rmdir(workdir)   # needed for copytree() fails if dst already exists
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
             copytree(afile, fullPath)
-            if sys.platform == 'win32':
-                sanitizeTreeReadOnly(fullPath)
+            sanitizeTreeBeforeConversion(fullPath)
             return workdir
         except OSError:
             raise
@@ -625,12 +624,14 @@ def sanitizeTree(filetree):
                 os.rename(os.path.join(root, name), os.path.join(root, slugify(name)))
 
 
-def sanitizeTreeReadOnly(filetree):
+def sanitizeTreeBeforeConversion(filetree):
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
-            os.chmod(os.path.join(root, name), S_IWRITE)
+            os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD)
+            if os.path.getsize(os.path.join(root, name)) == 0:
+                os.remove(os.path.join(root, name))
         for name in dirs:
-            os.chmod(os.path.join(root, name), S_IWRITE)
+            os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD)
 
 
 def Copyright():
