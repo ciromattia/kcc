@@ -135,10 +135,8 @@ class WorkerThread(QtCore.QThread):
             except Exception as err:
                 self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
-                QtGui.QMessageBox.critical(MainWindow, 'KCC Error',
-                                           "Error on file %s:\n%s\nTraceback:\n%s"
-                                           % (jobargv[-1], str(err), traceback.format_tb(traceback_)),
-                                           QtGui.QMessageBox.Ok)
+                self.emit(QtCore.SIGNAL("showDialog"), "Error on file %s:\n%s\nTraceback:\n%s"
+                                                       % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
                 self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create EPUB!', 'error')
             if not self.errors:
                 if str(GUI.FormatBox.currentText()) == 'CBZ':
@@ -343,6 +341,9 @@ class Ui_KCC(object):
         GUI.JobList.addItem(item)
         GUI.JobList.scrollToBottom()
 
+    def showDialog(self, message):
+        QtGui.QMessageBox.critical(MainWindow, 'KCC Error', message, QtGui.QMessageBox.Ok)
+
     def updateProgressbar(self, new=False, status=False):
         if new == "status":
             pass
@@ -413,6 +414,7 @@ class Ui_KCC(object):
         KCC.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
         KCC.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
         KCC.connect(self.worker, QtCore.SIGNAL("addMessage"), self.addMessage)
+        KCC.connect(self.worker, QtCore.SIGNAL("showDialog"), self.showDialog)
         KCC.connect(self.worker, QtCore.SIGNAL("hideProgressBar"), self.hideProgressBar)
         KCC.connect(self.versionCheck, QtCore.SIGNAL("addMessage"), self.addMessage)
         KCC.closeEvent = self.saveSettings

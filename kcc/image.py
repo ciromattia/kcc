@@ -116,11 +116,18 @@ class ComicPage:
             self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = device
         except KeyError:
             raise RuntimeError('Unexpected output device %s' % device)
+        # Detect corrupted files - Phase 2
         try:
             self.origFileName = source
             self.image = Image.open(source)
         except IOError:
             raise RuntimeError('Cannot read image file %s' % source)
+        # Detect corrupted files - Phase 3
+        try:
+            self.image.verify()
+        except:
+            raise RuntimeError('Image file %s is corrupted' % source)
+        self.image = Image.open(source)
         self.image = self.image.convert('RGB')
 
     def saveToDir(self, targetdir, forcepng, color, sufix=None):

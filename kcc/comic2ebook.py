@@ -358,7 +358,11 @@ def dirImgProcess(path):
                 GUI.emit(QtCore.SIGNAL("progressBarTick"))
         pool.join()
         queue.close()
-        splitpages = splitpages.get()
+        try:
+            splitpages = splitpages.get()
+        except:
+            rmtree(path)
+            raise RuntimeError("One of workers crashed. Cause: " + str(sys.exc_info()[1]))
         splitpages = filter(None, splitpages)
         splitpages.sort()
         for page in splitpages:
@@ -572,6 +576,7 @@ def getWorkFolder(afile):
             sanitizeTreeBeforeConversion(fullPath)
             return workdir
         except OSError:
+            rmtree(workdir)
             raise
     elif afile.lower().endswith('.pdf'):
         pdf = pdfjpgextract.PdfJpgExtract(afile)
@@ -582,10 +587,12 @@ def getWorkFolder(afile):
             try:
                 path = cbx.extract(workdir)
             except OSError:
+                rmtree(workdir)
                 print 'Unrar not found, please download from ' + \
                       'http://www.rarlab.com/download.htm and put into your PATH.'
                 sys.exit(21)
         else:
+            rmtree(workdir)
             raise TypeError
     move(path, path + "_temp")
     move(path + "_temp", os.path.join(path, 'OEBPS', 'Images'))
@@ -628,6 +635,7 @@ def sanitizeTreeBeforeConversion(filetree):
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD)
+            # Detect corrupted files - Phase 1
             if os.path.getsize(os.path.join(root, name)) == 0:
                 os.remove(os.path.join(root, name))
         for name in dirs:
