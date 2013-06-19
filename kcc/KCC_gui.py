@@ -112,7 +112,7 @@ class WorkerThread(QtCore.QThread):
                 argv.append("--stretch")
             if GUI.NoDitheringBox.isChecked():
                 argv.append("--nodithering")
-            if self.parent.GammaValue > 0.09:
+            if float(self.parent.GammaValue) > 0.09:
                 argv.append("--gamma=" + self.parent.GammaValue)
             if str(GUI.FormatBox.currentText()) == 'CBZ':
                 argv.append("--cbz-output")
@@ -304,13 +304,13 @@ class Ui_KCC(object):
                 self.modeExpert()
 
     def changeGamma(self, value):
-        if value <= 9:
-            value = 'Auto'
+        value = float(value)
+        value = '%.2f' % (value/100)
+        if float(value) <= 0.09:
+            GUI.GammaLabel.setText('Gamma: Auto')
         else:
-            value = float(value)
-            value = '%.2f' % (value/100)
-            self.GammaValue = value
-        GUI.GammaLabel.setText('Gamma: ' + str(value))
+            GUI.GammaLabel.setText('Gamma: ' + str(value))
+        self.GammaValue = value
 
     def changeDevice(self, value, start=False):
         if value == 11 and (start or self.currentMode != 3):
@@ -374,7 +374,21 @@ class Ui_KCC(object):
     def saveSettings(self, event):
         self.settings.setValue('lastPath', self.lastPath)
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
+        self.settings.setValue('currentFormat', GUI.FormatBox.currentIndex())
         self.settings.setValue('currentMode', self.currentMode)
+        self.settings.setValue('options', QtCore.QVariant({'MangaBox': GUI.MangaBox.checkState(),
+                                                           'RotateBox': GUI.RotateBox.checkState(),
+                                                           'QualityBox': GUI.QualityBox.checkState(),
+                                                           'ProcessingBox': GUI.ProcessingBox.checkState(),
+                                                           'UpscaleBox': GUI.UpscaleBox.checkState(),
+                                                           'NoRotateBox': GUI.NoRotateBox.checkState(),
+                                                           'BorderBox': GUI.BorderBox.checkState(),
+                                                           'StretchBox': GUI.StretchBox.checkState(),
+                                                           'NoDitheringBox': GUI.NoDitheringBox.checkState(),
+                                                           'ColorBox': GUI.ColorBox.checkState(),
+                                                           'customWidth': GUI.customWidth.text(),
+                                                           'customHeight': GUI.customHeight.text(),
+                                                           'GammaSlider': float(self.GammaValue)*100}))
         self.settings.sync()
 
     def __init__(self, UI, KCC):
@@ -387,10 +401,12 @@ class Ui_KCC(object):
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.lastDevice = self.settings.value('lastDevice', 10, type=int)
         self.currentMode = self.settings.value('currentMode', 1, type=int)
+        self.currentFormat = self.settings.value('currentFormat', 0, type=int)
+        self.options = self.settings.value('options', QtCore.QVariant({'GammaSlider': 0}))
+        self.options = self.options.toPyObject()
         self.worker = WorkerThread(self)
         self.versionCheck = VersionThread(self)
         self.needClean = True
-        self.GammaValue = 0
 
         self.addMessage('Welcome!', 'info')
         self.addMessage('Remember: All options have additional informations in tooltips.', 'info')
@@ -432,8 +448,22 @@ class Ui_KCC(object):
 
         for f in formats:
             GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
-        GUI.FormatBox.setCurrentIndex(0)
+        if self.currentFormat > GUI.FormatBox.count():
+            GUI.FormatBox.setCurrentIndex(0)
+            self.currentFormat = 0
+        else:
+            GUI.FormatBox.setCurrentIndex(self.currentFormat)
 
+        for option in self.options:
+            if str(option) == "customWidth":
+                GUI.customWidth.setText(str(self.options[option]))
+            elif str(option) == "customHeight":
+                GUI.customHeight.setText(str(self.options[option]))
+            elif str(option) == "GammaSlider":
+                GUI.GammaSlider.setValue(int(self.options[option]))
+                self.changeGamma(int(self.options[option]))
+            else:
+                eval('GUI.' + str(option)).setCheckState(self.options[option])
         if self.currentMode == 1:
             self.modeBasic()
         elif self.currentMode == 2:
