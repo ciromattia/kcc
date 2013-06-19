@@ -123,21 +123,21 @@ class ComicPage:
             raise RuntimeError('Cannot read image file %s' % source)
         self.image = self.image.convert('RGB')
 
-    def saveToDir(self, targetdir, forcepng, color, sufix=None):
+    def saveToDir(self, targetdir, forcepng, color, suffix=None):
         filename = os.path.basename(self.origFileName)
         try:
             if not color:
                 self.image = self.image.convert('L')    # convert to grayscale
-            # Sufix is used to recognise which files need horizontal Panel View.
-            if sufix == "R":
-                sufix = "_rotated"
+            # Suffix is used to recognise which files need horizontal Panel View.
+            if suffix == "R":
+                suffix = "_rotated"
             else:
-                sufix = ""
+                suffix = ""
             os.remove(os.path.join(targetdir, filename))
             if forcepng:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + sufix + ".png"), "PNG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + suffix + ".png"), "PNG")
             else:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + sufix + ".jpg"), "JPEG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + suffix + ".jpg"), "JPEG")
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
