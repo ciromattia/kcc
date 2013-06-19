@@ -666,7 +666,7 @@ def sanitizeTreeBeforeConversion(filetree):
             if os.path.getsize(os.path.join(root, name)) == 0:
                 os.remove(os.path.join(root, name))
         for name in dirs:
-            os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD)
+            os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD | stat.S_IEXEC)
 
 
 def Copyright():
