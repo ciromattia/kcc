@@ -137,10 +137,6 @@ class ComicPage:
                 self.image = self.image.convert('L')    # convert to grayscale
             if sufix == "R":
                 sufix = "_kccrotated"
-            #elif sufix == "NoneLQ":
-                #sufix = ""
-            elif sufix == "RLQ":
-                sufix = "_kccrotated"
             else:
                 sufix = ""
             if wipe:
@@ -216,7 +212,7 @@ class ComicPage:
         self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
         return self.image
 
-    def splitPage(self, targetdir, righttoleft=False, rotate=False, wipe=False):
+    def splitPage(self, targetdir, righttoleft=False, rotate=False):
         width, height = self.image.size
         dstwidth, dstheight = self.size
         #print "Image is %d x %d" % (width,height)
@@ -246,8 +242,7 @@ class ComicPage:
                         pagetwo = self.image.crop(rightbox)
                     pageone.save(fileone)
                     pagetwo.save(filetwo)
-                    if wipe:
-                        os.remove(self.origFileName)
+                    os.remove(self.origFileName)
                 except IOError as e:
                     raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
                 return fileone, filetwo
