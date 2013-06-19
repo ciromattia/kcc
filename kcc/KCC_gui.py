@@ -312,8 +312,8 @@ class Ui_KCC(object):
             self.GammaValue = value
         GUI.GammaLabel.setText('Gamma: ' + str(value))
 
-    def changeDevice(self, value):
-        if value == 11 and self.currentMode != 3:
+    def changeDevice(self, value, start=False):
+        if value == 11 and (start or self.currentMode != 3):
             GUI.BasicModeButton.setEnabled(False)
             GUI.AdvModeButton.setEnabled(False)
             self.modeExpert()
@@ -442,4 +442,4 @@ class Ui_KCC(object):
             self.modeExpert()
         self.versionCheck.start()
         self.hideProgressBar()
-        self.changeDevice(self.lastDevice)
+        self.changeDevice(self.lastDevice, True)
