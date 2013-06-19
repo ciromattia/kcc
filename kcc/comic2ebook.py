@@ -132,16 +132,16 @@ def buildHTML(path, imgfile):
                 imgfilepv = imgfile
             f.writelines(["<div id=\"BoxTL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTL-Panel\" class=\"",
                           "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
-                          imgfile, "\"/></div></div>\n",
+                          imgfilepv, "\"/></div></div>\n",
                           "<div id=\"BoxTR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTR-Panel\" class=\"",
                           "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
-                          imgfile, "\"/></div></div>\n",
+                          imgfilepv, "\"/></div></div>\n",
                           "<div id=\"BoxBL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBL-Panel\" class=\"",
                           "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
-                          imgfile, "\"/></div></div>\n",
+                          imgfilepv, "\"/></div></div>\n",
                           "<div id=\"BoxBR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBR-Panel\" class=\"",
                           "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
-                          imgfile, "\"/></div></div>\n"
+                          imgfilepv, "\"/></div></div>\n"
                           ])
         f.writelines(["</div>\n</body>\n</html>"])
         f.close()
@@ -407,7 +407,7 @@ def fileImgProcess(work):
     if options.nosplitrotate:
         split = None
     else:
-        split = img.splitPage(dirpath, options.righttoleft, options.rotate, wipe)
+        split = img.splitPage(dirpath, options.righttoleft, options.rotate)
     if split is not None and split is not "R":
         if options.verbose:
             print "Splitted " + afile
@@ -425,20 +425,21 @@ def fileImgProcess(work):
         applyImgOptimization(img1, True, toRight2, options)
         img1.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
         if options.quality == 2:
-            split2 = img.splitPage(dirpath, options.righttoleft, options.rotate, True)
-            img3 = image.ComicPage(split2[0], options.profileData)
+            img3 = image.ComicPage(split[0], options.profileData)
             applyImgOptimization(img3, True, toRight1, options, 0)
-            img3.saveToDir(dirpath, options.forcepng, options.forcecolor, True, "LQ")
-            img4 = image.ComicPage(split2[1], options.profileData)
+            img3.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
+            img4 = image.ComicPage(split[1], options.profileData)
             applyImgOptimization(img4, True, toRight2, options, 0)
-            img4.saveToDir(dirpath, options.forcepng, options.forcecolor, True, "LQ")
+            img4.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
     else:
         applyImgOptimization(img, False, False, options)
         img.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe, split)
         if options.quality == 2:
             img2 = image.ComicPage(os.path.join(dirpath, afile), options.profileData)
+            if split == "R":
+                img2.image = img2.image.rotate(90)
             applyImgOptimization(img2, False, False, options, 0)
-            img2.saveToDir(dirpath, options.forcepng, options.forcecolor, True, str(split) + "LQ")
+            img2.saveToDir(dirpath, options.forcepng, options.forcecolor, True, split)
     return output
 
 
