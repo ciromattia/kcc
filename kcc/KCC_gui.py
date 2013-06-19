@@ -153,7 +153,6 @@ class WorkerThread(QtCore.QThread):
                             retcode = call('kindlegen "' + outputPath + '"', shell=True)
                         except:
                             continue
-                        self.emit(QtCore.SIGNAL("hideProgressBar"))
                         if retcode == 0:
                             self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... Done!', 'info', True)
                             self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header...', 'info')
@@ -184,6 +183,7 @@ class WorkerThread(QtCore.QThread):
                         self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file is too big for KindleGen!', 'error')
                         self.emit(QtCore.SIGNAL("addMessage"), 'Limit exceeded by ' + str(excess) +
                                                                ' MB. Try converting smaller batch.', 'error')
+        self.emit(QtCore.SIGNAL("hideProgressBar"))
         self.parent.needClean = True
         self.emit(QtCore.SIGNAL("addMessage"), 'All jobs completed.', 'info')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
