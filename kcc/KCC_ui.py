@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Sun Jun 16 23:04:29 2013
+# Created: Tue Jun 18 22:41:54 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -139,11 +139,11 @@ class Ui_KCC(object):
         self.MangaBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.MangaBox.setChecked(True)
         self.MangaBox.setObjectName(_fromUtf8("MangaBox"))
-        self.HQPVBox = QtGui.QCheckBox(self.OptionsBasic)
-        self.HQPVBox.setGeometry(QtCore.QRect(282, 10, 130, 18))
-        self.HQPVBox.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.HQPVBox.setChecked(True)
-        self.HQPVBox.setObjectName(_fromUtf8("HQPVBox"))
+        self.QualityBox = QtGui.QCheckBox(self.OptionsBasic)
+        self.QualityBox.setGeometry(QtCore.QRect(282, 10, 130, 18))
+        self.QualityBox.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.QualityBox.setTristate(True)
+        self.QualityBox.setObjectName(_fromUtf8("QualityBox"))
         self.RotateBox = QtGui.QCheckBox(self.OptionsBasic)
         self.RotateBox.setGeometry(QtCore.QRect(145, 10, 130, 18))
         self.RotateBox.setFocusPolicy(QtCore.Qt.NoFocus)
@@ -270,11 +270,11 @@ class Ui_KCC(object):
         KCC.setWindowTitle(_translate("KCC", "Kindle Comic Converter", None))
         self.ProcessingBox.setToolTip(_translate("KCC", "Disable image optimizations.", None))
         self.ProcessingBox.setText(_translate("KCC", "No optimisation", None))
-        self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable image upscaling.</p><p>Aspect ratio will be preserved.</p></body></html>", None))
+        self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable image upscaling.<br/>Aspect ratio will be preserved.</p></body></html>", None))
         self.UpscaleBox.setText(_translate("KCC", "Upscale images", None))
-        self.StretchBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable image stretching.</p><p>Aspect ratio will be not preserved.</p></body></html>", None))
+        self.StretchBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable image stretching.<br/>Aspect ratio will be not preserved.</p></body></html>", None))
         self.StretchBox.setText(_translate("KCC", "Stretch images", None))
-        self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p>Create PNG files instead JPEG.</p><p><span style=\" font-weight:600;\">Only for non-Kindle devices!</span></p></body></html>", None))
+        self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p>Create PNG files instead JPEG.<br/><span style=\" font-weight:600;\">Only for non-Kindle devices!</span></p></body></html>", None))
         self.NoDitheringBox.setText(_translate("KCC", "PNG output", None))
         self.BorderBox.setToolTip(_translate("KCC", "Fill space around images with black color.", None))
         self.BorderBox.setText(_translate("KCC", "Black borders", None))
@@ -288,9 +288,15 @@ class Ui_KCC(object):
         self.ClearButton.setText(_translate("KCC", "Clear list", None))
         self.MangaBox.setToolTip(_translate("KCC", "Enable right-to-left reading.", None))
         self.MangaBox.setText(_translate("KCC", "Manga mode", None))
-        self.HQPVBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable high quality zoom.</p><p>Enabling it will <span style=\" font-weight:600;\">highly</span> increase size of output file and <span style=\" font-weight:600;\">slightly</span> reduce sharpness of not zoomed images.</p></body></html>", None))
-        self.HQPVBox.setText(_translate("KCC", "HQ Panel View", None))
-        self.RotateBox.setToolTip(_translate("KCC", "<html><head/><body><p>Disable page spliting.</p><p>They will be rotated instead.</p></body></html>", None))
+        self.QualityBox.setToolTip(_translate("KCC", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Normal quality mode<br /></span><span style=\" font-style:italic;\">Use it when Panel View support is not needed.</span><span style=\" font-weight:600; text-decoration: underline;\"><br /></span>- Maximum quality when zoom is not enabled.<br />- Poor quality when zoom is enabled.<br />- Lowest file size.</p>\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode<br /></span><span style=\" font-style:italic;\">Not zoomed image </span><span style=\" font-weight:600; font-style:italic;\">might </span><span style=\" font-style:italic;\">be </span><span style=\" font-style:italic;\">a little blurry.</span><span style=\" font-weight:600; text-decoration: underline;\"><br /></span>- Medium/High quality when zoom is not enabled.<br />- Maximum quality when zoom is enabled.</p>\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode<br /></span><span style=\" font-style:italic;\">Maximum possible quality.</span><span style=\" font-weight:600; text-decoration: underline;\"><br /></span>- Maximum quality when zoom is not enabled.<br />- Maximum quality when zoom is enabled.<br />- Very high file size.</p></body></html>", None))
+        self.QualityBox.setText(_translate("KCC", "High/Ultra quality", None))
+        self.RotateBox.setToolTip(_translate("KCC", "<html><head/><body><p>Disable page spliting.<br/>They will be rotated instead.</p></body></html>", None))
         self.RotateBox.setText(_translate("KCC", "Horizontal mode", None))
         self.BasicModeButton.setText(_translate("KCC", "Basic", None))
         self.AdvModeButton.setText(_translate("KCC", "Advanced", None))

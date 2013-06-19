@@ -116,28 +116,37 @@ class ComicPage:
             self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = device
         except KeyError:
             raise RuntimeError('Unexpected output device %s' % device)
+        # Detect corrupted files - Phase 2
         try:
             self.origFileName = source
             self.image = Image.open(source)
         except IOError:
             raise RuntimeError('Cannot read image file %s' % source)
+        # Detect corrupted files - Phase 3
+        try:
+            self.image.verify()
+        except:
+            raise RuntimeError('Image file %s is corrupted' % source)
+        self.image = Image.open(source)
         self.image = self.image.convert('RGB')
 
-    def saveToDir(self, targetdir, forcepng, color, suffix=None):
+    def saveToDir(self, targetdir, forcepng, color, wipe, sufix=None):
         filename = os.path.basename(self.origFileName)
         try:
             if not color:
                 self.image = self.image.convert('L')    # convert to grayscale
-            # Suffix is used to recognise which files need horizontal Panel View.
-            if suffix == "R":
-                suffix = "_rotated"
+            if sufix == "R":
+                sufix = "_kccrotated"
             else:
-                suffix = ""
-            os.remove(os.path.join(targetdir, filename))
+                sufix = ""
+            if wipe:
+                os.remove(os.path.join(targetdir, filename))
+            else:
+                sufix += "_kcchq"
             if forcepng:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + suffix + ".png"), "PNG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + sufix + ".png"), "PNG")
             else:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + suffix + ".jpg"), "JPEG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + sufix + ".jpg"), "JPEG")
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
@@ -160,13 +169,13 @@ class ComicPage:
         self.image = self.image.quantize(palette=palImg)
 
     def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False,
-                    landscapeMode=False, noPanelViewHQ=False):
+                    landscapeMode=False, qualityMode=0):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
         else:
             fill = 'white'
-        if noPanelViewHQ:
+        if qualityMode == 0:
             size = (self.size[0], self.size[1])
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
@@ -222,8 +231,8 @@ class ComicPage:
                     leftbox = (0, 0, width, height / 2)
                     rightbox = (0, height / 2, width, height)
                 filename = os.path.splitext(os.path.basename(self.origFileName))
-                fileone = targetdir + '/' + filename[0] + '-kcca' + filename[1]
-                filetwo = targetdir + '/' + filename[0] + '-kccb' + filename[1]
+                fileone = targetdir + '/' + filename[0] + '_kcca' + filename[1]
+                filetwo = targetdir + '/' + filename[0] + '_kccb' + filename[1]
                 try:
                     if righttoleft:
                         pageone = self.image.crop(rightbox)

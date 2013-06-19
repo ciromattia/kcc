@@ -93,8 +93,10 @@ class WorkerThread(QtCore.QThread):
             argv.append("--manga-style")
         if GUI.RotateBox.isChecked():
             argv.append("--rotate")
-        if not GUI.HQPVBox.isChecked():
-            argv.append("--nopanelviewhq")
+        if GUI.QualityBox.checkState() == 1:
+            argv.append("--quality=1")
+        elif GUI.QualityBox.checkState() == 2:
+            argv.append("--quality=2")
         if GUI.ProcessingBox.isChecked():
             argv.append("--noprocessing")
         if GUI.UpscaleBox.isChecked() and not GUI.StretchBox.isChecked():
@@ -135,10 +137,8 @@ class WorkerThread(QtCore.QThread):
             except Exception as err:
                 self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
-                QtGui.QMessageBox.critical(MainWindow, 'KCC Error',
-                                           "Error on file %s:\n%s\nTraceback:\n%s"
-                                           % (jobargv[-1], str(err), traceback.format_tb(traceback_)),
-                                           QtGui.QMessageBox.Ok)
+                self.emit(QtCore.SIGNAL("showDialog"), "Error during convertion %s:\n\n%s\n\nTraceback:\n%s"
+                                                       % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
                 self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create EPUB!', 'error')
             if not self.errors:
                 if str(GUI.FormatBox.currentText()) == 'CBZ':
@@ -153,7 +153,6 @@ class WorkerThread(QtCore.QThread):
                             retcode = call('kindlegen "' + outputPath + '"', shell=True)
                         except:
                             continue
-                        self.emit(QtCore.SIGNAL("hideProgressBar"))
                         if retcode == 0:
                             self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... Done!', 'info', True)
                             self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header...', 'info')
@@ -184,6 +183,7 @@ class WorkerThread(QtCore.QThread):
                         self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file is too big for KindleGen!', 'error')
                         self.emit(QtCore.SIGNAL("addMessage"), 'Limit exceeded by ' + str(excess) +
                                                                ' MB. Try converting smaller batch.', 'error')
+        self.emit(QtCore.SIGNAL("hideProgressBar"))
         self.parent.needClean = True
         self.emit(QtCore.SIGNAL("addMessage"), 'All jobs completed.', 'info')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
@@ -343,6 +343,9 @@ class Ui_KCC(object):
         GUI.JobList.addItem(item)
         GUI.JobList.scrollToBottom()
 
+    def showDialog(self, message):
+        QtGui.QMessageBox.critical(MainWindow, 'KCC Error', message, QtGui.QMessageBox.Ok)
+
     def updateProgressbar(self, new=False, status=False):
         if new == "status":
             pass
@@ -413,6 +416,7 @@ class Ui_KCC(object):
         KCC.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
         KCC.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
         KCC.connect(self.worker, QtCore.SIGNAL("addMessage"), self.addMessage)
+        KCC.connect(self.worker, QtCore.SIGNAL("showDialog"), self.showDialog)
         KCC.connect(self.worker, QtCore.SIGNAL("hideProgressBar"), self.hideProgressBar)
         KCC.connect(self.versionCheck, QtCore.SIGNAL("addMessage"), self.addMessage)
         KCC.closeEvent = self.saveSettings
