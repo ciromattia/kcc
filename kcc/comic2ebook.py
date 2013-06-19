@@ -346,7 +346,7 @@ def dirImgProcess(path):
     if GUI:
         GUI.emit(QtCore.SIGNAL("progressBarTick"), pagenumber)
     if len(work) > 0:
-        splitpages = pool.map_async(fileImgProcess, work)
+        splitpages = pool.map_async(func=fileImgProcess, iterable=work)
         pool.close()
         if GUI:
             while not splitpages.ready():
