@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Wed Jun 19 10:47:29 2013
+# Created: Wed Jun 19 11:39:49 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -137,7 +137,6 @@ class Ui_KCC(object):
         self.MangaBox = QtGui.QCheckBox(self.OptionsBasic)
         self.MangaBox.setGeometry(QtCore.QRect(9, 10, 130, 18))
         self.MangaBox.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.MangaBox.setChecked(True)
         self.MangaBox.setObjectName(_fromUtf8("MangaBox"))
         self.QualityBox = QtGui.QCheckBox(self.OptionsBasic)
         self.QualityBox.setGeometry(QtCore.QRect(282, 10, 130, 18))

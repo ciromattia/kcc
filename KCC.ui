@@ -315,9 +315,6 @@
      <property name="text">
       <string>Manga mode</string>
      </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
     </widget>
     <widget class="QCheckBox" name="QualityBox">
      <property name="geometry">

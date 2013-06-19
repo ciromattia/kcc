@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-OSX.ui'
 #
-# Created: Tue Jun 18 22:42:06 2013
+# Created: Wed Jun 19 11:40:04 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -158,7 +158,6 @@ class Ui_KCC(object):
         font.setPointSize(11)
         self.MangaBox.setFont(font)
         self.MangaBox.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.MangaBox.setChecked(True)
         self.MangaBox.setObjectName(_fromUtf8("MangaBox"))
         self.QualityBox = QtGui.QCheckBox(self.OptionsBasic)
         self.QualityBox.setGeometry(QtCore.QRect(282, 10, 130, 18))
@@ -185,7 +184,7 @@ class Ui_KCC(object):
         self.JobList.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.JobList.setObjectName(_fromUtf8("JobList"))
         self.BasicModeButton = QtGui.QPushButton(self.Form)
-        self.BasicModeButton.setGeometry(QtCore.QRect(5, 10, 156, 41))
+        self.BasicModeButton.setGeometry(QtCore.QRect(5, 10, 210, 41))
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(False)
@@ -194,7 +193,7 @@ class Ui_KCC(object):
         self.BasicModeButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.BasicModeButton.setObjectName(_fromUtf8("BasicModeButton"))
         self.AdvModeButton = QtGui.QPushButton(self.Form)
-        self.AdvModeButton.setGeometry(QtCore.QRect(160, 10, 101, 41))
+        self.AdvModeButton.setGeometry(QtCore.QRect(207, 10, 210, 41))
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(False)
@@ -202,13 +201,6 @@ class Ui_KCC(object):
         self.AdvModeButton.setFont(font)
         self.AdvModeButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.AdvModeButton.setObjectName(_fromUtf8("AdvModeButton"))
-        self.ExpertModeButton = QtGui.QPushButton(self.Form)
-        self.ExpertModeButton.setGeometry(QtCore.QRect(260, 10, 157, 41))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.ExpertModeButton.setFont(font)
-        self.ExpertModeButton.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.ExpertModeButton.setObjectName(_fromUtf8("ExpertModeButton"))
         self.OptionsAdvancedGamma = QtGui.QFrame(self.Form)
         self.OptionsAdvancedGamma.setEnabled(True)
         self.OptionsAdvancedGamma.setGeometry(QtCore.QRect(10, 303, 401, 41))
@@ -359,19 +351,18 @@ class Ui_KCC(object):
         self.RotateBox.setText(_translate("KCC", "Horizontal mode", None))
         self.BasicModeButton.setText(_translate("KCC", "Basic", None))
         self.AdvModeButton.setText(_translate("KCC", "Advanced", None))
-        self.ExpertModeButton.setText(_translate("KCC", "Expert", None))
         self.GammaLabel.setToolTip(_translate("KCC", "When converting color images setting this option to 1.0 MIGHT improve readability.", None))
         self.GammaLabel.setText(_translate("KCC", "Gamma: Auto", None))
         self.GammaSlider.setToolTip(_translate("KCC", "<html><head/><body><p>When converting color images setting this option to 1.0 <span style=\" font-weight:600;\">might</span> improve readability.</p></body></html>", None))
         self.ColorBox.setToolTip(_translate("KCC", "Do not convert images to grayscale.", None))
         self.ColorBox.setText(_translate("KCC", "Color mode", None))
-        self.wLabel.setToolTip(_translate("KCC", "Device profile width will be overwritten by this value.", None))
+        self.wLabel.setToolTip(_translate("KCC", "Resolution of target device.", None))
         self.wLabel.setText(_translate("KCC", "Custom width: ", None))
-        self.customWidth.setToolTip(_translate("KCC", "Device profile width will be overwritten by this value.", None))
+        self.customWidth.setToolTip(_translate("KCC", "Resolution of target device.", None))
         self.customWidth.setInputMask(_translate("KCC", "0000; ", None))
-        self.hLabel.setToolTip(_translate("KCC", "Device profile height will be overwritten by this value.", None))
+        self.hLabel.setToolTip(_translate("KCC", "Resolution of target device.", None))
         self.hLabel.setText(_translate("KCC", "Custom height: ", None))
-        self.customHeight.setToolTip(_translate("KCC", "Device profile height will be overwritten by this value.", None))
+        self.customHeight.setToolTip(_translate("KCC", "Resolution of target device.", None))
         self.customHeight.setInputMask(_translate("KCC", "0000; ", None))
         self.ActionBasic.setText(_translate("KCC", "Basic", None))
         self.ActionAdvanced.setText(_translate("KCC", "Advanced", None))
