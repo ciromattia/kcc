@@ -3,6 +3,7 @@
     <file>icons/comic2ebook.png</file>
   </qresource>
   <qresource prefix="Devices">
+    <file>icons/Other.png</file>
     <file>icons/Kindle.png</file>
   </qresource>
   <qresource prefix="Formats">

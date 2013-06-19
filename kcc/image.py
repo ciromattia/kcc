@@ -92,7 +92,8 @@ class ProfileData:
         'KDXG': ("Kindle DXG", (824, 1200), Palette16, 1.8, (1236, 1800)),
         'KF': ("Kindle Fire", (600, 1024), Palette16, 1.0, (900, 1536)),
         'KFHD': ("Kindle Fire HD 7\"", (800, 1280), Palette16, 1.0, (1200, 1920)),
-        'KFHD8': ("Kindle Fire HD 8.9\"", (1200, 1920), Palette16, 1.0, (1800, 2880))
+        'KFHD8': ("Kindle Fire HD 8.9\"", (1200, 1920), Palette16, 1.0, (1800, 2880)),
+        'Other': ("Other", (0, 0), Palette16, 1.0, (0, 0)),
     }
 
     ProfileLabels = {
@@ -106,7 +107,8 @@ class ProfileData:
         "Kindle DXG": 'KDXG',
         "Kindle Fire": 'KF',
         "Kindle Fire HD 7\"": 'KFHD',
-        "Kindle Fire HD 8.9\"": 'KFHD8'
+        "Kindle Fire HD 8.9\"": 'KFHD8',
+        "Other": 'OTHER'
     }
 
 

@@ -394,7 +394,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>141</width>
+      <width>195</width>
       <height>32</height>
      </rect>
     </property>
@@ -413,9 +413,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QPushButton" name="AdvModeButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>217</x>
       <y>10</y>
-      <width>91</width>
+      <width>195</width>
       <height>32</height>
      </rect>
     </property>
@@ -429,27 +429,6 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="text">
      <string>Advanced</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="ExpertModeButton">
-    <property name="geometry">
-     <rect>
-      <x>260</x>
-      <y>10</y>
-      <width>151</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>9</pointsize>
-     </font>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-    <property name="text">
-     <string>Expert</string>
     </property>
    </widget>
    <widget class="QFrame" name="OptionsAdvancedGamma">
@@ -583,7 +562,7 @@ p, li { white-space: pre-wrap; }
       <item row="0" column="0">
        <widget class="QLabel" name="wLabel">
         <property name="toolTip">
-         <string>Device profile width will be overwritten by this value.</string>
+         <string>Resolution of target device.</string>
         </property>
         <property name="text">
          <string>Custom width: </string>
@@ -611,7 +590,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="toolTip">
-         <string>Device profile width will be overwritten by this value.</string>
+         <string>Resolution of target device.</string>
         </property>
         <property name="inputMask">
          <string>0000; </string>
@@ -624,7 +603,7 @@ p, li { white-space: pre-wrap; }
       <item row="0" column="2">
        <widget class="QLabel" name="hLabel">
         <property name="toolTip">
-         <string>Device profile height will be overwritten by this value.</string>
+         <string>Resolution of target device.</string>
         </property>
         <property name="text">
          <string>Custom height: </string>
@@ -652,7 +631,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="toolTip">
-         <string>Device profile height will be overwritten by this value.</string>
+         <string>Resolution of target device.</string>
         </property>
         <property name="inputMask">
          <string>0000; </string>
@@ -665,6 +644,20 @@ p, li { white-space: pre-wrap; }
      </layout>
     </widget>
    </widget>
+   <zorder>OptionsAdvanced</zorder>
+   <zorder>DeviceBox</zorder>
+   <zorder>FormatBox</zorder>
+   <zorder>ConvertButton</zorder>
+   <zorder>DirectoryButton</zorder>
+   <zorder>FileButton</zorder>
+   <zorder>ClearButton</zorder>
+   <zorder>OptionsBasic</zorder>
+   <zorder>JobList</zorder>
+   <zorder>BasicModeButton</zorder>
+   <zorder>AdvModeButton</zorder>
+   <zorder>OptionsAdvancedGamma</zorder>
+   <zorder>OptionsExpert</zorder>
+   <zorder>ProgressBar</zorder>
   </widget>
   <action name="ActionBasic">
    <property name="checkable">
