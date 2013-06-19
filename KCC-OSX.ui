@@ -70,7 +70,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>Disable image optimizations.</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Disable image optimizations.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>No optimisation</string>
@@ -88,7 +88,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable image upscaling.&lt;br/&gt;Aspect ratio will be preserved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Enable image upscaling.&lt;br/&gt;Aspect ratio will be preserved.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>Upscale images</string>
@@ -106,7 +106,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable image stretching.&lt;br/&gt;Aspect ratio will be not preserved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Enable image stretching.&lt;br/&gt;Aspect ratio will be not preserved.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>Stretch images</string>
@@ -124,7 +124,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create PNG files instead JPEG.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Only for non-Kindle devices!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Create PNG files instead JPEG.&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Only for non-Kindle devices!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>PNG output</string>
@@ -142,7 +142,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>Fill space around images with black color.</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Fill space around images with black color.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>Black borders</string>
@@ -160,7 +160,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disable splitting and rotation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Disable splitting and rotation.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>No split/rotate</string>
@@ -345,7 +345,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>Enable right-to-left reading.</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Enable right-to-left reading.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Manga mode</string>
@@ -369,13 +369,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Normal quality mode&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Use it when Panel View support is not needed.&lt;/span&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/span&gt;- Maximum quality when zoom is not enabled.&lt;br /&gt;- Poor quality when zoom is enabled.&lt;br /&gt;- Lowest file size.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - High quality mode&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Not zoomed image &lt;/span&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;might &lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;be &lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;a little blurry.&lt;/span&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/span&gt;- Medium/High quality when zoom is not enabled.&lt;br /&gt;- Maximum quality when zoom is enabled.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Ultra quality mode&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Maximum possible quality.&lt;/span&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/span&gt;- Maximum quality when zoom is not enabled.&lt;br /&gt;- Maximum quality when zoom is enabled.&lt;br /&gt;- Very high file size.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Normal quality mode&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-style:italic;&quot;&gt;Use it when Panel View support is not needed.&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt;&quot;&gt;- Maximum quality when zoom is not enabled.&lt;br/&gt;- Poor quality when zoom is enabled.&lt;br/&gt;- Lowest file size.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - High quality mode&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-style:italic;&quot;&gt;Not zoomed image &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; font-style:italic;&quot;&gt;might &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-style:italic;&quot;&gt;be a little blurry.&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt;&quot;&gt;- Medium/High quality when zoom is not enabled.&lt;br/&gt;- Maximum quality when zoom is enabled.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Ultra quality mode&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-style:italic;&quot;&gt;Maximum possible quality.&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt;&quot;&gt;- Maximum quality when zoom is not enabled.&lt;br/&gt;- Maximum quality when zoom is enabled.&lt;br/&gt;- Very high file size.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>High/Ultra quality</string>
@@ -402,7 +396,7 @@ p, li { white-space: pre-wrap; }
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disable page spliting.&lt;br/&gt;They will be rotated instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Disable page spliting.&lt;br/&gt;They will be rotated instead.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Horizontal mode</string>
@@ -516,7 +510,7 @@ p, li { white-space: pre-wrap; }
       </font>
      </property>
      <property name="toolTip">
-      <string>When converting color images setting this option to 1.0 MIGHT improve readability.</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;When converting color images setting this option to 1.0 MIGHT improve readability.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Gamma: Auto</string>
@@ -535,7 +529,7 @@ p, li { white-space: pre-wrap; }
       <enum>Qt::ClickFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When converting color images setting this option to 1.0 &lt;span style=&quot; font-weight:600;&quot;&gt;might&lt;/span&gt; improve readability.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;When converting color images setting this option to 1.0 &lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;might&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; improve readability.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="maximum">
       <number>500</number>
@@ -609,7 +603,7 @@ p, li { white-space: pre-wrap; }
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>Do not convert images to grayscale.</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Do not convert images to grayscale.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Color mode</string>
@@ -635,7 +629,7 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
         <property name="toolTip">
-         <string>Resolution of target device.</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Resolution of target device.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string>Custom width: </string>
@@ -668,7 +662,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="toolTip">
-         <string>Resolution of target device.</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Resolution of target device.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="inputMask">
          <string>0000; </string>
@@ -688,7 +682,7 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
         <property name="toolTip">
-         <string>Resolution of target device.</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Resolution of target device.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string>Custom height: </string>
@@ -721,7 +715,7 @@ p, li { white-space: pre-wrap; }
          <bool>false</bool>
         </property>
         <property name="toolTip">
-         <string>Resolution of target device.</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Resolution of target device.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="inputMask">
          <string>0000; </string>
