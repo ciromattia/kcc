@@ -111,7 +111,7 @@ class WorkerThread(QtCore.QThread):
             if GUI.StretchBox.isChecked():
                 argv.append("--stretch")
             if GUI.NoDitheringBox.isChecked():
-                argv.append("--nodithering")
+                argv.append("--forcepng")
             if float(self.parent.GammaValue) > 0.09:
                 argv.append("--gamma=" + self.parent.GammaValue)
             if str(GUI.FormatBox.currentText()) == 'CBZ':
