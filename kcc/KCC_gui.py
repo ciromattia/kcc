@@ -257,6 +257,7 @@ class Ui_KCC(object):
         GUI.ProcessingBox.hide()
         GUI.UpscaleBox.hide()
         GUI.NoRotateBox.hide()
+        GUI.MangaBox.setEnabled(True)
 
     def modeAdvanced(self):
         self.currentMode = 2
@@ -272,6 +273,7 @@ class Ui_KCC(object):
         GUI.OptionsAdvancedGamma.setEnabled(True)
         GUI.OptionsAdvanced.setEnabled(True)
         GUI.OptionsExpert.setEnabled(False)
+        GUI.MangaBox.setEnabled(True)
 
     def modeExpert(self):
         self.modeAdvanced()
@@ -280,6 +282,8 @@ class Ui_KCC(object):
         MainWindow.setMaximumSize(QtCore.QSize(420, 380))
         MainWindow.resize(420, 380)
         GUI.OptionsExpert.setEnabled(True)
+        GUI.MangaBox.setCheckState(0)
+        GUI.MangaBox.setEnabled(False)
 
     def modeConvert(self, enable):
         if self.currentMode != 3:
