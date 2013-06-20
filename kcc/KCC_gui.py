@@ -39,6 +39,8 @@ class Icons:
     def __init__(self):
         self.deviceKindle = QtGui.QIcon()
         self.deviceKindle.addPixmap(QtGui.QPixmap(":/Devices/icons/Kindle.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.deviceOther = QtGui.QIcon()
+        self.deviceOther.addPixmap(QtGui.QPixmap(":/Devices/icons/Other.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
         self.MOBIFormat = QtGui.QIcon()
         self.MOBIFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -97,28 +99,28 @@ class WorkerThread(QtCore.QThread):
             argv.append("--quality=1")
         elif GUI.QualityBox.checkState() == 2:
             argv.append("--quality=2")
-        if GUI.ProcessingBox.isChecked():
-            argv.append("--noprocessing")
-        if GUI.UpscaleBox.isChecked() and not GUI.StretchBox.isChecked():
-            argv.append("--upscale")
-        if GUI.NoRotateBox.isChecked():
-            argv.append("--nosplitrotate")
-        if GUI.BorderBox.isChecked():
-            argv.append("--blackborders")
-        if GUI.StretchBox.isChecked():
-            argv.append("--stretch")
-        if GUI.NoDitheringBox.isChecked():
-            argv.append("--nodithering")
-        if self.parent.GammaValue > 0.09:
-            argv.append("--gamma=" + self.parent.GammaValue)
-        if str(GUI.FormatBox.currentText()) == 'CBZ':
-            argv.append("--cbz-output")
-        if str(GUI.customWidth.text()) != '':
+        if self.parent.currentMode > 1:
+            if GUI.ProcessingBox.isChecked():
+                argv.append("--noprocessing")
+            if GUI.UpscaleBox.isChecked() and not GUI.StretchBox.isChecked():
+                argv.append("--upscale")
+            if GUI.NoRotateBox.isChecked():
+                argv.append("--nosplitrotate")
+            if GUI.BorderBox.isChecked():
+                argv.append("--blackborders")
+            if GUI.StretchBox.isChecked():
+                argv.append("--stretch")
+            if GUI.NoDitheringBox.isChecked():
+                argv.append("--forcepng")
+            if float(self.parent.GammaValue) > 0.09:
+                argv.append("--gamma=" + self.parent.GammaValue)
+            if str(GUI.FormatBox.currentText()) == 'CBZ':
+                argv.append("--cbz-output")
+        if self.parent.currentMode > 2:
             argv.append("--customwidth=" + str(GUI.customWidth.text()))
-        if str(GUI.customHeight.text()) != '':
             argv.append("--customheight=" + str(GUI.customHeight.text()))
-        if GUI.ColorBox.isChecked():
-            argv.append("--forcecolor")
+            if GUI.ColorBox.isChecked():
+                argv.append("--forcecolor")
         for i in range(GUI.JobList.count()):
             currentJobs.append(str(GUI.JobList.item(i).text()))
         GUI.JobList.clear()
@@ -150,7 +152,7 @@ class WorkerThread(QtCore.QThread):
                         self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file...', 'info')
                         self.emit(QtCore.SIGNAL("progressBarTick"), 1)
                         try:
-                            retcode = call('kindlegen "' + outputPath + '"', shell=True)
+                            retcode = call('kindlegen -verbose "' + outputPath + '"', shell=True)
                         except:
                             continue
                         if retcode == 0:
@@ -174,7 +176,8 @@ class WorkerThread(QtCore.QThread):
                                           'MOBI file will work correctly but it will be highly oversized.', 'warning')
                         else:
                             os.remove(outputPath)
-                            os.remove(outputPath.replace('.epub', '.mobi'))
+                            if os.path.exists(outputPath.replace('.epub', '.mobi')):
+                                os.remove(outputPath.replace('.epub', '.mobi'))
                             self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', 'error')
                             self.emit(QtCore.SIGNAL("addMessage"), 'Try converting a bit smaller batch.', 'error')
                     else:
@@ -246,7 +249,6 @@ class Ui_KCC(object):
         MainWindow.resize(420, 270)
         GUI.BasicModeButton.setStyleSheet('font-weight:Bold;')
         GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
-        GUI.ExpertModeButton.setStyleSheet('font-weight:Normal;')
         GUI.FormatBox.setCurrentIndex(0)
         GUI.FormatBox.setEnabled(False)
         GUI.OptionsAdvanced.setEnabled(False)
@@ -255,16 +257,7 @@ class Ui_KCC(object):
         GUI.ProcessingBox.hide()
         GUI.UpscaleBox.hide()
         GUI.NoRotateBox.hide()
-        GUI.ProcessingBox.setChecked(False)
-        GUI.UpscaleBox.setChecked(False)
-        GUI.NoRotateBox.setChecked(False)
-        GUI.BorderBox.setChecked(False)
-        GUI.StretchBox.setChecked(False)
-        GUI.NoDitheringBox.setChecked(False)
-        GUI.GammaSlider.setValue(0)
-        GUI.customWidth.setText('')
-        GUI.customHeight.setText('')
-        GUI.ColorBox.setChecked(False)
+        GUI.MangaBox.setEnabled(True)
 
     def modeAdvanced(self):
         self.currentMode = 2
@@ -273,7 +266,6 @@ class Ui_KCC(object):
         MainWindow.resize(420, 345)
         GUI.BasicModeButton.setStyleSheet('font-weight:Normal;')
         GUI.AdvModeButton.setStyleSheet('font-weight:Bold;')
-        GUI.ExpertModeButton.setStyleSheet('font-weight:Normal;')
         GUI.FormatBox.setEnabled(True)
         GUI.ProcessingBox.show()
         GUI.UpscaleBox.show()
@@ -281,30 +273,22 @@ class Ui_KCC(object):
         GUI.OptionsAdvancedGamma.setEnabled(True)
         GUI.OptionsAdvanced.setEnabled(True)
         GUI.OptionsExpert.setEnabled(False)
-        GUI.customWidth.setText('')
-        GUI.customHeight.setText('')
-        GUI.ColorBox.setChecked(False)
+        GUI.MangaBox.setEnabled(True)
 
     def modeExpert(self):
+        self.modeAdvanced()
         self.currentMode = 3
         MainWindow.setMinimumSize(QtCore.QSize(420, 380))
         MainWindow.setMaximumSize(QtCore.QSize(420, 380))
         MainWindow.resize(420, 380)
-        GUI.BasicModeButton.setStyleSheet('font-weight:Normal;')
-        GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
-        GUI.ExpertModeButton.setStyleSheet('font-weight:Bold;')
-        GUI.FormatBox.setEnabled(True)
-        GUI.ProcessingBox.show()
-        GUI.UpscaleBox.show()
-        GUI.NoRotateBox.show()
-        GUI.OptionsAdvancedGamma.setEnabled(True)
-        GUI.OptionsAdvanced.setEnabled(True)
         GUI.OptionsExpert.setEnabled(True)
+        GUI.MangaBox.setCheckState(0)
+        GUI.MangaBox.setEnabled(False)
 
     def modeConvert(self, enable):
-        GUI.BasicModeButton.setEnabled(enable)
-        GUI.AdvModeButton.setEnabled(enable)
-        GUI.ExpertModeButton.setEnabled(enable)
+        if self.currentMode != 3:
+            GUI.BasicModeButton.setEnabled(enable)
+            GUI.AdvModeButton.setEnabled(enable)
         GUI.DirectoryButton.setEnabled(enable)
         GUI.ClearButton.setEnabled(enable)
         GUI.FileButton.setEnabled(enable)
@@ -324,13 +308,28 @@ class Ui_KCC(object):
                 self.modeExpert()
 
     def changeGamma(self, value):
-        if value <= 9:
-            value = 'Auto'
+        value = float(value)
+        value = '%.2f' % (value/100)
+        if float(value) <= 0.09:
+            GUI.GammaLabel.setText('Gamma: Auto')
         else:
-            value = float(value)
-            value = '%.2f' % (value/100)
-            self.GammaValue = value
-        GUI.GammaLabel.setText('Gamma: ' + str(value))
+            GUI.GammaLabel.setText('Gamma: ' + str(value))
+        self.GammaValue = value
+
+    def changeDevice(self, value, start=False):
+        if value == 11 and (start or self.currentMode != 3):
+            GUI.BasicModeButton.setEnabled(False)
+            GUI.AdvModeButton.setEnabled(False)
+            self.modeExpert()
+        elif self.currentMode == 3:
+            GUI.BasicModeButton.setEnabled(True)
+            GUI.AdvModeButton.setEnabled(True)
+            self.modeBasic()
+        if value in [0, 1, 5, 6, 7, 8, 9, 11]:
+            GUI.QualityBox.setCheckState(0)
+            GUI.QualityBox.setEnabled(False)
+        else:
+            GUI.QualityBox.setEnabled(True)
 
     def addMessage(self, message, icon=None, replace=False):
         if icon:
@@ -365,6 +364,11 @@ class Ui_KCC(object):
             self.addMessage('No files selected! Please choose files to convert.', 'error')
             self.needClean = True
             return
+        if self.currentMode > 2 and (str(GUI.customWidth.text()) == '' or str(GUI.customHeight.text()) == ''):
+            GUI.JobList.clear()
+            self.addMessage('Target resolution is not set!', 'error')
+            self.needClean = True
+            return
         self.worker.start()
 
     def hideProgressBar(self):
@@ -374,6 +378,21 @@ class Ui_KCC(object):
     def saveSettings(self, event):
         self.settings.setValue('lastPath', self.lastPath)
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
+        self.settings.setValue('currentFormat', GUI.FormatBox.currentIndex())
+        self.settings.setValue('currentMode', self.currentMode)
+        self.settings.setValue('options', QtCore.QVariant({'MangaBox': GUI.MangaBox.checkState(),
+                                                           'RotateBox': GUI.RotateBox.checkState(),
+                                                           'QualityBox': GUI.QualityBox.checkState(),
+                                                           'ProcessingBox': GUI.ProcessingBox.checkState(),
+                                                           'UpscaleBox': GUI.UpscaleBox.checkState(),
+                                                           'NoRotateBox': GUI.NoRotateBox.checkState(),
+                                                           'BorderBox': GUI.BorderBox.checkState(),
+                                                           'StretchBox': GUI.StretchBox.checkState(),
+                                                           'NoDitheringBox': GUI.NoDitheringBox.checkState(),
+                                                           'ColorBox': GUI.ColorBox.checkState(),
+                                                           'customWidth': GUI.customWidth.text(),
+                                                           'customHeight': GUI.customHeight.text(),
+                                                           'GammaSlider': float(self.GammaValue)*100}))
         self.settings.sync()
 
     def __init__(self, UI, KCC):
@@ -385,10 +404,13 @@ class Ui_KCC(object):
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.lastDevice = self.settings.value('lastDevice', 10, type=int)
+        self.currentMode = self.settings.value('currentMode', 1, type=int)
+        self.currentFormat = self.settings.value('currentFormat', 0, type=int)
+        self.options = self.settings.value('options', QtCore.QVariant({'GammaSlider': 0}))
+        self.options = self.options.toPyObject()
         self.worker = WorkerThread(self)
         self.versionCheck = VersionThread(self)
         self.needClean = True
-        self.GammaValue = 0
 
         self.addMessage('Welcome!', 'info')
         self.addMessage('Remember: All options have additional informations in tooltips.', 'info')
@@ -407,12 +429,12 @@ class Ui_KCC(object):
 
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
-        GUI.ExpertModeButton.clicked.connect(self.modeExpert)
         GUI.DirectoryButton.clicked.connect(self.selectDir)
         GUI.ClearButton.clicked.connect(self.clearJobs)
         GUI.FileButton.clicked.connect(self.selectFile)
         GUI.ConvertButton.clicked.connect(self.convertStart)
         GUI.GammaSlider.valueChanged.connect(self.changeGamma)
+        GUI.DeviceBox.activated.connect(self.changeDevice)
         KCC.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
         KCC.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
         KCC.connect(self.worker, QtCore.SIGNAL("addMessage"), self.addMessage)
@@ -422,12 +444,36 @@ class Ui_KCC(object):
         KCC.closeEvent = self.saveSettings
 
         for profile in profiles:
-            GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
+            if profile != "Other":
+                GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
+            else:
+                GUI.DeviceBox.addItem(self.icons.deviceOther, profile)
         GUI.DeviceBox.setCurrentIndex(self.lastDevice)
+
         for f in formats:
             GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
-        GUI.FormatBox.setCurrentIndex(0)
+        if self.currentFormat > GUI.FormatBox.count():
+            GUI.FormatBox.setCurrentIndex(0)
+            self.currentFormat = 0
+        else:
+            GUI.FormatBox.setCurrentIndex(self.currentFormat)
 
-        self.modeBasic()
+        for option in self.options:
+            if str(option) == "customWidth":
+                GUI.customWidth.setText(str(self.options[option]))
+            elif str(option) == "customHeight":
+                GUI.customHeight.setText(str(self.options[option]))
+            elif str(option) == "GammaSlider":
+                GUI.GammaSlider.setValue(int(self.options[option]))
+                self.changeGamma(int(self.options[option]))
+            else:
+                eval('GUI.' + str(option)).setCheckState(self.options[option])
+        if self.currentMode == 1:
+            self.modeBasic()
+        elif self.currentMode == 2:
+            self.modeAdvanced()
+        elif self.currentMode == 3:
+            self.modeExpert()
         self.versionCheck.start()
         self.hideProgressBar()
+        self.changeDevice(self.lastDevice, True)
