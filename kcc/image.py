@@ -130,23 +130,23 @@ class ComicPage:
         self.image = Image.open(source)
         self.image = self.image.convert('RGB')
 
-    def saveToDir(self, targetdir, forcepng, color, wipe, sufix=None):
+    def saveToDir(self, targetdir, forcepng, color, wipe, suffix=None):
         filename = os.path.basename(self.origFileName)
         try:
             if not color:
                 self.image = self.image.convert('L')    # convert to grayscale
-            if sufix == "R":
-                sufix = "_kccrotated"
+            if suffix == "R":
+                suffix = "_kccrotated"
             else:
-                sufix = ""
+                suffix = ""
             if wipe:
                 os.remove(os.path.join(targetdir, filename))
             else:
-                sufix += "_kcchq"
+                suffix += "_kcchq"
             if forcepng:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + sufix + ".png"), "PNG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + suffix + ".png"), "PNG")
             else:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + sufix + ".jpg"), "JPEG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + suffix + ".jpg"), "JPEG")
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
