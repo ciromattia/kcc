@@ -666,7 +666,7 @@ def sanitizeTreeBeforeConversion(filetree):
             if os.path.getsize(os.path.join(root, name)) == 0:
                 os.remove(os.path.join(root, name))
         for name in dirs:
-            os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD)
+            os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD | stat.S_IEXEC)
 
 
 def Copyright():
@@ -813,6 +813,11 @@ def checkOptions():
     if options.rotate:
         options.panelview = True
         options.landscapemode = False
+    # Disable all Kindle features
+    if options.profile == 'OTHER':
+        options.landscapemode = False
+        options.panelview = False
+        options.quality = 0
     # Override profile data
     if options.customwidth != 0 or options.customheight != 0:
         X = image.ProfileData.Profiles[options.profile][1][0]
