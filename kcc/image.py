@@ -93,7 +93,7 @@ class ProfileData:
         'KF': ("Kindle Fire", (600, 1024), Palette16, 1.0, (900, 1536)),
         'KFHD': ("Kindle Fire HD 7\"", (800, 1280), Palette16, 1.0, (1200, 1920)),
         'KFHD8': ("Kindle Fire HD 8.9\"", (1200, 1920), Palette16, 1.0, (1800, 2880)),
-        'OTHER': ("Other", (0, 0), Palette16, 1.0, (0, 0)),
+        'OTHER': ("Other", (0, 0), Palette16, 1.8, (0, 0)),
     }
 
     ProfileLabels = {
