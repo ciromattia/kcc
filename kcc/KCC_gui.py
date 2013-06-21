@@ -30,9 +30,10 @@ import urllib2
 import comic2ebook
 import kindlestrip
 from image import ProfileData
-from subprocess import call, STDOUT, PIPE
+from subprocess import call, Popen, STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
 from xml.dom.minidom import parse
+from string import split
 
 
 class Icons:
@@ -415,8 +416,22 @@ class Ui_KCC(object):
         self.addMessage('Welcome!', 'info')
         self.addMessage('Remember: All options have additional informations in tooltips.', 'info')
         if call('kindlegen', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
-            self.KindleGen = True
-            formats = ['MOBI', 'EPUB', 'CBZ']
+            versionCheck = Popen('kindlegen', stdout=PIPE, stderr=STDOUT, shell=True)
+            for line in versionCheck.stdout:
+                if "Amazon kindlegen" in line:
+                    versionCheck = line.split('V')[1].split(' ')[0]
+                    if tuple(map(int, (versionCheck.split(".")))) >= tuple(map(int, ('2.9'.split(".")))):
+                        versionCheck = True
+                    else:
+                        versionCheck = False
+                    break
+            if versionCheck:
+                self.KindleGen = True
+                formats = ['MOBI', 'EPUB', 'CBZ']
+            else:
+                self.KindleGen = False
+                formats = ['EPUB', 'CBZ']
+                self.addMessage('KindleGen is outdated! Creating MOBI files is disabled.', 'warning')
         else:
             self.KindleGen = False
             formats = ['EPUB', 'CBZ']
