@@ -37,7 +37,7 @@ In the meanwhile you can download [version 2.9](http://kcc.vulturis.eu/OSX/Kindl
 - PDF *(Extracting only contained JPG images)*
 
 ## OPTIONAL REQUIREMENTS
-- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.8+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For .mobi generation)*
+- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For .mobi generation)*
 - [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
 
 ### For compiling/running from source:
