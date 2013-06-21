@@ -627,10 +627,8 @@ def getWorkFolder(afile):
 
 
 def slugify(value):
-    """
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
-    """
+    # Normalizes string, converts to lowercase, removes non-alpha characters,
+    # and converts spaces to hyphens.
     import unicodedata
     value = unicodedata.normalize('NFKD', unicode(value, 'latin1')).encode('ascii', 'ignore')
     value = re.sub('[^\w\s\.-]', '', value).strip().lower()
@@ -794,7 +792,7 @@ def checkOptions():
         options.panelview = True
         options.landscapemode = False
     else:
-        # Virtual Panel View
+        # Virtual Panel View or Panel View disabled
         options.panelview = False
     # Older Kindle don't need higher resolution files due lack of Panel View.
     # Kindle Fire family have very high resolution. Bigger images are not needed.
