@@ -181,6 +181,7 @@ class ComicPage:
             size = (self.size[0], self.size[1])
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
+        # Kindle Paperwhite - Force upscale of splited pages to increase readability
         if isSplit and landscapeMode:
             upscale = True
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-OSX.ui'
 #
-# Created: Wed Jun 19 13:56:35 2013
+# Created: Fri Jun 21 18:23:35 2013
 #      by: PyQt4 UI code generator 4.10.1
 #
 # WARNING! All changes made in this file will be lost!

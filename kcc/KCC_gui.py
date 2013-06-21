@@ -33,7 +33,6 @@ from image import ProfileData
 from subprocess import call, Popen, STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
 from xml.dom.minidom import parse
-from string import split
 
 
 class Icons:
