@@ -73,7 +73,7 @@ class VersionThread(QtCore.QThread):
         except Exception:
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
-        if latestVersion != __version__:
+        if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
             self.emit(QtCore.SIGNAL("addMessage"), 'New version is available!', 'warning')
 
 
