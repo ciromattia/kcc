@@ -49,6 +49,7 @@ If it happens to you please append your message to [Issue #52](https://github.co
 ### Important tips:
 * Use high quality source files. **This little detail have a major impact on the final result.**
 * Read tooltip of _High/Ultra quality_ option. There are many important informations there.
+* When converting images smaller than device resolution remember to enable upscaling.
 * Check our [wiki](https://github.com/ciromattia/kcc/wiki/Other-devices) for a list of tested Non-Kindle E-Readers.
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
