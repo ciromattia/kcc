@@ -791,13 +791,8 @@ def checkOptions():
         options.panelview = True
         options.landscapemode = False
     else:
-        # Virtual Panel View or Panel View disabled
+        # Virtual Panel View
         options.panelview = False
-    # Older Kindle don't need higher resolution files due lack of Panel View.
-    # Kindle Fire family have very high resolution. Bigger images are not needed.
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG'\
-            or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
-        options.quality = 0
     # Disabling grayscale conversion for Kindle Fire family.
     if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8' or options.forcecolor:
         options.forcecolor = True
@@ -808,6 +803,13 @@ def checkOptions():
     if options.rotate:
         options.panelview = True
         options.landscapemode = False
+    # Older Kindle don't need higher resolution files due lack of Panel View.
+    # Kindle Fire family have very high resolution. Bigger images are not needed.
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG'\
+            or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
+        options.quality = 0
+        if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
+            options.panelview = False
     # Disable all Kindle features
     if options.profile == 'OTHER':
         options.landscapemode = False
