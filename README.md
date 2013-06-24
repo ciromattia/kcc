@@ -24,9 +24,8 @@ You can find the latest released binary at the following links:
 - **OS X:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
 - **Linux:** Just download sourcecode and launch: `python kcc.py`
 
-_It has been reported by a couple of users 2.10 crashing on OSX at start.
-If it happens to you please append your message to [Issue #52](https://github.com/ciromattia/kcc/issues/52).
-In the meanwhile you can download [version 2.9](http://kcc.vulturis.eu/OSX/KindleComicConverter_osx_2.9.zip)._
+_It has been reported by a couple of users that version 2.10 crashing on OSX at start. We don't know if that issue still exist in version 3.0.
+If it happens to you please append your message to [Issue #52](https://github.com/ciromattia/kcc/issues/52)._
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following file types:
@@ -37,7 +36,7 @@ In the meanwhile you can download [version 2.9](http://kcc.vulturis.eu/OSX/Kindl
 - PDF *(Extracting only contained JPG images)*
 
 ## OPTIONAL REQUIREMENTS
-- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.8+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For .mobi generation)*
+- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For .mobi generation)*
 - [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
 
 ### For compiling/running from source:
@@ -50,6 +49,8 @@ In the meanwhile you can download [version 2.9](http://kcc.vulturis.eu/OSX/Kindl
 ### Important tips:
 * Use high quality source files. **This little detail have a major impact on the final result.**
 * Read tooltip of _High/Ultra quality_ option. There are many important informations there.
+* When converting images smaller than device resolution remember to enable upscaling.
+* Check our [wiki](https://github.com/ciromattia/kcc/wiki/Other-devices) for a list of tested Non-Kindle E-Readers.
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
 * Output MOBI file should be uploaded via USB. Other methods (e.g. via Calibre) might corrupt it.

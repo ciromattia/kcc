@@ -28,14 +28,6 @@ except ImportError:
     exit(1)
 
 
-class ImageFlags:
-    Orient = 1 << 0
-    Resize = 1 << 1
-    Frame = 1 << 2
-    Quantize = 1 << 3
-    Stretch = 1 << 4
-
-
 class ProfileData:
     Palette4 = [
         0x00, 0x00, 0x00,
@@ -181,6 +173,7 @@ class ComicPage:
             size = (self.size[0], self.size[1])
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
+        # Kindle Paperwhite/Touch - Force upscale of splited pages to increase readability
         if isSplit and landscapeMode:
             upscale = True
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:

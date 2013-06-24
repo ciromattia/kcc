@@ -2,35 +2,46 @@
 cx_Freeze build script for KCC.
 
 Usage (Mac OS X):
-    python setup.py bdist_mac
+    python setup.py py2app
 
 Usage (Windows):
     python setup.py build
 """
 from sys import platform
-from cx_Freeze import setup, Executable
 
 NAME = "KindleComicConverter"
 VERSION = "3.0"
 MAIN = "kcc.py"
 
-includefiles = ['LICENSE.txt']
-includes = []
-excludes = []
-
 if platform == "darwin":
+    from setuptools import setup
     extra_options = dict(
-        options={"build_exe": {"include_files": includefiles, "excludes": excludes, "compressed": True},
-                 "bdist_mac": {"iconfile": "icons/comic2ebook.icns"}},
-        executables=[Executable(MAIN,
-                                copyDependentFiles=True,
-                                appendScriptToExe=True,
-                                appendScriptToLibrary=False,
-                                compress=True)])
+        setup_requires=['py2app'],
+        app=[MAIN],
+        options=dict(
+            py2app=dict(
+                argv_emulation=True,
+                iconfile='icons/comic2ebook.icns',
+                includes=['PIL', 'sip', 'PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui'],
+                resources=['other/qt.conf', 'LICENSE.txt'],
+                plist=dict(
+                    CFBundleName=NAME,
+                    CFBundleShortVersionString=VERSION,
+                    CFBundleGetInfoString=NAME + " " + VERSION +
+                    ", written 2012-2013 by Ciro Mattia Gonano and Pawel Jastrzebski",
+                    CFBundleExecutable=NAME,
+                    CFBundleIdentifier='com.github.ciromattia.kcc',
+                    CFBundleSignature='dplt',
+                    NSHumanReadableCopyright='ISC License (ISCL)'
+                )
+            )
+        )
+    )
 elif platform == "win32":
+    from cx_Freeze import setup, Executable
     base = "Win32GUI"
     extra_options = dict(
-        options={"build_exe": {"include_files": includefiles, "excludes": excludes, "compressed": True}},
+        options={"build_exe": {"include_files": ['LICENSE.txt'], "compressed": True}},
         executables=[Executable(MAIN,
                                 base=base,
                                 targetName="KCC.exe",
@@ -40,8 +51,9 @@ elif platform == "win32":
                                 appendScriptToLibrary=False,
                                 compress=True)])
 else:
+    from cx_Freeze import setup, Executable
     extra_options = dict(
-        options={"build_exe": {"include_files": includefiles, "excludes": excludes, "compressed": True}},
+        options={"build_exe": {"include_files": ['LICENSE.txt'], "compressed": True}},
         executables=[Executable(MAIN,
                                 icon="icons/comic2ebook.png",
                                 copyDependentFiles=True,
