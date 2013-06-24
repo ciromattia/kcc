@@ -193,7 +193,6 @@ def buildNCX(dstdir, title, chapters):
 
 def buildOPF(dstdir, title, filelist, cover=None):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
-    # read the first file resolution
     profilelabel, deviceres, palette, gamma, panelviewsize = options.profileData
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if options.righttoleft:
@@ -337,7 +336,7 @@ def applyImgOptimization(img, isSplit, toRight, options, overrideQuality=5):
         img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight,
                         options.landscapemode, options.quality)
     img.optimizeImage(options.gamma)
-    if options.forcepng:
+    if options.forcepng and not options.forcecolor:
         img.quantizeImage()
 
 
@@ -627,10 +626,8 @@ def getWorkFolder(afile):
 
 
 def slugify(value):
-    """
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
-    """
+    # Normalizes string, converts to lowercase, removes non-alpha characters,
+    # and converts spaces to hyphens.
     import unicodedata
     value = unicodedata.normalize('NFKD', unicode(value, 'latin1')).encode('ascii', 'ignore')
     value = re.sub('[^\w\s\.-]', '', value).strip().lower()
@@ -794,7 +791,7 @@ def checkOptions():
         options.panelview = True
         options.landscapemode = False
     else:
-        # Virtual Panel View
+        # Virtual Panel View or Panel View disabled
         options.panelview = False
     # Older Kindle don't need higher resolution files due lack of Panel View.
     # Kindle Fire family have very high resolution. Bigger images are not needed.
@@ -802,10 +799,8 @@ def checkOptions():
             or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
         options.quality = 0
     # Disabling grayscale conversion for Kindle Fire family.
-    # Forcing JPEG output. For now code can't provide color PNG files.
     if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8' or options.forcecolor:
         options.forcecolor = True
-        options.forcepng = False
     else:
         options.forcecolor = False
     # Mixing vertical and horizontal pages require real Panel View.

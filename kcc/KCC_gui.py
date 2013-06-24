@@ -30,7 +30,7 @@ import urllib2
 import comic2ebook
 import kindlestrip
 from image import ProfileData
-from subprocess import call, STDOUT, PIPE
+from subprocess import call, Popen, STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
 from xml.dom.minidom import parse
 
@@ -73,7 +73,7 @@ class VersionThread(QtCore.QThread):
         except Exception:
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
-        if latestVersion != __version__:
+        if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
             self.emit(QtCore.SIGNAL("addMessage"), 'New version is available!', 'warning')
 
 
@@ -415,8 +415,22 @@ class Ui_KCC(object):
         self.addMessage('Welcome!', 'info')
         self.addMessage('Remember: All options have additional informations in tooltips.', 'info')
         if call('kindlegen', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
-            self.KindleGen = True
-            formats = ['MOBI', 'EPUB', 'CBZ']
+            versionCheck = Popen('kindlegen', stdout=PIPE, stderr=STDOUT, shell=True)
+            for line in versionCheck.stdout:
+                if "Amazon kindlegen" in line:
+                    versionCheck = line.split('V')[1].split(' ')[0]
+                    if tuple(map(int, (versionCheck.split(".")))) >= tuple(map(int, ('2.9'.split(".")))):
+                        versionCheck = True
+                    else:
+                        versionCheck = False
+                    break
+            if versionCheck:
+                self.KindleGen = True
+                formats = ['MOBI', 'EPUB', 'CBZ']
+            else:
+                self.KindleGen = False
+                formats = ['EPUB', 'CBZ']
+                self.addMessage('KindleGen is outdated! Creating MOBI files is disabled.', 'warning')
         else:
             self.KindleGen = False
             formats = ['EPUB', 'CBZ']
