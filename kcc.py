@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012 Ciro Mattia Gonano <ciromattia@gmail.com>
 #
@@ -16,26 +17,35 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
-__version__ = '2.10'
+__version__ = '3.0'
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
+__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
-from Tkinter import *
-from kcc import gui
-from sys import platform
-from multiprocessing import freeze_support
+import sys
 import os
+try:
+    # noinspection PyUnresolvedReferences
+    from PyQt4 import QtGui
+except ImportError:
+    print "ERROR: PyQT4 is not installed!"
+    exit(1)
+from kcc import KCC_gui
+from multiprocessing import freeze_support
+
+if sys.platform == 'darwin':
+    os.environ['PATH'] = '/usr/local/bin:' + os.environ['PATH']
+    from kcc import KCC_ui_osx as KCC_ui
+else:
+    from kcc import KCC_ui
 
 freeze_support()
-root = Tk()
-root.resizable(width=False, height=False)
-root.config(padx=5, pady=5, takefocus=True)
-root.title("Kindle Comic Converter v" + __version__)
-#root.wm_attributes("-topmost", 1)
-if platform == 'darwin':
-    os.environ['PATH'] = '/usr/local/bin:' + os.environ['PATH']
-elif platform == 'win32':
-    root.iconbitmap(default='comic2ebook.ico')
-gui.MainWindow(master=root)
-root.mainloop()
+APP = QtGui.QApplication(sys.argv)
+KCC = QtGui.QMainWindow()
+UI = KCC_ui.Ui_KCC()
+UI.setupUi(KCC)
+GUI = KCC_gui.Ui_KCC(UI, KCC)
+KCC.setWindowTitle("Kindle Comic Converter " + __version__)
+KCC.show()
+KCC.raise_()
+sys.exit(APP.exec_())

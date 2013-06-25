@@ -15,7 +15,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
+__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import os
@@ -23,6 +23,7 @@ import zipfile
 import rarfile
 
 
+# noinspection PyBroadException
 class CBxArchive:
     def __init__(self, origFileName):
         self.origFileName = origFileName
@@ -40,7 +41,7 @@ class CBxArchive:
         cbzFile = zipfile.ZipFile(self.origFileName)
         filelist = []
         for f in cbzFile.namelist():
-            if f.startswith('__MACOSX') or f.endswith('.DS_Store'):
+            if f.startswith('__MACOSX') or f.endswith('.DS_Store') or f.endswith('thumbs.db'):
                 pass    # skip MacOS special files
             elif f.endswith('/'):
                 try:
@@ -55,7 +56,7 @@ class CBxArchive:
         cbrFile = rarfile.RarFile(self.origFileName)
         filelist = []
         for f in cbrFile.namelist():
-            if f.startswith('__MACOSX') or f.endswith('.DS_Store'):
+            if f.startswith('__MACOSX') or f.endswith('.DS_Store') or f.endswith('thumbs.db'):
                 pass  # skip MacOS special files
             elif f.endswith('/'):
                 try:

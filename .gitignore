@@ -3,5 +3,7 @@
 *.cbr
 .idea
 build
-awkcc
+dist
+kindlegen*
 .DS_Store
+Thumbs.db
