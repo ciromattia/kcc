@@ -207,9 +207,9 @@ class Ui_KCC(object):
             QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
                                        QtGui.QMessageBox.Ok)
             return
-        self.lastPath = os.path.abspath(os.path.join(str(dname), os.pardir))
-        GUI.JobList.addItem(dname)
-        self.clearEmptyJobs()
+        if str(dname) != "":
+            self.lastPath = os.path.abspath(os.path.join(str(dname), os.pardir))
+            GUI.JobList.addItem(dname)
 
     def selectFile(self):
         if self.needClean:
@@ -228,19 +228,12 @@ class Ui_KCC(object):
             QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
                                        QtGui.QMessageBox.Ok)
             return
-        self.lastPath = os.path.abspath(os.path.join(str(fname), os.pardir))
-        GUI.JobList.addItem(fname)
-        self.clearEmptyJobs()
+        if str(fname) != "":
+            self.lastPath = os.path.abspath(os.path.join(str(fname), os.pardir))
+            GUI.JobList.addItem(fname)
 
     def clearJobs(self):
         GUI.JobList.clear()
-
-    def clearEmptyJobs(self):
-        # Sometimes empty records appear. Dirty workaround.
-        for i in range(GUI.JobList.count()):
-            if str(GUI.JobList.item(i).text()) == '':
-                GUI.JobList.takeItem(i)
-        GUI.JobList.scrollToBottom()
 
     def modeBasic(self):
         self.currentMode = 1
