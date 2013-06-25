@@ -139,7 +139,7 @@ class WorkerThread(QtCore.QThread):
             except Exception as err:
                 self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
-                self.emit(QtCore.SIGNAL("showDialog"), "Error during convertion %s:\n\n%s\n\nTraceback:\n%s"
+                self.emit(QtCore.SIGNAL("showDialog"), "Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
                                                        % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
                 self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create EPUB!', 'error')
             if not self.errors:
@@ -179,13 +179,13 @@ class WorkerThread(QtCore.QThread):
                             if os.path.exists(outputPath.replace('.epub', '.mobi')):
                                 os.remove(outputPath.replace('.epub', '.mobi'))
                             self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', 'error')
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Try converting a bit smaller batch.', 'error')
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Try converting a smaller batch.', 'error')
                     else:
                         excess = (os.path.getsize(outputPath) - 314572800)/1024/1024
                         os.remove(outputPath)
                         self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file is too big for KindleGen!', 'error')
                         self.emit(QtCore.SIGNAL("addMessage"), 'Limit exceeded by ' + str(excess) +
-                                                               ' MB. Try converting smaller batch.', 'error')
+                                                               ' MB. Try converting a smaller batch.', 'error')
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         self.parent.needClean = True
         self.emit(QtCore.SIGNAL("addMessage"), 'All jobs completed.', 'info')
@@ -413,7 +413,7 @@ class Ui_KCC(object):
         self.needClean = True
 
         self.addMessage('Welcome!', 'info')
-        self.addMessage('Remember: All options have additional informations in tooltips.', 'info')
+        self.addMessage('Remember: all options have additional informations in tooltips.', 'info')
         if call('kindlegen', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
             self.KindleGen = True
             formats = ['MOBI', 'EPUB', 'CBZ']
@@ -422,17 +422,17 @@ class Ui_KCC(object):
                 if "Amazon kindlegen" in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if tuple(map(int, (versionCheck.split(".")))) < tuple(map(int, ('2.9'.split(".")))):
-                        self.addMessage('KindleGen is outdated! Creating MOBI might fail.', 'warning')
+                        self.addMessage('Your kindlegen is outdated! Creating MOBI might fail, please update kindlegen from http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211.', 'warning')
                     break
         else:
             self.KindleGen = False
             formats = ['EPUB', 'CBZ']
-            self.addMessage('Not found KindleGen! Creating MOBI files is disabled.', 'warning')
+            self.addMessage('Cannot find kindlegen in path! MOBI creation will be disabled.', 'warning')
         if call('unrar', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
             self.UnRAR = True
         else:
             self.UnRAR = False
-            self.addMessage('Not found UnRAR! Processing of CBR/RAR files is disabled.', 'warning')
+            self.addMessage('Cannot find UnRAR! Processing of CBR/RAR files will be disabled.', 'warning')
 
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
