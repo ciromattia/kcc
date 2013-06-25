@@ -422,7 +422,7 @@ class Ui_KCC(object):
                 if "Amazon kindlegen" in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if tuple(map(int, (versionCheck.split(".")))) < tuple(map(int, ('2.9'.split(".")))):
-                        self.addMessage('Your kindlegen is outdated! Creating MOBI might fail, please update kindlegen from http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211.', 'warning')
+                        self.addMessage('Your kindlegen is outdated! Creating MOBI might fail, please update kindlegen from Amazon\'s website.', 'warning')
                     break
         else:
             self.KindleGen = False
