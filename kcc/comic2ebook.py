@@ -165,6 +165,9 @@ def buildBlankHTML(path):
 
 
 def buildNCX(dstdir, title, chapters):
+    from uuid import uuid4
+    options.uuid = str(uuid4())
+    options.uuid = options.uuid.encode('utf-8')
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
     f = open(ncxfile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
@@ -172,7 +175,7 @@ def buildNCX(dstdir, title, chapters):
                   "\"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\n",
                   "<ncx version=\"2005-1\" xml:lang=\"en-US\" xmlns=\"http://www.daisy.org/z3986/2005/ncx/\">\n",
                   "<head>\n",
-                  "<meta name=\"dtb:uid\" content=\"015ffaec-9340-42f8-b163-a0c5ab7d0611\"/>\n",
+                  "<meta name=\"dtb:uid\" content=\"", options.uuid, "\"/>\n",
                   "<meta name=\"dtb:depth\" content=\"2\"/>\n",
                   "<meta name=\"dtb:totalPageCount\" content=\"0\"/>\n",
                   "<meta name=\"dtb:maxPageNumber\" content=\"0\"/>\n",
@@ -185,7 +188,7 @@ def buildNCX(dstdir, title, chapters):
         title = os.path.basename(folder)
         filename = getImageFileName(os.path.join(folder, chapter[1]))
         f.write("<navPoint id=\"" + folder.replace('/', '_').replace('\\', '_') + "\"><navLabel><text>" + title
-                + "</text></navLabel><content src=\"" + filename[0] + ".html\"/></navPoint>\n")
+                + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") + ".html\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
     return
@@ -205,9 +208,6 @@ def buildOPF(dstdir, title, filelist, cover=None):
         facing = "left"
         facing1 = "left"
         facing2 = "right"
-    from uuid import uuid4
-    uuid = str(uuid4())
-    uuid = uuid.encode('utf-8')
     f = open(opffile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<package version=\"2.0\" unique-identifier=\"BookID\" xmlns=\"http://www.idpf.org/2007/opf\">\n",
@@ -215,7 +215,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "xmlns:opf=\"http://www.idpf.org/2007/opf\">\n",
                   "<dc:title>", title, "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
-                  "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", uuid, "</dc:identifier>\n",
+                  "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n",
                   "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
                   "<meta name=\"cover\" content=\"cover\"/>\n",
                   "<meta name=\"book-type\" content=\"comic\"/>\n",
@@ -240,10 +240,10 @@ def buildOPF(dstdir, title, filelist, cover=None):
             mt = 'image/png'
         else:
             mt = 'image/jpeg'
-        f.write("<item id=\"cover\" href=\"" + filename[0] + filename[1] + "\" media-type=\"" + mt + "\"/>\n")
+        f.write("<item id=\"cover\" href=\"Images/cover" + filename[1] + "\" media-type=\"" + mt + "\"/>\n")
     reflist = []
     for path in filelist:
-        folder = path[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
+        folder = path[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\').replace("\\", "/")
         filename = getImageFileName(path[1])
         uniqueid = os.path.join(folder, filename[0]).replace('/', '_').replace('\\', '_')
         reflist.append(uniqueid)
@@ -580,7 +580,8 @@ def genEpubStruct(path):
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
                     chapter = True
                 if cover is None:
-                    cover = os.path.join(filelist[-1][0], 'cover' + getImageFileName(filelist[-1][1])[1])
+                    cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
+                                         'cover' + getImageFileName(filelist[-1][1])[1])
                     copyfile(os.path.join(filelist[-1][0], filelist[-1][1]), cover)
     buildNCX(path, options.title, chapterlist)
     # ensure we're sorting files alphabetically
