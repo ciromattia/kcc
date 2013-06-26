@@ -1,7 +1,5 @@
 """
-py2app/cx_Freeze build script for KCC.
-
-Will automatically ensure that all build prerequisites are available via ez_setup
+cx_Freeze build script for KCC.
 
 Usage (Mac OS X):
     python setup.py py2app
@@ -9,20 +7,13 @@ Usage (Mac OS X):
 Usage (Windows):
     python setup.py build
 """
-from ez_setup import use_setuptools
-use_setuptools()
-
-import sys
+from sys import platform
 
 NAME = "KindleComicConverter"
-VERSION = "2.10"
+VERSION = "3.0"
 MAIN = "kcc.py"
 
-includefiles = ['README.md', 'MANIFEST.in', 'LICENSE.txt', 'comic2ebook.ico', 'comic2ebook.icns']
-includes = []
-excludes = []
-
-if sys.platform == "darwin":
+if platform == "darwin":
     from setuptools import setup
     extra_options = dict(
         setup_requires=['py2app'],
@@ -30,58 +21,55 @@ if sys.platform == "darwin":
         options=dict(
             py2app=dict(
                 argv_emulation=True,
-                iconfile='comic2ebook.icns',
+                iconfile='icons/comic2ebook.icns',
+                includes=['PIL', 'sip', 'PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui'],
+                resources=['other/qt.conf', 'LICENSE.txt'],
                 plist=dict(
                     CFBundleName=NAME,
                     CFBundleShortVersionString=VERSION,
-                    CFBundleGetInfoString=NAME + " " + VERSION + ", written 2012-2013 by Ciro Mattia Gonano",
+                    CFBundleGetInfoString=NAME + " " + VERSION +
+                    ", written 2012-2013 by Ciro Mattia Gonano and Pawel Jastrzebski",
                     CFBundleExecutable=NAME,
                     CFBundleIdentifier='com.github.ciromattia.kcc',
-                    CFBundleSignature='dplt'
+                    CFBundleSignature='dplt',
+                    NSHumanReadableCopyright='ISC License (ISCL)'
                 )
             )
         )
     )
-elif sys.platform == 'win32':
+elif platform == "win32":
     from cx_Freeze import setup, Executable
     base = "Win32GUI"
     extra_options = dict(
-        options={"build_exe": {"include_files": includefiles, 'excludes': excludes, 'compressed': True}},
+        options={"build_exe": {"include_files": ['LICENSE.txt'], "compressed": True}},
         executables=[Executable(MAIN,
                                 base=base,
-                                icon="comic2ebook.ico",
+                                targetName="KCC.exe",
+                                icon="icons/comic2ebook.ico",
                                 copyDependentFiles=True,
                                 appendScriptToExe=True,
                                 appendScriptToLibrary=False,
                                 compress=True)])
 else:
+    from cx_Freeze import setup, Executable
     extra_options = dict(
-        scripts=[MAIN],
-    )
+        options={"build_exe": {"include_files": ['LICENSE.txt'], "compressed": True}},
+        executables=[Executable(MAIN,
+                                icon="icons/comic2ebook.png",
+                                copyDependentFiles=True,
+                                appendScriptToExe=True,
+                                appendScriptToLibrary=False,
+                                compress=True)])
 
 setup(
     name=NAME,
     version=VERSION,
-    author="Ciro Mattia Gonano",
-    author_email="ciromattia@gmail.com",
-    description="A tool to convert comics (CBR/CBZ/PDFs/image folders) to Mobipocket.",
+    author="Ciro Mattia Gonano, Pawel Jastrzebski",
+    author_email="ciromattia@gmail.com, pawelj@vulturis.eu",
+    description="A tool to convert comics (CBR/CBZ/PDFs/image folders) to MOBI.",
     license="ISC License (ISCL)",
     keywords="kindle comic mobipocket mobi cbz cbr manga",
     url="http://github.com/ciromattia/kcc",
-    classifiers=[
-        'Development Status :: 4 - Beta'
-        'License :: OSI Approved :: ISC License (ISCL)',
-        'Environment :: Console',
-        'Environment :: MacOS X',
-        'Environment :: Win32 (MS Windows)',
-        'Environment :: X11 Applications',
-        'Intended Audience :: End Users/Desktop',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Topic :: Multimedia :: Graphics :: Graphics Conversion',
-        'Topic :: Utilities'
-    ],
-    packages=['kcc'],
+    packages=['kcc'], requires=['Pillow'],
     **extra_options
 )
