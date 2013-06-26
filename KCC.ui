@@ -1,0 +1,694 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>KCC</class>
+ <widget class="QMainWindow" name="KCC">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>420</width>
+    <height>380</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>420</width>
+    <height>380</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>420</width>
+    <height>380</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>9</pointsize>
+   </font>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>Kindle Comic Converter</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="KCC.qrc">
+    <normaloff>:/Icon/icons/comic2ebook.png</normaloff>:/Icon/icons/comic2ebook.png</iconset>
+  </property>
+  <property name="locale">
+   <locale language="C" country="AnyCountry"/>
+  </property>
+  <widget class="QWidget" name="Form">
+   <widget class="QFrame" name="OptionsAdvanced">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>254</y>
+      <width>421</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QCheckBox" name="ProcessingBox">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>Disable image optimizations.</string>
+       </property>
+       <property name="text">
+        <string>No optimisation</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="UpscaleBox">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable image upscaling.&lt;br/&gt;Aspect ratio will be preserved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>Upscale images</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QCheckBox" name="StretchBox">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable image stretching.&lt;br/&gt;Aspect ratio will be not preserved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>Stretch images</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QCheckBox" name="NoDitheringBox">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create PNG files instead JPEG.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Only for non-Kindle devices!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>PNG output</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QCheckBox" name="BorderBox">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>Fill space around images with black color.</string>
+       </property>
+       <property name="text">
+        <string>Black borders</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QCheckBox" name="NoRotateBox">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disable splitting and rotation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>No split/rotate</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QComboBox" name="DeviceBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>200</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="toolTip">
+     <string>Target device.</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="FormatBox">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>200</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="toolTip">
+     <string>Output format.</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ConvertButton">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>200</y>
+      <width>91</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Convert</string>
+    </property>
+    <property name="icon">
+     <iconset resource="KCC.qrc">
+      <normaloff>:/Other/icons/convert.png</normaloff>:/Other/icons/convert.png</iconset>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="DirectoryButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>160</y>
+      <width>141</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Add directory</string>
+    </property>
+    <property name="icon">
+     <iconset resource="KCC.qrc">
+      <normaloff>:/Other/icons/folder_new.png</normaloff>:/Other/icons/folder_new.png</iconset>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="FileButton">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>160</y>
+      <width>151</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Add file</string>
+    </property>
+    <property name="icon">
+     <iconset resource="KCC.qrc">
+      <normaloff>:/Other/icons/document_new.png</normaloff>:/Other/icons/document_new.png</iconset>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ClearButton">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>160</y>
+      <width>91</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Clear list</string>
+    </property>
+    <property name="icon">
+     <iconset resource="KCC.qrc">
+      <normaloff>:/Other/icons/clear.png</normaloff>:/Other/icons/clear.png</iconset>
+    </property>
+   </widget>
+   <widget class="QFrame" name="OptionsBasic">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>230</y>
+      <width>421</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <widget class="QCheckBox" name="MangaBox">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>10</y>
+       <width>130</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>Enable right-to-left reading.</string>
+     </property>
+     <property name="text">
+      <string>Manga mode</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="QualityBox">
+     <property name="geometry">
+      <rect>
+       <x>282</x>
+       <y>10</y>
+       <width>130</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Normal quality mode&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Use it when Panel View support is not needed.&lt;/span&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/span&gt;- Maximum quality when zoom is not enabled.&lt;br /&gt;- Poor quality when zoom is enabled.&lt;br /&gt;- Lowest file size.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - High quality mode&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Not zoomed image &lt;/span&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;might &lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;be &lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;a little blurry.&lt;/span&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/span&gt;- Medium/High quality when zoom is not enabled.&lt;br /&gt;- Maximum quality when zoom is enabled.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Ultra quality mode&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Maximum possible quality.&lt;/span&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/span&gt;- Maximum quality when zoom is not enabled.&lt;br /&gt;- Maximum quality when zoom is enabled.&lt;br /&gt;- Very high file size.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>High/Ultra quality</string>
+     </property>
+     <property name="tristate">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="RotateBox">
+     <property name="geometry">
+      <rect>
+       <x>145</x>
+       <y>10</y>
+       <width>130</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disable page spliting.&lt;br/&gt;They will be rotated instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>Horizontal mode</string>
+     </property>
+    </widget>
+    <zorder>RotateBox</zorder>
+    <zorder>MangaBox</zorder>
+    <zorder>QualityBox</zorder>
+   </widget>
+   <widget class="QListWidget" name="JobList">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>401</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="showDropIndicator" stdset="0">
+     <bool>false</bool>
+    </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::NoSelection</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="BasicModeButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>195</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Basic</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="AdvModeButton">
+    <property name="geometry">
+     <rect>
+      <x>217</x>
+      <y>10</y>
+      <width>195</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Advanced</string>
+    </property>
+   </widget>
+   <widget class="QFrame" name="OptionsAdvancedGamma">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>305</y>
+      <width>401</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <widget class="QLabel" name="GammaLabel">
+     <property name="geometry">
+      <rect>
+       <x>15</x>
+       <y>0</y>
+       <width>100</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>When converting color images setting this option to 1.0 MIGHT improve readability.</string>
+     </property>
+     <property name="text">
+      <string>Gamma: Auto</string>
+     </property>
+    </widget>
+    <widget class="QSlider" name="GammaSlider">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>10</y>
+       <width>270</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When converting color images setting this option to 1.0 &lt;span style=&quot; font-weight:600;&quot;&gt;might&lt;/span&gt; improve readability.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="maximum">
+      <number>500</number>
+     </property>
+     <property name="singleStep">
+      <number>5</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QProgressBar" name="ProgressBar">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>401</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+    </property>
+    <property name="format">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QFrame" name="OptionsExpert">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>337</y>
+      <width>421</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <widget class="QCheckBox" name="ColorBox">
+     <property name="geometry">
+      <rect>
+       <x>9</x>
+       <y>11</y>
+       <width>130</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="toolTip">
+      <string>Do not convert images to grayscale.</string>
+     </property>
+     <property name="text">
+      <string>Color mode</string>
+     </property>
+    </widget>
+    <widget class="QFrame" name="OptionsExpertInternal">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>0</y>
+       <width>295</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="wLabel">
+        <property name="toolTip">
+         <string>Resolution of target device.</string>
+        </property>
+        <property name="text">
+         <string>Custom width: </string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="customWidth">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="acceptDrops">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Resolution of target device.</string>
+        </property>
+        <property name="inputMask">
+         <string>0000; </string>
+        </property>
+        <property name="maxLength">
+         <number>4</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="hLabel">
+        <property name="toolTip">
+         <string>Resolution of target device.</string>
+        </property>
+        <property name="text">
+         <string>Custom height: </string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="customHeight">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="acceptDrops">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Resolution of target device.</string>
+        </property>
+        <property name="inputMask">
+         <string>0000; </string>
+        </property>
+        <property name="maxLength">
+         <number>4</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <zorder>OptionsAdvanced</zorder>
+   <zorder>DeviceBox</zorder>
+   <zorder>FormatBox</zorder>
+   <zorder>ConvertButton</zorder>
+   <zorder>DirectoryButton</zorder>
+   <zorder>FileButton</zorder>
+   <zorder>ClearButton</zorder>
+   <zorder>OptionsBasic</zorder>
+   <zorder>JobList</zorder>
+   <zorder>BasicModeButton</zorder>
+   <zorder>AdvModeButton</zorder>
+   <zorder>OptionsAdvancedGamma</zorder>
+   <zorder>OptionsExpert</zorder>
+   <zorder>ProgressBar</zorder>
+  </widget>
+  <action name="ActionBasic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Basic</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="ActionAdvanced">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Advanced</string>
+   </property>
+  </action>
+ </widget>
+ <tabstops>
+  <tabstop>DirectoryButton</tabstop>
+  <tabstop>FileButton</tabstop>
+  <tabstop>ConvertButton</tabstop>
+  <tabstop>ClearButton</tabstop>
+ </tabstops>
+ <resources>
+  <include location="KCC.qrc"/>
+ </resources>
+ <connections/>
+</ui>

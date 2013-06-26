@@ -17,22 +17,28 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
-__version__ = '2.10'
+__version__ = '3.0'
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
+__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import os
 import sys
 import tempfile
 import re
+import stat
+import string
 from shutil import move
 from shutil import copyfile
 from shutil import copytree
 from shutil import rmtree
 from shutil import make_archive
 from optparse import OptionParser
-from multiprocessing import Pool, freeze_support
+from multiprocessing import Pool, Queue, freeze_support
+try:
+    from PyQt4 import QtCore
+except ImportError:
+    QtCore = None
 import image
 import cbxarchive
 import pdfjpgextract
@@ -42,7 +48,7 @@ def buildHTML(path, imgfile):
     filename = getImageFileName(imgfile)
     if filename is not None:
         # All files marked with this sufix need horizontal Panel View.
-        if "_rotated" in str(filename):
+        if "_kccrotated" in str(filename):
             rotate = True
         else:
             rotate = False
@@ -118,19 +124,24 @@ def buildHTML(path, imgfile):
                                   "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
                                   "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
                                   ])
-
+            if options.quality == 2:
+                imgfilepv = string.split(imgfile, ".")
+                imgfilepv[0] += "_kcchq"
+                imgfilepv = string.join(imgfilepv, ".")
+            else:
+                imgfilepv = imgfile
             f.writelines(["<div id=\"BoxTL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTL-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
-                          imgfile, "\"/></div></div>\n",
+                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
+                          imgfilepv, "\"/></div></div>\n",
                           "<div id=\"BoxTR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTR-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
-                          imgfile, "\"/></div></div>\n",
+                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
+                          imgfilepv, "\"/></div></div>\n",
                           "<div id=\"BoxBL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBL-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
-                          imgfile, "\"/></div></div>\n",
+                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
+                          imgfilepv, "\"/></div></div>\n",
                           "<div id=\"BoxBR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBR-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
-                          imgfile, "\"/></div></div>\n"
+                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
+                          imgfilepv, "\"/></div></div>\n"
                           ])
         f.writelines(["</div>\n</body>\n</html>"])
         f.close()
@@ -154,6 +165,9 @@ def buildBlankHTML(path):
 
 
 def buildNCX(dstdir, title, chapters):
+    from uuid import uuid4
+    options.uuid = str(uuid4())
+    options.uuid = options.uuid.encode('utf-8')
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
     f = open(ncxfile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
@@ -161,7 +175,7 @@ def buildNCX(dstdir, title, chapters):
                   "\"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\n",
                   "<ncx version=\"2005-1\" xml:lang=\"en-US\" xmlns=\"http://www.daisy.org/z3986/2005/ncx/\">\n",
                   "<head>\n",
-                  "<meta name=\"dtb:uid\" content=\"015ffaec-9340-42f8-b163-a0c5ab7d0611\"/>\n",
+                  "<meta name=\"dtb:uid\" content=\"", options.uuid, "\"/>\n",
                   "<meta name=\"dtb:depth\" content=\"2\"/>\n",
                   "<meta name=\"dtb:totalPageCount\" content=\"0\"/>\n",
                   "<meta name=\"dtb:maxPageNumber\" content=\"0\"/>\n",
@@ -174,16 +188,15 @@ def buildNCX(dstdir, title, chapters):
         title = os.path.basename(folder)
         filename = getImageFileName(os.path.join(folder, chapter[1]))
         f.write("<navPoint id=\"" + folder.replace('/', '_').replace('\\', '_') + "\"><navLabel><text>" + title
-                + "</text></navLabel><content src=\"" + filename[0] + ".html\"/></navPoint>\n")
+                + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") + ".html\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
     return
 
 
-def buildOPF(profile, dstdir, title, filelist, cover=None):
+def buildOPF(dstdir, title, filelist, cover=None):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
-    # read the first file resolution
-    profilelabel, deviceres, palette, gamma, panelviewsize = image.ProfileData.Profiles[profile]
+    profilelabel, deviceres, palette, gamma, panelviewsize = options.profileData
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if options.righttoleft:
         writingmode = "horizontal-rl"
@@ -195,9 +208,6 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
         facing = "left"
         facing1 = "left"
         facing2 = "right"
-    from uuid import uuid4
-    uuid = str(uuid4())
-    uuid = uuid.encode('utf-8')
     f = open(opffile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<package version=\"2.0\" unique-identifier=\"BookID\" xmlns=\"http://www.idpf.org/2007/opf\">\n",
@@ -205,7 +215,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
                   "xmlns:opf=\"http://www.idpf.org/2007/opf\">\n",
                   "<dc:title>", title, "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
-                  "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", uuid, "</dc:identifier>\n",
+                  "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n",
                   "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
                   "<meta name=\"cover\" content=\"cover\"/>\n",
                   "<meta name=\"book-type\" content=\"comic\"/>\n",
@@ -230,10 +240,10 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
             mt = 'image/png'
         else:
             mt = 'image/jpeg'
-        f.write("<item id=\"cover\" href=\"" + filename[0] + filename[1] + "\" media-type=\"" + mt + "\"/>\n")
+        f.write("<item id=\"cover\" href=\"Images/cover" + filename[1] + "\" media-type=\"" + mt + "\"/>\n")
     reflist = []
     for path in filelist:
-        folder = path[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
+        folder = path[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\').replace("\\", "/")
         filename = getImageFileName(path[1])
         uniqueid = os.path.join(folder, filename[0]).replace('/', '_').replace('\\', '_')
         reflist.append(uniqueid)
@@ -256,7 +266,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
     splitCountUsed = 1
     for entry in reflist:
-        if entry.endswith("-kcca"):
+        if "_kcca" in str(entry):
             # noinspection PyRedundantParentheses
             if ((options.righttoleft and facing == 'left') or (not options.righttoleft and facing == 'right')) and\
                     options.landscapemode:
@@ -266,7 +276,7 @@ def buildOPF(profile, dstdir, title, filelist, cover=None):
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
             else:
                 f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-        elif entry.endswith("-kccb"):
+        elif "_kccb" in str(entry):
             if options.landscapemode:
                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
             else:
@@ -315,14 +325,18 @@ def getImageFileName(imgfile):
     return filename
 
 
-def applyImgOptimization(img, isSplit, toRight, options):
+def applyImgOptimization(img, isSplit, toRight, options, overrideQuality=5):
     img.cropWhiteSpace(10.0)
     if options.cutpagenumbers:
         img.cutPageNumber()
-    img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight, options.landscapemode,
-                    options.nopanelviewhq)
+    if overrideQuality != 5:
+        img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight,
+                        options.landscapemode, overrideQuality)
+    else:
+        img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight,
+                        options.landscapemode, options.quality)
     img.optimizeImage(options.gamma)
-    if options.forcepng:
+    if options.forcepng and not options.forcecolor:
         img.quantizeImage()
 
 
@@ -331,35 +345,64 @@ def dirImgProcess(path):
     work = []
     pagenumber = 0
     pagenumbermodifier = 0
-    pool = Pool()
+    queue = Queue()
+    pool = Pool(None, fileImgProcess_init, [queue, options])
     for (dirpath, dirnames, filenames) in os.walk(path):
         for afile in filenames:
             if getImageFileName(afile) is not None:
                 pagenumber += 1
-                work.append([afile, dirpath, pagenumber, options])
-    splitpages = pool.map(fileImgProcess, work)
-    pool.close()
-    pool.join()
-    splitpages = filter(None, splitpages)
-    splitpages.sort()
-    for page in splitpages:
-        if (page + pagenumbermodifier) % 2 == 0:
-            splitCount += 1
+                work.append([afile, dirpath, pagenumber])
+    if GUI:
+        GUI.emit(QtCore.SIGNAL("progressBarTick"), pagenumber)
+    if len(work) > 0:
+        splitpages = pool.map_async(func=fileImgProcess, iterable=work)
+        pool.close()
+        if GUI:
+            while not splitpages.ready():
+                # noinspection PyBroadException
+                try:
+                    queue.get(True, 1)
+                except:
+                    pass
+                GUI.emit(QtCore.SIGNAL("progressBarTick"))
+        pool.join()
+        queue.close()
+        try:
+            splitpages = splitpages.get()
+        except:
+            rmtree(path)
+            raise RuntimeError("One of workers crashed. Cause: " + str(sys.exc_info()[1]))
+        splitpages = filter(None, splitpages)
+        splitpages.sort()
+        for page in splitpages:
+            if (page + pagenumbermodifier) % 2 == 0:
+                splitCount += 1
+                pagenumbermodifier += 1
             pagenumbermodifier += 1
-        pagenumbermodifier += 1
 
 
+def fileImgProcess_init(queue, options):
+    fileImgProcess.queue = queue
+    fileImgProcess.options = options
+
+
+# noinspection PyUnresolvedReferences
 def fileImgProcess(work):
     afile = work[0]
     dirpath = work[1]
     pagenumber = work[2]
-    options = work[3]
+    options = fileImgProcess.options
     output = None
     if options.verbose:
         print "Optimizing " + afile + " for " + options.profile
     else:
         print ".",
-    img = image.ComicPage(os.path.join(dirpath, afile), options.profile)
+    fileImgProcess.queue.put(".")
+    img = image.ComicPage(os.path.join(dirpath, afile), options.profileData)
+    if options.quality == 2:
+        wipe = False
+    else:
+        wipe = True
     if options.nosplitrotate:
         split = None
     else:
@@ -374,15 +417,28 @@ def fileImgProcess(work):
             toRight1 = True
             toRight2 = False
         output = pagenumber
-        img0 = image.ComicPage(split[0], options.profile)
+        img0 = image.ComicPage(split[0], options.profileData)
         applyImgOptimization(img0, True, toRight1, options)
-        img0.saveToDir(dirpath, options.forcepng, options.forcecolor)
-        img1 = image.ComicPage(split[1], options.profile)
+        img0.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
+        img1 = image.ComicPage(split[1], options.profileData)
         applyImgOptimization(img1, True, toRight2, options)
-        img1.saveToDir(dirpath, options.forcepng, options.forcecolor)
+        img1.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
+        if options.quality == 2:
+            img3 = image.ComicPage(split[0], options.profileData)
+            applyImgOptimization(img3, True, toRight1, options, 0)
+            img3.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
+            img4 = image.ComicPage(split[1], options.profileData)
+            applyImgOptimization(img4, True, toRight2, options, 0)
+            img4.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
     else:
         applyImgOptimization(img, False, False, options)
-        img.saveToDir(dirpath, options.forcepng, options.forcecolor, split)
+        img.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe, split)
+        if options.quality == 2:
+            img2 = image.ComicPage(os.path.join(dirpath, afile), options.profileData)
+            if split == "R":
+                img2.image = img2.image.rotate(90)
+            applyImgOptimization(img2, False, False, options, 0)
+            img2.saveToDir(dirpath, options.forcepng, options.forcecolor, True, split)
     return output
 
 
@@ -391,7 +447,7 @@ def genEpubStruct(path):
     filelist = []
     chapterlist = []
     cover = None
-    _, deviceres, _, _, panelviewsize = image.ProfileData.Profiles[options.profile]
+    _, deviceres, _, _, panelviewsize = options.profileData
     sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w')
@@ -518,20 +574,21 @@ def genEpubStruct(path):
         chapter = False
         for afile in filenames:
             filename = getImageFileName(afile)
-            if filename is not None:
+            if filename is not None and not "_kcchq" in filename[0]:
                 filelist.append(buildHTML(dirpath, afile))
                 if not chapter:
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
                     chapter = True
                 if cover is None:
-                    cover = os.path.join(filelist[-1][0], 'cover' + getImageFileName(filelist[-1][1])[1])
+                    cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
+                                         'cover' + getImageFileName(filelist[-1][1])[1])
                     copyfile(os.path.join(filelist[-1][0], filelist[-1][1]), cover)
     buildNCX(path, options.title, chapterlist)
     # ensure we're sorting files alphabetically
     convert = lambda text: int(text) if text.isdigit() else text
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
-    buildOPF(options.profile, path, options.title, filelist, cover)
+    buildOPF(path, options.title, filelist, cover)
     if options.landscapemode and splitCount > 0:
         filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
 
@@ -540,11 +597,13 @@ def getWorkFolder(afile):
     workdir = tempfile.mkdtemp()
     if os.path.isdir(afile):
         try:
-            import shutil
             os.rmdir(workdir)   # needed for copytree() fails if dst already exists
-            copytree(afile, workdir)
-            path = workdir
+            fullPath = os.path.join(workdir, 'OEBPS', 'Images')
+            copytree(afile, fullPath)
+            sanitizeTreeBeforeConversion(fullPath)
+            return workdir
         except OSError:
+            rmtree(workdir)
             raise
     elif afile.lower().endswith('.pdf'):
         pdf = pdfjpgextract.PdfJpgExtract(afile)
@@ -555,10 +614,12 @@ def getWorkFolder(afile):
             try:
                 path = cbx.extract(workdir)
             except OSError:
+                rmtree(workdir)
                 print 'Unrar not found, please download from ' + \
                       'http://www.rarlab.com/download.htm and put into your PATH.'
                 sys.exit(21)
         else:
+            rmtree(workdir)
             raise TypeError
     move(path, path + "_temp")
     move(path + "_temp", os.path.join(path, 'OEBPS', 'Images'))
@@ -566,10 +627,8 @@ def getWorkFolder(afile):
 
 
 def slugify(value):
-    """
-    Normalizes string, converts to lowercase, removes non-alpha characters,
-    and converts spaces to hyphens.
-    """
+    # Normalizes string, converts to lowercase, removes non-alpha characters,
+    # and converts spaces to hyphens.
     import unicodedata
     value = unicodedata.normalize('NFKD', unicode(value, 'latin1')).encode('ascii', 'ignore')
     value = re.sub('[^\w\s\.-]', '', value).strip().lower()
@@ -597,6 +656,17 @@ def sanitizeTree(filetree):
                 os.rename(os.path.join(root, name), os.path.join(root, slugify(name)))
 
 
+def sanitizeTreeBeforeConversion(filetree):
+    for root, dirs, files in os.walk(filetree, False):
+        for name in files:
+            os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD)
+            # Detect corrupted files - Phase 1
+            if os.path.getsize(os.path.join(root, name)) == 0:
+                os.remove(os.path.join(root, name))
+        for name in dirs:
+            os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD | stat.S_IEXEC)
+
+
 def Copyright():
     print ('comic2ebook v%(__version__)s. '
            'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals())
@@ -607,8 +677,8 @@ def Usage():
     parser.print_help()
 
 
-def main(argv=None):
-    global parser, options, epub_path, splitCount
+def main(argv=None, qtGUI=None):
+    global parser, options, epub_path, splitCount, GUI
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
@@ -618,10 +688,10 @@ def main(argv=None):
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                       help="Manga style (Right-to-left reading and splitting) [Default=False]")
+    parser.add_option("--quality", type="int", dest="quality", default="0",
+                      help="Output quality. 0 - Normal 1 - High 2 - Ultra [Default=0]")
     parser.add_option("-c", "--cbz-output", action="store_true", dest="cbzoutput", default=False,
                       help="Outputs a CBZ archive and does not generate EPUB")
-    parser.add_option("--nopanelviewhq", action="store_true", dest="nopanelviewhq", default=False,
-                      help="Disable high quality Panel View [Default=False]")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
                       help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
@@ -643,10 +713,21 @@ def main(argv=None):
                       help="Do not try to cut page numbering on images [Default=True]")
     parser.add_option("-o", "--output", action="store", dest="output", default=None,
                       help="Output generated file (EPUB or CBZ) to specified directory or file")
+    parser.add_option("--forcecolor", action="store_true", dest="forcecolor", default=False,
+                      help="Do not convert images to grayscale [Default=False]")
+    parser.add_option("--customwidth", type="int", dest="customwidth", default=0,
+                      help="Replace screen width provided by device profile [Default=0]")
+    parser.add_option("--customheight", type="int", dest="customheight", default=0,
+                      help="Replace screen height provided by device profile [Default=0]")
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="Verbose output [Default=False]")
     options, args = parser.parse_args(argv)
     checkOptions()
+    if qtGUI:
+        GUI = qtGUI
+        GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
+    else:
+        GUI = None
     if len(args) != 1:
         parser.print_help()
         return
@@ -656,14 +737,18 @@ def main(argv=None):
     splitCount = 0
     if options.imgproc:
         print "Processing images..."
+        if GUI:
+            GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Processing images')
         dirImgProcess(path + "/OEBPS/Images/")
+    if GUI:
+        GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
     if options.cbzoutput:
         # if CBZ output wanted, compress all images and return filepath
         print "\nCreating CBZ file..."
         filepath = getOutputFilename(args[0], options.output, '.cbz')
         make_archive(path + '_comic', 'zip', path + '/OEBPS/Images')
     else:
-        print "\nCreating ePub structure..."
+        print "\nCreating EPUB structure..."
         genEpubStruct(path)
         # actually zip the ePub
         filepath = getOutputFilename(args[0], options.output, '.epub')
@@ -701,22 +786,17 @@ def checkOptions():
     else:
         options.landscapemode = False
     # Older Kindle don't support Virtual Panel View. We providing them configuration that will fake that feature.
-    if options.profile == 'K3' or options.profile == 'K4NT':
+    # Ultra quality mode require Real Panel View. Landscape mode don't work correcly without Virtual Panel View.
+    if options.profile == 'K3' or options.profile == 'K4NT' or options.quality == 2:
         # Real Panel View
         options.panelview = True
+        options.landscapemode = False
     else:
         # Virtual Panel View
         options.panelview = False
-    # Older Kindle don't need higher resolution files due lack of Panel View.
-    # Kindle Fire family have very high resolution. Bigger images are not needed.
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG'\
-            or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
-        options.nopanelviewhq = True
     # Disabling grayscale conversion for Kindle Fire family.
-    # Forcing JPEG output. For now code can't provide color PNG files.
-    if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
+    if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8' or options.forcecolor:
         options.forcecolor = True
-        options.forcepng = False
     else:
         options.forcecolor = False
     # Mixing vertical and horizontal pages require real Panel View.
@@ -724,6 +804,31 @@ def checkOptions():
     if options.rotate:
         options.panelview = True
         options.landscapemode = False
+    # Older Kindle don't need higher resolution files due lack of Panel View.
+    # Kindle Fire family have very high resolution. Bigger images are not needed.
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG'\
+            or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
+        options.quality = 0
+        if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
+            options.panelview = False
+    # Disable all Kindle features
+    if options.profile == 'OTHER':
+        options.landscapemode = False
+        options.panelview = False
+        options.quality = 0
+    # Override profile data
+    if options.customwidth != 0 or options.customheight != 0:
+        X = image.ProfileData.Profiles[options.profile][1][0]
+        Y = image.ProfileData.Profiles[options.profile][1][1]
+        if options.customwidth != 0:
+            X = options.customwidth
+        if options.customheight != 0:
+            Y = options.customheight
+        newProfile = ("Custom", (X, Y), image.ProfileData.Palette16, image.ProfileData.Profiles[options.profile][3],
+                      (int(X*1.5), int(Y*1.5)))
+        image.ProfileData.Profiles["Custom"] = newProfile
+        options.profile = "Custom"
+    options.profileData = image.ProfileData.Profiles[options.profile]
 
 
 def getEpubPath():

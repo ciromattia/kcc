@@ -16,19 +16,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>'
+__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import os
-from PIL import Image, ImageOps, ImageStat, ImageChops
-
-
-class ImageFlags:
-    Orient = 1 << 0
-    Resize = 1 << 1
-    Frame = 1 << 2
-    Quantize = 1 << 3
-    Stretch = 1 << 4
+try:
+    # noinspection PyUnresolvedReferences
+    from PIL import Image, ImageOps, ImageStat, ImageChops
+except ImportError:
+    print "ERROR: Pillow is not installed!"
+    exit(1)
 
 
 class ProfileData:
@@ -87,7 +84,8 @@ class ProfileData:
         'KDXG': ("Kindle DXG", (824, 1200), Palette16, 1.8, (1236, 1800)),
         'KF': ("Kindle Fire", (600, 1024), Palette16, 1.0, (900, 1536)),
         'KFHD': ("Kindle Fire HD 7\"", (800, 1280), Palette16, 1.0, (1200, 1920)),
-        'KFHD8': ("Kindle Fire HD 8.9\"", (1200, 1920), Palette16, 1.0, (1800, 2880))
+        'KFHD8': ("Kindle Fire HD 8.9\"", (1200, 1920), Palette16, 1.0, (1800, 2880)),
+        'OTHER': ("Other", (0, 0), Palette16, 1.8, (0, 0)),
     }
 
     ProfileLabels = {
@@ -101,39 +99,48 @@ class ProfileData:
         "Kindle DXG": 'KDXG',
         "Kindle Fire": 'KF',
         "Kindle Fire HD 7\"": 'KFHD',
-        "Kindle Fire HD 8.9\"": 'KFHD8'
+        "Kindle Fire HD 8.9\"": 'KFHD8',
+        "Other": 'OTHER'
     }
 
 
 class ComicPage:
     def __init__(self, source, device):
         try:
-            self.profile = device
-            self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = ProfileData.Profiles[device]
+            self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = device
         except KeyError:
             raise RuntimeError('Unexpected output device %s' % device)
+        # Detect corrupted files - Phase 2
         try:
             self.origFileName = source
             self.image = Image.open(source)
         except IOError:
             raise RuntimeError('Cannot read image file %s' % source)
+        # Detect corrupted files - Phase 3
+        try:
+            self.image.verify()
+        except:
+            raise RuntimeError('Image file %s is corrupted' % source)
+        self.image = Image.open(source)
         self.image = self.image.convert('RGB')
 
-    def saveToDir(self, targetdir, forcepng, color, sufix=None):
+    def saveToDir(self, targetdir, forcepng, color, wipe, suffix=None):
         filename = os.path.basename(self.origFileName)
         try:
             if not color:
                 self.image = self.image.convert('L')    # convert to grayscale
-            # Sufix is used to recognise which files need horizontal Panel View.
-            if sufix == "R":
-                sufix = "_rotated"
+            if suffix == "R":
+                suffix = "_kccrotated"
             else:
-                sufix = ""
-            os.remove(os.path.join(targetdir, filename))
+                suffix = ""
+            if wipe:
+                os.remove(os.path.join(targetdir, filename))
+            else:
+                suffix += "_kcchq"
             if forcepng:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + sufix + ".png"), "PNG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + suffix + ".png"), "PNG")
             else:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + sufix + ".jpg"), "JPEG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + suffix + ".jpg"), "JPEG")
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
@@ -156,16 +163,17 @@ class ComicPage:
         self.image = self.image.quantize(palette=palImg)
 
     def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False,
-                    landscapeMode=False, noPanelViewHQ=False):
+                    landscapeMode=False, qualityMode=0):
         method = Image.ANTIALIAS
         if black_borders:
             fill = 'black'
         else:
             fill = 'white'
-        if noPanelViewHQ:
+        if qualityMode == 0:
             size = (self.size[0], self.size[1])
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
+        # Kindle Paperwhite/Touch - Force upscale of splited pages to increase readability
         if isSplit and landscapeMode:
             upscale = True
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
@@ -218,8 +226,8 @@ class ComicPage:
                     leftbox = (0, 0, width, height / 2)
                     rightbox = (0, height / 2, width, height)
                 filename = os.path.splitext(os.path.basename(self.origFileName))
-                fileone = targetdir + '/' + filename[0] + '-kcca' + filename[1]
-                filetwo = targetdir + '/' + filename[0] + '-kccb' + filename[1]
+                fileone = targetdir + '/' + filename[0] + '_kcca' + filename[1]
+                filetwo = targetdir + '/' + filename[0] + '_kccb' + filename[1]
                 try:
                     if righttoleft:
                         pageone = self.image.crop(rightbox)
@@ -260,7 +268,8 @@ class ComicPage:
             diff -= delta
             pageNumberCut2 = diff
             diff += delta
-            oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg - pageNumberCut2))).var[0]
+            oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg,
+                                                      heightImg - pageNumberCut2))).var[0]
             while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg - pageNumberCut2))).var[0]\
                     < fixedThreshold + oldStat and diff < heightImg / 4:
                 diff += delta
@@ -268,8 +277,8 @@ class ComicPage:
             pageNumberCut3 = diff
             delta = 5
             diff = delta
-            while ImageStat.Stat(self.image.crop((0, heightImg - pageNumberCut2, diff, heightImg))).var[0] < fixedThreshold\
-                    and diff < widthImg:
+            while ImageStat.Stat(self.image.crop((0, heightImg - pageNumberCut2, diff, heightImg))).var[0]\
+                    < fixedThreshold and diff < widthImg:
                 diff += delta
             diff -= delta
             pageNumberX1 = diff
@@ -329,61 +338,3 @@ class ComicPage:
             self.image = self.image.crop((0, 0, widthImg - diff, heightImg))
             #    print "New size: %sx%s"%(self.image.size[0],self.image.size[1])
         return self.image
-
-    # def addProgressbar(self, file_number, files_totalnumber, size, howoften):
-    #     if file_number // howoften != float(file_number) / howoften:
-    #         return self.image
-    #     white = (255, 255, 255)
-    #     black = (0, 0, 0)
-    #     widthDev, heightDev = size
-    #     widthImg, heightImg = self.image.size
-    #     pastePt = (
-    #         max(0, (widthDev - widthImg) / 2),
-    #         max(0, (heightDev - heightImg) / 2)
-    #     )
-    #     imageBg = Image.new('RGB', size, white)
-    #     imageBg.paste(self.image, pastePt)
-    #     self.image = imageBg
-    #     widthImg, heightImg = self.image.size
-    #     draw = ImageDraw.Draw(self.image)
-    #     #Black rectangle
-    #     draw.rectangle([(0, heightImg - 3), (widthImg, heightImg)], outline=black, fill=black)
-    #     #White rectangle
-    #     draw.rectangle([(widthImg * file_number / files_totalnumber, heightImg - 3), (widthImg - 1, heightImg)],
-    #                    outline=black, fill=white)
-    #     #Making notches
-    #     for i in range(1, 10):
-    #         if i <= (10 * file_number / files_totalnumber):
-    #             notch_colour = white  # White
-    #         else:
-    #             notch_colour = black  # Black
-    #         draw.line([(widthImg * float(i) / 10, heightImg - 3), (widthImg * float(i) / 10, heightImg)],
-    #                   fill=notch_colour)
-    #         #The 50%
-    #         if i == 5:
-    #             draw.rectangle([(widthImg / 2 - 1, heightImg - 5), (widthImg / 2 + 1, heightImg)],
-    #                            outline=black, fill=notch_colour)
-    #     return self.image
-    #
-    # def frameImage(self):
-    #     foreground = tuple(self.palette[:3])
-    #     background = tuple(self.palette[-3:])
-    #     widthDev, heightDev = self.size
-    #     widthImg, heightImg = self.image.size
-    #     pastePt = (
-    #         max(0, (widthDev - widthImg) / 2),
-    #         max(0, (heightDev - heightImg) / 2)
-    #     )
-    #     corner1 = (
-    #         pastePt[0] - 1,
-    #         pastePt[1] - 1
-    #     )
-    #     corner2 = (
-    #         pastePt[0] + widthImg + 1,
-    #         pastePt[1] + heightImg + 1
-    #     )
-    #     imageBg = Image.new(self.image.mode, self.size, background)
-    #     imageBg.paste(self.image, pastePt)
-    #     draw = ImageDraw.Draw(imageBg)
-    #     draw.rectangle([corner1, corner2], outline=foreground)
-    #     self.image = imageBg

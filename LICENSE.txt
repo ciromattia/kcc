@@ -1,6 +1,7 @@
 ISC LICENSE
 
-Copyright (c) 2012 Ciro Mattia Gonano <ciromattia@gmail.com>
+Copyright (c) 2013 Ciro Mattia Gonano <ciromattia@gmail.com>
+Copyright (c) 2013 Paweł Jastrzębski <pawelj@vulturis.eu>
 
 Permission to use, copy, modify, and/or distribute this software for
 any purpose with or without fee is hereby granted, provided that the
