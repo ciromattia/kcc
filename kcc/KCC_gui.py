@@ -422,7 +422,8 @@ class Ui_KCC(object):
             self.KindleGen = False
             formats = ['EPUB', 'CBZ']
             self.addMessage('Cannot find kindlegen in PATH! MOBI creation will be disabled.', 'warning')
-        if call('unrar', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
+        rarExitCode = call('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
+        if rarExitCode == 0 or rarExitCode == 7:
             self.UnRAR = True
         else:
             self.UnRAR = False
