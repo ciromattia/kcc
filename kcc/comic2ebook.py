@@ -340,7 +340,7 @@ def applyImgOptimization(img, isSplit, toRight, options, overrideQuality=5):
         img.quantizeImage()
 
 
-def dirImgProcess(path):
+def dirImgProcess(path, origPath):
     global options, splitCount
     work = []
     pagenumber = 0
@@ -379,6 +379,9 @@ def dirImgProcess(path):
                 splitCount += 1
                 pagenumbermodifier += 1
             pagenumbermodifier += 1
+    else:
+        rmtree(path)
+        raise UserWarning("Empty directory: " + origPath)
 
 
 def fileImgProcess_init(queue, options):
@@ -739,7 +742,7 @@ def main(argv=None, qtGUI=None):
         print "Processing images..."
         if GUI:
             GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Processing images')
-        dirImgProcess(path + "/OEBPS/Images/")
+        dirImgProcess(path + "/OEBPS/Images/", args[0])
     if GUI:
         GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
     if options.cbzoutput:
