@@ -138,8 +138,8 @@ class WorkerThread(QtCore.QThread):
                 self.emit(QtCore.SIGNAL("hideProgressBar"))
             except UserWarning as warn:
                 self.errors = True
-                self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create output file!', 'warning')
                 self.emit(QtCore.SIGNAL("addMessage"), str(warn), 'warning')
+                self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create output file!', 'warning')
             except Exception as err:
                 self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
