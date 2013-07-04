@@ -313,6 +313,12 @@ class Ui_KCC(object):
             GUI.GammaLabel.setText('Gamma: ' + str(value))
         self.GammaValue = value
 
+    def toggleNoSplitRotate(self, value):
+        if value:
+            GUI.RotateBox.setEnabled(False)
+        else:
+            GUI.RotateBox.setEnabled(True)
+
     def changeDevice(self, value, start=False):
         if value == 11 and (start or self.currentMode != 3):
             GUI.BasicModeButton.setEnabled(False)
@@ -440,6 +446,7 @@ class Ui_KCC(object):
         GUI.FileButton.clicked.connect(self.selectFile)
         GUI.ConvertButton.clicked.connect(self.convertStart)
         GUI.GammaSlider.valueChanged.connect(self.changeGamma)
+        GUI.NoRotateBox.stateChanged.connect(self.toggleNoSplitRotate)
         GUI.DeviceBox.activated.connect(self.changeDevice)
         KCC.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
         KCC.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
