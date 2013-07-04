@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Fri Jun 21 18:23:19 2013
-#      by: PyQt4 UI code generator 4.10.1
+# Created: Thu Jul 04 15:30:15 2013
+#      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -47,6 +47,7 @@ class Ui_KCC(object):
         self.OptionsAdvanced.setFont(font)
         self.OptionsAdvanced.setObjectName(_fromUtf8("OptionsAdvanced"))
         self.gridLayout = QtGui.QGridLayout(self.OptionsAdvanced)
+        self.gridLayout.setContentsMargins(9, -1, -1, -1)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.ProcessingBox = QtGui.QCheckBox(self.OptionsAdvanced)
         self.ProcessingBox.setFocusPolicy(QtCore.Qt.NoFocus)
