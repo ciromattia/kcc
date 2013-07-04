@@ -316,6 +316,7 @@ class Ui_KCC(object):
     def toggleNoSplitRotate(self, value):
         if value:
             GUI.RotateBox.setEnabled(False)
+            GUI.RotateBox.setChecked(False)
         else:
             GUI.RotateBox.setEnabled(True)
 
