@@ -16,12 +16,6 @@
     <height>380</height>
    </size>
   </property>
-  <property name="maximumSize">
-   <size>
-    <width>420</width>
-    <height>380</height>
-   </size>
-  </property>
   <property name="font">
    <font>
     <pointsize>9</pointsize>
@@ -59,16 +53,16 @@
      </font>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="0">
-      <widget class="QCheckBox" name="ProcessingBox">
+     <item row="1" column="2">
+      <widget class="QCheckBox" name="NoRotateBox">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>Disable image optimizations.</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disable splitting and rotation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>No optimisation</string>
+        <string>No split/rotate</string>
        </property>
       </widget>
      </item>
@@ -111,6 +105,19 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="0">
+      <widget class="QCheckBox" name="ProcessingBox">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="toolTip">
+        <string>Disable image optimizations.</string>
+       </property>
+       <property name="text">
+        <string>No optimisation</string>
+       </property>
+      </widget>
+     </item>
      <item row="3" column="0">
       <widget class="QCheckBox" name="BorderBox">
        <property name="focusPolicy">
@@ -121,19 +128,6 @@
        </property>
        <property name="text">
         <string>Black borders</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QCheckBox" name="NoRotateBox">
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disable splitting and rotation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>No split/rotate</string>
        </property>
       </widget>
      </item>
@@ -300,9 +294,9 @@
     <widget class="QCheckBox" name="MangaBox">
      <property name="geometry">
       <rect>
-       <x>9</x>
+       <x>10</x>
        <y>10</y>
-       <width>130</width>
+       <width>141</width>
        <height>18</height>
       </rect>
      </property>
@@ -349,8 +343,8 @@ p, li { white-space: pre-wrap; }
       <rect>
        <x>145</x>
        <y>10</y>
-       <width>130</width>
-       <height>18</height>
+       <width>141</width>
+       <height>20</height>
       </rect>
      </property>
      <property name="focusPolicy">
