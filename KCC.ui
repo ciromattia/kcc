@@ -59,6 +59,9 @@
      </font>
     </property>
     <layout class="QGridLayout" name="gridLayout">
+     <property name="leftMargin">
+      <number>9</number>
+     </property>
      <item row="1" column="0">
       <widget class="QCheckBox" name="ProcessingBox">
        <property name="focusPolicy">
