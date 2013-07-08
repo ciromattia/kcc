@@ -102,7 +102,7 @@ class WorkerThread(QtCore.QThread):
         if self.parent.currentMode > 1:
             if GUI.ProcessingBox.isChecked():
                 argv.append("--noprocessing")
-            if GUI.UpscaleBox.isChecked() and not GUI.StretchBox.isChecked():
+            if GUI.UpscaleBox.isChecked():
                 argv.append("--upscale")
             if GUI.NoRotateBox.isChecked():
                 argv.append("--nosplitrotate")
@@ -320,6 +320,14 @@ class Ui_KCC(object):
         else:
             GUI.RotateBox.setEnabled(True)
 
+    def toggleUpscale(self, value):
+        if value:
+            GUI.StretchBox.setChecked(False)
+
+    def toggleStretch(self, value):
+        if value:
+            GUI.UpscaleBox.setChecked(False)
+
     def changeDevice(self, value, start=False):
         if value == 11 and (start or self.currentMode != 3):
             GUI.BasicModeButton.setEnabled(False)
@@ -448,6 +456,8 @@ class Ui_KCC(object):
         GUI.ConvertButton.clicked.connect(self.convertStart)
         GUI.GammaSlider.valueChanged.connect(self.changeGamma)
         GUI.NoRotateBox.stateChanged.connect(self.toggleNoSplitRotate)
+        GUI.UpscaleBox.stateChanged.connect(self.toggleUpscale)
+        GUI.StretchBox.stateChanged.connect(self.toggleStretch)
         GUI.DeviceBox.activated.connect(self.changeDevice)
         KCC.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
         KCC.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
