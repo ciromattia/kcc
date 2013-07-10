@@ -346,12 +346,14 @@ class Ui_KCC(object):
     def addMessage(self, message, icon=None, replace=False):
         if icon:
             icon = eval('self.icons.' + icon)
-            item = QtGui.QListWidgetItem(icon, message)
+            item = QtGui.QListWidgetItem(icon, '')
         else:
-            item = QtGui.QListWidgetItem(message)
+            item = QtGui.QListWidgetItem('')
         if replace:
             GUI.JobList.takeItem(GUI.JobList.count()-1)
+        label = QtGui.QLabel(message)
         GUI.JobList.addItem(item)
+        GUI.JobList.setItemWidget(item, label)
         GUI.JobList.scrollToBottom()
 
     def showDialog(self, message):
