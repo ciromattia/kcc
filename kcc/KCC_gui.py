@@ -88,7 +88,8 @@ class VersionThread(QtCore.QThread):
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
         if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
-            self.emit(QtCore.SIGNAL("addMessage"), '<b>New version is available!</b>', 'warning')
+            self.emit(QtCore.SIGNAL("addMessage"), '<a href="http://kcc.vulturis.eu/">'
+                                                   '<b>New version is available!</b></a>', 'warning')
 
 
 # noinspection PyBroadException
@@ -346,6 +347,8 @@ class Ui_KCC(object):
         if value == 11 and (start or self.currentMode != 3):
             GUI.BasicModeButton.setEnabled(False)
             GUI.AdvModeButton.setEnabled(False)
+            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
+                            'List of supported Non-Kindle devices</a>', 'info')
             self.modeExpert()
         elif self.currentMode == 3:
             GUI.BasicModeButton.setEnabled(True)
