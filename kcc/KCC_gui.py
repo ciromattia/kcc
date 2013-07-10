@@ -368,13 +368,17 @@ class Ui_KCC(object):
     def addMessage(self, message, icon=None, replace=False):
         if icon:
             icon = eval('self.icons.' + icon)
-            item = QtGui.QListWidgetItem(icon, self.stripTags(message))
+            item = QtGui.QListWidgetItem(icon, '   ' + self.stripTags(message))
         else:
-            item = QtGui.QListWidgetItem(self.stripTags(message))
+            item = QtGui.QListWidgetItem('   ' + self.stripTags(message))
         if replace:
             GUI.JobList.takeItem(GUI.JobList.count()-1)
         label = QtGui.QLabel(message)
         label.setOpenExternalLinks(True)
+        if sys.platform == 'darwin':
+            font = QtGui.QFont()
+            font.setPointSize(11)
+            label.setFont(font)
         item.setTextColor(QtGui.QColor("white"))
         GUI.JobList.addItem(item)
         GUI.JobList.setItemWidget(item, label)
