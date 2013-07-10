@@ -88,7 +88,7 @@ class VersionThread(QtCore.QThread):
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
         if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
-            self.emit(QtCore.SIGNAL("addMessage"), 'New version is available!', 'warning')
+            self.emit(QtCore.SIGNAL("addMessage"), '<b>New version is available!</b>', 'warning')
 
 
 # noinspection PyBroadException
@@ -140,7 +140,7 @@ class WorkerThread(QtCore.QThread):
         GUI.JobList.clear()
         for job in currentJobs:
             self.errors = False
-            self.emit(QtCore.SIGNAL("addMessage"), 'Source: ' + job, 'info')
+            self.emit(QtCore.SIGNAL("addMessage"), '<b>Source:</b> ' + job, 'info')
             if str(GUI.FormatBox.currentText()) == 'CBZ':
                 self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file...', 'info')
             else:
@@ -206,7 +206,7 @@ class WorkerThread(QtCore.QThread):
                                                                ' MB. Try converting a smaller batch.', 'error')
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         self.parent.needClean = True
-        self.emit(QtCore.SIGNAL("addMessage"), 'All jobs completed.', 'info')
+        self.emit(QtCore.SIGNAL("addMessage"), '<b>All jobs completed.</b>', 'info')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
 
 
@@ -447,8 +447,8 @@ class Ui_KCC(object):
         self.versionCheck = VersionThread(self)
         self.needClean = True
 
-        self.addMessage('Welcome!', 'info')
-        self.addMessage('Remember: all options have additional informations in tooltips.', 'info')
+        self.addMessage('<b>Welcome!</b>', 'info')
+        self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')
         if call('kindlegen', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
             self.KindleGen = True
             formats = ['MOBI', 'EPUB', 'CBZ']
@@ -457,19 +457,23 @@ class Ui_KCC(object):
                 if "Amazon kindlegen" in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if tuple(map(int, (versionCheck.split(".")))) < tuple(map(int, ('2.9'.split(".")))):
-                        self.addMessage('Your kindlegen is outdated! Creating MOBI might fail.'
-                                        ' Please update kindlegen from Amazon\'s website.', 'warning')
+                        self.addMessage('Your <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
+                                        '1000765211">kindlegen</a> is outdated! Creating MOBI might fail.'
+                                        ' Please update <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
+                                        '1000765211">kindlegen</a> from Amazon\'s website.', 'warning')
                     break
         else:
             self.KindleGen = False
             formats = ['EPUB', 'CBZ']
-            self.addMessage('Cannot find kindlegen in PATH! MOBI creation will be disabled.', 'warning')
+            self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
+                            '1000765211">kindlegen</a> in PATH! MOBI creation will be disabled.', 'warning')
         rarExitCode = call('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
         if rarExitCode == 0 or rarExitCode == 7:
             self.UnRAR = True
         else:
             self.UnRAR = False
-            self.addMessage('Cannot find UnRAR! Processing of CBR/RAR files will be disabled.', 'warning')
+            self.addMessage('Cannot find <a href="http://www.rarlab.com/rar_add.htm">UnRAR</a>!'
+                            ' Processing of CBR/RAR files will be disabled.', 'warning')
 
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
