@@ -33,6 +33,7 @@ from image import ProfileData
 from subprocess import call, Popen, STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
 from xml.dom.minidom import parse
+from HTMLParser import HTMLParser
 
 
 class Icons:
@@ -55,6 +56,19 @@ class Icons:
         self.warning.addPixmap(QtGui.QPixmap(":/Status/icons/warning.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.error = QtGui.QIcon()
         self.error.addPixmap(QtGui.QPixmap(":/Status/icons/error.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+
+
+class HTMLStripper(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.reset()
+        self.fed = []
+
+    def handle_data(self, d):
+        self.fed.append(d)
+
+    def get_data(self):
+        return ''.join(self.fed)
 
 
 # noinspection PyBroadException
@@ -343,15 +357,22 @@ class Ui_KCC(object):
         else:
             GUI.QualityBox.setEnabled(True)
 
+    def stripTags(self, html):
+        s = HTMLStripper()
+        s.feed(html)
+        return s.get_data()
+
     def addMessage(self, message, icon=None, replace=False):
         if icon:
             icon = eval('self.icons.' + icon)
-            item = QtGui.QListWidgetItem(icon, '')
+            item = QtGui.QListWidgetItem(icon, self.stripTags(message))
         else:
-            item = QtGui.QListWidgetItem('')
+            item = QtGui.QListWidgetItem(self.stripTags(message))
         if replace:
             GUI.JobList.takeItem(GUI.JobList.count()-1)
         label = QtGui.QLabel(message)
+        label.setOpenExternalLinks(True)
+        item.setTextColor(QtGui.QColor("white"))
         GUI.JobList.addItem(item)
         GUI.JobList.setItemWidget(item, label)
         GUI.JobList.scrollToBottom()
