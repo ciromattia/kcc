@@ -174,7 +174,7 @@ class WorkerThread(QtCore.QThread):
                             retcode = call('kindlegen -verbose "' + outputPath + '"', shell=True)
                         except:
                             continue
-                        if retcode == 0:
+                        if retcode == 0 or retcode == 1:
                             self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... Done!', 'info', True)
                             self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header...', 'info')
                             os.remove(outputPath)
