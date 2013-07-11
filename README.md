@@ -70,7 +70,7 @@ Options:
   --version             show program's version number and exit
   -h, --help            show this help message and exit
   -p PROFILE, --profile=PROFILE
-                        Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8) [Default=KHD]
+                        Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8, KFA) [Default=KHD]
   -t TITLE, --title=TITLE
                         Comic title [Default=filename]
   -m, --manga-style     Manga style (Right-to-left reading and splitting) [Default=False]
