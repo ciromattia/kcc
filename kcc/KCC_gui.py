@@ -287,15 +287,21 @@ class Ui_KCC(object):
         GUI.OptionsExpert.setEnabled(False)
         GUI.MangaBox.setEnabled(True)
 
-    def modeExpert(self):
+    def modeExpert(self, KFA=False):
         self.modeAdvanced()
         self.currentMode = 3
         MainWindow.setMinimumSize(QtCore.QSize(420, 380))
         MainWindow.setMaximumSize(QtCore.QSize(420, 380))
         MainWindow.resize(420, 380)
         GUI.OptionsExpert.setEnabled(True)
-        GUI.MangaBox.setCheckState(0)
-        GUI.MangaBox.setEnabled(False)
+        if KFA:
+            GUI.ColorBox.setCheckState(2)
+            GUI.FormatBox.setCurrentIndex(0)
+            GUI.FormatBox.setEnabled(False)
+        else:
+            GUI.FormatBox.setEnabled(True)
+            GUI.MangaBox.setCheckState(0)
+            GUI.MangaBox.setEnabled(False)
 
     def modeConvert(self, enable):
         if self.currentMode != 3:
@@ -343,18 +349,22 @@ class Ui_KCC(object):
         if value:
             GUI.UpscaleBox.setChecked(False)
 
-    def changeDevice(self, value, start=False):
-        if value == 11 and (start or self.currentMode != 3):
+    def changeDevice(self, value):
+        if value == 12:
             GUI.BasicModeButton.setEnabled(False)
             GUI.AdvModeButton.setEnabled(False)
             self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
                             'List of supported Non-Kindle devices</a>', 'info')
             self.modeExpert()
+        elif value == 11:
+            GUI.BasicModeButton.setEnabled(False)
+            GUI.AdvModeButton.setEnabled(False)
+            self.modeExpert(True)
         elif self.currentMode == 3:
             GUI.BasicModeButton.setEnabled(True)
             GUI.AdvModeButton.setEnabled(True)
             self.modeBasic()
-        if value in [0, 1, 5, 6, 7, 8, 9, 11]:
+        if value in [0, 1, 5, 6, 7, 8, 9, 12]:
             GUI.QualityBox.setCheckState(0)
             GUI.QualityBox.setEnabled(False)
         else:
@@ -534,4 +544,4 @@ class Ui_KCC(object):
             self.modeExpert()
         self.versionCheck.start()
         self.hideProgressBar()
-        self.changeDevice(self.lastDevice, True)
+        self.changeDevice(self.lastDevice)

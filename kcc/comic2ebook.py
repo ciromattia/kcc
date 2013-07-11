@@ -685,8 +685,8 @@ def main(argv=None, qtGUI=None):
     usage = "Usage: %prog [options] comic_file|comic_folder"
     parser = OptionParser(usage=usage, version=__version__)
     parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                      help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8) "
-                      "[Default=KHD]")
+                      help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8,"
+                           " KFA) [Default=KHD]")
     parser.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                       help="Comic title [Default=filename]")
     parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
@@ -819,6 +819,10 @@ def checkOptions():
         options.landscapemode = False
         options.panelview = False
         options.quality = 0
+    # Kindle for Android profile require target resolution.
+    if options.profile == 'KFA' and (options.customwidth == 0 or options.customheight == 0):
+        print "ERROR: Kindle for Android profile require --customwidth and --customheight options!"
+        sys.exit(1)
     # Override profile data
     if options.customwidth != 0 or options.customheight != 0:
         X = image.ProfileData.Profiles[options.profile][1][0]
