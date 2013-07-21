@@ -236,6 +236,7 @@ class Ui_KCC(object):
         dirDialog = QtGui.QFileDialog(MainWindow, 'Select directory', self.lastPath)
         dirDialog.setFileMode(dirDialog.Directory)
         dirDialog.setOption(dirDialog.ShowDirsOnly, True)
+        dirDialog.setOption(dirDialog.DontUseNativeDialog, True)
         l = dirDialog.findChild(QtGui.QListView, "listView")
         t = dirDialog.findChild(QtGui.QTreeView)
         if l:
