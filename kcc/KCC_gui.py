@@ -148,8 +148,9 @@ class WorkerThread(QtCore.QThread):
                 argv.append("--forcecolor")
         for i in range(GUI.JobList.count()):
             currentJobs.append(str(GUI.JobList.item(i).text()))
+        GUI.JobList.clear()
         for job in currentJobs:
-            time.sleep(1)
+            time.sleep(0.5)
             if not self.conversionAlive:
                 self.clean()
                 return
