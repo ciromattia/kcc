@@ -27,6 +27,7 @@ import sys
 import shutil
 import traceback
 import urllib2
+import time
 import comic2ebook
 import kindlestrip
 from image import ProfileData
@@ -101,6 +102,15 @@ class WorkerThread(QtCore.QThread):
     def __del__(self):
         self.wait()
 
+    def sync(self):
+        self.conversionAlive = self.parent.conversionAlive
+
+    def clean(self):
+        self.parent.needClean = True
+        self.emit(QtCore.SIGNAL("hideProgressBar"))
+        self.emit(QtCore.SIGNAL("addMessage"), '<b>Conversion interrupted.</b>', 'error')
+        self.emit(QtCore.SIGNAL("modeConvert"), True)
+
     def run(self):
         self.emit(QtCore.SIGNAL("modeConvert"), False)
         profile = ProfileData.ProfileLabels[str(GUI.DeviceBox.currentText())]
@@ -138,8 +148,11 @@ class WorkerThread(QtCore.QThread):
                 argv.append("--forcecolor")
         for i in range(GUI.JobList.count()):
             currentJobs.append(str(GUI.JobList.item(i).text()))
-        GUI.JobList.clear()
         for job in currentJobs:
+            time.sleep(1)
+            if not self.conversionAlive:
+                self.clean()
+                return
             self.errors = False
             self.emit(QtCore.SIGNAL("addMessage"), '<b>Source:</b> ' + job, 'info')
             if str(GUI.FormatBox.currentText()) == 'CBZ':
@@ -152,15 +165,23 @@ class WorkerThread(QtCore.QThread):
                 outputPath = comic2ebook.main(jobargv, self)
                 self.emit(QtCore.SIGNAL("hideProgressBar"))
             except UserWarning as warn:
-                self.errors = True
-                self.emit(QtCore.SIGNAL("addMessage"), str(warn), 'warning')
-                self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create output file!', 'warning')
+                if not self.conversionAlive:
+                    self.clean()
+                    return
+                else:
+                    self.errors = True
+                    self.emit(QtCore.SIGNAL("addMessage"), str(warn), 'warning')
+                    self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create output file!', 'warning')
             except Exception as err:
                 self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
                 self.emit(QtCore.SIGNAL("showDialog"), "Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
                                                        % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
                 self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create EPUB!', 'error')
+            if not self.conversionAlive:
+                os.remove(outputPath)
+                self.clean()
+                return
             if not self.errors:
                 if str(GUI.FormatBox.currentText()) == 'CBZ':
                     self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file... Done!', 'info', True)
@@ -188,6 +209,11 @@ class WorkerThread(QtCore.QThread):
                         # ERROR: Unknown generic error
                         self.kindlegenErrorCode = 1
                         continue
+                    if not self.conversionAlive:
+                        os.remove(outputPath)
+                        os.remove(outputPath.replace('.epub', '.mobi'))
+                        self.clean()
+                        return
                     if self.kindlegenErrorCode == 0:
                         self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... Done!', 'info', True)
                         self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header...', 'info')
@@ -343,19 +369,33 @@ class Ui_KCC(object):
         GUI.ClearButton.setEnabled(enable)
         GUI.FileButton.setEnabled(enable)
         GUI.DeviceBox.setEnabled(enable)
-        GUI.ConvertButton.setEnabled(enable)
         GUI.FormatBox.setEnabled(enable)
         GUI.OptionsBasic.setEnabled(enable)
         GUI.OptionsAdvanced.setEnabled(enable)
         GUI.OptionsAdvancedGamma.setEnabled(enable)
         GUI.OptionsExpert.setEnabled(enable)
         if enable:
+            self.conversionAlive = False
+            self.worker.sync()
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap(":/Other/icons/convert.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            GUI.ConvertButton.setIcon(icon)
+            GUI.ConvertButton.setText('Convert')
+            GUI.ConvertButton.setEnabled(True)
             if self.currentMode == 1:
                 self.modeBasic()
             elif self.currentMode == 2:
                 self.modeAdvanced()
             elif self.currentMode == 3:
                 self.modeExpert()
+        else:
+            self.conversionAlive = True
+            self.worker.sync()
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap(":/Other/icons/clear.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            GUI.ConvertButton.setIcon(icon)
+            GUI.ConvertButton.setText('Abort')
+            GUI.ConvertButton.setEnabled(True)
 
     def changeGamma(self, value):
         value = float(value)
@@ -441,19 +481,25 @@ class Ui_KCC(object):
             GUI.ProgressBar.setValue(GUI.ProgressBar.value() + 1)
 
     def convertStart(self):
-        if self.needClean:
-            self.needClean = False
-            GUI.JobList.clear()
-        if GUI.JobList.count() == 0:
-            self.addMessage('No files selected! Please choose files to convert.', 'error')
-            self.needClean = True
-            return
-        if self.currentMode > 2 and (str(GUI.customWidth.text()) == '' or str(GUI.customHeight.text()) == ''):
-            GUI.JobList.clear()
-            self.addMessage('Target resolution is not set!', 'error')
-            self.needClean = True
-            return
-        self.worker.start()
+        if self.conversionAlive:
+            GUI.ConvertButton.setEnabled(False)
+            self.addMessage('Process will be interrupted. Please wait.', 'warning')
+            self.conversionAlive = False
+            self.worker.sync()
+        else:
+            if self.needClean:
+                self.needClean = False
+                GUI.JobList.clear()
+            if GUI.JobList.count() == 0:
+                self.addMessage('No files selected! Please choose files to convert.', 'error')
+                self.needClean = True
+                return
+            if self.currentMode > 2 and (str(GUI.customWidth.text()) == '' or str(GUI.customHeight.text()) == ''):
+                GUI.JobList.clear()
+                self.addMessage('Target resolution is not set!', 'error')
+                self.needClean = True
+                return
+            self.worker.start()
 
     def hideProgressBar(self):
         GUI.ProgressBar.hide()
@@ -494,6 +540,7 @@ class Ui_KCC(object):
         self.options = self.options.toPyObject()
         self.worker = WorkerThread(self)
         self.versionCheck = VersionThread(self)
+        self.conversionAlive = False
         self.needClean = True
 
         self.addMessage('<b>Welcome!</b>', 'info')
@@ -577,3 +624,4 @@ class Ui_KCC(object):
         self.versionCheck.start()
         self.hideProgressBar()
         self.changeDevice(self.lastDevice)
+        self.worker.sync()

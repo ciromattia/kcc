@@ -364,6 +364,10 @@ def dirImgProcess(path):
                     queue.get(True, 1)
                 except:
                     pass
+                if not GUI.conversionAlive:
+                    pool.terminate()
+                    rmtree(path)
+                    raise UserWarning("Conversion interrupted.")
                 GUI.emit(QtCore.SIGNAL("progressBarTick"))
         pool.join()
         queue.close()
