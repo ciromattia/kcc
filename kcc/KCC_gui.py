@@ -229,42 +229,58 @@ class WorkerThread(QtCore.QThread):
 # noinspection PyBroadException
 class Ui_KCC(object):
     def selectDir(self):
-        # Dialog allow to select multiple directories but we can't parse that. QT Bug.
         if self.needClean:
             self.needClean = False
             GUI.JobList.clear()
-        dname = QtGui.QFileDialog.getExistingDirectory(MainWindow, 'Select directory', self.lastPath)
+        # Dirty, dirty way but OS native QFileDialogs don't support directory multiselect
+        dirDialog = QtGui.QFileDialog(MainWindow, 'Select directory', self.lastPath)
+        dirDialog.setFileMode(dirDialog.Directory)
+        dirDialog.setOption(dirDialog.ShowDirsOnly, True)
+        l = dirDialog.findChild(QtGui.QListView, "listView")
+        t = dirDialog.findChild(QtGui.QTreeView)
+        if l:
+            l.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+        if t:
+            t.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+        if dirDialog.exec_() == 1:
+            dnames = dirDialog.selectedFiles()
+        else:
+            dnames = ""
         # Lame UTF-8 security measure
-        try:
-            str(dname)
-        except Exception:
-            QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
-                                       QtGui.QMessageBox.Ok)
-            return
-        if str(dname) != "":
-            self.lastPath = os.path.abspath(os.path.join(str(dname), os.pardir))
-            GUI.JobList.addItem(dname)
+        for dname in dnames:
+            try:
+                str(dname)
+            except Exception:
+                QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
+                                           QtGui.QMessageBox.Ok)
+                return
+            if str(dname) != "":
+                if sys.platform == 'win32':
+                    dname = dname.replace('/', '\\')
+                self.lastPath = os.path.abspath(os.path.join(str(dname), os.pardir))
+                GUI.JobList.addItem(dname)
 
     def selectFile(self):
         if self.needClean:
             self.needClean = False
             GUI.JobList.clear()
         if self.UnRAR:
-            fname = QtGui.QFileDialog.getOpenFileName(MainWindow, 'Select file', self.lastPath,
-                                                      '*.cbz *.cbr *.zip *.rar *.pdf')
+            fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
+                                                        '*.cbz *.cbr *.zip *.rar *.pdf')
         else:
-            fname = QtGui.QFileDialog.getOpenFileName(MainWindow, 'Select file', self.lastPath,
-                                                      '*.cbz *.zip *.pdf')
+            fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
+                                                        '*.cbz *.zip *.pdf', None, QtGui.QFileDialog.ShowDirsOnly)
         # Lame UTF-8 security measure
-        try:
-            str(fname)
-        except Exception:
-            QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
-                                       QtGui.QMessageBox.Ok)
-            return
-        if str(fname) != "":
-            self.lastPath = os.path.abspath(os.path.join(str(fname), os.pardir))
-            GUI.JobList.addItem(fname)
+        for fname in fnames:
+            try:
+                str(fname)
+            except Exception:
+                QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
+                                           QtGui.QMessageBox.Ok)
+                return
+            if str(fname) != "":
+                self.lastPath = os.path.abspath(os.path.join(str(fname), os.pardir))
+                GUI.JobList.addItem(fname)
 
     def clearJobs(self):
         GUI.JobList.clear()
