@@ -24,9 +24,6 @@ You can find the latest released binary at the following links:
 - **OS X:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
 - **Linux:** Just download sourcecode and launch: `python kcc.py`
 
-_It has been reported by a couple of users that version 2.10 crashing on OSX at start. We don't know if that issue still exist in version 3.0.
-If it happens to you please append your message to [Issue #52](https://github.com/ciromattia/kcc/issues/52)._
-
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following file types:
 - PNG, JPG, GIF, TIFF, BMP
@@ -213,8 +210,12 @@ The app relies and includes the following scripts/binaries:
 * Added support for custom width/height
 * Added option to disable color conversion
 
+####3.1:
+* Added profile: Kindle for Android
+* Add file/directory dialogs now support multiselect
+* Many small fixes and tweaks
+
 ## KNOWN ISSUES
-* _Add directory_ dialog allow to select multiple directories but they are not added to job list. [QT bug.](https://bugreports.qt-project.org/browse/QTBUG-21372)
 * Removing SRCS headers sometimes fail in 32bit enviroments. Due to memory limitations.
 
 ## COPYRIGHT
