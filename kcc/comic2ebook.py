@@ -654,13 +654,16 @@ def sanitizeTree(filetree):
                 splitname = os.path.splitext(name)
                 slugified = slugify(splitname[0])
                 while os.path.exists(os.path.join(root, slugified + splitname[1])):
-                    slugified += "1"
+                    slugified += "A"
                 os.rename(os.path.join(root, name), os.path.join(root, slugified + splitname[1]))
         for name in dirs:
             if name.startswith('.'):
                 os.remove(os.path.join(root, name))
             else:
-                os.rename(os.path.join(root, name), os.path.join(root, slugify(name)))
+                slugified = slugify(name)
+                while os.path.exists(os.path.join(root, slugified)):
+                    slugified += "A"
+                os.rename(os.path.join(root, name), os.path.join(root, slugified))
 
 
 def sanitizeTreeBeforeConversion(filetree):
@@ -840,11 +843,6 @@ def checkOptions():
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
-
-
-def getEpubPath():
-    global epub_path
-    return epub_path
 
 
 if __name__ == "__main__":
