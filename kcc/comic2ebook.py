@@ -28,11 +28,7 @@ import tempfile
 import re
 import stat
 import string
-from shutil import move
-from shutil import copyfile
-from shutil import copytree
-from shutil import rmtree
-from shutil import make_archive
+from shutil import move, copyfile, copytree, rmtree, make_archive
 from optparse import OptionParser
 from multiprocessing import Pool, Queue, freeze_support
 try:
