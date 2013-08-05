@@ -103,7 +103,7 @@ def splitImage(work):
                 draw.line([(0, y1Temp), (widthImg, y1Temp)], fill=(0, 255, 0))
                 draw.line([(0, y2Temp), (widthImg, y2Temp)], fill=(255, 0, 0))
             panelHeight = y2Temp - y1Temp
-            if y2Temp != heightImg:
+            if y2Temp < heightImg:
                 # Panels that can't be cut nicely will be forcefully splitted
                 panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight], options)
                 for panel in panelsCleaned:
