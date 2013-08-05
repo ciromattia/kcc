@@ -26,6 +26,7 @@ import sys
 import os
 from shutil import rmtree, copytree
 from optparse import OptionParser
+from multiprocessing import Pool, freeze_support
 from PIL import Image, ImageStat
 
 
@@ -43,7 +44,7 @@ def getImageFileName(imgfile):
     return filename
 
 
-def sanitizePanelSize(panel):
+def sanitizePanelSize(panel, options):
     newPanels = []
     if panel[2] > 1.5 * options.height:
         if (panel[2] / 2) > 1.5 * options.height:
@@ -60,7 +61,15 @@ def sanitizePanelSize(panel):
     return newPanels
 
 
-def splitImage(path, name):
+def splitImage_init(options):
+    splitImage.options = options
+
+
+# noinspection PyUnresolvedReferences
+def splitImage(work):
+    path = work[0]
+    name = work[1]
+    options = splitImage.options
     # Harcoded options
     threshold = 10.0
     delta = 10
@@ -96,7 +105,7 @@ def splitImage(path, name):
             panelHeight = y2Temp - y1Temp
             if y2Temp != heightImg:
                 # Panels that can't be cut nicely will be forcefully splitted
-                panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight])
+                panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight], options)
                 for panel in panelsCleaned:
                     panels.append(panel)
         if options.debug:
@@ -145,6 +154,7 @@ def Copyright():
            'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals())
 
 
+# noinspection PyBroadException
 def main(argv=None):
     global options
     usage = "Usage: %prog [options] comic_folder"
@@ -164,12 +174,28 @@ def main(argv=None):
         if os.path.isdir(options.sourceDir):
             rmtree(options.targetDir, True)
             copytree(options.sourceDir, options.targetDir)
+            work = []
+            pool = Pool(None, splitImage_init, [options])
             for root, dirs, files in os.walk(options.targetDir, False):
                 for name in files:
                     if getImageFileName(name) is not None:
-                        splitImage(root, name)
+                        work.append([root, name])
                     else:
                         os.remove(os.path.join(root, name))
+            if len(work) > 0:
+                workers = pool.map_async(func=splitImage, iterable=work)
+                pool.close()
+                pool.join()
+                try:
+                    workers.get()
+                except:
+                    rmtree(options.targetDir)
+                    print "ERROR: One of workers crashed. Cause: " + str(sys.exc_info()[1])
+                    sys.exit(1)
+            else:
+                rmtree(options.targetDir)
+                print "ERROR: Source directory is empty!!"
+                sys.exit(1)
         else:
             print "ERROR: Provided path is not a directory!"
             sys.exit(1)
@@ -178,7 +204,7 @@ def main(argv=None):
         sys.exit(1)
 
 if __name__ == "__main__":
-    # freeze_support()
+    freeze_support()
     Copyright()
     main(sys.argv[1:])
     sys.exit(0)
