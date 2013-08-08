@@ -451,7 +451,6 @@ def genEpubStruct(path):
     chapterlist = []
     cover = None
     _, deviceres, _, _, panelviewsize = options.profileData
-    sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w')
     # DON'T COMPRESS CSS. KINDLE WILL FAIL TO PARSE IT.
@@ -673,6 +672,140 @@ def sanitizeTreeBeforeConversion(filetree):
             os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD | stat.S_IEXEC)
 
 
+def getDirectorySize(start_path='.'):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
+
+
+def createNewTome():
+    tomePathRoot = tempfile.mkdtemp()
+    tomePath = os.path.join(tomePathRoot, 'OEBPS', 'Images')
+    os.makedirs(tomePath)
+    return tomePath, tomePathRoot
+
+
+def walkLevel(some_dir, level=1):
+    some_dir = some_dir.rstrip(os.path.sep)
+    assert os.path.isdir(some_dir)
+    num_sep = some_dir.count(os.path.sep)
+    for root, dirs, files in os.walk(some_dir):
+        yield root, dirs, files
+        num_sep_this = root.count(os.path.sep)
+        if num_sep + level <= num_sep_this:
+            del dirs[:]
+
+
+def splitDirectory(path, mode):
+    output = []
+    currentSize = 0
+    currentTarget = path
+    if mode == 0:
+        for root, dirs, files in walkLevel(path, 0):
+            for name in files:
+                size = os.path.getsize(os.path.join(root, name))
+                if currentSize + size > 262144000:
+                    currentTarget, pathRoot = createNewTome()
+                    output.append(pathRoot)
+                    currentSize = size
+                else:
+                    currentSize += size
+                if path != currentTarget:
+                    move(os.path.join(root, name), os.path.join(currentTarget, name))
+    elif mode == 1:
+        for root, dirs, files in walkLevel(path, 0):
+            for name in dirs:
+                size = getDirectorySize(os.path.join(root, name))
+                if currentSize + size > 262144000:
+                    currentTarget, pathRoot = createNewTome()
+                    output.append(pathRoot)
+                    currentSize = size
+                else:
+                    currentSize += size
+                if path != currentTarget:
+                    move(os.path.join(root, name), os.path.join(currentTarget, name))
+    elif mode == 2:
+        for root, dirs, files in walkLevel(path, 1):
+            for name in dirs:
+                if root != path:
+                    size = getDirectorySize(os.path.join(root, name))
+                    if currentSize + size > 262144000:
+                        currentTarget, pathRoot = createNewTome()
+                        output.append(pathRoot)
+                        currentSize = size
+                    else:
+                        currentSize += size
+                    if path != currentTarget:
+                        move(os.path.join(root, name), os.path.join(currentTarget, name))
+    return output
+
+
+# noinspection PyUnboundLocalVariable
+def preSplitDirectory(path):
+    if getDirectorySize(os.path.join(path, 'OEBPS', 'Images')) > 262144000:
+        # Detect directory stucture
+        for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 0):
+            subdirectoryNumber = len(dirs)
+            filesNumber = len(files)
+        if subdirectoryNumber == 0:
+            # No subdirectories
+            mode = 0
+        else:
+            if filesNumber > 0:
+                print '\nWARNING: Automatic output splitting failed.'
+                if GUI:
+                    GUI.emit(QtCore.SIGNAL("addMessage"), 'Automatic output splitting failed. <a href='
+                                                          '"https://github.com/ciromattia/kcc/wiki'
+                                                          '/Automatic-output-splitting">'
+                                                          'Click for more details.</a>', 'warning')
+                    GUI.emit(QtCore.SIGNAL("addMessage"), '')
+                return [path]
+            detectedSubSubdirectories = False
+            detectedFilesInSubdirectories = False
+            for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 1):
+                if root != os.path.join(path, 'OEBPS', 'Images'):
+                    if len(dirs) != 0:
+                        detectedSubSubdirectories = True
+                    elif len(dirs) == 0 and detectedSubSubdirectories:
+                        print '\nWARNING: Automatic output splitting failed.'
+                        if GUI:
+                            GUI.emit(QtCore.SIGNAL("addMessage"), 'Automatic output splitting failed. <a href='
+                                                                  '"https://github.com/ciromattia/kcc/wiki'
+                                                                  '/Automatic-output-splitting">'
+                                                                  'Click for more details.</a>', 'warning')
+                            GUI.emit(QtCore.SIGNAL("addMessage"), '')
+                        return [path]
+                    if len(files) != 0:
+                        detectedFilesInSubdirectories = True
+            if detectedSubSubdirectories:
+                # Two levels of subdirectories
+                mode = 2
+            else:
+                # One level of subdirectories
+                mode = 1
+            if detectedFilesInSubdirectories and detectedSubSubdirectories:
+                print '\nWARNING: Automatic output splitting failed.'
+                if GUI:
+                    GUI.emit(QtCore.SIGNAL("addMessage"), 'Automatic output splitting failed. <a href='
+                                                          '"https://github.com/ciromattia/kcc/wiki'
+                                                          '/Automatic-output-splitting">'
+                                                          'Click for more details.</a>', 'warning')
+                    GUI.emit(QtCore.SIGNAL("addMessage"), '')
+                return [path]
+        # Split directories
+        split = splitDirectory(os.path.join(path, 'OEBPS', 'Images'), mode)
+        path = [path]
+        for tome in split:
+            path.append(tome)
+        return path
+    else:
+        # No splitting is necessary
+        return [path]
+
+
 def Copyright():
     print ('comic2ebook v%(__version__)s. '
            'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals())
@@ -699,7 +832,7 @@ def main(argv=None, qtGUI=None):
     parser.add_option("-c", "--cbz-output", action="store_true", dest="cbzoutput", default=False,
                       help="Outputs a CBZ archive and does not generate EPUB")
     parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
-                      help="Do not apply image preprocessing (Page splitting and optimizations) [Default=True]")
+                      help="Don't apply image preprocessing (Page splitting and optimizations) [Default=True]")
     parser.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
                       help="Create PNG files instead JPEG (For non-Kindle devices) [Default=False]")
     parser.add_option("--gamma", type="float", dest="gamma", default="0.0",
@@ -716,15 +849,17 @@ def main(argv=None, qtGUI=None):
     parser.add_option("--nosplitrotate", action="store_true", dest="nosplitrotate", default=False,
                       help="Disable splitting and rotation [Default=False]")
     parser.add_option("--nocutpagenumbers", action="store_false", dest="cutpagenumbers", default=True,
-                      help="Do not try to cut page numbering on images [Default=True]")
-    parser.add_option("-o", "--output", action="store", dest="output", default=None,
-                      help="Output generated file (EPUB or CBZ) to specified directory or file")
+                      help="Don't try to cut page numbering on images [Default=True]")
     parser.add_option("--forcecolor", action="store_true", dest="forcecolor", default=False,
-                      help="Do not convert images to grayscale [Default=False]")
+                      help="Don't convert images to grayscale [Default=False]")
+    parser.add_option("--batchsplit", action="store_true", dest="batchsplit", default=False,
+                      help="Split output into multiple files [Default=False]"),
     parser.add_option("--customwidth", type="int", dest="customwidth", default=0,
                       help="Replace screen width provided by device profile [Default=0]")
     parser.add_option("--customheight", type="int", dest="customheight", default=0,
                       help="Replace screen height provided by device profile [Default=0]")
+    parser.add_option("-o", "--output", action="store", dest="output", default=None,
+                      help="Output generated file (EPUB or CBZ) to specified directory or file")
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="Verbose output [Default=False]")
     options, args = parser.parse_args(argv)
@@ -738,8 +873,6 @@ def main(argv=None, qtGUI=None):
         parser.print_help()
         return
     path = getWorkFolder(args[0])
-    if options.title == 'defaulttitle':
-        options.title = os.path.splitext(os.path.basename(args[0]))[0]
     splitCount = 0
     if options.imgproc:
         print "Processing images..."
@@ -748,23 +881,42 @@ def main(argv=None, qtGUI=None):
         dirImgProcess(path + "/OEBPS/Images/")
     if GUI:
         GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
-    if options.cbzoutput:
-        # if CBZ output wanted, compress all images and return filepath
-        print "\nCreating CBZ file..."
-        filepath = getOutputFilename(args[0], options.output, '.cbz')
-        make_archive(path + '_comic', 'zip', path + '/OEBPS/Images')
+    sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    if options.batchsplit:
+        tomes = preSplitDirectory(path)
     else:
-        print "\nCreating EPUB structure..."
-        genEpubStruct(path)
-        # actually zip the ePub
-        filepath = getOutputFilename(args[0], options.output, '.epub')
-        make_archive(path + '_comic', 'zip', path)
-    move(path + '_comic.zip', filepath)
-    rmtree(path)
+        tomes = [path]
+    filepath = []
+    tomeNumber = 0
+    for tome in tomes:
+        if len(tomes) > 1:
+            tomeNumber += 1
+            options.title = os.path.splitext(os.path.basename(args[0]))[0] + ' ' + str(tomeNumber)
+        elif options.title == 'defaulttitle':
+            options.title = os.path.splitext(os.path.basename(args[0]))[0]
+        if options.cbzoutput:
+            # if CBZ output wanted, compress all images and return filepath
+            print "\nCreating CBZ file..."
+            if len(tomes) > 1:
+                filepath.append(getOutputFilename(args[0], options.output, '.cbz', ' ' + str(tomeNumber)))
+            else:
+                filepath.append(getOutputFilename(args[0], options.output, '.cbz', ''))
+            make_archive(tome + '_comic', 'zip', tome + '/OEBPS/Images')
+        else:
+            print "\nCreating EPUB structure..."
+            genEpubStruct(tome)
+            # actually zip the ePub
+            if len(tomes) > 1:
+                filepath.append(getOutputFilename(args[0], options.output, '.epub', ' ' + str(tomeNumber)))
+            else:
+                filepath.append(getOutputFilename(args[0], options.output, '.epub', ''))
+            make_archive(tome + '_comic', 'zip', tome)
+        move(tome + '_comic.zip', filepath[-1])
+        rmtree(tome)
     return filepath
 
 
-def getOutputFilename(srcpath, wantedname, ext):
+def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
     if not ext.startswith('.'):
         ext = '.' + ext
     if wantedname is not None:
@@ -773,14 +925,13 @@ def getOutputFilename(srcpath, wantedname, ext):
         elif os.path.isdir(srcpath):
             filename = os.path.abspath(options.output) + "/" + os.path.basename(srcpath) + ext
         else:
-            filename = os.path.abspath(options.output) + "/" \
-                       + os.path.basename(os.path.splitext(srcpath)[0]) + ext
+            filename = os.path.abspath(options.output) + "/" + os.path.basename(os.path.splitext(srcpath)[0]) + ext
     elif os.path.isdir(srcpath):
-        filename = srcpath + ext
+        filename = srcpath + tomeNumber + ext
     else:
-        filename = os.path.splitext(srcpath)[0] + ext
+        filename = os.path.splitext(srcpath)[0] + tomeNumber + ext
     if os.path.isfile(filename):
-        filename = os.path.splitext(filename)[0] + '_kcc' + ext
+        filename = os.path.splitext(filename)[0] + '_kcc' + tomeNumber + ext
     return filename
 
 

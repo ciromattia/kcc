@@ -111,6 +111,7 @@ class WorkerThread(QtCore.QThread):
         self.emit(QtCore.SIGNAL("addMessage"), '<b>Conversion interrupted.</b>', 'error')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
 
+    # noinspection PyUnboundLocalVariable
     def run(self):
         self.emit(QtCore.SIGNAL("modeConvert"), False)
         profile = ProfileData.ProfileLabels[str(GUI.DeviceBox.currentText())]
@@ -141,6 +142,8 @@ class WorkerThread(QtCore.QThread):
                 argv.append("--gamma=" + self.parent.GammaValue)
             if str(GUI.FormatBox.currentText()) == 'CBZ':
                 argv.append("--cbz-output")
+            if str(GUI.FormatBox.currentText()) == 'MOBI':
+                argv.append("--batchsplit")
         if self.parent.currentMode > 2:
             argv.append("--customwidth=" + str(GUI.customWidth.text()))
             argv.append("--customheight=" + str(GUI.customHeight.text()))
@@ -180,7 +183,8 @@ class WorkerThread(QtCore.QThread):
                                                        % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
                 self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create EPUB!', 'error')
             if not self.conversionAlive:
-                os.remove(outputPath)
+                for item in outputPath:
+                    os.remove(item)
                 self.clean()
                 return
             if not self.errors:
@@ -189,64 +193,79 @@ class WorkerThread(QtCore.QThread):
                 else:
                     self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file... Done!', 'info', True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file...', 'info')
-                    self.emit(QtCore.SIGNAL("progressBarTick"), 1)
-                    try:
-                        self.kindlegenErrorCode = 0
-                        if os.path.getsize(outputPath) < 367001600:
-                            output = Popen('kindlegen "' + outputPath + '"', stdout=PIPE, stderr=STDOUT, shell=True)
-                            for line in output.stdout:
-                                # ERROR: Generic error
-                                if "Error(" in line:
-                                    self.kindlegenErrorCode = 1
-                                    self.kindlegenError = line
-                                # ERROR: EPUB too big
-                                if ":E23026:" in line:
-                                    self.kindlegenErrorCode = 23026
+                    tomeNumber = 0
+                    for item in outputPath:
+                        tomeNumber += 1
+                        if len(outputPath) > 1:
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file (' + str(tomeNumber)
+                                                                   + '/' + str(len(outputPath)) + ')...', 'info')
                         else:
-                            # ERROR: EPUB too big
-                            self.kindlegenErrorCode = 23026
-                    except:
-                        # ERROR: Unknown generic error
-                        self.kindlegenErrorCode = 1
-                        continue
-                    if not self.conversionAlive:
-                        os.remove(outputPath)
-                        os.remove(outputPath.replace('.epub', '.mobi'))
-                        self.clean()
-                        return
-                    if self.kindlegenErrorCode == 0:
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... Done!', 'info', True)
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header...', 'info')
-                        os.remove(outputPath)
-                        mobiPath = outputPath.replace('.epub', '.mobi')
-                        shutil.move(mobiPath, mobiPath + '_tostrip')
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file...', 'info')
+                        self.emit(QtCore.SIGNAL("progressBarTick"), 1)
                         try:
-                            kindlestrip.main((mobiPath + '_tostrip', mobiPath))
-                        except Exception:
-                            self.errors = True
-                        if not self.errors:
-                            os.remove(mobiPath + '_tostrip')
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header... Done!', 'info', True)
+                            self.kindlegenErrorCode = 0
+                            if os.path.getsize(item) < 367001600:
+                                output = Popen('kindlegen "' + item + '"', stdout=PIPE, stderr=STDOUT, shell=True)
+                                for line in output.stdout:
+                                    # ERROR: Generic error
+                                    if "Error(" in line:
+                                        self.kindlegenErrorCode = 1
+                                        self.kindlegenError = line
+                                    # ERROR: EPUB too big
+                                    if ":E23026:" in line:
+                                        self.kindlegenErrorCode = 23026
+                                    if self.kindlegenErrorCode > 0:
+                                        break
+                            else:
+                                # ERROR: EPUB too big
+                                self.kindlegenErrorCode = 23026
+                        except:
+                            # ERROR: Unknown generic error
+                            self.kindlegenErrorCode = 1
+                            continue
+                        if not self.conversionAlive:
+                            for item in outputPath:
+                                os.remove(item)
+                                os.remove(item.replace('.epub', '.mobi'))
+                            self.clean()
+                            return
+                        if self.kindlegenErrorCode == 0:
+                            if len(outputPath) > 1:
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file (' + str(tomeNumber) + '/'
+                                                                       + str(len(outputPath)) + ')... Done!', 'info',
+                                                                       True)
+                            else:
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... Done!', 'info', True)
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header...', 'info')
+                            os.remove(item)
+                            mobiPath = item.replace('.epub', '.mobi')
+                            shutil.move(mobiPath, mobiPath + '_tostrip')
+                            try:
+                                kindlestrip.main((mobiPath + '_tostrip', mobiPath))
+                            except Exception:
+                                self.errors = True
+                            if not self.errors:
+                                os.remove(mobiPath + '_tostrip')
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header... Done!', 'info', True)
+                            else:
+                                shutil.move(mobiPath + '_tostrip', mobiPath)
+                                self.emit(QtCore.SIGNAL("addMessage"),
+                                          'KindleStrip failed to remove SRCS header!', 'warning')
+                                self.emit(QtCore.SIGNAL("addMessage"),
+                                          'MOBI file will work correctly but it will be highly oversized.', 'warning')
                         else:
-                            shutil.move(mobiPath + '_tostrip', mobiPath)
-                            self.emit(QtCore.SIGNAL("addMessage"),
-                                      'KindleStrip failed to remove SRCS header!', 'warning')
-                            self.emit(QtCore.SIGNAL("addMessage"),
-                                      'MOBI file will work correctly but it will be highly oversized.', 'warning')
-                    else:
-                        epubSize = (os.path.getsize(outputPath))/1024/1024
-                        os.remove(outputPath)
-                        if os.path.exists(outputPath.replace('.epub', '.mobi')):
-                            os.remove(outputPath.replace('.epub', '.mobi'))
-                        self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', 'error')
-                        if self.kindlegenErrorCode == 1 and self.kindlegenError:
-                            self.emit(QtCore.SIGNAL("showDialog"), "KindleGen error:\n\n" + self.kindlegenError)
-                        if self.kindlegenErrorCode == 23026:
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file was too big.',
-                                      'error')
-                            self.emit(QtCore.SIGNAL("addMessage"), 'EPUB file: ' + str(epubSize) + 'MB.'
-                                                                   ' Supported size: ~300MB.', 'error')
+                            epubSize = (os.path.getsize(item))/1024/1024
+                            os.remove(item)
+                            if os.path.exists(item.replace('.epub', '.mobi')):
+                                os.remove(item.replace('.epub', '.mobi'))
+                            self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', 'error')
+                            if self.kindlegenErrorCode == 1 and self.kindlegenError:
+                                self.emit(QtCore.SIGNAL("showDialog"), "KindleGen error:\n\n" + self.kindlegenError)
+                            if self.kindlegenErrorCode == 23026:
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file was too big.',
+                                          'error')
+                                self.emit(QtCore.SIGNAL("addMessage"), 'EPUB file: ' + str(epubSize) + 'MB.'
+                                                                       ' Supported size: ~300MB.', 'error')
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         self.parent.needClean = True
         self.emit(QtCore.SIGNAL("addMessage"), '<b>All jobs completed.</b>', 'info')
