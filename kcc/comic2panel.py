@@ -25,9 +25,14 @@ __docformat__ = 'restructuredtext en'
 import sys
 import os
 from shutil import rmtree, copytree
-from optparse import OptionParser
+from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, freeze_support
-from PIL import Image, ImageStat
+try:
+    # noinspection PyUnresolvedReferences
+    from PIL import Image, ImageStat
+except ImportError:
+    print "ERROR: Pillow is not installed!"
+    exit(1)
 
 
 def getImageFileName(imgfile):
@@ -157,12 +162,17 @@ def Copyright():
 # noinspection PyBroadException
 def main(argv=None):
     global options
-    usage = "Usage: %prog [options] comic_folder"
-    parser = OptionParser(usage=usage, version=__version__)
-    parser.add_option("-y", "--height", type="int", dest="height", default=0,
-                      help="Target device screen height [Default=0]")
-    parser.add_option("-d", "--debug", action="store_true", dest="debug", default=False,
-                      help="Create debug file for every splitted image [Default=False]")
+    parser = OptionParser(usage="Usage: %prog [options] comic_folder", add_help_option=False)
+    mainOptions = OptionGroup(parser, "MANDATORY")
+    otherOptions = OptionGroup(parser, "OTHER")
+    mainOptions.add_option("-y", "--height", type="int", dest="height", default=0,
+                           help="Height of the target device screen")
+    otherOptions.add_option("-d", "--debug", action="store_true", dest="debug", default=False,
+                            help="Create debug file for every splitted image")
+    otherOptions.add_option("-h", "--help", action="help",
+                            help="Show this help message and exit")
+    parser.add_option_group(mainOptions)
+    parser.add_option_group(otherOptions)
     options, args = parser.parse_args(argv)
     if len(args) != 1:
         parser.print_help()
@@ -194,13 +204,13 @@ def main(argv=None):
                     sys.exit(1)
             else:
                 rmtree(options.targetDir)
-                print "ERROR: Source directory is empty!!"
+                print "ERROR: Source directory is empty!"
                 sys.exit(1)
         else:
             print "ERROR: Provided path is not a directory!"
             sys.exit(1)
     else:
-        print "ERROR: Target height was not provided!"
+        print "ERROR: Target height is not set!"
         sys.exit(1)
 
 if __name__ == "__main__":
