@@ -59,36 +59,74 @@ You can find the latest released binary at the following links:
 Should be pretty self-explanatory.
 After completed conversion you should find ready file alongside the original input file (same directory).
 
+### Comic2Panel
+
+**Comic2Panel** is currently experimental piece of software and it is **NOT** part of binary release.
+It is special parser for Webstrip comics like _Tower of God_ or _Noblesse_. Aka. files with a low width, high height and very specific panel layout.
+Script will automatically detect borders of panels and split them so that they fit target device screen.
+If detected panel will be still too big script will split it forcibly.
+
+Directory prepared by **Comic2Panel** can be used by KCC but you have to remember about two things:
+* _Horizontal mode_ option is **mandatory**
+* If pictures are color set _Gamma_ to 1.00
+
 ### Standalone `comic2ebook.py` usage:
 
 ```
 Usage: comic2ebook.py [options] comic_file|comic_folder
 
 Options:
-  --version             show program's version number and exit
-  -h, --help            show this help message and exit
-  -p PROFILE, --profile=PROFILE
+  MAIN:
+    -p PROFILE, --profile=PROFILE
                         Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8, KFA) [Default=KHD]
-  -t TITLE, --title=TITLE
-                        Comic title [Default=filename]
-  -m, --manga-style     Manga style (Right-to-left reading and splitting) [Default=False]
-  --quality=QUALITY     Output quality. 0 - Normal 1 - High 2 - Ultra [Default=0]
-  -c, --cbz-output      Outputs a CBZ archive and does not generate EPUB
-  --noprocessing        Do not apply image preprocessing (Page splitting and optimizations) [Default=True]
-  --forcepng            Create PNG files instead JPEG (For non-Kindle devices) [Default=False]
-  --gamma=GAMMA         Apply gamma correction to linearize the image [Default=Auto]
-  --upscale             Resize images smaller than device's resolution [Default=False]
-  --stretch             Stretch images to device's resolution [Default=False]
-  --blackborders        Use black borders instead of white ones when not stretching and ratio is not like the device's one [Default=False]
-  --rotate              Rotate landscape pages instead of splitting them [Default=False]
-  --nosplitrotate       Disable splitting and rotation [Default=False]
-  --nocutpagenumbers    Do not try to cut page numbering on images [Default=True]
-  -o OUTPUT, --output=OUTPUT
-                        Output generated file (EPUB or CBZ) to specified directory or file
-  --forcecolor          Do not convert images to grayscale [Default=False]
-  --customwidth=WIDTH   Replace screen width provided by device profile [Default=0]
-  --customheight=HEIGHT Replace screen height provided by device profile [Default=0]
-  -v, --verbose         Verbose output [Default=False]
+    -q QUALITY, --quality=QUALITY
+                        Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
+    -m, --manga-style   Manga style (Right-to-left reading and splitting)
+
+  OUTPUT SETTINGS:
+    -o OUTPUT, --output=OUTPUT
+                        Output generated file to specified directory or file
+    -t TITLE, --title=TITLE
+                        Comic title [Default=filename or directory name]
+    --cbz-output        Outputs a CBZ archive and does not generate EPUB
+    --batchsplit        Split output into multiple files
+
+  PROCESSING:
+    --blackborders      Use black borders instead of white ones
+    --forcecolor        Don't convert images to grayscale
+    --forcepng          Create PNG files instead JPEG (For non-Kindle devices)
+    --gamma=GAMMA       Apply gamma correction to linearize the image [Default=Auto]
+    --nocutpagenumbers  Don't try to cut page numbering on images
+    --noprocessing      Don't apply image preprocessing
+    --nosplitrotate     Disable splitting and rotation
+    --rotate            Rotate landscape pages instead of splitting them
+    --stretch           Stretch images to device's resolution
+    --upscale           Resize images smaller than device's resolution
+
+  CUSTOM PROFILE:
+    --customwidth=CUSTOMWIDTH
+                        Replace screen width provided by device profile
+    --customheight=CUSTOMHEIGHT
+                        Replace screen height provided by device profile
+
+  OTHER:
+    -v, --verbose       Verbose output
+    -h, --help          Show this help message and exit
+```
+
+### Standalone `comic2panel.py` usage:
+
+```
+Usage: comic2panel.py [options] comic_folder
+
+Options:
+  MANDATORY:
+    -y HEIGHT, --height=HEIGHT
+                        Height of the target device screen
+
+  OTHER:
+    -d, --debug         Create debug file for every splitted image
+    -h, --help          Show this help message and exit
 ```
 
 ## CREDITS
