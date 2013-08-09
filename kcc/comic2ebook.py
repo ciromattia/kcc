@@ -29,7 +29,7 @@ import re
 import stat
 import string
 from shutil import move, copyfile, copytree, rmtree, make_archive
-from optparse import OptionParser
+from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, Queue, freeze_support
 try:
     from PyQt4 import QtCore
@@ -818,50 +818,60 @@ def Usage():
 
 def main(argv=None, qtGUI=None):
     global parser, options, epub_path, splitCount, GUI
-    usage = "Usage: %prog [options] comic_file|comic_folder"
-    parser = OptionParser(usage=usage, version=__version__)
-    parser.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                      help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8,"
-                           " KFA) [Default=KHD]")
-    parser.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
-                      help="Comic title [Default=filename]")
-    parser.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
-                      help="Manga style (Right-to-left reading and splitting) [Default=False]")
-    parser.add_option("--quality", type="int", dest="quality", default="0",
-                      help="Output quality. 0 - Normal 1 - High 2 - Ultra [Default=0]")
-    parser.add_option("-c", "--cbz-output", action="store_true", dest="cbzoutput", default=False,
-                      help="Outputs a CBZ archive and does not generate EPUB")
-    parser.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
-                      help="Don't apply image preprocessing (Page splitting and optimizations) [Default=True]")
-    parser.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
-                      help="Create PNG files instead JPEG (For non-Kindle devices) [Default=False]")
-    parser.add_option("--gamma", type="float", dest="gamma", default="0.0",
-                      help="Apply gamma correction to linearize the image [Default=Auto]")
-    parser.add_option("--upscale", action="store_true", dest="upscale", default=False,
-                      help="Resize images smaller than device's resolution [Default=False]")
-    parser.add_option("--stretch", action="store_true", dest="stretch", default=False,
-                      help="Stretch images to device's resolution [Default=False]")
-    parser.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
-                      help="Use black borders instead of white ones when not stretching and ratio "
-                      + "is not like the device's one [Default=False]")
-    parser.add_option("--rotate", action="store_true", dest="rotate", default=False,
-                      help="Rotate landscape pages instead of splitting them [Default=False]")
-    parser.add_option("--nosplitrotate", action="store_true", dest="nosplitrotate", default=False,
-                      help="Disable splitting and rotation [Default=False]")
-    parser.add_option("--nocutpagenumbers", action="store_false", dest="cutpagenumbers", default=True,
-                      help="Don't try to cut page numbering on images [Default=True]")
-    parser.add_option("--forcecolor", action="store_true", dest="forcecolor", default=False,
-                      help="Don't convert images to grayscale [Default=False]")
-    parser.add_option("--batchsplit", action="store_true", dest="batchsplit", default=False,
-                      help="Split output into multiple files [Default=False]"),
-    parser.add_option("--customwidth", type="int", dest="customwidth", default=0,
-                      help="Replace screen width provided by device profile [Default=0]")
-    parser.add_option("--customheight", type="int", dest="customheight", default=0,
-                      help="Replace screen height provided by device profile [Default=0]")
-    parser.add_option("-o", "--output", action="store", dest="output", default=None,
-                      help="Output generated file (EPUB or CBZ) to specified directory or file")
-    parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
-                      help="Verbose output [Default=False]")
+    parser = OptionParser(usage="Usage: %prog [options] comic_file|comic_folder", add_help_option=False)
+    mainOptions = OptionGroup(parser, "MAIN")
+    processingOptions = OptionGroup(parser, "PROCESSING")
+    outputOptions = OptionGroup(parser, "OUTPUT SETTINGS")
+    customProfileOptions = OptionGroup(parser, "CUSTOM PROFILE")
+    otherOptions = OptionGroup(parser, "OTHER")
+    mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
+                           help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD,"
+                                " KFHD8, KFA) [Default=KHD]")
+    mainOptions.add_option("-q", "--quality", type="int", dest="quality", default="0",
+                           help="Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]")
+    mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
+                           help="Manga style (Right-to-left reading and splitting)")
+    outputOptions.add_option("-o", "--output", action="store", dest="output", default=None,
+                             help="Output generated file to specified directory or file")
+    outputOptions.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
+                             help="Comic title [Default=filename or directory name]")
+    outputOptions.add_option("--cbz-output", action="store_true", dest="cbzoutput", default=False,
+                             help="Outputs a CBZ archive and does not generate EPUB")
+    outputOptions.add_option("--batchsplit", action="store_true", dest="batchsplit", default=False,
+                             help="Split output into multiple files"),
+    processingOptions.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
+                                 help="Use black borders instead of white ones")
+    processingOptions.add_option("--forcecolor", action="store_true", dest="forcecolor", default=False,
+                                 help="Don't convert images to grayscale")
+    processingOptions.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
+                                 help="Create PNG files instead JPEG (For non-Kindle devices)")
+    processingOptions.add_option("--gamma", type="float", dest="gamma", default="0.0",
+                                 help="Apply gamma correction to linearize the image [Default=Auto]")
+    processingOptions.add_option("--nocutpagenumbers", action="store_false", dest="cutpagenumbers", default=True,
+                                 help="Don't try to cut page numbering on images")
+    processingOptions.add_option("--noprocessing", action="store_false", dest="imgproc", default=True,
+                                 help="Don't apply image preprocessing")
+    processingOptions.add_option("--nosplitrotate", action="store_true", dest="nosplitrotate", default=False,
+                                 help="Disable splitting and rotation")
+    processingOptions.add_option("--rotate", action="store_true", dest="rotate", default=False,
+                                 help="Rotate landscape pages instead of splitting them")
+    processingOptions.add_option("--stretch", action="store_true", dest="stretch", default=False,
+                                 help="Stretch images to device's resolution")
+    processingOptions.add_option("--upscale", action="store_true", dest="upscale", default=False,
+                                 help="Resize images smaller than device's resolution")
+    customProfileOptions.add_option("--customwidth", type="int", dest="customwidth", default=0,
+                                    help="Replace screen width provided by device profile")
+    customProfileOptions.add_option("--customheight", type="int", dest="customheight", default=0,
+                                    help="Replace screen height provided by device profile")
+    otherOptions.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
+                            help="Verbose output")
+    otherOptions.add_option("-h", "--help", action="help",
+                            help="Show this help message and exit")
+    parser.add_option_group(mainOptions)
+    parser.add_option_group(outputOptions)
+    parser.add_option_group(processingOptions)
+    parser.add_option_group(customProfileOptions)
+    parser.add_option_group(otherOptions)
     options, args = parser.parse_args(argv)
     checkOptions()
     if qtGUI:
