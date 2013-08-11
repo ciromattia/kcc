@@ -115,6 +115,7 @@ class ComicPage:
         # Detect corrupted files - Phase 2
         try:
             self.origFileName = source
+            self.filename = os.path.basename(self.origFileName)
             self.image = Image.open(source)
         except IOError:
             raise RuntimeError('Cannot read image file %s' % source)
@@ -134,7 +135,6 @@ class ComicPage:
         self.image = self.image.convert('RGB')
 
     def saveToDir(self, targetdir, forcepng, color, wipe, suffix=None):
-        filename = os.path.basename(self.origFileName)
         try:
             if not color:
                 self.image = self.image.convert('L')    # convert to grayscale
@@ -143,13 +143,13 @@ class ComicPage:
             else:
                 suffix = ""
             if wipe:
-                os.remove(os.path.join(targetdir, filename))
+                os.remove(os.path.join(targetdir, self.filename))
             else:
                 suffix += "_kcchq"
             if forcepng:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + suffix + ".png"), "PNG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"), "PNG")
             else:
-                self.image.save(os.path.join(targetdir, os.path.splitext(filename)[0] + suffix + ".jpg"), "JPEG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".jpg"), "JPEG")
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
@@ -174,10 +174,15 @@ class ComicPage:
     def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False,
                     landscapeMode=False, qualityMode=0):
         method = Image.ANTIALIAS
-        if black_borders:
+        if '-KCCFW' in str(self.filename):
+            fill = 'white'
+        elif '-KCCFB' in str(self.filename):
             fill = 'black'
         else:
-            fill = 'white'
+            if black_borders:
+                fill = 'black'
+            else:
+                fill = 'white'
         if qualityMode == 0:
             size = (self.size[0], self.size[1])
         else:
@@ -234,7 +239,7 @@ class ComicPage:
                     # source is portrait and target is landscape, so split by the height
                     leftbox = (0, 0, width, height / 2)
                     rightbox = (0, height / 2, width, height)
-                filename = os.path.splitext(os.path.basename(self.origFileName))
+                filename = os.path.splitext(self.filename)
                 fileone = targetdir + '/' + filename[0] + '_kcca' + filename[1]
                 filetwo = targetdir + '/' + filename[0] + '_kccb' + filename[1]
                 try:

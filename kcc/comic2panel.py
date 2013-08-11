@@ -89,6 +89,19 @@ def splitImage(work):
             debugImage = Image.open(os.path.join(path, name))
             draw = ImageDraw.Draw(debugImage)
 
+        # Find fill color
+        white = 0
+        black = 0
+        for i in image.getdata():
+            if i == (255, 255, 255):
+                white += 1
+            elif i == (0, 0, 0):
+                black += 1
+        if white > black:
+            fill = 'KCCFW'
+        else:
+            fill = 'KCCFB'
+
         # Find panels
         y1 = 0
         y2 = 10
@@ -148,7 +161,7 @@ def splitImage(work):
                 panelImg = image.crop([0, panels[panel][0], widthImg, panels[panel][1]])
                 newPage.paste(panelImg, (0, targetHeight))
                 targetHeight += panels[panel][2]
-            newPage.save(os.path.join(path, fileExpanded[0] + '-' + str(pageNumber) + '.png'), 'PNG')
+            newPage.save(os.path.join(path, fileExpanded[0] + '-' + str(pageNumber) + '-' + fill + '.png'), 'PNG')
             pageNumber += 1
         print ".",
         os.remove(os.path.join(path, name))
