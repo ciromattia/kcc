@@ -62,13 +62,14 @@ After completed conversion you should find ready file alongside the original inp
 ### Comic2Panel
 
 **Comic2Panel** is currently experimental piece of software and it is **NOT** part of binary release.
-It is special parser for Webstrip comics like _Tower of God_ or _Noblesse_. Aka. files with a low width, high height and very specific panel layout.
-Script will automatically detect borders of panels and split them so that they fit target device screen.
-If detected panel will be still too big script will split it forcibly.
 
-Directory prepared by **Comic2Panel** can be used by KCC but you have to remember about two things:
-* _Horizontal mode_ option is **mandatory**
-* If pictures are color set _Gamma_ to 1.00
+It is special parser for webstrip manga like _Tower of God_ or _Noblesse_ - Files with a low width, high height and vertical panel flow.
+Script will automatically detect panels and split them so that they fit target device screen.
+
+Directory prepared by **Comic2Panel** can be used by KCC but you have to remember about three things:
+* _Horizontal mode_ option is **mandatory**.
+* Color of borders will be set automatically.
+* Setting _Gamma_ to 1.00 will increase quality of color images. Try lower values if image is still too dark.
 
 ### Standalone `comic2ebook.py` usage:
 
