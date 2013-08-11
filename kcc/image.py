@@ -120,7 +120,14 @@ class ComicPage:
             raise RuntimeError('Cannot read image file %s' % source)
         # Detect corrupted files - Phase 3
         try:
+            self.image = Image.open(source)
             self.image.verify()
+        except:
+            raise RuntimeError('Image file %s is corrupted' % source)
+        # Detect corrupted files - Phase 4
+        try:
+            self.image = Image.open(source)
+            self.image.load()
         except:
             raise RuntimeError('Image file %s is corrupted' % source)
         self.image = Image.open(source)
