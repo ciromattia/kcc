@@ -22,17 +22,21 @@ __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
-import sys
 import os
-from shutil import rmtree, copytree
+import sys
+from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
-from multiprocessing import Pool, freeze_support
+from multiprocessing import Pool, Queue, freeze_support
 try:
     # noinspection PyUnresolvedReferences
     from PIL import Image, ImageStat
 except ImportError:
     print "ERROR: Pillow is not installed!"
     exit(1)
+try:
+    from PyQt4 import QtCore
+except ImportError:
+    QtCore = None
 
 
 def getImageFileName(imgfile):
@@ -66,7 +70,8 @@ def sanitizePanelSize(panel, options):
     return newPanels
 
 
-def splitImage_init(options):
+def splitImage_init(queue, options):
+    splitImage.queue = queue
     splitImage.options = options
 
 
@@ -78,7 +83,8 @@ def splitImage(work):
     # Harcoded options
     threshold = 10.0
     delta = 10
-
+    print ".",
+    splitImage.queue.put(".")
     fileExpanded = os.path.splitext(name)
     image = Image.open(os.path.join(path, name))
     image = image.convert('RGB')
@@ -163,7 +169,6 @@ def splitImage(work):
                 targetHeight += panels[panel][2]
             newPage.save(os.path.join(path, fileExpanded[0] + '-' + str(pageNumber) + '-' + fill + '.png'), 'PNG')
             pageNumber += 1
-        print ".",
         os.remove(os.path.join(path, name))
 
 
@@ -173,13 +178,15 @@ def Copyright():
 
 
 # noinspection PyBroadException
-def main(argv=None):
+def main(argv=None, qtGUI=None):
     global options
     parser = OptionParser(usage="Usage: %prog [options] comic_folder", add_help_option=False)
     mainOptions = OptionGroup(parser, "MANDATORY")
     otherOptions = OptionGroup(parser, "OTHER")
     mainOptions.add_option("-y", "--height", type="int", dest="height", default=0,
                            help="Height of the target device screen")
+    mainOptions.add_option("-i", "--in-place", action="store_true", dest="inPlace", default=False,
+                           help="Overwrite source directory")
     otherOptions.add_option("-d", "--debug", action="store_true", dest="debug", default=False,
                             help="Create debug file for every splitted image")
     otherOptions.add_option("-h", "--help", action="help",
@@ -187,44 +194,64 @@ def main(argv=None):
     parser.add_option_group(mainOptions)
     parser.add_option_group(otherOptions)
     options, args = parser.parse_args(argv)
+    if qtGUI:
+        GUI = qtGUI
+    else:
+        GUI = None
     if len(args) != 1:
         parser.print_help()
         return
     if options.height > 0:
         options.sourceDir = args[0]
         options.targetDir = args[0] + "-Splitted"
-        print "Spliting images..."
+        print "\nSplitting images..."
         if os.path.isdir(options.sourceDir):
             rmtree(options.targetDir, True)
             copytree(options.sourceDir, options.targetDir)
             work = []
-            pool = Pool(None, splitImage_init, [options])
+            pagenumber = 0
+            queue = Queue()
+            pool = Pool(None, splitImage_init, [queue, options])
             for root, dirs, files in os.walk(options.targetDir, False):
                 for name in files:
                     if getImageFileName(name) is not None:
+                        pagenumber += 1
                         work.append([root, name])
                     else:
                         os.remove(os.path.join(root, name))
+            if GUI:
+                GUI.emit(QtCore.SIGNAL("progressBarTick"), pagenumber)
             if len(work) > 0:
                 workers = pool.map_async(func=splitImage, iterable=work)
                 pool.close()
+                if GUI:
+                    while not workers.ready():
+                        # noinspection PyBroadException
+                        try:
+                            queue.get(True, 5)
+                        except:
+                            pass
+                        GUI.emit(QtCore.SIGNAL("progressBarTick"))
                 pool.join()
+                queue.close()
                 try:
                     workers.get()
                 except:
                     rmtree(options.targetDir)
-                    print "ERROR: One of workers crashed. Cause: " + str(sys.exc_info()[1])
-                    sys.exit(1)
+                    raise RuntimeError("One of workers crashed. Cause: " + str(sys.exc_info()[1]))
+                if GUI:
+                    GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
+                if options.inPlace:
+                    rmtree(options.sourceDir, True)
+                    move(options.targetDir, options.sourceDir)
             else:
                 rmtree(options.targetDir)
-                print "ERROR: Source directory is empty!"
-                sys.exit(1)
+                raise UserWarning("Source directory is empty.")
         else:
-            print "ERROR: Provided path is not a directory!"
-            sys.exit(1)
+            raise UserWarning("Provided path is not a directory.")
     else:
-        print "ERROR: Target height is not set!"
-        sys.exit(1)
+        raise UserWarning("Target height is not set.")
+
 
 if __name__ == "__main__":
     freeze_support()
