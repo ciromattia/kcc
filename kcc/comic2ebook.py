@@ -597,8 +597,8 @@ def genEpubStruct(path):
 
 
 def getWorkFolder(afile):
+    workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.join(os.path.splitext(afile)[0], '..'))
     if os.path.isdir(afile):
-        workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.join(os.path.splitext(afile)[0], '..'))
         try:
             os.rmdir(workdir)   # needed for copytree() fails if dst already exists
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
@@ -610,9 +610,12 @@ def getWorkFolder(afile):
             raise
     elif afile.lower().endswith('.pdf'):
         pdf = pdfjpgextract.PdfJpgExtract(afile)
-        path = pdf.extract()
+        path, njpg = pdf.extract()
+        if njpg == 0:
+            rmtree(workdir)
+            rmtree(path)
+            raise UserWarning("Failed to extract images.")
     else:
-        workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.splitext(afile)[0])
         cbx = cbxarchive.CBxArchive(afile)
         if cbx.isCbxFile():
             try:
