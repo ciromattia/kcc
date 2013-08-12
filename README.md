@@ -56,20 +56,8 @@ You can find the latest released binary at the following links:
 
 ### GUI 
 
-Should be pretty self-explanatory.
+Should be pretty self-explanatory. All options have detailed informations in tooltips.
 After completed conversion you should find ready file alongside the original input file (same directory).
-
-### Comic2Panel
-
-**Comic2Panel** is currently experimental piece of software and it is **NOT** part of binary release.
-
-It is special parser for webstrip manga like _Tower of God_ or _Noblesse_ - Files with a low width, high height and vertical panel flow.
-Script will automatically detect panels and split them so that they fit target device screen.
-
-Directory prepared by **Comic2Panel** can be used by KCC but you have to remember about three things:
-* _Horizontal mode_ option is **mandatory**.
-* Color of borders will be set automatically.
-* Setting _Gamma_ to 1.00 will increase quality of color images. Try lower values if image is still too dark.
 
 ### Standalone `comic2ebook.py` usage:
 
@@ -83,6 +71,9 @@ Options:
     -q QUALITY, --quality=QUALITY
                         Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
     -m, --manga-style   Manga style (Right-to-left reading and splitting)
+
+  EXPERIMENTAL:
+    -w, --webstrip      Webstrip processing mode
 
   OUTPUT SETTINGS:
     -o OUTPUT, --output=OUTPUT
@@ -124,6 +115,7 @@ Options:
   MANDATORY:
     -y HEIGHT, --height=HEIGHT
                         Height of the target device screen
+    -i, --in-place      Overwrite source directory
 
   OTHER:
     -d, --debug         Create debug file for every splitted image
@@ -254,6 +246,12 @@ The app relies and includes the following scripts/binaries:
 * Added profile: Kindle for Android
 * Add file/directory dialogs now support multiselect
 * Many small fixes and tweaks
+
+####3.2:
+* Too big EPUB files are now splitted before conversion to MOBI
+* Added experimental parser of manga webstrips
+* Moved location of temporary files to increase conversion speed
+* Improved error handling
 
 ## KNOWN ISSUES
 * Removing SRCS headers sometimes fail in 32bit enviroments. Due to memory limitations.
