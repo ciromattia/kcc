@@ -597,8 +597,8 @@ def genEpubStruct(path):
 
 
 def getWorkFolder(afile):
-    workdir = tempfile.mkdtemp()
     if os.path.isdir(afile):
+        workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.join(os.path.splitext(afile)[0], '..'))
         try:
             os.rmdir(workdir)   # needed for copytree() fails if dst already exists
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
@@ -612,6 +612,7 @@ def getWorkFolder(afile):
         pdf = pdfjpgextract.PdfJpgExtract(afile)
         path = pdf.extract()
     else:
+        workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.splitext(afile)[0])
         cbx = cbxarchive.CBxArchive(afile)
         if cbx.isCbxFile():
             try:
@@ -682,8 +683,8 @@ def getDirectorySize(start_path='.'):
     return total_size
 
 
-def createNewTome():
-    tomePathRoot = tempfile.mkdtemp()
+def createNewTome(parentPath):
+    tomePathRoot = tempfile.mkdtemp('', 'KCC-TMP-', parentPath)
     tomePath = os.path.join(tomePathRoot, 'OEBPS', 'Images')
     os.makedirs(tomePath)
     return tomePath, tomePathRoot
@@ -700,7 +701,7 @@ def walkLevel(some_dir, level=1):
             del dirs[:]
 
 
-def splitDirectory(path, mode):
+def splitDirectory(path, mode, parentPath):
     output = []
     currentSize = 0
     currentTarget = path
@@ -709,7 +710,7 @@ def splitDirectory(path, mode):
             for name in files:
                 size = os.path.getsize(os.path.join(root, name))
                 if currentSize + size > 262144000:
-                    currentTarget, pathRoot = createNewTome()
+                    currentTarget, pathRoot = createNewTome(parentPath)
                     output.append(pathRoot)
                     currentSize = size
                 else:
@@ -721,7 +722,7 @@ def splitDirectory(path, mode):
             for name in dirs:
                 size = getDirectorySize(os.path.join(root, name))
                 if currentSize + size > 262144000:
-                    currentTarget, pathRoot = createNewTome()
+                    currentTarget, pathRoot = createNewTome(parentPath)
                     output.append(pathRoot)
                     currentSize = size
                 else:
@@ -734,7 +735,7 @@ def splitDirectory(path, mode):
                 if root != path:
                     size = getDirectorySize(os.path.join(root, name))
                     if currentSize + size > 262144000:
-                        currentTarget, pathRoot = createNewTome()
+                        currentTarget, pathRoot = createNewTome(parentPath)
                         output.append(pathRoot)
                         currentSize = size
                     else:
@@ -761,7 +762,7 @@ def preSplitDirectory(path):
                     GUI.emit(QtCore.SIGNAL("addMessage"), 'Automatic output splitting failed. <a href='
                                                           '"https://github.com/ciromattia/kcc/wiki'
                                                           '/Automatic-output-splitting">'
-                                                          'Click for more details.</a>', 'warning')
+                                                          'More details.</a>', 'warning')
                     GUI.emit(QtCore.SIGNAL("addMessage"), '')
                 return [path]
             detectedSubSubdirectories = False
@@ -776,7 +777,7 @@ def preSplitDirectory(path):
                             GUI.emit(QtCore.SIGNAL("addMessage"), 'Automatic output splitting failed. <a href='
                                                                   '"https://github.com/ciromattia/kcc/wiki'
                                                                   '/Automatic-output-splitting">'
-                                                                  'Click for more details.</a>', 'warning')
+                                                                  'More details.</a>', 'warning')
                             GUI.emit(QtCore.SIGNAL("addMessage"), '')
                         return [path]
                     if len(files) != 0:
@@ -793,11 +794,11 @@ def preSplitDirectory(path):
                     GUI.emit(QtCore.SIGNAL("addMessage"), 'Automatic output splitting failed. <a href='
                                                           '"https://github.com/ciromattia/kcc/wiki'
                                                           '/Automatic-output-splitting">'
-                                                          'Click for more details.</a>', 'warning')
+                                                          'More details.</a>', 'warning')
                     GUI.emit(QtCore.SIGNAL("addMessage"), '')
                 return [path]
         # Split directories
-        split = splitDirectory(os.path.join(path, 'OEBPS', 'Images'), mode)
+        split = splitDirectory(os.path.join(path, 'OEBPS', 'Images'), mode, os.path.join(path, '..'))
         path = [path]
         for tome in split:
             path.append(tome)
