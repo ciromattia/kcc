@@ -29,7 +29,7 @@ class PdfJpgExtract:
     def __init__(self, origFileName):
         self.origFileName = origFileName
         self.filename = os.path.splitext(origFileName)
-        self.path = self.filename[0]
+        self.path = self.filename[0] + "-KCC-TMP"
 
     def getPath(self):
         return self.path
