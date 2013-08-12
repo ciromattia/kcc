@@ -35,6 +35,7 @@ try:
     from PyQt4 import QtCore
 except ImportError:
     QtCore = None
+import comic2panel
 import image
 import cbxarchive
 import pdfjpgextract
@@ -357,7 +358,7 @@ def dirImgProcess(path):
             while not splitpages.ready():
                 # noinspection PyBroadException
                 try:
-                    queue.get(True, 1)
+                    queue.get(True, 5)
                 except:
                     pass
                 if not GUI.conversionAlive:
@@ -820,6 +821,7 @@ def main(argv=None, qtGUI=None):
     global parser, options, epub_path, splitCount, GUI
     parser = OptionParser(usage="Usage: %prog [options] comic_file|comic_folder", add_help_option=False)
     mainOptions = OptionGroup(parser, "MAIN")
+    experimentalOptions = OptionGroup(parser, "EXPERIMENTAL")
     processingOptions = OptionGroup(parser, "PROCESSING")
     outputOptions = OptionGroup(parser, "OUTPUT SETTINGS")
     customProfileOptions = OptionGroup(parser, "CUSTOM PROFILE")
@@ -839,6 +841,8 @@ def main(argv=None, qtGUI=None):
                              help="Outputs a CBZ archive and does not generate EPUB")
     outputOptions.add_option("--batchsplit", action="store_true", dest="batchsplit", default=False,
                              help="Split output into multiple files"),
+    experimentalOptions.add_option("-w", "--webstrip", action="store_true", dest="webstrip", default=False,
+                                   help="Webstrip processing mode"),
     processingOptions.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
                                  help="Use black borders instead of white ones")
     processingOptions.add_option("--forcecolor", action="store_true", dest="forcecolor", default=False,
@@ -868,6 +872,7 @@ def main(argv=None, qtGUI=None):
     otherOptions.add_option("-h", "--help", action="help",
                             help="Show this help message and exit")
     parser.add_option_group(mainOptions)
+    parser.add_option_group(experimentalOptions)
     parser.add_option_group(outputOptions)
     parser.add_option_group(processingOptions)
     parser.add_option_group(customProfileOptions)
@@ -883,9 +888,16 @@ def main(argv=None, qtGUI=None):
         parser.print_help()
         return
     path = getWorkFolder(args[0])
+    if options.webstrip:
+        if GUI:
+            GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Splitting images')
+        if options.customheight > 0:
+            comic2panel.main(['-y ' + str(options.customheight), '-i', path], qtGUI)
+        else:
+            comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', path], qtGUI)
     splitCount = 0
     if options.imgproc:
-        print "Processing images..."
+        print "\nProcessing images..."
         if GUI:
             GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Processing images')
         dirImgProcess(path + "/OEBPS/Images/")
@@ -947,6 +959,11 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
 
 def checkOptions():
     global options
+    # Webstrip mode mandatory options
+    if options.webstrip:
+        options.rotate = True
+        options.black_borders = False
+        options.quality = 0
     # Landscape mode is only supported by Kindle Touch and Paperwhite.
     if options.profile == 'K4T' or options.profile == 'KHD':
         options.landscapemode = True
