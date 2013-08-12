@@ -128,16 +128,18 @@ class WorkerThread(QtCore.QThread):
         if self.parent.currentMode > 1:
             if GUI.ProcessingBox.isChecked():
                 argv.append("--noprocessing")
-            if GUI.UpscaleBox.isChecked():
-                argv.append("--upscale")
             if GUI.NoRotateBox.isChecked():
                 argv.append("--nosplitrotate")
             if GUI.BorderBox.isChecked():
                 argv.append("--blackborders")
-            if GUI.StretchBox.isChecked():
+            if GUI.UpscaleBox.checkState() == 1:
                 argv.append("--stretch")
+            elif GUI.UpscaleBox.checkState() == 2:
+                argv.append("--upscale")
             if GUI.NoDitheringBox.isChecked():
                 argv.append("--forcepng")
+            if GUI.WebstripBox.isChecked():
+                argv.append("--webstrip")
             if float(self.parent.GammaValue) > 0.09:
                 argv.append("--gamma=" + self.parent.GammaValue)
             if str(GUI.FormatBox.currentText()) == 'CBZ':
@@ -426,20 +428,25 @@ class Ui_KCC(object):
             GUI.GammaLabel.setText('Gamma: ' + str(value))
         self.GammaValue = value
 
+    def toggleWebstripBox(self, value):
+        if value:
+            GUI.RotateBox.setEnabled(False)
+            GUI.RotateBox.setChecked(True)
+            GUI.QualityBox.setEnabled(False)
+            GUI.QualityBox.setChecked(False)
+            GUI.BorderBox.setEnabled(False)
+            GUI.BorderBox.setChecked(False)
+        else:
+            GUI.RotateBox.setEnabled(True)
+            GUI.QualityBox.setEnabled(True)
+            GUI.BorderBox.setEnabled(True)
+
     def toggleNoSplitRotate(self, value):
         if value:
             GUI.RotateBox.setEnabled(False)
             GUI.RotateBox.setChecked(False)
         else:
             GUI.RotateBox.setEnabled(True)
-
-    def toggleUpscale(self, value):
-        if value:
-            GUI.StretchBox.setChecked(False)
-
-    def toggleStretch(self, value):
-        if value:
-            GUI.UpscaleBox.setChecked(False)
 
     def changeDevice(self, value):
         if value == 12:
@@ -491,7 +498,6 @@ class Ui_KCC(object):
 
     def updateProgressbar(self, new=False, status=False):
         if new == "status":
-            pass
             GUI.ProgressBar.setFormat(status)
         elif new:
             GUI.ProgressBar.setMaximum(new - 1)
@@ -537,7 +543,7 @@ class Ui_KCC(object):
                                                            'UpscaleBox': GUI.UpscaleBox.checkState(),
                                                            'NoRotateBox': GUI.NoRotateBox.checkState(),
                                                            'BorderBox': GUI.BorderBox.checkState(),
-                                                           'StretchBox': GUI.StretchBox.checkState(),
+                                                           'WebstripBox': GUI.WebstripBox.checkState(),
                                                            'NoDitheringBox': GUI.NoDitheringBox.checkState(),
                                                            'ColorBox': GUI.ColorBox.checkState(),
                                                            'customWidth': GUI.customWidth.text(),
@@ -599,8 +605,7 @@ class Ui_KCC(object):
         GUI.ConvertButton.clicked.connect(self.convertStart)
         GUI.GammaSlider.valueChanged.connect(self.changeGamma)
         GUI.NoRotateBox.stateChanged.connect(self.toggleNoSplitRotate)
-        GUI.UpscaleBox.stateChanged.connect(self.toggleUpscale)
-        GUI.StretchBox.stateChanged.connect(self.toggleStretch)
+        GUI.WebstripBox.stateChanged.connect(self.toggleWebstripBox)
         GUI.DeviceBox.activated.connect(self.changeDevice)
         KCC.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
         KCC.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
@@ -633,6 +638,8 @@ class Ui_KCC(object):
             elif str(option) == "GammaSlider":
                 GUI.GammaSlider.setValue(int(self.options[option]))
                 self.changeGamma(int(self.options[option]))
+            elif str(option) == "StretchBox":
+                pass
             else:
                 eval('GUI.' + str(option)).setCheckState(self.options[option])
         if self.currentMode == 1:

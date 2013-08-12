@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Thu Jul 04 15:30:15 2013
+# Created: Mon Aug 12 13:54:39 2013
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -55,12 +55,13 @@ class Ui_KCC(object):
         self.gridLayout.addWidget(self.ProcessingBox, 1, 0, 1, 1)
         self.UpscaleBox = QtGui.QCheckBox(self.OptionsAdvanced)
         self.UpscaleBox.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.UpscaleBox.setTristate(True)
         self.UpscaleBox.setObjectName(_fromUtf8("UpscaleBox"))
         self.gridLayout.addWidget(self.UpscaleBox, 1, 1, 1, 1)
-        self.StretchBox = QtGui.QCheckBox(self.OptionsAdvanced)
-        self.StretchBox.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.StretchBox.setObjectName(_fromUtf8("StretchBox"))
-        self.gridLayout.addWidget(self.StretchBox, 3, 1, 1, 1)
+        self.WebstripBox = QtGui.QCheckBox(self.OptionsAdvanced)
+        self.WebstripBox.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.WebstripBox.setObjectName(_fromUtf8("WebstripBox"))
+        self.gridLayout.addWidget(self.WebstripBox, 3, 1, 1, 1)
         self.NoDitheringBox = QtGui.QCheckBox(self.OptionsAdvanced)
         self.NoDitheringBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.NoDitheringBox.setObjectName(_fromUtf8("NoDitheringBox"))
@@ -263,10 +264,10 @@ class Ui_KCC(object):
         KCC.setWindowTitle(_translate("KCC", "Kindle Comic Converter", None))
         self.ProcessingBox.setToolTip(_translate("KCC", "Disable image optimizations.", None))
         self.ProcessingBox.setText(_translate("KCC", "No optimisation", None))
-        self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable image upscaling.<br/>Aspect ratio will be preserved.</p></body></html>", None))
-        self.UpscaleBox.setText(_translate("KCC", "Upscale images", None))
-        self.StretchBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable image stretching.<br/>Aspect ratio will be not preserved.</p></body></html>", None))
-        self.StretchBox.setText(_translate("KCC", "Stretch images", None))
+        self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>", None))
+        self.UpscaleBox.setText(_translate("KCC", "Stretch/Upscale", None))
+        self.WebstripBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600;\">EXPERIMENTAL!<br/></span>Enable auto-splitting of webstrips like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>Files with a low width, high height and vertical panel flow.</p></body></html>", None))
+        self.WebstripBox.setText(_translate("KCC", "Webstrip mode", None))
         self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p>Create PNG files instead JPEG.<br/><span style=\" font-weight:600;\">Only for non-Kindle devices!</span></p></body></html>", None))
         self.NoDitheringBox.setText(_translate("KCC", "PNG output", None))
         self.BorderBox.setToolTip(_translate("KCC", "Fill space around images with black color.", None))
