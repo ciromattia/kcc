@@ -53,7 +53,8 @@ def getImageFileName(imgfile):
     return filename
 
 
-def getImageFill(histogram):
+def getImageHistogram(image):
+    histogram = image.histogram()
     RBGW = []
     for i in range(256):
         RBGW.append(histogram[i] + histogram[256 + i] + histogram[512 + i])
@@ -67,6 +68,18 @@ def getImageFill(histogram):
         return 'KCCFW'
     else:
         return 'KCCFB'
+
+
+def getImageFill(image):
+    imageSize = image.size
+    imageT = image.crop((0, 0, imageSize[0], 1))
+    imageB = image.crop((0, imageSize[1]-1, imageSize[0], imageSize[1]))
+    imageT = getImageHistogram(imageT)
+    imageB = getImageHistogram(imageB)
+    if imageT == imageB:
+        return imageT
+    else:
+        return 'KCCFW'
 
 
 def sanitizePanelSize(panel, options):
@@ -171,7 +184,7 @@ def splitImage(work):
                 newPage.paste(panelImg, (0, targetHeight))
                 targetHeight += panels[panel][2]
             newPage.save(os.path.join(path, fileExpanded[0] + '-' +
-                                      str(pageNumber) + '-' + getImageFill(newPage.histogram()) + '.png'), 'PNG')
+                                      str(pageNumber) + '-' + getImageFill(newPage) + '.png'), 'PNG')
             pageNumber += 1
         os.remove(os.path.join(path, name))
 
