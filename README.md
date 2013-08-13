@@ -250,7 +250,6 @@ The app relies and includes the following scripts/binaries:
 ####3.2:
 * Too big EPUB files are now splitted before conversion to MOBI
 * Added experimental parser of manga webstrips
-* Moved location of temporary files to increase conversion speed
 * Improved error handling
 
 ## KNOWN ISSUES
