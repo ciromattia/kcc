@@ -599,7 +599,8 @@ def genEpubStruct(path):
 
 def getWorkFolder(afile):
     if os.path.isdir(afile):
-        workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.join(os.path.splitext(afile)[0], '..'))
+        workdir = tempfile.mkdtemp('', 'KCC-TMP-')
+        #workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.join(os.path.splitext(afile)[0], '..'))
         try:
             os.rmdir(workdir)   # needed for copytree() fails if dst already exists
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
@@ -616,7 +617,8 @@ def getWorkFolder(afile):
             rmtree(path)
             raise UserWarning("Failed to extract images.")
     else:
-        workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.dirname(afile))
+        workdir = tempfile.mkdtemp('', 'KCC-TMP-')
+        #workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.dirname(afile))
         cbx = cbxarchive.CBxArchive(afile)
         if cbx.isCbxFile():
             try:
@@ -688,7 +690,8 @@ def getDirectorySize(start_path='.'):
 
 
 def createNewTome(parentPath):
-    tomePathRoot = tempfile.mkdtemp('', 'KCC-TMP-', parentPath)
+    tomePathRoot = tempfile.mkdtemp('', 'KCC-TMP-')
+    #tomePathRoot = tempfile.mkdtemp('', 'KCC-TMP-', parentPath)
     tomePath = os.path.join(tomePathRoot, 'OEBPS', 'Images')
     os.makedirs(tomePath)
     return tomePath, tomePathRoot
