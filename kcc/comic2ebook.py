@@ -323,8 +323,9 @@ def getImageFileName(imgfile):
 
 
 def applyImgOptimization(img, isSplit, toRight, options, overrideQuality=5):
-    img.cropWhiteSpace(10.0)
-    if options.cutpagenumbers:
+    if not options.webstrip:
+        img.cropWhiteSpace(10.0)
+    if options.cutpagenumbers and not options.webstrip:
         img.cutPageNumber()
     img.optimizeImage(options.gamma)
     if overrideQuality != 5:

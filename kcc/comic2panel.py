@@ -53,6 +53,22 @@ def getImageFileName(imgfile):
     return filename
 
 
+def getImageFill(histogram):
+    RBGW = []
+    for i in range(256):
+        RBGW.append(histogram[i] + histogram[256 + i] + histogram[512 + i])
+    white = 0
+    black = 0
+    for i in range(245, 256):
+        white += RBGW[i]
+    for i in range(11):
+        black += RBGW[i]
+    if white > black:
+        return 'KCCFW'
+    else:
+        return 'KCCFB'
+
+
 def sanitizePanelSize(panel, options):
     newPanels = []
     if panel[2] > 1.5 * options.height:
@@ -94,19 +110,6 @@ def splitImage(work):
             from PIL import ImageDraw
             debugImage = Image.open(os.path.join(path, name))
             draw = ImageDraw.Draw(debugImage)
-
-        # Find fill color
-        white = 0
-        black = 0
-        for i in image.getdata():
-            if i == (255, 255, 255):
-                white += 1
-            elif i == (0, 0, 0):
-                black += 1
-        if white > black:
-            fill = 'KCCFW'
-        else:
-            fill = 'KCCFB'
 
         # Find panels
         y1 = 0
@@ -167,7 +170,8 @@ def splitImage(work):
                 panelImg = image.crop([0, panels[panel][0], widthImg, panels[panel][1]])
                 newPage.paste(panelImg, (0, targetHeight))
                 targetHeight += panels[panel][2]
-            newPage.save(os.path.join(path, fileExpanded[0] + '-' + str(pageNumber) + '-' + fill + '.png'), 'PNG')
+            newPage.save(os.path.join(path, fileExpanded[0] + '-' +
+                                      str(pageNumber) + '-' + getImageFill(newPage.histogram()) + '.png'), 'PNG')
             pageNumber += 1
         os.remove(os.path.join(path, name))
 
