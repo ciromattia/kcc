@@ -186,7 +186,8 @@ class WorkerThread(QtCore.QThread):
                 self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create EPUB!', 'error')
             if not self.conversionAlive:
                 for item in outputPath:
-                    os.remove(item)
+                    if os.path.exists(item):
+                        os.remove(item)
                 self.clean()
                 return
             if not self.errors:
