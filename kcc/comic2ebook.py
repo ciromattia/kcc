@@ -616,7 +616,7 @@ def getWorkFolder(afile):
             rmtree(path)
             raise UserWarning("Failed to extract images.")
     else:
-        workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.splitext(afile)[0])
+        workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.dirname(afile))
         cbx = cbxarchive.CBxArchive(afile)
         if cbx.isCbxFile():
             try:
