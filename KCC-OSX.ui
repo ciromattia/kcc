@@ -93,13 +93,13 @@
        <property name="text">
         <string>Stretch/Upscale</string>
        </property>
-	   <property name="tristate">
+       <property name="tristate">
         <bool>true</bool>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QCheckBox" name="WebstripBox">
+      <widget class="QCheckBox" name="WebtoonBox">
        <property name="font">
         <font>
          <pointsize>11</pointsize>
@@ -109,10 +109,10 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;EXPERIMENTAL!&lt;br/&gt;&lt;/span&gt;Enable auto-splitting of webstrips like &lt;span style=&quot; font-style:italic;&quot;&gt;Tower of God&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;Noblesse&lt;/span&gt;.&lt;br/&gt;Files with a low width, high height and vertical panel flow.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;EXPERIMENTAL!&lt;br/&gt;&lt;/span&gt;Enable auto-splitting of webtoons like &lt;span style=&quot; font-style:italic;&quot;&gt;Tower of God&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;Noblesse&lt;/span&gt;.&lt;br/&gt;Pages with a low width, high height and vertical panel flow.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>Webstrip mode</string>
+        <string>Webtoon mode</string>
        </property>
       </widget>
      </item>

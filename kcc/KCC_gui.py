@@ -138,8 +138,8 @@ class WorkerThread(QtCore.QThread):
                 argv.append("--upscale")
             if GUI.NoDitheringBox.isChecked():
                 argv.append("--forcepng")
-            if GUI.WebstripBox.isChecked():
-                argv.append("--webstrip")
+            if GUI.WebtoonBox.isChecked():
+                argv.append("--webtoon")
             if float(self.parent.GammaValue) > 0.09:
                 argv.append("--gamma=" + self.parent.GammaValue)
             if str(GUI.FormatBox.currentText()) == 'CBZ':
@@ -429,16 +429,17 @@ class Ui_KCC(object):
             GUI.GammaLabel.setText('Gamma: ' + str(value))
         self.GammaValue = value
 
-    def toggleWebstripBox(self, value):
+    def toggleWebtoonBox(self, value):
         if value:
-            GUI.RotateBox.setEnabled(False)
-            GUI.RotateBox.setChecked(True)
+            GUI.NoRotateBox.setEnabled(False)
+            GUI.NoRotateBox.setChecked(True)
             GUI.QualityBox.setEnabled(False)
             GUI.QualityBox.setChecked(False)
             GUI.BorderBox.setEnabled(False)
             GUI.BorderBox.setChecked(False)
+            self.addMessage('If images are color setting <i>Gamma</i> to 1.0 is recommended.', 'info')
         else:
-            GUI.RotateBox.setEnabled(True)
+            GUI.NoRotateBox.setEnabled(True)
             GUI.QualityBox.setEnabled(True)
             GUI.BorderBox.setEnabled(True)
 
@@ -544,7 +545,7 @@ class Ui_KCC(object):
                                                            'UpscaleBox': GUI.UpscaleBox.checkState(),
                                                            'NoRotateBox': GUI.NoRotateBox.checkState(),
                                                            'BorderBox': GUI.BorderBox.checkState(),
-                                                           'WebstripBox': GUI.WebstripBox.checkState(),
+                                                           'WebtoonBox': GUI.WebtoonBox.checkState(),
                                                            'NoDitheringBox': GUI.NoDitheringBox.checkState(),
                                                            'ColorBox': GUI.ColorBox.checkState(),
                                                            'customWidth': GUI.customWidth.text(),
@@ -606,7 +607,7 @@ class Ui_KCC(object):
         GUI.ConvertButton.clicked.connect(self.convertStart)
         GUI.GammaSlider.valueChanged.connect(self.changeGamma)
         GUI.NoRotateBox.stateChanged.connect(self.toggleNoSplitRotate)
-        GUI.WebstripBox.stateChanged.connect(self.toggleWebstripBox)
+        GUI.WebtoonBox.stateChanged.connect(self.toggleWebtoonBox)
         GUI.DeviceBox.activated.connect(self.changeDevice)
         KCC.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
         KCC.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
@@ -639,7 +640,7 @@ class Ui_KCC(object):
             elif str(option) == "GammaSlider":
                 GUI.GammaSlider.setValue(int(self.options[option]))
                 self.changeGamma(int(self.options[option]))
-            elif str(option) == "StretchBox":
+            elif str(option) == "StretchBox" or str(option) == "WebstripBox":
                 pass
             else:
                 eval('GUI.' + str(option)).setCheckState(self.options[option])
