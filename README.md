@@ -73,7 +73,7 @@ Options:
     -m, --manga-style   Manga style (Right-to-left reading and splitting)
 
   EXPERIMENTAL:
-    -w, --webstrip      Webstrip processing mode
+    -w, --webtoon       Webtoon processing mode
 
   OUTPUT SETTINGS:
     -o OUTPUT, --output=OUTPUT
@@ -249,7 +249,7 @@ The app relies and includes the following scripts/binaries:
 
 ####3.2:
 * Too big EPUB files are now splitted before conversion to MOBI
-* Added experimental parser of manga webstrips
+* Added experimental parser of manga webtoons
 * Improved error handling
 
 ## KNOWN ISSUES

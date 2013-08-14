@@ -323,9 +323,9 @@ def getImageFileName(imgfile):
 
 
 def applyImgOptimization(img, isSplit, toRight, options, overrideQuality=5):
-    if not options.webstrip:
+    if not options.webtoon:
         img.cropWhiteSpace(10.0)
-    if options.cutpagenumbers and not options.webstrip:
+    if options.cutpagenumbers and not options.webtoon:
         img.cutPageNumber()
     img.optimizeImage(options.gamma)
     if overrideQuality != 5:
@@ -849,8 +849,8 @@ def main(argv=None, qtGUI=None):
                              help="Outputs a CBZ archive and does not generate EPUB")
     outputOptions.add_option("--batchsplit", action="store_true", dest="batchsplit", default=False,
                              help="Split output into multiple files"),
-    experimentalOptions.add_option("-w", "--webstrip", action="store_true", dest="webstrip", default=False,
-                                   help="Webstrip processing mode"),
+    experimentalOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
+                                   help="Webtoon processing mode"),
     processingOptions.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
                                  help="Use black borders instead of white ones")
     processingOptions.add_option("--forcecolor", action="store_true", dest="forcecolor", default=False,
@@ -896,7 +896,7 @@ def main(argv=None, qtGUI=None):
         parser.print_help()
         return
     path = getWorkFolder(args[0])
-    if options.webstrip:
+    if options.webtoon:
         if GUI:
             GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Splitting images')
         if options.customheight > 0:
@@ -967,9 +967,9 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
 
 def checkOptions():
     global options
-    # Webstrip mode mandatory options
-    if options.webstrip:
-        options.rotate = True
+    # Webtoon mode mandatory options
+    if options.webtoon:
+        options.nosplitrotate = True
         options.black_borders = False
         options.quality = 0
     # Landscape mode is only supported by Kindle Touch and Paperwhite.

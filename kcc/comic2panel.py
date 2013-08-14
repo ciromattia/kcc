@@ -110,8 +110,8 @@ def splitImage(work):
     name = work[1]
     options = splitImage.options
     # Harcoded options
-    threshold = 10.0
-    delta = 10
+    threshold = 0.5
+    delta = 15
     print ".",
     splitImage.queue.put(".")
     fileExpanded = os.path.splitext(name)
@@ -126,7 +126,7 @@ def splitImage(work):
 
         # Find panels
         y1 = 0
-        y2 = 10
+        y2 = 15
         panels = []
         while y2 < heightImg:
             while ImageStat.Stat(image.crop([0, y1, widthImg, y2])).var[0] < threshold and y2 < heightImg:
@@ -178,14 +178,15 @@ def splitImage(work):
             targetHeight = 0
             for panel in page:
                 pageHeight += panels[panel][2]
-            newPage = Image.new('RGB', (widthImg, pageHeight))
-            for panel in page:
-                panelImg = image.crop([0, panels[panel][0], widthImg, panels[panel][1]])
-                newPage.paste(panelImg, (0, targetHeight))
-                targetHeight += panels[panel][2]
-            newPage.save(os.path.join(path, fileExpanded[0] + '-' +
-                                      str(pageNumber) + '-' + getImageFill(newPage) + '.png'), 'PNG')
-            pageNumber += 1
+            if pageHeight > delta:
+                newPage = Image.new('RGB', (widthImg, pageHeight))
+                for panel in page:
+                    panelImg = image.crop([0, panels[panel][0], widthImg, panels[panel][1]])
+                    newPage.paste(panelImg, (0, targetHeight))
+                    targetHeight += panels[panel][2]
+                newPage.save(os.path.join(path, fileExpanded[0] + '-' +
+                                          str(pageNumber) + '-' + getImageFill(newPage) + '.png'), 'PNG')
+                pageNumber += 1
         os.remove(os.path.join(path, name))
 
 

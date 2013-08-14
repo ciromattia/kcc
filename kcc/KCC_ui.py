@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Mon Aug 12 13:54:39 2013
+# Created: Wed Aug 14 08:39:46 2013
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -58,10 +58,10 @@ class Ui_KCC(object):
         self.UpscaleBox.setTristate(True)
         self.UpscaleBox.setObjectName(_fromUtf8("UpscaleBox"))
         self.gridLayout.addWidget(self.UpscaleBox, 1, 1, 1, 1)
-        self.WebstripBox = QtGui.QCheckBox(self.OptionsAdvanced)
-        self.WebstripBox.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.WebstripBox.setObjectName(_fromUtf8("WebstripBox"))
-        self.gridLayout.addWidget(self.WebstripBox, 3, 1, 1, 1)
+        self.WebtoonBox = QtGui.QCheckBox(self.OptionsAdvanced)
+        self.WebtoonBox.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.WebtoonBox.setObjectName(_fromUtf8("WebtoonBox"))
+        self.gridLayout.addWidget(self.WebtoonBox, 3, 1, 1, 1)
         self.NoDitheringBox = QtGui.QCheckBox(self.OptionsAdvanced)
         self.NoDitheringBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.NoDitheringBox.setObjectName(_fromUtf8("NoDitheringBox"))
@@ -266,8 +266,8 @@ class Ui_KCC(object):
         self.ProcessingBox.setText(_translate("KCC", "No optimisation", None))
         self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>", None))
         self.UpscaleBox.setText(_translate("KCC", "Stretch/Upscale", None))
-        self.WebstripBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600;\">EXPERIMENTAL!<br/></span>Enable auto-splitting of webstrips like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>Files with a low width, high height and vertical panel flow.</p></body></html>", None))
-        self.WebstripBox.setText(_translate("KCC", "Webstrip mode", None))
+        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600;\">EXPERIMENTAL!<br/></span>Enable auto-splitting of webtoons like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>Pages with a low width, high height and vertical panel flow.</p></body></html>", None))
+        self.WebtoonBox.setText(_translate("KCC", "Webtoon mode", None))
         self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p>Create PNG files instead JPEG.<br/><span style=\" font-weight:600;\">Only for non-Kindle devices!</span></p></body></html>", None))
         self.NoDitheringBox.setText(_translate("KCC", "PNG output", None))
         self.BorderBox.setToolTip(_translate("KCC", "Fill space around images with black color.", None))
