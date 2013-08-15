@@ -228,8 +228,10 @@ class WorkerThread(QtCore.QThread):
                             continue
                         if not self.conversionAlive:
                             for item in outputPath:
-                                os.remove(item)
-                                os.remove(item.replace('.epub', '.mobi'))
+                                if os.path.exists(item):
+                                    os.remove(item)
+                                if os.path.exists(item.replace('.epub', '.mobi')):
+                                    os.remove(item.replace('.epub', '.mobi'))
                             self.clean()
                             return
                         if self.kindlegenErrorCode == 0:
@@ -532,8 +534,15 @@ class Ui_KCC(object):
     def hideProgressBar(self):
         GUI.ProgressBar.hide()
 
-    # noinspection PyUnusedLocal
     def saveSettings(self, event):
+        if self.conversionAlive:
+            GUI.ConvertButton.setEnabled(False)
+            self.addMessage('Process will be interrupted. Please wait.', 'warning')
+            self.conversionAlive = False
+            self.worker.sync()
+            event.ignore()
+        if not GUI.ConvertButton.isEnabled():
+            event.ignore()
         self.settings.setValue('lastPath', self.lastPath)
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
         self.settings.setValue('currentFormat', GUI.FormatBox.currentIndex())

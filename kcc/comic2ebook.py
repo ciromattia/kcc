@@ -364,7 +364,7 @@ def dirImgProcess(path):
                     pass
                 if not GUI.conversionAlive:
                     pool.terminate()
-                    rmtree(path)
+                    rmtree(os.path.join(path, '..', '..'))
                     raise UserWarning("Conversion interrupted.")
                 GUI.emit(QtCore.SIGNAL("progressBarTick"))
         pool.join()
@@ -372,7 +372,7 @@ def dirImgProcess(path):
         try:
             splitpages = splitpages.get()
         except:
-            rmtree(path)
+            rmtree(os.path.join(path, '..', '..'))
             raise RuntimeError("One of workers crashed. Cause: " + str(sys.exc_info()[1]))
         splitpages = filter(None, splitpages)
         splitpages.sort()
@@ -382,7 +382,7 @@ def dirImgProcess(path):
                 pagenumbermodifier += 1
             pagenumbermodifier += 1
     else:
-        rmtree(path)
+        rmtree(os.path.join(path, '..', '..'))
         raise UserWarning("Source directory is empty.")
 
 

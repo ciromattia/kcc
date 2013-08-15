@@ -255,7 +255,7 @@ def main(argv=None, qtGUI=None):
                 try:
                     workers.get()
                 except:
-                    rmtree(options.targetDir)
+                    rmtree(options.targetDir, True)
                     raise RuntimeError("One of workers crashed. Cause: " + str(sys.exc_info()[1]))
                 if GUI:
                     GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
