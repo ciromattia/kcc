@@ -84,8 +84,8 @@ def getImageFill(image):
 
 def sanitizePanelSize(panel, options):
     newPanels = []
-    if panel[2] > 1.5 * options.height:
-        if (panel[2] / 2) > 1.5 * options.height:
+    if panel[2] > 2 * options.height:
+        if (panel[2] / 2) > 2 * options.height:
             diff = (panel[2] / 4)
             newPanels.append([panel[0], panel[1] - diff*3, diff])
             newPanels.append([panel[1] - diff*3, panel[1] - diff*2, diff])
