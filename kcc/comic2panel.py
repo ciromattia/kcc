@@ -70,16 +70,23 @@ def getImageHistogram(image):
         return True
 
 
-def getImageFill(image):
+def getImageFill(image, y):
     imageSize = image.size
-    imageT = image.crop((0, 0, imageSize[0], 1))
-    imageB = image.crop((0, imageSize[1]-1, imageSize[0], imageSize[1]))
-    imageT = getImageHistogram(imageT)
-    imageB = getImageHistogram(imageB)
-    if imageT or imageB:
-        return 'KCCFB'
-    else:
+    image = image.crop((0, 0, imageSize[0], y))
+    histogram = image.histogram()
+    RBGW = []
+    for i in range(256):
+        RBGW.append(histogram[i] + histogram[256 + i] + histogram[512 + i])
+    white = 0
+    black = 0
+    for i in range(245, 256):
+        white += RBGW[i]
+    for i in range(11):
+        black += RBGW[i]
+    if white > black:
         return 'KCCFW'
+    else:
+        return 'KCCFB'
 
 
 def sanitizePanelSize(panel, options):
@@ -124,18 +131,36 @@ def splitImage(work):
     print ".",
     splitImage.queue.put(".")
     fileExpanded = os.path.splitext(name)
-    image = Image.open(os.path.join(path, name))
+    filePath = os.path.join(path, name)
+    # Detect corrupted files
+    try:
+        image = Image.open(filePath)
+    except IOError:
+        raise RuntimeError('Cannot read image file %s' % filePath)
+    try:
+        image = Image.open(filePath)
+        image.verify()
+    except:
+        raise RuntimeError('Image file %s is corrupted' % filePath)
+    try:
+        image = Image.open(filePath)
+        image.load()
+    except:
+        raise RuntimeError('Image file %s is corrupted' % filePath)
+    image = Image.open(filePath)
     image = image.convert('RGB')
     widthImg, heightImg = image.size
     if heightImg > options.height:
         if options.debug:
             from PIL import ImageDraw
-            debugImage = Image.open(os.path.join(path, name))
+            debugImage = Image.open(filePath)
             draw = ImageDraw.Draw(debugImage)
 
         # Find panels
         y1 = 0
         y2 = 15
+        fillDataNeeded = True
+        yFill = 1
         panels = []
         while y2 < heightImg:
             while ImageStat.Stat(image.crop([0, y1, widthImg, y2])).var[0] < threshold and y2 < heightImg:
@@ -153,10 +178,14 @@ def splitImage(work):
                 draw.line([(0, y2Temp), (widthImg, y2Temp)], fill=(255, 0, 0))
             panelHeight = y2Temp - y1Temp
             if y2Temp < heightImg:
+                if fillDataNeeded:
+                    fillDataNeeded = False
+                    yFill = y1Temp
                 # Panels that can't be cut nicely will be forcefully splitted
                 panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight], options)
                 for panel in panelsCleaned:
                     panels.append(panel)
+        fill = getImageFill(image, yFill)
         if options.debug:
             # noinspection PyUnboundLocalVariable
             debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG')
@@ -194,9 +223,9 @@ def splitImage(work):
                     newPage.paste(panelImg, (0, targetHeight))
                     targetHeight += panels[panel][2]
                 newPage.save(os.path.join(path, fileExpanded[0] + '-' +
-                                          str(pageNumber) + '-' + getImageFill(newPage) + '.png'), 'PNG')
+                                          str(pageNumber) + '-' + fill + '.png'), 'PNG')
                 pageNumber += 1
-        os.remove(os.path.join(path, name))
+        os.remove(filePath)
 
 
 def Copyright():
