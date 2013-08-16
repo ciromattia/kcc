@@ -152,7 +152,8 @@ class WorkerThread(QtCore.QThread):
             if GUI.ColorBox.isChecked():
                 argv.append("--forcecolor")
         for i in range(GUI.JobList.count()):
-            currentJobs.append(str(GUI.JobList.item(i).text()))
+            if GUI.JobList.item(i).icon().isNull():
+                currentJobs.append(str(GUI.JobList.item(i).text()))
         GUI.JobList.clear()
         for job in currentJobs:
             time.sleep(0.5)
