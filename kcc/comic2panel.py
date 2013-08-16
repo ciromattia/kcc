@@ -84,16 +84,25 @@ def getImageFill(image):
 
 def sanitizePanelSize(panel, options):
     newPanels = []
-    if panel[2] > 2 * options.height:
-        if (panel[2] / 2) > 2 * options.height:
-            diff = (panel[2] / 4)
-            newPanels.append([panel[0], panel[1] - diff*3, diff])
-            newPanels.append([panel[1] - diff*3, panel[1] - diff*2, diff])
-            newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
-            newPanels.append([panel[1] - diff, panel[1], diff])
-        else:
-            newPanels.append([panel[0], panel[1] - (panel[2] / 2), (panel[2] / 2)])
-            newPanels.append([panel[1] - (panel[2] / 2), panel[1], (panel[2] / 2)])
+    if panel[2] > 8 * options.height:
+        diff = (panel[2] / 8)
+        newPanels.append([panel[0], panel[1] - diff*7, diff])
+        newPanels.append([panel[1] - diff*7, panel[1] - diff*6, diff])
+        newPanels.append([panel[1] - diff*6, panel[1] - diff*5, diff])
+        newPanels.append([panel[1] - diff*5, panel[1] - diff*4, diff])
+        newPanels.append([panel[1] - diff*4, panel[1] - diff*3, diff])
+        newPanels.append([panel[1] - diff*3, panel[1] - diff*2, diff])
+        newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
+        newPanels.append([panel[1] - diff, panel[1], diff])
+    elif panel[2] > 4 * options.height:
+        diff = (panel[2] / 4)
+        newPanels.append([panel[0], panel[1] - diff*3, diff])
+        newPanels.append([panel[1] - diff*3, panel[1] - diff*2, diff])
+        newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
+        newPanels.append([panel[1] - diff, panel[1], diff])
+    elif panel[2] > 2 * options.height:
+        newPanels.append([panel[0], panel[1] - (panel[2] / 2), (panel[2] / 2)])
+        newPanels.append([panel[1] - (panel[2] / 2), panel[1], (panel[2] / 2)])
     else:
         newPanels = [panel]
     return newPanels
