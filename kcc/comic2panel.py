@@ -65,9 +65,9 @@ def getImageHistogram(image):
     for i in range(11):
         black += RBGW[i]
     if white > black:
-        return 'KCCFW'
+        return False
     else:
-        return 'KCCFB'
+        return True
 
 
 def getImageFill(image):
@@ -76,8 +76,8 @@ def getImageFill(image):
     imageB = image.crop((0, imageSize[1]-1, imageSize[0], imageSize[1]))
     imageT = getImageHistogram(imageT)
     imageB = getImageHistogram(imageB)
-    if imageT == imageB:
-        return imageT
+    if imageT or imageB:
+        return 'KCCFB'
     else:
         return 'KCCFW'
 
@@ -119,7 +119,7 @@ def splitImage(work):
     name = work[1]
     options = splitImage.options
     # Harcoded options
-    threshold = 0.5
+    threshold = 1.0
     delta = 15
     print ".",
     splitImage.queue.put(".")
