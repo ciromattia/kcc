@@ -737,18 +737,35 @@ def splitDirectory(path, mode, parentPath):
                 if path != currentTarget:
                     move(os.path.join(root, name), os.path.join(currentTarget, name))
     elif mode == 2:
-        for root, dirs, files in walkLevel(path, 1):
+        firstTome = True
+        for root, dirs, files in walkLevel(path, 0):
             for name in dirs:
-                if root != path:
-                    size = getDirectorySize(os.path.join(root, name))
-                    if currentSize + size > 262144000:
+                size = getDirectorySize(os.path.join(root, name))
+                currentSize = 0
+                if size > 262144000:
+                    if not firstTome:
                         currentTarget, pathRoot = createNewTome(parentPath)
                         output.append(pathRoot)
-                        currentSize = size
                     else:
-                        currentSize += size
-                    if path != currentTarget:
+                        firstTome = False
+                    for rootInside, dirsInside, filesInside in walkLevel(os.path.join(root, name), 0):
+                        for nameInside in dirsInside:
+                            size = getDirectorySize(os.path.join(rootInside, nameInside))
+                            if currentSize + size > 262144000:
+                                currentTarget, pathRoot = createNewTome(parentPath)
+                                output.append(pathRoot)
+                                currentSize = size
+                            else:
+                                currentSize += size
+                            if path != currentTarget:
+                                move(os.path.join(rootInside, nameInside), os.path.join(currentTarget, nameInside))
+                else:
+                    if not firstTome:
+                        currentTarget, pathRoot = createNewTome(parentPath)
+                        output.append(pathRoot)
                         move(os.path.join(root, name), os.path.join(currentTarget, name))
+                    else:
+                        firstTome = False
     return output
 
 
