@@ -28,7 +28,7 @@ from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, Queue, freeze_support
 try:
-    # noinspection PyUnresolvedReferences
+    # noinspection PyUnresolvedReferences,PyPackageRequirements
     from PIL import Image, ImageStat
 except ImportError:
     print "ERROR: Pillow is not installed!"
@@ -65,28 +65,26 @@ def getImageHistogram(image):
     for i in range(11):
         black += RBGW[i]
     if white > black:
-        return False
+        return 0
     else:
-        return True
+        return 1
 
 
-def getImageFill(image, y):
+def getImageFill(image):
     imageSize = image.size
-    image = image.crop((0, 0, imageSize[0], y))
-    histogram = image.histogram()
-    RBGW = []
-    for i in range(256):
-        RBGW.append(histogram[i] + histogram[256 + i] + histogram[512 + i])
-    white = 0
-    black = 0
-    for i in range(245, 256):
-        white += RBGW[i]
-    for i in range(11):
-        black += RBGW[i]
-    if white > black:
-        return 'KCCFW'
-    else:
+    imageT = image.crop((0, 0, imageSize[0], 1))
+    imageB = image.crop((0, imageSize[1]-1, imageSize[0], imageSize[1]))
+    imageL = image.crop((0, 0, 1, imageSize[1]))
+    imageR = image.crop((imageSize[0]-1, 0, imageSize[0], imageSize[1]))
+    fill = 0
+    fill += getImageHistogram(imageT)
+    fill += getImageHistogram(imageB)
+    fill += getImageHistogram(imageL)
+    fill += getImageHistogram(imageR)
+    if fill > 2:
         return 'KCCFB'
+    else:
+        return 'KCCFW'
 
 
 def sanitizePanelSize(panel, options):
@@ -159,8 +157,6 @@ def splitImage(work):
         # Find panels
         y1 = 0
         y2 = 15
-        fillDataNeeded = True
-        yFill = 1
         panels = []
         while y2 < heightImg:
             while ImageStat.Stat(image.crop([0, y1, widthImg, y2])).var[0] < threshold and y2 < heightImg:
@@ -178,14 +174,10 @@ def splitImage(work):
                 draw.line([(0, y2Temp), (widthImg, y2Temp)], fill=(255, 0, 0))
             panelHeight = y2Temp - y1Temp
             if y2Temp < heightImg:
-                if fillDataNeeded:
-                    fillDataNeeded = False
-                    yFill = y1Temp
                 # Panels that can't be cut nicely will be forcefully splitted
                 panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight], options)
                 for panel in panelsCleaned:
                     panels.append(panel)
-        fill = getImageFill(image, yFill)
         if options.debug:
             # noinspection PyUnboundLocalVariable
             debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG')
@@ -223,7 +215,7 @@ def splitImage(work):
                     newPage.paste(panelImg, (0, targetHeight))
                     targetHeight += panels[panel][2]
                 newPage.save(os.path.join(path, fileExpanded[0] + '-' +
-                                          str(pageNumber) + '-' + fill + '.png'), 'PNG')
+                                          str(pageNumber) + '-' + getImageFill(newPage) + '.png'), 'PNG')
                 pageNumber += 1
         os.remove(filePath)
 
