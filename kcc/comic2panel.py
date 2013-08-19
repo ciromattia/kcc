@@ -65,26 +65,31 @@ def getImageHistogram(image):
     for i in range(11):
         black += RBGW[i]
     if white > black:
-        return 0
+        return False
     else:
-        return 1
+        return True
 
 
 def getImageFill(image):
     imageSize = image.size
     imageT = image.crop((0, 0, imageSize[0], 1))
     imageB = image.crop((0, imageSize[1]-1, imageSize[0], imageSize[1]))
-    imageL = image.crop((0, 0, 1, imageSize[1]))
-    imageR = image.crop((imageSize[0]-1, 0, imageSize[0], imageSize[1]))
     fill = 0
     fill += getImageHistogram(imageT)
     fill += getImageHistogram(imageB)
-    fill += getImageHistogram(imageL)
-    fill += getImageHistogram(imageR)
-    if fill > 2:
+    if fill == 2:
         return 'KCCFB'
-    else:
+    elif fill == 0:
         return 'KCCFW'
+    else:
+        imageL = image.crop((0, 0, 1, imageSize[1]))
+        imageR = image.crop((imageSize[0]-1, 0, imageSize[0], imageSize[1]))
+        fill += getImageHistogram(imageL)
+        fill += getImageHistogram(imageR)
+        if fill >= 2:
+            return 'KCCFB'
+        else:
+            return 'KCCFW'
 
 
 def sanitizePanelSize(panel, options):
@@ -168,12 +173,14 @@ def splitImage(work):
             while ImageStat.Stat(image.crop([0, y1, widthImg, y2])).var[0] >= threshold and y2 < heightImg:
                 y1 += delta
                 y2 += delta
+            if y1 + delta >= heightImg:
+                y1 = heightImg - 1
             y2Temp = y1
             if options.debug:
                 draw.line([(0, y1Temp), (widthImg, y1Temp)], fill=(0, 255, 0))
                 draw.line([(0, y2Temp), (widthImg, y2Temp)], fill=(255, 0, 0))
             panelHeight = y2Temp - y1Temp
-            if y2Temp < heightImg:
+            if panelHeight > delta:
                 # Panels that can't be cut nicely will be forcefully splitted
                 panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight], options)
                 for panel in panelsCleaned:
