@@ -252,6 +252,9 @@ The app relies and includes the following scripts/binaries:
 * Added experimental parser of manga webtoons
 * Improved error handling
 
+####3.2.1:
+* Hotfixed crash occurring on OS with Russian locale
+
 ## KNOWN ISSUES
 * Removing SRCS headers sometimes fail in 32bit enviroments. Due to memory limitations.
 
