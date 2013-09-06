@@ -209,7 +209,7 @@ class WorkerThread(QtCore.QThread):
                         try:
                             self.kindlegenErrorCode = 0
                             if os.path.getsize(item) < 367001600:
-                                output = Popen('kindlegen "' + item + '"', stdout=PIPE, stderr=STDOUT, shell=True)
+                                output = Popen('kindlegen -locale en "' + item + '"', stdout=PIPE, stderr=STDOUT, shell=True)
                                 for line in output.stdout:
                                     # ERROR: Generic error
                                     if "Error(" in line:
@@ -583,10 +583,10 @@ class Ui_KCC(object):
 
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')
-        if call('kindlegen', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
+        if call('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
             self.KindleGen = True
             formats = ['MOBI', 'EPUB', 'CBZ']
-            versionCheck = Popen('kindlegen', stdout=PIPE, stderr=STDOUT, shell=True)
+            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
             for line in versionCheck.stdout:
                 if "Amazon kindlegen" in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
