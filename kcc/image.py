@@ -21,7 +21,7 @@ __docformat__ = 'restructuredtext en'
 
 import os
 try:
-    # noinspection PyUnresolvedReferences,PyPackageRequirements
+    # noinspection PyUnresolvedReferences
     from PIL import Image, ImageOps, ImageStat, ImageChops
 except ImportError:
     print "ERROR: Pillow is not installed!"
