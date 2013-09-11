@@ -32,7 +32,6 @@ except ImportError:
     exit(1)
 from kcc import KCC_gui
 from multiprocessing import freeze_support
-
 if sys.platform == 'darwin':
     os.environ['PATH'] = '/usr/local/bin:' + os.environ['PATH']
     from kcc import KCC_ui_osx as KCC_ui

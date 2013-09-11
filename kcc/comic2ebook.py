@@ -689,6 +689,7 @@ def getDirectorySize(start_path='.'):
     return total_size
 
 
+# noinspection PyUnusedLocal
 def createNewTome(parentPath):
     tomePathRoot = tempfile.mkdtemp('', 'KCC-TMP-')
     #tomePathRoot = tempfile.mkdtemp('', 'KCC-TMP-', parentPath)

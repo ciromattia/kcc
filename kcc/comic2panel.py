@@ -28,7 +28,7 @@ from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, Queue, freeze_support
 try:
-    # noinspection PyUnresolvedReferences,PyPackageRequirements
+    # noinspection PyUnresolvedReferences
     from PIL import Image, ImageStat
 except ImportError:
     print "ERROR: Pillow is not installed!"
@@ -137,7 +137,7 @@ def splitImage(work):
     filePath = os.path.join(path, name)
     # Detect corrupted files
     try:
-        image = Image.open(filePath)
+        Image.open(filePath)
     except IOError:
         raise RuntimeError('Cannot read image file %s' % filePath)
     try:

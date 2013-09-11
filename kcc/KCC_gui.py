@@ -111,7 +111,6 @@ class WorkerThread(QtCore.QThread):
         self.emit(QtCore.SIGNAL("addMessage"), '<b>Conversion interrupted.</b>', 'error')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
 
-    # noinspection PyUnboundLocalVariable
     def run(self):
         self.emit(QtCore.SIGNAL("modeConvert"), False)
         profile = ProfileData.ProfileLabels[str(GUI.DeviceBox.currentText())]
