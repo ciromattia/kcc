@@ -97,7 +97,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;EXPERIMENTAL!&lt;br/&gt;&lt;/span&gt;Enable auto-splitting of webtoons like &lt;span style=&quot; font-style:italic;&quot;&gt;Tower of God&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;Noblesse&lt;/span&gt;.&lt;br/&gt;Pages with a low width, high height and vertical panel flow.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable auto-splitting of webtoons like &lt;span style=&quot; font-style:italic;&quot;&gt;Tower of God&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;Noblesse&lt;/span&gt;.&lt;br/&gt;Pages with a low width, high height and vertical panel flow.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>Webtoon mode</string>

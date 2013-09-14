@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Wed Aug 14 08:39:46 2013
-#      by: PyQt4 UI code generator 4.10.2
+# Created: Sat Sep 14 10:28:36 2013
+#      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -266,7 +266,7 @@ class Ui_KCC(object):
         self.ProcessingBox.setText(_translate("KCC", "No optimisation", None))
         self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>", None))
         self.UpscaleBox.setText(_translate("KCC", "Stretch/Upscale", None))
-        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600;\">EXPERIMENTAL!<br/></span>Enable auto-splitting of webtoons like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>Pages with a low width, high height and vertical panel flow.</p></body></html>", None))
+        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable auto-splitting of webtoons like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>Pages with a low width, high height and vertical panel flow.</p></body></html>", None))
         self.WebtoonBox.setText(_translate("KCC", "Webtoon mode", None))
         self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p>Create PNG files instead JPEG.<br/><span style=\" font-weight:600;\">Only for non-Kindle devices!</span></p></body></html>", None))
         self.NoDitheringBox.setText(_translate("KCC", "PNG output", None))
