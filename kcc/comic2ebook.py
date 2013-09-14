@@ -985,11 +985,6 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
 
 def checkOptions():
     global options
-    # Webtoon mode mandatory options
-    if options.webtoon:
-        options.nosplitrotate = True
-        options.black_borders = False
-        options.quality = 0
     # Landscape mode is only supported by Kindle Touch and Paperwhite.
     if options.profile == 'K4T' or options.profile == 'KHD':
         options.landscapemode = True
@@ -1021,6 +1016,13 @@ def checkOptions():
         options.quality = 0
         if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
             options.panelview = False
+    # Webtoon mode mandatory options
+    if options.webtoon:
+        options.nosplitrotate = True
+        options.black_borders = False
+        options.quality = 0
+        options.landscapemode = False
+        options.panelview = False
     # Disable all Kindle features
     if options.profile == 'OTHER':
         options.landscapemode = False
