@@ -53,45 +53,6 @@ def getImageFileName(imgfile):
     return filename
 
 
-def getImageHistogram(image):
-    histogram = image.histogram()
-    RBGW = []
-    for i in range(256):
-        RBGW.append(histogram[i] + histogram[256 + i] + histogram[512 + i])
-    white = 0
-    black = 0
-    for i in range(245, 256):
-        white += RBGW[i]
-    for i in range(11):
-        black += RBGW[i]
-    if white > black:
-        return False
-    else:
-        return True
-
-
-def getImageFill(image):
-    imageSize = image.size
-    imageT = image.crop((0, 0, imageSize[0], 1))
-    imageB = image.crop((0, imageSize[1]-1, imageSize[0], imageSize[1]))
-    fill = 0
-    fill += getImageHistogram(imageT)
-    fill += getImageHistogram(imageB)
-    if fill == 2:
-        return 'KCCFB'
-    elif fill == 0:
-        return 'KCCFW'
-    else:
-        imageL = image.crop((0, 0, 1, imageSize[1]))
-        imageR = image.crop((imageSize[0]-1, 0, imageSize[0], imageSize[1]))
-        fill += getImageHistogram(imageL)
-        fill += getImageHistogram(imageR)
-        if fill >= 2:
-            return 'KCCFB'
-        else:
-            return 'KCCFW'
-
-
 def sanitizePanelSize(panel, options):
     newPanels = []
     if panel[2] > 8 * options.height:
@@ -222,7 +183,7 @@ def splitImage(work):
                     newPage.paste(panelImg, (0, targetHeight))
                     targetHeight += panels[panel][2]
                 newPage.save(os.path.join(path, fileExpanded[0] + '-' +
-                                          str(pageNumber) + '-' + getImageFill(newPage) + '.png'), 'PNG')
+                                          str(pageNumber) + '.png'), 'PNG')
                 pageNumber += 1
         os.remove(filePath)
 

@@ -275,9 +275,9 @@ def applyImgOptimization(img, options, overrideQuality=5):
         img.cutPageNumber()
     img.optimizeImage(options.gamma)
     if overrideQuality != 5:
-        img.resizeImage(options.upscale, options.stretch, options.black_borders, overrideQuality)
+        img.resizeImage(options.upscale, options.stretch, options.bordersColor, overrideQuality)
     else:
-        img.resizeImage(options.upscale, options.stretch, options.black_borders, options.quality)
+        img.resizeImage(options.upscale, options.stretch, options.bordersColor, options.quality)
     if options.forcepng and not options.forcecolor:
         img.quantizeImage()
 
@@ -804,7 +804,9 @@ def main(argv=None, qtGUI=None):
     experimentalOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
                                    help="Webtoon processing mode"),
     processingOptions.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
-                                 help="Use black borders instead of white ones")
+                                 help="Disable autodetection and force black borders")
+    processingOptions.add_option("--whiteborders", action="store_true", dest="white_borders", default=False,
+                                 help="Disable autodetection and force white borders")
     processingOptions.add_option("--forcecolor", action="store_true", dest="forcecolor", default=False,
                                  help="Don't convert images to grayscale")
     processingOptions.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
@@ -919,6 +921,11 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
 def checkOptions():
     global options
     options.panelview = True
+    options.bordersColor = None
+    if options.white_borders:
+        options.bordersColor = "white"
+    if options.black_borders:
+        options.bordersColor = "black"
     # Disabling grayscale conversion for Kindle Fire family.
     if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8' or options.forcecolor:
         options.forcecolor = True
@@ -931,7 +938,6 @@ def checkOptions():
     # Webtoon mode mandatory options
     if options.webtoon:
         options.nosplitrotate = True
-        options.black_borders = False
         options.quality = 0
         options.panelview = False
     # Disable all Kindle features for other e-readers

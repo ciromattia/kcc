@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-OSX.ui'
 #
-# Created: Sat Sep 14 10:28:47 2013
+# Created: Sun Sep 15 16:18:48 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -82,6 +82,7 @@ class Ui_KCC(object):
         font.setPointSize(11)
         self.BorderBox.setFont(font)
         self.BorderBox.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.BorderBox.setTristate(True)
         self.BorderBox.setObjectName(_fromUtf8("BorderBox"))
         self.gridLayout.addWidget(self.BorderBox, 3, 0, 1, 1)
         self.NoRotateBox = QtGui.QCheckBox(self.OptionsAdvanced)
@@ -328,8 +329,8 @@ class Ui_KCC(object):
         self.WebtoonBox.setText(_translate("KCC", "Webtoon mode", None))
         self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt;\">Create PNG files instead JPEG.<br/></span><span style=\" font-size:12pt; font-weight:600;\">Only for non-Kindle devices!</span></p></body></html>", None))
         self.NoDitheringBox.setText(_translate("KCC", "PNG output", None))
-        self.BorderBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt;\">Fill space around images with black color.</span></p></body></html>", None))
-        self.BorderBox.setText(_translate("KCC", "Black borders", None))
+        self.BorderBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Autodetection<br/></span>Color of margins fill will be detected automatically.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - White<br/></span>Margins will be filled with white color.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Black<br/></span>Margins will be filled with black color.</p></body></html>", None))
+        self.BorderBox.setText(_translate("KCC", "W/B margins", None))
         self.NoRotateBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt;\">Disable splitting and rotation.</span></p></body></html>", None))
         self.NoRotateBox.setText(_translate("KCC", "No split/rotate", None))
         self.DeviceBox.setToolTip(_translate("KCC", "Target device.", None))
