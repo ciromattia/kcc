@@ -173,8 +173,7 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False,
-                    landscapeMode=False, qualityMode=0):
+    def resizeImage(self, upscale=False, stretch=False, black_borders=False, qualityMode=0):
         method = Image.ANTIALIAS
         if '-KCCFW' in str(self.filename):
             fill = 'white'
@@ -194,9 +193,6 @@ class ComicPage:
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
             generateBorder = False
-        # Kindle Paperwhite/Touch - Force upscale of splited pages to increase readability
-        if isSplit and landscapeMode:
-            upscale = True
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
                 borderw = (self.size[0] - self.image.size[0]) / 2
@@ -210,7 +206,7 @@ class ComicPage:
                 return self.image
             else:
                 method = Image.BILINEAR
-        if stretch:  # if stretching call directly resize() without other considerations.
+        if stretch:  # If stretching call directly resize() without other considerations.
             self.image = self.image.resize(size, method)
             if generateBorder:
                 if fill == 'white':
@@ -224,19 +220,8 @@ class ComicPage:
             return self.image
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
-            if isSplit and landscapeMode:
-                generateBorder = False
-                diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-                self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
-                tempImg = Image.new(self.image.mode, (self.image.size[0] + diff, self.image.size[1]), fill)
-                if toRight:
-                    tempImg.paste(self.image, (diff, 0))
-                else:
-                    tempImg.paste(self.image, (0, 0))
-                self.image = tempImg
-            else:
-                diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-                self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
+            diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
+            self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
             self.image = ImageOps.expand(self.image, border=(0, diff / 2), fill=fill)
@@ -255,19 +240,18 @@ class ComicPage:
     def splitPage(self, targetdir, righttoleft=False, rotate=False):
         width, height = self.image.size
         dstwidth, dstheight = self.size
-        #print "Image is %d x %d" % (width,height)
-        # only split if origin is not oriented the same as target
+        # Only split if origin is not oriented the same as target
         if (width > height) != (dstwidth > dstheight):
             if rotate:
                 self.image = self.image.rotate(90)
                 return "R"
             else:
                 if width > height:
-                    # source is landscape, so split by the width
+                    # Source is landscape, so split by the width
                     leftbox = (0, 0, width / 2, height)
                     rightbox = (width / 2, 0, width, height)
                 else:
-                    # source is portrait and target is landscape, so split by the height
+                    # Source is portrait and target is landscape, so split by the height
                     leftbox = (0, 0, width, height / 2)
                     rightbox = (0, height / 2, width, height)
                 filename = os.path.splitext(self.filename)

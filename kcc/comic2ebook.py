@@ -145,22 +145,6 @@ def buildHTML(path, imgfile):
         return path, imgfile
 
 
-def buildBlankHTML(path):
-    f = open(os.path.join(path, 'blank.html'), "w")
-    f.writelines(["<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" ",
-                  "\"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
-                  "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
-                  "<head>\n",
-                  "<title></title>\n",
-                  "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
-                  "</head>\n",
-                  "<body>\n",
-                  "</body>\n",
-                  "</html>"])
-    f.close()
-    return path
-
-
 def buildNCX(dstdir, title, chapters):
     from uuid import uuid4
     options.uuid = str(uuid4())
@@ -173,16 +157,18 @@ def buildNCX(dstdir, title, chapters):
                   "<ncx version=\"2005-1\" xml:lang=\"en-US\" xmlns=\"http://www.daisy.org/z3986/2005/ncx/\">\n",
                   "<head>\n",
                   "<meta name=\"dtb:uid\" content=\"", options.uuid, "\"/>\n",
-                  "<meta name=\"dtb:depth\" content=\"2\"/>\n",
+                  "<meta name=\"dtb:depth\" content=\"1\"/>\n",
                   "<meta name=\"dtb:totalPageCount\" content=\"0\"/>\n",
                   "<meta name=\"dtb:maxPageNumber\" content=\"0\"/>\n",
+                  "<meta name=\"generated\" content=\"true\"/>\n",
                   "</head>\n",
                   "<docTitle><text>", title, "</text></docTitle>\n",
                   "<navMap>"
                   ])
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
-        title = os.path.basename(folder)
+        if os.path.basename(folder) != "Text":
+            title = os.path.basename(folder)
         filename = getImageFileName(os.path.join(folder, chapter[1]))
         f.write("<navPoint id=\"" + folder.replace('/', '_').replace('\\', '_') + "\"><navLabel><text>" + title
                 + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") + ".html\"/></navPoint>\n")
@@ -197,38 +183,32 @@ def buildOPF(dstdir, title, filelist, cover=None):
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if options.righttoleft:
         writingmode = "horizontal-rl"
-        facing = "right"
-        facing1 = "right"
-        facing2 = "left"
     else:
         writingmode = "horizontal-lr"
-        facing = "left"
-        facing1 = "left"
-        facing2 = "right"
     f = open(opffile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
-                  "<package version=\"2.0\" unique-identifier=\"BookID\" xmlns=\"http://www.idpf.org/2007/opf\">\n",
-                  "<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" ",
-                  "xmlns:opf=\"http://www.idpf.org/2007/opf\">\n",
+                  "<package version=\"2.0\" unique-identifier=\"BookID\" ",
+                  "xmlns=\"http://www.idpf.org/2007/opf\">\n",
+                  "<metadata xmlns:opf=\"http://www.idpf.org/2007/opf\" ",
+                  "xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n",
                   "<dc:title>", title, "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
                   "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n",
+                  "<meta name=\"generator\" content=\"KindleComicConverter-" + __version__ + "\"/>\n",
                   "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
+                  "<meta name=\"region-mag\" content=\"true\"/>\n",
                   "<meta name=\"cover\" content=\"cover\"/>\n",
                   "<meta name=\"book-type\" content=\"comic\"/>\n",
+                  "<meta name=\"rendition:layout\" content=\"pre-paginated\"/>\n",
                   "<meta name=\"zero-gutter\" content=\"true\"/>\n",
                   "<meta name=\"zero-margin\" content=\"true\"/>\n",
                   "<meta name=\"fixed-layout\" content=\"true\"/>\n"
-                  ])
-    if options.landscapemode:
-        f.writelines(["<meta name=\"rendition:orientation\" content=\"auto\"/>\n",
-                      "<meta name=\"orientation-lock\" content=\"none\"/>\n"])
-    else:
-        f.writelines(["<meta name=\"rendition:orientation\" content=\"portrait\"/>\n",
-                      "<meta name=\"orientation-lock\" content=\"portrait\"/>\n"])
-    f.writelines(["<meta name=\"original-resolution\" content=\"", imgres, "\"/>\n",
+                  "<meta name=\"rendition:orientation\" content=\"portrait\"/>\n",
+                  "<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
+                  "<meta name=\"original-resolution\" content=\"", imgres, "\"/>\n",
                   "<meta name=\"primary-writing-mode\" content=\"", writingmode, "\"/>\n",
-                  "<meta name=\"rendition:layout\" content=\"pre-paginated\"/>\n",
+                  "<meta name=\"ke-border-color\" content=\"#ffffff\"/>\n",
+                  "<meta name=\"ke-border-width\" content=\"0\"/>\n",
                   "</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
                   "media-type=\"application/x-dtbncx+xml\"/>\n"])
     if cover is not None:
@@ -253,44 +233,10 @@ def buildOPF(dstdir, title, filelist, cover=None):
             mt = 'image/jpeg'
         f.write("<item id=\"img_" + uniqueid + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\""
                 + mt + "\"/>\n")
-    if options.landscapemode and splitCount > 0:
-        splitCountUsed = 1
-        while splitCountUsed <= splitCount:
-            f.write("<item id=\"blank-page" + str(splitCountUsed) +
-                    "\" href=\"Text/blank.html\" media-type=\"application/xhtml+xml\"/>\n")
-            splitCountUsed += 1
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
-    splitCountUsed = 1
     for entry in reflist:
-        if "_kcca" in str(entry):
-            # noinspection PyRedundantParentheses
-            if ((options.righttoleft and facing == 'left') or (not options.righttoleft and facing == 'right')) and\
-                    options.landscapemode:
-                f.write("<itemref idref=\"blank-page" + str(splitCountUsed) + "\" properties=\"layout-blank\"/>\n")
-                splitCountUsed += 1
-            if options.landscapemode:
-                f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
-            else:
-                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-        elif "_kccb" in str(entry):
-            if options.landscapemode:
-                f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
-            else:
-                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-            if options.righttoleft:
-                facing = "right"
-            else:
-                facing = "left"
-        else:
-            if options.landscapemode:
-                f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing + "\"/>\n")
-            else:
-                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-            if facing == 'right':
-                facing = 'left'
-            else:
-                facing = 'right'
+        f.write("<itemref idref=\"page_" + entry + "\"/>\n")
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
@@ -322,24 +268,22 @@ def getImageFileName(imgfile):
     return filename
 
 
-def applyImgOptimization(img, isSplit, toRight, options, overrideQuality=5):
+def applyImgOptimization(img, options, overrideQuality=5):
     if not options.webtoon:
         img.cropWhiteSpace(10.0)
     if options.cutpagenumbers and not options.webtoon:
         img.cutPageNumber()
     img.optimizeImage(options.gamma)
     if overrideQuality != 5:
-        img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight,
-                        options.landscapemode, overrideQuality)
+        img.resizeImage(options.upscale, options.stretch, options.black_borders, overrideQuality)
     else:
-        img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight,
-                        options.landscapemode, options.quality)
+        img.resizeImage(options.upscale, options.stretch, options.black_borders, options.quality)
     if options.forcepng and not options.forcecolor:
         img.quantizeImage()
 
 
 def dirImgProcess(path):
-    global options, splitCount
+    global options
     work = []
     pagenumber = 0
     pagenumbermodifier = 0
@@ -378,7 +322,6 @@ def dirImgProcess(path):
         splitpages.sort()
         for page in splitpages:
             if (page + pagenumbermodifier) % 2 == 0:
-                splitCount += 1
                 pagenumbermodifier += 1
             pagenumbermodifier += 1
     else:
@@ -415,34 +358,28 @@ def fileImgProcess(work):
     if split is not None and split is not "R":
         if options.verbose:
             print "Splitted " + afile
-        if options.righttoleft:
-            toRight1 = False
-            toRight2 = True
-        else:
-            toRight1 = True
-            toRight2 = False
         output = pagenumber
         img0 = image.ComicPage(split[0], options.profileData)
-        applyImgOptimization(img0, True, toRight1, options)
+        applyImgOptimization(img0, options)
         img0.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
         img1 = image.ComicPage(split[1], options.profileData)
-        applyImgOptimization(img1, True, toRight2, options)
+        applyImgOptimization(img1, options)
         img1.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
         if options.quality == 2:
             img3 = image.ComicPage(split[0], options.profileData)
-            applyImgOptimization(img3, True, toRight1, options, 0)
+            applyImgOptimization(img3, options, 0)
             img3.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
             img4 = image.ComicPage(split[1], options.profileData)
-            applyImgOptimization(img4, True, toRight2, options, 0)
+            applyImgOptimization(img4, options, 0)
             img4.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
     else:
-        applyImgOptimization(img, False, False, options)
+        applyImgOptimization(img, options)
         img.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe, split)
         if options.quality == 2:
             img2 = image.ComicPage(os.path.join(dirpath, afile), options.profileData)
             if split == "R":
                 img2.image = img2.image.rotate(90)
-            applyImgOptimization(img2, False, False, options, 0)
+            applyImgOptimization(img2, options, 0)
             img2.saveToDir(dirpath, options.forcepng, options.forcecolor, True, split)
     return output
 
@@ -588,13 +525,11 @@ def genEpubStruct(path):
                                          'cover' + getImageFileName(filelist[-1][1])[1])
                     copyfile(os.path.join(filelist[-1][0], filelist[-1][1]), cover)
     buildNCX(path, options.title, chapterlist)
-    # ensure we're sorting files alphabetically
+    # Ensure we're sorting files alphabetically
     convert = lambda text: int(text) if text.isdigit() else text
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(path, options.title, filelist, cover)
-    if options.landscapemode and splitCount > 0:
-        filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
 
 
 def getWorkFolder(afile):
@@ -637,8 +572,7 @@ def getWorkFolder(afile):
 
 
 def slugify(value):
-    # Normalizes string, converts to lowercase, removes non-alpha characters,
-    # and converts spaces to hyphens.
+    # Normalizes string, converts to lowercase, removes non-alpha characters and converts spaces to hyphens.
     import unicodedata
     value = unicodedata.normalize('NFKD', unicode(value, 'latin1')).encode('ascii', 'ignore')
     value = re.sub('[^\w\s\.-]', '', value).strip().lower()
@@ -844,7 +778,7 @@ def Usage():
 
 
 def main(argv=None, qtGUI=None):
-    global parser, options, epub_path, splitCount, GUI
+    global parser, options, epub_path, GUI
     parser = OptionParser(usage="Usage: %prog [options] comic_file|comic_folder", add_help_option=False)
     mainOptions = OptionGroup(parser, "MAIN")
     experimentalOptions = OptionGroup(parser, "EXPERIMENTAL")
@@ -921,7 +855,6 @@ def main(argv=None, qtGUI=None):
             comic2panel.main(['-y ' + str(options.customheight), '-i', path], qtGUI)
         else:
             comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', path], qtGUI)
-    splitCount = 0
     if options.imgproc:
         print "\nProcessing images..."
         if GUI:
@@ -985,47 +918,24 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
 
 def checkOptions():
     global options
-    # Landscape mode is only supported by Kindle Touch and Paperwhite.
-    if options.profile == 'K4T' or options.profile == 'KHD':
-        options.landscapemode = True
-    else:
-        options.landscapemode = False
-    # Older Kindle don't support Virtual Panel View. We providing them configuration that will fake that feature.
-    # Ultra quality mode require Real Panel View. Landscape mode don't work correcly without Virtual Panel View.
-    if options.profile == 'K3' or options.profile == 'K4NT' or options.quality == 2:
-        # Real Panel View
-        options.panelview = True
-        options.landscapemode = False
-    else:
-        # Virtual Panel View
-        options.panelview = False
+    options.panelview = True
     # Disabling grayscale conversion for Kindle Fire family.
     if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8' or options.forcecolor:
         options.forcecolor = True
     else:
         options.forcecolor = False
-    # Mixing vertical and horizontal pages require real Panel View.
-    # Landscape mode don't work correcly without Virtual Panel View.
-    if options.rotate:
-        options.panelview = True
-        options.landscapemode = False
     # Older Kindle don't need higher resolution files due lack of Panel View.
-    # Kindle Fire family have very high resolution. Bigger images are not needed.
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG'\
-            or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
         options.quality = 0
-        if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
-            options.panelview = False
+        options.panelview = False
     # Webtoon mode mandatory options
     if options.webtoon:
         options.nosplitrotate = True
         options.black_borders = False
         options.quality = 0
-        options.landscapemode = False
         options.panelview = False
-    # Disable all Kindle features
+    # Disable all Kindle features for other e-readers
     if options.profile == 'OTHER':
-        options.landscapemode = False
         options.panelview = False
         options.quality = 0
     # Kindle for Android profile require target resolution.
