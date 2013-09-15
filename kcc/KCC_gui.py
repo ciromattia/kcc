@@ -129,12 +129,14 @@ class WorkerThread(QtCore.QThread):
                 argv.append("--noprocessing")
             if GUI.NoRotateBox.isChecked():
                 argv.append("--nosplitrotate")
-            if GUI.BorderBox.isChecked():
-                argv.append("--blackborders")
             if GUI.UpscaleBox.checkState() == 1:
                 argv.append("--stretch")
             elif GUI.UpscaleBox.checkState() == 2:
                 argv.append("--upscale")
+            if GUI.BorderBox.checkState() == 1:
+                argv.append("--whiteborders")
+            elif GUI.BorderBox.checkState() == 2:
+                argv.append("--blackborders")
             if GUI.NoDitheringBox.isChecked():
                 argv.append("--forcepng")
             if GUI.WebtoonBox.isChecked():

@@ -186,17 +186,12 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False, qualityMode=0):
+    def resizeImage(self, upscale=False, stretch=False, bordersColor=None, qualityMode=0):
         method = Image.ANTIALIAS
-        if '-KCCFW' in str(self.filename):
-            fill = 'white'
-        elif '-KCCFB' in str(self.filename):
-            fill = 'black'
+        if bordersColor:
+            fill = bordersColor
         else:
-            if black_borders:
-                fill = 'black'
-            else:
-                fill = 'white'
+            fill = self.getImageFill()
         if qualityMode == 0:
             size = (self.size[0], self.size[1])
             generateBorder = True
@@ -380,3 +375,39 @@ class ComicPage:
             self.image = self.image.crop((0, 0, widthImg - diff, heightImg))
             #    print "New size: %sx%s"%(self.image.size[0],self.image.size[1])
         return self.image
+
+    def getImageHistogram(self, image):
+        histogram = image.histogram()
+        RBGW = []
+        for i in range(256):
+            RBGW.append(histogram[i] + histogram[256 + i] + histogram[512 + i])
+        white = 0
+        black = 0
+        for i in range(245, 256):
+            white += RBGW[i]
+        for i in range(11):
+            black += RBGW[i]
+        if white > black:
+            return False
+        else:
+            return True
+
+    def getImageFill(self):
+        imageT = self.image.crop((0, 0, self.image.size[0], 1))
+        imageB = self.image.crop((0, self.image.size[1]-1, self.image.size[0], self.image.size[1]))
+        fill = 0
+        fill += self.getImageHistogram(imageT)
+        fill += self.getImageHistogram(imageB)
+        if fill == 2:
+            return 'black'
+        elif fill == 0:
+            return 'white'
+        else:
+            imageL = self.image.crop((0, 0, 1, self.image.size[1]))
+            imageR = self.image.crop((self.image.size[0]-1, 0, self.image.size[0], self.image.size[1]))
+            fill += self.getImageHistogram(imageL)
+            fill += self.getImageHistogram(imageR)
+            if fill >= 2:
+                return 'black'
+            else:
+                return 'white'
