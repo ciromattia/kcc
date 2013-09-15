@@ -208,7 +208,8 @@ class WorkerThread(QtCore.QThread):
                         try:
                             self.kindlegenErrorCode = 0
                             if os.path.getsize(item) < 367001600:
-                                output = Popen('kindlegen -locale en "' + item + '"', stdout=PIPE, stderr=STDOUT, shell=True)
+                                output = Popen('kindlegen -locale en "' + item + '"', stdout=PIPE, stderr=STDOUT,
+                                               shell=True)
                                 for line in output.stdout:
                                     # ERROR: Generic error
                                     if "Error(" in line:
@@ -439,11 +440,14 @@ class Ui_KCC(object):
             GUI.QualityBox.setChecked(False)
             GUI.BorderBox.setEnabled(False)
             GUI.BorderBox.setChecked(False)
+            GUI.MangaBox.setEnabled(False)
+            GUI.MangaBox.setChecked(False)
             self.addMessage('If images are color setting <i>Gamma</i> to 1.0 is recommended.', 'info')
         else:
             GUI.NoRotateBox.setEnabled(True)
             GUI.QualityBox.setEnabled(True)
             GUI.BorderBox.setEnabled(True)
+            GUI.MangaBox.setEnabled(True)
 
     def toggleNoSplitRotate(self, value):
         if value:
@@ -467,7 +471,7 @@ class Ui_KCC(object):
             GUI.BasicModeButton.setEnabled(True)
             GUI.AdvModeButton.setEnabled(True)
             self.modeBasic()
-        if value in [0, 1, 5, 6, 7, 8, 9, 12]:
+        if value in [0, 1, 5, 6, 12]:
             GUI.QualityBox.setCheckState(0)
             GUI.QualityBox.setEnabled(False)
         else:
