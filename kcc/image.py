@@ -152,13 +152,17 @@ class ComicPage:
             if not color:
                 self.image = self.image.convert('L')    # convert to grayscale
             if suffix == "R":
-                suffix = "_kccrotated"
+                suffix = "_kccrot"
             else:
                 suffix = ""
             if wipe:
                 os.remove(os.path.join(targetdir, self.filename))
             else:
                 suffix += "_kcchq"
+            if self.noHPV:
+                suffix += "_kccnh"
+            if self.noVPV:
+                suffix += "_kccnv"
             if self.border:
                 suffix += "_kccx" + str(self.border[0]) + "_kccy" + str(self.border[1])
             if forcepng:
@@ -207,10 +211,20 @@ class ComicPage:
                 borderh = (self.size[1] - self.image.size[1]) / 2
                 self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
                 if generateBorder:
-                        self.border = [int(round(float(borderw)/float(self.image.size[0])*100, 2)*100*1.5),
-                                       int(round(float(borderh)/float(self.image.size[1])*100, 2)*100*1.5)]
+                    if (self.image.size[0]-(2*borderw))*1.5 < self.size[0]:
+                        self.noHPV = True
+                    else:
+                        self.noHPV = None
+                    if (self.image.size[1]-(2*borderh))*1.5 < self.size[1]:
+                        self.noVPV = True
+                    else:
+                        self.noVPV = None
+                    self.border = [int(round(float(borderw)/float(self.image.size[0])*100, 2)*100*1.5),
+                                   int(round(float(borderh)/float(self.image.size[1])*100, 2)*100*1.5)]
                 else:
                     self.border = None
+                    self.noHPV = None
+                    self.noVPV = None
                 return self.image
             else:
                 method = Image.BILINEAR
@@ -221,10 +235,20 @@ class ComicPage:
                     border = ImageOps.invert(self.image).getbbox()
                 else:
                     border = self.image.getbbox()
+                if (border[2]-border[0])*1.5 < self.size[0]:
+                    self.noHPV = True
+                else:
+                    self.noHPV = None
+                if (border[3]-border[1])*1.5 < self.size[1]:
+                    self.noVPV = True
+                else:
+                    self.noVPV = None
                 self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
                                int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
             else:
                 self.border = None
+                self.noHPV = None
+                self.noVPV = None
             return self.image
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
@@ -239,10 +263,20 @@ class ComicPage:
                 border = ImageOps.invert(self.image).getbbox()
             else:
                 border = self.image.getbbox()
+            if (border[2]-border[0])*1.5 < self.size[0]:
+                self.noHPV = True
+            else:
+                self.noHPV = None
+            if (border[3]-border[1])*1.5 < self.size[1]:
+                self.noVPV = True
+            else:
+                self.noVPV = None
             self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
                            int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
         else:
             self.border = None
+            self.noHPV = None
+            self.noVPV = None
         return self.image
 
     def splitPage(self, targetdir, righttoleft=False, rotate=False):

@@ -44,11 +44,18 @@ import pdfjpgextract
 def buildHTML(path, imgfile):
     filename = getImageFileName(imgfile)
     if filename is not None:
-        # All files marked with this sufix need horizontal Panel View.
-        if "_kccrotated" in str(filename):
-            rotate = True
+        if "_kccrot" in str(filename):
+            rotatedPage = True
         else:
-            rotate = False
+            rotatedPage = False
+        if "_kccnh" in str(filename):
+            noHorizontalPV = True
+        else:
+            noHorizontalPV = False
+        if "_kccnv" in str(filename):
+            noVerticalPV = True
+        else:
+            noVerticalPV = False
         htmlpath = ''
         postfix = ''
         backref = 1
@@ -79,64 +86,74 @@ def buildHTML(path, imgfile):
                       imgfile, "\" class=\"singlePage\"/></div>\n"
                       ])
         if options.panelview:
-            if rotate:
-                if options.righttoleft:
-                    order = [1, 3, 2, 4]
+            if not noHorizontalPV and not noVerticalPV:
+                if rotatedPage:
+                    if options.righttoleft:
+                        order = [1, 3, 2, 4]
+                    else:
+                        order = [2, 4, 1, 3]
                 else:
-                    order = [2, 4, 1, 3]
+                    if options.righttoleft:
+                        order = [2, 1, 4, 3]
+                    else:
+                        order = [1, 2, 3, 4]
+                boxes = ["BoxTL", "BoxTR", "BoxBL", "BoxBR"]
+            elif noHorizontalPV and not noVerticalPV:
+                if rotatedPage:
+                    if options.righttoleft:
+                        order = [2, 1]
+                    else:
+                        order = [1, 2]
+                else:
+                    order = [1, 2]
+                boxes = ["BoxT", "BoxB"]
+            elif not noHorizontalPV and noVerticalPV:
+                if rotatedPage:
+                    order = [1, 2]
+                else:
+                    if options.righttoleft:
+                        order = [2, 1]
+                    else:
+                        order = [1, 2]
+                boxes = ["BoxL", "BoxR"]
             else:
-                if options.righttoleft:
-                    order = [2, 1, 4, 3]
-                else:
-                    order = [1, 2, 3, 4]
-            f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                          "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":" + str(order[0]) + "}'></a></div>\n",
-                          "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                          "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":" + str(order[1]) + "}'></a></div>\n",
-                          "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                          "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":" + str(order[2]) + "}'></a></div>\n",
-                          "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
-                          "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":" + str(order[3]) + "}'></a></div>\n"
-                          ])
+                order = [1]
+                boxes = ["BoxC"]
+            for i in range(0, len(boxes)):
+                f.writelines(["<div id=\"" + boxes[i] + "\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                              "'{\"targetId\":\"" + boxes[i] + "-Panel-Parent\", \"ordinal\":" + str(order[i]),
+                              "}'></a></div>\n"])
             if options.quality == 2:
                 imgfilepv = string.split(imgfile, ".")
-                imgfilepv[0] = imgfilepv[0].split("_kccx")[0]
+                imgfilepv[0] = imgfilepv[0].split("_kccx")[0].replace("_kccnh", "").replace("_kccnv", "")
                 imgfilepv[0] += "_kcchq"
                 imgfilepv = string.join(imgfilepv, ".")
             else:
                 imgfilepv = imgfile
-            if not "_kccx" in filename[0]:
-                for box in ["BoxTL", "BoxTR", "BoxBL", "BoxBR"]:
-                    f.writelines(["<div id=\"" + box + "-Panel-Parent\" class=\"target-mag-parent\"><div id=\"" + box,
-                                  "-Panel\" class=\"target-mag\"><img src=\"", "../" * backref, "Images/", postfix,
-                                  imgfilepv, "\" alt=\"" + imgfilepv, "\"/></div></div>\n"
-                                  ])
+            xy = string.split(filename[0], "_kccx")[1]
+            x = string.split(xy, "_kccy")[0].lstrip("0")
+            y = string.split(xy, "_kccy")[1].lstrip("0")
+            if x != "":
+                x = "-" + str(float(x)/100) + "%"
             else:
-                xy = string.split(filename[0], "_kccx")[1]
-                x = string.split(xy, "_kccy")[0].lstrip("0")
-                y = string.split(xy, "_kccy")[1].lstrip("0")
-                if x != "":
-                    x = "-" + str(float(x)/100) + "%"
-                else:
-                    x = "0%"
-                if y != "":
-                    y = "-" + str(float(y)/100) + "%"
-                else:
-                    y = "0%"
-                f.writelines(["<div id=\"BoxTL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTL",
-                              "-Panel\" class=\"target-mag\"><img style=\"left:" + x + ";top:" + y + ";\" src=\"",
-                              "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
-                              "\"/></div></div>\n",
-                              "<div id=\"BoxTR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTR",
-                              "-Panel\" class=\"target-mag\"><img style=\"right:" + x + ";top:" + y + ";\" src=\"",
-                              "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
-                              "\"/></div></div>\n",
-                              "<div id=\"BoxBL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBL",
-                              "-Panel\" class=\"target-mag\"><img style=\"left:" + x + ";bottom:" + y + ";\" src=\"",
-                              "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
-                              "\"/></div></div>\n",
-                              "<div id=\"BoxBR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBR",
-                              "-Panel\" class=\"target-mag\"><img style=\"right:" + x + ";bottom:" + y + ";\" src=\"",
+                x = "0%"
+            if y != "":
+                y = "-" + str(float(y)/100) + "%"
+            else:
+                y = "0%"
+            boxStyles = {"BoxTL": "left:" + x + ";top:" + y + ";",
+                         "BoxTR": "right:" + x + ";top:" + y + ";",
+                         "BoxBL": "left:" + x + ";bottom:" + y + ";",
+                         "BoxBR": "right:" + x + ";bottom:" + y + ";",
+                         "BoxT": "left:-25%;top:" + y + ";",
+                         "BoxB": "left:-25%;bottom:" + y + ";",
+                         "BoxL": "left:" + x + ";top:-25%;",
+                         "BoxR": "right:" + x + ";top:-25%;",
+                         "BoxC": "right:-25%;top:-25%;"
+                         }
+            for box in boxes:
+                f.writelines(["<div id=\"" + box + "-Panel-Parent\" class=\"target-mag-parent\"><div id=\"",
+                              "Generic-Panel\" class=\"target-mag\"><img style=\"" + boxStyles[box] + "\" src=\"",
                               "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
                               "\"/></div></div>\n",
                               ])
@@ -445,6 +462,36 @@ def genEpubStruct(path):
                   "height: ", str(panelviewsize[1]), "px;\n",
                   "width: ", str(panelviewsize[0]), "px;\n",
                   "}\n",
+                  "#Generic-Panel {\n",
+                  "top: 0;\n",
+                  "height: 100%;\n",
+                  "width: 100%;\n",
+                  "}\n",
+                  "#BoxC {\n",
+                  "top: 0;\n",
+                  "height: 100%;\n",
+                  "width: 100%;\n",
+                  "}\n",
+                  "#BoxT {\n",
+                  "top: 0;\n",
+                  "height: 50%;\n",
+                  "width: 100%;\n",
+                  "}\n",
+                  "#BoxB {\n",
+                  "bottom: 0;\n",
+                  "height: 50%;\n",
+                  "width: 100%;\n",
+                  "}\n",
+                  "#BoxL {\n",
+                  "left: 0;\n",
+                  "height: 100%;\n",
+                  "width: 50%;\n",
+                  "}\n",
+                  "#BoxR {\n",
+                  "right: 0;\n",
+                  "height: 100%;\n",
+                  "width: 50%;\n",
+                  "}\n",
                   "#BoxTL {\n",
                   "top: 0;\n",
                   "left: 0;\n",
@@ -468,47 +515,7 @@ def genEpubStruct(path):
                   "right: 0;\n",
                   "height: 50%;\n",
                   "width: 50%;\n",
-                  "}\n",
-                  "#BoxTL-Panel {\n",
-                  "top: 0;\n",
-                  "left: 0;\n",
-                  "height: 100%;\n",
-                  "width: 100%;\n",
-                  "}\n",
-                  "#BoxTL-Panel img {\n",
-                  "top: 0%;\n",
-                  "left: 0%;\n",
-                  "}\n",
-                  "#BoxTR-Panel {\n",
-                  "top: 0;\n",
-                  "right: 0;\n",
-                  "height: 100%;\n",
-                  "width: 100%;\n",
-                  "}\n",
-                  "#BoxTR-Panel img {\n",
-                  "top: 0%;\n",
-                  "right: 0%;\n",
-                  "}\n",
-                  "#BoxBL-Panel {\n",
-                  "bottom: 0;\n",
-                  "left: 0;\n",
-                  "height: 100%;\n",
-                  "width: 100%;\n",
-                  "}\n",
-                  "#BoxBL-Panel img {\n",
-                  "bottom: 0%;\n",
-                  "left: 0%;\n",
-                  "}\n",
-                  "#BoxBR-Panel {\n",
-                  "bottom: 0;\n",
-                  "right: 0;\n",
-                  "height: 100%;\n",
-                  "width: 100%;\n",
-                  "}\n",
-                  "#BoxBR-Panel img {\n",
-                  "bottom: 0%;\n",
-                  "right: 0%;\n",
-                  "}"
+                  "}",
                   ])
     f.close()
     for (dirpath, dirnames, filenames) in os.walk(os.path.join(path, 'OEBPS', 'Images')):
