@@ -76,9 +76,7 @@ class ProfileData:
     Profiles = {
         'K1': ("Kindle 1", (600, 800), Palette4, 1.8, (900, 1200)),
         'K2': ("Kindle 2", (600, 800), Palette15, 1.8, (900, 1200)),
-        'K3': ("Kindle Keyboard", (600, 800), Palette16, 1.8, (900, 1200)),
-        'K4NT': ("Kindle Non-Touch", (600, 800), Palette16, 1.8, (900, 1200)),
-        'K4T': ("Kindle Touch", (600, 800), Palette16, 1.8, (900, 1200)),
+        'K345': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
         'KHD': ("Kindle Paperwhite", (758, 1024), Palette16, 1.8, (1137, 1536)),
         'KDX': ("Kindle DX", (824, 1200), Palette15, 1.8, (1236, 1800)),
         'KDXG': ("Kindle DXG", (824, 1200), Palette16, 1.8, (1236, 1800)),
@@ -92,9 +90,7 @@ class ProfileData:
     ProfileLabels = {
         "Kindle 1": 'K1',
         "Kindle 2": 'K2',
-        "Kindle 3/Keyboard": 'K3',
-        "Kindle 4/Non-Touch": 'K4NT',
-        "Kindle 4/Touch": 'K4T',
+        "Kindle": 'K345',
         "Kindle Paperwhite": 'KHD',
         "Kindle DX": 'KDX',
         "Kindle DXG": 'KDXG',
@@ -104,6 +100,23 @@ class ProfileData:
         "Kindle for Android": 'KFA',
         "Other": 'OTHER'
     }
+
+    ProfileLabelsGUI = [
+        "Kindle Paperwhite",
+        "Kindle",
+        "Separator",
+        "Kindle Fire",
+        "Kindle Fire HD 7\"",
+        "Kindle Fire HD 8.9\"",
+        "Separator",
+        "Kindle for Android",
+        "Other",
+        "Separator",
+        "Kindle 1",
+        "Kindle 2",
+        "Kindle DX",
+        "Kindle DXG"
+    ]
 
 
 class ComicPage:
