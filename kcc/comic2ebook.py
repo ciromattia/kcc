@@ -81,65 +81,65 @@ def buildHTML(path, imgfile):
         if options.panelview:
             if rotate:
                 if options.righttoleft:
-                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
-                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
-                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
-                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
-                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
-                                  ])
+                    order = [1, 3, 2, 4]
                 else:
-                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
-                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
-                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
-                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
-                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":3}'></a></div>\n"
-                                  ])
+                    order = [2, 4, 1, 3]
             else:
                 if options.righttoleft:
-                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
-                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
-                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
-                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
-                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":3}'></a></div>\n"
-                                  ])
+                    order = [2, 1, 4, 3]
                 else:
-                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
-                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
-                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
-                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
-                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
-                                  ])
+                    order = [1, 2, 3, 4]
+            f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                          "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":" + str(order[0]) + "}'></a></div>\n",
+                          "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                          "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":" + str(order[1]) + "}'></a></div>\n",
+                          "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                          "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":" + str(order[2]) + "}'></a></div>\n",
+                          "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
+                          "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":" + str(order[3]) + "}'></a></div>\n"
+                          ])
             if options.quality == 2:
                 imgfilepv = string.split(imgfile, ".")
+                imgfilepv[0] = imgfilepv[0].split("_kccx")[0]
                 imgfilepv[0] += "_kcchq"
                 imgfilepv = string.join(imgfilepv, ".")
             else:
                 imgfilepv = imgfile
-            f.writelines(["<div id=\"BoxTL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTL-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
-                          imgfilepv, "\"/></div></div>\n",
-                          "<div id=\"BoxTR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTR-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
-                          imgfilepv, "\"/></div></div>\n",
-                          "<div id=\"BoxBL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBL-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
-                          imgfilepv, "\"/></div></div>\n",
-                          "<div id=\"BoxBR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBR-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
-                          imgfilepv, "\"/></div></div>\n"
-                          ])
+            if not "_kccx" in filename[0]:
+                for box in ["BoxTL", "BoxTR", "BoxBL", "BoxBR"]:
+                    f.writelines(["<div id=\"" + box + "-Panel-Parent\" class=\"target-mag-parent\"><div id=\"" + box,
+                                  "-Panel\" class=\"target-mag\"><img src=\"", "../" * backref, "Images/", postfix,
+                                  imgfilepv, "\" alt=\"" + imgfilepv, "\"/></div></div>\n"
+                                  ])
+            else:
+                xy = string.split(filename[0], "_kccx")[1]
+                x = string.split(xy, "_kccy")[0].lstrip("0")
+                y = string.split(xy, "_kccy")[1].lstrip("0")
+                if x != "":
+                    x = "-" + str(float(x)/100) + "%"
+                else:
+                    x = "0%"
+                if y != "":
+                    y = "-" + str(float(y)/100) + "%"
+                else:
+                    y = "0%"
+                f.writelines(["<div id=\"BoxTL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTL",
+                              "-Panel\" class=\"target-mag\"><img style=\"left:" + x + ";top:" + y + ";\" src=\"",
+                              "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
+                              "\"/></div></div>\n",
+                              "<div id=\"BoxTR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTR",
+                              "-Panel\" class=\"target-mag\"><img style=\"right:" + x + ";top:" + y + ";\" src=\"",
+                              "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
+                              "\"/></div></div>\n",
+                              "<div id=\"BoxBL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBL",
+                              "-Panel\" class=\"target-mag\"><img style=\"left:" + x + ";bottom:" + y + ";\" src=\"",
+                              "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
+                              "\"/></div></div>\n",
+                              "<div id=\"BoxBR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBR",
+                              "-Panel\" class=\"target-mag\"><img style=\"right:" + x + ";bottom:" + y + ";\" src=\"",
+                              "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
+                              "\"/></div></div>\n",
+                              ])
         f.writelines(["</div>\n</body>\n</html>"])
         f.close()
         return path, imgfile
