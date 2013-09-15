@@ -787,8 +787,8 @@ def main(argv=None, qtGUI=None):
     customProfileOptions = OptionGroup(parser, "CUSTOM PROFILE")
     otherOptions = OptionGroup(parser, "OTHER")
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                           help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD,"
-                                " KFHD8, KFA) [Default=KHD]")
+                           help="Device profile (Choose one among K1, K2, K345, KDX, KDXG, KHD, KF, KFHD, KFHD8, KFA)"
+                                "[Default=KHD]")
     mainOptions.add_option("-q", "--quality", type="int", dest="quality", default="0",
                            help="Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,

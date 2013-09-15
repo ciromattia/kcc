@@ -457,13 +457,13 @@ class Ui_KCC(object):
             GUI.RotateBox.setEnabled(True)
 
     def changeDevice(self, value):
-        if value == 12:
+        if value == 8:
             GUI.BasicModeButton.setEnabled(False)
             GUI.AdvModeButton.setEnabled(False)
             self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
                             'List of supported Non-Kindle devices</a>', 'info')
             self.modeExpert()
-        elif value == 11:
+        elif value == 7:
             GUI.BasicModeButton.setEnabled(False)
             GUI.AdvModeButton.setEnabled(False)
             self.modeExpert(True)
@@ -471,7 +471,7 @@ class Ui_KCC(object):
             GUI.BasicModeButton.setEnabled(True)
             GUI.AdvModeButton.setEnabled(True)
             self.modeBasic()
-        if value in [0, 1, 5, 6, 12]:
+        if value in [8, 9, 10, 11, 12]:
             GUI.QualityBox.setCheckState(0)
             GUI.QualityBox.setEnabled(False)
         else:
@@ -570,7 +570,6 @@ class Ui_KCC(object):
         global GUI, MainWindow
         GUI = UI
         MainWindow = KCC
-        profiles = sorted(ProfileData.ProfileLabels.iterkeys())
         self.icons = Icons()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.lastPath = self.settings.value('lastPath', '', type=str)
@@ -630,12 +629,18 @@ class Ui_KCC(object):
         KCC.connect(self.versionCheck, QtCore.SIGNAL("addMessage"), self.addMessage)
         KCC.closeEvent = self.saveSettings
 
-        for profile in profiles:
-            if profile != "Other":
-                GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
-            else:
+        for profile in ProfileData.ProfileLabelsGUI:
+            if profile == "Other":
                 GUI.DeviceBox.addItem(self.icons.deviceOther, profile)
-        GUI.DeviceBox.setCurrentIndex(self.lastDevice)
+            elif profile == "Separator":
+                GUI.DeviceBox.insertSeparator(GUI.DeviceBox.count()+1)
+            else:
+                GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
+        if self.lastDevice > GUI.DeviceBox.count():
+            GUI.DeviceBox.setCurrentIndex(0)
+            self.lastDevice = 0
+        else:
+            GUI.DeviceBox.setCurrentIndex(self.lastDevice)
 
         for f in formats:
             GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
