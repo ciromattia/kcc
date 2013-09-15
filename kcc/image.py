@@ -146,6 +146,8 @@ class ComicPage:
                 os.remove(os.path.join(targetdir, self.filename))
             else:
                 suffix += "_kcchq"
+            if self.border:
+                suffix += "_kccx" + str(self.border[0]) + "_kccy" + str(self.border[1])
             if forcepng:
                 self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"), "PNG")
             else:
@@ -185,8 +187,13 @@ class ComicPage:
                 fill = 'white'
         if qualityMode == 0:
             size = (self.size[0], self.size[1])
+            generateBorder = True
+        elif qualityMode == 1:
+            size = (self.panelviewsize[0], self.panelviewsize[1])
+            generateBorder = True
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
+            generateBorder = False
         # Kindle Paperwhite/Touch - Force upscale of splited pages to increase readability
         if isSplit and landscapeMode:
             upscale = True
@@ -195,15 +202,30 @@ class ComicPage:
                 borderw = (self.size[0] - self.image.size[0]) / 2
                 borderh = (self.size[1] - self.image.size[1]) / 2
                 self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
+                if generateBorder:
+                        self.border = [int(round(float(borderw)/float(self.image.size[0])*100, 2)*100*1.5),
+                                       int(round(float(borderh)/float(self.image.size[1])*100, 2)*100*1.5)]
+                else:
+                    self.border = None
                 return self.image
             else:
                 method = Image.BILINEAR
         if stretch:  # if stretching call directly resize() without other considerations.
             self.image = self.image.resize(size, method)
+            if generateBorder:
+                if fill == 'white':
+                    border = ImageOps.invert(self.image).getbbox()
+                else:
+                    border = self.image.getbbox()
+                self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
+                               int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
+            else:
+                self.border = None
             return self.image
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             if isSplit and landscapeMode:
+                generateBorder = False
                 diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
                 self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
                 tempImg = Image.new(self.image.mode, (self.image.size[0] + diff, self.image.size[1]), fill)
@@ -219,6 +241,15 @@ class ComicPage:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
             self.image = ImageOps.expand(self.image, border=(0, diff / 2), fill=fill)
         self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
+        if generateBorder:
+            if fill == 'white':
+                border = ImageOps.invert(self.image).getbbox()
+            else:
+                border = self.image.getbbox()
+            self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
+                           int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
+        else:
+            self.border = None
         return self.image
 
     def splitPage(self, targetdir, righttoleft=False, rotate=False):
