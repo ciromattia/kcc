@@ -372,7 +372,7 @@ def fileImgProcess(work):
         split = None
     else:
         split = img.splitPage(dirpath, options.righttoleft, options.rotate)
-    if split is not None and split is not "R":
+    if split is not None:
         if options.verbose:
             print "Splitted " + afile
         output = pagenumber
@@ -391,13 +391,14 @@ def fileImgProcess(work):
             img4.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
     else:
         applyImgOptimization(img, options)
-        img.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe, split)
+        img.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
         if options.quality == 2:
             img2 = image.ComicPage(os.path.join(dirpath, afile), options.profileData)
-            if split == "R":
+            if img.rotated:
                 img2.image = img2.image.rotate(90)
+                img2.rotated = True
             applyImgOptimization(img2, options, 0)
-            img2.saveToDir(dirpath, options.forcepng, options.forcecolor, True, split)
+            img2.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
     return output
 
 
