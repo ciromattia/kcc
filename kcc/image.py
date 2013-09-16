@@ -146,15 +146,18 @@ class ComicPage:
             raise RuntimeError('Image file %s is corrupted' % source)
         self.image = Image.open(source)
         self.image = self.image.convert('RGB')
+        self.rotated = None
+        self.border = None
+        self.noHPV = None
+        self.noVPV = None
 
-    def saveToDir(self, targetdir, forcepng, color, wipe, suffix=None):
+    def saveToDir(self, targetdir, forcepng, color, wipe):
         try:
+            suffix = ""
             if not color:
                 self.image = self.image.convert('L')    # convert to grayscale
-            if suffix == "R":
-                suffix = "_kccrot"
-            else:
-                suffix = ""
+            if self.rotated:
+                suffix += "_kccrot"
             if wipe:
                 os.remove(os.path.join(targetdir, self.filename))
             else:
@@ -213,18 +216,10 @@ class ComicPage:
                 if generateBorder:
                     if (self.image.size[0]-(2*borderw))*1.5 < self.size[0]:
                         self.noHPV = True
-                    else:
-                        self.noHPV = None
                     if (self.image.size[1]-(2*borderh))*1.5 < self.size[1]:
                         self.noVPV = True
-                    else:
-                        self.noVPV = None
                     self.border = [int(round(float(borderw)/float(self.image.size[0])*100, 2)*100*1.5),
                                    int(round(float(borderh)/float(self.image.size[1])*100, 2)*100*1.5)]
-                else:
-                    self.border = None
-                    self.noHPV = None
-                    self.noVPV = None
                 return self.image
             else:
                 method = Image.BILINEAR
@@ -238,22 +233,14 @@ class ComicPage:
                 if border is not None:
                     if (border[2]-border[0])*1.5 < self.size[0]:
                         self.noHPV = True
-                    else:
-                        self.noHPV = None
                     if (border[3]-border[1])*1.5 < self.size[1]:
                         self.noVPV = True
-                    else:
-                        self.noVPV = None
                     self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
                                    int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
                 else:
                     self.border = [0, 0]
                     self.noHPV = True
                     self.noVPV = True
-            else:
-                self.border = None
-                self.noHPV = None
-                self.noVPV = None
             return self.image
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
@@ -271,22 +258,14 @@ class ComicPage:
             if border is not None:
                 if (border[2]-border[0])*1.5 < self.size[0]:
                     self.noHPV = True
-                else:
-                    self.noHPV = None
                 if (border[3]-border[1])*1.5 < self.size[1]:
                     self.noVPV = True
-                else:
-                    self.noVPV = None
                 self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
                                int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
             else:
                 self.border = [0, 0]
                 self.noHPV = True
                 self.noVPV = True
-        else:
-            self.border = None
-            self.noHPV = None
-            self.noVPV = None
         return self.image
 
     def splitPage(self, targetdir, righttoleft=False, rotate=False):
@@ -296,8 +275,10 @@ class ComicPage:
         if (width > height) != (dstwidth > dstheight):
             if rotate:
                 self.image = self.image.rotate(90)
-                return "R"
+                self.rotated = True
+                return None
             else:
+                self.rotated = False
                 if width > height:
                     # Source is landscape, so split by the width
                     leftbox = (0, 0, width / 2, height)
@@ -323,6 +304,7 @@ class ComicPage:
                     raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
                 return fileone, filetwo
         else:
+            self.rotated = False
             return None
 
     def cutPageNumber(self):
@@ -438,7 +420,7 @@ class ComicPage:
 
     def getImageFill(self, isWebToon):
         fill = 0
-        if isWebToon:
+        if isWebToon or self.rotated:
             imageT = self.image.crop((0, 0, self.image.size[0], 1))
             imageB = self.image.crop((0, self.image.size[1]-1, self.image.size[0], self.image.size[1]))
             fill += self.getImageHistogram(imageT)
@@ -453,7 +435,7 @@ class ComicPage:
         elif fill == 0:
             return 'white'
         else:
-            if isWebToon:
+            if isWebToon or self.rotated:
                 imageL = self.image.crop((0, 0, 1, self.image.size[1]))
                 imageR = self.image.crop((self.image.size[0]-1, 0, self.image.size[0], self.image.size[1]))
                 fill += self.getImageHistogram(imageL)
