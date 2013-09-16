@@ -190,12 +190,12 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, bordersColor=None, qualityMode=0):
+    def resizeImage(self, upscale=False, stretch=False, bordersColor=None, qualityMode=0, isWebToon=False):
         method = Image.ANTIALIAS
         if bordersColor:
             fill = bordersColor
         else:
-            fill = self.getImageFill()
+            fill = self.getImageFill(isWebToon)
         if qualityMode == 0:
             size = (self.size[0], self.size[1])
             generateBorder = True
@@ -436,21 +436,33 @@ class ComicPage:
         else:
             return True
 
-    def getImageFill(self):
-        imageT = self.image.crop((0, 0, self.image.size[0], 1))
-        imageB = self.image.crop((0, self.image.size[1]-1, self.image.size[0], self.image.size[1]))
+    def getImageFill(self, isWebToon):
         fill = 0
-        fill += self.getImageHistogram(imageT)
-        fill += self.getImageHistogram(imageB)
-        if fill == 2:
-            return 'black'
-        elif fill == 0:
-            return 'white'
+        if isWebToon:
+            imageT = self.image.crop((0, 0, self.image.size[0], 1))
+            imageB = self.image.crop((0, self.image.size[1]-1, self.image.size[0], self.image.size[1]))
+            fill += self.getImageHistogram(imageT)
+            fill += self.getImageHistogram(imageB)
         else:
             imageL = self.image.crop((0, 0, 1, self.image.size[1]))
             imageR = self.image.crop((self.image.size[0]-1, 0, self.image.size[0], self.image.size[1]))
             fill += self.getImageHistogram(imageL)
             fill += self.getImageHistogram(imageR)
+        if fill == 2:
+            return 'black'
+        elif fill == 0:
+            return 'white'
+        else:
+            if isWebToon:
+                imageL = self.image.crop((0, 0, 1, self.image.size[1]))
+                imageR = self.image.crop((self.image.size[0]-1, 0, self.image.size[0], self.image.size[1]))
+                fill += self.getImageHistogram(imageL)
+                fill += self.getImageHistogram(imageR)
+            else:
+                imageT = self.image.crop((0, 0, self.image.size[0], 1))
+                imageB = self.image.crop((0, self.image.size[1]-1, self.image.size[0], self.image.size[1]))
+                fill += self.getImageHistogram(imageT)
+                fill += self.getImageHistogram(imageB)
             if fill >= 2:
                 return 'black'
             else:
