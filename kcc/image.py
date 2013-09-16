@@ -235,16 +235,21 @@ class ComicPage:
                     border = ImageOps.invert(self.image).getbbox()
                 else:
                     border = self.image.getbbox()
-                if (border[2]-border[0])*1.5 < self.size[0]:
+                if border is not None:
+                    if (border[2]-border[0])*1.5 < self.size[0]:
+                        self.noHPV = True
+                    else:
+                        self.noHPV = None
+                    if (border[3]-border[1])*1.5 < self.size[1]:
+                        self.noVPV = True
+                    else:
+                        self.noVPV = None
+                    self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
+                                   int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
+                else:
+                    self.border = [0, 0]
                     self.noHPV = True
-                else:
-                    self.noHPV = None
-                if (border[3]-border[1])*1.5 < self.size[1]:
                     self.noVPV = True
-                else:
-                    self.noVPV = None
-                self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
-                               int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
             else:
                 self.border = None
                 self.noHPV = None
@@ -263,16 +268,21 @@ class ComicPage:
                 border = ImageOps.invert(self.image).getbbox()
             else:
                 border = self.image.getbbox()
-            if (border[2]-border[0])*1.5 < self.size[0]:
+            if border is not None:
+                if (border[2]-border[0])*1.5 < self.size[0]:
+                    self.noHPV = True
+                else:
+                    self.noHPV = None
+                if (border[3]-border[1])*1.5 < self.size[1]:
+                    self.noVPV = True
+                else:
+                    self.noVPV = None
+                self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
+                               int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
+            else:
+                self.border = [0, 0]
                 self.noHPV = True
-            else:
-                self.noHPV = None
-            if (border[3]-border[1])*1.5 < self.size[1]:
                 self.noVPV = True
-            else:
-                self.noVPV = None
-            self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
-                           int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
         else:
             self.border = None
             self.noHPV = None
