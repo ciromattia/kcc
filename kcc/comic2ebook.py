@@ -292,9 +292,9 @@ def applyImgOptimization(img, options, overrideQuality=5):
         img.cutPageNumber()
     img.optimizeImage(options.gamma)
     if overrideQuality != 5:
-        img.resizeImage(options.upscale, options.stretch, options.bordersColor, overrideQuality)
+        img.resizeImage(options.upscale, options.stretch, options.bordersColor, overrideQuality, options.webtoon)
     else:
-        img.resizeImage(options.upscale, options.stretch, options.bordersColor, options.quality)
+        img.resizeImage(options.upscale, options.stretch, options.bordersColor, options.quality, options.webtoon)
     if options.forcepng and not options.forcecolor:
         img.quantizeImage()
 
