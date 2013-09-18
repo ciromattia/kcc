@@ -67,12 +67,10 @@ Usage: comic2ebook.py [options] comic_file|comic_folder
 Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
-                        Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8, KFA) [Default=KHD]
+                        Device profile (Choose one among K1, K2, K345, KDX, KDXG, KHD, KF, KFHD, KFHD8, KFA) [Default=KHD]
     -q QUALITY, --quality=QUALITY
                         Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
     -m, --manga-style   Manga style (Right-to-left reading and splitting)
-
-  EXPERIMENTAL:
     -w, --webtoon       Webtoon processing mode
 
   OUTPUT SETTINGS:
@@ -84,7 +82,8 @@ Options:
     --batchsplit        Split output into multiple files
 
   PROCESSING:
-    --blackborders      Use black borders instead of white ones
+    --blackborders      Disable autodetection and force black borders
+    --whiteborders      Disable autodetection and force white borders
     --forcecolor        Don't convert images to grayscale
     --forcepng          Create PNG files instead JPEG (For non-Kindle devices)
     --gamma=GAMMA       Apply gamma correction to linearize the image [Default=Auto]
@@ -136,15 +135,13 @@ The app relies and includes the following scripts/binaries:
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
 
 ## SAMPLE FILES CREATED BY KCC
-* [Kindle Keyboard](http://kcc.vulturis.eu/Samples/Ubunchu!-K3.mobi)
-* [Kindle DX](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
-* [Kindle DXG](http://kcc.vulturis.eu/Samples/Ubunchu!-KDXG.mobi)
-* [Kindle Non-Touch](http://kcc.vulturis.eu/Samples/Ubunchu!-K4NT.mobi)
-* [Kindle Touch](http://kcc.vulturis.eu/Samples/Ubunchu!-K4T.mobi)
 * [Kindle Paperwhite](http://kcc.vulturis.eu/Samples/Ubunchu!-KPW.mobi)
+* [Kindle](http://kcc.vulturis.eu/Samples/Ubunchu!-K345.mobi)
 * [Kindle Fire](http://kcc.vulturis.eu/Samples/Ubunchu!-KF.mobi)
 * [Kindle Fire HD](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD.mobi)
 * [Kindle Fire HD 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD8.mobi)
+* [Kindle DX](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
+* [Kindle DXG](http://kcc.vulturis.eu/Samples/Ubunchu!-KDXG.mobi)
 
 ## CHANGELOG
 ####1.00
@@ -254,6 +251,15 @@ The app relies and includes the following scripts/binaries:
 
 ####3.2.1:
 * Hotfixed crash occurring on OS with Russian locale
+
+####3.3:
+* Margins are now automatically omitted in Panel View mode
+* Layout of panels in Panel View mode is now automatically adjusted to content
+* Support for Virtual Panel View was removed
+* Margin color fill is now autodetected
+* Profiles for Kindle Keyboard, Touch and Non-Touch are now merged
+* Windows release is now bundled with UnRAR
+* Small GUI tweaks
 
 ## KNOWN ISSUES
 * Removing SRCS headers sometimes fail in 32bit enviroments. Due to memory limitations.

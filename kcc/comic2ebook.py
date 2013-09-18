@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2012 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -17,7 +18,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
-__version__ = '3.2.1'
+__version__ = '3.3'
 __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
@@ -789,7 +790,6 @@ def main(argv=None, qtGUI=None):
     global parser, options, epub_path, GUI
     parser = OptionParser(usage="Usage: %prog [options] comic_file|comic_folder", add_help_option=False)
     mainOptions = OptionGroup(parser, "MAIN")
-    experimentalOptions = OptionGroup(parser, "EXPERIMENTAL")
     processingOptions = OptionGroup(parser, "PROCESSING")
     outputOptions = OptionGroup(parser, "OUTPUT SETTINGS")
     customProfileOptions = OptionGroup(parser, "CUSTOM PROFILE")
@@ -801,6 +801,8 @@ def main(argv=None, qtGUI=None):
                            help="Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (Right-to-left reading and splitting)")
+    mainOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
+                           help="Webtoon processing mode"),
     outputOptions.add_option("-o", "--output", action="store", dest="output", default=None,
                              help="Output generated file to specified directory or file")
     outputOptions.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
@@ -809,8 +811,6 @@ def main(argv=None, qtGUI=None):
                              help="Outputs a CBZ archive and does not generate EPUB")
     outputOptions.add_option("--batchsplit", action="store_true", dest="batchsplit", default=False,
                              help="Split output into multiple files"),
-    experimentalOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
-                                   help="Webtoon processing mode"),
     processingOptions.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
                                  help="Disable autodetection and force black borders")
     processingOptions.add_option("--whiteborders", action="store_true", dest="white_borders", default=False,
@@ -842,7 +842,6 @@ def main(argv=None, qtGUI=None):
     otherOptions.add_option("-h", "--help", action="help",
                             help="Show this help message and exit")
     parser.add_option_group(mainOptions)
-    parser.add_option_group(experimentalOptions)
     parser.add_option_group(outputOptions)
     parser.add_option_group(processingOptions)
     parser.add_option_group(customProfileOptions)
