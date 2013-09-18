@@ -1,6 +1,7 @@
 # Copyright (C) 2010  Alex Yatskov
 # Copyright (C) 2011  Stanislav (proDOOMman) Kosolapov <prodoomman@gmail.com>
 # Copyright (C) 2012-2013  Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (C) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
