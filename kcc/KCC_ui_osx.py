@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-OSX.ui'
 #
-# Created: Sun Sep 15 16:18:48 2013
+# Created: Wed Sep 18 12:13:05 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -323,13 +323,13 @@ class Ui_KCC(object):
         KCC.setWindowTitle(_translate("KCC", "Kindle Comic Converter", None))
         self.ProcessingBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt;\">Disable image optimizations.</span></p></body></html>", None))
         self.ProcessingBox.setText(_translate("KCC", "No optimisation", None))
-        self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>", None))
+        self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span><span style=\" font-size:12pt;\">Images smaller than device resolution will not be resized.</span></p><p><span style=\" font-size:12pt; font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span><span style=\" font-size:12pt;\">Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</span></p><p><span style=\" font-size:12pt; font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span><span style=\" font-size:12pt;\">Images smaller than device resolution will be resized. Aspect ratio will be preserved.</span></p></body></html>", None))
         self.UpscaleBox.setText(_translate("KCC", "Stretch/Upscale", None))
-        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable auto-splitting of webtoons like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>Pages with a low width, high height and vertical panel flow.</p></body></html>", None))
+        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt;\">Enable auto-splitting of webtoons like </span><span style=\" font-size:12pt; font-style:italic;\">Tower of God</span><span style=\" font-size:12pt;\"> or </span><span style=\" font-size:12pt; font-style:italic;\">Noblesse</span><span style=\" font-size:12pt;\">.<br/>Pages with a low width, high height and vertical panel flow.</span></p></body></html>", None))
         self.WebtoonBox.setText(_translate("KCC", "Webtoon mode", None))
-        self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt;\">Create PNG files instead JPEG.<br/></span><span style=\" font-size:12pt; font-weight:600;\">Only for non-Kindle devices!</span></p></body></html>", None))
+        self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt;\">Create PNG files instead JPEG.</span></p></body></html>", None))
         self.NoDitheringBox.setText(_translate("KCC", "PNG output", None))
-        self.BorderBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Autodetection<br/></span>Color of margins fill will be detected automatically.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - White<br/></span>Margins will be filled with white color.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Black<br/></span>Margins will be filled with black color.</p></body></html>", None))
+        self.BorderBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt; font-weight:600; text-decoration: underline;\">Unchecked - Autodetection<br/></span><span style=\" font-size:12pt;\">Color of margins fill will be detected automatically.</span></p><p><span style=\" font-size:12pt; font-weight:600; text-decoration: underline;\">Indeterminate - White<br/></span><span style=\" font-size:12pt;\">Margins will be filled with white color.</span></p><p><span style=\" font-size:12pt; font-weight:600; text-decoration: underline;\">Checked - Black<br/></span><span style=\" font-size:12pt;\">Margins will be filled with black color.</span></p></body></html>", None))
         self.BorderBox.setText(_translate("KCC", "W/B margins", None))
         self.NoRotateBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt;\">Disable splitting and rotation.</span></p></body></html>", None))
         self.NoRotateBox.setText(_translate("KCC", "No split/rotate", None))

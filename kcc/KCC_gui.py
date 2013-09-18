@@ -440,15 +440,12 @@ class Ui_KCC(object):
             GUI.NoRotateBox.setChecked(True)
             GUI.QualityBox.setEnabled(False)
             GUI.QualityBox.setChecked(False)
-            GUI.BorderBox.setEnabled(False)
-            GUI.BorderBox.setChecked(False)
             GUI.MangaBox.setEnabled(False)
             GUI.MangaBox.setChecked(False)
             self.addMessage('If images are color setting <i>Gamma</i> to 1.0 is recommended.', 'info')
         else:
             GUI.NoRotateBox.setEnabled(True)
             GUI.QualityBox.setEnabled(True)
-            GUI.BorderBox.setEnabled(True)
             GUI.MangaBox.setEnabled(True)
 
     def toggleNoSplitRotate(self, value):
@@ -477,7 +474,13 @@ class Ui_KCC(object):
             GUI.QualityBox.setCheckState(0)
             GUI.QualityBox.setEnabled(False)
         else:
-            GUI.QualityBox.setEnabled(True)
+            if not GUI.WebtoonBox.isChecked():
+                GUI.QualityBox.setEnabled(True)
+        if not value in [8]:
+            GUI.NoDitheringBox.setCheckState(0)
+            GUI.NoDitheringBox.setEnabled(False)
+        else:
+            GUI.NoDitheringBox.setEnabled(True)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -549,10 +552,12 @@ class Ui_KCC(object):
             event.ignore()
         if not GUI.ConvertButton.isEnabled():
             event.ignore()
+        self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
         self.settings.setValue('currentFormat', GUI.FormatBox.currentIndex())
         self.settings.setValue('currentMode', self.currentMode)
+        self.settings.setValue('firstStart', False)
         self.settings.setValue('options', QtCore.QVariant({'MangaBox': GUI.MangaBox.checkState(),
                                                            'RotateBox': GUI.RotateBox.checkState(),
                                                            'QualityBox': GUI.QualityBox.checkState(),
@@ -572,12 +577,20 @@ class Ui_KCC(object):
         global GUI, MainWindow
         GUI = UI
         MainWindow = KCC
+        # User settings will be reverted to default ones if were created in one of the following versions
+        # Empty string cover all versions before this system was implemented
+        purgeSettingsVersions = ['']
         self.icons = Icons()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
+        self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
+        if self.settingsVersion in purgeSettingsVersions:
+            QtCore.QSettings.clear(self.settings)
+            self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
-        self.lastDevice = self.settings.value('lastDevice', 10, type=int)
+        self.lastDevice = self.settings.value('lastDevice', 0, type=int)
         self.currentMode = self.settings.value('currentMode', 1, type=int)
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
+        self.firstStart = self.settings.value('firstStart', True, type=bool)
         self.options = self.settings.value('options', QtCore.QVariant({'GammaSlider': 0}))
         self.options = self.options.toPyObject()
         self.worker = WorkerThread(self)
@@ -587,6 +600,9 @@ class Ui_KCC(object):
 
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')
+        if self.firstStart:
+            self.addMessage('Since you are using <b>KCC</b> for first time please see few '
+                            '<a href="https://github.com/ciromattia/kcc#important-tips">important tips<a>.', 'info')
         if call('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
             self.KindleGen = True
             formats = ['MOBI', 'EPUB', 'CBZ']
@@ -660,8 +676,6 @@ class Ui_KCC(object):
             elif str(option) == "GammaSlider":
                 GUI.GammaSlider.setValue(int(self.options[option]))
                 self.changeGamma(int(self.options[option]))
-            elif str(option) == "StretchBox" or str(option) == "WebstripBox":
-                pass
             else:
                 eval('GUI.' + str(option)).setCheckState(self.options[option])
         if self.currentMode == 1:
