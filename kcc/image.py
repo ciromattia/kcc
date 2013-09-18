@@ -421,31 +421,29 @@ class ComicPage:
     def getImageFill(self, isWebToon):
         fill = 0
         if isWebToon or self.rotated:
-            imageT = self.image.crop((0, 0, self.image.size[0], 1))
-            imageB = self.image.crop((0, self.image.size[1]-1, self.image.size[0], self.image.size[1]))
-            fill += self.getImageHistogram(imageT)
-            fill += self.getImageHistogram(imageB)
+            fill += self.getImageHistogram(self.image.crop((0, 0, self.image.size[0], 1)))
+            fill += self.getImageHistogram(self.image.crop((0, self.image.size[1]-1, self.image.size[0],
+                                                            self.image.size[1])))
         else:
-            imageL = self.image.crop((0, 0, 1, self.image.size[1]))
-            imageR = self.image.crop((self.image.size[0]-1, 0, self.image.size[0], self.image.size[1]))
-            fill += self.getImageHistogram(imageL)
-            fill += self.getImageHistogram(imageR)
+            fill += self.getImageHistogram(self.image.crop((0, 0, 1, self.image.size[1])))
+            fill += self.getImageHistogram(self.image.crop((self.image.size[0]-1, 0, self.image.size[0],
+                                                            self.image.size[1])))
         if fill == 2:
             return 'black'
         elif fill == 0:
             return 'white'
         else:
-            if isWebToon or self.rotated:
-                imageL = self.image.crop((0, 0, 1, self.image.size[1]))
-                imageR = self.image.crop((self.image.size[0]-1, 0, self.image.size[0], self.image.size[1]))
-                fill += self.getImageHistogram(imageL)
-                fill += self.getImageHistogram(imageR)
+            bBox = self.image.getbbox()
+            wBox = ImageOps.invert(self.image).getbbox()
+            if bBox is None:
+                bBox = 0
             else:
-                imageT = self.image.crop((0, 0, self.image.size[0], 1))
-                imageB = self.image.crop((0, self.image.size[1]-1, self.image.size[0], self.image.size[1]))
-                fill += self.getImageHistogram(imageT)
-                fill += self.getImageHistogram(imageB)
-            if fill >= 2:
-                return 'black'
+                bBox = (bBox[2]-bBox[0])*(bBox[3]-bBox[1])
+            if wBox is None:
+                wBox = 0
             else:
-                return 'white'
+                wBox = (wBox[2]-wBox[0])*(wBox[3]-wBox[1])
+            if wBox <= bBox:
+                return "white"
+            else:
+                return "black"
