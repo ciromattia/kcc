@@ -569,8 +569,7 @@ def getWorkFolder(afile):
                 path = cbx.extract(workdir)
             except OSError:
                 rmtree(workdir)
-                print 'Unrar not found, please download from ' + \
-                      'http://www.rarlab.com/download.htm and put into your PATH.'
+                print 'UnRAR/7za not found or file failed to extract!'
                 sys.exit(21)
         else:
             rmtree(workdir)

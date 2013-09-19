@@ -30,11 +30,13 @@ You can find the latest released binary at the following links:
 - Folders
 - CBZ, ZIP
 - CBR, RAR *(With `unrar` executable)*
+- CB7, 7Z *(With `7za` executable)*
 - PDF *(Extracting only contained JPG images)*
 
 ## OPTIONAL REQUIREMENTS
 - [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For .mobi generation)*
 - [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
+- [7za](http://www.7-zip.org/download.html) *(For 7z/CB7 support)*
 
 ### For compiling/running from source:
 - Python 2.7 - Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows.
@@ -52,7 +54,7 @@ You can find the latest released binary at the following links:
 * Check our [wiki](https://github.com/ciromattia/kcc/wiki/Other-devices) for a list of tested Non-Kindle E-Readers.
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
-* Output MOBI file should be uploaded via USB. Other methods (e.g. via Calibre) might corrupt it.
+* Output MOBI file should be uploaded via USB. Other methods might corrupt it.
 
 ### GUI 
 
@@ -257,8 +259,9 @@ The app relies and includes the following scripts/binaries:
 * Layout of panels in Panel View mode is now automatically adjusted to content
 * Support for Virtual Panel View was removed
 * Margin color fill is now autodetected
+* Added support of 7z/CB7 files
 * Profiles for Kindle Keyboard, Touch and Non-Touch are now merged
-* Windows release is now bundled with UnRAR
+* Windows release is now bundled with UnRAR and 7za
 * Small GUI tweaks
 
 ## KNOWN ISSUES

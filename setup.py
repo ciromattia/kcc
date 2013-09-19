@@ -41,7 +41,11 @@ elif platform == "win32":
     from cx_Freeze import setup, Executable
     base = "Win32GUI"
     extra_options = dict(
-        options={"build_exe": {"include_files": ['LICENSE.txt', ['other/UnRAR.exe', 'UnRAR.exe']], "compressed": True}},
+        options={"build_exe": {"include_files": ['LICENSE.txt',
+                                                 ['other/UnRAR.exe', 'UnRAR.exe'],
+                                                 ['other/7za.exe', '7za.exe'],
+                                                 ['other/Additional-LICENSE.txt', 'Additional-LICENSE.txt']
+                                                 ], "compressed": True}},
         executables=[Executable(MAIN,
                                 base=base,
                                 targetName="KCC.exe",
