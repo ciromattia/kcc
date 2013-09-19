@@ -321,11 +321,19 @@ class Ui_KCC(object):
             self.needClean = False
             GUI.JobList.clear()
         if self.UnRAR:
-            fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
-                                                        '*.cbz *.cbr *.zip *.rar *.pdf')
+            if self.sevenza:
+                fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
+                                                            '*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf')
+            else:
+                fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
+                                                            '*.cbz *.cbr *.zip *.rar *.pdf')
         else:
-            fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
-                                                        '*.cbz *.zip *.pdf')
+            if self.sevenza:
+                fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
+                                                            '*.cbz *.cb7 *.zip *.7z *.pdf')
+            else:
+                fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
+                                                            '*.cbz *.zip *.pdf')
         # Lame UTF-8 security measure
         for fname in fnames:
             try:
@@ -629,6 +637,13 @@ class Ui_KCC(object):
             self.UnRAR = False
             self.addMessage('Cannot find <a href="http://www.rarlab.com/rar_add.htm">UnRAR</a>!'
                             ' Processing of CBR/RAR files will be disabled.', 'warning')
+        sevenzaExitCode = call('7za', stdout=PIPE, stderr=STDOUT, shell=True)
+        if sevenzaExitCode == 0 or sevenzaExitCode == 7:
+            self.sevenza = True
+        else:
+            self.sevenza = False
+            self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html>7za</a>!'
+                            ' Processing of CB7/7Z files will be disabled.', 'warning')
 
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
