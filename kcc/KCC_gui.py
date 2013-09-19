@@ -611,7 +611,7 @@ class Ui_KCC(object):
         self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')
         if self.firstStart:
             self.addMessage('Since you are using <b>KCC</b> for first time please see few '
-                            '<a href="https://github.com/ciromattia/kcc#important-tips">important tips<a>.', 'info')
+                            '<a href="https://github.com/ciromattia/kcc#important-tips">important tips</a>.', 'info')
         if call('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
             self.KindleGen = True
             formats = ['MOBI', 'EPUB', 'CBZ']
@@ -642,7 +642,7 @@ class Ui_KCC(object):
             self.sevenza = True
         else:
             self.sevenza = False
-            self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html>7za</a>!'
+            self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7za</a>!'
                             ' Processing of CB7/7Z files will be disabled.', 'warning')
 
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
