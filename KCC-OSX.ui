@@ -47,7 +47,7 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>9</x>
+      <x>4</x>
       <y>253</y>
       <width>421</width>
       <height>61</height>
@@ -55,6 +55,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>9</pointsize>
      </font>
     </property>
@@ -63,7 +64,8 @@
       <widget class="QCheckBox" name="ProcessingBox">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <family>Lucida Grande</family>
+         <pointsize>12</pointsize>
         </font>
        </property>
        <property name="focusPolicy">
@@ -81,7 +83,8 @@
       <widget class="QCheckBox" name="UpscaleBox">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <family>Lucida Grande</family>
+         <pointsize>12</pointsize>
         </font>
        </property>
        <property name="focusPolicy">
@@ -102,7 +105,8 @@
       <widget class="QCheckBox" name="WebtoonBox">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <family>Lucida Grande</family>
+         <pointsize>12</pointsize>
         </font>
        </property>
        <property name="focusPolicy">
@@ -120,7 +124,8 @@
       <widget class="QCheckBox" name="NoDitheringBox">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <family>Lucida Grande</family>
+         <pointsize>12</pointsize>
         </font>
        </property>
        <property name="focusPolicy">
@@ -138,7 +143,8 @@
       <widget class="QCheckBox" name="BorderBox">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <family>Lucida Grande</family>
+         <pointsize>12</pointsize>
         </font>
        </property>
        <property name="focusPolicy">
@@ -159,7 +165,8 @@
       <widget class="QCheckBox" name="NoRotateBox">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <family>Lucida Grande</family>
+         <pointsize>12</pointsize>
         </font>
        </property>
        <property name="focusPolicy">
@@ -186,6 +193,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>11</pointsize>
      </font>
     </property>
@@ -193,7 +201,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="toolTip">
-     <string>Target device.</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Target device.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QComboBox" name="FormatBox">
@@ -207,6 +215,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>11</pointsize>
      </font>
     </property>
@@ -214,7 +223,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="toolTip">
-     <string>Output format.</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Output format.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QPushButton" name="ConvertButton">
@@ -228,6 +237,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>11</pointsize>
       <weight>75</weight>
       <bold>true</bold>
@@ -255,6 +265,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>11</pointsize>
      </font>
     </property>
@@ -280,6 +291,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>11</pointsize>
      </font>
     </property>
@@ -305,6 +317,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>11</pointsize>
      </font>
     </property>
@@ -322,7 +335,7 @@
    <widget class="QFrame" name="OptionsBasic">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>5</x>
       <y>233</y>
       <width>421</width>
       <height>41</height>
@@ -330,7 +343,8 @@
     </property>
     <property name="font">
      <font>
-      <pointsize>9</pointsize>
+      <family>Lucida Grande</family>
+      <pointsize>12</pointsize>
      </font>
     </property>
     <widget class="QCheckBox" name="MangaBox">
@@ -344,7 +358,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>11</pointsize>
+       <family>Lucida Grande</family>
+       <pointsize>12</pointsize>
       </font>
      </property>
      <property name="focusPolicy">
@@ -362,20 +377,21 @@
       <rect>
        <x>282</x>
        <y>10</y>
-       <width>130</width>
+       <width>135</width>
        <height>18</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>11</pointsize>
+       <family>Lucida Grande</family>
+       <pointsize>12</pointsize>
       </font>
      </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Normal quality mode&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-style:italic;&quot;&gt;Use it when Panel View support is not needed.&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt;&quot;&gt;- Maximum quality when zoom is not enabled.&lt;br/&gt;- Poor quality when zoom is enabled.&lt;br/&gt;- Lowest file size.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - High quality mode&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-style:italic;&quot;&gt;Not zoomed image &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; font-style:italic;&quot;&gt;might &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-style:italic;&quot;&gt;be a little blurry.&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt;&quot;&gt;- Medium/High quality when zoom is not enabled.&lt;br/&gt;- Maximum quality when zoom is enabled.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Ultra quality mode&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-style:italic;&quot;&gt;Maximum possible quality.&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:14pt;&quot;&gt;- Maximum quality when zoom is not enabled.&lt;br/&gt;- Maximum quality when zoom is enabled.&lt;br/&gt;- Very high file size.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Normal quality mode&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-style:italic;&quot;&gt;Use it when Panel View support is not needed.&lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-size:12pt;&quot;&gt;- Maximum quality when zoom is not enabled.&lt;br/&gt;- Poor quality when zoom is enabled.&lt;br/&gt;- Lowest file size.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - High quality mode&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-style:italic;&quot;&gt;Not zoomed image &lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; font-style:italic;&quot;&gt;might &lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-style:italic;&quot;&gt;be a little blurry.&lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-size:12pt;&quot;&gt;- Medium/High quality when zoom is not enabled.&lt;br/&gt;- Maximum quality when zoom is enabled.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Ultra quality mode&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-style:italic;&quot;&gt;Maximum possible quality.&lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-size:12pt;&quot;&gt;- Maximum quality when zoom is not enabled.&lt;br/&gt;- Maximum quality when zoom is enabled.&lt;br/&gt;- Very high file size.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>High/Ultra quality</string>
@@ -395,7 +411,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>11</pointsize>
+       <family>Lucida Grande</family>
+       <pointsize>12</pointsize>
       </font>
      </property>
      <property name="focusPolicy">
@@ -423,6 +440,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>11</pointsize>
      </font>
     </property>
@@ -447,6 +465,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>12</pointsize>
       <weight>50</weight>
       <bold>false</bold>
@@ -470,6 +489,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>12</pointsize>
       <weight>50</weight>
       <bold>false</bold>
@@ -488,7 +508,7 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>5</x>
       <y>303</y>
       <width>401</width>
       <height>41</height>
@@ -496,6 +516,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>9</pointsize>
      </font>
     </property>
@@ -510,13 +531,14 @@
      </property>
      <property name="font">
       <font>
+       <family>Lucida Grande</family>
        <pointsize>12</pointsize>
        <weight>50</weight>
        <bold>false</bold>
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;When converting color images setting this option to 1.0 MIGHT improve readability.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;When converting color images setting this option to 1.0 &lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;might&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; improve readability.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Gamma: Auto</string>
@@ -527,9 +549,14 @@
       <rect>
        <x>110</x>
        <y>10</y>
-       <width>280</width>
+       <width>290</width>
        <height>22</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Lucida Grande</family>
+      </font>
      </property>
      <property name="focusPolicy">
       <enum>Qt::ClickFocus</enum>
@@ -559,6 +586,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>10</pointsize>
       <weight>75</weight>
       <bold>true</bold>
@@ -580,7 +608,7 @@
    <widget class="QFrame" name="OptionsExpert">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>5</x>
       <y>335</y>
       <width>421</width>
       <height>41</height>
@@ -588,6 +616,7 @@
     </property>
     <property name="font">
      <font>
+      <family>Lucida Grande</family>
       <pointsize>9</pointsize>
      </font>
     </property>
@@ -602,7 +631,8 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>11</pointsize>
+       <family>Lucida Grande</family>
+       <pointsize>12</pointsize>
       </font>
      </property>
      <property name="focusPolicy">
@@ -618,17 +648,23 @@
     <widget class="QFrame" name="OptionsExpertInternal">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>95</x>
        <y>0</y>
        <width>315</width>
        <height>40</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Lucida Grande</family>
+      </font>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
        <widget class="QLabel" name="wLabel">
         <property name="font">
          <font>
+          <family>Lucida Grande</family>
           <pointsize>12</pointsize>
           <weight>50</weight>
           <bold>false</bold>
@@ -658,6 +694,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Lucida Grande</family>
           <pointsize>12</pointsize>
          </font>
         </property>
@@ -682,6 +719,7 @@
        <widget class="QLabel" name="hLabel">
         <property name="font">
          <font>
+          <family>Lucida Grande</family>
           <pointsize>12</pointsize>
           <weight>50</weight>
           <bold>false</bold>
@@ -711,6 +749,7 @@
         </property>
         <property name="font">
          <font>
+          <family>Lucida Grande</family>
           <pointsize>12</pointsize>
          </font>
         </property>
