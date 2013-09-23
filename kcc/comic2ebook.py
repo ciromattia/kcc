@@ -212,6 +212,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "<dc:title>", title, "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
                   "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n",
+                  "<dc:Creator>KCC</dc:Creator>\n",
                   "<meta name=\"generator\" content=\"KindleComicConverter-" + __version__ + "\"/>\n",
                   "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
                   "<meta name=\"region-mag\" content=\"true\"/>\n",
