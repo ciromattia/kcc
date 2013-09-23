@@ -288,15 +288,16 @@ def getImageFileName(imgfile):
 
 
 def applyImgOptimization(img, options, overrideQuality=5):
+    img.getImageFill(options.webtoon)
     if not options.webtoon:
         img.cropWhiteSpace(10.0)
     if options.cutpagenumbers and not options.webtoon:
         img.cutPageNumber()
     img.optimizeImage(options.gamma)
     if overrideQuality != 5:
-        img.resizeImage(options.upscale, options.stretch, options.bordersColor, overrideQuality, options.webtoon)
+        img.resizeImage(options.upscale, options.stretch, options.bordersColor, overrideQuality)
     else:
-        img.resizeImage(options.upscale, options.stretch, options.bordersColor, options.quality, options.webtoon)
+        img.resizeImage(options.upscale, options.stretch, options.bordersColor, options.quality)
     if options.forcepng and not options.forcecolor:
         img.quantizeImage()
 

@@ -151,6 +151,7 @@ class ComicPage:
         self.border = None
         self.noHPV = None
         self.noVPV = None
+        self.fill = None
 
     def saveToDir(self, targetdir, forcepng, color, wipe):
         try:
@@ -194,12 +195,12 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, bordersColor=None, qualityMode=0, isWebToon=False):
+    def resizeImage(self, upscale=False, stretch=False, bordersColor=None, qualityMode=0):
         method = Image.ANTIALIAS
         if bordersColor:
             fill = bordersColor
         else:
-            fill = self.getImageFill(isWebToon)
+            fill = self.fill
         if qualityMode == 0:
             size = (self.size[0], self.size[1])
             generateBorder = True
@@ -422,29 +423,25 @@ class ComicPage:
     def getImageFill(self, isWebToon):
         fill = 0
         if isWebToon or self.rotated:
-            fill += self.getImageHistogram(self.image.crop((0, 0, self.image.size[0], 1)))
-            fill += self.getImageHistogram(self.image.crop((0, self.image.size[1]-1, self.image.size[0],
+            fill += self.getImageHistogram(self.image.crop((0, 0, self.image.size[0], 5)))
+            fill += self.getImageHistogram(self.image.crop((0, self.image.size[1]-5, self.image.size[0],
                                                             self.image.size[1])))
         else:
-            fill += self.getImageHistogram(self.image.crop((0, 0, 1, self.image.size[1])))
-            fill += self.getImageHistogram(self.image.crop((self.image.size[0]-1, 0, self.image.size[0],
+            fill += self.getImageHistogram(self.image.crop((0, 0, 5, self.image.size[1])))
+            fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, 0, self.image.size[0],
                                                             self.image.size[1])))
         if fill == 2:
-            return 'black'
+            self.fill = 'black'
         elif fill == 0:
-            return 'white'
+            self.fill = 'white'
         else:
-            bBox = self.image.getbbox()
-            wBox = ImageOps.invert(self.image).getbbox()
-            if bBox is None:
-                bBox = 0
+            fill = 0
+            fill += self.getImageHistogram(self.image.crop((0, 0, 5, 5)))
+            fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, 0, self.image.size[0], 5)))
+            fill += self.getImageHistogram(self.image.crop((0, self.image.size[1]-5, 5, self.image.size[1])))
+            fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, self.image.size[1]-5,
+                                                            self.image.size[0], self.image.size[1])))
+            if fill > 1:
+                self.fill = 'black'
             else:
-                bBox = (bBox[2]-bBox[0])*(bBox[3]-bBox[1])
-            if wBox is None:
-                wBox = 0
-            else:
-                wBox = (wBox[2]-wBox[0])*(wBox[3]-wBox[1])
-            if wBox <= bBox:
-                return "white"
-            else:
-                return "black"
+                self.fill = 'white'
