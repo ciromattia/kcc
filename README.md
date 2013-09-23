@@ -130,11 +130,10 @@ This script born as a cross-platform alternative to `KindleComicParser` by **Dc5
 
 The app relies and includes the following scripts/binaries:
 
- - `KindleStrip` script &copy; 2010-2012 by **Paul Durrant** and released in public domain
-([forum thread](http://www.mobileread.com/forums/showthread.php?t=96903))
- - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>, released with ISC License
- - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches
- - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
+ - `KindleUnpack` script by Charles **M. Hannum, P. Durrant, K. Hendricks, S. Siebert, fandrieu, DiapDealer, nickredding**. Released with GPLv3 License.
+ - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>. Released with ISC License.
+ - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches.
+ - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
 ## SAMPLE FILES CREATED BY KCC
 * [Kindle Paperwhite](http://kcc.vulturis.eu/Samples/Ubunchu!-KPW.mobi)
@@ -255,6 +254,7 @@ The app relies and includes the following scripts/binaries:
 * Hotfixed crash occurring on OS with Russian locale
 
 ####3.3:
+* Created MOBI files are not longer marked as _Personal_ on newer Kindle models
 * Margins are now automatically omitted in Panel View mode
 * Layout of panels in Panel View mode is now automatically adjusted to content
 * Support for Virtual Panel View was removed
@@ -263,9 +263,6 @@ The app relies and includes the following scripts/binaries:
 * Profiles for Kindle Keyboard, Touch and Non-Touch are now merged
 * Windows release is now bundled with UnRAR and 7za
 * Small GUI tweaks
-
-## KNOWN ISSUES
-* Removing SRCS headers sometimes fail in 32bit enviroments. Due to memory limitations.
 
 ## COPYRIGHT
 

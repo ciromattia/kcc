@@ -30,7 +30,7 @@ import traceback
 import urllib2
 import time
 import comic2ebook
-import kindlestrip
+import kindlesplit
 from image import ProfileData
 from subprocess import call, Popen, STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
@@ -245,23 +245,27 @@ class WorkerThread(QtCore.QThread):
                                                                        True)
                             else:
                                 self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... Done!', 'info', True)
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header...', 'info')
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file...', 'info')
                             os.remove(item)
                             mobiPath = item.replace('.epub', '.mobi')
-                            shutil.move(mobiPath, mobiPath + '_tostrip')
+                            shutil.move(mobiPath, mobiPath + '_toclean')
                             try:
-                                kindlestrip.main((mobiPath + '_tostrip', mobiPath))
+                                if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFA']:
+                                    newKindle = True
+                                else:
+                                    newKindle = False
+                                mobisplit = kindlesplit.mobi_split(mobiPath + '_toclean', newKindle)
+                                open(mobiPath, 'wb').write(mobisplit.getResult())
                             except Exception:
                                 self.errors = True
                             if not self.errors:
-                                os.remove(mobiPath + '_tostrip')
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header... Done!', 'info', True)
+                                os.remove(mobiPath + '_toclean')
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file... Done!', 'info', True)
                             else:
-                                shutil.move(mobiPath + '_tostrip', mobiPath)
+                                os.remove(mobiPath + '_toclean')
+                                os.remove(mobiPath)
                                 self.emit(QtCore.SIGNAL("addMessage"),
-                                          'KindleStrip failed to remove SRCS header!', 'warning')
-                                self.emit(QtCore.SIGNAL("addMessage"),
-                                          'MOBI file will work correctly but it will be highly oversized.', 'warning')
+                                          'KindleUnpack failed to clean MOBI file!', 'error')
                         else:
                             epubSize = (os.path.getsize(item))/1024/1024
                             os.remove(item)
