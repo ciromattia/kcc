@@ -20,7 +20,7 @@ __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jas
 __docformat__ = 'restructuredtext en'
 
 import struct
-from uuid import uuid4
+# from uuid import uuid4
 
 # important  pdb header offsets
 unique_id_seed = 68
@@ -251,7 +251,7 @@ class mobi_split:
             datain = open(infile, 'rb').read()
             datain_rec0 = readsection(datain, 0)
             ver = getint(datain_rec0, mobi_version)
-            fake_asin = str(uuid4())
+            # fake_asin = str(uuid4())
             self.combo = (ver != 8)
             if not self.combo:
                 return
@@ -292,10 +292,10 @@ class mobi_split:
                 # don't remove the EXTH 131 KF8 Unidentified Count, seems to be present in mobi6 files as well
 
                 # Make sure we have an ASIN & cdeType set...
-                if len(read_exth(datain_rec0, 113)) == 0:
-                    datain_rec0 = add_exth(datain_rec0, 113, fake_asin)
-                if len(read_exth(datain_rec0, 504)) == 0:
-                    datain_rec0 = add_exth(datain_rec0, 504, fake_asin)
+                # if len(read_exth(datain_rec0, 113)) == 0:
+                #     datain_rec0 = add_exth(datain_rec0, 113, fake_asin)
+                # if len(read_exth(datain_rec0, 504)) == 0:
+                #     datain_rec0 = add_exth(datain_rec0, 504, fake_asin)
                 if len(read_exth(datain_rec0, 501)) == 0:
                     datain_rec0 = add_exth(datain_rec0, 501, b'EBOK')
 
@@ -347,10 +347,10 @@ class mobi_split:
                 datain_kfrec0 = write_exth(datain_kfrec0, 125, struct.pack('>L', lastimage-firstimage+1))
 
                 # Same dance for the KF8, we want an ASIN & cdeType :)
-                if len(read_exth(datain_kfrec0, 113)) == 0:
-                    datain_kfrec0 = add_exth(datain_kfrec0, 113, fake_asin)
-                if len(read_exth(datain_kfrec0, 504)) == 0:
-                    datain_kfrec0 = add_exth(datain_kfrec0, 504, fake_asin)
+                # if len(read_exth(datain_kfrec0, 113)) == 0:
+                #     datain_kfrec0 = add_exth(datain_kfrec0, 113, fake_asin)
+                # if len(read_exth(datain_kfrec0, 504)) == 0:
+                #     datain_kfrec0 = add_exth(datain_kfrec0, 504, fake_asin)
                 if len(read_exth(datain_kfrec0, 501)) == 0:
                     datain_kfrec0 = add_exth(datain_kfrec0, 501, b'EBOK')
 
