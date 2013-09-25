@@ -74,6 +74,9 @@ class ProfileData:
         0xff, 0xff, 0xff,
     ]
 
+    PalleteNull = [
+    ]
+
     Profiles = {
         'K1': ("Kindle 1", (600, 800), Palette4, 1.8, (900, 1200)),
         'K2': ("Kindle 2", (600, 800), Palette15, 1.8, (900, 1200)),
@@ -81,10 +84,12 @@ class ProfileData:
         'KHD': ("Kindle Paperwhite", (758, 1024), Palette16, 1.8, (1137, 1536)),
         'KDX': ("Kindle DX", (824, 1200), Palette15, 1.8, (1236, 1800)),
         'KDXG': ("Kindle DXG", (824, 1200), Palette16, 1.8, (1236, 1800)),
-        'KF': ("Kindle Fire", (600, 1024), Palette16, 1.0, (900, 1536)),
-        'KFHD': ("Kindle Fire HD 7\"", (800, 1280), Palette16, 1.0, (1200, 1920)),
-        'KFHD8': ("Kindle Fire HD 8.9\"", (1200, 1920), Palette16, 1.0, (1800, 2880)),
-        'KFA': ("Kindle for Android", (0, 0), Palette16, 1.0, (0, 0)),
+        'KF': ("Kindle Fire", (600, 1024), PalleteNull, 1.0, (900, 1536)),
+        'KFHD': ("K. Fire HD 7\"", (800, 1280), PalleteNull, 1.0, (1200, 1920)),
+        'KFHD8': ("K. Fire HD 8.9\"", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
+        'KFHDX': ("K. Fire HDX 7\"", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
+        'KFHDX8': ("K. Fire HDX 8.9\"", (1600, 2560), PalleteNull, 1.0, (2400, 3840)),
+        'KFA': ("Kindle for Android", (0, 0), PalleteNull, 1.0, (0, 0)),
         'OTHER': ("Other", (0, 0), Palette16, 1.8, (0, 0)),
     }
 
@@ -96,8 +101,10 @@ class ProfileData:
         "Kindle DX": 'KDX',
         "Kindle DXG": 'KDXG',
         "Kindle Fire": 'KF',
-        "Kindle Fire HD 7\"": 'KFHD',
-        "Kindle Fire HD 8.9\"": 'KFHD8',
+        "K. Fire HD 7\"": 'KFHD',
+        "K. Fire HD 8.9\"": 'KFHD8',
+        "K. Fire HDX 7\"": 'KFHDX',
+        "K. Fire HDX 8.9\"": 'KFHDX8',
         "Kindle for Android": 'KFA',
         "Other": 'OTHER'
     }
@@ -106,9 +113,10 @@ class ProfileData:
         "Kindle Paperwhite",
         "Kindle",
         "Separator",
-        "Kindle Fire",
-        "Kindle Fire HD 7\"",
-        "Kindle Fire HD 8.9\"",
+        "K. Fire HD 7\"",
+        "K. Fire HD 8.9\"",
+        "K. Fire HDX 7\"",
+        "K. Fire HDX 8.9\"",
         "Separator",
         "Kindle for Android",
         "Other",
@@ -116,7 +124,8 @@ class ProfileData:
         "Kindle 1",
         "Kindle 2",
         "Kindle DX",
-        "Kindle DXG"
+        "Kindle DXG",
+        "Kindle Fire"
     ]
 
 
