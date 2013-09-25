@@ -250,7 +250,7 @@ class WorkerThread(QtCore.QThread):
                             mobiPath = item.replace('.epub', '.mobi')
                             shutil.move(mobiPath, mobiPath + '_toclean')
                             try:
-                                if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFA']:
+                                if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX', 'KFHDX8', 'KFA']:
                                     newKindle = True
                                 else:
                                     newKindle = False
@@ -469,13 +469,13 @@ class Ui_KCC(object):
             GUI.RotateBox.setEnabled(True)
 
     def changeDevice(self, value):
-        if value == 8:
+        if value == 9:
             GUI.BasicModeButton.setEnabled(False)
             GUI.AdvModeButton.setEnabled(False)
             self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
                             'List of supported Non-Kindle devices</a>', 'info')
             self.modeExpert()
-        elif value == 7:
+        elif value == 8:
             GUI.BasicModeButton.setEnabled(False)
             GUI.AdvModeButton.setEnabled(False)
             self.modeExpert(True)
@@ -483,13 +483,13 @@ class Ui_KCC(object):
             GUI.BasicModeButton.setEnabled(True)
             GUI.AdvModeButton.setEnabled(True)
             self.modeBasic()
-        if value in [8, 9, 10, 11, 12]:
+        if value in [9, 11, 12, 13, 14]:
             GUI.QualityBox.setCheckState(0)
             GUI.QualityBox.setEnabled(False)
         else:
             if not GUI.WebtoonBox.isChecked():
                 GUI.QualityBox.setEnabled(True)
-        if not value in [8]:
+        if value in [3, 4, 5, 6, 8, 15]:
             GUI.NoDitheringBox.setCheckState(0)
             GUI.NoDitheringBox.setEnabled(False)
         else:

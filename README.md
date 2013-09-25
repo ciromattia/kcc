@@ -69,7 +69,7 @@ Usage: comic2ebook.py [options] comic_file|comic_folder
 Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
-                        Device profile (Choose one among K1, K2, K345, KDX, KDXG, KHD, KF, KFHD, KFHD8, KFA) [Default=KHD]
+                        Device profile (Choose one among K1, K2, K345, KDX, KDXG, KHD, KF, KFHD, KFHD8, KFHDX, KFHDX8, KFA) [Default=KHD]
     -q QUALITY, --quality=QUALITY
                         Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
     -m, --manga-style   Manga style (Right-to-left reading and splitting)
@@ -141,6 +141,8 @@ The app relies and includes the following scripts/binaries:
 * [Kindle Fire](http://kcc.vulturis.eu/Samples/Ubunchu!-KF.mobi)
 * [Kindle Fire HD](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD.mobi)
 * [Kindle Fire HD 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD8.mobi)
+* [Kindle Fire HDX](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX.mobi)
+* [Kindle Fire HDX 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX8.mobi)
 * [Kindle DX](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
 * [Kindle DXG](http://kcc.vulturis.eu/Samples/Ubunchu!-KDXG.mobi)
 
@@ -260,6 +262,7 @@ The app relies and includes the following scripts/binaries:
 * Support for Virtual Panel View was removed
 * Margin color fill is now autodetected
 * Added support of 7z/CB7 files
+* Added Kindle Fire HDX profile
 * Profiles for Kindle Keyboard, Touch and Non-Touch are now merged
 * Windows release is now bundled with UnRAR and 7za
 * Small GUI tweaks
