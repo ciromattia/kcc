@@ -407,7 +407,9 @@ class ComicPage:
     def getImageHistogram(self, image):
         histogram = image.histogram()
         RBGW = []
+        pixelCount = 0
         for i in range(256):
+            pixelCount += histogram[i] + histogram[256 + i] + histogram[512 + i]
             RBGW.append(histogram[i] + histogram[256 + i] + histogram[512 + i])
         white = 0
         black = 0
@@ -415,10 +417,10 @@ class ComicPage:
             white += RBGW[i]
         for i in range(11):
             black += RBGW[i]
-        if white > black:
-            return False
-        else:
+        if black > white and black > pixelCount*0.5:
             return True
+        else:
+            return False
 
     def getImageFill(self, isWebToon):
         fill = 0
