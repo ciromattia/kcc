@@ -30,6 +30,9 @@ except ImportError:
 
 
 class ProfileData:
+    def __init__(self):
+        pass
+
     Palette4 = [
         0x00, 0x00, 0x00,
         0x55, 0x55, 0x55,

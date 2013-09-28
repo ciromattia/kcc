@@ -138,13 +138,12 @@ The app relies and includes the following scripts/binaries:
 ## SAMPLE FILES CREATED BY KCC
 * [Kindle Paperwhite](http://kcc.vulturis.eu/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.vulturis.eu/Samples/Ubunchu!-K345.mobi)
+* [Kindle DX](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
 * [Kindle Fire](http://kcc.vulturis.eu/Samples/Ubunchu!-KF.mobi)
 * [Kindle Fire HD](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD.mobi)
 * [Kindle Fire HD 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD8.mobi)
 * [Kindle Fire HDX](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX.mobi)
 * [Kindle Fire HDX 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX8.mobi)
-* [Kindle DX](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
-* [Kindle DXG](http://kcc.vulturis.eu/Samples/Ubunchu!-KDXG.mobi)
 
 ## CHANGELOG
 ####1.00

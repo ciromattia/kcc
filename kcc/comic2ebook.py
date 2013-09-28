@@ -287,23 +287,22 @@ def getImageFileName(imgfile):
     return filename
 
 
-def applyImgOptimization(img, options, overrideQuality=5):
-    img.getImageFill(options.webtoon)
-    if not options.webtoon:
+def applyImgOptimization(img, opt, overrideQuality=5):
+    img.getImageFill(opt.webtoon)
+    if not opt.webtoon:
         img.cropWhiteSpace(10.0)
-    if options.cutpagenumbers and not options.webtoon:
+    if opt.cutpagenumbers and not opt.webtoon:
         img.cutPageNumber()
-    img.optimizeImage(options.gamma)
+    img.optimizeImage(opt.gamma)
     if overrideQuality != 5:
-        img.resizeImage(options.upscale, options.stretch, options.bordersColor, overrideQuality)
+        img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, overrideQuality)
     else:
-        img.resizeImage(options.upscale, options.stretch, options.bordersColor, options.quality)
-    if options.forcepng and not options.forcecolor:
+        img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, opt.quality)
+    if opt.forcepng and not opt.forcecolor:
         img.quantizeImage()
 
 
 def dirImgProcess(path):
-    global options
     work = []
     pagenumber = 0
     pagenumbermodifier = 0
@@ -349,9 +348,9 @@ def dirImgProcess(path):
         raise UserWarning("Source directory is empty.")
 
 
-def fileImgProcess_init(queue, options):
+def fileImgProcess_init(queue, opt):
     fileImgProcess.queue = queue
-    fileImgProcess.options = options
+    fileImgProcess.options = opt
 
 
 # noinspection PyUnresolvedReferences
@@ -359,54 +358,53 @@ def fileImgProcess(work):
     afile = work[0]
     dirpath = work[1]
     pagenumber = work[2]
-    options = fileImgProcess.options
+    opt = fileImgProcess.options
     output = None
-    if options.verbose:
-        print "Optimizing " + afile + " for " + options.profile
+    if opt.verbose:
+        print "Optimizing " + afile + " for " + opt.profile
     else:
         print ".",
     fileImgProcess.queue.put(".")
-    img = image.ComicPage(os.path.join(dirpath, afile), options.profileData)
-    if options.quality == 2:
+    img = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
+    if opt.quality == 2:
         wipe = False
     else:
         wipe = True
-    if options.nosplitrotate:
+    if opt.nosplitrotate:
         split = None
     else:
-        split = img.splitPage(dirpath, options.righttoleft, options.rotate)
+        split = img.splitPage(dirpath, opt.righttoleft, opt.rotate)
     if split is not None:
-        if options.verbose:
+        if opt.verbose:
             print "Splitted " + afile
         output = pagenumber
-        img0 = image.ComicPage(split[0], options.profileData)
-        applyImgOptimization(img0, options)
-        img0.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
-        img1 = image.ComicPage(split[1], options.profileData)
-        applyImgOptimization(img1, options)
-        img1.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
-        if options.quality == 2:
-            img3 = image.ComicPage(split[0], options.profileData)
-            applyImgOptimization(img3, options, 0)
-            img3.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
-            img4 = image.ComicPage(split[1], options.profileData)
-            applyImgOptimization(img4, options, 0)
-            img4.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
+        img0 = image.ComicPage(split[0], opt.profileData)
+        applyImgOptimization(img0, opt)
+        img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+        img1 = image.ComicPage(split[1], opt.profileData)
+        applyImgOptimization(img1, opt)
+        img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+        if opt.quality == 2:
+            img3 = image.ComicPage(split[0], opt.profileData)
+            applyImgOptimization(img3, opt, 0)
+            img3.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
+            img4 = image.ComicPage(split[1], opt.profileData)
+            applyImgOptimization(img4, opt, 0)
+            img4.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
     else:
-        applyImgOptimization(img, options)
-        img.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
-        if options.quality == 2:
-            img2 = image.ComicPage(os.path.join(dirpath, afile), options.profileData)
+        applyImgOptimization(img, opt)
+        img.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+        if opt.quality == 2:
+            img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
             if img.rotated:
                 img2.image = img2.image.rotate(90)
                 img2.rotated = True
-            applyImgOptimization(img2, options, 0)
-            img2.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
+            applyImgOptimization(img2, opt, 0)
+            img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
     return output
 
 
 def genEpubStruct(path):
-    global options
     filelist = []
     chapterlist = []
     cover = None
@@ -584,6 +582,7 @@ def getWorkFolder(afile):
 def slugify(value):
     # Normalizes string, converts to lowercase, removes non-alpha characters and converts spaces to hyphens.
     import unicodedata
+    #noinspection PyArgumentList
     value = unicodedata.normalize('NFKD', unicode(value, 'latin1')).encode('ascii', 'ignore')
     value = re.sub('[^\w\s\.-]', '', value).strip().lower()
     value = re.sub('[-\.\s]+', '-', value)
@@ -788,7 +787,7 @@ def Usage():
 
 
 def main(argv=None, qtGUI=None):
-    global parser, options, epub_path, GUI
+    global parser, options, GUI
     parser = OptionParser(usage="Usage: %prog [options] comic_file|comic_folder", add_help_option=False)
     mainOptions = OptionGroup(parser, "MAIN")
     processingOptions = OptionGroup(parser, "PROCESSING")
