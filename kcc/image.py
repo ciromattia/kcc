@@ -81,12 +81,12 @@ class ProfileData:
     ]
 
     Profiles = {
-        'K1': ("Kindle 1", (600, 800), Palette4, 1.8, (900, 1200)),
-        'K2': ("Kindle 2", (600, 800), Palette15, 1.8, (900, 1200)),
+        'K1': ("Kindle 1", (600, 670), Palette4, 1.8, (900, 1005)),
+        'K2': ("Kindle 2", (600, 670), Palette15, 1.8, (900, 1005)),
         'K345': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
         'KHD': ("Kindle Paperwhite", (758, 1024), Palette16, 1.8, (1137, 1536)),
-        'KDX': ("Kindle DX", (824, 1200), Palette15, 1.8, (1236, 1800)),
-        'KDXG': ("Kindle DXG", (824, 1200), Palette16, 1.8, (1236, 1800)),
+        'KDX': ("Kindle DX", (824, 1000), Palette15, 1.8, (1236, 1500)),
+        'KDXG': ("Kindle DXG", (824, 1000), Palette16, 1.8, (1236, 1500)),
         'KF': ("Kindle Fire", (600, 1024), PalleteNull, 1.0, (900, 1536)),
         'KFHD': ("K. Fire HD 7\"", (800, 1280), PalleteNull, 1.0, (1200, 1920)),
         'KFHD8': ("K. Fire HD 8.9\"", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),

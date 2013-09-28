@@ -138,7 +138,7 @@ The app relies and includes the following scripts/binaries:
 ## SAMPLE FILES CREATED BY KCC
 * [Kindle Paperwhite](http://kcc.vulturis.eu/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.vulturis.eu/Samples/Ubunchu!-K345.mobi)
-* [Kindle DX](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
+* [Kindle DX/DXG](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
 * [Kindle Fire](http://kcc.vulturis.eu/Samples/Ubunchu!-KF.mobi)
 * [Kindle Fire HD](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD.mobi)
 * [Kindle Fire HD 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD8.mobi)
@@ -255,13 +255,15 @@ The app relies and includes the following scripts/binaries:
 * Hotfixed crash occurring on OS with Russian locale
 
 ####3.3:
-* Created MOBI files are not longer marked as _Personal_ on newer Kindle models
 * Margins are now automatically omitted in Panel View mode
-* Layout of panels in Panel View mode is now automatically adjusted to content
-* Support for Virtual Panel View was removed
 * Margin color fill is now autodetected
+* Created MOBI files are not longer marked as _Personal_ on newer Kindle models
+* Layout of panels in Panel View mode is now automatically adjusted to content
+* Fixed Kindle 2/DX/DXG profiles - no more blank pages
+* All Kindle Fire profiles now support hiqh quality Panel View
 * Added support of 7z/CB7 files
 * Added Kindle Fire HDX profile
+* Support for Virtual Panel View was removed
 * Profiles for Kindle Keyboard, Touch and Non-Touch are now merged
 * Windows release is now bundled with UnRAR and 7za
 * Small GUI tweaks
