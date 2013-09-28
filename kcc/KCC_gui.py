@@ -99,6 +99,10 @@ class WorkerThread(QtCore.QThread):
     def __init__(self, parent):
         QtCore.QThread.__init__(self)
         self.parent = parent
+        self.conversionAlive = False
+        self.errors = False
+        self.kindlegenErrorCode = 0
+        self.kindlegenError = None
 
     def __del__(self):
         self.wait()
@@ -610,6 +614,7 @@ class Ui_KCC(object):
         self.versionCheck = VersionThread(self)
         self.conversionAlive = False
         self.needClean = True
+        self.GammaValue = 1.0
 
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')

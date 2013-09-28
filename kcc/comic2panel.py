@@ -54,9 +54,9 @@ def getImageFileName(imgfile):
     return filename
 
 
-def sanitizePanelSize(panel, options):
+def sanitizePanelSize(panel, opt):
     newPanels = []
-    if panel[2] > 8 * options.height:
+    if panel[2] > 8 * opt.height:
         diff = (panel[2] / 8)
         newPanels.append([panel[0], panel[1] - diff*7, diff])
         newPanels.append([panel[1] - diff*7, panel[1] - diff*6, diff])
@@ -66,13 +66,13 @@ def sanitizePanelSize(panel, options):
         newPanels.append([panel[1] - diff*3, panel[1] - diff*2, diff])
         newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
         newPanels.append([panel[1] - diff, panel[1], diff])
-    elif panel[2] > 4 * options.height:
+    elif panel[2] > 4 * opt.height:
         diff = (panel[2] / 4)
         newPanels.append([panel[0], panel[1] - diff*3, diff])
         newPanels.append([panel[1] - diff*3, panel[1] - diff*2, diff])
         newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
         newPanels.append([panel[1] - diff, panel[1], diff])
-    elif panel[2] > 2 * options.height:
+    elif panel[2] > 2 * opt.height:
         newPanels.append([panel[0], panel[1] - (panel[2] / 2), (panel[2] / 2)])
         newPanels.append([panel[1] - (panel[2] / 2), panel[1], (panel[2] / 2)])
     else:
@@ -80,17 +80,17 @@ def sanitizePanelSize(panel, options):
     return newPanels
 
 
-def splitImage_init(queue, options):
+def splitImage_init(queue, opt):
     splitImage.queue = queue
-    splitImage.options = options
+    splitImage.options = opt
 
 
 # noinspection PyUnresolvedReferences
 def splitImage(work):
     path = work[0]
     name = work[1]
-    options = splitImage.options
-    # Harcoded options
+    opt = splitImage.options
+    # Harcoded opttions
     threshold = 1.0
     delta = 15
     print ".",
@@ -115,8 +115,8 @@ def splitImage(work):
     image = Image.open(filePath)
     image = image.convert('RGB')
     widthImg, heightImg = image.size
-    if heightImg > options.height:
-        if options.debug:
+    if heightImg > opt.height:
+        if opt.debug:
             from PIL import ImageDraw
             debugImage = Image.open(filePath)
             draw = ImageDraw.Draw(debugImage)
@@ -138,23 +138,23 @@ def splitImage(work):
             if y1 + delta >= heightImg:
                 y1 = heightImg - 1
             y2Temp = y1
-            if options.debug:
+            if opt.debug:
                 draw.line([(0, y1Temp), (widthImg, y1Temp)], fill=(0, 255, 0))
                 draw.line([(0, y2Temp), (widthImg, y2Temp)], fill=(255, 0, 0))
             panelHeight = y2Temp - y1Temp
             if panelHeight > delta:
                 # Panels that can't be cut nicely will be forcefully splitted
-                panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight], options)
+                panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight], opt)
                 for panel in panelsCleaned:
                     panels.append(panel)
-        if options.debug:
+        if opt.debug:
             # noinspection PyUnboundLocalVariable
             debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG')
 
         # Create virtual pages
         pages = []
         currentPage = []
-        pageLeft = options.height
+        pageLeft = opt.height
         panelNumber = 0
         for panel in panels:
             if pageLeft - panel[2] > 0:
@@ -164,7 +164,7 @@ def splitImage(work):
             else:
                 if len(currentPage) > 0:
                     pages.append(currentPage)
-                pageLeft = options.height - panel[2]
+                pageLeft = opt.height - panel[2]
                 currentPage = [panelNumber]
                 panelNumber += 1
         if len(currentPage) > 0:
