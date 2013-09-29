@@ -1,6 +1,7 @@
 # Copyright (C) 2010  Alex Yatskov
 # Copyright (C) 2011  Stanislav (proDOOMman) Kosolapov <prodoomman@gmail.com>
 # Copyright (C) 2012-2013  Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (C) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +22,7 @@ __docformat__ = 'restructuredtext en'
 
 import os
 try:
-    # noinspection PyUnresolvedReferences,PyPackageRequirements
+    # noinspection PyUnresolvedReferences
     from PIL import Image, ImageOps, ImageStat, ImageChops
 except ImportError:
     print "ERROR: Pillow is not installed!"
@@ -29,6 +30,9 @@ except ImportError:
 
 
 class ProfileData:
+    def __init__(self):
+        pass
+
     Palette4 = [
         0x00, 0x00, 0x00,
         0x55, 0x55, 0x55,
@@ -73,37 +77,59 @@ class ProfileData:
         0xff, 0xff, 0xff,
     ]
 
+    PalleteNull = [
+    ]
+
     Profiles = {
-        'K1': ("Kindle 1", (600, 800), Palette4, 1.8, (900, 1200)),
-        'K2': ("Kindle 2", (600, 800), Palette15, 1.8, (900, 1200)),
-        'K3': ("Kindle Keyboard", (600, 800), Palette16, 1.8, (900, 1200)),
-        'K4NT': ("Kindle Non-Touch", (600, 800), Palette16, 1.8, (900, 1200)),
-        'K4T': ("Kindle Touch", (600, 800), Palette16, 1.8, (900, 1200)),
+        'K1': ("Kindle 1", (600, 670), Palette4, 1.8, (900, 1005)),
+        'K2': ("Kindle 2", (600, 670), Palette15, 1.8, (900, 1005)),
+        'K345': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
         'KHD': ("Kindle Paperwhite", (758, 1024), Palette16, 1.8, (1137, 1536)),
-        'KDX': ("Kindle DX", (824, 1200), Palette15, 1.8, (1236, 1800)),
-        'KDXG': ("Kindle DXG", (824, 1200), Palette16, 1.8, (1236, 1800)),
-        'KF': ("Kindle Fire", (600, 1024), Palette16, 1.0, (900, 1536)),
-        'KFHD': ("Kindle Fire HD 7\"", (800, 1280), Palette16, 1.0, (1200, 1920)),
-        'KFHD8': ("Kindle Fire HD 8.9\"", (1200, 1920), Palette16, 1.0, (1800, 2880)),
-        'KFA': ("Kindle for Android", (0, 0), Palette16, 1.0, (0, 0)),
+        'KDX': ("Kindle DX", (824, 1000), Palette15, 1.8, (1236, 1500)),
+        'KDXG': ("Kindle DXG", (824, 1000), Palette16, 1.8, (1236, 1500)),
+        'KF': ("Kindle Fire", (600, 1024), PalleteNull, 1.0, (900, 1536)),
+        'KFHD': ("K. Fire HD 7\"", (800, 1280), PalleteNull, 1.0, (1200, 1920)),
+        'KFHD8': ("K. Fire HD 8.9\"", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
+        'KFHDX': ("K. Fire HDX 7\"", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
+        'KFHDX8': ("K. Fire HDX 8.9\"", (1600, 2560), PalleteNull, 1.0, (2400, 3840)),
+        'KFA': ("Kindle for Android", (0, 0), PalleteNull, 1.0, (0, 0)),
         'OTHER': ("Other", (0, 0), Palette16, 1.8, (0, 0)),
     }
 
     ProfileLabels = {
         "Kindle 1": 'K1',
         "Kindle 2": 'K2',
-        "Kindle 3/Keyboard": 'K3',
-        "Kindle 4/Non-Touch": 'K4NT',
-        "Kindle 4/Touch": 'K4T',
+        "Kindle": 'K345',
         "Kindle Paperwhite": 'KHD',
         "Kindle DX": 'KDX',
         "Kindle DXG": 'KDXG',
         "Kindle Fire": 'KF',
-        "Kindle Fire HD 7\"": 'KFHD',
-        "Kindle Fire HD 8.9\"": 'KFHD8',
+        "K. Fire HD 7\"": 'KFHD',
+        "K. Fire HD 8.9\"": 'KFHD8',
+        "K. Fire HDX 7\"": 'KFHDX',
+        "K. Fire HDX 8.9\"": 'KFHDX8',
         "Kindle for Android": 'KFA',
         "Other": 'OTHER'
     }
+
+    ProfileLabelsGUI = [
+        "Kindle Paperwhite",
+        "Kindle",
+        "Separator",
+        "K. Fire HD 7\"",
+        "K. Fire HD 8.9\"",
+        "K. Fire HDX 7\"",
+        "K. Fire HDX 8.9\"",
+        "Separator",
+        "Kindle for Android",
+        "Other",
+        "Separator",
+        "Kindle 1",
+        "Kindle 2",
+        "Kindle DX",
+        "Kindle DXG",
+        "Kindle Fire"
+    ]
 
 
 class ComicPage:
@@ -133,19 +159,29 @@ class ComicPage:
             raise RuntimeError('Image file %s is corrupted' % source)
         self.image = Image.open(source)
         self.image = self.image.convert('RGB')
+        self.rotated = None
+        self.border = None
+        self.noHPV = None
+        self.noVPV = None
+        self.fill = None
 
-    def saveToDir(self, targetdir, forcepng, color, wipe, suffix=None):
+    def saveToDir(self, targetdir, forcepng, color, wipe):
         try:
+            suffix = ""
             if not color:
                 self.image = self.image.convert('L')    # convert to grayscale
-            if suffix == "R":
-                suffix = "_kccrotated"
-            else:
-                suffix = ""
+            if self.rotated:
+                suffix += "_kccrot"
             if wipe:
                 os.remove(os.path.join(targetdir, self.filename))
             else:
                 suffix += "_kcchq"
+            if self.noHPV:
+                suffix += "_kccnh"
+            if self.noVPV:
+                suffix += "_kccnv"
+            if self.border:
+                suffix += "_kccx" + str(self.border[0]) + "_kccy" + str(self.border[1])
             if forcepng:
                 self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"), "PNG")
             else:
@@ -171,72 +207,98 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def resizeImage(self, upscale=False, stretch=False, black_borders=False, isSplit=False, toRight=False,
-                    landscapeMode=False, qualityMode=0):
+    def resizeImage(self, upscale=False, stretch=False, bordersColor=None, qualityMode=0):
         method = Image.ANTIALIAS
-        if '-KCCFW' in str(self.filename):
-            fill = 'white'
-        elif '-KCCFB' in str(self.filename):
-            fill = 'black'
+        if bordersColor:
+            fill = bordersColor
         else:
-            if black_borders:
-                fill = 'black'
-            else:
-                fill = 'white'
+            fill = self.fill
         if qualityMode == 0:
             size = (self.size[0], self.size[1])
+            generateBorder = True
+        elif qualityMode == 1:
+            size = (self.panelviewsize[0], self.panelviewsize[1])
+            generateBorder = True
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
-        # Kindle Paperwhite/Touch - Force upscale of splited pages to increase readability
-        if isSplit and landscapeMode:
-            upscale = True
+            generateBorder = False
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
                 borderw = (self.size[0] - self.image.size[0]) / 2
                 borderh = (self.size[1] - self.image.size[1]) / 2
                 self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
+                if generateBorder:
+                    if (self.image.size[0]-(2*borderw))*1.5 < self.size[0]:
+                        self.noHPV = True
+                    if (self.image.size[1]-(2*borderh))*1.5 < self.size[1]:
+                        self.noVPV = True
+                    self.border = [int(round(float(borderw)/float(self.image.size[0])*100, 2)*100*1.5),
+                                   int(round(float(borderh)/float(self.image.size[1])*100, 2)*100*1.5)]
                 return self.image
             else:
                 method = Image.BILINEAR
-        if stretch:  # if stretching call directly resize() without other considerations.
+        if stretch:  # If stretching call directly resize() without other considerations.
             self.image = self.image.resize(size, method)
+            if generateBorder:
+                if fill == 'white':
+                    border = ImageOps.invert(self.image).getbbox()
+                else:
+                    border = self.image.getbbox()
+                if border is not None:
+                    if (border[2]-border[0])*1.5 < self.size[0]:
+                        self.noHPV = True
+                    if (border[3]-border[1])*1.5 < self.size[1]:
+                        self.noVPV = True
+                    self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
+                                   int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
+                else:
+                    self.border = [0, 0]
+                    self.noHPV = True
+                    self.noVPV = True
             return self.image
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
-            if isSplit and landscapeMode:
-                diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-                self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
-                tempImg = Image.new(self.image.mode, (self.image.size[0] + diff, self.image.size[1]), fill)
-                if toRight:
-                    tempImg.paste(self.image, (diff, 0))
-                else:
-                    tempImg.paste(self.image, (0, 0))
-                self.image = tempImg
-            else:
-                diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-                self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
+            diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
+            self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
             self.image = ImageOps.expand(self.image, border=(0, diff / 2), fill=fill)
         self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
+        if generateBorder:
+            if fill == 'white':
+                border = ImageOps.invert(self.image).getbbox()
+            else:
+                border = self.image.getbbox()
+            if border is not None:
+                if (border[2]-border[0])*1.5 < self.size[0]:
+                    self.noHPV = True
+                if (border[3]-border[1])*1.5 < self.size[1]:
+                    self.noVPV = True
+                self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
+                               int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
+            else:
+                self.border = [0, 0]
+                self.noHPV = True
+                self.noVPV = True
         return self.image
 
     def splitPage(self, targetdir, righttoleft=False, rotate=False):
         width, height = self.image.size
         dstwidth, dstheight = self.size
-        #print "Image is %d x %d" % (width,height)
-        # only split if origin is not oriented the same as target
+        # Only split if origin is not oriented the same as target
         if (width > height) != (dstwidth > dstheight):
             if rotate:
                 self.image = self.image.rotate(90)
-                return "R"
+                self.rotated = True
+                return None
             else:
+                self.rotated = False
                 if width > height:
-                    # source is landscape, so split by the width
+                    # Source is landscape, so split by the width
                     leftbox = (0, 0, width / 2, height)
                     rightbox = (width / 2, 0, width, height)
                 else:
-                    # source is portrait and target is landscape, so split by the height
+                    # Source is portrait and target is landscape, so split by the height
                     leftbox = (0, 0, width, height / 2)
                     rightbox = (0, height / 2, width, height)
                 filename = os.path.splitext(self.filename)
@@ -256,6 +318,7 @@ class ComicPage:
                     raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
                 return fileone, filetwo
         else:
+            self.rotated = False
             return None
 
     def cutPageNumber(self):
@@ -352,3 +415,47 @@ class ComicPage:
             self.image = self.image.crop((0, 0, widthImg - diff, heightImg))
             #    print "New size: %sx%s"%(self.image.size[0],self.image.size[1])
         return self.image
+
+    def getImageHistogram(self, image):
+        histogram = image.histogram()
+        RBGW = []
+        pixelCount = 0
+        for i in range(256):
+            pixelCount += histogram[i] + histogram[256 + i] + histogram[512 + i]
+            RBGW.append(histogram[i] + histogram[256 + i] + histogram[512 + i])
+        white = 0
+        black = 0
+        for i in range(245, 256):
+            white += RBGW[i]
+        for i in range(11):
+            black += RBGW[i]
+        if black > white and black > pixelCount*0.5:
+            return True
+        else:
+            return False
+
+    def getImageFill(self, isWebToon):
+        fill = 0
+        if isWebToon or self.rotated:
+            fill += self.getImageHistogram(self.image.crop((0, 0, self.image.size[0], 5)))
+            fill += self.getImageHistogram(self.image.crop((0, self.image.size[1]-5, self.image.size[0],
+                                                            self.image.size[1])))
+        else:
+            fill += self.getImageHistogram(self.image.crop((0, 0, 5, self.image.size[1])))
+            fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, 0, self.image.size[0],
+                                                            self.image.size[1])))
+        if fill == 2:
+            self.fill = 'black'
+        elif fill == 0:
+            self.fill = 'white'
+        else:
+            fill = 0
+            fill += self.getImageHistogram(self.image.crop((0, 0, 5, 5)))
+            fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, 0, self.image.size[0], 5)))
+            fill += self.getImageHistogram(self.image.crop((0, self.image.size[1]-5, 5, self.image.size[1])))
+            fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, self.image.size[1]-5,
+                                                            self.image.size[0], self.image.size[1])))
+            if fill > 1:
+                self.fill = 'black'
+            else:
+                self.fill = 'white'

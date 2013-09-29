@@ -47,32 +47,34 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>4</x>
-      <y>253</y>
+      <x>1</x>
+      <y>254</y>
       <width>421</width>
       <height>61</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
+      <family>DejaVu Sans</family>
       <pointsize>9</pointsize>
      </font>
     </property>
     <layout class="QGridLayout" name="gridLayout">
+     <property name="leftMargin">
+      <number>9</number>
+     </property>
      <item row="1" column="0">
       <widget class="QCheckBox" name="ProcessingBox">
        <property name="font">
         <font>
-         <family>Lucida Grande</family>
-         <pointsize>12</pointsize>
+         <family>DejaVu Sans</family>
         </font>
        </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Disable image optimizations.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>Disable image optimizations.</string>
        </property>
        <property name="text">
         <string>No optimisation</string>
@@ -83,15 +85,14 @@
       <widget class="QCheckBox" name="UpscaleBox">
        <property name="font">
         <font>
-         <family>Lucida Grande</family>
-         <pointsize>12</pointsize>
+         <family>DejaVu Sans</family>
         </font>
        </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Nothing&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Images smaller than device resolution will not be resized.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - Stretching&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Images smaller than device resolution will be resized. Aspect ratio will be not preserved.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Upscaling&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Images smaller than device resolution will be resized. Aspect ratio will be preserved.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Nothing&lt;br/&gt;&lt;/span&gt;Images smaller than device resolution will not be resized.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - Stretching&lt;br/&gt;&lt;/span&gt;Images smaller than device resolution will be resized. Aspect ratio will be not preserved.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Upscaling&lt;br/&gt;&lt;/span&gt;Images smaller than device resolution will be resized. Aspect ratio will be preserved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>Stretch/Upscale</string>
@@ -105,15 +106,14 @@
       <widget class="QCheckBox" name="WebtoonBox">
        <property name="font">
         <font>
-         <family>Lucida Grande</family>
-         <pointsize>12</pointsize>
+         <family>DejaVu Sans</family>
         </font>
        </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Enable auto-splitting of webtoons like &lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-style:italic;&quot;&gt;Tower of God&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; or &lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-style:italic;&quot;&gt;Noblesse&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;.&lt;br/&gt;Pages with a low width, high height and vertical panel flow.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable auto-splitting of webtoons like &lt;span style=&quot; font-style:italic;&quot;&gt;Tower of God&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;Noblesse&lt;/span&gt;.&lt;br/&gt;Pages with a low width, high height and vertical panel flow.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>Webtoon mode</string>
@@ -124,15 +124,14 @@
       <widget class="QCheckBox" name="NoDitheringBox">
        <property name="font">
         <font>
-         <family>Lucida Grande</family>
-         <pointsize>12</pointsize>
+         <family>DejaVu Sans</family>
         </font>
        </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Create PNG files instead JPEG.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create PNG files instead JPEG.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>PNG output</string>
@@ -143,15 +142,14 @@
       <widget class="QCheckBox" name="BorderBox">
        <property name="font">
         <font>
-         <family>Lucida Grande</family>
-         <pointsize>12</pointsize>
+         <family>DejaVu Sans</family>
         </font>
        </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Autodetection&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Color of margins fill will be detected automatically.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - White&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Margins will be filled with white color.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Black&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Margins will be filled with black color.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Autodetection&lt;br/&gt;&lt;/span&gt;Color of margins fill will be detected automatically.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - White&lt;br/&gt;&lt;/span&gt;Margins will be filled with white color.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Black&lt;br/&gt;&lt;/span&gt;Margins will be filled with black color.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>W/B margins</string>
@@ -165,15 +163,14 @@
       <widget class="QCheckBox" name="NoRotateBox">
        <property name="font">
         <font>
-         <family>Lucida Grande</family>
-         <pointsize>12</pointsize>
+         <family>DejaVu Sans</family>
         </font>
        </property>
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Disable splitting and rotation.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disable splitting and rotation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>No split/rotate</string>
@@ -185,45 +182,45 @@
    <widget class="QComboBox" name="DeviceBox">
     <property name="geometry">
      <rect>
-      <x>8</x>
+      <x>10</x>
       <y>200</y>
-      <width>151</width>
-      <height>34</height>
+      <width>141</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
-      <pointsize>11</pointsize>
+      <family>DejaVu Sans</family>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Target device.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>Target device.</string>
     </property>
    </widget>
    <widget class="QComboBox" name="FormatBox">
     <property name="geometry">
      <rect>
-      <x>262</x>
+      <x>260</x>
       <y>200</y>
-      <width>152</width>
-      <height>34</height>
+      <width>151</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
-      <pointsize>11</pointsize>
+      <family>DejaVu Sans</family>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Output format.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>Output format.</string>
     </property>
    </widget>
    <widget class="QPushButton" name="ConvertButton">
@@ -231,14 +228,14 @@
      <rect>
       <x>160</x>
       <y>200</y>
-      <width>101</width>
-      <height>41</height>
+      <width>91</width>
+      <height>32</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
-      <pointsize>11</pointsize>
+      <family>DejaVu Sans</family>
+      <pointsize>9</pointsize>
       <weight>75</weight>
       <bold>true</bold>
      </font>
@@ -257,16 +254,16 @@
    <widget class="QPushButton" name="DirectoryButton">
     <property name="geometry">
      <rect>
-      <x>5</x>
+      <x>10</x>
       <y>160</y>
-      <width>156</width>
-      <height>41</height>
+      <width>141</width>
+      <height>32</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
-      <pointsize>11</pointsize>
+      <family>DejaVu Sans</family>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
@@ -285,14 +282,14 @@
      <rect>
       <x>260</x>
       <y>160</y>
-      <width>157</width>
-      <height>41</height>
+      <width>151</width>
+      <height>32</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
-      <pointsize>11</pointsize>
+      <family>DejaVu Sans</family>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
@@ -311,14 +308,14 @@
      <rect>
       <x>160</x>
       <y>160</y>
-      <width>101</width>
-      <height>41</height>
+      <width>91</width>
+      <height>32</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
-      <pointsize>11</pointsize>
+      <family>DejaVu Sans</family>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
@@ -335,16 +332,16 @@
    <widget class="QFrame" name="OptionsBasic">
     <property name="geometry">
      <rect>
-      <x>5</x>
-      <y>233</y>
+      <x>1</x>
+      <y>230</y>
       <width>421</width>
       <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
-      <pointsize>12</pointsize>
+      <family>DejaVu Sans</family>
+      <pointsize>9</pointsize>
      </font>
     </property>
     <widget class="QCheckBox" name="MangaBox">
@@ -358,15 +355,14 @@
      </property>
      <property name="font">
       <font>
-       <family>Lucida Grande</family>
-       <pointsize>12</pointsize>
+       <family>DejaVu Sans</family>
       </font>
      </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Enable right-to-left reading.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>Enable right-to-left reading.</string>
      </property>
      <property name="text">
       <string>Manga mode</string>
@@ -383,15 +379,20 @@
      </property>
      <property name="font">
       <font>
-       <family>Lucida Grande</family>
-       <pointsize>12</pointsize>
+       <family>DejaVu Sans</family>
       </font>
      </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Normal quality mode&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-style:italic;&quot;&gt;Use it when Panel View support is not needed.&lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-size:12pt;&quot;&gt;- Maximum quality when zoom is not enabled.&lt;br/&gt;- Poor quality when zoom is enabled.&lt;br/&gt;- Lowest file size.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - High quality mode&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-style:italic;&quot;&gt;Not zoomed image &lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; font-style:italic;&quot;&gt;might &lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-style:italic;&quot;&gt;be a little blurry.&lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-size:12pt;&quot;&gt;- Medium/High quality when zoom is not enabled.&lt;br/&gt;- Maximum quality when zoom is enabled.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Ultra quality mode&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-style:italic;&quot;&gt;Maximum possible quality.&lt;/span&gt;&lt;span style=&quot;font-size:12pt; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot;font-size:12pt;&quot;&gt;- Maximum quality when zoom is not enabled.&lt;br/&gt;- Maximum quality when zoom is enabled.&lt;br/&gt;- Very high file size.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Normal quality mode&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-style:italic;&quot;&gt;Use it when Panel View support is not needed.&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2';&quot;&gt;- Maximum quality when zoom is not enabled.&lt;br /&gt;- Poor quality when zoom is enabled.&lt;br /&gt;- Lowest file size.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - High quality mode&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-style:italic;&quot;&gt;Not zoomed image &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-weight:600; font-style:italic;&quot;&gt;might &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-style:italic;&quot;&gt;be a little blurry.&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2';&quot;&gt;- Medium/High quality when zoom is not enabled.&lt;br /&gt;- Maximum quality when zoom is enabled.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Ultra quality mode&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-style:italic;&quot;&gt;Maximum possible quality.&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-weight:600; text-decoration: underline;&quot;&gt;&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2';&quot;&gt;- Maximum quality when zoom is not enabled.&lt;br /&gt;- Maximum quality when zoom is enabled.&lt;br /&gt;- Very high file size.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>High/Ultra quality</string>
@@ -411,15 +412,14 @@
      </property>
      <property name="font">
       <font>
-       <family>Lucida Grande</family>
-       <pointsize>12</pointsize>
+       <family>DejaVu Sans</family>
       </font>
      </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Disable page spliting.&lt;br/&gt;They will be rotated instead.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disable page spliting.&lt;br/&gt;They will be rotated instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Horizontal mode</string>
@@ -440,8 +440,9 @@
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
-      <pointsize>11</pointsize>
+      <family>DejaVu Sans</family>
+      <pointsize>8</pointsize>
+      <italic>false</italic>
      </font>
     </property>
     <property name="focusPolicy">
@@ -453,22 +454,26 @@
     <property name="selectionMode">
      <enum>QAbstractItemView::NoSelection</enum>
     </property>
+    <property name="iconSize">
+     <size>
+      <width>18</width>
+      <height>18</height>
+     </size>
+    </property>
    </widget>
    <widget class="QPushButton" name="BasicModeButton">
     <property name="geometry">
      <rect>
-      <x>5</x>
+      <x>10</x>
       <y>10</y>
-      <width>210</width>
-      <height>41</height>
+      <width>195</width>
+      <height>32</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
-      <pointsize>12</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
+      <family>DejaVu Sans</family>
+      <pointsize>9</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
@@ -481,18 +486,16 @@
    <widget class="QPushButton" name="AdvModeButton">
     <property name="geometry">
      <rect>
-      <x>207</x>
+      <x>217</x>
       <y>10</y>
-      <width>210</width>
-      <height>41</height>
+      <width>195</width>
+      <height>32</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
-      <pointsize>12</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
+      <family>DejaVu Sans</family>
+      <pointsize>9</pointsize>
      </font>
     </property>
     <property name="focusPolicy">
@@ -508,22 +511,22 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>5</x>
-      <y>303</y>
+      <x>10</x>
+      <y>305</y>
       <width>401</width>
       <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
+      <family>DejaVu Sans</family>
       <pointsize>9</pointsize>
      </font>
     </property>
     <widget class="QLabel" name="GammaLabel">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>15</x>
        <y>0</y>
        <width>100</width>
        <height>40</height>
@@ -531,14 +534,11 @@
      </property>
      <property name="font">
       <font>
-       <family>Lucida Grande</family>
-       <pointsize>12</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
+       <family>DejaVu Sans</family>
       </font>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;When converting color images setting this option to 1.0 &lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;might&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; improve readability.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When converting color images setting this option to 1.0 &lt;span style=&quot; font-weight:600;&quot;&gt;might&lt;/span&gt; improve readability.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Gamma: Auto</string>
@@ -549,20 +549,20 @@
       <rect>
        <x>110</x>
        <y>10</y>
-       <width>290</width>
+       <width>275</width>
        <height>22</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <family>Lucida Grande</family>
+       <family>DejaVu Sans</family>
       </font>
      </property>
      <property name="focusPolicy">
       <enum>Qt::ClickFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;When converting color images setting this option to 1.0 &lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;might&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; improve readability.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When converting color images setting this option to 1.0 &lt;span style=&quot; font-weight:600;&quot;&gt;might&lt;/span&gt; improve readability.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="maximum">
       <number>500</number>
@@ -581,19 +581,16 @@
       <x>10</x>
       <y>10</y>
       <width>401</width>
-      <height>35</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
+      <family>DejaVu Sans</family>
       <pointsize>10</pointsize>
       <weight>75</weight>
       <bold>true</bold>
      </font>
-    </property>
-    <property name="autoFillBackground">
-     <bool>true</bool>
     </property>
     <property name="value">
      <number>0</number>
@@ -608,15 +605,15 @@
    <widget class="QFrame" name="OptionsExpert">
     <property name="geometry">
      <rect>
-      <x>5</x>
-      <y>335</y>
+      <x>1</x>
+      <y>337</y>
       <width>421</width>
       <height>41</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Lucida Grande</family>
+      <family>DejaVu Sans</family>
       <pointsize>9</pointsize>
      </font>
     </property>
@@ -631,15 +628,14 @@
      </property>
      <property name="font">
       <font>
-       <family>Lucida Grande</family>
-       <pointsize>12</pointsize>
+       <family>DejaVu Sans</family>
       </font>
      </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Do not convert images to grayscale.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>Do not convert images to grayscale.</string>
      </property>
      <property name="text">
       <string>Color mode</string>
@@ -648,15 +644,15 @@
     <widget class="QFrame" name="OptionsExpertInternal">
      <property name="geometry">
       <rect>
-       <x>95</x>
+       <x>105</x>
        <y>0</y>
-       <width>315</width>
+       <width>295</width>
        <height>40</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <family>Lucida Grande</family>
+       <family>DejaVu Sans</family>
       </font>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
@@ -664,14 +660,11 @@
        <widget class="QLabel" name="wLabel">
         <property name="font">
          <font>
-          <family>Lucida Grande</family>
-          <pointsize>12</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
+          <family>DejaVu Sans</family>
          </font>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Resolution of target device.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>Resolution of target device.</string>
         </property>
         <property name="text">
          <string>Custom width: </string>
@@ -688,14 +681,13 @@
         </property>
         <property name="maximumSize">
          <size>
-          <width>45</width>
+          <width>40</width>
           <height>16777215</height>
          </size>
         </property>
         <property name="font">
          <font>
-          <family>Lucida Grande</family>
-          <pointsize>12</pointsize>
+          <family>DejaVu Sans</family>
          </font>
         </property>
         <property name="focusPolicy">
@@ -705,7 +697,7 @@
          <bool>false</bool>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Resolution of target device.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>Resolution of target device.</string>
         </property>
         <property name="inputMask">
          <string>0000; </string>
@@ -719,14 +711,11 @@
        <widget class="QLabel" name="hLabel">
         <property name="font">
          <font>
-          <family>Lucida Grande</family>
-          <pointsize>12</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
+          <family>DejaVu Sans</family>
          </font>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Resolution of target device.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>Resolution of target device.</string>
         </property>
         <property name="text">
          <string>Custom height: </string>
@@ -736,21 +725,20 @@
       <item row="0" column="3">
        <widget class="QLineEdit" name="customHeight">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="maximumSize">
          <size>
-          <width>45</width>
+          <width>40</width>
           <height>16777215</height>
          </size>
         </property>
         <property name="font">
          <font>
-          <family>Lucida Grande</family>
-          <pointsize>12</pointsize>
+          <family>DejaVu Sans</family>
          </font>
         </property>
         <property name="focusPolicy">
@@ -760,7 +748,7 @@
          <bool>false</bool>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Resolution of target device.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>Resolution of target device.</string>
         </property>
         <property name="inputMask">
          <string>0000; </string>
@@ -773,10 +761,6 @@
      </layout>
     </widget>
    </widget>
-   <zorder>BasicModeButton</zorder>
-   <zorder>AdvModeButton</zorder>
-   <zorder>ProgressBar</zorder>
-   <zorder>JobList</zorder>
    <zorder>OptionsAdvanced</zorder>
    <zorder>DeviceBox</zorder>
    <zorder>FormatBox</zorder>
@@ -785,8 +769,12 @@
    <zorder>FileButton</zorder>
    <zorder>ClearButton</zorder>
    <zorder>OptionsBasic</zorder>
+   <zorder>JobList</zorder>
+   <zorder>BasicModeButton</zorder>
+   <zorder>AdvModeButton</zorder>
    <zorder>OptionsAdvancedGamma</zorder>
    <zorder>OptionsExpert</zorder>
+   <zorder>ProgressBar</zorder>
   </widget>
   <action name="ActionBasic">
    <property name="checkable">
@@ -799,9 +787,7 @@
     <string>Basic</string>
    </property>
    <property name="font">
-    <font>
-     <pointsize>9</pointsize>
-    </font>
+    <font/>
    </property>
   </action>
   <action name="ActionAdvanced">

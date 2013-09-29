@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2012 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -17,7 +18,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
-__version__ = '3.2.1'
+__version__ = '3.3'
 __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
@@ -44,11 +45,18 @@ import pdfjpgextract
 def buildHTML(path, imgfile):
     filename = getImageFileName(imgfile)
     if filename is not None:
-        # All files marked with this sufix need horizontal Panel View.
-        if "_kccrotated" in str(filename):
-            rotate = True
+        if "_kccrot" in str(filename):
+            rotatedPage = True
         else:
-            rotate = False
+            rotatedPage = False
+        if "_kccnh" in str(filename):
+            noHorizontalPV = True
+        else:
+            noHorizontalPV = False
+        if "_kccnv" in str(filename):
+            noVerticalPV = True
+        else:
+            noVerticalPV = False
         htmlpath = ''
         postfix = ''
         backref = 1
@@ -79,86 +87,80 @@ def buildHTML(path, imgfile):
                       imgfile, "\" class=\"singlePage\"/></div>\n"
                       ])
         if options.panelview:
-            if rotate:
-                if options.righttoleft:
-                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
-                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
-                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
-                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
-                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
-                                  ])
+            if not noHorizontalPV and not noVerticalPV:
+                if rotatedPage:
+                    if options.righttoleft:
+                        order = [1, 3, 2, 4]
+                    else:
+                        order = [2, 4, 1, 3]
                 else:
-                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
-                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
-                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
-                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
-                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":3}'></a></div>\n"
-                                  ])
+                    if options.righttoleft:
+                        order = [2, 1, 4, 3]
+                    else:
+                        order = [1, 2, 3, 4]
+                boxes = ["BoxTL", "BoxTR", "BoxBL", "BoxBR"]
+            elif noHorizontalPV and not noVerticalPV:
+                if rotatedPage:
+                    if options.righttoleft:
+                        order = [2, 1]
+                    else:
+                        order = [1, 2]
+                else:
+                    order = [1, 2]
+                boxes = ["BoxT", "BoxB"]
+            elif not noHorizontalPV and noVerticalPV:
+                if rotatedPage:
+                    order = [1, 2]
+                else:
+                    if options.righttoleft:
+                        order = [2, 1]
+                    else:
+                        order = [1, 2]
+                boxes = ["BoxL", "BoxR"]
             else:
-                if options.righttoleft:
-                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
-                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
-                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":4}'></a></div>\n",
-                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
-                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":3}'></a></div>\n"
-                                  ])
-                else:
-                    f.writelines(["<div id=\"BoxTL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTL-Panel-Parent\", \"ordinal\":1}'></a></div>\n",
-                                  "<div id=\"BoxTR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxTR-Panel-Parent\", \"ordinal\":2}'></a></div>\n",
-                                  "<div id=\"BoxBL\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                                  "'{\"targetId\":\"BoxBL-Panel-Parent\", \"ordinal\":3}'></a></div>\n",
-                                  "<div id=\"BoxBR\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify="
-                                  "'{\"targetId\":\"BoxBR-Panel-Parent\", \"ordinal\":4}'></a></div>\n"
-                                  ])
+                order = [1]
+                boxes = ["BoxC"]
+            for i in range(0, len(boxes)):
+                f.writelines(["<div id=\"" + boxes[i] + "\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                              "'{\"targetId\":\"" + boxes[i] + "-Panel-Parent\", \"ordinal\":" + str(order[i]),
+                              "}'></a></div>\n"])
             if options.quality == 2:
                 imgfilepv = string.split(imgfile, ".")
+                imgfilepv[0] = imgfilepv[0].split("_kccx")[0].replace("_kccnh", "").replace("_kccnv", "")
                 imgfilepv[0] += "_kcchq"
                 imgfilepv = string.join(imgfilepv, ".")
             else:
                 imgfilepv = imgfile
-            f.writelines(["<div id=\"BoxTL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTL-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
-                          imgfilepv, "\"/></div></div>\n",
-                          "<div id=\"BoxTR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxTR-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
-                          imgfilepv, "\"/></div></div>\n",
-                          "<div id=\"BoxBL-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBL-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
-                          imgfilepv, "\"/></div></div>\n",
-                          "<div id=\"BoxBR-Panel-Parent\" class=\"target-mag-parent\"><div id=\"BoxBR-Panel\" class=\"",
-                          "target-mag\"><img src=\"", "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"",
-                          imgfilepv, "\"/></div></div>\n"
-                          ])
+            xy = string.split(filename[0], "_kccx")[1]
+            x = string.split(xy, "_kccy")[0].lstrip("0")
+            y = string.split(xy, "_kccy")[1].lstrip("0")
+            if x != "":
+                x = "-" + str(float(x)/100) + "%"
+            else:
+                x = "0%"
+            if y != "":
+                y = "-" + str(float(y)/100) + "%"
+            else:
+                y = "0%"
+            boxStyles = {"BoxTL": "left:" + x + ";top:" + y + ";",
+                         "BoxTR": "right:" + x + ";top:" + y + ";",
+                         "BoxBL": "left:" + x + ";bottom:" + y + ";",
+                         "BoxBR": "right:" + x + ";bottom:" + y + ";",
+                         "BoxT": "left:-25%;top:" + y + ";",
+                         "BoxB": "left:-25%;bottom:" + y + ";",
+                         "BoxL": "left:" + x + ";top:-25%;",
+                         "BoxR": "right:" + x + ";top:-25%;",
+                         "BoxC": "right:-25%;top:-25%;"
+                         }
+            for box in boxes:
+                f.writelines(["<div id=\"" + box + "-Panel-Parent\" class=\"target-mag-parent\"><div id=\"",
+                              "Generic-Panel\" class=\"target-mag\"><img style=\"" + boxStyles[box] + "\" src=\"",
+                              "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
+                              "\"/></div></div>\n",
+                              ])
         f.writelines(["</div>\n</body>\n</html>"])
         f.close()
         return path, imgfile
-
-
-def buildBlankHTML(path):
-    f = open(os.path.join(path, 'blank.html'), "w")
-    f.writelines(["<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" ",
-                  "\"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
-                  "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
-                  "<head>\n",
-                  "<title></title>\n",
-                  "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
-                  "</head>\n",
-                  "<body>\n",
-                  "</body>\n",
-                  "</html>"])
-    f.close()
-    return path
 
 
 def buildNCX(dstdir, title, chapters):
@@ -173,16 +175,18 @@ def buildNCX(dstdir, title, chapters):
                   "<ncx version=\"2005-1\" xml:lang=\"en-US\" xmlns=\"http://www.daisy.org/z3986/2005/ncx/\">\n",
                   "<head>\n",
                   "<meta name=\"dtb:uid\" content=\"", options.uuid, "\"/>\n",
-                  "<meta name=\"dtb:depth\" content=\"2\"/>\n",
+                  "<meta name=\"dtb:depth\" content=\"1\"/>\n",
                   "<meta name=\"dtb:totalPageCount\" content=\"0\"/>\n",
                   "<meta name=\"dtb:maxPageNumber\" content=\"0\"/>\n",
+                  "<meta name=\"generated\" content=\"true\"/>\n",
                   "</head>\n",
                   "<docTitle><text>", title, "</text></docTitle>\n",
                   "<navMap>"
                   ])
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
-        title = os.path.basename(folder)
+        if os.path.basename(folder) != "Text":
+            title = os.path.basename(folder)
         filename = getImageFileName(os.path.join(folder, chapter[1]))
         f.write("<navPoint id=\"" + folder.replace('/', '_').replace('\\', '_') + "\"><navLabel><text>" + title
                 + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") + ".html\"/></navPoint>\n")
@@ -197,38 +201,33 @@ def buildOPF(dstdir, title, filelist, cover=None):
     imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if options.righttoleft:
         writingmode = "horizontal-rl"
-        facing = "right"
-        facing1 = "right"
-        facing2 = "left"
     else:
         writingmode = "horizontal-lr"
-        facing = "left"
-        facing1 = "left"
-        facing2 = "right"
     f = open(opffile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
-                  "<package version=\"2.0\" unique-identifier=\"BookID\" xmlns=\"http://www.idpf.org/2007/opf\">\n",
-                  "<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" ",
-                  "xmlns:opf=\"http://www.idpf.org/2007/opf\">\n",
+                  "<package version=\"2.0\" unique-identifier=\"BookID\" ",
+                  "xmlns=\"http://www.idpf.org/2007/opf\">\n",
+                  "<metadata xmlns:opf=\"http://www.idpf.org/2007/opf\" ",
+                  "xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n",
                   "<dc:title>", title, "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
                   "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n",
+                  "<dc:Creator>KCC</dc:Creator>\n",
+                  "<meta name=\"generator\" content=\"KindleComicConverter-" + __version__ + "\"/>\n",
                   "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
+                  "<meta name=\"region-mag\" content=\"true\"/>\n",
                   "<meta name=\"cover\" content=\"cover\"/>\n",
                   "<meta name=\"book-type\" content=\"comic\"/>\n",
+                  "<meta name=\"rendition:layout\" content=\"pre-paginated\"/>\n",
                   "<meta name=\"zero-gutter\" content=\"true\"/>\n",
                   "<meta name=\"zero-margin\" content=\"true\"/>\n",
                   "<meta name=\"fixed-layout\" content=\"true\"/>\n"
-                  ])
-    if options.landscapemode:
-        f.writelines(["<meta name=\"rendition:orientation\" content=\"auto\"/>\n",
-                      "<meta name=\"orientation-lock\" content=\"none\"/>\n"])
-    else:
-        f.writelines(["<meta name=\"rendition:orientation\" content=\"portrait\"/>\n",
-                      "<meta name=\"orientation-lock\" content=\"portrait\"/>\n"])
-    f.writelines(["<meta name=\"original-resolution\" content=\"", imgres, "\"/>\n",
+                  "<meta name=\"rendition:orientation\" content=\"portrait\"/>\n",
+                  "<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
+                  "<meta name=\"original-resolution\" content=\"", imgres, "\"/>\n",
                   "<meta name=\"primary-writing-mode\" content=\"", writingmode, "\"/>\n",
-                  "<meta name=\"rendition:layout\" content=\"pre-paginated\"/>\n",
+                  "<meta name=\"ke-border-color\" content=\"#ffffff\"/>\n",
+                  "<meta name=\"ke-border-width\" content=\"0\"/>\n",
                   "</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
                   "media-type=\"application/x-dtbncx+xml\"/>\n"])
     if cover is not None:
@@ -253,44 +252,10 @@ def buildOPF(dstdir, title, filelist, cover=None):
             mt = 'image/jpeg'
         f.write("<item id=\"img_" + uniqueid + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\""
                 + mt + "\"/>\n")
-    if options.landscapemode and splitCount > 0:
-        splitCountUsed = 1
-        while splitCountUsed <= splitCount:
-            f.write("<item id=\"blank-page" + str(splitCountUsed) +
-                    "\" href=\"Text/blank.html\" media-type=\"application/xhtml+xml\"/>\n")
-            splitCountUsed += 1
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
-    splitCountUsed = 1
     for entry in reflist:
-        if "_kcca" in str(entry):
-            # noinspection PyRedundantParentheses
-            if ((options.righttoleft and facing == 'left') or (not options.righttoleft and facing == 'right')) and\
-                    options.landscapemode:
-                f.write("<itemref idref=\"blank-page" + str(splitCountUsed) + "\" properties=\"layout-blank\"/>\n")
-                splitCountUsed += 1
-            if options.landscapemode:
-                f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing1 + "\"/>\n")
-            else:
-                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-        elif "_kccb" in str(entry):
-            if options.landscapemode:
-                f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing2 + "\"/>\n")
-            else:
-                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-            if options.righttoleft:
-                facing = "right"
-            else:
-                facing = "left"
-        else:
-            if options.landscapemode:
-                f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-" + facing + "\"/>\n")
-            else:
-                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-            if facing == 'right':
-                facing = 'left'
-            else:
-                facing = 'right'
+        f.write("<itemref idref=\"page_" + entry + "\"/>\n")
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
@@ -322,24 +287,22 @@ def getImageFileName(imgfile):
     return filename
 
 
-def applyImgOptimization(img, isSplit, toRight, options, overrideQuality=5):
-    if not options.webtoon:
+def applyImgOptimization(img, opt, overrideQuality=5):
+    img.getImageFill(opt.webtoon)
+    if not opt.webtoon:
         img.cropWhiteSpace(10.0)
-    if options.cutpagenumbers and not options.webtoon:
+    if opt.cutpagenumbers and not opt.webtoon:
         img.cutPageNumber()
-    img.optimizeImage(options.gamma)
+    img.optimizeImage(opt.gamma)
     if overrideQuality != 5:
-        img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight,
-                        options.landscapemode, overrideQuality)
+        img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, overrideQuality)
     else:
-        img.resizeImage(options.upscale, options.stretch, options.black_borders, isSplit, toRight,
-                        options.landscapemode, options.quality)
-    if options.forcepng and not options.forcecolor:
+        img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, opt.quality)
+    if opt.forcepng and not opt.forcecolor:
         img.quantizeImage()
 
 
 def dirImgProcess(path):
-    global options, splitCount
     work = []
     pagenumber = 0
     pagenumbermodifier = 0
@@ -378,7 +341,6 @@ def dirImgProcess(path):
         splitpages.sort()
         for page in splitpages:
             if (page + pagenumbermodifier) % 2 == 0:
-                splitCount += 1
                 pagenumbermodifier += 1
             pagenumbermodifier += 1
     else:
@@ -386,9 +348,9 @@ def dirImgProcess(path):
         raise UserWarning("Source directory is empty.")
 
 
-def fileImgProcess_init(queue, options):
+def fileImgProcess_init(queue, opt):
     fileImgProcess.queue = queue
-    fileImgProcess.options = options
+    fileImgProcess.options = opt
 
 
 # noinspection PyUnresolvedReferences
@@ -396,59 +358,53 @@ def fileImgProcess(work):
     afile = work[0]
     dirpath = work[1]
     pagenumber = work[2]
-    options = fileImgProcess.options
+    opt = fileImgProcess.options
     output = None
-    if options.verbose:
-        print "Optimizing " + afile + " for " + options.profile
+    if opt.verbose:
+        print "Optimizing " + afile + " for " + opt.profile
     else:
         print ".",
     fileImgProcess.queue.put(".")
-    img = image.ComicPage(os.path.join(dirpath, afile), options.profileData)
-    if options.quality == 2:
+    img = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
+    if opt.quality == 2:
         wipe = False
     else:
         wipe = True
-    if options.nosplitrotate:
+    if opt.nosplitrotate:
         split = None
     else:
-        split = img.splitPage(dirpath, options.righttoleft, options.rotate)
-    if split is not None and split is not "R":
-        if options.verbose:
+        split = img.splitPage(dirpath, opt.righttoleft, opt.rotate)
+    if split is not None:
+        if opt.verbose:
             print "Splitted " + afile
-        if options.righttoleft:
-            toRight1 = False
-            toRight2 = True
-        else:
-            toRight1 = True
-            toRight2 = False
         output = pagenumber
-        img0 = image.ComicPage(split[0], options.profileData)
-        applyImgOptimization(img0, True, toRight1, options)
-        img0.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
-        img1 = image.ComicPage(split[1], options.profileData)
-        applyImgOptimization(img1, True, toRight2, options)
-        img1.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe)
-        if options.quality == 2:
-            img3 = image.ComicPage(split[0], options.profileData)
-            applyImgOptimization(img3, True, toRight1, options, 0)
-            img3.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
-            img4 = image.ComicPage(split[1], options.profileData)
-            applyImgOptimization(img4, True, toRight2, options, 0)
-            img4.saveToDir(dirpath, options.forcepng, options.forcecolor, True)
+        img0 = image.ComicPage(split[0], opt.profileData)
+        applyImgOptimization(img0, opt)
+        img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+        img1 = image.ComicPage(split[1], opt.profileData)
+        applyImgOptimization(img1, opt)
+        img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+        if opt.quality == 2:
+            img3 = image.ComicPage(split[0], opt.profileData)
+            applyImgOptimization(img3, opt, 0)
+            img3.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
+            img4 = image.ComicPage(split[1], opt.profileData)
+            applyImgOptimization(img4, opt, 0)
+            img4.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
     else:
-        applyImgOptimization(img, False, False, options)
-        img.saveToDir(dirpath, options.forcepng, options.forcecolor, wipe, split)
-        if options.quality == 2:
-            img2 = image.ComicPage(os.path.join(dirpath, afile), options.profileData)
-            if split == "R":
+        applyImgOptimization(img, opt)
+        img.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+        if opt.quality == 2:
+            img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
+            if img.rotated:
                 img2.image = img2.image.rotate(90)
-            applyImgOptimization(img2, False, False, options, 0)
-            img2.saveToDir(dirpath, options.forcepng, options.forcecolor, True, split)
+                img2.rotated = True
+            applyImgOptimization(img2, opt, 0)
+            img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
     return output
 
 
 def genEpubStruct(path):
-    global options
     filelist = []
     chapterlist = []
     cover = None
@@ -508,6 +464,36 @@ def genEpubStruct(path):
                   "height: ", str(panelviewsize[1]), "px;\n",
                   "width: ", str(panelviewsize[0]), "px;\n",
                   "}\n",
+                  "#Generic-Panel {\n",
+                  "top: 0;\n",
+                  "height: 100%;\n",
+                  "width: 100%;\n",
+                  "}\n",
+                  "#BoxC {\n",
+                  "top: 0;\n",
+                  "height: 100%;\n",
+                  "width: 100%;\n",
+                  "}\n",
+                  "#BoxT {\n",
+                  "top: 0;\n",
+                  "height: 50%;\n",
+                  "width: 100%;\n",
+                  "}\n",
+                  "#BoxB {\n",
+                  "bottom: 0;\n",
+                  "height: 50%;\n",
+                  "width: 100%;\n",
+                  "}\n",
+                  "#BoxL {\n",
+                  "left: 0;\n",
+                  "height: 100%;\n",
+                  "width: 50%;\n",
+                  "}\n",
+                  "#BoxR {\n",
+                  "right: 0;\n",
+                  "height: 100%;\n",
+                  "width: 50%;\n",
+                  "}\n",
                   "#BoxTL {\n",
                   "top: 0;\n",
                   "left: 0;\n",
@@ -531,47 +517,7 @@ def genEpubStruct(path):
                   "right: 0;\n",
                   "height: 50%;\n",
                   "width: 50%;\n",
-                  "}\n",
-                  "#BoxTL-Panel {\n",
-                  "top: 0;\n",
-                  "left: 0;\n",
-                  "height: 100%;\n",
-                  "width: 100%;\n",
-                  "}\n",
-                  "#BoxTL-Panel img {\n",
-                  "top: 0%;\n",
-                  "left: 0%;\n",
-                  "}\n",
-                  "#BoxTR-Panel {\n",
-                  "top: 0;\n",
-                  "right: 0;\n",
-                  "height: 100%;\n",
-                  "width: 100%;\n",
-                  "}\n",
-                  "#BoxTR-Panel img {\n",
-                  "top: 0%;\n",
-                  "right: 0%;\n",
-                  "}\n",
-                  "#BoxBL-Panel {\n",
-                  "bottom: 0;\n",
-                  "left: 0;\n",
-                  "height: 100%;\n",
-                  "width: 100%;\n",
-                  "}\n",
-                  "#BoxBL-Panel img {\n",
-                  "bottom: 0%;\n",
-                  "left: 0%;\n",
-                  "}\n",
-                  "#BoxBR-Panel {\n",
-                  "bottom: 0;\n",
-                  "right: 0;\n",
-                  "height: 100%;\n",
-                  "width: 100%;\n",
-                  "}\n",
-                  "#BoxBR-Panel img {\n",
-                  "bottom: 0%;\n",
-                  "right: 0%;\n",
-                  "}"
+                  "}",
                   ])
     f.close()
     for (dirpath, dirnames, filenames) in os.walk(os.path.join(path, 'OEBPS', 'Images')):
@@ -588,13 +534,11 @@ def genEpubStruct(path):
                                          'cover' + getImageFileName(filelist[-1][1])[1])
                     copyfile(os.path.join(filelist[-1][0], filelist[-1][1]), cover)
     buildNCX(path, options.title, chapterlist)
-    # ensure we're sorting files alphabetically
+    # Ensure we're sorting files alphabetically
     convert = lambda text: int(text) if text.isdigit() else text
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(path, options.title, filelist, cover)
-    if options.landscapemode and splitCount > 0:
-        filelist.append(buildBlankHTML(os.path.join(path, 'OEBPS', 'Text')))
 
 
 def getWorkFolder(afile):
@@ -625,8 +569,7 @@ def getWorkFolder(afile):
                 path = cbx.extract(workdir)
             except OSError:
                 rmtree(workdir)
-                print 'Unrar not found, please download from ' + \
-                      'http://www.rarlab.com/download.htm and put into your PATH.'
+                print 'UnRAR/7za not found or file failed to extract!'
                 sys.exit(21)
         else:
             rmtree(workdir)
@@ -637,9 +580,9 @@ def getWorkFolder(afile):
 
 
 def slugify(value):
-    # Normalizes string, converts to lowercase, removes non-alpha characters,
-    # and converts spaces to hyphens.
+    # Normalizes string, converts to lowercase, removes non-alpha characters and converts spaces to hyphens.
     import unicodedata
+    #noinspection PyArgumentList
     value = unicodedata.normalize('NFKD', unicode(value, 'latin1')).encode('ascii', 'ignore')
     value = re.sub('[^\w\s\.-]', '', value).strip().lower()
     value = re.sub('[-\.\s]+', '-', value)
@@ -689,6 +632,7 @@ def getDirectorySize(start_path='.'):
     return total_size
 
 
+# noinspection PyUnusedLocal
 def createNewTome(parentPath):
     tomePathRoot = tempfile.mkdtemp('', 'KCC-TMP-')
     #tomePathRoot = tempfile.mkdtemp('', 'KCC-TMP-', parentPath)
@@ -843,21 +787,22 @@ def Usage():
 
 
 def main(argv=None, qtGUI=None):
-    global parser, options, epub_path, splitCount, GUI
+    global parser, options, GUI
     parser = OptionParser(usage="Usage: %prog [options] comic_file|comic_folder", add_help_option=False)
     mainOptions = OptionGroup(parser, "MAIN")
-    experimentalOptions = OptionGroup(parser, "EXPERIMENTAL")
     processingOptions = OptionGroup(parser, "PROCESSING")
     outputOptions = OptionGroup(parser, "OUTPUT SETTINGS")
     customProfileOptions = OptionGroup(parser, "CUSTOM PROFILE")
     otherOptions = OptionGroup(parser, "OTHER")
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                           help="Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD,"
-                                " KFHD8, KFA) [Default=KHD]")
+                           help="Device profile (Choose one among K1, K2, K345, KDX, KDXG, KHD, KF, KFHD, KFHD8, KFHDX,"
+                                " KFHDX8, KFA) [Default=KHD]")
     mainOptions.add_option("-q", "--quality", type="int", dest="quality", default="0",
                            help="Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (Right-to-left reading and splitting)")
+    mainOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
+                           help="Webtoon processing mode"),
     outputOptions.add_option("-o", "--output", action="store", dest="output", default=None,
                              help="Output generated file to specified directory or file")
     outputOptions.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
@@ -866,10 +811,10 @@ def main(argv=None, qtGUI=None):
                              help="Outputs a CBZ archive and does not generate EPUB")
     outputOptions.add_option("--batchsplit", action="store_true", dest="batchsplit", default=False,
                              help="Split output into multiple files"),
-    experimentalOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
-                                   help="Webtoon processing mode"),
     processingOptions.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
-                                 help="Use black borders instead of white ones")
+                                 help="Disable autodetection and force black borders")
+    processingOptions.add_option("--whiteborders", action="store_true", dest="white_borders", default=False,
+                                 help="Disable autodetection and force white borders")
     processingOptions.add_option("--forcecolor", action="store_true", dest="forcecolor", default=False,
                                  help="Don't convert images to grayscale")
     processingOptions.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
@@ -897,7 +842,6 @@ def main(argv=None, qtGUI=None):
     otherOptions.add_option("-h", "--help", action="help",
                             help="Show this help message and exit")
     parser.add_option_group(mainOptions)
-    parser.add_option_group(experimentalOptions)
     parser.add_option_group(outputOptions)
     parser.add_option_group(processingOptions)
     parser.add_option_group(customProfileOptions)
@@ -920,7 +864,6 @@ def main(argv=None, qtGUI=None):
             comic2panel.main(['-y ' + str(options.customheight), '-i', path], qtGUI)
         else:
             comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', path], qtGUI)
-    splitCount = 0
     if options.imgproc:
         print "\nProcessing images..."
         if GUI:
@@ -984,45 +927,29 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
 
 def checkOptions():
     global options
-    # Webtoon mode mandatory options
-    if options.webtoon:
-        options.nosplitrotate = True
-        options.black_borders = False
-        options.quality = 0
-    # Landscape mode is only supported by Kindle Touch and Paperwhite.
-    if options.profile == 'K4T' or options.profile == 'KHD':
-        options.landscapemode = True
-    else:
-        options.landscapemode = False
-    # Older Kindle don't support Virtual Panel View. We providing them configuration that will fake that feature.
-    # Ultra quality mode require Real Panel View. Landscape mode don't work correcly without Virtual Panel View.
-    if options.profile == 'K3' or options.profile == 'K4NT' or options.quality == 2:
-        # Real Panel View
-        options.panelview = True
-        options.landscapemode = False
-    else:
-        # Virtual Panel View
-        options.panelview = False
+    options.panelview = True
+    options.bordersColor = None
+    if options.white_borders:
+        options.bordersColor = "white"
+    if options.black_borders:
+        options.bordersColor = "black"
     # Disabling grayscale conversion for Kindle Fire family.
-    if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8' or options.forcecolor:
+    if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8' or options.profile == 'KFHDX'\
+       or options.profile == 'KFHDX8' or options.forcecolor:
         options.forcecolor = True
     else:
         options.forcecolor = False
-    # Mixing vertical and horizontal pages require real Panel View.
-    # Landscape mode don't work correcly without Virtual Panel View.
-    if options.rotate:
-        options.panelview = True
-        options.landscapemode = False
     # Older Kindle don't need higher resolution files due lack of Panel View.
-    # Kindle Fire family have very high resolution. Bigger images are not needed.
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG'\
-            or options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8':
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
         options.quality = 0
-        if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
-            options.panelview = False
-    # Disable all Kindle features
+        options.panelview = False
+    # Webtoon mode mandatory options
+    if options.webtoon:
+        options.nosplitrotate = True
+        options.quality = 0
+        options.panelview = False
+    # Disable all Kindle features for other e-readers
     if options.profile == 'OTHER':
-        options.landscapemode = False
         options.panelview = False
         options.quality = 0
     # Kindle for Android profile require target resolution.
