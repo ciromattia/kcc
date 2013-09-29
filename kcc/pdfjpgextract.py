@@ -1,4 +1,5 @@
-# Copyright (c) 2012 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Based upon the code snippet by Ned Batchelder
 # (http://nedbatchelder.com/blog/200712/extracting_jpgs_from_pdfs.html)

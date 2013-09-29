@@ -30,11 +30,13 @@ You can find the latest released binary at the following links:
 - Folders
 - CBZ, ZIP
 - CBR, RAR *(With `unrar` executable)*
+- CB7, 7Z *(With `7za` executable)*
 - PDF *(Extracting only contained JPG images)*
 
 ## OPTIONAL REQUIREMENTS
 - [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For .mobi generation)*
 - [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
+- [7za](http://www.7-zip.org/download.html) *(For 7z/CB7 support)*
 
 ### For compiling/running from source:
 - Python 2.7 - Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows.
@@ -52,7 +54,7 @@ You can find the latest released binary at the following links:
 * Check our [wiki](https://github.com/ciromattia/kcc/wiki/Other-devices) for a list of tested Non-Kindle E-Readers.
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
-* Output MOBI file should be uploaded via USB. Other methods (e.g. via Calibre) might corrupt it.
+* Output MOBI file should be uploaded via USB. Other methods might corrupt it.
 
 ### GUI 
 
@@ -67,12 +69,10 @@ Usage: comic2ebook.py [options] comic_file|comic_folder
 Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
-                        Device profile (Choose one among K1, K2, K3, K4NT, K4T, KDX, KDXG, KHD, KF, KFHD, KFHD8, KFA) [Default=KHD]
+                        Device profile (Choose one among K1, K2, K345, KDX, KDXG, KHD, KF, KFHD, KFHD8, KFHDX, KFHDX8, KFA) [Default=KHD]
     -q QUALITY, --quality=QUALITY
                         Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
     -m, --manga-style   Manga style (Right-to-left reading and splitting)
-
-  EXPERIMENTAL:
     -w, --webtoon       Webtoon processing mode
 
   OUTPUT SETTINGS:
@@ -84,7 +84,8 @@ Options:
     --batchsplit        Split output into multiple files
 
   PROCESSING:
-    --blackborders      Use black borders instead of white ones
+    --blackborders      Disable autodetection and force black borders
+    --whiteborders      Disable autodetection and force white borders
     --forcecolor        Don't convert images to grayscale
     --forcepng          Create PNG files instead JPEG (For non-Kindle devices)
     --gamma=GAMMA       Apply gamma correction to linearize the image [Default=Auto]
@@ -129,22 +130,20 @@ This script born as a cross-platform alternative to `KindleComicParser` by **Dc5
 
 The app relies and includes the following scripts/binaries:
 
- - `KindleStrip` script &copy; 2010-2012 by **Paul Durrant** and released in public domain
-([forum thread](http://www.mobileread.com/forums/showthread.php?t=96903))
- - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>, released with ISC License
- - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches
- - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License
+ - `KindleUnpack` script by Charles **M. Hannum, P. Durrant, K. Hendricks, S. Siebert, fandrieu, DiapDealer, nickredding**. Released with GPLv3 License.
+ - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>. Released with ISC License.
+ - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches.
+ - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
 ## SAMPLE FILES CREATED BY KCC
-* [Kindle Keyboard](http://kcc.vulturis.eu/Samples/Ubunchu!-K3.mobi)
-* [Kindle DX](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
-* [Kindle DXG](http://kcc.vulturis.eu/Samples/Ubunchu!-KDXG.mobi)
-* [Kindle Non-Touch](http://kcc.vulturis.eu/Samples/Ubunchu!-K4NT.mobi)
-* [Kindle Touch](http://kcc.vulturis.eu/Samples/Ubunchu!-K4T.mobi)
 * [Kindle Paperwhite](http://kcc.vulturis.eu/Samples/Ubunchu!-KPW.mobi)
+* [Kindle](http://kcc.vulturis.eu/Samples/Ubunchu!-K345.mobi)
+* [Kindle DX/DXG](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
 * [Kindle Fire](http://kcc.vulturis.eu/Samples/Ubunchu!-KF.mobi)
 * [Kindle Fire HD](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD.mobi)
 * [Kindle Fire HD 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD8.mobi)
+* [Kindle Fire HDX](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX.mobi)
+* [Kindle Fire HDX 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX8.mobi)
 
 ## CHANGELOG
 ####1.00
@@ -255,8 +254,19 @@ The app relies and includes the following scripts/binaries:
 ####3.2.1:
 * Hotfixed crash occurring on OS with Russian locale
 
-## KNOWN ISSUES
-* Removing SRCS headers sometimes fail in 32bit enviroments. Due to memory limitations.
+####3.3:
+* Margins are now automatically omitted in Panel View mode
+* Margin color fill is now autodetected
+* Created MOBI files are not longer marked as _Personal_ on newer Kindle models
+* Layout of panels in Panel View mode is now automatically adjusted to content
+* Fixed Kindle 2/DX/DXG profiles - no more blank pages
+* All Kindle Fire profiles now support hiqh quality Panel View
+* Added support of 7z/CB7 files
+* Added Kindle Fire HDX profile
+* Support for Virtual Panel View was removed
+* Profiles for Kindle Keyboard, Touch and Non-Touch are now merged
+* Windows release is now bundled with UnRAR and 7za
+* Small GUI tweaks
 
 ## COPYRIGHT
 

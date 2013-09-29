@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2013 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -17,7 +18,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '3.2.1'
+__version__ = '3.3'
 __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
@@ -29,7 +30,7 @@ import traceback
 import urllib2
 import time
 import comic2ebook
-import kindlestrip
+import kindlesplit
 from image import ProfileData
 from subprocess import call, Popen, STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
@@ -98,6 +99,10 @@ class WorkerThread(QtCore.QThread):
     def __init__(self, parent):
         QtCore.QThread.__init__(self)
         self.parent = parent
+        self.conversionAlive = False
+        self.errors = False
+        self.kindlegenErrorCode = 0
+        self.kindlegenError = None
 
     def __del__(self):
         self.wait()
@@ -111,7 +116,6 @@ class WorkerThread(QtCore.QThread):
         self.emit(QtCore.SIGNAL("addMessage"), '<b>Conversion interrupted.</b>', 'error')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
 
-    # noinspection PyUnboundLocalVariable
     def run(self):
         self.emit(QtCore.SIGNAL("modeConvert"), False)
         profile = ProfileData.ProfileLabels[str(GUI.DeviceBox.currentText())]
@@ -130,12 +134,14 @@ class WorkerThread(QtCore.QThread):
                 argv.append("--noprocessing")
             if GUI.NoRotateBox.isChecked():
                 argv.append("--nosplitrotate")
-            if GUI.BorderBox.isChecked():
-                argv.append("--blackborders")
             if GUI.UpscaleBox.checkState() == 1:
                 argv.append("--stretch")
             elif GUI.UpscaleBox.checkState() == 2:
                 argv.append("--upscale")
+            if GUI.BorderBox.checkState() == 1:
+                argv.append("--whiteborders")
+            elif GUI.BorderBox.checkState() == 2:
+                argv.append("--blackborders")
             if GUI.NoDitheringBox.isChecked():
                 argv.append("--forcepng")
             if GUI.WebtoonBox.isChecked():
@@ -209,7 +215,8 @@ class WorkerThread(QtCore.QThread):
                         try:
                             self.kindlegenErrorCode = 0
                             if os.path.getsize(item) < 367001600:
-                                output = Popen('kindlegen -locale en "' + item + '"', stdout=PIPE, stderr=STDOUT, shell=True)
+                                output = Popen('kindlegen -locale en "' + item + '"', stdout=PIPE, stderr=STDOUT,
+                                               shell=True)
                                 for line in output.stdout:
                                     # ERROR: Generic error
                                     if "Error(" in line:
@@ -242,23 +249,27 @@ class WorkerThread(QtCore.QThread):
                                                                        True)
                             else:
                                 self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... Done!', 'info', True)
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header...', 'info')
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file...', 'info')
                             os.remove(item)
                             mobiPath = item.replace('.epub', '.mobi')
-                            shutil.move(mobiPath, mobiPath + '_tostrip')
+                            shutil.move(mobiPath, mobiPath + '_toclean')
                             try:
-                                kindlestrip.main((mobiPath + '_tostrip', mobiPath))
+                                if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX', 'KFHDX8', 'KFA']:
+                                    newKindle = True
+                                else:
+                                    newKindle = False
+                                mobisplit = kindlesplit.mobi_split(mobiPath + '_toclean', newKindle)
+                                open(mobiPath, 'wb').write(mobisplit.getResult())
                             except Exception:
                                 self.errors = True
                             if not self.errors:
-                                os.remove(mobiPath + '_tostrip')
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Removing SRCS header... Done!', 'info', True)
+                                os.remove(mobiPath + '_toclean')
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file... Done!', 'info', True)
                             else:
-                                shutil.move(mobiPath + '_tostrip', mobiPath)
+                                os.remove(mobiPath + '_toclean')
+                                os.remove(mobiPath)
                                 self.emit(QtCore.SIGNAL("addMessage"),
-                                          'KindleStrip failed to remove SRCS header!', 'warning')
-                                self.emit(QtCore.SIGNAL("addMessage"),
-                                          'MOBI file will work correctly but it will be highly oversized.', 'warning')
+                                          'KindleUnpack failed to clean MOBI file!', 'error')
                         else:
                             epubSize = (os.path.getsize(item))/1024/1024
                             os.remove(item)
@@ -318,11 +329,19 @@ class Ui_KCC(object):
             self.needClean = False
             GUI.JobList.clear()
         if self.UnRAR:
-            fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
-                                                        '*.cbz *.cbr *.zip *.rar *.pdf')
+            if self.sevenza:
+                fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
+                                                            '*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf')
+            else:
+                fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
+                                                            '*.cbz *.cbr *.zip *.rar *.pdf')
         else:
-            fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
-                                                        '*.cbz *.zip *.pdf')
+            if self.sevenza:
+                fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
+                                                            '*.cbz *.cb7 *.zip *.7z *.pdf')
+            else:
+                fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
+                                                            '*.cbz *.zip *.pdf')
         # Lame UTF-8 security measure
         for fname in fnames:
             try:
@@ -438,13 +457,13 @@ class Ui_KCC(object):
             GUI.NoRotateBox.setChecked(True)
             GUI.QualityBox.setEnabled(False)
             GUI.QualityBox.setChecked(False)
-            GUI.BorderBox.setEnabled(False)
-            GUI.BorderBox.setChecked(False)
+            GUI.MangaBox.setEnabled(False)
+            GUI.MangaBox.setChecked(False)
             self.addMessage('If images are color setting <i>Gamma</i> to 1.0 is recommended.', 'info')
         else:
             GUI.NoRotateBox.setEnabled(True)
             GUI.QualityBox.setEnabled(True)
-            GUI.BorderBox.setEnabled(True)
+            GUI.MangaBox.setEnabled(True)
 
     def toggleNoSplitRotate(self, value):
         if value:
@@ -454,13 +473,13 @@ class Ui_KCC(object):
             GUI.RotateBox.setEnabled(True)
 
     def changeDevice(self, value):
-        if value == 12:
+        if value == 9:
             GUI.BasicModeButton.setEnabled(False)
             GUI.AdvModeButton.setEnabled(False)
             self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
                             'List of supported Non-Kindle devices</a>', 'info')
             self.modeExpert()
-        elif value == 11:
+        elif value == 8:
             GUI.BasicModeButton.setEnabled(False)
             GUI.AdvModeButton.setEnabled(False)
             self.modeExpert(True)
@@ -468,11 +487,17 @@ class Ui_KCC(object):
             GUI.BasicModeButton.setEnabled(True)
             GUI.AdvModeButton.setEnabled(True)
             self.modeBasic()
-        if value in [0, 1, 5, 6, 7, 8, 9, 12]:
+        if value in [9, 11, 12, 13, 14]:
             GUI.QualityBox.setCheckState(0)
             GUI.QualityBox.setEnabled(False)
         else:
-            GUI.QualityBox.setEnabled(True)
+            if not GUI.WebtoonBox.isChecked():
+                GUI.QualityBox.setEnabled(True)
+        if value in [3, 4, 5, 6, 8, 15]:
+            GUI.NoDitheringBox.setCheckState(0)
+            GUI.NoDitheringBox.setEnabled(False)
+        else:
+            GUI.NoDitheringBox.setEnabled(True)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -544,10 +569,12 @@ class Ui_KCC(object):
             event.ignore()
         if not GUI.ConvertButton.isEnabled():
             event.ignore()
+        self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
         self.settings.setValue('currentFormat', GUI.FormatBox.currentIndex())
         self.settings.setValue('currentMode', self.currentMode)
+        self.settings.setValue('firstStart', False)
         self.settings.setValue('options', QtCore.QVariant({'MangaBox': GUI.MangaBox.checkState(),
                                                            'RotateBox': GUI.RotateBox.checkState(),
                                                            'QualityBox': GUI.QualityBox.checkState(),
@@ -567,22 +594,33 @@ class Ui_KCC(object):
         global GUI, MainWindow
         GUI = UI
         MainWindow = KCC
-        profiles = sorted(ProfileData.ProfileLabels.iterkeys())
+        # User settings will be reverted to default ones if were created in one of the following versions
+        # Empty string cover all versions before this system was implemented
+        purgeSettingsVersions = ['']
         self.icons = Icons()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
+        self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
+        if self.settingsVersion in purgeSettingsVersions:
+            QtCore.QSettings.clear(self.settings)
+            self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
-        self.lastDevice = self.settings.value('lastDevice', 10, type=int)
+        self.lastDevice = self.settings.value('lastDevice', 0, type=int)
         self.currentMode = self.settings.value('currentMode', 1, type=int)
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
+        self.firstStart = self.settings.value('firstStart', True, type=bool)
         self.options = self.settings.value('options', QtCore.QVariant({'GammaSlider': 0}))
         self.options = self.options.toPyObject()
         self.worker = WorkerThread(self)
         self.versionCheck = VersionThread(self)
         self.conversionAlive = False
         self.needClean = True
+        self.GammaValue = 1.0
 
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')
+        if self.firstStart:
+            self.addMessage('Since you are using <b>KCC</b> for first time please see few '
+                            '<a href="https://github.com/ciromattia/kcc#important-tips">important tips</a>.', 'info')
         if call('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
             self.KindleGen = True
             formats = ['MOBI', 'EPUB', 'CBZ']
@@ -608,6 +646,13 @@ class Ui_KCC(object):
             self.UnRAR = False
             self.addMessage('Cannot find <a href="http://www.rarlab.com/rar_add.htm">UnRAR</a>!'
                             ' Processing of CBR/RAR files will be disabled.', 'warning')
+        sevenzaExitCode = call('7za', stdout=PIPE, stderr=STDOUT, shell=True)
+        if sevenzaExitCode == 0 or sevenzaExitCode == 7:
+            self.sevenza = True
+        else:
+            self.sevenza = False
+            self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7za</a>!'
+                            ' Processing of CB7/7Z files will be disabled.', 'warning')
 
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
@@ -627,12 +672,18 @@ class Ui_KCC(object):
         KCC.connect(self.versionCheck, QtCore.SIGNAL("addMessage"), self.addMessage)
         KCC.closeEvent = self.saveSettings
 
-        for profile in profiles:
-            if profile != "Other":
-                GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
-            else:
+        for profile in ProfileData.ProfileLabelsGUI:
+            if profile == "Other":
                 GUI.DeviceBox.addItem(self.icons.deviceOther, profile)
-        GUI.DeviceBox.setCurrentIndex(self.lastDevice)
+            elif profile == "Separator":
+                GUI.DeviceBox.insertSeparator(GUI.DeviceBox.count()+1)
+            else:
+                GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
+        if self.lastDevice > GUI.DeviceBox.count():
+            GUI.DeviceBox.setCurrentIndex(0)
+            self.lastDevice = 0
+        else:
+            GUI.DeviceBox.setCurrentIndex(self.lastDevice)
 
         for f in formats:
             GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
@@ -650,8 +701,6 @@ class Ui_KCC(object):
             elif str(option) == "GammaSlider":
                 GUI.GammaSlider.setValue(int(self.options[option]))
                 self.changeGamma(int(self.options[option]))
-            elif str(option) == "StretchBox" or str(option) == "WebstripBox":
-                pass
             else:
                 eval('GUI.' + str(option)).setCheckState(self.options[option])
         if self.currentMode == 1:

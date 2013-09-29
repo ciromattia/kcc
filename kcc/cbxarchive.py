@@ -1,4 +1,5 @@
-# Copyright (c) 2012 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -21,6 +22,7 @@ __docformat__ = 'restructuredtext en'
 import os
 import zipfile
 import rarfile
+from subprocess import Popen, STDOUT, PIPE
 
 
 # noinspection PyBroadException
@@ -31,6 +33,8 @@ class CBxArchive:
             self.compressor = 'zip'
         elif rarfile.is_rarfile(origFileName):
             self.compressor = 'rar'
+        elif origFileName.endswith('.7z') or origFileName.endswith('.cb7'):
+            self.compressor = '7z'
         else:
             self.compressor = None
 
@@ -67,12 +71,24 @@ class CBxArchive:
                 filelist.append(f)
         cbrFile.extractall(targetdir, filelist)
 
+    def extractCB7(self, targetdir):
+        output = Popen('7za x "' + self.origFileName + '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -o"' + targetdir +
+                       '"', stdout=PIPE, stderr=STDOUT, shell=True)
+        extracted = False
+        for line in output.stdout:
+            if "Everything is Ok" in line:
+                extracted = True
+        if not extracted:
+            raise OSError
+
     def extract(self, targetdir):
         print "\n" + targetdir + "\n"
         if self.compressor == 'rar':
             self.extractCBR(targetdir)
         elif self.compressor == 'zip':
             self.extractCBZ(targetdir)
+        elif self.compressor == '7z':
+            self.extractCB7(targetdir)
         adir = os.listdir(targetdir)
         if len(adir) == 1 and os.path.isdir(os.path.join(targetdir, adir[0])):
             import shutil

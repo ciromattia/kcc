@@ -97,7 +97,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;EXPERIMENTAL!&lt;br/&gt;&lt;/span&gt;Enable auto-splitting of webtoons like &lt;span style=&quot; font-style:italic;&quot;&gt;Tower of God&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;Noblesse&lt;/span&gt;.&lt;br/&gt;Pages with a low width, high height and vertical panel flow.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable auto-splitting of webtoons like &lt;span style=&quot; font-style:italic;&quot;&gt;Tower of God&lt;/span&gt; or &lt;span style=&quot; font-style:italic;&quot;&gt;Noblesse&lt;/span&gt;.&lt;br/&gt;Pages with a low width, high height and vertical panel flow.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>Webtoon mode</string>
@@ -110,7 +110,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create PNG files instead JPEG.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Only for non-Kindle devices!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create PNG files instead JPEG.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>PNG output</string>
@@ -123,10 +123,13 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>Fill space around images with black color.</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Autodetection&lt;br/&gt;&lt;/span&gt;Color of margins fill will be detected automatically.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - White&lt;br/&gt;&lt;/span&gt;Margins will be filled with white color.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Black&lt;br/&gt;&lt;/span&gt;Margins will be filled with black color.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>Black borders</string>
+        <string>W/B margins</string>
+       </property>
+       <property name="tristate">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

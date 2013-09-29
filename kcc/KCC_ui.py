@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Wed Aug 14 08:39:46 2013
-#      by: PyQt4 UI code generator 4.10.2
+# Created: Wed Sep 18 12:12:45 2013
+#      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -68,6 +68,7 @@ class Ui_KCC(object):
         self.gridLayout.addWidget(self.NoDitheringBox, 3, 2, 1, 1)
         self.BorderBox = QtGui.QCheckBox(self.OptionsAdvanced)
         self.BorderBox.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.BorderBox.setTristate(True)
         self.BorderBox.setObjectName(_fromUtf8("BorderBox"))
         self.gridLayout.addWidget(self.BorderBox, 3, 0, 1, 1)
         self.NoRotateBox = QtGui.QCheckBox(self.OptionsAdvanced)
@@ -266,12 +267,12 @@ class Ui_KCC(object):
         self.ProcessingBox.setText(_translate("KCC", "No optimisation", None))
         self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>", None))
         self.UpscaleBox.setText(_translate("KCC", "Stretch/Upscale", None))
-        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600;\">EXPERIMENTAL!<br/></span>Enable auto-splitting of webtoons like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>Pages with a low width, high height and vertical panel flow.</p></body></html>", None))
+        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable auto-splitting of webtoons like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>Pages with a low width, high height and vertical panel flow.</p></body></html>", None))
         self.WebtoonBox.setText(_translate("KCC", "Webtoon mode", None))
-        self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p>Create PNG files instead JPEG.<br/><span style=\" font-weight:600;\">Only for non-Kindle devices!</span></p></body></html>", None))
+        self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p>Create PNG files instead JPEG.</p></body></html>", None))
         self.NoDitheringBox.setText(_translate("KCC", "PNG output", None))
-        self.BorderBox.setToolTip(_translate("KCC", "Fill space around images with black color.", None))
-        self.BorderBox.setText(_translate("KCC", "Black borders", None))
+        self.BorderBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Autodetection<br/></span>Color of margins fill will be detected automatically.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - White<br/></span>Margins will be filled with white color.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Black<br/></span>Margins will be filled with black color.</p></body></html>", None))
+        self.BorderBox.setText(_translate("KCC", "W/B margins", None))
         self.NoRotateBox.setToolTip(_translate("KCC", "<html><head/><body><p>Disable splitting and rotation.</p></body></html>", None))
         self.NoRotateBox.setText(_translate("KCC", "No split/rotate", None))
         self.DeviceBox.setToolTip(_translate("KCC", "Target device.", None))

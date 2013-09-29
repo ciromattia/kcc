@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2012 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -17,7 +18,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
-__version__ = '3.2.1'
+__version__ = '3.3'
 __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
@@ -28,7 +29,7 @@ from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, Queue, freeze_support
 try:
-    # noinspection PyUnresolvedReferences,PyPackageRequirements
+    # noinspection PyUnresolvedReferences
     from PIL import Image, ImageStat
 except ImportError:
     print "ERROR: Pillow is not installed!"
@@ -53,48 +54,9 @@ def getImageFileName(imgfile):
     return filename
 
 
-def getImageHistogram(image):
-    histogram = image.histogram()
-    RBGW = []
-    for i in range(256):
-        RBGW.append(histogram[i] + histogram[256 + i] + histogram[512 + i])
-    white = 0
-    black = 0
-    for i in range(245, 256):
-        white += RBGW[i]
-    for i in range(11):
-        black += RBGW[i]
-    if white > black:
-        return False
-    else:
-        return True
-
-
-def getImageFill(image):
-    imageSize = image.size
-    imageT = image.crop((0, 0, imageSize[0], 1))
-    imageB = image.crop((0, imageSize[1]-1, imageSize[0], imageSize[1]))
-    fill = 0
-    fill += getImageHistogram(imageT)
-    fill += getImageHistogram(imageB)
-    if fill == 2:
-        return 'KCCFB'
-    elif fill == 0:
-        return 'KCCFW'
-    else:
-        imageL = image.crop((0, 0, 1, imageSize[1]))
-        imageR = image.crop((imageSize[0]-1, 0, imageSize[0], imageSize[1]))
-        fill += getImageHistogram(imageL)
-        fill += getImageHistogram(imageR)
-        if fill >= 2:
-            return 'KCCFB'
-        else:
-            return 'KCCFW'
-
-
-def sanitizePanelSize(panel, options):
+def sanitizePanelSize(panel, opt):
     newPanels = []
-    if panel[2] > 8 * options.height:
+    if panel[2] > 8 * opt.height:
         diff = (panel[2] / 8)
         newPanels.append([panel[0], panel[1] - diff*7, diff])
         newPanels.append([panel[1] - diff*7, panel[1] - diff*6, diff])
@@ -104,13 +66,13 @@ def sanitizePanelSize(panel, options):
         newPanels.append([panel[1] - diff*3, panel[1] - diff*2, diff])
         newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
         newPanels.append([panel[1] - diff, panel[1], diff])
-    elif panel[2] > 4 * options.height:
+    elif panel[2] > 4 * opt.height:
         diff = (panel[2] / 4)
         newPanels.append([panel[0], panel[1] - diff*3, diff])
         newPanels.append([panel[1] - diff*3, panel[1] - diff*2, diff])
         newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
         newPanels.append([panel[1] - diff, panel[1], diff])
-    elif panel[2] > 2 * options.height:
+    elif panel[2] > 2 * opt.height:
         newPanels.append([panel[0], panel[1] - (panel[2] / 2), (panel[2] / 2)])
         newPanels.append([panel[1] - (panel[2] / 2), panel[1], (panel[2] / 2)])
     else:
@@ -118,17 +80,17 @@ def sanitizePanelSize(panel, options):
     return newPanels
 
 
-def splitImage_init(queue, options):
+def splitImage_init(queue, opt):
     splitImage.queue = queue
-    splitImage.options = options
+    splitImage.options = opt
 
 
 # noinspection PyUnresolvedReferences
 def splitImage(work):
     path = work[0]
     name = work[1]
-    options = splitImage.options
-    # Harcoded options
+    opt = splitImage.options
+    # Harcoded opttions
     threshold = 1.0
     delta = 15
     print ".",
@@ -137,7 +99,7 @@ def splitImage(work):
     filePath = os.path.join(path, name)
     # Detect corrupted files
     try:
-        image = Image.open(filePath)
+        Image.open(filePath)
     except IOError:
         raise RuntimeError('Cannot read image file %s' % filePath)
     try:
@@ -153,8 +115,8 @@ def splitImage(work):
     image = Image.open(filePath)
     image = image.convert('RGB')
     widthImg, heightImg = image.size
-    if heightImg > options.height:
-        if options.debug:
+    if heightImg > opt.height:
+        if opt.debug:
             from PIL import ImageDraw
             debugImage = Image.open(filePath)
             draw = ImageDraw.Draw(debugImage)
@@ -176,23 +138,23 @@ def splitImage(work):
             if y1 + delta >= heightImg:
                 y1 = heightImg - 1
             y2Temp = y1
-            if options.debug:
+            if opt.debug:
                 draw.line([(0, y1Temp), (widthImg, y1Temp)], fill=(0, 255, 0))
                 draw.line([(0, y2Temp), (widthImg, y2Temp)], fill=(255, 0, 0))
             panelHeight = y2Temp - y1Temp
             if panelHeight > delta:
                 # Panels that can't be cut nicely will be forcefully splitted
-                panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight], options)
+                panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight], opt)
                 for panel in panelsCleaned:
                     panels.append(panel)
-        if options.debug:
+        if opt.debug:
             # noinspection PyUnboundLocalVariable
             debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG')
 
         # Create virtual pages
         pages = []
         currentPage = []
-        pageLeft = options.height
+        pageLeft = opt.height
         panelNumber = 0
         for panel in panels:
             if pageLeft - panel[2] > 0:
@@ -202,7 +164,7 @@ def splitImage(work):
             else:
                 if len(currentPage) > 0:
                     pages.append(currentPage)
-                pageLeft = options.height - panel[2]
+                pageLeft = opt.height - panel[2]
                 currentPage = [panelNumber]
                 panelNumber += 1
         if len(currentPage) > 0:
@@ -222,7 +184,7 @@ def splitImage(work):
                     newPage.paste(panelImg, (0, targetHeight))
                     targetHeight += panels[panel][2]
                 newPage.save(os.path.join(path, fileExpanded[0] + '-' +
-                                          str(pageNumber) + '-' + getImageFill(newPage) + '.png'), 'PNG')
+                                          str(pageNumber) + '.png'), 'PNG')
                 pageNumber += 1
         os.remove(filePath)
 
