@@ -599,7 +599,8 @@ def sanitizeTree(filetree):
             else:
                 splitname = os.path.splitext(name)
                 slugified = slugify(splitname[0])
-                while os.path.exists(os.path.join(root, slugified + splitname[1])):
+                while os.path.exists(os.path.join(root, slugified + splitname[1])) and splitname[0].upper()\
+                        != slugified.upper():
                     slugified += "A"
                 os.rename(os.path.join(root, name), os.path.join(root, slugified + splitname[1]))
         for name in dirs:
@@ -607,7 +608,7 @@ def sanitizeTree(filetree):
                 os.remove(os.path.join(root, name))
             else:
                 slugified = slugify(name)
-                while os.path.exists(os.path.join(root, slugified)):
+                while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
                     slugified += "A"
                 os.rename(os.path.join(root, name), os.path.join(root, slugified))
 
