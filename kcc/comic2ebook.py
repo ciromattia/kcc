@@ -131,16 +131,20 @@ def buildHTML(path, imgfile):
                 imgfilepv = string.join(imgfilepv, ".")
             else:
                 imgfilepv = imgfile
-            xy = string.split(filename[0], "_kccx")[1]
-            x = string.split(xy, "_kccy")[0].lstrip("0")
-            y = string.split(xy, "_kccy")[1].lstrip("0")
-            if x != "":
-                x = "-" + str(float(x)/100) + "%"
+            if "_kccx" in filename[0]:
+                xy = string.split(filename[0], "_kccx")[1]
+                x = string.split(xy, "_kccy")[0].lstrip("0")
+                y = string.split(xy, "_kccy")[1].lstrip("0")
+                if x != "":
+                    x = "-" + str(float(x)/100) + "%"
+                else:
+                    x = "0%"
+                if y != "":
+                    y = "-" + str(float(y)/100) + "%"
+                else:
+                    y = "0%"
             else:
                 x = "0%"
-            if y != "":
-                y = "-" + str(float(y)/100) + "%"
-            else:
                 y = "0%"
             boxStyles = {"BoxTL": "left:" + x + ";top:" + y + ";",
                          "BoxTR": "right:" + x + ";top:" + y + ";",
