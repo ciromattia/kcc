@@ -366,6 +366,9 @@ class Ui_KCC(object):
         GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
         GUI.FormatBox.setCurrentIndex(0)
         GUI.FormatBox.setEnabled(False)
+        GUI.NoRotateBox.setChecked(False)
+        GUI.WebtoonBox.setChecked(False)
+        GUI.ProcessingBox.setChecked(False)
         GUI.OptionsAdvanced.setEnabled(False)
         GUI.OptionsAdvancedGamma.setEnabled(False)
         GUI.OptionsExpert.setEnabled(False)
@@ -398,12 +401,12 @@ class Ui_KCC(object):
         MainWindow.resize(420, 380)
         GUI.OptionsExpert.setEnabled(True)
         if KFA:
-            GUI.ColorBox.setCheckState(2)
+            GUI.ColorBox.setChecked(True)
             GUI.FormatBox.setCurrentIndex(0)
             GUI.FormatBox.setEnabled(False)
         else:
             GUI.FormatBox.setEnabled(True)
-            GUI.MangaBox.setCheckState(0)
+            GUI.MangaBox.setChecked(False)
             GUI.MangaBox.setEnabled(False)
 
     def modeConvert(self, enable):
@@ -459,25 +462,63 @@ class Ui_KCC(object):
             GUI.QualityBox.setChecked(False)
             GUI.MangaBox.setEnabled(False)
             GUI.MangaBox.setChecked(False)
-            self.addMessage('If images are color setting <i>Gamma</i> to 1.0 is recommended.', 'info')
+            self.addMessage('If images will be too dark after conversion: Set <i>Gamma</i> to 1.0.', 'info')
         else:
-            GUI.NoRotateBox.setEnabled(True)
-            GUI.QualityBox.setEnabled(True)
+            if not GUI.ProcessingBox.isChecked():
+                GUI.NoRotateBox.setEnabled(True)
+                GUI.QualityBox.setEnabled(True)
             GUI.MangaBox.setEnabled(True)
+        self.changeDevice(GUI.DeviceBox.currentIndex(), False)
 
     def toggleNoSplitRotate(self, value):
         if value:
             GUI.RotateBox.setEnabled(False)
             GUI.RotateBox.setChecked(False)
         else:
-            GUI.RotateBox.setEnabled(True)
+            if not GUI.ProcessingBox.isChecked():
+                GUI.RotateBox.setEnabled(True)
+        self.changeDevice(GUI.DeviceBox.currentIndex(), False)
 
-    def changeDevice(self, value):
+    def toggleProcessingBox(self, value):
+        if value:
+            GUI.RotateBox.setEnabled(False)
+            GUI.RotateBox.setChecked(False)
+            GUI.QualityBox.setEnabled(False)
+            GUI.QualityBox.setChecked(False)
+            GUI.UpscaleBox.setEnabled(False)
+            GUI.UpscaleBox.setChecked(False)
+            GUI.NoRotateBox.setEnabled(False)
+            GUI.NoRotateBox.setChecked(False)
+            GUI.BorderBox.setEnabled(False)
+            GUI.BorderBox.setChecked(False)
+            GUI.WebtoonBox.setEnabled(False)
+            GUI.WebtoonBox.setChecked(False)
+            GUI.NoDitheringBox.setEnabled(False)
+            GUI.NoDitheringBox.setChecked(False)
+            GUI.ColorBox.setEnabled(False)
+            GUI.ColorBox.setChecked(False)
+            GUI.GammaSlider.setEnabled(False)
+            GUI.GammaLabel.setEnabled(False)
+        else:
+            GUI.RotateBox.setEnabled(True)
+            GUI.QualityBox.setEnabled(True)
+            GUI.UpscaleBox.setEnabled(True)
+            GUI.NoRotateBox.setEnabled(True)
+            GUI.BorderBox.setEnabled(True)
+            GUI.WebtoonBox.setEnabled(True)
+            GUI.NoDitheringBox.setEnabled(True)
+            GUI.ColorBox.setEnabled(True)
+            GUI.GammaSlider.setEnabled(True)
+            GUI.GammaLabel.setEnabled(True)
+        self.changeDevice(GUI.DeviceBox.currentIndex(), False)
+
+    def changeDevice(self, value, showInfo=True):
         if value == 9:
             GUI.BasicModeButton.setEnabled(False)
             GUI.AdvModeButton.setEnabled(False)
-            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
-                            'List of supported Non-Kindle devices</a>', 'info')
+            if showInfo:
+                self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
+                                'List of supported Non-Kindle devices</a>', 'info')
             self.modeExpert()
         elif value == 8:
             GUI.BasicModeButton.setEnabled(False)
@@ -488,16 +529,17 @@ class Ui_KCC(object):
             GUI.AdvModeButton.setEnabled(True)
             self.modeBasic()
         if value in [9, 11, 12, 13, 14]:
-            GUI.QualityBox.setCheckState(0)
+            GUI.QualityBox.setChecked(False)
             GUI.QualityBox.setEnabled(False)
         else:
-            if not GUI.WebtoonBox.isChecked():
+            if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked():
                 GUI.QualityBox.setEnabled(True)
         if value in [3, 4, 5, 6, 8, 15]:
-            GUI.NoDitheringBox.setCheckState(0)
+            GUI.NoDitheringBox.setChecked(False)
             GUI.NoDitheringBox.setEnabled(False)
         else:
-            GUI.NoDitheringBox.setEnabled(True)
+            if not GUI.ProcessingBox.isChecked():
+                GUI.NoDitheringBox.setEnabled(True)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -663,6 +705,7 @@ class Ui_KCC(object):
         GUI.GammaSlider.valueChanged.connect(self.changeGamma)
         GUI.NoRotateBox.stateChanged.connect(self.toggleNoSplitRotate)
         GUI.WebtoonBox.stateChanged.connect(self.toggleWebtoonBox)
+        GUI.ProcessingBox.stateChanged.connect(self.toggleProcessingBox)
         GUI.DeviceBox.activated.connect(self.changeDevice)
         KCC.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
         KCC.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
@@ -672,6 +715,23 @@ class Ui_KCC(object):
         KCC.connect(self.versionCheck, QtCore.SIGNAL("addMessage"), self.addMessage)
         KCC.closeEvent = self.saveSettings
 
+        for f in formats:
+            GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
+        if self.currentFormat > GUI.FormatBox.count():
+            GUI.FormatBox.setCurrentIndex(0)
+            self.currentFormat = 0
+        else:
+            GUI.FormatBox.setCurrentIndex(self.currentFormat)
+        for option in self.options:
+            if str(option) == "customWidth":
+                GUI.customWidth.setText(str(self.options[option]))
+            elif str(option) == "customHeight":
+                GUI.customHeight.setText(str(self.options[option]))
+            elif str(option) == "GammaSlider":
+                GUI.GammaSlider.setValue(int(self.options[option]))
+                self.changeGamma(int(self.options[option]))
+            else:
+                eval('GUI.' + str(option)).setCheckState(self.options[option])
         for profile in ProfileData.ProfileLabelsGUI:
             if profile == "Other":
                 GUI.DeviceBox.addItem(self.icons.deviceOther, profile)
@@ -685,31 +745,13 @@ class Ui_KCC(object):
         else:
             GUI.DeviceBox.setCurrentIndex(self.lastDevice)
 
-        for f in formats:
-            GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
-        if self.currentFormat > GUI.FormatBox.count():
-            GUI.FormatBox.setCurrentIndex(0)
-            self.currentFormat = 0
-        else:
-            GUI.FormatBox.setCurrentIndex(self.currentFormat)
-
-        for option in self.options:
-            if str(option) == "customWidth":
-                GUI.customWidth.setText(str(self.options[option]))
-            elif str(option) == "customHeight":
-                GUI.customHeight.setText(str(self.options[option]))
-            elif str(option) == "GammaSlider":
-                GUI.GammaSlider.setValue(int(self.options[option]))
-                self.changeGamma(int(self.options[option]))
-            else:
-                eval('GUI.' + str(option)).setCheckState(self.options[option])
         if self.currentMode == 1:
             self.modeBasic()
         elif self.currentMode == 2:
             self.modeAdvanced()
         elif self.currentMode == 3:
             self.modeExpert()
+        self.changeDevice(self.lastDevice)
         self.versionCheck.start()
         self.hideProgressBar()
-        self.changeDevice(self.lastDevice)
         self.worker.sync()
