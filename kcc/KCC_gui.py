@@ -376,6 +376,7 @@ class Ui_KCC(object):
         GUI.UpscaleBox.hide()
         GUI.NoRotateBox.hide()
         GUI.MangaBox.setEnabled(True)
+        self.changeFormat()
 
     def modeAdvanced(self):
         self.currentMode = 2
@@ -469,6 +470,7 @@ class Ui_KCC(object):
                 GUI.QualityBox.setEnabled(True)
             GUI.MangaBox.setEnabled(True)
         self.changeDevice(GUI.DeviceBox.currentIndex(), False)
+        self.changeFormat()
 
     def toggleNoSplitRotate(self, value):
         if value:
@@ -478,6 +480,7 @@ class Ui_KCC(object):
             if not GUI.ProcessingBox.isChecked():
                 GUI.RotateBox.setEnabled(True)
         self.changeDevice(GUI.DeviceBox.currentIndex(), False)
+        self.changeFormat()
 
     def toggleProcessingBox(self, value):
         if value:
@@ -511,6 +514,7 @@ class Ui_KCC(object):
             GUI.GammaSlider.setEnabled(True)
             GUI.GammaLabel.setEnabled(True)
         self.changeDevice(GUI.DeviceBox.currentIndex(), False)
+        self.changeFormat()
 
     def changeDevice(self, value, showInfo=True):
         if value == 9:
@@ -532,7 +536,8 @@ class Ui_KCC(object):
             GUI.QualityBox.setChecked(False)
             GUI.QualityBox.setEnabled(False)
         else:
-            if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked():
+            if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked() \
+                    and str(GUI.FormatBox.currentText()) != 'CBZ':
                 GUI.QualityBox.setEnabled(True)
         if value in [3, 4, 5, 6, 8, 15]:
             GUI.NoDitheringBox.setChecked(False)
@@ -540,6 +545,14 @@ class Ui_KCC(object):
         else:
             if not GUI.ProcessingBox.isChecked():
                 GUI.NoDitheringBox.setEnabled(True)
+
+    def changeFormat(self):
+        if str(GUI.FormatBox.currentText()) == 'CBZ':
+            GUI.QualityBox.setChecked(False)
+            GUI.QualityBox.setEnabled(False)
+        else:
+            if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked():
+                GUI.QualityBox.setEnabled(True)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -707,6 +720,7 @@ class Ui_KCC(object):
         GUI.WebtoonBox.stateChanged.connect(self.toggleWebtoonBox)
         GUI.ProcessingBox.stateChanged.connect(self.toggleProcessingBox)
         GUI.DeviceBox.activated.connect(self.changeDevice)
+        GUI.FormatBox.activated.connect(self.changeFormat)
         KCC.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
         KCC.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
         KCC.connect(self.worker, QtCore.SIGNAL("addMessage"), self.addMessage)
@@ -752,6 +766,7 @@ class Ui_KCC(object):
         elif self.currentMode == 3:
             self.modeExpert()
         self.changeDevice(self.lastDevice)
+        self.changeFormat()
         self.versionCheck.start()
         self.hideProgressBar()
         self.worker.sync()
