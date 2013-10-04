@@ -199,9 +199,9 @@ class WorkerThread(QtCore.QThread):
                 return
             if not self.errors:
                 if str(GUI.FormatBox.currentText()) == 'CBZ':
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file... Done!', 'info', True)
+                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file... <b>Done!</b>', 'info', True)
                 else:
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file... Done!', 'info', True)
+                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file... <b>Done!</b>', 'info', True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
                     tomeNumber = 0
                     for item in outputPath:
@@ -245,10 +245,11 @@ class WorkerThread(QtCore.QThread):
                         if self.kindlegenErrorCode == 0:
                             if len(outputPath) > 1:
                                 self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file (' + str(tomeNumber) + '/'
-                                                                       + str(len(outputPath)) + ')... Done!', 'info',
-                                                                       True)
+                                                                       + str(len(outputPath)) + ')... <b>Done!</b>',
+                                                                       'info',  True)
                             else:
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... Done!', 'info', True)
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... <b>Done!</b>', 'info',
+                                          True)
                             self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file...', 'info')
                             os.remove(item)
                             mobiPath = item.replace('.epub', '.mobi')
@@ -264,7 +265,8 @@ class WorkerThread(QtCore.QThread):
                                 self.errors = True
                             if not self.errors:
                                 os.remove(mobiPath + '_toclean')
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file... Done!', 'info', True)
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file... <b>Done!</b>', 'info',
+                                          True)
                             else:
                                 os.remove(mobiPath + '_toclean')
                                 os.remove(mobiPath)
@@ -568,12 +570,13 @@ class Ui_KCC(object):
         if replace:
             GUI.JobList.takeItem(GUI.JobList.count()-1)
         label = QtGui.QLabel(message)
+        label.setStyleSheet('background-image:url('');background-color:rgba(255,0,0,0.5);')
         label.setOpenExternalLinks(True)
         if sys.platform == 'darwin':
             font = QtGui.QFont()
             font.setPointSize(11)
             label.setFont(font)
-        item.setTextColor(QtGui.QColor("white"))
+        item.setTextColor(QtGui.QColor('transparent'))
         GUI.JobList.addItem(item)
         GUI.JobList.setItemWidget(item, label)
         GUI.JobList.scrollToBottom()
