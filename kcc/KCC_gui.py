@@ -572,10 +572,9 @@ class Ui_KCC(object):
         label = QtGui.QLabel(message)
         label.setStyleSheet('background-image:url('');background-color:rgba(255,0,0,0.5);')
         label.setOpenExternalLinks(True)
-        if sys.platform == 'darwin':
-            font = QtGui.QFont()
-            font.setPointSize(11)
-            label.setFont(font)
+        font = QtGui.QFont()
+        font.setPointSize(self.listFontSize)
+        label.setFont(font)
         item.setTextColor(QtGui.QColor('transparent'))
         GUI.JobList.addItem(item)
         GUI.JobList.setItemWidget(item, label)
@@ -673,6 +672,12 @@ class Ui_KCC(object):
         self.conversionAlive = False
         self.needClean = True
         self.GammaValue = 1.0
+        if sys.platform.startswith('darwin'):
+            self.listFontSize = 11
+        elif sys.platform.startswith('linux'):
+            self.listFontSize = 8
+        else:
+            self.listFontSize = 9
 
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')
