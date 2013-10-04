@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Wed Sep 18 12:12:45 2013
+# Created: Fri Oct 04 15:29:31 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -153,6 +153,7 @@ class Ui_KCC(object):
         self.JobList = QtGui.QListWidget(self.Form)
         self.JobList.setGeometry(QtCore.QRect(10, 50, 401, 101))
         self.JobList.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.JobList.setStyleSheet(_fromUtf8("background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;"))
         self.JobList.setProperty("showDropIndicator", False)
         self.JobList.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.JobList.setObjectName(_fromUtf8("JobList"))

@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'KCC-OSX.ui'
 #
-# Created: Fri Sep 20 10:57:31 2013
-#      by: PyQt4 UI code generator 4.10.2
+# Created: Fri Oct 04 15:30:10 2013
+#      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -200,6 +200,7 @@ class Ui_KCC(object):
         font.setPointSize(11)
         self.JobList.setFont(font)
         self.JobList.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.JobList.setStyleSheet(_fromUtf8("background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;"))
         self.JobList.setProperty("showDropIndicator", False)
         self.JobList.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.JobList.setObjectName(_fromUtf8("JobList"))

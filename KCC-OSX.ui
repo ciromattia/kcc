@@ -447,6 +447,9 @@
     <property name="focusPolicy">
      <enum>Qt::NoFocus</enum>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;</string>
+    </property>
     <property name="showDropIndicator" stdset="0">
      <bool>false</bool>
     </property>
