@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-Linux.ui'
 #
-# Created: Sun Oct 06 13:48:03 2013
+# Created: Sun Oct 06 18:20:50 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -339,7 +339,7 @@ class Ui_KCC(object):
         self.UpscaleBox.setText(_translate("KCC", "Stretch/Upscale", None))
         self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable auto-splitting of webtoons like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>Pages with a low width, high height and vertical panel flow.</p></body></html>", None))
         self.WebtoonBox.setText(_translate("KCC", "Webtoon mode", None))
-        self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p>Create PNG files instead JPEG.<br/>Output files will be ~33% smaller.<br/><span style=\" font-weight:600;\">MOBI creation will be ~3x slower.</span></p></body></html>", None))
+        self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p>Create PNG files instead JPEG.<br/>Output files might be smaller.<br/><span style=\" font-weight:600;\">MOBI creation will be much slower.</span></p></body></html>", None))
         self.NoDitheringBox.setText(_translate("KCC", "PNG output", None))
         self.BorderBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Autodetection<br/></span>Color of margins fill will be detected automatically.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - White<br/></span>Margins will be filled with white color.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Black<br/></span>Margins will be filled with black color.</p></body></html>", None))
         self.BorderBox.setText(_translate("KCC", "W/B margins", None))
