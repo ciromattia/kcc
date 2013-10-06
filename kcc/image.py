@@ -183,9 +183,11 @@ class ComicPage:
             if self.border:
                 suffix += "_kccx" + str(self.border[0]) + "_kccy" + str(self.border[1])
             if forcepng:
-                self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"), "PNG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"), "PNG",
+                                optimize=1)
             else:
-                self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".jpg"), "JPEG")
+                self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".jpg"), "JPEG",
+                                optimize=1)
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 

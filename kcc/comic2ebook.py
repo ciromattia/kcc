@@ -823,7 +823,7 @@ def main(argv=None, qtGUI=None):
     processingOptions.add_option("--forcecolor", action="store_true", dest="forcecolor", default=False,
                                  help="Don't convert images to grayscale")
     processingOptions.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
-                                 help="Create PNG files instead JPEG (For non-Kindle devices)")
+                                 help="Create PNG files instead JPEG")
     processingOptions.add_option("--gamma", type="float", dest="gamma", default="0.0",
                                  help="Apply gamma correction to linearize the image [Default=Auto]")
     processingOptions.add_option("--nocutpagenumbers", action="store_false", dest="cutpagenumbers", default=True,
