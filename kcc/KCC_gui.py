@@ -537,23 +537,19 @@ class Ui_KCC(object):
         if value in [9, 11, 12, 13, 14]:
             GUI.QualityBox.setChecked(False)
             GUI.QualityBox.setEnabled(False)
+            self.QualityBoxDisabled = True
         else:
             if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked() \
                     and str(GUI.FormatBox.currentText()) != 'CBZ':
                 GUI.QualityBox.setEnabled(True)
-        if value in [3, 4, 5, 6, 8, 15]:
-            GUI.NoDitheringBox.setChecked(False)
-            GUI.NoDitheringBox.setEnabled(False)
-        else:
-            if not GUI.ProcessingBox.isChecked():
-                GUI.NoDitheringBox.setEnabled(True)
+                self.QualityBoxDisabled = False
 
     def changeFormat(self):
         if str(GUI.FormatBox.currentText()) == 'CBZ':
             GUI.QualityBox.setChecked(False)
             GUI.QualityBox.setEnabled(False)
         else:
-            if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked():
+            if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked() and not self.QualityBoxDisabled:
                 GUI.QualityBox.setEnabled(True)
 
     def stripTags(self, html):
@@ -671,6 +667,7 @@ class Ui_KCC(object):
         self.versionCheck = VersionThread(self)
         self.conversionAlive = False
         self.needClean = True
+        self.QualityBoxDisabled = False
         self.GammaValue = 1.0
         if sys.platform.startswith('darwin'):
             self.listFontSize = 11
