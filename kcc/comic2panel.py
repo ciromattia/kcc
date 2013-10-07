@@ -25,6 +25,7 @@ __docformat__ = 'restructuredtext en'
 
 import os
 import sys
+import stat
 from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, Queue, freeze_support
@@ -223,7 +224,7 @@ def main(argv=None, qtGUI=None):
         options.targetDir = args[0] + "-Splitted"
         print "\nSplitting images..."
         if os.path.isdir(options.sourceDir):
-            rmtree(options.targetDir, True)
+            rmtree(options.targetDir, onerror=fixReadOnly)
             copytree(options.sourceDir, options.targetDir)
             work = []
             pagenumber = 0
@@ -254,21 +255,29 @@ def main(argv=None, qtGUI=None):
                 try:
                     workers.get()
                 except:
-                    rmtree(options.targetDir, True)
+                    rmtree(options.targetDir, onerror=fixReadOnly)
                     raise RuntimeError("One of workers crashed. Cause: " + str(sys.exc_info()[1]))
                 if GUI:
                     GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
                 if options.inPlace:
-                    rmtree(options.sourceDir, True)
+                    rmtree(options.sourceDir, onerror=fixReadOnly)
                     move(options.targetDir, options.sourceDir)
             else:
-                rmtree(options.targetDir)
+                rmtree(options.targetDir, onerror=fixReadOnly)
                 raise UserWarning("Source directory is empty.")
         else:
             raise UserWarning("Provided path is not a directory.")
     else:
         raise UserWarning("Target height is not set.")
 
+
+#noinspection PyUnusedLocal
+def fixReadOnly(func, path, exc_info):
+    if not os.access(path, os.W_OK):
+        os.chmod(path, stat.S_IWUSR)
+        func(path)
+    else:
+        raise
 
 if __name__ == "__main__":
     freeze_support()
