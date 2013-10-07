@@ -131,7 +131,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create PNG files instead JPEG.&lt;br/&gt;Output files might be smaller.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;MOBI creation will be much slower.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create PNG files instead JPEG.&lt;br/&gt;Quality increase is not noticeable on most of devices.&lt;br/&gt;Output files &lt;span style=&quot; font-weight:600;&quot;&gt;might&lt;/span&gt; be smaller.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;MOBI conversion will be much slower.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>PNG output</string>
