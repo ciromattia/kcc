@@ -224,7 +224,7 @@ def main(argv=None, qtGUI=None):
         options.targetDir = args[0] + "-Splitted"
         print "\nSplitting images..."
         if os.path.isdir(options.sourceDir):
-            rmtree(options.targetDir, onerror=fixReadOnly)
+            rmtree(options.targetDir, True)
             copytree(options.sourceDir, options.targetDir)
             work = []
             pagenumber = 0
