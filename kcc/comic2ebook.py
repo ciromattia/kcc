@@ -800,7 +800,7 @@ def main(argv=None, qtGUI=None):
     customProfileOptions = OptionGroup(parser, "CUSTOM PROFILE")
     otherOptions = OptionGroup(parser, "OTHER")
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                           help="Device profile (Choose one among K1, K2, K345, KDX, KDXG, KHD, KF, KFHD, KFHD8, KFHDX,"
+                           help="Device profile (Choose one among K1, K2, K345, KDX, KHD, KF, KFHD, KFHD8, KFHDX,"
                                 " KFHDX8, KFA) [Default=KHD]")
     mainOptions.add_option("-q", "--quality", type="int", dest="quality", default="0",
                            help="Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]")
@@ -945,7 +945,7 @@ def checkOptions():
     else:
         options.forcecolor = False
     # Older Kindle don't need higher resolution files due lack of Panel View.
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX' or options.profile == 'KDXG':
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX':
         options.quality = 0
         options.panelview = False
     # Webtoon mode mandatory options

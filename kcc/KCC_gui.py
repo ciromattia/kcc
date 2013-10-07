@@ -255,7 +255,7 @@ class WorkerThread(QtCore.QThread):
                             mobiPath = item.replace('.epub', '.mobi')
                             shutil.move(mobiPath, mobiPath + '_toclean')
                             try:
-                                if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX', 'KFHDX8', 'KFA']:
+                                if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX8', 'KFA']:
                                     newKindle = True
                                 else:
                                     newKindle = False
@@ -534,7 +534,7 @@ class Ui_KCC(object):
             GUI.BasicModeButton.setEnabled(True)
             GUI.AdvModeButton.setEnabled(True)
             self.modeBasic()
-        if value in [9, 11, 12, 13, 14]:
+        if value in [9, 11, 12, 13]:
             GUI.QualityBox.setChecked(False)
             GUI.QualityBox.setEnabled(False)
             self.QualityBoxDisabled = True

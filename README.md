@@ -69,7 +69,7 @@ Usage: comic2ebook.py [options] comic_file|comic_folder
 Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
-                        Device profile (Choose one among K1, K2, K345, KDX, KDXG, KHD, KF, KFHD, KFHD8, KFHDX, KFHDX8, KFA) [Default=KHD]
+                        Device profile (Choose one among K1, K2, K345, KDX, KHD, KF, KFHD, KFHD8, KFHDX, KFHDX8, KFA) [Default=KHD]
     -q QUALITY, --quality=QUALITY
                         Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
     -m, --manga-style   Manga style (Right-to-left reading and splitting)
