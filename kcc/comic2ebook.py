@@ -331,7 +331,7 @@ def dirImgProcess(path):
                     pass
                 if not GUI.conversionAlive:
                     pool.terminate()
-                    rmtree(os.path.join(path, '..', '..'))
+                    rmtree(os.path.join(path, '..', '..'), onerror=fixReadOnly)
                     raise UserWarning("Conversion interrupted.")
                 GUI.emit(QtCore.SIGNAL("progressBarTick"))
         pool.join()
@@ -339,7 +339,7 @@ def dirImgProcess(path):
         try:
             splitpages = splitpages.get()
         except:
-            rmtree(os.path.join(path, '..', '..'))
+            rmtree(os.path.join(path, '..', '..'), onerror=fixReadOnly)
             raise RuntimeError("One of workers crashed. Cause: " + str(sys.exc_info()[1]))
         splitpages = filter(None, splitpages)
         splitpages.sort()
@@ -348,7 +348,7 @@ def dirImgProcess(path):
                 pagenumbermodifier += 1
             pagenumbermodifier += 1
     else:
-        rmtree(os.path.join(path, '..', '..'))
+        rmtree(os.path.join(path, '..', '..'), onerror=fixReadOnly)
         raise UserWarning("Source directory is empty.")
 
 
@@ -556,13 +556,13 @@ def getWorkFolder(afile):
             sanitizeTreeBeforeConversion(fullPath)
             return workdir
         except OSError:
-            rmtree(workdir)
+            rmtree(workdir, onerror=fixReadOnly)
             raise
     elif afile.lower().endswith('.pdf'):
         pdf = pdfjpgextract.PdfJpgExtract(afile)
         path, njpg = pdf.extract()
         if njpg == 0:
-            rmtree(path)
+            rmtree(path, onerror=fixReadOnly)
             raise UserWarning("Failed to extract images.")
     else:
         workdir = tempfile.mkdtemp('', 'KCC-TMP-')
@@ -572,11 +572,11 @@ def getWorkFolder(afile):
             try:
                 path = cbx.extract(workdir)
             except OSError:
-                rmtree(workdir)
+                rmtree(workdir, onerror=fixReadOnly)
                 print 'UnRAR/7za not found or file failed to extract!'
                 sys.exit(21)
         else:
-            rmtree(workdir)
+            rmtree(workdir, onerror=fixReadOnly)
             raise TypeError
     move(path, path + "_temp")
     move(path + "_temp", os.path.join(path, 'OEBPS', 'Images'))
@@ -907,7 +907,7 @@ def main(argv=None, qtGUI=None):
                 filepath.append(getOutputFilename(args[0], options.output, '.epub', ''))
             make_archive(tome + '_comic', 'zip', tome)
         move(tome + '_comic.zip', filepath[-1])
-        rmtree(tome)
+        rmtree(tome, onerror=fixReadOnly)
     return filepath
 
 
@@ -975,6 +975,14 @@ def checkOptions():
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
 
+
+#noinspection PyUnusedLocal
+def fixReadOnly(func, path, exc_info):
+    if not os.access(path, os.W_OK):
+        os.chmod(path, stat.S_IWUSR)
+        func(path)
+    else:
+        raise
 
 if __name__ == "__main__":
     freeze_support()
