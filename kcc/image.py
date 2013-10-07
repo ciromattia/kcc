@@ -85,8 +85,7 @@ class ProfileData:
         'K2': ("Kindle 2", (600, 670), Palette15, 1.8, (900, 1005)),
         'K345': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
         'KHD': ("Kindle Paperwhite", (758, 1024), Palette16, 1.8, (1137, 1536)),
-        'KDX': ("Kindle DX", (824, 1000), Palette15, 1.8, (1236, 1500)),
-        'KDXG': ("Kindle DXG", (824, 1000), Palette16, 1.8, (1236, 1500)),
+        'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8, (1236, 1500)),
         'KF': ("Kindle Fire", (600, 1024), PalleteNull, 1.0, (900, 1536)),
         'KFHD': ("K. Fire HD 7\"", (800, 1280), PalleteNull, 1.0, (1200, 1920)),
         'KFHD8': ("K. Fire HD 8.9\"", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
@@ -101,8 +100,7 @@ class ProfileData:
         "Kindle 2": 'K2',
         "Kindle": 'K345',
         "Kindle Paperwhite": 'KHD',
-        "Kindle DX": 'KDX',
-        "Kindle DXG": 'KDXG',
+        "Kindle DX/DXG": 'KDX',
         "Kindle Fire": 'KF',
         "K. Fire HD 7\"": 'KFHD',
         "K. Fire HD 8.9\"": 'KFHD8',
@@ -126,8 +124,7 @@ class ProfileData:
         "Separator",
         "Kindle 1",
         "Kindle 2",
-        "Kindle DX",
-        "Kindle DXG",
+        "Kindle DX/DXG",
         "Kindle Fire"
     ]
 
@@ -168,8 +165,8 @@ class ComicPage:
     def saveToDir(self, targetdir, forcepng, color, wipe):
         try:
             suffix = ""
-            if not color:
-                self.image = self.image.convert('L')    # convert to grayscale
+            if not color and not forcepng:
+                self.image = self.image.convert('L')
             if self.rotated:
                 suffix += "_kccrot"
             if wipe:
@@ -200,13 +197,13 @@ class ComicPage:
             self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: 255 * (a / 255.) ** gamma))
 
     def quantizeImage(self):
-        self.image = self.image.convert('L')    # convert to grayscale
-        self.image = self.image.convert("RGB")    # convert back to RGB
         colors = len(self.palette) / 3
         if colors < 256:
             self.palette += self.palette[:3] * (256 - colors)
         palImg = Image.new('P', (1, 1))
         palImg.putpalette(self.palette)
+        self.image = self.image.convert('L')
+        self.image = self.image.convert('RGB')
         self.image = self.image.quantize(palette=palImg)
 
     def resizeImage(self, upscale=False, stretch=False, bordersColor=None, qualityMode=0):
