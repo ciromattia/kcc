@@ -159,7 +159,7 @@ class WorkerThread(QtCore.QThread):
                 argv.append("--forcecolor")
         for i in range(GUI.JobList.count()):
             if GUI.JobList.item(i).icon().isNull():
-                currentJobs.append(str(GUI.JobList.item(i).text()))
+                currentJobs.append(unicode(GUI.JobList.item(i).text()))
         GUI.JobList.clear()
         for job in currentJobs:
             time.sleep(0.5)
@@ -215,8 +215,8 @@ class WorkerThread(QtCore.QThread):
                         try:
                             self.kindlegenErrorCode = 0
                             if os.path.getsize(item) < 367001600:
-                                output = Popen('kindlegen -locale en "' + item + '"', stdout=PIPE, stderr=STDOUT,
-                                               shell=True)
+                                output = Popen('kindlegen -locale en "' + item.encode(sys.getfilesystemencoding()) +
+                                               '"', stdout=PIPE, stderr=STDOUT, shell=True)
                                 for line in output.stdout:
                                     # ERROR: Generic error
                                     if "Error(" in line:
@@ -312,18 +312,11 @@ class Ui_KCC(object):
             dnames = dirDialog.selectedFiles()
         else:
             dnames = ""
-        # Lame UTF-8 security measure
         for dname in dnames:
-            try:
-                str(dname)
-            except Exception:
-                QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
-                                           QtGui.QMessageBox.Ok)
-                return
-            if str(dname) != "":
+            if unicode(dname) != "":
                 if sys.platform == 'win32':
                     dname = dname.replace('/', '\\')
-                self.lastPath = os.path.abspath(os.path.join(str(dname), os.pardir))
+                self.lastPath = os.path.abspath(os.path.join(unicode(dname), os.pardir))
                 GUI.JobList.addItem(dname)
 
     def selectFile(self):
@@ -344,16 +337,9 @@ class Ui_KCC(object):
             else:
                 fnames = QtGui.QFileDialog.getOpenFileNames(MainWindow, 'Select file', self.lastPath,
                                                             '*.cbz *.zip *.pdf')
-        # Lame UTF-8 security measure
         for fname in fnames:
-            try:
-                str(fname)
-            except Exception:
-                QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
-                                           QtGui.QMessageBox.Ok)
-                return
-            if str(fname) != "":
-                self.lastPath = os.path.abspath(os.path.join(str(fname), os.pardir))
+            if unicode(fname) != "":
+                self.lastPath = os.path.abspath(os.path.join(unicode(fname), os.pardir))
                 GUI.JobList.addItem(fname)
 
     def clearJobs(self):
@@ -577,7 +563,7 @@ class Ui_KCC(object):
         GUI.JobList.scrollToBottom()
 
     def showDialog(self, message):
-        QtGui.QMessageBox.critical(MainWindow, 'KCC Error', message, QtGui.QMessageBox.Ok)
+        QtGui.QMessageBox.critical(MainWindow, 'KCC - Error', message, QtGui.QMessageBox.Ok)
 
     def updateProgressbar(self, new=False, status=False):
         if new == "status":
@@ -643,7 +629,11 @@ class Ui_KCC(object):
                                                            'GammaSlider': float(self.GammaValue)*100}))
         self.settings.sync()
 
-    def __init__(self, UI, KCC):
+    def handleMessage(self, message):
+        #TODO
+        print message
+
+    def __init__(self, UI, KCC, APP):
         global GUI, MainWindow
         GUI = UI
         MainWindow = KCC
@@ -714,6 +704,7 @@ class Ui_KCC(object):
             self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7za</a>!'
                             ' Processing of CB7/7Z files will be disabled.', 'warning')
 
+        APP.connect(APP, QtCore.SIGNAL('messageFromOtherInstance'), self.handleMessage)
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
         GUI.DirectoryButton.clicked.connect(self.selectDir)

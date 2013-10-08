@@ -24,6 +24,9 @@ import os
 try:
     # noinspection PyUnresolvedReferences
     from PIL import Image, ImageOps, ImageStat, ImageChops
+    if tuple(map(int, ('2.2.1'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
+        print "ERROR: Pillow 2.2.1 or newer is required!"
+        exit(1)
 except ImportError:
     print "ERROR: Pillow is not installed!"
     exit(1)
