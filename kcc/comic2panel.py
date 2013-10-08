@@ -25,7 +25,6 @@ __docformat__ = 'restructuredtext en'
 
 import os
 import sys
-import stat
 from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, Queue, freeze_support
@@ -258,29 +257,21 @@ def main(argv=None, qtGUI=None):
                 try:
                     workers.get()
                 except:
-                    rmtree(options.targetDir, onerror=fixReadOnly)
+                    rmtree(options.targetDir, True)
                     raise RuntimeError("One of workers crashed. Cause: " + str(sys.exc_info()[1]))
                 if GUI:
                     GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
                 if options.inPlace:
-                    rmtree(options.sourceDir, onerror=fixReadOnly)
+                    rmtree(options.sourceDir, True)
                     move(options.targetDir, options.sourceDir)
             else:
-                rmtree(options.targetDir, onerror=fixReadOnly)
+                rmtree(options.targetDir, True)
                 raise UserWarning("Source directory is empty.")
         else:
             raise UserWarning("Provided path is not a directory.")
     else:
         raise UserWarning("Target height is not set.")
 
-
-#noinspection PyUnusedLocal
-def fixReadOnly(func, path, exc_info):
-    if not os.access(path, os.W_OK):
-        os.chmod(path, stat.S_IWUSR)
-        func(path)
-    else:
-        raise
 
 if __name__ == "__main__":
     freeze_support()
