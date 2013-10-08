@@ -926,7 +926,11 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
     else:
         filename = os.path.splitext(srcpath)[0] + tomeNumber + ext
     if os.path.isfile(filename):
-        filename = os.path.splitext(filename)[0] + '_kcc' + tomeNumber + ext
+        counter = 0
+        basename = os.path.splitext(filename)[0]
+        while os.path.isfile(basename + '_kcc' + str(counter) + ext):
+            counter += 1
+        filename = basename + '_kcc' + str(counter) + ext
     return filename
 
 
