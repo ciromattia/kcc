@@ -27,7 +27,7 @@ import sys
 import os
 try:
     # noinspection PyUnresolvedReferences
-    from PyQt4 import QtGui
+    from PyQt4 import QtCore, QtGui, QtNetwork
 except ImportError:
     print "ERROR: PyQT4 is not installed!"
     exit(1)
@@ -41,13 +41,67 @@ elif sys.platform.startswith('linux'):
 else:
     from kcc import KCC_ui
 
+
+class QApplicationMessaging(QtGui.QApplication):
+    def __init__(self, argv):
+        QtGui.QApplication.__init__(self, argv)
+        self._memory = QtCore.QSharedMemory(self)
+        self._memory.setKey('KCC')
+        if self._memory.attach():
+            self._running = True
+        else:
+            self._running = False
+            if not self._memory.create(1):
+                raise RuntimeError(self._memory.errorString().toLocal8Bit().data())
+        self._key = 'KCC'
+        self._timeout = 1000
+        self._server = QtNetwork.QLocalServer(self)
+        if not self.isRunning():
+            self._server.newConnection.connect(self.handleMessage)
+            self._server.listen(self._key)
+
+    def isRunning(self):
+        return self._running
+
+    def handleMessage(self):
+        socket = self._server.nextPendingConnection()
+        if socket.waitForReadyRead(self._timeout):
+            self.emit(QtCore.SIGNAL('messageFromOtherInstance'), socket.readAll().data())
+
+    def sendMessage(self, message):
+        if self.isRunning():
+            socket = QtNetwork.QLocalSocket(self)
+            socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
+            if not socket.waitForConnected(self._timeout):
+                return False
+            socket.write(message.encode('utf8'))
+            if not socket.waitForBytesWritten(self._timeout):
+                return False
+            socket.disconnectFromServer()
+            return True
+        return False
+
 freeze_support()
-APP = QtGui.QApplication(sys.argv)
+APP = QApplicationMessaging(sys.argv)
+if APP.isRunning():
+    if len(sys.argv) > 1:
+        APP.sendMessage('Araise!')
+        APP.sendMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
+        sys.exit(0)
+    else:
+        messageBox = QtGui.QMessageBox()
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(':/Icon/icons/comic2ebook.png'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        messageBox.setWindowIcon(icon)
+        QtGui.QMessageBox.critical(messageBox, 'KCC - Error', 'KCC is already running!', QtGui.QMessageBox.Ok)
+        sys.exit(1)
 KCC = QtGui.QMainWindow()
 UI = KCC_ui.Ui_KCC()
 UI.setupUi(KCC)
-GUI = KCC_gui.Ui_KCC(UI, KCC)
+GUI = KCC_gui.Ui_KCC(UI, KCC, APP)
 KCC.setWindowTitle("Kindle Comic Converter " + __version__)
 KCC.show()
 KCC.raise_()
+if len(sys.argv) > 1:
+    GUI.handleMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
 sys.exit(APP.exec_())
