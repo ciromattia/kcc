@@ -317,7 +317,7 @@ class Ui_KCC(object):
             try:
                 str(dname)
             except Exception:
-                QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
+                QtGui.QMessageBox.critical(MainWindow, 'KCC - Error', 'Path cannot contain non-ASCII characters.',
                                            QtGui.QMessageBox.Ok)
                 return
             if str(dname) != "":
@@ -349,7 +349,7 @@ class Ui_KCC(object):
             try:
                 str(fname)
             except Exception:
-                QtGui.QMessageBox.critical(MainWindow, 'KCC Error', "Path cannot contain non-ASCII characters.",
+                QtGui.QMessageBox.critical(MainWindow, 'KCC - Error', 'Path cannot contain non-ASCII characters.',
                                            QtGui.QMessageBox.Ok)
                 return
             if str(fname) != "":
@@ -577,7 +577,7 @@ class Ui_KCC(object):
         GUI.JobList.scrollToBottom()
 
     def showDialog(self, message):
-        QtGui.QMessageBox.critical(MainWindow, 'KCC Error', message, QtGui.QMessageBox.Ok)
+        QtGui.QMessageBox.critical(MainWindow, 'KCC - Error', message, QtGui.QMessageBox.Ok)
 
     def updateProgressbar(self, new=False, status=False):
         if new == "status":
@@ -643,7 +643,11 @@ class Ui_KCC(object):
                                                            'GammaSlider': float(self.GammaValue)*100}))
         self.settings.sync()
 
-    def __init__(self, UI, KCC):
+    def handleMessage(self, message):
+        #TODO
+        print message
+
+    def __init__(self, UI, KCC, APP):
         global GUI, MainWindow
         GUI = UI
         MainWindow = KCC
@@ -714,6 +718,7 @@ class Ui_KCC(object):
             self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7za</a>!'
                             ' Processing of CB7/7Z files will be disabled.', 'warning')
 
+        APP.connect(APP, QtCore.SIGNAL('messageFromOtherInstance'), self.handleMessage)
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
         GUI.DirectoryButton.clicked.connect(self.selectDir)
