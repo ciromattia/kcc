@@ -184,7 +184,7 @@ def buildNCX(dstdir, title, chapters):
                   "<meta name=\"dtb:maxPageNumber\" content=\"0\"/>\n",
                   "<meta name=\"generated\" content=\"true\"/>\n",
                   "</head>\n",
-                  "<docTitle><text>", title, "</text></docTitle>\n",
+                  "<docTitle><text>", title.encode('utf-8'), "</text></docTitle>\n",
                   "<navMap>"
                   ])
     for chapter in chapters:
@@ -192,8 +192,9 @@ def buildNCX(dstdir, title, chapters):
         if os.path.basename(folder) != "Text":
             title = os.path.basename(folder)
         filename = getImageFileName(os.path.join(folder, chapter[1]))
-        f.write("<navPoint id=\"" + folder.replace('/', '_').replace('\\', '_') + "\"><navLabel><text>" + title
-                + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") + ".html\"/></navPoint>\n")
+        f.write("<navPoint id=\"" + folder.replace('/', '_').replace('\\', '_') + "\"><navLabel><text>"
+                + title.encode('utf-8') + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/")
+                + ".html\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
     return
@@ -213,7 +214,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "xmlns=\"http://www.idpf.org/2007/opf\">\n",
                   "<metadata xmlns:opf=\"http://www.idpf.org/2007/opf\" ",
                   "xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n",
-                  "<dc:title>", title, "</dc:title>\n",
+                  "<dc:title>", title.encode('utf-8'), "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
                   "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n",
                   "<dc:Creator>KCC</dc:Creator>\n",
