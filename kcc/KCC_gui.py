@@ -630,8 +630,29 @@ class Ui_KCC(object):
         self.settings.sync()
 
     def handleMessage(self, message):
-        #TODO
-        print message
+        MainWindow.raise_()
+        if not self.conversionAlive:
+            if self.needClean:
+                self.needClean = False
+                GUI.JobList.clear()
+            if self.UnRAR:
+                if self.sevenza:
+                    formats = ['.cbz', '.cbr', '.cb7', '.zip', '.rar', '.7z', '.pdf']
+                else:
+                    formats = ['.cbz', '.cbr', '.zip', '.rar', '.pdf']
+            else:
+                if self.sevenza:
+                    formats = ['.cbz', '.cb7', '.zip', '.7z', '.pdf']
+                else:
+                    formats = ['.cbz', '.zip', '.pdf']
+            if os.path.isdir(message):
+                GUI.JobList.addItem(message)
+            elif os.path.isfile(message):
+                extension = os.path.splitext(message)
+                if extension[1].lower() in formats:
+                    GUI.JobList.addItem(message)
+                else:
+                    self.addMessage('This file type is unsupported!', 'error')
 
     def __init__(self, UI, KCC, APP):
         global GUI, MainWindow
