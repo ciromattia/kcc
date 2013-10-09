@@ -262,7 +262,7 @@ def main(argv=None, qtGUI=None):
                 if GUI:
                     GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
                 if options.inPlace:
-                    rmtree(options.sourceDir, True)
+                    rmtree(options.sourceDir)
                     move(options.targetDir, options.sourceDir)
             else:
                 rmtree(options.targetDir, True)
