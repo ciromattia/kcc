@@ -22,8 +22,8 @@ if platform == "darwin":
             py2app=dict(
                 argv_emulation=True,
                 iconfile='icons/comic2ebook.icns',
-                includes=['PIL', 'sip', 'PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui'],
-                resources=['other/qt.conf', 'LICENSE.txt'],
+                includes=['PIL', 'sip', 'PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui', 'PyQt4.QtNetwork'],
+                resources=['other/qt.conf', 'LICENSE.txt', 'other/Additional-LICENSE.txt'],
                 plist=dict(
                     CFBundleName=NAME,
                     CFBundleShortVersionString=VERSION,
@@ -57,7 +57,9 @@ elif platform == "win32":
 else:
     from cx_Freeze import setup, Executable
     extra_options = dict(
-        options={"build_exe": {"include_files": ['LICENSE.txt'], "compressed": True}},
+        options={"build_exe": {"include_files": ['LICENSE.txt',
+                                                 ['other/Additional-LICENSE.txt', 'Additional-LICENSE.txt']
+                                                 ], "compressed": True}},
         executables=[Executable(MAIN,
                                 icon="icons/comic2ebook.png",
                                 copyDependentFiles=True,
