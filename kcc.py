@@ -39,6 +39,11 @@ if sys.platform.startswith('darwin'):
 elif sys.platform.startswith('linux'):
     from kcc import KCC_ui_linux as KCC_ui
 else:
+    # Workaround for Windows file association mechanism
+    if getattr(sys, 'frozen', False):
+        os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
+    else:
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
     from kcc import KCC_ui
 
 
@@ -85,7 +90,6 @@ freeze_support()
 APP = QApplicationMessaging(sys.argv)
 if APP.isRunning():
     if len(sys.argv) > 1:
-        APP.sendMessage('Araise!')
         APP.sendMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
         sys.exit(0)
     else:
