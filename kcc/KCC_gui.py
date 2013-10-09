@@ -631,6 +631,7 @@ class Ui_KCC(object):
 
     def handleMessage(self, message):
         MainWindow.raise_()
+        MainWindow.activateWindow()
         if not self.conversionAlive:
             if self.needClean:
                 self.needClean = False

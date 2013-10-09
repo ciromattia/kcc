@@ -71,7 +71,7 @@ class QApplicationMessaging(QtGui.QApplication):
     def handleMessage(self):
         socket = self._server.nextPendingConnection()
         if socket.waitForReadyRead(self._timeout):
-            self.emit(QtCore.SIGNAL('messageFromOtherInstance'), socket.readAll().data())
+            self.emit(QtCore.SIGNAL('messageFromOtherInstance'), socket.readAll().data().decode('utf8'))
 
     def sendMessage(self, message):
         if self.isRunning():
