@@ -32,6 +32,13 @@ if platform == "darwin":
                     CFBundleExecutable=NAME,
                     CFBundleIdentifier='com.github.ciromattia.kcc',
                     CFBundleSignature='dplt',
+                    CFBundleDocumentTypes=[
+                        dict(
+                            CFBundleTypeExtensions=['.cbz', '.cbr', '.cb7', '.zip', '.rar', '.7z', '.pdf'],
+                            CFBundleTypeIconFile='comic2ebook.icns',
+                            CFBundleTypeRole='Viewer',
+                        )
+                    ],
                     NSHumanReadableCopyright='ISC License (ISCL)'
                 )
             )
