@@ -34,7 +34,7 @@ if platform == "darwin":
                     CFBundleSignature='dplt',
                     CFBundleDocumentTypes=[
                         dict(
-                            CFBundleTypeExtensions=['.cbz', '.cbr', '.cb7', '.zip', '.rar', '.7z', '.pdf'],
+                            CFBundleTypeExtensions=['cbz', 'cbr', 'cb7', 'zip', 'rar', '7z', 'pdf'],
                             CFBundleTypeIconFile='comic2ebook.icns',
                             CFBundleTypeRole='Viewer',
                         )
