@@ -1850,6 +1850,8 @@ def check_returncode(p, out):
     code = p.returncode
     if code == 0:
         return
+    if code == 9:
+        return
 
     # map return code to exception class
     errmap = [None,
