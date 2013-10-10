@@ -587,8 +587,11 @@ def getWorkFolder(afile):
 def slugify(value):
     # Normalizes string, converts to lowercase, removes non-alpha characters and converts spaces to hyphens.
     import unicodedata
-    #noinspection PyArgumentList
-    value = unicodedata.normalize('NFKD', unicode(value, 'latin1')).encode('ascii', 'ignore')
+    if isinstance(value, str):
+        #noinspection PyArgumentList
+        value = unicodedata.normalize('NFKD', unicode(value, 'latin1')).encode('ascii', 'ignore')
+    elif isinstance(value, unicode):
+        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
     value = re.sub('[^\w\s\.-]', '', value).strip().lower()
     value = re.sub('[-\.\s]+', '-', value)
     value = re.sub(r'([0-9]+)', r'00000\1', value)
