@@ -22,6 +22,7 @@ __docformat__ = 'restructuredtext en'
 import os
 import zipfile
 import rarfile
+import locale
 from subprocess import Popen, STDOUT, PIPE
 
 
@@ -57,7 +58,7 @@ class CBxArchive:
         cbzFile.extractall(targetdir, filelist)
 
     def extractCBR(self, targetdir):
-        cbrFile = rarfile.RarFile(self.origFileName)
+        cbrFile = rarfile.RarFile(self.origFileName.encode(locale.getpreferredencoding()))
         filelist = []
         for f in cbrFile.namelist():
             if f.startswith('__MACOSX') or f.endswith('.DS_Store') or f.endswith('thumbs.db'):
@@ -68,12 +69,13 @@ class CBxArchive:
                 except:
                     pass  # the dir exists so we are going to extract the images only.
             else:
-                filelist.append(f)
+                filelist.append(f.encode(locale.getpreferredencoding()))
         cbrFile.extractall(targetdir, filelist)
 
     def extractCB7(self, targetdir):
-        output = Popen('7za x "' + self.origFileName + '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -o"' + targetdir +
-                       '"', stdout=PIPE, stderr=STDOUT, shell=True)
+        output = Popen('7za x "' + self.origFileName.encode(locale.getpreferredencoding()) +
+                       '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -o"' + targetdir + '"',
+                       stdout=PIPE, stderr=STDOUT, shell=True)
         extracted = False
         for line in output.stdout:
             if "Everything is Ok" in line:
