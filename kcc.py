@@ -34,6 +34,7 @@ except ImportError:
 from kcc import KCC_gui
 from multiprocessing import freeze_support
 if sys.platform.startswith('darwin'):
+    # Workaround Finder-launched app PATH evaluation
     os.environ['PATH'] = '/usr/local/bin:' + os.environ['PATH']
     from kcc import KCC_ui_osx as KCC_ui
 elif sys.platform.startswith('linux'):
@@ -47,6 +48,7 @@ else:
     from kcc import KCC_ui
 
 
+# Implementing detection of already running KCC instance and forwarding argv to it
 class QApplicationMessaging(QtGui.QApplication):
     def __init__(self, argv):
         QtGui.QApplication.__init__(self, argv)
