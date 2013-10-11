@@ -158,6 +158,7 @@ class WorkerThread(QtCore.QThread):
             if GUI.ColorBox.isChecked():
                 argv.append("--forcecolor")
         for i in range(GUI.JobList.count()):
+            # Make sure that we don't consider any system message as job to do
             if GUI.JobList.item(i).icon().isNull():
                 currentJobs.append(unicode(GUI.JobList.item(i).text()))
         GUI.JobList.clear()
@@ -255,6 +256,8 @@ class WorkerThread(QtCore.QThread):
                             mobiPath = item.replace('.epub', '.mobi')
                             shutil.move(mobiPath, mobiPath + '_toclean')
                             try:
+                                # MOBI file produced by KindleGen is hybrid. KF8 + M7 + Source header
+                                # KindleSplit is removing redundant data as we need only KF8 part for new Kindle models
                                 if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX8', 'KFA']:
                                     newKindle = True
                                 else:
@@ -546,18 +549,20 @@ class Ui_KCC(object):
     def addMessage(self, message, icon=None, replace=False):
         if icon:
             icon = eval('self.icons.' + icon)
-            item = QtGui.QListWidgetItem(icon, '   ' + self.stripTags(message))
+            item = QtGui.QListWidgetItem(icon, '    ' + self.stripTags(message))
         else:
-            item = QtGui.QListWidgetItem('   ' + self.stripTags(message))
+            item = QtGui.QListWidgetItem('    ' + self.stripTags(message))
         if replace:
             GUI.JobList.takeItem(GUI.JobList.count()-1)
+        # Due to lack of HTML support in QListWidgetItem we overlay text field with QLabel
+        # We still fill original text field with transparent content to trigger creation of horizontal scrollbar
+        item.setTextColor(QtGui.QColor('transparent'))
         label = QtGui.QLabel(message)
         label.setStyleSheet('background-image:url('');background-color:rgba(255,0,0,0.5);')
         label.setOpenExternalLinks(True)
         font = QtGui.QFont()
         font.setPointSize(self.listFontSize)
         label.setFont(font)
-        item.setTextColor(QtGui.QColor('transparent'))
         GUI.JobList.addItem(item)
         GUI.JobList.setItemWidget(item, label)
         GUI.JobList.scrollToBottom()

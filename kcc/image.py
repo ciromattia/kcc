@@ -207,9 +207,11 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.convert('L')
         self.image = self.image.convert('RGB')
+        # Quantize is deprecated but new function call it internally anyway...
         self.image = self.image.quantize(palette=palImg)
 
     def resizeImage(self, upscale=False, stretch=False, bordersColor=None, qualityMode=0):
+        # High-quality downscaling filter
         method = Image.ANTIALIAS
         if bordersColor:
             fill = bordersColor
@@ -224,6 +226,7 @@ class ComicPage:
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
             generateBorder = False
+        # If image is smaller than screen and upscale is off - Just expand it
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             if not upscale:
                 borderw = (self.size[0] - self.image.size[0]) / 2
@@ -238,8 +241,10 @@ class ComicPage:
                                    int(round(float(borderh)/float(self.image.size[1])*100, 2)*100*1.5)]
                 return self.image
             else:
-                method = Image.BILINEAR
-        if stretch:  # If stretching call directly resize() without other considerations.
+                # Cubic spline interpolation in a 4x4 environment
+                method = Image.BICUBIC
+        # If stretching is on - Resize without other considerations
+        if stretch:
             self.image = self.image.resize(size, method)
             if generateBorder:
                 if fill == 'white':
@@ -258,6 +263,7 @@ class ComicPage:
                     self.noHPV = True
                     self.noVPV = True
             return self.image
+        # Otherwise - Upscale/Downscale
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
