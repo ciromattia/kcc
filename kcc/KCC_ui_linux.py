@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-Linux.ui'
 #
-# Created: Fri Oct 11 10:36:16 2013
+# Created: Fri Oct 11 13:17:20 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -197,6 +197,8 @@ class Ui_KCC(object):
         self.JobList.setProperty("showDropIndicator", False)
         self.JobList.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.JobList.setIconSize(QtCore.QSize(18, 18))
+        self.JobList.setVerticalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
+        self.JobList.setHorizontalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
         self.JobList.setObjectName(_fromUtf8("JobList"))
         self.BasicModeButton = QtGui.QPushButton(self.Form)
         self.BasicModeButton.setGeometry(QtCore.QRect(10, 10, 195, 32))

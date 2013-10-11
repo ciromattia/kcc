@@ -456,6 +456,12 @@
     <property name="selectionMode">
      <enum>QAbstractItemView::NoSelection</enum>
     </property>
+    <property name="verticalScrollMode">
+     <enum>QAbstractItemView::ScrollPerPixel</enum>
+    </property>
+    <property name="horizontalScrollMode">
+     <enum>QAbstractItemView::ScrollPerPixel</enum>
+    </property>
    </widget>
    <widget class="QPushButton" name="BasicModeButton">
     <property name="geometry">
