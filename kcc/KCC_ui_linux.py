@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-Linux.ui'
 #
-# Created: Mon Oct 07 09:18:59 2013
+# Created: Fri Oct 11 10:36:16 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -193,7 +193,7 @@ class Ui_KCC(object):
         font.setItalic(False)
         self.JobList.setFont(font)
         self.JobList.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.JobList.setStyleSheet(_fromUtf8("background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;"))
+        self.JobList.setStyleSheet(_fromUtf8("QListWidget#JobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;}QScrollBar:vertical{border:1px solid #999;background:#FFF;width:5px;margin:0}QScrollBar::handle:vertical{background:#000;min-height:0}QScrollBar::add-line:vertical{height:0;background:#000;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:vertical{height:0;background:#000;subcontrol-position:top;subcontrol-origin:margin}QScrollBar:horizontal{border:1px solid #999;background:#FFF;height:5px;margin:0}QScrollBar::handle:horizontal{background:#000;min-width:0}QScrollBar::add-line:horizontal{width:0;background:#000;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:horizontal{width:0;background:#000;subcontrol-position:top;subcontrol-origin:margin}"))
         self.JobList.setProperty("showDropIndicator", False)
         self.JobList.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.JobList.setIconSize(QtCore.QSize(18, 18))
