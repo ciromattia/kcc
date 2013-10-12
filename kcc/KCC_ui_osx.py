@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-OSX.ui'
 #
-# Created: Fri Oct 11 19:30:26 2013
+# Created: Sat Oct 12 11:28:19 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -100,7 +100,7 @@ class Ui_KCC(object):
         self.NoRotateBox.setObjectName(_fromUtf8("NoRotateBox"))
         self.gridLayout.addWidget(self.NoRotateBox, 1, 2, 1, 1)
         self.DeviceBox = QtGui.QComboBox(self.Form)
-        self.DeviceBox.setGeometry(QtCore.QRect(8, 200, 151, 34))
+        self.DeviceBox.setGeometry(QtCore.QRect(8, 201, 151, 34))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Lucida Grande"))
         font.setPointSize(11)
@@ -108,7 +108,7 @@ class Ui_KCC(object):
         self.DeviceBox.setFocusPolicy(QtCore.Qt.NoFocus)
         self.DeviceBox.setObjectName(_fromUtf8("DeviceBox"))
         self.FormatBox = QtGui.QComboBox(self.Form)
-        self.FormatBox.setGeometry(QtCore.QRect(262, 200, 152, 34))
+        self.FormatBox.setGeometry(QtCore.QRect(262, 201, 152, 34))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Lucida Grande"))
         font.setPointSize(11)
@@ -200,7 +200,7 @@ class Ui_KCC(object):
         font.setPointSize(11)
         self.JobList.setFont(font)
         self.JobList.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.JobList.setStyleSheet(_fromUtf8("QScrollBar:vertical{border:1px solid #999;background:#FFF;width:5px;margin:0}QScrollBar::handle:vertical{background:#000;min-height:0}QScrollBar::add-line:vertical{height:0;background:#000;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:vertical{height:0;background:#000;subcontrol-position:top;subcontrol-origin:margin}QScrollBar:horizontal{border:1px solid #999;background:#FFF;height:5px;margin:0}QScrollBar::handle:horizontal{background:#000;min-width:0}QScrollBar::add-line:horizontal{width:0;background:#000;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:horizontal{width:0;background:#000;subcontrol-position:top;subcontrol-origin:margin}"))
+        self.JobList.setStyleSheet(_fromUtf8("QListWidget#JobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;}QScrollBar:vertical{border:1px solid #999;background:#FFF;width:5px;margin:0}QScrollBar::handle:vertical{background:DarkGray;min-height:0}QScrollBar::add-line:vertical{height:0;background:DarkGray;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:vertical{height:0;background:DarkGray;subcontrol-position:top;subcontrol-origin:margin}QScrollBar:horizontal{border:1px solid #999;background:#FFF;height:5px;margin:0}QScrollBar::handle:horizontal{background:DarkGray;min-width:0}QScrollBar::add-line:horizontal{width:0;background:DarkGray;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:horizontal{width:0;background:DarkGray;subcontrol-position:top;subcontrol-origin:margin}"))
         self.JobList.setProperty("showDropIndicator", False)
         self.JobList.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
         self.JobList.setVerticalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
