@@ -23,7 +23,10 @@ if platform == "darwin":
                 argv_emulation=True,
                 iconfile='icons/comic2ebook.icns',
                 includes=['PIL', 'sip', 'PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui', 'PyQt4.QtNetwork'],
-                resources=['other/qt.conf', 'LICENSE.txt', 'other/Additional-LICENSE.txt'],
+                excludes=['PyQt4.QtDeclarative', 'PyQt4.QtDesigner', 'PyQt4.QtHelp', 'PyQt4.QtMultimedia',
+                          'PyQt4.QtOpenGL', 'PyQt4.QtScript', 'PyQt4.QtScriptTools', 'PyQt4.QtSql', 'PyQt4.QtSvg',
+                          'PyQt4.QtXmlPatterns', 'PyQt4.QtXml', 'PyQt4.QtWebKit', 'PyQt4.QtTest'],
+                resources=['LICENSE.txt', 'other/Additional-LICENSE.txt'],
                 plist=dict(
                     CFBundleName=NAME,
                     CFBundleShortVersionString=VERSION,
