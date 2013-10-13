@@ -10,7 +10,7 @@ Usage (Windows):
 from sys import platform
 
 NAME = "KindleComicConverter"
-VERSION = "3.3"
+VERSION = "3.4"
 MAIN = "kcc.py"
 
 if platform == "darwin":
