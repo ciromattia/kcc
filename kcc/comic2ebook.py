@@ -547,12 +547,16 @@ def genEpubStruct(path):
 
 
 def getWorkFolder(afile):
+    if len(afile) > 240:
+        raise UserWarning("Path is too long.")
     if os.path.isdir(afile):
         workdir = tempfile.mkdtemp('', 'KCC-TMP-')
         #workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.join(os.path.splitext(afile)[0], '..'))
         try:
             os.rmdir(workdir)   # needed for copytree() fails if dst already exists
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
+            if len(fullPath) > 240:
+                raise UserWarning("Path is too long.")
             copytree(afile, fullPath)
             sanitizeTreeBeforeConversion(fullPath)
             return workdir
@@ -579,6 +583,8 @@ def getWorkFolder(afile):
         else:
             rmtree(workdir, True)
             raise TypeError
+    if len(os.path.join(path, 'OEBPS', 'Images')) > 240:
+        raise UserWarning("Path is too long.")
     move(path, path + "_temp")
     move(path + "_temp", os.path.join(path, 'OEBPS', 'Images'))
     return path
