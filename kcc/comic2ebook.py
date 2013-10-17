@@ -888,11 +888,15 @@ def main(argv=None, qtGUI=None):
     filepath = []
     tomeNumber = 0
     for tome in tomes:
+        if os.path.isdir(args[0]):
+            barePath = os.path.basename(args[0])
+        else:
+            barePath = os.path.splitext(os.path.basename(args[0]))[0]
         if len(tomes) > 1:
             tomeNumber += 1
-            options.title = os.path.splitext(os.path.basename(args[0]))[0] + ' ' + str(tomeNumber)
+            options.title = barePath + ' ' + str(tomeNumber)
         elif options.title == 'defaulttitle':
-            options.title = os.path.splitext(os.path.basename(args[0]))[0]
+            options.title = barePath
         if options.cbzoutput:
             # if CBZ output wanted, compress all images and return filepath
             print "\nCreating CBZ file..."
