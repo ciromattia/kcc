@@ -31,7 +31,7 @@ import stat
 import string
 from shutil import move, copyfile, copytree, rmtree, make_archive
 from optparse import OptionParser, OptionGroup
-from multiprocessing import Pool, Queue, freeze_support
+from multiprocessing import Pool, freeze_support
 try:
     from PyQt4 import QtCore
 except ImportError:
@@ -308,105 +308,91 @@ def applyImgOptimization(img, opt, overrideQuality=5):
 
 
 def dirImgProcess(path):
+    global workerPool, workerOutput
+    workerPool = Pool()
+    workerOutput = []
     work = []
     pagenumber = 0
-    pagenumbermodifier = 0
-    queue = Queue()
-    pool = Pool(None, fileImgProcess_init, [queue, options])
     for (dirpath, dirnames, filenames) in os.walk(path):
         for afile in filenames:
             if getImageFileName(afile) is not None:
                 pagenumber += 1
-                work.append([afile, dirpath, pagenumber])
+                work.append([afile, dirpath, options])
     if GUI:
         GUI.emit(QtCore.SIGNAL("progressBarTick"), pagenumber)
     if len(work) > 0:
-        splitpages = pool.map_async(func=fileImgProcess, iterable=work)
-        pool.close()
-        if GUI:
-            while not splitpages.ready():
-                # noinspection PyBroadException
-                try:
-                    queue.get(True, 5)
-                except:
-                    pass
-                if not GUI.conversionAlive:
-                    pool.terminate()
-                    rmtree(os.path.join(path, '..', '..'), True)
-                    raise UserWarning("Conversion interrupted.")
-                GUI.emit(QtCore.SIGNAL("progressBarTick"))
-        pool.join()
-        queue.close()
-        try:
-            splitpages = splitpages.get()
-        except:
+        for i in work:
+            workerPool.apply_async(func=fileImgProcess, args=(i, ), callback=fileImgProcess_tick)
+        workerPool.close()
+        workerPool.join()
+        if GUI and not GUI.conversionAlive:
             rmtree(os.path.join(path, '..', '..'), True)
-            raise RuntimeError("One of workers crashed. Cause: " + str(sys.exc_info()[1]))
-        splitpages = filter(None, splitpages)
-        splitpages.sort()
-        for page in splitpages:
-            if (page + pagenumbermodifier) % 2 == 0:
-                pagenumbermodifier += 1
-            pagenumbermodifier += 1
+            raise UserWarning("Conversion interrupted.")
+        if len(workerOutput) > 0:
+            rmtree(os.path.join(path, '..', '..'), True)
+            raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0])
     else:
         rmtree(os.path.join(path, '..', '..'), True)
         raise UserWarning("Source directory is empty.")
 
 
-def fileImgProcess_init(queue, opt):
-    fileImgProcess.queue = queue
-    fileImgProcess.options = opt
+def fileImgProcess_tick(output):
+    if output:
+        workerOutput.append(output)
+        workerPool.terminate()
+    if GUI:
+        GUI.emit(QtCore.SIGNAL("progressBarTick"))
+        if not GUI.conversionAlive:
+            workerPool.terminate()
 
 
-# noinspection PyUnresolvedReferences
 def fileImgProcess(work):
-    afile = work[0]
-    dirpath = work[1]
-    pagenumber = work[2]
-    opt = fileImgProcess.options
-    output = None
-    if opt.verbose:
-        print "Optimizing " + afile + " for " + opt.profile
-    else:
-        print ".",
-    fileImgProcess.queue.put(".")
-    img = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
-    if opt.quality == 2:
-        wipe = False
-    else:
-        wipe = True
-    if opt.nosplitrotate:
-        split = None
-    else:
-        split = img.splitPage(dirpath, opt.righttoleft, opt.rotate)
-    if split is not None:
+    #noinspection PyBroadException
+    try:
+        afile = work[0]
+        dirpath = work[1]
+        opt = work[2]
         if opt.verbose:
-            print "Splitted " + afile
-        output = pagenumber
-        img0 = image.ComicPage(split[0], opt.profileData)
-        applyImgOptimization(img0, opt)
-        img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
-        img1 = image.ComicPage(split[1], opt.profileData)
-        applyImgOptimization(img1, opt)
-        img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+            print "Optimizing " + afile + " for " + opt.profile
+        else:
+            print ".",
+        img = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
         if opt.quality == 2:
-            img3 = image.ComicPage(split[0], opt.profileData)
-            applyImgOptimization(img3, opt, 0)
-            img3.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
-            img4 = image.ComicPage(split[1], opt.profileData)
-            applyImgOptimization(img4, opt, 0)
-            img4.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
-    else:
-        applyImgOptimization(img, opt)
-        img.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
-        if opt.quality == 2:
-            img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
-            if img.rotated:
-                img2.image = img2.image.rotate(90)
-                img2.rotated = True
-            applyImgOptimization(img2, opt, 0)
-            img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
-    return output
+            wipe = False
+        else:
+            wipe = True
+        if opt.nosplitrotate:
+            split = None
+        else:
+            split = img.splitPage(dirpath, opt.righttoleft, opt.rotate)
+        if split is not None:
+            if opt.verbose:
+                print "Splitted " + afile
+            img0 = image.ComicPage(split[0], opt.profileData)
+            applyImgOptimization(img0, opt)
+            img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+            img1 = image.ComicPage(split[1], opt.profileData)
+            applyImgOptimization(img1, opt)
+            img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+            if opt.quality == 2:
+                img3 = image.ComicPage(split[0], opt.profileData)
+                applyImgOptimization(img3, opt, 0)
+                img3.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
+                img4 = image.ComicPage(split[1], opt.profileData)
+                applyImgOptimization(img4, opt, 0)
+                img4.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
+        else:
+            applyImgOptimization(img, opt)
+            img.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+            if opt.quality == 2:
+                img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
+                if img.rotated:
+                    img2.image = img2.image.rotate(90)
+                    img2.rotated = True
+                applyImgOptimization(img2, opt, 0)
+                img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
+    except:
+        return str(sys.exc_info()[1])
 
 
 def genEpubStruct(path):
