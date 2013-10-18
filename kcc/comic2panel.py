@@ -27,7 +27,7 @@ import os
 import sys
 from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
-from multiprocessing import Pool, Queue, freeze_support
+from multiprocessing import Pool, freeze_support
 try:
     # noinspection PyUnresolvedReferences
     from PIL import Image, ImageStat
@@ -83,113 +83,120 @@ def sanitizePanelSize(panel, opt):
     return newPanels
 
 
-def splitImage_init(queue, opt):
-    splitImage.queue = queue
-    splitImage.options = opt
+def splitImage_tick(output):
+    if output:
+        splitWorkerOutput.append(output)
+        splitWorkerPool.terminate()
+    if GUI:
+        GUI.emit(QtCore.SIGNAL("progressBarTick"))
+        if not GUI.conversionAlive:
+            splitWorkerPool.terminate()
 
 
-# noinspection PyUnresolvedReferences
 def splitImage(work):
-    path = work[0]
-    name = work[1]
-    opt = splitImage.options
-    # Harcoded opttions
-    threshold = 1.0
-    delta = 15
-    print ".",
-    splitImage.queue.put(".")
-    fileExpanded = os.path.splitext(name)
-    filePath = os.path.join(path, name)
-    # Detect corrupted files
+    #noinspection PyBroadException
     try:
-        Image.open(filePath)
-    except IOError:
-        raise RuntimeError('Cannot read image file %s' % filePath)
-    try:
+        path = work[0]
+        name = work[1]
+        opt = work[2]
+        # Harcoded opttions
+        threshold = 1.0
+        delta = 15
+        print ".",
+        fileExpanded = os.path.splitext(name)
+        filePath = os.path.join(path, name)
+        # Detect corrupted files
+        try:
+            Image.open(filePath)
+        except IOError:
+            raise RuntimeError('Cannot read image file %s' % filePath)
+        try:
+            image = Image.open(filePath)
+            image.verify()
+        except:
+            raise RuntimeError('Image file %s is corrupted' % filePath)
+        try:
+            image = Image.open(filePath)
+            image.load()
+        except:
+            raise RuntimeError('Image file %s is corrupted' % filePath)
         image = Image.open(filePath)
-        image.verify()
-    except:
-        raise RuntimeError('Image file %s is corrupted' % filePath)
-    try:
-        image = Image.open(filePath)
-        image.load()
-    except:
-        raise RuntimeError('Image file %s is corrupted' % filePath)
-    image = Image.open(filePath)
-    image = image.convert('RGB')
-    widthImg, heightImg = image.size
-    if heightImg > opt.height:
-        if opt.debug:
-            from PIL import ImageDraw
-            debugImage = Image.open(filePath)
-            draw = ImageDraw.Draw(debugImage)
-
-        # Find panels
-        y1 = 0
-        y2 = 15
-        panels = []
-        while y2 < heightImg:
-            while ImageStat.Stat(image.crop([0, y1, widthImg, y2])).var[0] < threshold and y2 < heightImg:
-                y2 += delta
-            y2 -= delta
-            y1Temp = y2
-            y1 = y2 + delta
-            y2 = y1 + delta
-            while ImageStat.Stat(image.crop([0, y1, widthImg, y2])).var[0] >= threshold and y2 < heightImg:
-                y1 += delta
-                y2 += delta
-            if y1 + delta >= heightImg:
-                y1 = heightImg - 1
-            y2Temp = y1
+        image = image.convert('RGB')
+        widthImg, heightImg = image.size
+        if heightImg > opt.height:
             if opt.debug:
-                draw.line([(0, y1Temp), (widthImg, y1Temp)], fill=(0, 255, 0))
-                draw.line([(0, y2Temp), (widthImg, y2Temp)], fill=(255, 0, 0))
-            panelHeight = y2Temp - y1Temp
-            if panelHeight > delta:
-                # Panels that can't be cut nicely will be forcefully splitted
-                panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight], opt)
-                for panel in panelsCleaned:
-                    panels.append(panel)
-        if opt.debug:
-            # noinspection PyUnboundLocalVariable
-            debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG')
+                from PIL import ImageDraw
+                debugImage = Image.open(filePath)
+                draw = ImageDraw.Draw(debugImage)
 
-        # Create virtual pages
-        pages = []
-        currentPage = []
-        pageLeft = opt.height
-        panelNumber = 0
-        for panel in panels:
-            if pageLeft - panel[2] > 0:
-                pageLeft -= panel[2]
-                currentPage.append(panelNumber)
-                panelNumber += 1
-            else:
-                if len(currentPage) > 0:
-                    pages.append(currentPage)
-                pageLeft = opt.height - panel[2]
-                currentPage = [panelNumber]
-                panelNumber += 1
-        if len(currentPage) > 0:
-            pages.append(currentPage)
+            # Find panels
+            y1 = 0
+            y2 = 15
+            panels = []
+            while y2 < heightImg:
+                while ImageStat.Stat(image.crop([0, y1, widthImg, y2])).var[0] < threshold and y2 < heightImg:
+                    y2 += delta
+                y2 -= delta
+                y1Temp = y2
+                y1 = y2 + delta
+                y2 = y1 + delta
+                while ImageStat.Stat(image.crop([0, y1, widthImg, y2])).var[0] >= threshold and y2 < heightImg:
+                    y1 += delta
+                    y2 += delta
+                if y1 + delta >= heightImg:
+                    y1 = heightImg - 1
+                y2Temp = y1
+                if opt.debug:
+                    draw.line([(0, y1Temp), (widthImg, y1Temp)], fill=(0, 255, 0))
+                    draw.line([(0, y2Temp), (widthImg, y2Temp)], fill=(255, 0, 0))
+                panelHeight = y2Temp - y1Temp
+                if panelHeight > delta:
+                    # Panels that can't be cut nicely will be forcefully splitted
+                    panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight], opt)
+                    for panel in panelsCleaned:
+                        panels.append(panel)
+            if opt.debug:
+                # noinspection PyUnboundLocalVariable
+                debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG')
 
-        # Create pages
-        pageNumber = 1
-        for page in pages:
-            pageHeight = 0
-            targetHeight = 0
-            for panel in page:
-                pageHeight += panels[panel][2]
-            if pageHeight > delta:
-                newPage = Image.new('RGB', (widthImg, pageHeight))
+            # Create virtual pages
+            pages = []
+            currentPage = []
+            pageLeft = opt.height
+            panelNumber = 0
+            for panel in panels:
+                if pageLeft - panel[2] > 0:
+                    pageLeft -= panel[2]
+                    currentPage.append(panelNumber)
+                    panelNumber += 1
+                else:
+                    if len(currentPage) > 0:
+                        pages.append(currentPage)
+                    pageLeft = opt.height - panel[2]
+                    currentPage = [panelNumber]
+                    panelNumber += 1
+            if len(currentPage) > 0:
+                pages.append(currentPage)
+
+            # Create pages
+            pageNumber = 1
+            for page in pages:
+                pageHeight = 0
+                targetHeight = 0
                 for panel in page:
-                    panelImg = image.crop([0, panels[panel][0], widthImg, panels[panel][1]])
-                    newPage.paste(panelImg, (0, targetHeight))
-                    targetHeight += panels[panel][2]
-                newPage.save(os.path.join(path, fileExpanded[0] + '-' +
-                                          str(pageNumber) + '.png'), 'PNG')
-                pageNumber += 1
-        os.remove(filePath)
+                    pageHeight += panels[panel][2]
+                if pageHeight > delta:
+                    newPage = Image.new('RGB', (widthImg, pageHeight))
+                    for panel in page:
+                        panelImg = image.crop([0, panels[panel][0], widthImg, panels[panel][1]])
+                        newPage.paste(panelImg, (0, targetHeight))
+                        targetHeight += panels[panel][2]
+                    newPage.save(os.path.join(path, fileExpanded[0] + '-' +
+                                              str(pageNumber) + '.png'), 'PNG')
+                    pageNumber += 1
+            os.remove(filePath)
+    except:
+        return str(sys.exc_info()[1])
 
 
 def Copyright():
@@ -199,7 +206,7 @@ def Copyright():
 
 # noinspection PyBroadException
 def main(argv=None, qtGUI=None):
-    global options
+    global options, GUI, splitWorkerPool, splitWorkerOutput
     parser = OptionParser(usage="Usage: %prog [options] comic_folder", add_help_option=False)
     mainOptions = OptionGroup(parser, "MANDATORY")
     otherOptions = OptionGroup(parser, "OTHER")
@@ -230,37 +237,28 @@ def main(argv=None, qtGUI=None):
             copytree(options.sourceDir, options.targetDir)
             work = []
             pagenumber = 0
-            queue = Queue()
-            pool = Pool(None, splitImage_init, [queue, options])
+            splitWorkerOutput = []
+            splitWorkerPool = Pool()
             for root, dirs, files in os.walk(options.targetDir, False):
                 for name in files:
                     if getImageFileName(name) is not None:
                         pagenumber += 1
-                        work.append([root, name])
+                        work.append([root, name, options])
                     else:
                         os.remove(os.path.join(root, name))
             if GUI:
                 GUI.emit(QtCore.SIGNAL("progressBarTick"), pagenumber)
             if len(work) > 0:
-                workers = pool.map_async(func=splitImage, iterable=work)
-                pool.close()
-                if GUI:
-                    while not workers.ready():
-                        # noinspection PyBroadException
-                        try:
-                            queue.get(True, 5)
-                        except:
-                            pass
-                        GUI.emit(QtCore.SIGNAL("progressBarTick"))
-                pool.join()
-                queue.close()
-                try:
-                    workers.get()
-                except:
+                for i in work:
+                    splitWorkerPool.apply_async(func=splitImage, args=(i, ), callback=splitImage_tick)
+                splitWorkerPool.close()
+                splitWorkerPool.join()
+                if GUI and not GUI.conversionAlive:
                     rmtree(options.targetDir, True)
-                    raise RuntimeError("One of workers crashed. Cause: " + str(sys.exc_info()[1]))
-                if GUI:
-                    GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
+                    raise UserWarning("Conversion interrupted.")
+                if len(splitWorkerOutput) > 0:
+                    rmtree(options.targetDir, True)
+                    raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0])
                 if options.inPlace:
                     rmtree(options.sourceDir)
                     move(options.targetDir, options.sourceDir)
