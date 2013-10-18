@@ -91,7 +91,9 @@ class VersionThread(QtCore.QThread):
         latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
         if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
             self.emit(QtCore.SIGNAL("addMessage"), '<a href="http://kcc.vulturis.eu/">'
-                                                   '<b>New version is available!</b></a>', 'warning')
+                                                   '<b>New version is available!</b></a> '
+                                                   '(<a href="https://github.com/ciromattia/kcc/releases/">'
+                                                   'Changelog</a>)', 'warning')
 
 
 # noinspection PyBroadException

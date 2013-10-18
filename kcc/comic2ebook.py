@@ -537,7 +537,6 @@ def getWorkFolder(afile):
         raise UserWarning("Path is too long.")
     if os.path.isdir(afile):
         workdir = tempfile.mkdtemp('', 'KCC-TMP-')
-        #workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.join(os.path.splitext(afile)[0], '..'))
         try:
             os.rmdir(workdir)   # needed for copytree() fails if dst already exists
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
@@ -557,7 +556,6 @@ def getWorkFolder(afile):
             raise UserWarning("Failed to extract images.")
     else:
         workdir = tempfile.mkdtemp('', 'KCC-TMP-')
-        #workdir = tempfile.mkdtemp('', 'KCC-TMP-', os.path.dirname(afile))
         cbx = cbxarchive.CBxArchive(afile)
         if cbx.isCbxFile():
             try:
@@ -633,10 +631,8 @@ def getDirectorySize(start_path='.'):
     return total_size
 
 
-# noinspection PyUnusedLocal
-def createNewTome(parentPath):
+def createNewTome():
     tomePathRoot = tempfile.mkdtemp('', 'KCC-TMP-')
-    #tomePathRoot = tempfile.mkdtemp('', 'KCC-TMP-', parentPath)
     tomePath = os.path.join(tomePathRoot, 'OEBPS', 'Images')
     os.makedirs(tomePath)
     return tomePath, tomePathRoot
@@ -653,7 +649,7 @@ def walkLevel(some_dir, level=1):
             del dirs[:]
 
 
-def splitDirectory(path, mode, parentPath):
+def splitDirectory(path, mode):
     output = []
     currentSize = 0
     currentTarget = path
@@ -662,7 +658,7 @@ def splitDirectory(path, mode, parentPath):
             for name in files:
                 size = os.path.getsize(os.path.join(root, name))
                 if currentSize + size > 262144000:
-                    currentTarget, pathRoot = createNewTome(parentPath)
+                    currentTarget, pathRoot = createNewTome()
                     output.append(pathRoot)
                     currentSize = size
                 else:
@@ -674,7 +670,7 @@ def splitDirectory(path, mode, parentPath):
             for name in dirs:
                 size = getDirectorySize(os.path.join(root, name))
                 if currentSize + size > 262144000:
-                    currentTarget, pathRoot = createNewTome(parentPath)
+                    currentTarget, pathRoot = createNewTome()
                     output.append(pathRoot)
                     currentSize = size
                 else:
@@ -689,7 +685,7 @@ def splitDirectory(path, mode, parentPath):
                 currentSize = 0
                 if size > 262144000:
                     if not firstTome:
-                        currentTarget, pathRoot = createNewTome(parentPath)
+                        currentTarget, pathRoot = createNewTome()
                         output.append(pathRoot)
                     else:
                         firstTome = False
@@ -697,7 +693,7 @@ def splitDirectory(path, mode, parentPath):
                         for nameInside in dirsInside:
                             size = getDirectorySize(os.path.join(rootInside, nameInside))
                             if currentSize + size > 262144000:
-                                currentTarget, pathRoot = createNewTome(parentPath)
+                                currentTarget, pathRoot = createNewTome()
                                 output.append(pathRoot)
                                 currentSize = size
                             else:
@@ -706,7 +702,7 @@ def splitDirectory(path, mode, parentPath):
                                 move(os.path.join(rootInside, nameInside), os.path.join(currentTarget, nameInside))
                 else:
                     if not firstTome:
-                        currentTarget, pathRoot = createNewTome(parentPath)
+                        currentTarget, pathRoot = createNewTome()
                         output.append(pathRoot)
                         move(os.path.join(root, name), os.path.join(currentTarget, name))
                     else:
@@ -767,7 +763,7 @@ def preSplitDirectory(path):
                     GUI.emit(QtCore.SIGNAL("addMessage"), '')
                 return [path]
         # Split directories
-        split = splitDirectory(os.path.join(path, 'OEBPS', 'Images'), mode, os.path.join(path, '..'))
+        split = splitDirectory(os.path.join(path, 'OEBPS', 'Images'), mode)
         path = [path]
         for tome in split:
             path.append(tome)
