@@ -393,7 +393,6 @@ class ComicPage:
             while ImageStat.Stat(self.image.crop((0, 0, widthImg, diff))).var[0] < threshold and diff < heightImg:
                 diff += delta
             diff -= delta
-            #    print "Top crop: %s"%diff
             self.image = self.image.crop((0, diff, widthImg, heightImg))
             widthImg, heightImg = self.image.size
             diff = delta
@@ -401,7 +400,6 @@ class ComicPage:
             while ImageStat.Stat(self.image.crop((0, 0, diff, heightImg))).var[0] < threshold and diff < widthImg:
                 diff += delta
             diff -= delta
-            #    print "Left crop: %s"%diff
             self.image = self.image.crop((diff, 0, widthImg, heightImg))
             widthImg, heightImg = self.image.size
             diff = delta
@@ -410,7 +408,6 @@ class ComicPage:
                     and diff < heightImg:
                 diff += delta
             diff -= delta
-            #    print "Down crop: %s"%diff
             self.image = self.image.crop((0, 0, widthImg, heightImg - diff))
             widthImg, heightImg = self.image.size
             diff = delta
@@ -419,9 +416,7 @@ class ComicPage:
                     and diff < widthImg:
                 diff += delta
             diff -= delta
-            #    print "Right crop: %s"%diff
             self.image = self.image.crop((0, 0, widthImg - diff, heightImg))
-            #    print "New size: %sx%s"%(self.image.size[0],self.image.size[1])
         return self.image
 
     def getImageHistogram(self, image):
