@@ -187,13 +187,13 @@ class WorkerThread(QtCore.QThread):
                 else:
                     self.errors = True
                     self.emit(QtCore.SIGNAL("addMessage"), str(warn), 'warning')
-                    self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create output file!', 'warning')
+                    self.emit(QtCore.SIGNAL("addMessage"), 'Failed to create output file!', 'warning')
             except Exception as err:
                 self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
                 self.emit(QtCore.SIGNAL("showDialog"), "Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
                                                        % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
-                self.emit(QtCore.SIGNAL("addMessage"), 'KCC failed to create EPUB!', 'error')
+                self.emit(QtCore.SIGNAL("addMessage"), 'Failed to create EPUB!', 'error')
             if not self.conversionAlive:
                 for item in outputPath:
                     if os.path.exists(item):
@@ -207,6 +207,8 @@ class WorkerThread(QtCore.QThread):
                     self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file... <b>Done!</b>', 'info', True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
                     tomeNumber = 0
+                    self.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Creating MOBI files')
+                    self.emit(QtCore.SIGNAL("progressBarTick"), len(outputPath)*2)
                     for item in outputPath:
                         tomeNumber += 1
                         if len(outputPath) > 1:
@@ -214,7 +216,7 @@ class WorkerThread(QtCore.QThread):
                                                                    + '/' + str(len(outputPath)) + ')...', 'info')
                         else:
                             self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file...', 'info')
-                        self.emit(QtCore.SIGNAL("progressBarTick"), 1)
+                        self.emit(QtCore.SIGNAL("progressBarTick"))
                         try:
                             self.kindlegenErrorCode = 0
                             if os.path.getsize(item) < 367001600:
@@ -254,6 +256,7 @@ class WorkerThread(QtCore.QThread):
                                 self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... <b>Done!</b>', 'info',
                                           True)
                             self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file...', 'info')
+                            self.emit(QtCore.SIGNAL("progressBarTick"))
                             os.remove(item)
                             mobiPath = item.replace('.epub', '.mobi')
                             shutil.move(mobiPath, mobiPath + '_toclean')
