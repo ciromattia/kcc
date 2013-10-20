@@ -875,7 +875,15 @@ def main(argv=None, qtGUI=None):
         tomes = [path]
     filepath = []
     tomeNumber = 0
+    if GUI:
+        if options.cbzoutput:
+            GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Compressing CBZ files')
+        else:
+            GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Compressing EPUB files')
+        GUI.emit(QtCore.SIGNAL("progressBarTick"), len(tomes))
     for tome in tomes:
+        if GUI:
+            GUI.emit(QtCore.SIGNAL("progressBarTick"))
         if os.path.isdir(args[0]):
             barePath = os.path.basename(args[0])
         else:
