@@ -31,6 +31,10 @@ import urllib2
 import time
 import comic2ebook
 import kindlesplit
+import socket
+import string
+from KCC_rc_web import WebContent
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from image import ProfileData
 from subprocess import call, Popen, STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
@@ -73,11 +77,105 @@ class HTMLStripper(HTMLParser):
         return ''.join(self.fed)
 
 
+#noinspection PyAttributeOutsideInit,PyShadowingBuiltins
+class WebServerHandler(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):
+        pass
+
+    def do_GET(self):
+        if self.path == '/':
+            self.path = '/index.html'
+        try:
+            sendReply = False
+            mimetype = None
+            if self.path.endswith('.mobi'):
+                mimetype = 'application/x-mobipocket-ebook'
+                sendReply = True
+            if self.path.endswith('.epub'):
+                mimetype = 'application/epub+zip'
+                sendReply = True
+            if self.path.endswith('.cbz'):
+                mimetype = 'application/x-cbz'
+                sendReply = True
+            if self.path == '/index.html':
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write('<!DOCTYPE html>\n'
+                                 '<html lang="en">\n'
+                                 '<head><meta charset="utf-8">\n'
+                                 '<link href="' + GUIMain.webContent.favicon + '" rel="icon" type="image/x-icon" />\n'
+                                 '<title>KindleComicConverter</title>\n'
+                                 '</head>\n'
+                                 '<body>\n'
+                                 '<div style="text-align: center; font-size:25px">\n'
+                                 '<p style="font-size:50px">- <img style="vertical-align: middle" '
+                                 'alt="KCC Logo" src="' + GUIMain.webContent.logo + '" /> -</p>\n')
+                if len(GUIMain.completedWork) > 0 and not GUIMain.conversionAlive:
+                    for key in sorted(GUIMain.completedWork.iterkeys()):
+                        self.wfile.write('<p style="font-weight: bold">Only one file is available at once.<br/>'
+                                         'Refresh page after successful download.</p>\n'
+                                         '<p><br/><a href="' + key + '">&gt;&gt;&gt; ' + string.split(key, '.')[0] +
+                                         ' &lt;&lt;&lt;</a></p>\n')
+                        break
+                else:
+                    self.wfile.write('<p style="font-weight: bold">No downloads are available.<br/>'
+                                     'Convert some files and refresh this page.</p>\n')
+                self.wfile.write('<p><br/><a style="font-weight: bold" href="javascript:history.go(0)">- Refresh page -'
+                                 '</a></p>\n'
+                                 '</div>\n'
+                                 '</body>\n'
+                                 '</html>\n')
+            elif sendReply:
+                outputFile = GUIMain.completedWork[urllib2.unquote(self.path[1:])].decode('utf-8')
+                fp = open(outputFile, 'rb')
+                self.send_response(200)
+                self.send_header('Content-type', mimetype)
+                self.send_header('Content-Length', os.path.getsize(outputFile))
+                self.end_headers()
+                while True:
+                    chunk = fp.read(1024)
+                    if not chunk:
+                        fp.close()
+                        break
+                    self.wfile.write(chunk)
+                GUIMain.completedWork.pop(urllib2.unquote(self.path[1:]), None)
+            return
+        except (IOError, LookupError):
+            self.send_error(404, 'File Not Found: %s' % self.path)
+
+
+#noinspection PyBroadException
+class WebServerThread(QtCore.QThread):
+    def __init__(self):
+        QtCore.QThread.__init__(self)
+        self.server = None
+        self.running = False
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        try:
+            self.server = HTTPServer(('', 4242), WebServerHandler)
+            self.running = True
+            # Sweet cross-platform one-liner to get LAN ip address
+            lIP = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
+            self.emit(QtCore.SIGNAL("addMessage"), '<b><a href="http://' + lIP +
+                                                   ':4242/">Content server</a></b> started.', 'info')
+            while self.running:
+                self.server.handle_request()
+        except:
+            self.emit(QtCore.SIGNAL("addMessage"), '<b>Content server</b> crashed!', 'error')
+
+    def stop(self):
+        self.running = False
+
+
 # noinspection PyBroadException
 class VersionThread(QtCore.QThread):
-    def __init__(self, parent):
+    def __init__(self):
         QtCore.QThread.__init__(self)
-        self.parent = parent
 
     def __del__(self):
         self.wait()
@@ -98,9 +196,8 @@ class VersionThread(QtCore.QThread):
 
 # noinspection PyBroadException
 class WorkerThread(QtCore.QThread):
-    def __init__(self, parent):
+    def __init__(self):
         QtCore.QThread.__init__(self)
-        self.parent = parent
         self.conversionAlive = False
         self.errors = False
         self.kindlegenErrorCode = 0
@@ -110,10 +207,10 @@ class WorkerThread(QtCore.QThread):
         self.wait()
 
     def sync(self):
-        self.conversionAlive = self.parent.conversionAlive
+        self.conversionAlive = GUIMain.conversionAlive
 
     def clean(self):
-        self.parent.needClean = True
+        GUIMain.needClean = True
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         self.emit(QtCore.SIGNAL("addMessage"), '<b>Conversion interrupted.</b>', 'error')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
@@ -131,7 +228,7 @@ class WorkerThread(QtCore.QThread):
             argv.append("--quality=1")
         elif GUI.QualityBox.checkState() == 2:
             argv.append("--quality=2")
-        if self.parent.currentMode > 1:
+        if GUIMain.currentMode > 1:
             if GUI.ProcessingBox.isChecked():
                 argv.append("--noprocessing")
             if GUI.NoRotateBox.isChecked():
@@ -148,13 +245,13 @@ class WorkerThread(QtCore.QThread):
                 argv.append("--forcepng")
             if GUI.WebtoonBox.isChecked():
                 argv.append("--webtoon")
-            if float(self.parent.GammaValue) > 0.09:
-                argv.append("--gamma=" + self.parent.GammaValue)
+            if float(GUIMain.GammaValue) > 0.09:
+                argv.append("--gamma=" + GUIMain.GammaValue)
             if str(GUI.FormatBox.currentText()) == 'CBZ':
                 argv.append("--cbz-output")
             if str(GUI.FormatBox.currentText()) == 'MOBI':
                 argv.append("--batchsplit")
-        if self.parent.currentMode > 2:
+        if GUIMain.currentMode > 2:
             argv.append("--customwidth=" + str(GUI.customWidth.text()))
             argv.append("--customheight=" + str(GUI.customHeight.text()))
             if GUI.ColorBox.isChecked():
@@ -275,6 +372,8 @@ class WorkerThread(QtCore.QThread):
                                 os.remove(mobiPath + '_toclean')
                                 self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file... <b>Done!</b>', 'info',
                                           True)
+                                GUIMain.completedWork[os.path.basename(mobiPath).encode('utf-8')] = \
+                                    mobiPath.encode('utf-8')
                             else:
                                 os.remove(mobiPath + '_toclean')
                                 os.remove(mobiPath)
@@ -293,8 +392,11 @@ class WorkerThread(QtCore.QThread):
                                           'error')
                                 self.emit(QtCore.SIGNAL("addMessage"), 'EPUB file: ' + str(epubSize) + 'MB.'
                                                                        ' Supported size: ~300MB.', 'error')
+                else:
+                    for item in outputPath:
+                        GUIMain.completedWork[os.path.basename(item).encode('utf-8')] = item.encode('utf-8')
         self.emit(QtCore.SIGNAL("hideProgressBar"))
-        self.parent.needClean = True
+        GUIMain.needClean = True
         self.emit(QtCore.SIGNAL("addMessage"), '<b>All jobs completed.</b>', 'info')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
 
@@ -618,6 +720,7 @@ class Ui_KCC(object):
             event.ignore()
         if not GUI.ConvertButton.isEnabled():
             event.ignore()
+        self.contentServer.stop()
         self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
@@ -666,13 +769,15 @@ class Ui_KCC(object):
                     self.addMessage('This file type is unsupported!', 'error')
 
     def __init__(self, UI, KCC, APP):
-        global GUI, MainWindow
+        global GUI, GUIMain, MainWindow
         GUI = UI
+        GUIMain = self
         MainWindow = KCC
         # User settings will be reverted to default ones if were created in one of the following versions
         # Empty string cover all versions before this system was implemented
         purgeSettingsVersions = ['']
         self.icons = Icons()
+        self.webContent = WebContent()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         if self.settingsVersion in purgeSettingsVersions:
@@ -685,12 +790,14 @@ class Ui_KCC(object):
         self.firstStart = self.settings.value('firstStart', True, type=bool)
         self.options = self.settings.value('options', QtCore.QVariant({'GammaSlider': 0}))
         self.options = self.options.toPyObject()
-        self.worker = WorkerThread(self)
-        self.versionCheck = VersionThread(self)
+        self.worker = WorkerThread()
+        self.versionCheck = VersionThread()
+        self.contentServer = WebServerThread()
         self.conversionAlive = False
         self.needClean = True
         self.QualityBoxDisabled = False
         self.GammaValue = 1.0
+        self.completedWork = {}
         if sys.platform.startswith('darwin'):
             self.listFontSize = 11
         elif sys.platform.startswith('linux'):
@@ -755,6 +862,7 @@ class Ui_KCC(object):
         KCC.connect(self.worker, QtCore.SIGNAL("showDialog"), self.showDialog)
         KCC.connect(self.worker, QtCore.SIGNAL("hideProgressBar"), self.hideProgressBar)
         KCC.connect(self.versionCheck, QtCore.SIGNAL("addMessage"), self.addMessage)
+        KCC.connect(self.contentServer, QtCore.SIGNAL("addMessage"), self.addMessage)
         KCC.closeEvent = self.saveSettings
 
         for f in formats:
@@ -796,5 +904,6 @@ class Ui_KCC(object):
         self.changeDevice(self.lastDevice)
         self.changeFormat()
         self.versionCheck.start()
+        self.contentServer.start()
         self.hideProgressBar()
         self.worker.sync()
