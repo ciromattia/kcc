@@ -157,16 +157,23 @@ class WebServerThread(QtCore.QThread):
 
     def run(self):
         try:
-            self.server = HTTPServer(('', 4242), WebServerHandler)
-            self.running = True
             # Sweet cross-platform one-liner to get LAN ip address
             lIP = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
-            self.emit(QtCore.SIGNAL("addMessage"), '<b><a href="http://' + lIP +
-                                                   ':4242/">Content server</a></b> started.', 'info')
+        except:
+            # Sadly it can fail on some Linux configurations
+            lIP = None
+        try:
+            self.server = HTTPServer(('', 4242), WebServerHandler)
+            self.running = True
+            if lIP:
+                self.emit(QtCore.SIGNAL("addMessage"), '<b><a href="http://' + lIP +
+                                                       ':4242/">Content server</a></b> started.', 'info')
+            else:
+                self.emit(QtCore.SIGNAL("addMessage"), '<b>Content server</b> started on port 4242.', 'info')
             while self.running:
                 self.server.handle_request()
         except:
-            self.emit(QtCore.SIGNAL("addMessage"), '<b>Content server</b> crashed!', 'error')
+            self.emit(QtCore.SIGNAL("addMessage"), '<b>Content server</b> failed to start!', 'error')
 
     def stop(self):
         self.running = False
