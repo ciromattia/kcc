@@ -347,7 +347,6 @@ def fileImgProcess_tick(output):
 
 
 def fileImgProcess(work):
-    #noinspection PyBroadException
     try:
         afile = work[0]
         dirpath = work[1]
@@ -391,7 +390,7 @@ def fileImgProcess(work):
                     img2.rotated = True
                 applyImgOptimization(img2, opt, 0)
                 img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
-    except:
+    except StandardError:
         return str(sys.exc_info()[1])
 
 
@@ -710,7 +709,7 @@ def splitDirectory(path, mode):
     return output
 
 
-# noinspection PyUnboundLocalVariable
+#noinspection PyUnboundLocalVariable
 def preSplitDirectory(path):
     if getDirectorySize(os.path.join(path, 'OEBPS', 'Images')) > 262144000:
         # Detect directory stucture

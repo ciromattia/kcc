@@ -26,7 +26,6 @@ import locale
 from subprocess import Popen, STDOUT, PIPE
 
 
-# noinspection PyBroadException
 class CBxArchive:
     def __init__(self, origFileName):
         self.origFileName = origFileName
@@ -51,7 +50,7 @@ class CBxArchive:
             elif f.endswith('/'):
                 try:
                     os.makedirs(os.path.join(targetdir, f))
-                except:
+                except StandardError:
                     pass  # the dir exists so we are going to extract the images only.
             else:
                 filelist.append(f)
@@ -66,7 +65,7 @@ class CBxArchive:
             elif f.endswith('/'):
                 try:
                     os.makedirs(os.path.join(targetdir, f))
-                except:
+                except StandardError:
                     pass  # the dir exists so we are going to extract the images only.
             else:
                 filelist.append(f.encode(locale.getpreferredencoding()))
