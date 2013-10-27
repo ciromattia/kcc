@@ -29,7 +29,7 @@ from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, freeze_support
 try:
-    # noinspection PyUnresolvedReferences
+    #noinspection PyUnresolvedReferences
     from PIL import Image, ImageStat
     if tuple(map(int, ('2.2.1'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
         print "ERROR: Pillow 2.2.1 or newer is required!"
@@ -93,8 +93,8 @@ def splitImage_tick(output):
             splitWorkerPool.terminate()
 
 
+#noinspection PyUnboundLocalVariable
 def splitImage(work):
-    #noinspection PyBroadException
     try:
         path = work[0]
         name = work[1]
@@ -156,7 +156,6 @@ def splitImage(work):
                     for panel in panelsCleaned:
                         panels.append(panel)
             if opt.debug:
-                # noinspection PyUnboundLocalVariable
                 debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG')
 
             # Create virtual pages
@@ -195,7 +194,7 @@ def splitImage(work):
                                               str(pageNumber) + '.png'), 'PNG')
                     pageNumber += 1
             os.remove(filePath)
-    except:
+    except StandardError:
         return str(sys.exc_info()[1])
 
 
@@ -204,7 +203,6 @@ def Copyright():
            'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals())
 
 
-# noinspection PyBroadException
 def main(argv=None, qtGUI=None):
     global options, GUI, splitWorkerPool, splitWorkerOutput
     parser = OptionParser(usage="Usage: %prog [options] comic_folder", add_help_option=False)

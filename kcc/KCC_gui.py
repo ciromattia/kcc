@@ -77,11 +77,12 @@ class HTMLStripper(HTMLParser):
         return ''.join(self.fed)
 
 
-#noinspection PyAttributeOutsideInit,PyShadowingBuiltins
 class WebServerHandler(BaseHTTPRequestHandler):
+    #noinspection PyShadowingBuiltins
     def log_message(self, format, *args):
         pass
 
+    #noinspection PyAttributeOutsideInit
     def do_GET(self):
         if self.path == '/':
             self.path = '/index.html'
@@ -145,7 +146,6 @@ class WebServerHandler(BaseHTTPRequestHandler):
             self.send_error(404, 'File Not Found: %s' % self.path)
 
 
-#noinspection PyBroadException
 class WebServerThread(QtCore.QThread):
     def __init__(self):
         QtCore.QThread.__init__(self)
@@ -159,7 +159,7 @@ class WebServerThread(QtCore.QThread):
         try:
             # Sweet cross-platform one-liner to get LAN ip address
             lIP = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
-        except:
+        except StandardError:
             # Sadly it can fail on some Linux configurations
             lIP = None
         try:
@@ -172,14 +172,13 @@ class WebServerThread(QtCore.QThread):
                 self.emit(QtCore.SIGNAL("addMessage"), '<b>Content server</b> started on port 4242.', 'info')
             while self.running:
                 self.server.handle_request()
-        except:
+        except StandardError:
             self.emit(QtCore.SIGNAL("addMessage"), '<b>Content server</b> failed to start!', 'error')
 
     def stop(self):
         self.running = False
 
 
-# noinspection PyBroadException
 class VersionThread(QtCore.QThread):
     def __init__(self):
         QtCore.QThread.__init__(self)
@@ -191,7 +190,7 @@ class VersionThread(QtCore.QThread):
         try:
             XML = urllib2.urlopen('http://kcc.vulturis.eu/Version.php')
             XML = parse(XML)
-        except Exception:
+        except StandardError:
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
         if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
