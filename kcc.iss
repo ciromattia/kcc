@@ -16,7 +16,7 @@ DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 LicenseFile=LICENSE.txt
-OutputBaseFilename=KindleComicConverter_{#MyAppVersion}
+OutputBaseFilename=KindleComicConverter_win_{#MyAppVersion}
 SetupIconFile=icons\comic2ebook.ico
 SolidCompression=yes
 ArchitecturesInstallIn64BitMode=x64
@@ -88,10 +88,10 @@ Source: "build\exe.win32-2.7\sip.pyd"; DestDir: "{app}"; Flags: ignoreversion; C
 Source: "build\exe.win32-2.7\SSLEAY32.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: "build\exe.win32-2.7\unicodedata.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 ; Common files
-Source: "build\exe.win-amd64-2.7\LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
-Source: "build\exe.win-amd64-2.7\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "build\exe.win-amd64-2.7\UnRAR.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "build\exe.win-amd64-2.7\7za.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
+Source: "other\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "other\UnRAR.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "other\7za.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
