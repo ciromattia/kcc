@@ -278,6 +278,12 @@ The app relies and includes the following scripts/binaries:
 * Merged DX and DXG profiles
 * Many other minor bug fixes and GUI tweaks
 
+####3.5:
+* Added simple content server - Converted files can be now delivered wireless
+* Added proper Windows installer
+* Improved multiprocessing speed
+* GUI tweaks and minor bug fixes
+
 ## COPYRIGHT
 
 Copyright (c) 2012-2013 Ciro Mattia Gonano and Paweł Jastrzębski.  
