@@ -1,4 +1,4 @@
-ISC LICENSE
+﻿ISC LICENSE
 
 Copyright (c) 2013 Ciro Mattia Gonano <ciromattia@gmail.com>
 Copyright (c) 2013 Paweł Jastrzębski <pawelj@vulturis.eu>
