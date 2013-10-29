@@ -4,8 +4,9 @@
 .idea
 build
 dist
+Output
 kindlegen*
+UnRAR*
+7za*
 .DS_Store
 Thumbs.db
-/UnRAR.exe
-/7za.exe
