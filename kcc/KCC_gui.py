@@ -35,6 +35,7 @@ import socket
 import string
 from KCC_rc_web import WebContent
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from SocketServer import ThreadingMixIn
 from image import ProfileData
 from subprocess import call, Popen, STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
@@ -78,10 +79,6 @@ class HTMLStripper(HTMLParser):
 
 
 class WebServerHandler(BaseHTTPRequestHandler):
-    #noinspection PyShadowingBuiltins
-    def log_message(self, format, *args):
-        pass
-
     #noinspection PyAttributeOutsideInit
     def do_GET(self):
         if self.path == '/':
@@ -114,17 +111,11 @@ class WebServerHandler(BaseHTTPRequestHandler):
                                  'alt="KCC Logo" src="' + GUIMain.webContent.logo + '" /> -</p>\n')
                 if len(GUIMain.completedWork) > 0 and not GUIMain.conversionAlive:
                     for key in sorted(GUIMain.completedWork.iterkeys()):
-                        self.wfile.write('<p style="font-weight: bold">Only one file is available at once.<br/>'
-                                         'Refresh page after successful download.</p>\n'
-                                         '<p><br/><a href="' + key + '">&gt;&gt;&gt; ' + string.split(key, '.')[0] +
-                                         ' &lt;&lt;&lt;</a></p>\n')
-                        break
+                        self.wfile.write('<p><a href="' + key + '">' + string.split(key, '.')[0] + '</a></p>\n')
                 else:
                     self.wfile.write('<p style="font-weight: bold">No downloads are available.<br/>'
                                      'Convert some files and refresh this page.</p>\n')
-                self.wfile.write('<p><br/><a style="font-weight: bold" href="javascript:history.go(0)">- Refresh page -'
-                                 '</a></p>\n'
-                                 '</div>\n'
+                self.wfile.write('</div>\n'
                                  '</body>\n'
                                  '</html>\n')
             elif sendReply:
@@ -135,15 +126,18 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-Length', os.path.getsize(outputFile))
                 self.end_headers()
                 while True:
-                    chunk = fp.read(1024)
+                    chunk = fp.read(8192)
                     if not chunk:
                         fp.close()
                         break
                     self.wfile.write(chunk)
-                GUIMain.completedWork.pop(urllib2.unquote(self.path[1:]), None)
             return
         except (IOError, LookupError):
             self.send_error(404, 'File Not Found: %s' % self.path)
+
+
+class WebServerThreaded(ThreadingMixIn, HTTPServer):
+    """Handle requests in a separate thread."""
 
 
 class WebServerThread(QtCore.QThread):
@@ -163,7 +157,7 @@ class WebServerThread(QtCore.QThread):
             # Sadly it can fail on some Linux configurations
             lIP = None
         try:
-            self.server = HTTPServer(('', 4242), WebServerHandler)
+            self.server = WebServerThreaded(('', 4242), WebServerHandler)
             self.running = True
             if lIP:
                 self.emit(QtCore.SIGNAL("addMessage"), '<b><a href="http://' + lIP +
