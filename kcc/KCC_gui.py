@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
