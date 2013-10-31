@@ -1,6 +1,6 @@
 ﻿# KCC
 
-**KindleComicConverter** is a Python app to convert comic files or folders to ePub or Panel View MOBI.
+**Kindle Comic Converter** is a Python app to convert comic files or folders to ePub or Panel View MOBI.
 It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
 actually a comic to EPUB converter that every e-reader owner can happily use**_.
 It can also optionally optimize images by applying a number of transformations.
@@ -8,8 +8,7 @@ It can also optionally optimize images by applying a number of transformations.
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.  
 Amazon's tool is for comic publishers and involves a lot of manual effort, while **KCC** is for comic readers.
-If you want to read some comments over *Amazon's KC2* you can take a look at [this](http://www.mobileread.com/forums/showthread.php?t=207461&page=7#96) and [that](http://www.mobileread.com/forums/showthread.php?t=211047) threads on Mobileread.
-_KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;)
+_KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;-)
 
 ### Donations
 If you find **KCC** valuable you can consider donating to the authors:
@@ -19,10 +18,9 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
-- **Win64:** [http://kcc.vulturis.eu/Win64/](http://kcc.vulturis.eu/Win64/)
-- **Win32:** [http://kcc.vulturis.eu/Win32/](http://kcc.vulturis.eu/Win32/)
+- **Windows:** [http://kcc.vulturis.eu/Windows/](http://kcc.vulturis.eu/Windows/)
+- **Linux:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/Linux/)
 - **OS X:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
-- **Linux:** Just download sourcecode and launch: `python kcc.py`
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following file types:
@@ -147,30 +145,30 @@ The app relies and includes the following scripts/binaries:
 * [Kindle Fire HDX 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX8.mobi)
 
 ## CHANGELOG
-####1.00
+####1.0
 * Initial version
 
-####1.10
+####1.1
 * Added support for CBZ/CBR files in comic2ebook.py
 
-####1.11
-* Added support for CBZ/CBR files in KindleComicConverter
+####1.1.1
+* Added support for CBZ/CBR files in Kindle Comic Converter
 
-####1.20
+####1.2
 * Comic optimizations! Split pages not target-oriented (landscape with portrait target or portrait with landscape target), add palette and other image optimizations from Mangle. WARNING: PIL is required for all image mangling!
 
-####1.30
+####1.3
 * Fixed an issue in OPF generation for device resolution  
 * Reworked options system (call with -h option to get the inline help)
 
-####1.40
+####1.4
 * Added some options for controlling image optimization  
 * Further optimization (ImageOps, page numbering cut, autocontrast)
 
-####1.41
+####1.4.1
 * Fixed a serious bug on resizing when img ratio was bigger than device one
 
-####1.50
+####1.5
 * Added subfolder support for multiple chapters.
 
 ####2.0
@@ -179,7 +177,7 @@ The app relies and includes the following scripts/binaries:
 ####2.1
 * Added basic error reporting
 
-#### 2.2:
+####2.2:
 * Added (valid!) ePub 2.0 output  
 * Rename .zip files to .cbz to avoid overwriting
 
