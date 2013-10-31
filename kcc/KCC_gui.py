@@ -102,7 +102,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
                                  '<html lang="en">\n'
                                  '<head><meta charset="utf-8">\n'
                                  '<link href="' + GUIMain.webContent.favicon + '" rel="icon" type="image/x-icon" />\n'
-                                 '<title>KindleComicConverter</title>\n'
+                                 '<title>Kindle Comic Converter</title>\n'
                                  '</head>\n'
                                  '<body>\n'
                                  '<div style="text-align: center; font-size:25px">\n'
