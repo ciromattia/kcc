@@ -19,7 +19,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
 - **Windows:** [http://kcc.vulturis.eu/Windows/](http://kcc.vulturis.eu/Windows/)
-- **Linux:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/Linux/)
+- **Linux:** [http://kcc.vulturis.eu/Linux/](http://kcc.vulturis.eu/Linux/)
 - **OS X:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
 
 ## INPUT FORMATS
