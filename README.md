@@ -47,13 +47,14 @@ You can find the latest released binary at the following links:
 ### Important tips:
 * Use high quality source files. **This little detail have a major impact on the final result.**
 * Read tooltip of _High/Ultra quality_ option. There are many important informations there.
+* **Uploading with Calibre will work only if file will not be modified by any of Calibre converters.**
 * When converting images smaller than device resolution remember to enable upscaling.
 * Panel View (auto zooming every part of page) can be disabled directly on Kindle. There is no KCC option to do that.
 * If you're converting color images and the end result is not satisfactory, experiment with gamma correction option (check 1.0 setting first).
 * Check our [wiki](https://github.com/ciromattia/kcc/wiki/Other-devices) for a list of tested Non-Kindle E-Readers.
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
-* Output MOBI file should be uploaded via USB. Other methods might corrupt it.
+* ComicRack metadata will be parsed only if they are saved in *ComicInfo.xml* file.
 
 ### GUI 
 
