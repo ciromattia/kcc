@@ -32,6 +32,7 @@ import string
 from shutil import move, copyfile, copytree, rmtree, make_archive
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, freeze_support
+from xml.dom.minidom import parse
 try:
     from PyQt4 import QtCore
 except ImportError:
@@ -216,9 +217,10 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n",
                   "<dc:title>", title.encode('utf-8'), "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
-                  "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n",
-                  "<dc:Creator>KCC</dc:Creator>\n",
-                  "<meta name=\"generator\" content=\"KindleComicConverter-" + __version__ + "\"/>\n",
+                  "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n"])
+    for author in options.authors:
+        f.writelines(["<dc:Creator>", author.encode('utf-8'), "</dc:Creator>\n"])
+    f.writelines(["<meta name=\"generator\" content=\"KindleComicConverter-" + __version__ + "\"/>\n",
                   "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
                   "<meta name=\"region-mag\" content=\"true\"/>\n",
                   "<meta name=\"cover\" content=\"cover\"/>\n",
@@ -573,6 +575,47 @@ def getWorkFolder(afile):
     return path
 
 
+def checkComicInfo(path):
+    xmlPath = os.path.join(path, 'ComicInfo.xml')
+    options.authors = ['KCC']
+    if os.path.exists(xmlPath):
+        try:
+            xml = parse(xmlPath)
+        except StandardError:
+            os.remove(xmlPath)
+            return
+        options.authors = []
+        if options.title == 'defaulttitle':
+            if len(xml.getElementsByTagName('Series')) != 0:
+                options.title = xml.getElementsByTagName('Series')[0].firstChild.nodeValue
+            if len(xml.getElementsByTagName('Volume')) != 0:
+                options.title += ' V' + xml.getElementsByTagName('Volume')[0].firstChild.nodeValue
+            if len(xml.getElementsByTagName('Number')) != 0:
+                options.title += ' #' + xml.getElementsByTagName('Number')[0].firstChild.nodeValue
+        if len(xml.getElementsByTagName('Writer')) != 0:
+            authorsTemp = string.split(xml.getElementsByTagName('Writer')[0].firstChild.nodeValue, ', ')
+            for author in authorsTemp:
+                options.authors.append(author)
+        if len(xml.getElementsByTagName('Penciller')) != 0:
+            authorsTemp = string.split(xml.getElementsByTagName('Penciller')[0].firstChild.nodeValue, ', ')
+            for author in authorsTemp:
+                options.authors.append(author)
+        if len(xml.getElementsByTagName('Inker')) != 0:
+            authorsTemp = string.split(xml.getElementsByTagName('Inker')[0].firstChild.nodeValue, ', ')
+            for author in authorsTemp:
+                options.authors.append(author)
+        if len(xml.getElementsByTagName('Colorist')) != 0:
+            authorsTemp = string.split(xml.getElementsByTagName('Colorist')[0].firstChild.nodeValue, ', ')
+            for author in authorsTemp:
+                options.authors.append(author)
+        if len(options.authors) > 0:
+            options.authors = list(set(options.authors))
+            options.authors.sort()
+        else:
+            options.authors = ['KCC']
+        os.remove(xmlPath)
+
+
 def slugify(value):
     # Normalizes string, converts to lowercase, removes non-alpha characters and converts spaces to hyphens.
     import unicodedata
@@ -853,6 +896,7 @@ def main(argv=None, qtGUI=None):
         parser.print_help()
         return
     path = getWorkFolder(args[0])
+    checkComicInfo(path + "/OEBPS/Images/")
     if options.webtoon:
         if GUI:
             GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Splitting images')
@@ -880,18 +924,18 @@ def main(argv=None, qtGUI=None):
         else:
             GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Compressing EPUB files')
         GUI.emit(QtCore.SIGNAL("progressBarTick"), len(tomes))
+    if options.title == 'defaulttitle':
+        if os.path.isdir(args[0]):
+            options.title = os.path.basename(args[0])
+        else:
+            options.title = os.path.splitext(os.path.basename(args[0]))[0]
+    options.baseTitle = options.title
     for tome in tomes:
         if GUI:
             GUI.emit(QtCore.SIGNAL("progressBarTick"))
-        if os.path.isdir(args[0]):
-            barePath = os.path.basename(args[0])
-        else:
-            barePath = os.path.splitext(os.path.basename(args[0]))[0]
         if len(tomes) > 1:
             tomeNumber += 1
-            options.title = barePath + ' ' + str(tomeNumber)
-        elif options.title == 'defaulttitle':
-            options.title = barePath
+            options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
         if options.cbzoutput:
             # if CBZ output wanted, compress all images and return filepath
             print "\nCreating CBZ file..."
