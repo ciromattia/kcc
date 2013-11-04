@@ -923,7 +923,8 @@ def main(argv=None, qtGUI=None):
             GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Compressing CBZ files')
         else:
             GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Compressing EPUB files')
-        GUI.emit(QtCore.SIGNAL("progressBarTick"), len(tomes))
+        GUI.emit(QtCore.SIGNAL("progressBarTick"), len(tomes) + 1)
+        GUI.emit(QtCore.SIGNAL("progressBarTick"))
     if options.title == 'defaulttitle':
         if os.path.isdir(args[0]):
             options.title = os.path.basename(args[0])
@@ -931,8 +932,6 @@ def main(argv=None, qtGUI=None):
             options.title = os.path.splitext(os.path.basename(args[0]))[0]
     options.baseTitle = options.title
     for tome in tomes:
-        if GUI:
-            GUI.emit(QtCore.SIGNAL("progressBarTick"))
         if len(tomes) > 1:
             tomeNumber += 1
             options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
@@ -955,6 +954,8 @@ def main(argv=None, qtGUI=None):
             make_archive(tome + '_comic', 'zip', tome)
         move(tome + '_comic.zip', filepath[-1])
         rmtree(tome, True)
+        if GUI:
+            GUI.emit(QtCore.SIGNAL("progressBarTick"))
     return filepath
 
 
