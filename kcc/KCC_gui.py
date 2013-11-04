@@ -193,14 +193,78 @@ class VersionThread(QtCore.QThread):
                                                    'Changelog</a>)', 'warning')
 
 
-# noinspection PyBroadException
+class WorkerSignals(QtCore.QObject):
+    result = QtCore.pyqtSignal(list)
+
+
+class KindleGenThread(QtCore.QRunnable):
+    def __init__(self, batch):
+        super(KindleGenThread, self).__init__()
+        self.signals = WorkerSignals()
+        self.work = batch
+
+    def run(self):
+        kindlegenErrorCode = 0
+        kindlegenError = ''
+        try:
+            if os.path.getsize(self.work) < 367001600:
+                output = Popen('kindlegen -locale en "' + self.work.encode(sys.getfilesystemencoding()) + '"',
+                               stdout=PIPE, stderr=STDOUT, shell=True)
+                for line in output.stdout:
+                    # ERROR: Generic error
+                    if "Error(" in line:
+                        kindlegenErrorCode = 1
+                        kindlegenError = line
+                    # ERROR: EPUB too big
+                    if ":E23026:" in line:
+                        kindlegenErrorCode = 23026
+                    if kindlegenErrorCode > 0:
+                        break
+            else:
+                # ERROR: EPUB too big
+                kindlegenErrorCode = 23026
+            self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
+        except StandardError:
+            # ERROR: Unknown generic error
+            kindlegenErrorCode = 1
+            self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
+
+
+class KindleUnpackThread(QtCore.QRunnable):
+    def __init__(self, batch):
+        super(KindleUnpackThread, self).__init__()
+        self.signals = WorkerSignals()
+        self.work = batch
+
+    def run(self):
+        item = self.work[0]
+        profile = self.work[1]
+        os.remove(item)
+        mobiPath = item.replace('.epub', '.mobi')
+        shutil.move(mobiPath, mobiPath + '_toclean')
+        try:
+            # MOBI file produced by KindleGen is hybrid. KF8 + M7 + Source header
+            # KindleSplit is removing redundant data as we need only KF8 part for new Kindle models
+            if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX8', 'KFA']:
+                newKindle = True
+            else:
+                newKindle = False
+            mobisplit = kindlesplit.mobi_split(mobiPath + '_toclean', newKindle)
+            open(mobiPath, 'wb').write(mobisplit.getResult())
+            self.signals.result.emit([True])
+        except StandardError:
+            self.signals.result.emit([False])
+
+
 class WorkerThread(QtCore.QThread):
     def __init__(self):
         QtCore.QThread.__init__(self)
+        self.pool = QtCore.QThreadPool()
+        self.pool.setMaxThreadCount(1)
         self.conversionAlive = False
         self.errors = False
-        self.kindlegenErrorCode = 0
-        self.kindlegenError = None
+        self.kindlegenErrorCode = [0]
+        self.workerOutput = []
 
     def __del__(self):
         self.wait()
@@ -213,6 +277,10 @@ class WorkerThread(QtCore.QThread):
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         self.emit(QtCore.SIGNAL("addMessage"), '<b>Conversion interrupted.</b>', 'error')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
+
+    def addResult(self, output):
+        self.emit(QtCore.SIGNAL("progressBarTick"))
+        self.workerOutput.append(output)
 
     def run(self):
         self.emit(QtCore.SIGNAL("modeConvert"), False)
@@ -302,95 +370,76 @@ class WorkerThread(QtCore.QThread):
                 else:
                     self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file... <b>Done!</b>', 'info', True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
-                    tomeNumber = 0
                     self.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Creating MOBI files')
-                    self.emit(QtCore.SIGNAL("progressBarTick"), len(outputPath)*2)
+                    self.emit(QtCore.SIGNAL("progressBarTick"), len(outputPath)*2+1)
+                    self.emit(QtCore.SIGNAL("progressBarTick"))
+                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file...', 'info')
+                    self.workerOutput = []
                     for item in outputPath:
-                        tomeNumber += 1
-                        if len(outputPath) > 1:
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file (' + str(tomeNumber)
-                                                                   + '/' + str(len(outputPath)) + ')...', 'info')
-                        else:
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file...', 'info')
-                        self.emit(QtCore.SIGNAL("progressBarTick"))
-                        try:
-                            self.kindlegenErrorCode = 0
-                            if os.path.getsize(item) < 367001600:
-                                output = Popen('kindlegen -locale en "' + item.encode(sys.getfilesystemencoding()) +
-                                               '"', stdout=PIPE, stderr=STDOUT, shell=True)
-                                for line in output.stdout:
-                                    # ERROR: Generic error
-                                    if "Error(" in line:
-                                        self.kindlegenErrorCode = 1
-                                        self.kindlegenError = line
-                                    # ERROR: EPUB too big
-                                    if ":E23026:" in line:
-                                        self.kindlegenErrorCode = 23026
-                                    if self.kindlegenErrorCode > 0:
-                                        break
-                            else:
-                                # ERROR: EPUB too big
-                                self.kindlegenErrorCode = 23026
-                        except:
-                            # ERROR: Unknown generic error
-                            self.kindlegenErrorCode = 1
-                            continue
-                        if not self.conversionAlive:
-                            for item in outputPath:
-                                if os.path.exists(item):
-                                    os.remove(item)
-                                if os.path.exists(item.replace('.epub', '.mobi')):
-                                    os.remove(item.replace('.epub', '.mobi'))
-                            self.clean()
-                            return
-                        if self.kindlegenErrorCode == 0:
-                            if len(outputPath) > 1:
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file (' + str(tomeNumber) + '/'
-                                                                       + str(len(outputPath)) + ')... <b>Done!</b>',
-                                                                       'info',  True)
-                            else:
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... <b>Done!</b>', 'info',
-                                          True)
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file...', 'info')
-                            self.emit(QtCore.SIGNAL("progressBarTick"))
-                            os.remove(item)
-                            mobiPath = item.replace('.epub', '.mobi')
-                            shutil.move(mobiPath, mobiPath + '_toclean')
-                            try:
-                                # MOBI file produced by KindleGen is hybrid. KF8 + M7 + Source header
-                                # KindleSplit is removing redundant data as we need only KF8 part for new Kindle models
-                                if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX8', 'KFA']:
-                                    newKindle = True
-                                else:
-                                    newKindle = False
-                                mobisplit = kindlesplit.mobi_split(mobiPath + '_toclean', newKindle)
-                                open(mobiPath, 'wb').write(mobisplit.getResult())
-                            except Exception:
-                                self.errors = True
-                            if not self.errors:
-                                os.remove(mobiPath + '_toclean')
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file... <b>Done!</b>', 'info',
-                                          True)
-                                GUIMain.completedWork[os.path.basename(mobiPath).encode('utf-8')] = \
-                                    mobiPath.encode('utf-8')
-                            else:
-                                os.remove(mobiPath + '_toclean')
-                                os.remove(mobiPath)
-                                self.emit(QtCore.SIGNAL("addMessage"),
-                                          'KindleUnpack failed to clean MOBI file!', 'error')
-                        else:
-                            epubSize = (os.path.getsize(item))/1024/1024
-                            os.remove(item)
+                        worker = KindleGenThread(item)
+                        worker.signals.result.connect(self.addResult)
+                        self.pool.start(worker)
+                    self.pool.waitForDone()
+                    time.sleep(0.5)
+                    self.kindlegenErrorCode = [0]
+                    for errors in self.workerOutput:
+                        if errors[0] != 0:
+                            self.kindlegenErrorCode = errors
+                            break
+                    if not self.conversionAlive:
+                        for item in outputPath:
+                            if os.path.exists(item):
+                                os.remove(item)
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
-                            self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', 'error')
-                            if self.kindlegenErrorCode == 1 and self.kindlegenError:
-                                self.emit(QtCore.SIGNAL("showDialog"), "KindleGen error:\n\n" + self.kindlegenError)
-                            if self.kindlegenErrorCode == 23026:
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file was too big.',
-                                          'error')
-                                self.emit(QtCore.SIGNAL("addMessage"), 'EPUB file: ' + str(epubSize) + 'MB.'
-                                                                       ' Supported size: ~300MB.', 'error')
+                        self.clean()
+                        return
+                    if self.kindlegenErrorCode[0] == 0:
+                        self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... <b>Done!</b>', 'info', True)
+                        self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file...', 'info')
+                        self.workerOutput = []
+                        for item in outputPath:
+                            worker = KindleUnpackThread([item, profile])
+                            worker.signals.result.connect(self.addResult)
+                            self.pool.start(worker)
+                        self.pool.waitForDone()
+                        time.sleep(0.5)
+                        for success in self.workerOutput:
+                            if not success:
+                                self.errors = True
+                                break
+                        if not self.errors:
+                            for item in outputPath:
+                                mobiPath = item.replace('.epub', '.mobi')
+                                os.remove(mobiPath + '_toclean')
+                                GUIMain.completedWork[os.path.basename(mobiPath).encode('utf-8')] = \
+                                    mobiPath.encode('utf-8')
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file... <b>Done!</b>', 'info',
+                                          True)
+                        else:
+                            for item in outputPath:
+                                mobiPath = item.replace('.epub', '.mobi')
+                                if os.path.exists(mobiPath):
+                                    os.remove(mobiPath)
+                                if os.path.exists(mobiPath + '_toclean'):
+                                    os.remove(mobiPath + '_toclean')
+                            self.emit(QtCore.SIGNAL("addMessage"), 'KindleUnpack failed to clean MOBI file!', 'error')
+                    else:
+                        epubSize = (os.path.getsize(self.kindlegenErrorCode[2]))/1024/1024
+                        for item in outputPath:
+                            if os.path.exists(item):
+                                os.remove(item)
+                            if os.path.exists(item.replace('.epub', '.mobi')):
+                                os.remove(item.replace('.epub', '.mobi'))
+                        self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', 'error')
+                        if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':
+                            self.emit(QtCore.SIGNAL("showDialog"), "KindleGen error:\n\n" +
+                                                                   self.self.kindlegenErrorCode[1])
+                        if self.kindlegenErrorCode[0] == 23026:
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file was too big.',
+                                      'error')
+                            self.emit(QtCore.SIGNAL("addMessage"), 'EPUB file: ' + str(epubSize) + 'MB.'
+                                                                   ' Supported size: ~300MB.', 'error')
                 else:
                     for item in outputPath:
                         GUIMain.completedWork[os.path.basename(item).encode('utf-8')] = item.encode('utf-8')
@@ -400,7 +449,6 @@ class WorkerThread(QtCore.QThread):
         self.emit(QtCore.SIGNAL("modeConvert"), True)
 
 
-# noinspection PyBroadException
 class Ui_KCC(object):
     def selectDir(self):
         if self.needClean:
