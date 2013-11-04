@@ -575,9 +575,18 @@ def getWorkFolder(afile):
     return path
 
 
-def checkComicInfo(path):
+def checkComicInfo(path, originalPath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.authors = ['KCC']
+    titleSuffix = ''
+    if options.title == 'defaulttitle':
+        defaultTitle = True
+        if os.path.isdir(originalPath):
+            options.title = os.path.basename(originalPath)
+        else:
+            options.title = os.path.splitext(os.path.basename(originalPath))[0]
+    else:
+        defaultTitle = False
     if os.path.exists(xmlPath):
         try:
             xml = parse(xmlPath)
@@ -585,13 +594,14 @@ def checkComicInfo(path):
             os.remove(xmlPath)
             return
         options.authors = []
-        if options.title == 'defaulttitle':
+        if defaultTitle:
             if len(xml.getElementsByTagName('Series')) != 0:
                 options.title = xml.getElementsByTagName('Series')[0].firstChild.nodeValue
             if len(xml.getElementsByTagName('Volume')) != 0:
-                options.title += ' V' + xml.getElementsByTagName('Volume')[0].firstChild.nodeValue
+                titleSuffix += ' V' + xml.getElementsByTagName('Volume')[0].firstChild.nodeValue
             if len(xml.getElementsByTagName('Number')) != 0:
-                options.title += ' #' + xml.getElementsByTagName('Number')[0].firstChild.nodeValue
+                titleSuffix += ' #' + xml.getElementsByTagName('Number')[0].firstChild.nodeValue
+            options.title += titleSuffix
         if len(xml.getElementsByTagName('Writer')) != 0:
             authorsTemp = string.split(xml.getElementsByTagName('Writer')[0].firstChild.nodeValue, ', ')
             for author in authorsTemp:
@@ -896,7 +906,7 @@ def main(argv=None, qtGUI=None):
         parser.print_help()
         return
     path = getWorkFolder(args[0])
-    checkComicInfo(path + "/OEBPS/Images/")
+    checkComicInfo(path + "/OEBPS/Images/", args[0])
     if options.webtoon:
         if GUI:
             GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Splitting images')
@@ -925,11 +935,6 @@ def main(argv=None, qtGUI=None):
             GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Compressing EPUB files')
         GUI.emit(QtCore.SIGNAL("progressBarTick"), len(tomes) + 1)
         GUI.emit(QtCore.SIGNAL("progressBarTick"))
-    if options.title == 'defaulttitle':
-        if os.path.isdir(args[0]):
-            options.title = os.path.basename(args[0])
-        else:
-            options.title = os.path.splitext(os.path.basename(args[0]))[0]
     options.baseTitle = options.title
     for tome in tomes:
         if len(tomes) > 1:

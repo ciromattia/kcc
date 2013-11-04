@@ -91,6 +91,8 @@ class CBxArchive:
         elif self.compressor == '7z':
             self.extractCB7(targetdir)
         adir = os.listdir(targetdir)
+        if 'ComicInfo.xml' in adir:
+            adir.remove('ComicInfo.xml')
         if len(adir) == 1 and os.path.isdir(os.path.join(targetdir, adir[0])):
             import shutil
             for f in os.listdir(os.path.join(targetdir, adir[0])):
