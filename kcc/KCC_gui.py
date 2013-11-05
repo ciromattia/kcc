@@ -257,14 +257,19 @@ class KindleUnpackThread(QtCore.QRunnable):
 
 
 class WorkerThread(QtCore.QThread):
+    #noinspection PyArgumentList
     def __init__(self):
         QtCore.QThread.__init__(self)
         self.pool = QtCore.QThreadPool()
-        self.pool.setMaxThreadCount(1)
         self.conversionAlive = False
         self.errors = False
         self.kindlegenErrorCode = [0]
         self.workerOutput = []
+        # 4 should be safe value. It will not melt 32bit enviroments and machines with pathologically low amount of RAM.
+        if QtCore.QThread.idealThreadCount() < 4:
+            self.threadNumber = QtCore.QThread.idealThreadCount()
+        else:
+            self.threadNumber = 4
 
     def __del__(self):
         self.wait()
@@ -375,6 +380,7 @@ class WorkerThread(QtCore.QThread):
                     self.emit(QtCore.SIGNAL("progressBarTick"))
                     self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file...', 'info')
                     self.workerOutput = []
+                    self.pool.setMaxThreadCount(self.threadNumber)
                     for item in outputPath:
                         worker = KindleGenThread(item)
                         worker.signals.result.connect(self.addResult)
@@ -398,6 +404,9 @@ class WorkerThread(QtCore.QThread):
                         self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... <b>Done!</b>', 'info', True)
                         self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file...', 'info')
                         self.workerOutput = []
+                        # Multithreading KindleUnpack in current form is a waste of resources.
+                        # Unless we higly optimise KindleUnpack or drop 32bit support this will not change.
+                        self.pool.setMaxThreadCount(1)
                         for item in outputPath:
                             worker = KindleUnpackThread([item, profile])
                             worker.signals.result.connect(self.addResult)
