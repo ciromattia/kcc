@@ -38,8 +38,9 @@ You can find the latest released binary at the following links:
 
 ### For compiling/running from source:
 - Python 2.7 - Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows.
-- PyQt4 - Please refer to official documentation for installing into your system.
+- [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt/download) - Please refer to official documentation for installing into your system.
 - [Pillow](http://pypi.python.org/pypi/Pillow/) 2.2.1+ - For comic optimizations. Please refer to official documentation for installing into your system.
+- [Psutil](https://code.google.com/p/psutil/) - Please refer to official documentation for installing into your system.
 - **To build OS X release a modified QT is required:** [Patch](https://github.com/ciromattia/kcc/blob/master/other/QT-4.8.5-QListWidget.patch)
 
 ## USAGE
