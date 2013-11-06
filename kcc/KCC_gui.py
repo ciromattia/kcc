@@ -24,14 +24,14 @@ __docformat__ = 'restructuredtext en'
 
 import os
 import sys
-import shutil
 import traceback
 import urllib2
-import time
 import comic2ebook
 import kindlesplit
 import socket
-import string
+from string import split
+from time import sleep
+from shutil import move
 from psutil import virtual_memory
 from KCC_rc_web import WebContent
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
@@ -111,7 +111,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
                                  'alt="KCC Logo" src="' + GUIMain.webContent.logo + '" /> -</p>\n')
                 if len(GUIMain.completedWork) > 0 and not GUIMain.conversionAlive:
                     for key in sorted(GUIMain.completedWork.iterkeys()):
-                        self.wfile.write('<p><a href="' + key + '">' + string.split(key, '.')[0] + '</a></p>\n')
+                        self.wfile.write('<p><a href="' + key + '">' + split(key, '.')[0] + '</a></p>\n')
                 else:
                     self.wfile.write('<p style="font-weight: bold">No downloads are available.<br/>'
                                      'Convert some files and refresh this page.</p>\n')
@@ -242,7 +242,7 @@ class KindleUnpackThread(QtCore.QRunnable):
         profile = self.work[1]
         os.remove(item)
         mobiPath = item.replace('.epub', '.mobi')
-        shutil.move(mobiPath, mobiPath + '_toclean')
+        move(mobiPath, mobiPath + '_toclean')
         try:
             # MOBI file produced by KindleGen is hybrid. KF8 + M7 + Source header
             # KindleSplit is removing redundant data as we need only KF8 part for new Kindle models
@@ -341,7 +341,7 @@ class WorkerThread(QtCore.QThread):
                 currentJobs.append(unicode(GUI.JobList.item(i).text()))
         GUI.JobList.clear()
         for job in currentJobs:
-            time.sleep(0.5)
+            sleep(0.5)
             if not self.conversionAlive:
                 self.clean()
                 return
@@ -394,7 +394,7 @@ class WorkerThread(QtCore.QThread):
                         worker.signals.result.connect(self.addResult)
                         self.pool.start(worker)
                     self.pool.waitForDone()
-                    time.sleep(0.5)
+                    sleep(0.5)
                     self.kindlegenErrorCode = [0]
                     for errors in self.workerOutput:
                         if errors[0] != 0:
@@ -420,7 +420,7 @@ class WorkerThread(QtCore.QThread):
                             worker.signals.result.connect(self.addResult)
                             self.pool.start(worker)
                         self.pool.waitForDone()
-                        time.sleep(0.5)
+                        sleep(0.5)
                         for success in self.workerOutput:
                             if not success:
                                 self.errors = True

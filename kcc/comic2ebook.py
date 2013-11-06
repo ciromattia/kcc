@@ -25,14 +25,15 @@ __docformat__ = 'restructuredtext en'
 
 import os
 import sys
-import tempfile
 import re
 import stat
 import string
+from tempfile import mkdtemp
 from shutil import move, copyfile, copytree, rmtree, make_archive
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, freeze_support
 from xml.dom.minidom import parse
+from uuid import uuid4
 try:
     from PyQt4 import QtCore
 except ImportError:
@@ -41,6 +42,7 @@ import comic2panel
 import image
 import cbxarchive
 import pdfjpgextract
+import unicodedata
 
 
 def buildHTML(path, imgfile):
@@ -169,7 +171,6 @@ def buildHTML(path, imgfile):
 
 
 def buildNCX(dstdir, title, chapters):
-    from uuid import uuid4
     options.uuid = str(uuid4())
     options.uuid = options.uuid.encode('utf-8')
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
@@ -537,7 +538,7 @@ def getWorkFolder(afile):
     if len(afile) > 240:
         raise UserWarning("Path is too long.")
     if os.path.isdir(afile):
-        workdir = tempfile.mkdtemp('', 'KCC-TMP-')
+        workdir = mkdtemp('', 'KCC-TMP-')
         try:
             os.rmdir(workdir)   # needed for copytree() fails if dst already exists
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
@@ -556,7 +557,7 @@ def getWorkFolder(afile):
             rmtree(path, True)
             raise UserWarning("Failed to extract images.")
     else:
-        workdir = tempfile.mkdtemp('', 'KCC-TMP-')
+        workdir = mkdtemp('', 'KCC-TMP-')
         cbx = cbxarchive.CBxArchive(afile)
         if cbx.isCbxFile():
             try:
@@ -628,7 +629,6 @@ def checkComicInfo(path, originalPath):
 
 def slugify(value):
     # Normalizes string, converts to lowercase, removes non-alpha characters and converts spaces to hyphens.
-    import unicodedata
     if isinstance(value, str):
         #noinspection PyArgumentList
         value = unicodedata.normalize('NFKD', unicode(value, 'latin1')).encode('ascii', 'ignore')
@@ -684,7 +684,7 @@ def getDirectorySize(start_path='.'):
 
 
 def createNewTome():
-    tomePathRoot = tempfile.mkdtemp('', 'KCC-TMP-')
+    tomePathRoot = mkdtemp('', 'KCC-TMP-')
     tomePath = os.path.join(tomePathRoot, 'OEBPS', 'Images')
     os.makedirs(tomePath)
     return tomePath, tomePathRoot
