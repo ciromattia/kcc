@@ -32,15 +32,20 @@ import socket
 from string import split
 from time import sleep
 from shutil import move
-from psutil import virtual_memory
 from KCC_rc_web import WebContent
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from SocketServer import ThreadingMixIn
 from image import ProfileData
-from subprocess import call, Popen, STDOUT, PIPE
+from subprocess import STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
 from xml.dom.minidom import parse
 from HTMLParser import HTMLParser
+try:
+    #noinspection PyUnresolvedReferences
+    from psutil import TOTAL_PHYMEM, Popen
+except ImportError:
+    print "ERROR: Psutil is not installed!"
+    exit(1)
 
 
 class Icons:
@@ -267,7 +272,7 @@ class WorkerThread(QtCore.QThread):
         self.kindlegenErrorCode = [0]
         self.workerOutput = []
         # Let's make sure that we don't fill the memory
-        availableMemory = virtual_memory()[0]/1000000000
+        availableMemory = TOTAL_PHYMEM/1000000000
         if availableMemory <= 2:
             self.threadNumber = 1
         elif 2 < availableMemory <= 4:
@@ -874,7 +879,8 @@ class Ui_KCC(object):
         if self.firstStart:
             self.addMessage('Since you are using <b>KCC</b> for first time please see few '
                             '<a href="https://github.com/ciromattia/kcc#important-tips">important tips</a>.', 'info')
-        if call('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True) == 0:
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+        if kindleGenExitCode.wait() == 0:
             self.KindleGen = True
             formats = ['MOBI', 'EPUB', 'CBZ']
             versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
@@ -892,14 +898,16 @@ class Ui_KCC(object):
             formats = ['EPUB', 'CBZ']
             self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
                             '1000765211">kindlegen</a> in PATH! MOBI creation will be disabled.', 'warning')
-        rarExitCode = call('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
+        rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
+        rarExitCode = rarExitCode.wait()
         if rarExitCode == 0 or rarExitCode == 7:
             self.UnRAR = True
         else:
             self.UnRAR = False
             self.addMessage('Cannot find <a href="http://www.rarlab.com/rar_add.htm">UnRAR</a>!'
                             ' Processing of CBR/RAR files will be disabled.', 'warning')
-        sevenzaExitCode = call('7za', stdout=PIPE, stderr=STDOUT, shell=True)
+        sevenzaExitCode = Popen('7za', stdout=PIPE, stderr=STDOUT, shell=True)
+        sevenzaExitCode = sevenzaExitCode.wait()
         if sevenzaExitCode == 0 or sevenzaExitCode == 7:
             self.sevenza = True
         else:
