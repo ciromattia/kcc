@@ -30,6 +30,12 @@ try:
     from PyQt4 import QtCore, QtGui, QtNetwork
 except ImportError:
     print "ERROR: PyQT4 is not installed!"
+    if sys.platform.startswith('linux'):
+        import Tkinter
+        import tkMessageBox
+        importRoot = Tkinter.Tk()
+        importRoot.withdraw()
+        tkMessageBox.showerror("KCC - Error", "PyQT4 is not installed!")
     exit(1)
 from kcc import KCC_gui
 from multiprocessing import freeze_support

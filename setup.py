@@ -55,7 +55,8 @@ elif platform == "win32":
                                                  ['other/UnRAR.exe', 'UnRAR.exe'],
                                                  ['other/7za.exe', '7za.exe'],
                                                  ['other/Additional-LICENSE.txt', 'Additional-LICENSE.txt']
-                                                 ], "compressed": True}},
+                                                 ], "compressed": True,
+                               "excludes": ['Tkinter']}},
         executables=[Executable(MAIN,
                                 base=base,
                                 targetName="KCC.exe",

@@ -45,6 +45,12 @@ try:
     from psutil import TOTAL_PHYMEM, Popen
 except ImportError:
     print "ERROR: Psutil is not installed!"
+    if sys.platform.startswith('linux'):
+        import Tkinter
+        import tkMessageBox
+        importRoot = Tkinter.Tk()
+        importRoot.withdraw()
+        tkMessageBox.showerror("KCC - Error", "Psutil is not installed!")
     exit(1)
 
 
