@@ -32,6 +32,7 @@ import comic2ebook
 import kindlesplit
 import socket
 import string
+from psutil import virtual_memory
 from KCC_rc_web import WebContent
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from SocketServer import ThreadingMixIn
@@ -265,11 +266,17 @@ class WorkerThread(QtCore.QThread):
         self.errors = False
         self.kindlegenErrorCode = [0]
         self.workerOutput = []
-        # 4 should be safe value. It will not melt 32bit enviroments and machines with pathologically low amount of RAM.
-        if QtCore.QThread.idealThreadCount() < 4:
-            self.threadNumber = QtCore.QThread.idealThreadCount()
+        # Let's make sure that we don't fill the memory
+        availableMemory = virtual_memory()[0]/1000000000
+        if availableMemory <= 2:
+            self.threadNumber = 1
+        elif 2 < availableMemory <= 4:
+            self.threadNumber = 2
         else:
             self.threadNumber = 4
+        # Let's make sure that we don't use too many threads
+        if self.threadNumber > QtCore.QThread.idealThreadCount():
+            self.threadNumber = QtCore.QThread.idealThreadCount()
 
     def __del__(self):
         self.wait()
@@ -380,6 +387,7 @@ class WorkerThread(QtCore.QThread):
                     self.emit(QtCore.SIGNAL("progressBarTick"))
                     self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file...', 'info')
                     self.workerOutput = []
+                    # Number of KindleGen threads depends on the size of RAM
                     self.pool.setMaxThreadCount(self.threadNumber)
                     for item in outputPath:
                         worker = KindleGenThread(item)
