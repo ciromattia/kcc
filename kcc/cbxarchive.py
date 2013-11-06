@@ -24,6 +24,7 @@ import zipfile
 import rarfile
 import locale
 from subprocess import Popen, STDOUT, PIPE
+from shutil import move
 
 
 class CBxArchive:
@@ -94,8 +95,7 @@ class CBxArchive:
         if 'ComicInfo.xml' in adir:
             adir.remove('ComicInfo.xml')
         if len(adir) == 1 and os.path.isdir(os.path.join(targetdir, adir[0])):
-            import shutil
             for f in os.listdir(os.path.join(targetdir, adir[0])):
-                shutil.move(os.path.join(targetdir, adir[0], f), targetdir)
+                move(os.path.join(targetdir, adir[0], f), targetdir)
             os.rmdir(os.path.join(targetdir, adir[0]))
         return targetdir
