@@ -23,7 +23,8 @@ import os
 import zipfile
 import rarfile
 import locale
-from subprocess import Popen, STDOUT, PIPE
+from subprocess import STDOUT, PIPE
+from psutil import Popen
 from shutil import move
 
 
