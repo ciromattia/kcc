@@ -4,6 +4,7 @@
 .idea
 build
 dist
+test
 Output
 kindlegen*
 UnRAR*
