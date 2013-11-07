@@ -42,6 +42,7 @@ if platform == "darwin":
                             CFBundleTypeRole='Viewer',
                         )
                     ],
+                    LSMinimumSystemVersion='10.6.0',
                     NSHumanReadableCopyright='ISC License (ISCL)'
                 )
             )
