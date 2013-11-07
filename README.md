@@ -41,7 +41,7 @@ You can find the latest released binary at the following links:
 - [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt/download) - Please refer to official documentation for installing into your system.
 - [Pillow](http://pypi.python.org/pypi/Pillow/) 2.2.1+ - For comic optimizations. Please refer to official documentation for installing into your system.
 - [Psutil](https://code.google.com/p/psutil/) - Please refer to official documentation for installing into your system.
-- **To build OS X release a modified QT is required:** [Patch](https://github.com/ciromattia/kcc/blob/master/other/QT-4.8.5-QListWidget.patch)
+- **To build OS X release on Mavericks (10.9) you need a modified QT:** [Patch](https://github.com/ciromattia/kcc/blob/master/other/QT-4.8.5-QListWidget.patch); if you use [Homebrew](http://brew.sh) take a look at [PR #23793](https://github.com/mxcl/homebrew/pull/23793).
 
 ## USAGE
 
