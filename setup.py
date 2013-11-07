@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 """
 cx_Freeze build script for KCC.
 
@@ -67,18 +68,10 @@ elif platform == "win32":
                                 appendScriptToLibrary=False,
                                 compress=True)])
 else:
-    from cx_Freeze import setup, Executable
-    extra_options = dict(
-        options={"build_exe": {"include_files": ['LICENSE.txt',
-                                                 ['other/Additional-LICENSE.txt', 'Additional-LICENSE.txt']
-                                                 ], "compressed": True}},
-        executables=[Executable(MAIN,
-                                icon="icons/comic2ebook.png",
-                                copyDependentFiles=True,
-                                appendScriptToExe=True,
-                                appendScriptToLibrary=False,
-                                compress=True)])
+    print 'Please use setup.sh to build Linux package.'
+    exit()
 
+#noinspection PyUnboundLocalVariable
 setup(
     name=NAME,
     version=VERSION,
