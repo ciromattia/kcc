@@ -48,7 +48,6 @@ You can find the latest released binary at the following links:
 ### Important tips:
 * Use high quality source files. **This little detail have a major impact on the final result.**
 * Read tooltip of _High/Ultra quality_ option. There are many important informations there.
-* **Uploading with Calibre will work only if file will not be modified by any of Calibre converters.**
 * When converting images smaller than device resolution remember to enable upscaling.
 * Panel View (auto zooming every part of page) can be disabled directly on Kindle. There is no KCC option to do that.
 * If you're converting color images and the end result is not satisfactory, experiment with gamma correction option (check 1.0 setting first).
@@ -56,6 +55,11 @@ You can find the latest released binary at the following links:
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
 * ComicRack metadata will be parsed only if they are saved in *ComicInfo.xml* file.
+
+### Calibre:
+* Calibre can be used to upload files created by KCC.
+* MOBI files created by KCC are already in AZW3 format. **Don't convert them once more with Calibre!**
+* Don't use Calibre reader to preview files created by KCC. It can't parse them correctly.
 
 ### GUI 
 
