@@ -12,6 +12,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
+AppCopyright=Copyright (C) 2012-2013 Ciro Mattia Gonano and Paweł Jastrzębski
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
@@ -28,6 +29,7 @@ UninstallDisplayName={#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
 ChangesAssociations=True
 InfoAfterFile=other\InstallWarning.rtf
+SignTool=SignTool /d $q{#MyAppName}$q /du $q{#MyAppURL}$q $f
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -63,6 +65,7 @@ Source: "build\exe.win-amd64-2.7\select.pyd"; DestDir: "{app}"; Flags: ignorever
 Source: "build\exe.win-amd64-2.7\sip.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: "build\exe.win-amd64-2.7\SSLEAY32.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: "build\exe.win-amd64-2.7\unicodedata.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "build\exe.win-amd64-2.7\_psutil_mswindows.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
 ; x86 files
 Source: "build\exe.win32-2.7\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion solidbreak; Check: not Is64BitInstallMode
 Source: "build\exe.win32-2.7\_ctypes.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
@@ -87,6 +90,7 @@ Source: "build\exe.win32-2.7\select.pyd"; DestDir: "{app}"; Flags: ignoreversion
 Source: "build\exe.win32-2.7\sip.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: "build\exe.win32-2.7\SSLEAY32.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: "build\exe.win32-2.7\unicodedata.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "build\exe.win32-2.7\_psutil_mswindows.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 ; Common files
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
 Source: "other\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
