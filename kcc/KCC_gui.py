@@ -321,6 +321,7 @@ class WorkerThread(QtCore.QThread):
 
     def clean(self):
         GUIMain.progress.content = ''
+        self.progress.stop()
         GUIMain.needClean = True
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         self.emit(QtCore.SIGNAL("addMessage"), '<b>Conversion interrupted.</b>', 'error')
@@ -508,6 +509,7 @@ class WorkerThread(QtCore.QThread):
                     for item in outputPath:
                         GUIMain.completedWork[os.path.basename(item).encode('utf-8')] = item.encode('utf-8')
         GUIMain.progress.content = ''
+        self.progress.stop()
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         GUIMain.needClean = True
         self.emit(QtCore.SIGNAL("addMessage"), '<b>All jobs completed.</b>', 'info')
@@ -806,6 +808,7 @@ class Ui_KCC(object):
             self.conversionAlive = False
             self.worker.sync()
         else:
+            self.progress.start()
             if self.needClean:
                 self.needClean = False
                 GUI.JobList.clear()
@@ -833,7 +836,6 @@ class Ui_KCC(object):
         if not GUI.ConvertButton.isEnabled():
             event.ignore()
         self.contentServer.stop()
-        self.progress.stop()
         self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
@@ -1023,6 +1025,5 @@ class Ui_KCC(object):
         self.changeFormat()
         self.versionCheck.start()
         self.contentServer.start()
-        self.progress.start()
         self.hideProgressBar()
         self.worker.sync()
