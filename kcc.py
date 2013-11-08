@@ -40,8 +40,10 @@ except ImportError:
 from kcc import KCC_gui
 from multiprocessing import freeze_support
 if sys.platform.startswith('darwin'):
-    # Workaround Finder-launched app PATH evaluation
-    os.environ['PATH'] = '/usr/local/bin:' + os.environ['PATH']
+    if 'RESOURCEPATH' in os.environ:
+        os.environ['PATH'] = os.environ['RESOURCEPATH'] + ':' + os.environ['PATH']
+    else:
+        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/:' + os.environ['PATH']
     from kcc import KCC_ui_osx as KCC_ui
 elif sys.platform.startswith('linux'):
     from kcc import KCC_ui_linux as KCC_ui
