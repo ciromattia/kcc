@@ -296,7 +296,8 @@ def getImageFileName(imgfile):
 
 
 def applyImgOptimization(img, opt, overrideQuality=5):
-    img.getImageFill(opt.webtoon)
+    if not img.fill:
+        img.getImageFill(opt.webtoon)
     if not opt.webtoon:
         img.cropWhiteSpace(10.0)
     if opt.cutpagenumbers and not opt.webtoon:
@@ -377,17 +378,17 @@ def fileImgProcess(work):
             applyImgOptimization(img1, opt)
             img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
             if opt.quality == 2:
-                img3 = image.ComicPage(split[0], opt.profileData)
+                img3 = image.ComicPage(split[0], opt.profileData, img0.fill)
                 applyImgOptimization(img3, opt, 0)
                 img3.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
-                img4 = image.ComicPage(split[1], opt.profileData)
+                img4 = image.ComicPage(split[1], opt.profileData, img1.fill)
                 applyImgOptimization(img4, opt, 0)
                 img4.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
         else:
             applyImgOptimization(img, opt)
             img.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
             if opt.quality == 2:
-                img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
+                img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData, img.fill)
                 if img.rotated:
                     img2.image = img2.image.rotate(90)
                     img2.rotated = True

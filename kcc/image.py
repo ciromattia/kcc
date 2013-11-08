@@ -142,7 +142,7 @@ class ProfileData:
 
 
 class ComicPage:
-    def __init__(self, source, device):
+    def __init__(self, source, device, fill=None):
         try:
             self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = device
         except KeyError:
@@ -172,7 +172,10 @@ class ComicPage:
         self.border = None
         self.noHPV = None
         self.noVPV = None
-        self.fill = None
+        if fill:
+            self.fill = fill
+        else:
+            self.fill = None
 
     def saveToDir(self, targetdir, forcepng, color, wipe):
         try:
@@ -428,7 +431,7 @@ class ComicPage:
             self.image = self.image.crop((0, 0, widthImg - diff, heightImg))
         return self.image
 
-    def getImageHistogram(self, image):
+    def getImageHistogram(self, image, new=True):
         histogram = image.histogram()
         RBGW = []
         pixelCount = 0
@@ -437,37 +440,73 @@ class ComicPage:
             RBGW.append(histogram[i] + histogram[256 + i] + histogram[512 + i])
         white = 0
         black = 0
-        for i in range(245, 256):
+        for i in range(251, 256):
             white += RBGW[i]
-        for i in range(11):
+        for i in range(5):
             black += RBGW[i]
-        if black > white and black > pixelCount*0.5:
-            return True
+        if new:
+            if black > 0 and white == 0:
+                return 1
+            elif white > 0 and black == 0:
+                return -1
+            else:
+                return False
         else:
-            return False
+            if black > white and black > pixelCount*0.5:
+                return True
+            else:
+                return False
 
     def getImageFill(self, isWebToon):
-        fill = 0
-        if isWebToon or self.rotated:
-            fill += self.getImageHistogram(self.image.crop((0, 0, self.image.size[0], 5)))
+        if isWebToon:
+            fill = 0
+            fill += self.getImageHistogram(self.image.crop((0, 0, self.image.size[0], 5)), False)
             fill += self.getImageHistogram(self.image.crop((0, self.image.size[1]-5, self.image.size[0],
-                                                            self.image.size[1])))
-        else:
-            fill += self.getImageHistogram(self.image.crop((0, 0, 5, self.image.size[1])))
-            fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, 0, self.image.size[0],
-                                                            self.image.size[1])))
-        if fill == 2:
-            self.fill = 'black'
-        elif fill == 0:
-            self.fill = 'white'
+                                                            self.image.size[1])), False)
+            if fill == 2:
+                self.fill = 'black'
+            elif fill == 0:
+                self.fill = 'white'
+            else:
+                fill = 0
+                fill += self.getImageHistogram(self.image.crop((0, 0, 5, 5)), False)
+                fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, 0, self.image.size[0], 5)), False)
+                fill += self.getImageHistogram(self.image.crop((0, self.image.size[1]-5, 5, self.image.size[1])), False)
+                fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, self.image.size[1]-5,
+                                                                self.image.size[0], self.image.size[1])), False)
+                if fill > 1:
+                    self.fill = 'black'
+                else:
+                    self.fill = 'white'
         else:
             fill = 0
-            fill += self.getImageHistogram(self.image.crop((0, 0, 5, 5)))
-            fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, 0, self.image.size[0], 5)))
-            fill += self.getImageHistogram(self.image.crop((0, self.image.size[1]-5, 5, self.image.size[1])))
-            fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, self.image.size[1]-5,
-                                                            self.image.size[0], self.image.size[1])))
-            if fill > 1:
+            # Search fom horizontal solid lines
+            startY = 0
+            stopY = 3
+            searching = True
+            while stopY <= self.image.size[1]:
+                checkSolid = self.getImageHistogram(self.image.crop((0, startY, self.image.size[0], stopY)))
+                if checkSolid:
+                    fill += checkSolid
+                startY = stopY + 1
+                stopY = startY + 3
+                if stopY > self.image.size[1] and searching:
+                    stopY = self.image.size[1]
+                    searching = False
+            # Search fom vertical solid lines
+            startX = 0
+            stopX = 3
+            searching = True
+            while stopX <= self.image.size[0]:
+                checkSolid = self.getImageHistogram(self.image.crop((startX, 0, stopX, self.image.size[1])))
+                if checkSolid:
+                    fill += checkSolid
+                startX = stopX + 1
+                stopX = startX + 3
+                if stopX > self.image.size[0] and searching:
+                    stopX = self.image.size[0]
+                    searching = False
+            if fill > 0:
                 self.fill = 'black'
             else:
                 self.fill = 'white'
