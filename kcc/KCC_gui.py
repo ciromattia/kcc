@@ -321,7 +321,7 @@ class WorkerThread(QtCore.QThread):
 
     def clean(self):
         GUIMain.progress.content = ''
-        self.progress.stop()
+        GUIMain.progress.stop()
         GUIMain.needClean = True
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         self.emit(QtCore.SIGNAL("addMessage"), '<b>Conversion interrupted.</b>', 'error')
@@ -509,7 +509,7 @@ class WorkerThread(QtCore.QThread):
                     for item in outputPath:
                         GUIMain.completedWork[os.path.basename(item).encode('utf-8')] = item.encode('utf-8')
         GUIMain.progress.content = ''
-        self.progress.stop()
+        GUIMain.progress.stop()
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         GUIMain.needClean = True
         self.emit(QtCore.SIGNAL("addMessage"), '<b>All jobs completed.</b>', 'info')
