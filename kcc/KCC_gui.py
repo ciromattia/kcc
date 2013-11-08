@@ -205,6 +205,30 @@ class VersionThread(QtCore.QThread):
                                                    'Changelog</a>)', 'warning')
 
 
+class ProgressThread(QtCore.QThread):
+    def __init__(self):
+        QtCore.QThread.__init__(self)
+        self.running = False
+        self.content = None
+        self.progress = 0
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        self.running = True
+        while self.running:
+            sleep(1)
+            if self.content:
+                self.emit(QtCore.SIGNAL("addMessage"), self.content + self.progress * '.', 'info', True)
+                self.progress += 1
+                if self.progress == 4:
+                    self.progress = 0
+
+    def stop(self):
+        self.running = False
+
+
 class WorkerSignals(QtCore.QObject):
     result = QtCore.pyqtSignal(list)
 
@@ -296,6 +320,8 @@ class WorkerThread(QtCore.QThread):
         self.conversionAlive = GUIMain.conversionAlive
 
     def clean(self):
+        GUIMain.progress.content = ''
+        GUIMain.progress.stop()
         GUIMain.needClean = True
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         self.emit(QtCore.SIGNAL("addMessage"), '<b>Conversion interrupted.</b>', 'error')
@@ -359,9 +385,11 @@ class WorkerThread(QtCore.QThread):
             self.errors = False
             self.emit(QtCore.SIGNAL("addMessage"), '<b>Source:</b> ' + job, 'info')
             if str(GUI.FormatBox.currentText()) == 'CBZ':
-                self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file...', 'info')
+                self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ files', 'info')
+                GUIMain.progress.content = 'Creating CBZ files'
             else:
-                self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file...', 'info')
+                self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB files', 'info')
+                GUIMain.progress.content = 'Creating EPUB files'
             jobargv = list(argv)
             jobargv.append(job)
             try:
@@ -372,10 +400,12 @@ class WorkerThread(QtCore.QThread):
                     self.clean()
                     return
                 else:
+                    GUIMain.progress.content = ''
                     self.errors = True
                     self.emit(QtCore.SIGNAL("addMessage"), str(warn), 'warning')
                     self.emit(QtCore.SIGNAL("addMessage"), 'Failed to create output file!', 'warning')
             except Exception as err:
+                GUIMain.progress.content = ''
                 self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
                 self.emit(QtCore.SIGNAL("showDialog"), "Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
@@ -388,15 +418,17 @@ class WorkerThread(QtCore.QThread):
                 self.clean()
                 return
             if not self.errors:
+                GUIMain.progress.content = ''
                 if str(GUI.FormatBox.currentText()) == 'CBZ':
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ file... <b>Done!</b>', 'info', True)
+                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ files... <b>Done!</b>', 'info', True)
                 else:
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB file... <b>Done!</b>', 'info', True)
+                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB files... <b>Done!</b>', 'info', True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
                     self.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Creating MOBI files')
                     self.emit(QtCore.SIGNAL("progressBarTick"), len(outputPath)*2+1)
                     self.emit(QtCore.SIGNAL("progressBarTick"))
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file...', 'info')
+                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI files', 'info')
+                    GUIMain.progress.content = 'Creating MOBI files'
                     self.workerOutput = []
                     # Number of KindleGen threads depends on the size of RAM
                     self.pool.setMaxThreadCount(self.threadNumber)
@@ -420,8 +452,10 @@ class WorkerThread(QtCore.QThread):
                         self.clean()
                         return
                     if self.kindlegenErrorCode[0] == 0:
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI file... <b>Done!</b>', 'info', True)
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file...', 'info')
+                        GUIMain.progress.content = ''
+                        self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI files... <b>Done!</b>', 'info', True)
+                        self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files', 'info')
+                        GUIMain.progress.content = 'Cleaning MOBI files'
                         self.workerOutput = []
                         # Multithreading KindleUnpack in current form is a waste of resources.
                         # Unless we higly optimise KindleUnpack or drop 32bit support this will not change.
@@ -438,13 +472,15 @@ class WorkerThread(QtCore.QThread):
                                 break
                         if not self.errors:
                             for item in outputPath:
+                                GUIMain.progress.content = ''
                                 mobiPath = item.replace('.epub', '.mobi')
                                 os.remove(mobiPath + '_toclean')
                                 GUIMain.completedWork[os.path.basename(mobiPath).encode('utf-8')] = \
                                     mobiPath.encode('utf-8')
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI file... <b>Done!</b>', 'info',
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files... <b>Done!</b>', 'info',
                                           True)
                         else:
+                            GUIMain.progress.content = ''
                             for item in outputPath:
                                 mobiPath = item.replace('.epub', '.mobi')
                                 if os.path.exists(mobiPath):
@@ -453,6 +489,7 @@ class WorkerThread(QtCore.QThread):
                                     os.remove(mobiPath + '_toclean')
                             self.emit(QtCore.SIGNAL("addMessage"), 'KindleUnpack failed to clean MOBI file!', 'error')
                     else:
+                        GUIMain.progress.content = ''
                         epubSize = (os.path.getsize(self.kindlegenErrorCode[2]))/1024/1024
                         for item in outputPath:
                             if os.path.exists(item):
@@ -471,6 +508,8 @@ class WorkerThread(QtCore.QThread):
                 else:
                     for item in outputPath:
                         GUIMain.completedWork[os.path.basename(item).encode('utf-8')] = item.encode('utf-8')
+        GUIMain.progress.content = ''
+        GUIMain.progress.stop()
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         GUIMain.needClean = True
         self.emit(QtCore.SIGNAL("addMessage"), '<b>All jobs completed.</b>', 'info')
@@ -769,6 +808,7 @@ class Ui_KCC(object):
             self.conversionAlive = False
             self.worker.sync()
         else:
+            self.progress.start()
             if self.needClean:
                 self.needClean = False
                 GUI.JobList.clear()
@@ -868,6 +908,7 @@ class Ui_KCC(object):
         self.worker = WorkerThread()
         self.versionCheck = VersionThread()
         self.contentServer = WebServerThread()
+        self.progress = ProgressThread()
         self.conversionAlive = False
         self.needClean = True
         self.QualityBoxDisabled = False
@@ -941,6 +982,7 @@ class Ui_KCC(object):
         KCC.connect(self.worker, QtCore.SIGNAL("hideProgressBar"), self.hideProgressBar)
         KCC.connect(self.versionCheck, QtCore.SIGNAL("addMessage"), self.addMessage)
         KCC.connect(self.contentServer, QtCore.SIGNAL("addMessage"), self.addMessage)
+        KCC.connect(self.progress, QtCore.SIGNAL("addMessage"), self.addMessage)
         KCC.closeEvent = self.saveSettings
 
         for f in formats:
