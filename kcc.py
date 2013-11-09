@@ -52,6 +52,7 @@ else:
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
     else:
+        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/;' + os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
     from kcc import KCC_ui
 

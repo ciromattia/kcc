@@ -491,6 +491,7 @@ class ComicPage:
                 startY = stopY + 1
                 stopY = startY + 3
                 if stopY > self.image.size[1] and searching:
+                    startY = self.image.size[1] - 3
                     stopY = self.image.size[1]
                     searching = False
             # Search fom vertical solid lines
@@ -504,6 +505,7 @@ class ComicPage:
                 startX = stopX + 1
                 stopX = startX + 3
                 if stopX > self.image.size[0] and searching:
+                    startX = self.image.size[0] - 3
                     stopX = self.image.size[0]
                     searching = False
             if fill > 0:
