@@ -58,7 +58,8 @@ You can find the latest released binary at the following links:
 
 ### Calibre:
 * Calibre can be used to upload files created by KCC.
-* MOBI files created by KCC are already in AZW3 format. **Don't convert them once more with Calibre!**
+* Uploading KCC output with Calibre will remove *Personal* tag from cover.
+* **Don't convert files created by KCC with Calibre!** Any conversion process will corrupt the file!
 * Don't use Calibre reader to preview files created by KCC. It can't parse them correctly.
 
 ### GUI 
