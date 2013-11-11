@@ -41,7 +41,7 @@ You can find the latest released binary at the following links:
 - [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt/download) - Please refer to official documentation for installing into your system.
 - [Pillow](http://pypi.python.org/pypi/Pillow/) 2.2.1+ - For comic optimizations. Please refer to official documentation for installing into your system.
 - [Psutil](https://code.google.com/p/psutil/) - Please refer to official documentation for installing into your system.
-- **To build OS X release you need a modified QT:** [Patch](https://github.com/ciromattia/kcc/blob/master/other/QT-4.8.5-QListWidget.patch)
+- **To build OS X release you need a modified QT:** [patch](https://github.com/ciromattia/kcc/blob/master/other/QT-4.8.5-QListWidget.patch)
 
 ## USAGE
 
@@ -287,6 +287,8 @@ The app relies and includes the following scripts/binaries:
 * Added proper Windows installer
 * Improved multiprocessing speed
 * GUI tweaks and minor bug fixes
+
+####3.6:
 
 ## COPYRIGHT
 
