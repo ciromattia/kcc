@@ -600,9 +600,9 @@ class Ui_KCC(object):
 
     def modeBasic(self):
         self.currentMode = 1
-        MainWindow.setMinimumSize(QtCore.QSize(420, 270))
-        MainWindow.setMaximumSize(QtCore.QSize(420, 270))
-        MainWindow.resize(420, 270)
+        MainWindow.setMinimumSize(QtCore.QSize(420, 287))
+        MainWindow.setMaximumSize(QtCore.QSize(420, 287))
+        MainWindow.resize(420, 287)
         GUI.BasicModeButton.setStyleSheet('font-weight:Bold;')
         GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
         GUI.FormatBox.setCurrentIndex(0)
@@ -621,9 +621,9 @@ class Ui_KCC(object):
 
     def modeAdvanced(self):
         self.currentMode = 2
-        MainWindow.setMinimumSize(QtCore.QSize(420, 345))
-        MainWindow.setMaximumSize(QtCore.QSize(420, 345))
-        MainWindow.resize(420, 345)
+        MainWindow.setMinimumSize(QtCore.QSize(420, 365))
+        MainWindow.setMaximumSize(QtCore.QSize(420, 365))
+        MainWindow.resize(420, 365)
         GUI.BasicModeButton.setStyleSheet('font-weight:Normal;')
         GUI.AdvModeButton.setStyleSheet('font-weight:Bold;')
         GUI.FormatBox.setEnabled(True)
@@ -638,9 +638,9 @@ class Ui_KCC(object):
     def modeExpert(self, KFA=False):
         self.modeAdvanced()
         self.currentMode = 3
-        MainWindow.setMinimumSize(QtCore.QSize(420, 380))
-        MainWindow.setMaximumSize(QtCore.QSize(420, 380))
-        MainWindow.resize(420, 380)
+        MainWindow.setMinimumSize(QtCore.QSize(420, 397))
+        MainWindow.setMaximumSize(QtCore.QSize(420, 397))
+        MainWindow.resize(420, 397)
         GUI.OptionsExpert.setEnabled(True)
         if KFA:
             GUI.ColorBox.setChecked(True)
@@ -954,6 +954,18 @@ class Ui_KCC(object):
         else:
             self.listFontSize = 9
             self.tray.show()
+
+        statusBarLabel = QtGui.QLabel('<b><a href="http://kcc.vulturis.eu/">HOMEPAGE</a> - <a href="https://github.com/'
+                                      'ciromattia/kcc/blob/master/README.md#donations">DONATE</a> - <a href="https://gi'
+                                      'thub.com/ciromattia/kcc/blob/master/README.md#kcc">README</a> - <a href="https:/'
+                                      '/github.com/ciromattia/kcc/wiki">WIKI</a></b>')
+        statusBarLabel.setAlignment(QtCore.Qt.AlignCenter)
+        statusBarLabel.setStyleSheet('QLabel{padding-top:3px;padding-bottom:3px;border-top:2px solid #C2C7CB}')
+        statusBarLabel.setOpenExternalLinks(True)
+        statusBarLabelFont = QtGui.QFont()
+        statusBarLabelFont.setPointSize(8)
+        statusBarLabel.setFont(statusBarLabelFont)
+        GUI.statusBar.addPermanentWidget(statusBarLabel, 1)
 
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')
