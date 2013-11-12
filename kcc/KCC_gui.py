@@ -75,6 +75,9 @@ class Icons:
         self.error = QtGui.QIcon()
         self.error.addPixmap(QtGui.QPixmap(":/Status/icons/error.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
+        self.programIcon = QtGui.QIcon()
+        self.programIcon.addPixmap(QtGui.QPixmap(":/Icon/icons/comic2ebook.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+
 
 class HTMLStripper(HTMLParser):
     def __init__(self):
@@ -325,6 +328,7 @@ class WorkerThread(QtCore.QThread):
         GUIMain.needClean = True
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         self.emit(QtCore.SIGNAL("addMessage"), '<b>Conversion interrupted.</b>', 'error')
+        self.emit(QtCore.SIGNAL("addTrayMessage"), 'Conversion interrupted.', 'Critical')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
 
     def addResult(self, output):
@@ -404,6 +408,7 @@ class WorkerThread(QtCore.QThread):
                     self.errors = True
                     self.emit(QtCore.SIGNAL("addMessage"), str(warn), 'warning')
                     self.emit(QtCore.SIGNAL("addMessage"), 'Failed to create output file!', 'warning')
+                    self.emit(QtCore.SIGNAL("addTrayMessage"), 'Failed to create output file!', 'Critical')
             except Exception as err:
                 GUIMain.progress.content = ''
                 self.errors = True
@@ -411,6 +416,7 @@ class WorkerThread(QtCore.QThread):
                 self.emit(QtCore.SIGNAL("showDialog"), "Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
                                                        % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
                 self.emit(QtCore.SIGNAL("addMessage"), 'Failed to create EPUB!', 'error')
+                self.emit(QtCore.SIGNAL("addTrayMessage"), 'Failed to create EPUB!', 'Critical')
             if not self.conversionAlive:
                 for item in outputPath:
                     if os.path.exists(item):
@@ -488,6 +494,8 @@ class WorkerThread(QtCore.QThread):
                                 if os.path.exists(mobiPath + '_toclean'):
                                     os.remove(mobiPath + '_toclean')
                             self.emit(QtCore.SIGNAL("addMessage"), 'KindleUnpack failed to clean MOBI file!', 'error')
+                            self.emit(QtCore.SIGNAL("addTrayMessage"), 'KindleUnpack failed to clean MOBI file!',
+                                      'Critical')
                     else:
                         GUIMain.progress.content = ''
                         epubSize = (os.path.getsize(self.kindlegenErrorCode[2]))/1024/1024
@@ -497,6 +505,7 @@ class WorkerThread(QtCore.QThread):
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
                         self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', 'error')
+                        self.emit(QtCore.SIGNAL("addTrayMessage"), 'KindleGen failed to create MOBI!', 'Critical')
                         if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':
                             self.emit(QtCore.SIGNAL("showDialog"), "KindleGen error:\n\n" +
                                                                    self.self.kindlegenErrorCode[1])
@@ -513,7 +522,30 @@ class WorkerThread(QtCore.QThread):
         self.emit(QtCore.SIGNAL("hideProgressBar"))
         GUIMain.needClean = True
         self.emit(QtCore.SIGNAL("addMessage"), '<b>All jobs completed.</b>', 'info')
+        self.emit(QtCore.SIGNAL("addTrayMessage"), 'All jobs completed.', 'Information')
         self.emit(QtCore.SIGNAL("modeConvert"), True)
+
+
+class SystemTrayIcon(QtGui.QSystemTrayIcon):
+    def __init__(self, parent=None):
+        QtGui.QSystemTrayIcon.__init__(self, parent)
+        self.setIcon(GUIMain.icons.programIcon)
+        self.activated.connect(self.catchClicks)
+
+    def catchClicks(self):
+        MainWindow.raise_()
+        MainWindow.activateWindow()
+
+    def addTrayMessage(self, message, icon):
+        icon = eval('QtGui.QSystemTrayIcon.' + icon)
+        if self.supportsMessages() and not MainWindow.isActiveWindow():
+            self.showMessage('Kindle Comic Converter', message, icon)
+
+    def focusChange(self, _):
+        if self.isSystemTrayAvailable() and not MainWindow.isActiveWindow():
+            self.show()
+        else:
+            self.hide()
 
 
 class Ui_KCC(object):
@@ -542,6 +574,7 @@ class Ui_KCC(object):
                     dname = dname.replace('/', '\\')
                 self.lastPath = os.path.abspath(os.path.join(unicode(dname), os.pardir))
                 GUI.JobList.addItem(dname)
+        MainWindow.setFocus()
 
     def selectFile(self):
         if self.needClean:
@@ -893,6 +926,7 @@ class Ui_KCC(object):
         purgeSettingsVersions = ['']
         self.icons = Icons()
         self.webContent = WebContent()
+        self.tray = SystemTrayIcon()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         if self.settingsVersion in purgeSettingsVersions:
@@ -962,6 +996,8 @@ class Ui_KCC(object):
             self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7za</a>!'
                             ' Processing of CB7/7Z files will be disabled.', 'warning')
 
+        KCC.focusInEvent = self.tray.focusChange
+        KCC.focusOutEvent = self.tray.focusChange
         APP.connect(APP, QtCore.SIGNAL('messageFromOtherInstance'), self.handleMessage)
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
@@ -978,6 +1014,7 @@ class Ui_KCC(object):
         KCC.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
         KCC.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
         KCC.connect(self.worker, QtCore.SIGNAL("addMessage"), self.addMessage)
+        KCC.connect(self.worker, QtCore.SIGNAL("addTrayMessage"), self.tray.addTrayMessage)
         KCC.connect(self.worker, QtCore.SIGNAL("showDialog"), self.showDialog)
         KCC.connect(self.worker, QtCore.SIGNAL("hideProgressBar"), self.hideProgressBar)
         KCC.connect(self.versionCheck, QtCore.SIGNAL("addMessage"), self.addMessage)

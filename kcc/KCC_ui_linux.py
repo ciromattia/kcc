@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-Linux.ui'
 #
-# Created: Sat Oct 12 11:28:11 2013
+# Created: Tue Nov 12 11:51:18 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -32,7 +32,7 @@ class Ui_KCC(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         KCC.setFont(font)
-        KCC.setFocusPolicy(QtCore.Qt.NoFocus)
+        KCC.setFocusPolicy(QtCore.Qt.StrongFocus)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/Icon/icons/comic2ebook.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         KCC.setWindowIcon(icon)
