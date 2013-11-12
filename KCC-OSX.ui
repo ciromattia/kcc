@@ -27,9 +27,6 @@
     <pointsize>9</pointsize>
    </font>
   </property>
-  <property name="focusPolicy">
-   <enum>Qt::StrongFocus</enum>
-  </property>
   <property name="windowTitle">
    <string>Kindle Comic Converter</string>
   </property>

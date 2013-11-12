@@ -528,24 +528,20 @@ class WorkerThread(QtCore.QThread):
 
 class SystemTrayIcon(QtGui.QSystemTrayIcon):
     def __init__(self, parent=None):
-        QtGui.QSystemTrayIcon.__init__(self, parent)
-        self.setIcon(GUIMain.icons.programIcon)
-        self.activated.connect(self.catchClicks)
+        if not sys.platform.startswith('darwin') and self.isSystemTrayAvailable():
+            QtGui.QSystemTrayIcon.__init__(self, parent)
+            self.setIcon(GUIMain.icons.programIcon)
+            self.activated.connect(self.catchClicks)
 
     def catchClicks(self):
         MainWindow.raise_()
         MainWindow.activateWindow()
 
     def addTrayMessage(self, message, icon):
-        icon = eval('QtGui.QSystemTrayIcon.' + icon)
-        if self.supportsMessages() and not MainWindow.isActiveWindow():
-            self.showMessage('Kindle Comic Converter', message, icon)
-
-    def focusChange(self, _):
-        if self.isSystemTrayAvailable() and not MainWindow.isActiveWindow():
-            self.show()
-        else:
-            self.hide()
+        if not sys.platform.startswith('darwin'):
+            icon = eval('QtGui.QSystemTrayIcon.' + icon)
+            if self.supportsMessages() and not MainWindow.isActiveWindow():
+                self.showMessage('Kindle Comic Converter', message, icon)
 
 
 class Ui_KCC(object):
@@ -868,6 +864,8 @@ class Ui_KCC(object):
             event.ignore()
         if not GUI.ConvertButton.isEnabled():
             event.ignore()
+        if not sys.platform.startswith('darwin'):
+            self.tray.hide()
         self.contentServer.stop()
         self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
@@ -952,8 +950,10 @@ class Ui_KCC(object):
             self.listFontSize = 11
         elif sys.platform.startswith('linux'):
             self.listFontSize = 8
+            self.tray.show()
         else:
             self.listFontSize = 9
+            self.tray.show()
 
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')
@@ -996,8 +996,6 @@ class Ui_KCC(object):
             self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7za</a>!'
                             ' Processing of CB7/7Z files will be disabled.', 'warning')
 
-        KCC.focusInEvent = self.tray.focusChange
-        KCC.focusOutEvent = self.tray.focusChange
         APP.connect(APP, QtCore.SIGNAL('messageFromOtherInstance'), self.handleMessage)
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
