@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>420</width>
-    <height>380</height>
+    <height>397</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>420</width>
-    <height>380</height>
+    <height>397</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>420</width>
-    <height>380</height>
+    <height>397</height>
    </size>
   </property>
   <property name="font">
@@ -793,6 +793,17 @@
    <zorder>OptionsBasic</zorder>
    <zorder>OptionsAdvancedGamma</zorder>
    <zorder>OptionsExpert</zorder>
+  </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="font">
+    <font>
+     <family>Aharoni</family>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="sizeGripEnabled">
+    <bool>false</bool>
+   </property>
   </widget>
   <action name="ActionBasic">
    <property name="checkable">

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-Linux.ui'
 #
-# Created: Tue Nov 12 13:11:16 2013
+# Created: Tue Nov 12 14:32:11 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,9 +26,9 @@ except AttributeError:
 class Ui_KCC(object):
     def setupUi(self, KCC):
         KCC.setObjectName(_fromUtf8("KCC"))
-        KCC.resize(420, 380)
-        KCC.setMinimumSize(QtCore.QSize(420, 380))
-        KCC.setMaximumSize(QtCore.QSize(420, 380))
+        KCC.resize(420, 397)
+        KCC.setMinimumSize(QtCore.QSize(420, 397))
+        KCC.setMaximumSize(QtCore.QSize(420, 397))
         font = QtGui.QFont()
         font.setPointSize(9)
         KCC.setFont(font)
@@ -316,6 +316,14 @@ class Ui_KCC(object):
         self.customHeight.setObjectName(_fromUtf8("customHeight"))
         self.gridLayout_2.addWidget(self.customHeight, 0, 3, 1, 1)
         KCC.setCentralWidget(self.Form)
+        self.statusBar = QtGui.QStatusBar(KCC)
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("DejaVu Sans"))
+        font.setPointSize(8)
+        self.statusBar.setFont(font)
+        self.statusBar.setSizeGripEnabled(False)
+        self.statusBar.setObjectName(_fromUtf8("statusBar"))
+        KCC.setStatusBar(self.statusBar)
         self.ActionBasic = QtGui.QAction(KCC)
         self.ActionBasic.setCheckable(True)
         self.ActionBasic.setChecked(False)

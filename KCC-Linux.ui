@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>420</width>
-    <height>380</height>
+    <height>397</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>420</width>
-    <height>380</height>
+    <height>397</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>420</width>
-    <height>380</height>
+    <height>397</height>
    </size>
   </property>
   <property name="font">
@@ -781,6 +781,17 @@ p, li { white-space: pre-wrap; }
    <zorder>OptionsAdvancedGamma</zorder>
    <zorder>OptionsExpert</zorder>
    <zorder>ProgressBar</zorder>
+  </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="font">
+    <font>
+     <family>DejaVu Sans</family>
+     <pointsize>8</pointsize>
+    </font>
+   </property>
+   <property name="sizeGripEnabled">
+    <bool>false</bool>
+   </property>
   </widget>
   <action name="ActionBasic">
    <property name="checkable">
