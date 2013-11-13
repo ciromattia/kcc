@@ -39,22 +39,19 @@ except ImportError:
     exit(1)
 from kcc import KCC_gui
 from multiprocessing import freeze_support
+
+# OS specific PATH variable workarounds
 if sys.platform.startswith('darwin'):
     if 'RESOURCEPATH' in os.environ:
         os.environ['PATH'] = os.environ['RESOURCEPATH'] + ':' + os.environ['PATH']
     else:
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/:' + os.environ['PATH']
-    from kcc import KCC_ui_osx as KCC_ui
-elif sys.platform.startswith('linux'):
-    from kcc import KCC_ui_linux as KCC_ui
-else:
-    # Workaround for Windows file association mechanism
+elif sys.platform.startswith('win'):
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
     else:
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/;' + os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    from kcc import KCC_ui
 
 
 # Implementing detection of already running KCC instance and forwarding argv to it
@@ -98,10 +95,10 @@ class QApplicationMessaging(QtGui.QApplication):
         return False
 
 freeze_support()
-APP = QApplicationMessaging(sys.argv)
-if APP.isRunning():
+KCCAplication = QApplicationMessaging(sys.argv)
+if KCCAplication.isRunning():
     if len(sys.argv) > 1:
-        APP.sendMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
+        KCCAplication.sendMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
         sys.exit(0)
     else:
         messageBox = QtGui.QMessageBox()
@@ -110,13 +107,8 @@ if APP.isRunning():
         messageBox.setWindowIcon(icon)
         QtGui.QMessageBox.critical(messageBox, 'KCC - Error', 'KCC is already running!', QtGui.QMessageBox.Ok)
         sys.exit(1)
-KCC = QtGui.QMainWindow()
-UI = KCC_ui.Ui_KCC()
-UI.setupUi(KCC)
-GUI = KCC_gui.Ui_KCC(UI, KCC, APP)
-KCC.setWindowTitle("Kindle Comic Converter " + __version__)
-KCC.show()
-KCC.raise_()
+KCCWindow = QtGui.QMainWindow()
+KCCUI = KCC_gui.KCCGUI(KCCAplication, KCCWindow)
 if len(sys.argv) > 1:
-    GUI.handleMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
-sys.exit(APP.exec_())
+    KCCUI.handleMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
+sys.exit(KCCAplication.exec_())

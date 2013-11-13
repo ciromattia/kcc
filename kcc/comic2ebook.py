@@ -28,6 +28,7 @@ import sys
 import re
 import stat
 import string
+import unicodedata
 from tempfile import mkdtemp
 from shutil import move, copyfile, copytree, rmtree, make_archive
 from optparse import OptionParser, OptionGroup
@@ -42,7 +43,6 @@ import comic2panel
 import image
 import cbxarchive
 import pdfjpgextract
-import unicodedata
 
 
 def buildHTML(path, imgfile):
