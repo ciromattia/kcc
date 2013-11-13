@@ -44,6 +44,14 @@ try:
         exit(1)
 except ImportError:
     print "ERROR: Pillow is not installed!"
+    if sys.platform.startswith('linux'):
+        #noinspection PyUnresolvedReferences
+        import Tkinter
+        #noinspection PyUnresolvedReferences
+        import tkMessageBox
+        importRoot = Tkinter.Tk()
+        importRoot.withdraw()
+        tkMessageBox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
     exit(1)
 try:
     from PyQt4 import QtCore
