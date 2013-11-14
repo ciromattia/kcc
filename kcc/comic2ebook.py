@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
@@ -18,7 +18,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
-__version__ = '3.6'
+__version__ = '4.0'
 __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
@@ -35,14 +35,15 @@ from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, freeze_support
 from xml.dom.minidom import parse
 from uuid import uuid4
+from slugify import slugify
 try:
     from PyQt4 import QtCore
 except ImportError:
     QtCore = None
-import comic2panel
-import image
-import cbxarchive
-import pdfjpgextract
+from . import comic2panel
+from . import image
+from . import cbxarchive
+from . import pdfjpgextract
 
 
 def buildHTML(path, imgfile):
@@ -172,7 +173,6 @@ def buildHTML(path, imgfile):
 
 def buildNCX(dstdir, title, chapters):
     options.uuid = str(uuid4())
-    options.uuid = options.uuid.encode('utf-8')
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
     f = open(ncxfile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
@@ -186,7 +186,7 @@ def buildNCX(dstdir, title, chapters):
                   "<meta name=\"dtb:maxPageNumber\" content=\"0\"/>\n",
                   "<meta name=\"generated\" content=\"true\"/>\n",
                   "</head>\n",
-                  "<docTitle><text>", title.encode('utf-8'), "</text></docTitle>\n",
+                  "<docTitle><text>", title, "</text></docTitle>\n",
                   "<navMap>"
                   ])
     for chapter in chapters:
@@ -195,7 +195,7 @@ def buildNCX(dstdir, title, chapters):
             title = os.path.basename(folder)
         filename = getImageFileName(os.path.join(folder, chapter[1]))
         f.write("<navPoint id=\"" + folder.replace('/', '_').replace('\\', '_') + "\"><navLabel><text>"
-                + title.encode('utf-8') + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/")
+                + title + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/")
                 + ".html\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
@@ -216,11 +216,11 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "xmlns=\"http://www.idpf.org/2007/opf\">\n",
                   "<metadata xmlns:opf=\"http://www.idpf.org/2007/opf\" ",
                   "xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n",
-                  "<dc:title>", title.encode('utf-8'), "</dc:title>\n",
+                  "<dc:title>", title, "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
                   "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n"])
     for author in options.authors:
-        f.writelines(["<dc:Creator>", author.encode('utf-8'), "</dc:Creator>\n"])
+        f.writelines(["<dc:Creator>", author, "</dc:Creator>\n"])
     f.writelines(["<meta name=\"generator\" content=\"KindleComicConverter-" + __version__ + "\"/>\n",
                   "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
                   "<meta name=\"region-mag\" content=\"true\"/>\n",
@@ -356,9 +356,9 @@ def fileImgProcess(work):
         dirpath = work[1]
         opt = work[2]
         if opt.verbose:
-            print "Optimizing " + afile + " for " + opt.profile
+            print("Optimizing " + afile + " for " + opt.profile)
         else:
-            print ".",
+            print(".", end=' ')
         img = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
         if opt.quality == 2:
             wipe = False
@@ -370,7 +370,7 @@ def fileImgProcess(work):
             split = img.splitPage(dirpath, opt.righttoleft, opt.rotate)
         if split is not None:
             if opt.verbose:
-                print "Splitted " + afile
+                print("Splitted " + afile)
             img0 = image.ComicPage(split[0], opt.profileData)
             applyImgOptimization(img0, opt)
             img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
@@ -394,7 +394,9 @@ def fileImgProcess(work):
                     img2.rotated = True
                 applyImgOptimization(img2, opt, 0)
                 img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
-    except StandardError:
+    except Exception:
+        import traceback
+        traceback.print_tb(sys.exc_info()[2])
         return str(sys.exc_info()[1])
 
 
@@ -565,7 +567,7 @@ def getWorkFolder(afile):
                 path = cbx.extract(workdir)
             except OSError:
                 rmtree(workdir, True)
-                print 'UnRAR/7za not found or file failed to extract!'
+                print('UnRAR/7za not found or file failed to extract!')
                 sys.exit(21)
         else:
             rmtree(workdir, True)
@@ -592,7 +594,7 @@ def checkComicInfo(path, originalPath):
     if os.path.exists(xmlPath):
         try:
             xml = parse(xmlPath)
-        except StandardError:
+        except Exception:
             os.remove(xmlPath)
             return
         options.authors = []
@@ -628,18 +630,14 @@ def checkComicInfo(path, originalPath):
         os.remove(xmlPath)
 
 
-def slugify(value):
-    # Normalizes string, converts to lowercase, removes non-alpha characters and converts spaces to hyphens.
-    if isinstance(value, str):
-        #noinspection PyArgumentList
-        value = unicodedata.normalize('NFKD', unicode(value, 'latin1')).encode('ascii', 'ignore')
-    elif isinstance(value, unicode):
-        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = re.sub('[^\w\s\.-]', '', value).strip().lower()
-    value = re.sub('[-\.\s]+', '-', value)
-    value = re.sub(r'([0-9]+)', r'00000\1', value)
-    value = re.sub(r'0*([0-9]{6,})', r'\1', value)
-    return value
+#def slugify(value):
+#    # Normalizes string, converts to lowercase, removes non-alpha characters and converts spaces to hyphens.
+#    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+#    value = re.sub('[^\w\s\.-]', '', value).strip().lower()
+#    value = re.sub('[-\.\s]+', '-', value)
+#    value = re.sub(r'([0-9]+)', r'00000\1', value)
+#    value = re.sub(r'0*([0-9]{6,})', r'\1', value)
+#    return value
 
 
 def sanitizeTree(filetree):
@@ -775,7 +773,7 @@ def preSplitDirectory(path):
             mode = 0
         else:
             if filesNumber > 0:
-                print '\nWARNING: Automatic output splitting failed.'
+                print('\nWARNING: Automatic output splitting failed.')
                 if GUI:
                     GUI.emit(QtCore.SIGNAL("addMessage"), 'Automatic output splitting failed. <a href='
                                                           '"https://github.com/ciromattia/kcc/wiki'
@@ -790,7 +788,7 @@ def preSplitDirectory(path):
                     if len(dirs) != 0:
                         detectedSubSubdirectories = True
                     elif len(dirs) == 0 and detectedSubSubdirectories:
-                        print '\nWARNING: Automatic output splitting failed.'
+                        print('\nWARNING: Automatic output splitting failed.')
                         if GUI:
                             GUI.emit(QtCore.SIGNAL("addMessage"), 'Automatic output splitting failed. <a href='
                                                                   '"https://github.com/ciromattia/kcc/wiki'
@@ -807,7 +805,7 @@ def preSplitDirectory(path):
                 # One level of subdirectories
                 mode = 1
             if detectedFilesInSubdirectories and detectedSubSubdirectories:
-                print '\nWARNING: Automatic output splitting failed.'
+                print('\nWARNING: Automatic output splitting failed.')
                 if GUI:
                     GUI.emit(QtCore.SIGNAL("addMessage"), 'Automatic output splitting failed. <a href='
                                                           '"https://github.com/ciromattia/kcc/wiki'
@@ -827,12 +825,12 @@ def preSplitDirectory(path):
 
 
 def Copyright():
-    print ('comic2ebook v%(__version__)s. '
-           'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals())
+    print(('comic2ebook v%(__version__)s. '
+           'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
 
 
 def Usage():
-    print "Generates EPUB/CBZ comic ebook from a bunch of images."
+    print("Generates EPUB/CBZ comic ebook from a bunch of images.")
     parser.print_help()
 
 
@@ -916,7 +914,7 @@ def main(argv=None, qtGUI=None):
         else:
             comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', path], qtGUI)
     if options.imgproc:
-        print "\nProcessing images..."
+        print("\nProcessing images...")
         if GUI:
             GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Processing images')
         dirImgProcess(path + "/OEBPS/Images/")
@@ -943,14 +941,14 @@ def main(argv=None, qtGUI=None):
             options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
         if options.cbzoutput:
             # if CBZ output wanted, compress all images and return filepath
-            print "\nCreating CBZ file..."
+            print("\nCreating CBZ file...")
             if len(tomes) > 1:
                 filepath.append(getOutputFilename(args[0], options.output, '.cbz', ' ' + str(tomeNumber)))
             else:
                 filepath.append(getOutputFilename(args[0], options.output, '.cbz', ''))
             make_archive(tome + '_comic', 'zip', tome + '/OEBPS/Images')
         else:
-            print "\nCreating EPUB structure..."
+            print("\nCreating EPUB structure...")
             genEpubStruct(tome)
             # actually zip the ePub
             if len(tomes) > 1:
@@ -1017,7 +1015,7 @@ def checkOptions():
         options.quality = 0
     # Kindle for Android profile require target resolution.
     if options.profile == 'KFA' and (options.customwidth == 0 or options.customheight == 0):
-        print "ERROR: Kindle for Android profile require --customwidth and --customheight options!"
+        print("ERROR: Kindle for Android profile require --customwidth and --customheight options!")
         sys.exit(1)
     # Override profile data
     if options.customwidth != 0 or options.customheight != 0:

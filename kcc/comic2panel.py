@@ -18,7 +18,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
-__version__ = '3.6'
+__version__ = '4.0'
 __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
@@ -32,26 +32,26 @@ try:
     #noinspection PyUnresolvedReferences
     from PIL import Image, ImageStat
     if tuple(map(int, ('2.2.1'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
-        print "ERROR: Pillow 2.2.1 or newer is required!"
+        print("ERROR: Pillow 2.2.1 or newer is required!")
         if sys.platform.startswith('linux'):
             #noinspection PyUnresolvedReferences
-            import Tkinter
+            import tkinter
             #noinspection PyUnresolvedReferences
-            import tkMessageBox
-            importRoot = Tkinter.Tk()
+            import tkinter.messagebox
+            importRoot = tkinter.Tk()
             importRoot.withdraw()
-            tkMessageBox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
+            tkinter.messagebox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
         exit(1)
 except ImportError:
-    print "ERROR: Pillow is not installed!"
+    print("ERROR: Pillow is not installed!")
     if sys.platform.startswith('linux'):
         #noinspection PyUnresolvedReferences
-        import Tkinter
+        import tkinter
         #noinspection PyUnresolvedReferences
-        import tkMessageBox
-        importRoot = Tkinter.Tk()
+        import tkinter.messagebox
+        importRoot = tkinter.Tk()
         importRoot.withdraw()
-        tkMessageBox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
+        tkinter.messagebox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
     exit(1)
 try:
     from PyQt4 import QtCore
@@ -118,7 +118,7 @@ def splitImage(work):
         # Harcoded opttions
         threshold = 1.0
         delta = 15
-        print ".",
+        print(".", end=' ')
         fileExpanded = os.path.splitext(name)
         filePath = os.path.join(path, name)
         # Detect corrupted files
@@ -210,13 +210,13 @@ def splitImage(work):
                                               str(pageNumber) + '.png'), 'PNG')
                     pageNumber += 1
             os.remove(filePath)
-    except StandardError:
+    except Exception:
         return str(sys.exc_info()[1])
 
 
 def Copyright():
-    print ('comic2panel v%(__version__)s. '
-           'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals())
+    print(('comic2panel v%(__version__)s. '
+           'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
 
 
 def main(argv=None, qtGUI=None):
@@ -245,7 +245,7 @@ def main(argv=None, qtGUI=None):
     if options.height > 0:
         options.sourceDir = args[0]
         options.targetDir = args[0] + "-Splitted"
-        print "\nSplitting images..."
+        print("\nSplitting images...")
         if os.path.isdir(options.sourceDir):
             rmtree(options.targetDir, True)
             copytree(options.sourceDir, options.targetDir)

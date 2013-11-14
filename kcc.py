@@ -18,7 +18,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '3.6'
+__version__ = '4.0'
 __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
@@ -29,13 +29,13 @@ try:
     #noinspection PyUnresolvedReferences
     from PyQt4 import QtCore, QtGui, QtNetwork
 except ImportError:
-    print "ERROR: PyQT4 is not installed!"
+    print("ERROR: PyQT4 is not installed!")
     if sys.platform.startswith('linux'):
-        import Tkinter
-        import tkMessageBox
-        importRoot = Tkinter.Tk()
+        import tkinter
+        import tkinter.messagebox
+        importRoot = tkinter.Tk()
         importRoot.withdraw()
-        tkMessageBox.showerror("KCC - Error", "PyQT4 is not installed!")
+        tkinter.messagebox.showerror("KCC - Error", "PyQT4 is not installed!")
     exit(1)
 from kcc import KCC_gui
 from multiprocessing import freeze_support

@@ -26,26 +26,26 @@ try:
     # noinspection PyUnresolvedReferences
     from PIL import Image, ImageOps, ImageStat, ImageChops
     if tuple(map(int, ('2.2.1'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
-        print "ERROR: Pillow 2.2.1 or newer is required!"
+        print("ERROR: Pillow 2.2.1 or newer is required!")
         if platform.startswith('linux'):
             #noinspection PyUnresolvedReferences
-            import Tkinter
+            import tkinter
             #noinspection PyUnresolvedReferences
-            import tkMessageBox
-            importRoot = Tkinter.Tk()
+            import tkinter.messagebox
+            importRoot = tkinter.Tk()
             importRoot.withdraw()
-            tkMessageBox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
+            tkinter.messagebox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
         exit(1)
 except ImportError:
-    print "ERROR: Pillow is not installed!"
+    print("ERROR: Pillow is not installed!")
     if platform.startswith('linux'):
         #noinspection PyUnresolvedReferences
-        import Tkinter
+        import tkinter
         #noinspection PyUnresolvedReferences
-        import tkMessageBox
-        importRoot = Tkinter.Tk()
+        import tkinter.messagebox
+        importRoot = tkinter.Tk()
         importRoot.withdraw()
-        tkMessageBox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
+        tkinter.messagebox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
     exit(1)
 
 
@@ -287,10 +287,10 @@ class ComicPage:
         ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-            self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
+            self.image = ImageOps.expand(self.image, border=(int(diff / 2), 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
-            self.image = ImageOps.expand(self.image, border=(0, diff / 2), fill=fill)
+            self.image = ImageOps.expand(self.image, border=(0, int(diff / 2)), fill=fill)
         self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
         if generateBorder:
             if fill == 'white':

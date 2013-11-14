@@ -21,7 +21,7 @@ __docformat__ = 'restructuredtext en'
 
 import os
 import zipfile
-import rarfile
+from . import rarfile
 import locale
 from subprocess import STDOUT, PIPE
 from psutil import Popen
@@ -52,7 +52,7 @@ class CBxArchive:
             elif f.endswith('/'):
                 try:
                     os.makedirs(os.path.join(targetdir, f))
-                except StandardError:
+                except Exception:
                     pass  # the dir exists so we are going to extract the images only.
             else:
                 filelist.append(f)
@@ -67,7 +67,7 @@ class CBxArchive:
             elif f.endswith('/'):
                 try:
                     os.makedirs(os.path.join(targetdir, f))
-                except StandardError:
+                except Exception:
                     pass  # the dir exists so we are going to extract the images only.
             else:
                 filelist.append(f.encode(locale.getpreferredencoding()))
@@ -85,7 +85,7 @@ class CBxArchive:
             raise OSError
 
     def extract(self, targetdir):
-        print "\n" + targetdir + "\n"
+        print("\n" + targetdir + "\n")
         if self.compressor == 'rar':
             self.extractCBR(targetdir)
         elif self.compressor == 'zip':

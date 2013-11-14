@@ -11,7 +11,7 @@ Usage (Windows):
 from sys import platform
 
 NAME = "KindleComicConverter"
-VERSION = "3.6"
+VERSION = "4.0"
 MAIN = "kcc.py"
 
 if platform == "darwin":
@@ -72,7 +72,7 @@ elif platform == "win32":
                                 appendScriptToLibrary=False,
                                 compress=True)])
 else:
-    print 'Please use setup.sh to build Linux package.'
+    print('Please use setup.sh to build Linux package.')
     exit()
 
 #noinspection PyUnboundLocalVariable
@@ -91,5 +91,5 @@ setup(
 
 if platform == "darwin":
     from os import chmod
-    chmod('dist/' + NAME + '.app/Contents/Resources/unrar', 0777)
-    chmod('dist/' + NAME + '.app/Contents/Resources/7za', 0777)
+    chmod('dist/' + NAME + '.app/Contents/Resources/unrar', 0o777)
+    chmod('dist/' + NAME + '.app/Contents/Resources/7za', 0o777)
