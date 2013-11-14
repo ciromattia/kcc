@@ -17,7 +17,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '3.6'
+__version__ = '4.0'
 __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
@@ -25,39 +25,38 @@ __docformat__ = 'restructuredtext en'
 import os
 import sys
 import traceback
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import socket
-import comic2ebook
-import kindlesplit
-from string import split
+from . import comic2ebook
+from . import kindlesplit
 from time import sleep
 from shutil import move
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-from SocketServer import ThreadingMixIn
-from image import ProfileData
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from socketserver import ThreadingMixIn
+from .image import ProfileData
 from subprocess import STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
 from xml.dom.minidom import parse
-from HTMLParser import HTMLParser
-from KCC_rc_web import WebContent
+from html.parser import HTMLParser
+from .KCC_rc_web import WebContent
 try:
     #noinspection PyUnresolvedReferences
     from psutil import TOTAL_PHYMEM, Popen
 except ImportError:
-    print "ERROR: Psutil is not installed!"
+    print("ERROR: Psutil is not installed!")
     if sys.platform.startswith('linux'):
-        import Tkinter
-        import tkMessageBox
-        importRoot = Tkinter.Tk()
+        import tkinter
+        import tkinter.messagebox
+        importRoot = tkinter.Tk()
         importRoot.withdraw()
-        tkMessageBox.showerror("KCC - Error", "Psutil is not installed!")
+        tkinter.messagebox.showerror("KCC - Error", "Psutil is not installed!")
     exit(1)
 if sys.platform.startswith('darwin'):
-    import KCC_ui_osx as KCC_ui
+    from . import KCC_ui_osx as KCC_ui
 elif sys.platform.startswith('linux'):
-    import KCC_ui_linux as KCC_ui
+    from . import KCC_ui_linux as KCC_ui
 else:
-    import KCC_ui
+    from . import KCC_ui
 
 
 class Icons:
@@ -130,8 +129,8 @@ class WebServerHandler(BaseHTTPRequestHandler):
                                  '<p style="font-size:50px">- <img style="vertical-align: middle" '
                                  'alt="KCC Logo" src="' + GUI.webContent.logo + '" /> -</p>\n')
                 if len(GUI.completedWork) > 0 and not GUI.conversionAlive:
-                    for key in sorted(GUI.completedWork.iterkeys()):
-                        self.wfile.write('<p><a href="' + key + '">' + split(key, '.')[0] + '</a></p>\n')
+                    for key in sorted(GUI.completedWork.keys()):
+                        self.wfile.write('<p><a href="' + key + '">' + key.split('.')[0] + '</a></p>\n')
                 else:
                     self.wfile.write('<p style="font-weight: bold">No downloads are available.<br/>'
                                      'Convert some files and refresh this page.</p>\n')
@@ -139,7 +138,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
                                  '</body>\n'
                                  '</html>\n')
             elif sendReply:
-                outputFile = GUI.completedWork[urllib2.unquote(self.path[1:])].decode('utf-8')
+                outputFile = GUI.completedWork[urllib.parse.unquote(self.path[1:])].decode('utf-8')
                 fp = open(outputFile, 'rb')
                 self.send_response(200)
                 self.send_header('Content-type', mimetype)
@@ -173,7 +172,7 @@ class WebServerThread(QtCore.QThread):
         try:
             # Sweet cross-platform one-liner to get LAN ip address
             lIP = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
-        except StandardError:
+        except Exception:
             # Sadly it can fail on some Linux configurations
             lIP = None
         try:
@@ -186,7 +185,7 @@ class WebServerThread(QtCore.QThread):
                 self.emit(QtCore.SIGNAL("addMessage"), '<b>Content server</b> started on port 4242.', 'info')
             while self.running:
                 self.server.handle_request()
-        except StandardError:
+        except Exception:
             self.emit(QtCore.SIGNAL("addMessage"), '<b>Content server</b> failed to start!', 'error')
 
     def stop(self):
@@ -202,9 +201,9 @@ class VersionThread(QtCore.QThread):
 
     def run(self):
         try:
-            XML = urllib2.urlopen('http://kcc.vulturis.eu/Version.php')
+            XML = urllib.request.urlopen('http://kcc.vulturis.eu/Version.php')
             XML = parse(XML)
-        except StandardError:
+        except Exception:
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
         if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
@@ -253,9 +252,10 @@ class KindleGenThread(QtCore.QRunnable):
         kindlegenError = ''
         try:
             if os.path.getsize(self.work) < 367001600:
-                output = Popen('kindlegen -locale en "' + self.work.encode(sys.getfilesystemencoding()) + '"',
-                               stdout=PIPE, stderr=STDOUT, shell=True)
+                output = Popen('kindlegen -locale en "' + self.work.encode(sys.getfilesystemencoding()).decode('utf-8')
+                               + '"', stdout=PIPE, stderr=STDOUT, shell=True)
                 for line in output.stdout:
+                    line = line.decode('utf-8')
                     # ERROR: Generic error
                     if "Error(" in line:
                         kindlegenErrorCode = 1
@@ -269,9 +269,10 @@ class KindleGenThread(QtCore.QRunnable):
                 # ERROR: EPUB too big
                 kindlegenErrorCode = 23026
             self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
-        except StandardError:
-            # ERROR: Unknown generic error
+        except Exception as err:
+            # ERROR: KCC unknown generic error
             kindlegenErrorCode = 1
+            kindlegenError = format(err)
             self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
 
 
@@ -297,8 +298,9 @@ class KindleUnpackThread(QtCore.QRunnable):
             mobisplit = kindlesplit.mobi_split(mobiPath + '_toclean', newKindle)
             open(mobiPath, 'wb').write(mobisplit.getResult())
             self.signals.result.emit([True])
-        except StandardError:
-            self.signals.result.emit([False])
+        except Exception as err:
+            traceback.print_exc()
+            self.signals.result.emit([False, format(err)])
 
 
 class WorkerThread(QtCore.QThread):
@@ -385,7 +387,7 @@ class WorkerThread(QtCore.QThread):
         for i in range(GUI.JobList.count()):
             # Make sure that we don't consider any system message as job to do
             if GUI.JobList.item(i).icon().isNull():
-                currentJobs.append(unicode(GUI.JobList.item(i).text()))
+                currentJobs.append(str(GUI.JobList.item(i).text()))
         GUI.JobList.clear()
         for job in currentJobs:
             sleep(0.5)
@@ -466,42 +468,45 @@ class WorkerThread(QtCore.QThread):
                     if self.kindlegenErrorCode[0] == 0:
                         GUI.progress.content = ''
                         self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI files... <b>Done!</b>', 'info', True)
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files', 'info')
-                        GUI.progress.content = 'Cleaning MOBI files'
-                        self.workerOutput = []
-                        # Multithreading KindleUnpack in current form is a waste of resources.
-                        # Unless we higly optimise KindleUnpack or drop 32bit support this will not change.
-                        self.pool.setMaxThreadCount(1)
-                        for item in outputPath:
-                            worker = KindleUnpackThread([item, profile])
-                            worker.signals.result.connect(self.addResult)
-                            self.pool.start(worker)
-                        self.pool.waitForDone()
-                        sleep(0.5)
-                        for success in self.workerOutput:
-                            if not success:
-                                self.errors = True
-                                break
-                        if not self.errors:
-                            for item in outputPath:
-                                GUI.progress.content = ''
-                                mobiPath = item.replace('.epub', '.mobi')
-                                os.remove(mobiPath + '_toclean')
-                                GUI.completedWork[os.path.basename(mobiPath).encode('utf-8')] = \
-                                    mobiPath.encode('utf-8')
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files... <b>Done!</b>', 'info',
-                                          True)
-                        else:
-                            GUI.progress.content = ''
-                            for item in outputPath:
-                                mobiPath = item.replace('.epub', '.mobi')
-                                if os.path.exists(mobiPath):
-                                    os.remove(mobiPath)
-                                if os.path.exists(mobiPath + '_toclean'):
-                                    os.remove(mobiPath + '_toclean')
-                            self.emit(QtCore.SIGNAL("addMessage"), 'KindleUnpack failed to clean MOBI file!', 'error')
-                            self.emit(QtCore.SIGNAL("addTrayMessage"), 'KindleUnpack failed to clean MOBI file!',
-                                      'Critical')
+                        self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files is currently disabled in this branch', 'info')
+                        GUI.progress.content = 'Cleaning MOBI files is currently disabled in this branch'
+                        #self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files', 'info')
+                        #GUI.progress.content = 'Cleaning MOBI files'
+                        #self.workerOutput = []
+                        ## Multithreading KindleUnpack in current form is a waste of resources.
+                        ## Unless we higly optimise KindleUnpack or drop 32bit support this will not change.
+                        #self.pool.setMaxThreadCount(1)
+                        #for item in outputPath:
+                        #    worker = KindleUnpackThread([item, profile])
+                        #    worker.signals.result.connect(self.addResult)
+                        #    self.pool.start(worker)
+                        #self.pool.waitForDone()
+                        #sleep(0.5)
+                        #for success in self.workerOutput:
+                        #    if not success[0]:
+                        #        self.errors = True
+                        #        print(success[1])
+                        #        break
+                        #if not self.errors:
+                        #    for item in outputPath:
+                        #        GUI.progress.content = ''
+                        #        mobiPath = item.replace('.epub', '.mobi')
+                        #        os.remove(mobiPath + '_toclean')
+                        #        GUI.completedWork[os.path.basename(mobiPath).encode('utf-8')] = \
+                        #            mobiPath.encode('utf-8')
+                        #        self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files... <b>Done!</b>', 'info',
+                        #                  True)
+                        #else:
+                        #    GUI.progress.content = ''
+                        #    for item in outputPath:
+                        #        mobiPath = item.replace('.epub', '.mobi')
+                        #        if os.path.exists(mobiPath):
+                        #            os.remove(mobiPath)
+                        #        if os.path.exists(mobiPath + '_toclean'):
+                        #            os.remove(mobiPath + '_toclean')
+                        #    self.emit(QtCore.SIGNAL("addMessage"), 'KindleUnpack failed to clean MOBI file!', 'error')
+                        #    self.emit(QtCore.SIGNAL("addTrayMessage"), 'KindleUnpack failed to clean MOBI file!',
+                        #              'Critical')
                     else:
                         GUI.progress.content = ''
                         epubSize = (os.path.getsize(self.kindlegenErrorCode[2]))/1024/1024
@@ -571,10 +576,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
         else:
             dnames = ""
         for dname in dnames:
-            if unicode(dname) != "":
+            if str(dname) != "":
                 if sys.platform == 'win32':
                     dname = dname.replace('/', '\\')
-                self.lastPath = os.path.abspath(os.path.join(unicode(dname), os.pardir))
+                self.lastPath = os.path.abspath(os.path.join(str(dname), os.pardir))
                 GUI.JobList.addItem(dname)
         MW.setFocus()
 
@@ -597,8 +602,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 fnames = QtGui.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
                                                             '*.cbz *.zip *.pdf')
         for fname in fnames:
-            if unicode(fname) != "":
-                self.lastPath = os.path.abspath(os.path.join(unicode(fname), os.pardir))
+            if str(fname) != "":
+                self.lastPath = os.path.abspath(os.path.join(str(fname), os.pardir))
                 GUI.JobList.addItem(fname)
 
     def clearJobs(self):
@@ -884,19 +889,19 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.settings.setValue('currentFormat', GUI.FormatBox.currentIndex())
         self.settings.setValue('currentMode', self.currentMode)
         self.settings.setValue('firstStart', False)
-        self.settings.setValue('options', QtCore.QVariant({'MangaBox': GUI.MangaBox.checkState(),
-                                                           'RotateBox': GUI.RotateBox.checkState(),
-                                                           'QualityBox': GUI.QualityBox.checkState(),
-                                                           'ProcessingBox': GUI.ProcessingBox.checkState(),
-                                                           'UpscaleBox': GUI.UpscaleBox.checkState(),
-                                                           'NoRotateBox': GUI.NoRotateBox.checkState(),
-                                                           'BorderBox': GUI.BorderBox.checkState(),
-                                                           'WebtoonBox': GUI.WebtoonBox.checkState(),
-                                                           'NoDitheringBox': GUI.NoDitheringBox.checkState(),
-                                                           'ColorBox': GUI.ColorBox.checkState(),
-                                                           'customWidth': GUI.customWidth.text(),
-                                                           'customHeight': GUI.customHeight.text(),
-                                                           'GammaSlider': float(self.GammaValue)*100}))
+        self.settings.setValue('options', {'MangaBox': GUI.MangaBox.checkState(),
+                                           'RotateBox': GUI.RotateBox.checkState(),
+                                           'QualityBox': GUI.QualityBox.checkState(),
+                                           'ProcessingBox': GUI.ProcessingBox.checkState(),
+                                           'UpscaleBox': GUI.UpscaleBox.checkState(),
+                                           'NoRotateBox': GUI.NoRotateBox.checkState(),
+                                           'BorderBox': GUI.BorderBox.checkState(),
+                                           'WebtoonBox': GUI.WebtoonBox.checkState(),
+                                           'NoDitheringBox': GUI.NoDitheringBox.checkState(),
+                                           'ColorBox': GUI.ColorBox.checkState(),
+                                           'customWidth': GUI.customWidth.text(),
+                                           'customHeight': GUI.customHeight.text(),
+                                           'GammaSlider': float(self.GammaValue)*100})
         self.settings.sync()
 
     def handleMessage(self, message):
@@ -947,8 +952,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.currentMode = self.settings.value('currentMode', 1, type=int)
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.firstStart = self.settings.value('firstStart', True, type=bool)
-        self.options = self.settings.value('options', QtCore.QVariant({'GammaSlider': 0}))
-        self.options = self.options.toPyObject()
+        self.options = self.settings.value('options', {'GammaSlider': 0})
         self.worker = WorkerThread()
         self.versionCheck = VersionThread()
         self.contentServer = WebServerThread()
@@ -996,7 +1000,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
             formats = ['MOBI', 'EPUB', 'CBZ']
             versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
             for line in versionCheck.stdout:
-                if "Amazon kindlegen" in line:
+                line = line.decode("utf-8")
+                if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if tuple(map(int, (versionCheck.split(".")))) < tuple(map(int, ('2.9'.split(".")))):
                         self.addMessage('Your <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='

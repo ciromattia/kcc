@@ -63,7 +63,7 @@ class PdfJpgExtract:
 
             istart += startfix
             iend += endfix
-            print "JPG %d from %d to %d" % (njpg, istart, iend)
+            print("JPG %d from %d to %d" % (njpg, istart, iend))
             jpg = pdf[istart:iend]
             jpgfile = file(self.path + "/jpg%d.jpg" % njpg, "wb")
             jpgfile.write(jpg)

@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
 # Based on initial version of KindleUnpack. Copyright (C) 2009 Charles M. Hannum <root@ihack.net>
 # Improvements Copyright (C) 2009-2012 P. Durrant, K. Hendricks, S. Siebert, fandrieu, DiapDealer, nickredding
 # Copyright (C) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
@@ -105,8 +108,8 @@ def nullsection(datain, secno):  # make it zero-length without deleting it
         datalst.append('\0' * lpad)
     datalst.append(datain[zerosecstart: secstart])
     datalst.append(datain[secend:])
-    dataout = "".join(datalst)
-    return dataout
+    dataout = "".join(str(datalst)[1:-1])
+    return dataout.encode('utf-8')
 
 
 def deletesectionrange(datain, firstsec, lastsec):  # delete a range of sections
@@ -135,8 +138,8 @@ def deletesectionrange(datain, firstsec, lastsec):  # delete a range of sections
         datalst.append('\0' * lpad)
     datalst.append(datain[zerosecstart:firstsecstart])
     datalst.append(datain[lastsecend:])
-    dataout = "".join(datalst)
-    return dataout
+    dataout = "".join(str(datalst)[1:-1])
+    return dataout.encode('utf-8')
 
 
 def insertsection(datain, secno, secdata):  # insert a new section
@@ -166,13 +169,14 @@ def insertsection(datain, secno, secdata):  # insert a new section
     datalst.append(datain[zerosecstart:secstart])
     datalst.append(secdata)
     datalst.append(datain[secstart:])
-    dataout = "".join(datalst)
-    return dataout
+    dataout = "".join(str(datalst)[1:-1])
+    return dataout.encode('utf-8')
 
 
 def insertsectionrange(sectionsource, firstsec, lastsec, sectiontarget, targetsec):  # insert a range of sections
     dataout = sectiontarget
     for idx in range(lastsec, firstsec-1, -1):
+        print(dataout)
         dataout = insertsection(dataout, targetsec, readsection(sectionsource, idx))
     return dataout
 
@@ -382,3 +386,9 @@ class mobi_split:
 
     def getResult(self):
         return self.result_file
+
+
+if __name__ == "__main__":
+    import sys
+    mobi_split(sys.argv[1], False)
+    sys.exit(0)
