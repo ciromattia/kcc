@@ -1019,6 +1019,9 @@ def checkOptions():
     if options.profile == 'KFA' and (options.customwidth == 0 or options.customheight == 0):
         print "ERROR: Kindle for Android profile require --customwidth and --customheight options!"
         sys.exit(1)
+    # CBZ files on Kindle DX/DXG support higher resolution
+    if options.profile == 'KDX' and options.cbzoutput:
+        options.customheight = 1200
     # Override profile data
     if options.customwidth != 0 or options.customheight != 0:
         X = image.ProfileData.Profiles[options.profile][1][0]
