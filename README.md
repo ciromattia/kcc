@@ -20,7 +20,8 @@ If you find **KCC** valuable you can consider donating to the authors:
 You can find the latest released binary at the following links:
 - **Windows:** [http://kcc.vulturis.eu/Windows/](http://kcc.vulturis.eu/Windows/)
 - **Linux:** [http://kcc.vulturis.eu/Linux/](http://kcc.vulturis.eu/Linux/)
-- **OS X:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
+- **OS X (10.8 or later):** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
+- **OS X (10.7 or earlier)** [https://dl.dropboxusercontent.com/u/16806101/KindleComicConverter_3.6-rc1_osx10.7.zip](https://dl.dropboxusercontent.com/u/16806101/KindleComicConverter_3.6-rc1_osx10.7.zip)
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following file types:
