@@ -15,6 +15,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 * Ciro Mattia Gonano 
   * PayPal: [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D8WNYNPBGDAS2)
+  * Flattr: [![Flattr this](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/2260449/ciromattiakcc-on-GitHub)
 * Paweł Jastrzębski
   * PayPal: [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
   * BitCoin: [1W15wwqsfd7wbaZ6wvSJf1LW1bz6q5L8b](bitcoin:1W15wwqsfd7wbaZ6wvSJf1LW1bz6q5L8b?label=KCC)
