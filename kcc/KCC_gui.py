@@ -541,6 +541,7 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
             self.activated.connect(self.catchClicks)
 
     def catchClicks(self):
+        MW.showNormal()
         MW.raise_()
         MW.activateWindow()
 
