@@ -214,6 +214,8 @@ class ComicPage:
     def optimizeImage(self, gamma):
         if gamma < 0.1:
             gamma = self.gamma
+            if self.gamma != 1.0 and self.isImageColor(self.image):
+                gamma = 1.0
         if gamma == 1.0:
             self.image = ImageOps.autocontrast(self.image)
         else:
@@ -520,3 +522,28 @@ class ComicPage:
                 self.fill = 'black'
             else:
                 self.fill = 'white'
+
+    def isImageColor(self, image):
+        v = ImageStat.Stat(image).var
+        isMonochromatic = reduce(lambda x, y: x and y < 0.005, v, True)
+        if isMonochromatic:
+            # Monochromatic
+            return False
+        else:
+            if len(v) == 3:
+                maxmin = abs(max(v) - min(v))
+                if maxmin > 1000:
+                    # Color
+                    return True
+                elif maxmin > 100:
+                    # Probably color
+                    return True
+                else:
+                    # Grayscale
+                    return False
+            elif len(v) == 1:
+                # Black and white
+                return False
+            else:
+                # Detection failed
+                return False

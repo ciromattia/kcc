@@ -54,7 +54,6 @@ You can find the latest released binary at the following links:
 * Read tooltip of _High/Ultra quality_ option. There are many important informations there.
 * When converting images smaller than device resolution remember to enable upscaling.
 * Panel View (auto zooming every part of page) can be disabled directly on Kindle. There is no KCC option to do that.
-* If you're converting color images and the end result is not satisfactory, experiment with gamma correction option (check 1.0 setting first).
 * Check our [wiki](https://github.com/ciromattia/kcc/wiki/Other-devices) for a list of tested Non-Kindle E-Readers.
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.

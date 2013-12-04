@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-OSX.ui'
 #
-# Created: Tue Nov 12 14:31:59 2013
+# Created: Wed Dec 04 18:28:04 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -392,9 +392,7 @@ class Ui_KCC(object):
         self.RotateBox.setText(_translate("KCC", "Horizontal mode", None))
         self.BasicModeButton.setText(_translate("KCC", "Basic", None))
         self.AdvModeButton.setText(_translate("KCC", "Advanced", None))
-        self.GammaLabel.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt;\">When converting color images setting this option to 1.0 </span><span style=\" font-size:12pt; font-weight:600;\">might</span><span style=\" font-size:12pt;\"> improve readability.</span></p></body></html>", None))
         self.GammaLabel.setText(_translate("KCC", "Gamma: Auto", None))
-        self.GammaSlider.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt;\">When converting color images setting this option to 1.0 </span><span style=\" font-size:12pt; font-weight:600;\">might</span><span style=\" font-size:12pt;\"> improve readability.</span></p></body></html>", None))
         self.ColorBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt;\">Do not convert images to grayscale.</span></p></body></html>", None))
         self.ColorBox.setText(_translate("KCC", "Color mode", None))
         self.wLabel.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-size:12pt;\">Resolution of target device.</span></p></body></html>", None))
