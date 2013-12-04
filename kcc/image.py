@@ -201,7 +201,8 @@ class ComicPage:
             if self.noVPV:
                 suffix += "_kccnv"
             if self.border:
-                suffix += "_kccx" + str(self.border[0]) + "_kccy" + str(self.border[1])
+                suffix += "_kccxl" + str(self.border[0]) + "_kccyu" + str(self.border[1]) + "_kccxr" +\
+                          str(self.border[2]) + "_kccyd" + str(self.border[3])
             if forcepng:
                 self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"), "PNG",
                                 optimize=1)
@@ -232,6 +233,23 @@ class ComicPage:
         # Quantize is deprecated but new function call it internally anyway...
         self.image = self.image.quantize(palette=palImg)
 
+    def calculateBorder(self, sourceImage):
+        if self.fill == 'white':
+            border = ImageOps.invert(sourceImage.image).getbbox()
+        else:
+            border = sourceImage.image.getbbox()
+        if border is not None:
+            if border[2]-border[0] < self.size[0]:
+                self.noHPV = True
+            if border[3]-border[1] < self.size[1]:
+                self.noVPV = True
+            self.border = [border[0], border[1],
+                           sourceImage.image.size[0] - border[2], sourceImage.image.size[1] - border[3]]
+        else:
+            self.border = [0, 0]
+            self.noHPV = True
+            self.noVPV = True
+
     def resizeImage(self, upscale=False, stretch=False, bordersColor=None, qualityMode=0):
         # High-quality downscaling filter
         method = Image.ANTIALIAS
@@ -239,28 +257,17 @@ class ComicPage:
             fill = bordersColor
         else:
             fill = self.fill
+        # Set target size
         if qualityMode == 0:
             size = (self.size[0], self.size[1])
-            generateBorder = True
-        elif qualityMode == 1:
-            size = (self.panelviewsize[0], self.panelviewsize[1])
-            generateBorder = True
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
-            generateBorder = False
-        # If image is smaller than screen and upscale is off - Just expand it
-        if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
+        # If image is smaller than target size and upscale is off - Just expand it by adding margins
+        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
             if not upscale:
-                borderw = (self.size[0] - self.image.size[0]) / 2
-                borderh = (self.size[1] - self.image.size[1]) / 2
+                borderw = (size[0] - self.image.size[0]) / 2
+                borderh = (size[1] - self.image.size[1]) / 2
                 self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
-                if generateBorder:
-                    if (self.image.size[0]-(2*borderw))*1.5 < self.size[0]:
-                        self.noHPV = True
-                    if (self.image.size[1]-(2*borderh))*1.5 < self.size[1]:
-                        self.noVPV = True
-                    self.border = [int(round(float(borderw)/float(self.image.size[0])*100, 2)*100*1.5),
-                                   int(round(float(borderh)/float(self.image.size[1])*100, 2)*100*1.5)]
                 return self.image
             else:
                 # Cubic spline interpolation in a 4x4 environment
@@ -268,25 +275,9 @@ class ComicPage:
         # If stretching is on - Resize without other considerations
         if stretch:
             self.image = self.image.resize(size, method)
-            if generateBorder:
-                if fill == 'white':
-                    border = ImageOps.invert(self.image).getbbox()
-                else:
-                    border = self.image.getbbox()
-                if border is not None:
-                    if (border[2]-border[0])*1.5 < self.size[0]:
-                        self.noHPV = True
-                    if (border[3]-border[1])*1.5 < self.size[1]:
-                        self.noVPV = True
-                    self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
-                                   int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
-                else:
-                    self.border = [0, 0]
-                    self.noHPV = True
-                    self.noVPV = True
             return self.image
         # Otherwise - Upscale/Downscale
-        ratioDev = float(self.size[0]) / float(self.size[1])
+        ratioDev = float(size[0]) / float(size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
             self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
@@ -294,22 +285,6 @@ class ComicPage:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
             self.image = ImageOps.expand(self.image, border=(0, diff / 2), fill=fill)
         self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
-        if generateBorder:
-            if fill == 'white':
-                border = ImageOps.invert(self.image).getbbox()
-            else:
-                border = self.image.getbbox()
-            if border is not None:
-                if (border[2]-border[0])*1.5 < self.size[0]:
-                    self.noHPV = True
-                if (border[3]-border[1])*1.5 < self.size[1]:
-                    self.noVPV = True
-                self.border = [int(round(float(border[0])/float(self.image.size[0])*100, 2)*100*1.5),
-                               int(round(float(border[1])/float(self.image.size[1])*100, 2)*100*1.5)]
-            else:
-                self.border = [0, 0]
-                self.noHPV = True
-                self.noVPV = True
         return self.image
 
     def splitPage(self, targetdir, righttoleft=False, rotate=False):
