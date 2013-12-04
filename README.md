@@ -13,14 +13,19 @@ _KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll
 ### Donations
 If you find **KCC** valuable you can consider donating to the authors:
 
-* Ciro Mattia Gonano [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D8WNYNPBGDAS2)
-* Paweł Jastrzębski [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
+* Ciro Mattia Gonano 
+  * PayPal: [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D8WNYNPBGDAS2)
+  * Flattr: [![Flattr this](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/2260449/ciromattiakcc-on-GitHub)
+* Paweł Jastrzębski
+  * PayPal: [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
+  * BitCoin: [1W15wwqsfd7wbaZ6wvSJf1LW1bz6q5L8b](bitcoin:1W15wwqsfd7wbaZ6wvSJf1LW1bz6q5L8b?label=KCC)
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
 - **Windows:** [http://kcc.vulturis.eu/Windows/](http://kcc.vulturis.eu/Windows/)
 - **Linux:** [http://kcc.vulturis.eu/Linux/](http://kcc.vulturis.eu/Linux/)
-- **OS X:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
+- **OS X (10.8 or later):** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
+- **OS X (10.7 or earlier):** [http://kcc.vulturis.eu/Old/OSX/KindleComicConverter_3.6-rc1_osx10.7.zip](http://kcc.vulturis.eu/Old/OSX/KindleComicConverter_3.6-rc1_osx10.7.zip)
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following file types:
