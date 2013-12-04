@@ -543,9 +543,6 @@
        <bold>false</bold>
       </font>
      </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;When converting color images setting this option to 1.0 &lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;might&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; improve readability.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
      <property name="text">
       <string>Gamma: Auto</string>
      </property>
@@ -566,9 +563,6 @@
      </property>
      <property name="focusPolicy">
       <enum>Qt::ClickFocus</enum>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;When converting color images setting this option to 1.0 &lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;might&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; improve readability.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="maximum">
       <number>500</number>

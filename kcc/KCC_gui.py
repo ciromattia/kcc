@@ -372,6 +372,7 @@ class WorkerThread(QtCore.QThread):
             if GUI.WebtoonBox.isChecked():
                 argv.append("--webtoon")
             if float(GUI.GammaValue) > 0.09:
+                # noinspection PyTypeChecker
                 argv.append("--gamma=" + GUI.GammaValue)
             if str(GUI.FormatBox.currentText()) == 'CBZ':
                 argv.append("--cbz-output")
@@ -715,7 +716,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.QualityBox.setChecked(False)
             GUI.MangaBox.setEnabled(False)
             GUI.MangaBox.setChecked(False)
-            self.addMessage('If images will be too dark after conversion: Set <i>Gamma</i> to 1.0.', 'info')
         else:
             if not GUI.ProcessingBox.isChecked():
                 GUI.NoRotateBox.setEnabled(True)

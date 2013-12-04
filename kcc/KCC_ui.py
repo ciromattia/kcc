@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Tue Nov 12 14:31:48 2013
+# Created: Wed Dec 04 18:28:13 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -305,9 +305,7 @@ class Ui_KCC(object):
         self.RotateBox.setText(_translate("KCC", "Horizontal mode", None))
         self.BasicModeButton.setText(_translate("KCC", "Basic", None))
         self.AdvModeButton.setText(_translate("KCC", "Advanced", None))
-        self.GammaLabel.setToolTip(_translate("KCC", "When converting color images setting this option to 1.0 MIGHT improve readability.", None))
         self.GammaLabel.setText(_translate("KCC", "Gamma: Auto", None))
-        self.GammaSlider.setToolTip(_translate("KCC", "<html><head/><body><p>When converting color images setting this option to 1.0 <span style=\" font-weight:600;\">might</span> improve readability.</p></body></html>", None))
         self.ColorBox.setToolTip(_translate("KCC", "Do not convert images to grayscale.", None))
         self.ColorBox.setText(_translate("KCC", "Color mode", None))
         self.wLabel.setToolTip(_translate("KCC", "Resolution of target device.", None))
