@@ -233,26 +233,34 @@ class ComicPage:
         # Quantize is deprecated but new function call it internally anyway...
         self.image = self.image.quantize(palette=palImg)
 
+    def calculateBorderPercent(self, x, img, isWidth):
+        if isWidth:
+            return int(round(float(x)/float(img.image.size[0]), 4) * 10000 * 1.5)
+        else:
+            return int(round(float(x)/float(img.image.size[1]), 4) * 10000 * 1.5)
+
     def calculateBorder(self, sourceImage):
         if self.fill == 'white':
             border = ImageOps.invert(sourceImage.image).getbbox()
         else:
             border = sourceImage.image.getbbox()
         if border is not None:
-            if border[2]-border[0] < self.size[0]:
+            self.border = [self.calculateBorderPercent(border[0], sourceImage, True),
+                           self.calculateBorderPercent(border[1], sourceImage, False),
+                           self.calculateBorderPercent((sourceImage.image.size[0] - border[2]), sourceImage, True),
+                           self.calculateBorderPercent((sourceImage.image.size[1] - border[3]), sourceImage, False)]
+            if int((border[2] - border[0]) * 1.5) < self.size[0]:
                 self.noHPV = True
-            if border[3]-border[1] < self.size[1]:
+                self.border[0] /= 2
+            if int((border[3] - border[1]) * 1.5) < self.size[1]:
                 self.noVPV = True
-            self.border = [border[0], border[1],
-                           sourceImage.image.size[0] - border[2], sourceImage.image.size[1] - border[3]]
+                self.border[1] /= 2
         else:
-            self.border = [0, 0]
+            self.border = [0, 0, 0, 0]
             self.noHPV = True
             self.noVPV = True
 
     def resizeImage(self, upscale=False, stretch=False, bordersColor=None, qualityMode=0):
-        # High-quality downscaling filter
-        method = Image.ANTIALIAS
         if bordersColor:
             fill = bordersColor
         else:
@@ -262,28 +270,32 @@ class ComicPage:
             size = (self.size[0], self.size[1])
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
-        # If image is smaller than target size and upscale is off - Just expand it by adding margins
-        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
-            if not upscale:
-                borderw = (size[0] - self.image.size[0]) / 2
-                borderh = (size[1] - self.image.size[1]) / 2
-                self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
-                return self.image
-            else:
-                # Cubic spline interpolation in a 4x4 environment
-                method = Image.BICUBIC
+        # If image is smaller than device resolution and upscale is off - Just expand it by adding margins
+        if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1] and not upscale:
+            borderw = (self.size[0] - self.image.size[0]) / 2
+            borderh = (self.size[1] - self.image.size[1]) / 2
+            self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
+            return self.image
         # If stretching is on - Resize without other considerations
         if stretch:
+            if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
+                method = Image.BICUBIC
+            else:
+                method = Image.ANTIALIAS
             self.image = self.image.resize(size, method)
             return self.image
         # Otherwise - Upscale/Downscale
-        ratioDev = float(size[0]) / float(size[1])
+        ratioDev = float(self.size[0]) / float(self.size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
             self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
             self.image = ImageOps.expand(self.image, border=(0, diff / 2), fill=fill)
+        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
+            method = Image.BICUBIC
+        else:
+            method = Image.ANTIALIAS
         self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
         return self.image
 

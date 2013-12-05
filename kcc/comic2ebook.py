@@ -142,35 +142,35 @@ def buildHTML(path, imgfile):
                 xr = borders[2].lstrip("0")
                 yd = borders[3].lstrip("0")
                 if xl != "":
-                    xl = "-" + str(xl) + "px"
+                    xl = "-" + str(float(xl)/100) + "%"
                 else:
-                    xl = "0px"
+                    xl = "0%"
                 if xr != "":
-                    xr = "-" + str(xr) + "px"
+                    xr = "-" + str(float(xr)/100) + "%"
                 else:
-                    xr = "0px"
+                    xr = "0%"
                 if yu != "":
-                    yu = "-" + str(yu) + "px"
+                    yu = "-" + str(float(yu)/100) + "%"
                 else:
-                    yu = "0px"
+                    yu = "0%"
                 if yd != "":
-                    yd = "-" + str(yd) + "px"
+                    yd = "-" + str(float(yd)/100) + "%"
                 else:
-                    yd = "0px"
+                    yd = "0%"
             else:
-                xl = "0px"
-                yu = "0px"
-                xr = "0px"
-                yd = "0px"
+                xl = "0%"
+                yu = "0%"
+                xr = "0%"
+                yd = "0%"
             boxStyles = {"BoxTL": "left:" + xl + ";top:" + yu + ";",
                          "BoxTR": "right:" + xr + ";top:" + yu + ";",
                          "BoxBL": "left:" + xl + ";bottom:" + yd + ";",
                          "BoxBR": "right:" + xr + ";bottom:" + yd + ";",
-                         "BoxT": "left:-25%;top:" + yu + ";",
-                         "BoxB": "left:-25%;bottom:" + yd + ";",
-                         "BoxL": "left:" + xl + ";top:-25%;",
-                         "BoxR": "right:" + xr + ";top:-25%;",
-                         "BoxC": "right:-25%;top:-25%;"
+                         "BoxT": "left:" + xl + ";top:" + yu + ";",
+                         "BoxB": "left:" + xl + ";bottom:" + yd + ";",
+                         "BoxL": "left:" + xl + ";top:" + yu + ";",
+                         "BoxR": "right:" + xr + ";top:" + yu + ";",
+                         "BoxC": "left:" + xl + ";top:" + yu + ";"
                          }
             for box in boxes:
                 f.writelines(["<div id=\"" + box + "-Panel-Parent\" class=\"target-mag-parent\"><div id=\"",
@@ -321,6 +321,8 @@ def applyImgOptimization(img, opt, hqImage=None):
         img.calculateBorder(hqImage)
     else:
         img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, opt.quality)
+        if opt.panelview and opt.quality != 2:
+            img.calculateBorder(img)
     if opt.forcepng and not opt.forcecolor:
         img.quantizeImage()
 
