@@ -57,6 +57,7 @@ You can find the latest released binary at the following links:
 * Check our [wiki](https://github.com/ciromattia/kcc/wiki/Other-devices) for a list of tested Non-Kindle E-Readers.
 * The first image found will be set as the comic's cover.
 * All files/directories will be added to EPUB in alphabetical order.
+* Using high/ultra quality output option with Kindle Fire HD/HDX in most cases is just waste of space.
 * ComicRack metadata will be parsed only if they are saved in *ComicInfo.xml* file.
 
 ### Calibre:

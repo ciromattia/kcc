@@ -290,7 +290,7 @@ class KindleUnpackThread(QtCore.QRunnable):
         try:
             # MOBI file produced by KindleGen is hybrid. KF8 + M7 + Source header
             # KindleSplit is removing redundant data as we need only KF8 part for new Kindle models
-            if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX8', 'KFA']:
+            if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX', 'KFHDX8', 'KFA']:
                 newKindle = True
             else:
                 newKindle = False
@@ -354,6 +354,9 @@ class WorkerThread(QtCore.QThread):
             argv.append("--quality=1")
         elif GUI.QualityBox.checkState() == 2:
             argv.append("--quality=2")
+        if GUI.currentMode == 1:
+            if profile in ['KFHD', 'KFHD8', 'KFHDX', 'KFHDX8']:
+                argv.append("--upscale")
         if GUI.currentMode > 1:
             if GUI.ProcessingBox.isChecked():
                 argv.append("--noprocessing")
@@ -789,6 +792,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.QualityBox.setChecked(False)
             GUI.QualityBox.setEnabled(False)
             self.QualityBoxDisabled = True
+        if value in [4, 5, 6, 7]:
+            if GUI.UpscaleBox.isEnabled():
+                GUI.UpscaleBox.setChecked(True)
         else:
             if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked() \
                     and str(GUI.FormatBox.currentText()) != 'CBZ':
