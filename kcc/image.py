@@ -241,7 +241,7 @@ class ComicPage:
 
     def calculateBorder(self, sourceImage):
         if self.fill == 'white':
-            border = ImageOps.invert(sourceImage.image).getbbox()
+            border = ImageChops.invert(sourceImage.image).getbbox()
         else:
             border = sourceImage.image.getbbox()
         if border is not None:
