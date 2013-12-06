@@ -537,10 +537,9 @@ class WorkerThread(QtCore.QThread):
 
 
 class SystemTrayIcon(QtGui.QSystemTrayIcon):
-    def __init__(self, parent=None):
+    def __init__(self):
         if not sys.platform.startswith('darwin') and self.isSystemTrayAvailable():
-            QtGui.QSystemTrayIcon.__init__(self, parent)
-            self.setIcon(GUI.icons.programIcon)
+            QtGui.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
             self.activated.connect(self.catchClicks)
 
     def catchClicks(self):
@@ -882,8 +881,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             event.ignore()
         if not GUI.ConvertButton.isEnabled():
             event.ignore()
-        if not sys.platform.startswith('darwin'):
-            self.tray.hide()
         self.contentServer.stop()
         self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
