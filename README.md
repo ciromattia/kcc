@@ -24,7 +24,7 @@ You can find the latest released binary at the following links:
 - **Windows:** [http://kcc.vulturis.eu/Windows/](http://kcc.vulturis.eu/Windows/)
 - **Linux:** [http://kcc.vulturis.eu/Linux/](http://kcc.vulturis.eu/Linux/)
 - **OS X (10.8 or later):** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
-- **OS X (10.7 or earlier):** [http://kcc.vulturis.eu/Old/OSX/KindleComicConverter_3.6-rc1_osx10.7.zip](http://kcc.vulturis.eu/Old/OSX/KindleComicConverter_3.6-rc1_osx10.7.zip)
+- **OS X (10.7 or earlier):** Soon™
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following file types:
@@ -294,6 +294,15 @@ The app relies and includes the following scripts/binaries:
 * GUI tweaks and minor bug fixes
 
 ####3.6:
+* Increased quality of Panel View zoom
+* Creation of multipart MOBI output is now faster on machines with 4GB+ RAM
+* Automatic gamma correction now distinguishes color and grayscale images
+* Added ComicRack metadata parser
+* Implemented new method to detect border color in non-webtoon comics
+* Upscaling is now enabled by default for Kindle Fire HD/HDX
+* Windows nad Linux releases now have tray icon
+* Fixed Kindle Fire HDX 7" output
+* Increased target resolution for Kindle DX/DXG CBZ output
 
 ## COPYRIGHT
 
