@@ -797,7 +797,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 GUI.UpscaleBox.setChecked(True)
         else:
             if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked() \
-                    and str(GUI.FormatBox.currentText()) != 'CBZ':
+                    and str(GUI.FormatBox.currentText()) != 'CBZ' and value not in [9, 11, 12, 13]:
                 GUI.QualityBox.setEnabled(True)
                 self.QualityBoxDisabled = False
 
@@ -981,9 +981,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.tray.show()
 
         statusBarLabel = QtGui.QLabel('<b><a href="http://kcc.vulturis.eu/">HOMEPAGE</a> - <a href="https://github.com/'
-                                      'ciromattia/kcc/blob/master/README.md#donations">DONATE</a> - <a href="https://gi'
-                                      'thub.com/ciromattia/kcc/blob/master/README.md#kcc">README</a> - <a href="https:/'
-                                      '/github.com/ciromattia/kcc/wiki">WIKI</a></b>')
+                                      'ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DONATE</a>'
+                                      ' - <a href="https://github.com/ciromattia/kcc/blob/master/README.md#kcc">README<'
+                                      '/a> - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a></b>')
         statusBarLabel.setAlignment(QtCore.Qt.AlignCenter)
         statusBarLabel.setStyleSheet(self.statusBarStyle)
         statusBarLabel.setOpenExternalLinks(True)
