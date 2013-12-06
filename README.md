@@ -304,6 +304,9 @@ The app relies and includes the following scripts/binaries:
 * Fixed Kindle Fire HDX 7" output
 * Increased target resolution for Kindle DX/DXG CBZ output
 
+####3.6.1:
+* Fixed PNG output
+
 ## COPYRIGHT
 
 Copyright (c) 2012-2013 Ciro Mattia Gonano and Paweł Jastrzębski.  

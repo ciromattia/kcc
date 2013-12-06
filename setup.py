@@ -11,7 +11,7 @@ Usage (Windows):
 from sys import platform
 
 NAME = "KindleComicConverter"
-VERSION = "3.6"
+VERSION = "3.6.1"
 MAIN = "kcc.py"
 
 if platform == "darwin":
