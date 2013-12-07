@@ -105,9 +105,9 @@ def buildHTML(path, imgfile):
             elif noHorizontalPV and not noVerticalPV:
                 if rotatedPage:
                     if options.righttoleft:
-                        order = [2, 1]
-                    else:
                         order = [1, 2]
+                    else:
+                        order = [2, 1]
                 else:
                     order = [1, 2]
                 boxes = ["BoxT", "BoxB"]
@@ -166,11 +166,11 @@ def buildHTML(path, imgfile):
                          "BoxTR": "right:" + xr + ";top:" + yu + ";",
                          "BoxBL": "left:" + xl + ";bottom:" + yd + ";",
                          "BoxBR": "right:" + xr + ";bottom:" + yd + ";",
-                         "BoxT": "left:" + xl + ";top:" + yu + ";",
-                         "BoxB": "left:" + xl + ";bottom:" + yd + ";",
-                         "BoxL": "left:" + xl + ";top:" + yu + ";",
-                         "BoxR": "right:" + xr + ";top:" + yu + ";",
-                         "BoxC": "left:" + xl + ";top:" + yu + ";"
+                         "BoxT": "left:-25%;top:" + yu + ";",
+                         "BoxB": "left:-25%;bottom:" + yd + ";",
+                         "BoxL": "left:" + xl + ";top:-25%;",
+                         "BoxR": "right:" + xr + ";top:-25%;",
+                         "BoxC": "left:-25%;top:-25%;"
                          }
             for box in boxes:
                 f.writelines(["<div id=\"" + box + "-Panel-Parent\" class=\"target-mag-parent\"><div id=\"",
@@ -318,11 +318,14 @@ def applyImgOptimization(img, opt, hqImage=None):
     img.optimizeImage(opt.gamma)
     if hqImage:
         img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, 0)
-        img.calculateBorder(hqImage)
+        img.calculateBorder(hqImage, True)
     else:
         img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, opt.quality)
-        if opt.panelview and opt.quality != 2:
-            img.calculateBorder(img)
+        if opt.panelview:
+            if opt.quality == 0:
+                img.calculateBorder(img)
+            elif opt.quality == 1:
+                img.calculateBorder(img, True)
     if opt.forcepng and not opt.forcecolor:
         img.quantizeImage()
 
