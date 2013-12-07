@@ -241,6 +241,9 @@ class ComicPage:
 
     def calculateBorder(self, sourceImage):
         if self.fill == 'white':
+            # This code trigger only when sourceImage is already saved. So we can break color quantization.
+            if sourceImage.image.mode == 'P':
+                sourceImage.image = sourceImage.image.convert('RGB')
             border = ImageChops.invert(sourceImage.image).getbbox()
         else:
             border = sourceImage.image.getbbox()
