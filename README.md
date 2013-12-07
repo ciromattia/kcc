@@ -307,6 +307,10 @@ The app relies and includes the following scripts/binaries:
 ####3.6.1:
 * Fixed PNG output
 
+####3.6.2:
+* Fixed previous PNG output fix
+* Fixed Panel View anomalies
+
 ## COPYRIGHT
 
 Copyright (c) 2012-2013 Ciro Mattia Gonano and Paweł Jastrzębski.  
