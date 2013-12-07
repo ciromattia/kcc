@@ -239,7 +239,7 @@ class ComicPage:
         else:
             return int(round(float(x)/float(img.image.size[1]), 4) * 10000 * 1.5)
 
-    def calculateBorder(self, sourceImage):
+    def calculateBorder(self, sourceImage, isHQ=False):
         if self.fill == 'white':
             # This code trigger only when sourceImage is already saved. So we can break color quantization.
             if sourceImage.image.mode == 'P':
@@ -248,16 +248,18 @@ class ComicPage:
         else:
             border = sourceImage.image.getbbox()
         if border is not None:
+            if isHQ:
+                multiplier = 1.0
+            else:
+                multiplier = 1.5
             self.border = [self.calculateBorderPercent(border[0], sourceImage, True),
                            self.calculateBorderPercent(border[1], sourceImage, False),
                            self.calculateBorderPercent((sourceImage.image.size[0] - border[2]), sourceImage, True),
                            self.calculateBorderPercent((sourceImage.image.size[1] - border[3]), sourceImage, False)]
-            if int((border[2] - border[0]) * 1.5) < self.size[0]:
+            if int((border[2] - border[0]) * multiplier) < self.size[0]:
                 self.noHPV = True
-                self.border[0] /= 2
-            if int((border[3] - border[1]) * 1.5) < self.size[1]:
+            if int((border[3] - border[1]) * multiplier) < self.size[1]:
                 self.noVPV = True
-                self.border[1] /= 2
         else:
             self.border = [0, 0, 0, 0]
             self.noHPV = True
