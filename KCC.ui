@@ -363,7 +363,7 @@ p, li { white-space: pre-wrap; }
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disable page spliting.&lt;br/&gt;They will be rotated instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Disable splitting of two-page spreads.&lt;br/&gt;They will be rotated instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Horizontal mode</string>
@@ -549,7 +549,7 @@ p, li { white-space: pre-wrap; }
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="toolTip">
-      <string>Do not convert images to grayscale.</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Don't convert images to grayscale.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Color mode</string>

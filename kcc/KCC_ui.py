@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Wed Dec 04 18:28:13 2013
+# Created: Fri Dec 13 19:22:05 2013
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -301,12 +301,12 @@ class Ui_KCC(object):
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode<br /></span><span style=\" font-style:italic;\">Not zoomed image </span><span style=\" font-weight:600; font-style:italic;\">might </span><span style=\" font-style:italic;\">be </span><span style=\" font-style:italic;\">a little blurry.</span><span style=\" font-weight:600; text-decoration: underline;\"><br /></span>- Medium/High quality when zoom is not enabled.<br />- Maximum quality when zoom is enabled.</p>\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode<br /></span><span style=\" font-style:italic;\">Maximum possible quality.</span><span style=\" font-weight:600; text-decoration: underline;\"><br /></span>- Maximum quality when zoom is not enabled.<br />- Maximum quality when zoom is enabled.<br />- Very high file size.</p></body></html>", None))
         self.QualityBox.setText(_translate("KCC", "High/Ultra quality", None))
-        self.RotateBox.setToolTip(_translate("KCC", "<html><head/><body><p>Disable page spliting.<br/>They will be rotated instead.</p></body></html>", None))
+        self.RotateBox.setToolTip(_translate("KCC", "<html><head/><body><p>Disable splitting of two-page spreads.<br/>They will be rotated instead.</p></body></html>", None))
         self.RotateBox.setText(_translate("KCC", "Horizontal mode", None))
         self.BasicModeButton.setText(_translate("KCC", "Basic", None))
         self.AdvModeButton.setText(_translate("KCC", "Advanced", None))
         self.GammaLabel.setText(_translate("KCC", "Gamma: Auto", None))
-        self.ColorBox.setToolTip(_translate("KCC", "Do not convert images to grayscale.", None))
+        self.ColorBox.setToolTip(_translate("KCC", "<html><head/><body><p>Don\'t convert images to grayscale.</p></body></html>", None))
         self.ColorBox.setText(_translate("KCC", "Color mode", None))
         self.wLabel.setToolTip(_translate("KCC", "Resolution of target device.", None))
         self.wLabel.setText(_translate("KCC", "Custom width: ", None))
