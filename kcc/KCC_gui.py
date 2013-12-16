@@ -291,7 +291,7 @@ class KindleUnpackThread(QtCore.QRunnable):
         try:
             # MOBI file produced by KindleGen is hybrid. KF8 + M7 + Source header
             # KindleSplit is removing redundant data as we need only KF8 part for new Kindle models
-            if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX8', 'KFA']:
+            if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX', 'KFHDX8', 'KFA']:
                 newKindle = True
             else:
                 newKindle = False
@@ -356,6 +356,9 @@ class WorkerThread(QtCore.QThread):
             argv.append("--quality=1")
         elif GUI.QualityBox.checkState() == 2:
             argv.append("--quality=2")
+        if GUI.currentMode == 1:
+            if profile in ['KFHD', 'KFHD8', 'KFHDX', 'KFHDX8']:
+                argv.append("--upscale")
         if GUI.currentMode > 1:
             if GUI.ProcessingBox.isChecked():
                 argv.append("--noprocessing")
@@ -374,6 +377,7 @@ class WorkerThread(QtCore.QThread):
             if GUI.WebtoonBox.isChecked():
                 argv.append("--webtoon")
             if float(GUI.GammaValue) > 0.09:
+                # noinspection PyTypeChecker
                 argv.append("--gamma=" + GUI.GammaValue)
             if str(GUI.FormatBox.currentText()) == 'CBZ':
                 argv.append("--cbz-output")
@@ -540,11 +544,11 @@ class WorkerThread(QtCore.QThread):
 class SystemTrayIcon(QtGui.QSystemTrayIcon):
     def __init__(self, parent=None):
         if not sys.platform.startswith('darwin') and self.isSystemTrayAvailable():
-            QtGui.QSystemTrayIcon.__init__(self, parent)
-            self.setIcon(GUI.icons.programIcon)
+            QtGui.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
             self.activated.connect(self.catchClicks)
 
     def catchClicks(self):
+        MW.showNormal()
         MW.raise_()
         MW.activateWindow()
 
@@ -793,9 +797,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.QualityBox.setChecked(False)
             GUI.QualityBox.setEnabled(False)
             self.QualityBoxDisabled = True
+        if value in [4, 5, 6, 7]:
+            if GUI.UpscaleBox.isEnabled():
+                GUI.UpscaleBox.setChecked(True)
         else:
             if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked() \
-                    and str(GUI.FormatBox.currentText()) != 'CBZ':
+                    and str(GUI.FormatBox.currentText()) != 'CBZ' and value not in [9, 11, 12, 13]:
                 GUI.QualityBox.setEnabled(True)
                 self.QualityBoxDisabled = False
 
@@ -880,8 +887,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             event.ignore()
         if not GUI.ConvertButton.isEnabled():
             event.ignore()
-        if not sys.platform.startswith('darwin'):
-            self.tray.hide()
         self.contentServer.stop()
         self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
@@ -978,9 +983,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.tray.show()
 
         statusBarLabel = QtGui.QLabel('<b><a href="http://kcc.vulturis.eu/">HOMEPAGE</a> - <a href="https://github.com/'
-                                      'ciromattia/kcc/blob/master/README.md#donations">DONATE</a> - <a href="https://gi'
-                                      'thub.com/ciromattia/kcc/blob/master/README.md#kcc">README</a> - <a href="https:/'
-                                      '/github.com/ciromattia/kcc/wiki">WIKI</a></b>')
+                                      'ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DONATE</a>'
+                                      ' - <a href="https://github.com/ciromattia/kcc/blob/master/README.md#kcc">README<'
+                                      '/a> - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a></b>')
         statusBarLabel.setAlignment(QtCore.Qt.AlignCenter)
         statusBarLabel.setStyleSheet(self.statusBarStyle)
         statusBarLabel.setOpenExternalLinks(True)
