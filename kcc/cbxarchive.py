@@ -23,8 +23,20 @@ import os
 import zipfile
 from . import rarfile
 import locale
+from sys import platform
 from subprocess import STDOUT, PIPE
-from psutil import Popen
+try:
+    #noinspection PyUnresolvedReferences
+    from psutil import Popen
+except ImportError:
+    print("ERROR: Psutil is not installed!")
+    if platform.startswith('linux'):
+        import Tkinter
+        import tkMessageBox
+        importRoot = Tkinter.Tk()
+        importRoot.withdraw()
+        tkMessageBox.showerror("KCC - Error", "Psutil is not installed!")
+    exit(1)
 from shutil import move
 
 

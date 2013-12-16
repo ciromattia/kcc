@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
@@ -106,9 +106,9 @@ def buildHTML(path, imgfile):
             elif noHorizontalPV and not noVerticalPV:
                 if rotatedPage:
                     if options.righttoleft:
-                        order = [2, 1]
-                    else:
                         order = [1, 2]
+                    else:
+                        order = [2, 1]
                 else:
                     order = [1, 2]
                 boxes = ["BoxT", "BoxB"]
@@ -130,35 +130,48 @@ def buildHTML(path, imgfile):
                               "}'></a></div>\n"])
             if options.quality == 2:
                 imgfilepv = string.split(imgfile, ".")
-                imgfilepv[0] = imgfilepv[0].split("_kccx")[0].replace("_kccnh", "").replace("_kccnv", "")
+                imgfilepv[0] = imgfilepv[0].split("_kccxl")[0].replace("_kccnh", "").replace("_kccnv", "")
                 imgfilepv[0] += "_kcchq"
                 imgfilepv = string.join(imgfilepv, ".")
             else:
                 imgfilepv = imgfile
-            if "_kccx" in filename[0]:
-                xy = string.split(filename[0], "_kccx")[1]
-                x = string.split(xy, "_kccy")[0].lstrip("0")
-                y = string.split(xy, "_kccy")[1].lstrip("0")
-                if x != "":
-                    x = "-" + str(float(x)/100) + "%"
+            if "_kccxl" in filename[0]:
+                borders = filename[0].split('_kccxl')[1]
+                borders = re.findall('[0-9]{1,6}', borders)
+                xl = borders[0].lstrip("0")
+                yu = borders[1].lstrip("0")
+                xr = borders[2].lstrip("0")
+                yd = borders[3].lstrip("0")
+                if xl != "":
+                    xl = "-" + str(float(xl)/100) + "%"
                 else:
-                    x = "0%"
-                if y != "":
-                    y = "-" + str(float(y)/100) + "%"
+                    xl = "0%"
+                if xr != "":
+                    xr = "-" + str(float(xr)/100) + "%"
                 else:
-                    y = "0%"
+                    xr = "0%"
+                if yu != "":
+                    yu = "-" + str(float(yu)/100) + "%"
+                else:
+                    yu = "0%"
+                if yd != "":
+                    yd = "-" + str(float(yd)/100) + "%"
+                else:
+                    yd = "0%"
             else:
-                x = "0%"
-                y = "0%"
-            boxStyles = {"BoxTL": "left:" + x + ";top:" + y + ";",
-                         "BoxTR": "right:" + x + ";top:" + y + ";",
-                         "BoxBL": "left:" + x + ";bottom:" + y + ";",
-                         "BoxBR": "right:" + x + ";bottom:" + y + ";",
-                         "BoxT": "left:-25%;top:" + y + ";",
-                         "BoxB": "left:-25%;bottom:" + y + ";",
-                         "BoxL": "left:" + x + ";top:-25%;",
-                         "BoxR": "right:" + x + ";top:-25%;",
-                         "BoxC": "right:-25%;top:-25%;"
+                xl = "0%"
+                yu = "0%"
+                xr = "0%"
+                yd = "0%"
+            boxStyles = {"BoxTL": "left:" + xl + ";top:" + yu + ";",
+                         "BoxTR": "right:" + xr + ";top:" + yu + ";",
+                         "BoxBL": "left:" + xl + ";bottom:" + yd + ";",
+                         "BoxBR": "right:" + xr + ";bottom:" + yd + ";",
+                         "BoxT": "left:-25%;top:" + yu + ";",
+                         "BoxB": "left:-25%;bottom:" + yd + ";",
+                         "BoxL": "left:" + xl + ";top:-25%;",
+                         "BoxR": "right:" + xr + ";top:-25%;",
+                         "BoxC": "left:-25%;top:-25%;"
                          }
             for box in boxes:
                 f.writelines(["<div id=\"" + box + "-Panel-Parent\" class=\"target-mag-parent\"><div id=\"",
@@ -173,6 +186,7 @@ def buildHTML(path, imgfile):
 
 def buildNCX(dstdir, title, chapters):
     options.uuid = str(uuid4())
+    options.uuid = options.uuid.encode('utf-8')
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
     f = open(ncxfile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
@@ -295,7 +309,7 @@ def getImageFileName(imgfile):
     return filename
 
 
-def applyImgOptimization(img, opt, overrideQuality=5):
+def applyImgOptimization(img, opt, hqImage=None):
     if not img.fill:
         img.getImageFill(opt.webtoon)
     if not opt.webtoon:
@@ -303,10 +317,16 @@ def applyImgOptimization(img, opt, overrideQuality=5):
     if opt.cutpagenumbers and not opt.webtoon:
         img.cutPageNumber()
     img.optimizeImage(opt.gamma)
-    if overrideQuality != 5:
-        img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, overrideQuality)
+    if hqImage:
+        img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, 0)
+        img.calculateBorder(hqImage, True)
     else:
         img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, opt.quality)
+        if opt.panelview:
+            if opt.quality == 0:
+                img.calculateBorder(img)
+            elif opt.quality == 1:
+                img.calculateBorder(img, True)
     if opt.forcepng and not opt.forcecolor:
         img.quantizeImage()
 
@@ -378,12 +398,12 @@ def fileImgProcess(work):
             applyImgOptimization(img1, opt)
             img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
             if opt.quality == 2:
-                img3 = image.ComicPage(split[0], opt.profileData, img0.fill)
-                applyImgOptimization(img3, opt, 0)
-                img3.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
-                img4 = image.ComicPage(split[1], opt.profileData, img1.fill)
-                applyImgOptimization(img4, opt, 0)
-                img4.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
+                img0b = image.ComicPage(split[0], opt.profileData, img0.fill)
+                applyImgOptimization(img0b, opt, img0)
+                img0b.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
+                img1b = image.ComicPage(split[1], opt.profileData, img1.fill)
+                applyImgOptimization(img1b, opt, img1)
+                img1b.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
         else:
             applyImgOptimization(img, opt)
             img.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
@@ -392,7 +412,7 @@ def fileImgProcess(work):
                 if img.rotated:
                     img2.image = img2.image.rotate(90)
                     img2.rotated = True
-                applyImgOptimization(img2, opt, 0)
+                applyImgOptimization(img2, opt, img)
                 img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
     except Exception:
         import traceback
