@@ -498,7 +498,8 @@ class WorkerThread(QtCore.QThread):
                                     move(mobiPath, mobiPath.replace('.mobi', '.azw3'))
                                     mobiPath = item.replace('.mobi', '.azw3')
                                 GUI.completedWork[os.path.basename(mobiPath).encode('utf-8')] = mobiPath.encode('utf-8')
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files... <b>Done!</b>', 'info', True)
+                                self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files... <b>Done!</b>', 'info',
+                                          True)
                         else:
                             GUI.progress.content = ''
                             for item in outputPath:
@@ -522,7 +523,7 @@ class WorkerThread(QtCore.QThread):
                         self.emit(QtCore.SIGNAL("addTrayMessage"), 'KindleGen failed to create MOBI!', 'Critical')
                         if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':
                             self.emit(QtCore.SIGNAL("showDialog"), "KindleGen error:\n\n" +
-                                                                   self.self.kindlegenErrorCode[1])
+                                                                   self.kindlegenErrorCode[1])
                         if self.kindlegenErrorCode[0] == 23026:
                             self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file was too big.',
                                       'error')
