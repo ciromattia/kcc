@@ -34,7 +34,6 @@ from time import sleep
 from shutil import move
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from SocketServer import ThreadingMixIn
-from image import ProfileData
 from subprocess import STDOUT, PIPE
 from PyQt4 import QtGui, QtCore
 from xml.dom.minidom import parse
@@ -348,7 +347,7 @@ class WorkerThread(QtCore.QThread):
 
     def run(self):
         self.emit(QtCore.SIGNAL("modeConvert"), False)
-        profile = ProfileData.ProfileLabels[str(GUI.DeviceBox.currentText())]
+        profile = GUI.profiles[str(GUI.DeviceBox.currentText())]['Label']
         argv = ["--profile=" + profile]
         currentJobs = []
         if GUI.MangaBox.isChecked():
@@ -359,6 +358,8 @@ class WorkerThread(QtCore.QThread):
             argv.append("--quality=1")
         elif GUI.QualityBox.checkState() == 2:
             argv.append("--quality=2")
+        if str(GUI.FormatBox.currentText()) == 'CBZ':
+            argv.append("--cbz-output")
         if GUI.currentMode == 1:
             if profile in ['KFHD', 'KFHD8', 'KFHDX', 'KFHDX8']:
                 argv.append("--upscale")
@@ -382,8 +383,6 @@ class WorkerThread(QtCore.QThread):
             if float(GUI.GammaValue) > 0.09:
                 # noinspection PyTypeChecker
                 argv.append("--gamma=" + GUI.GammaValue)
-            if str(GUI.FormatBox.currentText()) == 'CBZ':
-                argv.append("--cbz-output")
             if str(GUI.FormatBox.currentText()) == 'MOBI':
                 argv.append("--batchsplit")
         if GUI.currentMode > 2:
@@ -625,67 +624,103 @@ class KCCGUI(KCC_ui.Ui_KCC):
             MW.setMinimumSize(QtCore.QSize(420, 287))
             MW.setMaximumSize(QtCore.QSize(420, 287))
             MW.resize(420, 287)
+        GUI.BasicModeButton.setEnabled(True)
+        GUI.AdvModeButton.setEnabled(True)
         GUI.BasicModeButton.setStyleSheet('font-weight:Bold;')
         GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
-        GUI.FormatBox.setCurrentIndex(0)
         GUI.FormatBox.setEnabled(False)
-        GUI.NoRotateBox.setChecked(False)
-        GUI.WebtoonBox.setChecked(False)
-        GUI.ProcessingBox.setChecked(False)
+        GUI.OptionsBasic.setEnabled(True)
+        GUI.OptionsBasic.setVisible(True)
+        GUI.MangaBox.setChecked(False)
+        GUI.RotateBox.setChecked(False)
+        GUI.QualityBox.setChecked(False)
         GUI.OptionsAdvanced.setEnabled(False)
+        GUI.OptionsAdvanced.setVisible(False)
+        GUI.ProcessingBox.setChecked(False)
+        GUI.UpscaleBox.setChecked(False)
+        GUI.NoRotateBox.setChecked(False)
+        GUI.BorderBox.setChecked(False)
+        GUI.WebtoonBox.setChecked(False)
+        GUI.NoDitheringBox.setChecked(False)
         GUI.OptionsAdvancedGamma.setEnabled(False)
+        GUI.OptionsAdvancedGamma.setVisible(False)
         GUI.OptionsExpert.setEnabled(False)
-        GUI.ProcessingBox.hide()
-        GUI.UpscaleBox.hide()
-        GUI.NoRotateBox.hide()
-        GUI.MangaBox.setEnabled(True)
-        self.changeFormat()
+        GUI.OptionsExpert.setVisible(False)
+        GUI.ColorBox.setChecked(False)
 
     def modeAdvanced(self):
         self.currentMode = 2
         MW.setMinimumSize(QtCore.QSize(420, 365))
         MW.setMaximumSize(QtCore.QSize(420, 365))
         MW.resize(420, 365)
+        GUI.BasicModeButton.setEnabled(True)
+        GUI.AdvModeButton.setEnabled(True)
         GUI.BasicModeButton.setStyleSheet('font-weight:Normal;')
         GUI.AdvModeButton.setStyleSheet('font-weight:Bold;')
         GUI.FormatBox.setEnabled(True)
-        GUI.ProcessingBox.show()
-        GUI.UpscaleBox.show()
-        GUI.NoRotateBox.show()
-        GUI.OptionsAdvancedGamma.setEnabled(True)
+        GUI.OptionsBasic.setEnabled(True)
+        GUI.OptionsBasic.setVisible(True)
+        GUI.MangaBox.setChecked(False)
+        GUI.RotateBox.setChecked(False)
+        GUI.QualityBox.setChecked(False)
         GUI.OptionsAdvanced.setEnabled(True)
-        GUI.OptionsExpert.setEnabled(False)
-        GUI.MangaBox.setEnabled(True)
+        GUI.OptionsAdvanced.setVisible(True)
+        GUI.ProcessingBox.setChecked(False)
+        GUI.UpscaleBox.setChecked(False)
+        GUI.NoRotateBox.setChecked(False)
+        GUI.BorderBox.setChecked(False)
+        GUI.WebtoonBox.setChecked(False)
+        GUI.NoDitheringBox.setChecked(False)
+        GUI.OptionsAdvancedGamma.setEnabled(True)
+        GUI.OptionsAdvancedGamma.setVisible(True)
+        GUI.OptionsExpert.setEnabled(True)
+        GUI.OptionsExpert.setVisible(True)
+        GUI.ColorBox.setChecked(False)
 
-    def modeExpert(self, KFA=False):
-        self.modeAdvanced()
+    def modeExpert(self):
         self.currentMode = 3
         MW.setMinimumSize(QtCore.QSize(420, 397))
         MW.setMaximumSize(QtCore.QSize(420, 397))
         MW.resize(420, 397)
+        GUI.BasicModeButton.setEnabled(False)
+        GUI.AdvModeButton.setEnabled(False)
+        GUI.BasicModeButton.setStyleSheet('font-weight:Normal;')
+        GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
+        GUI.FormatBox.setEnabled(True)
+        GUI.OptionsBasic.setEnabled(True)
+        GUI.OptionsBasic.setVisible(True)
+        GUI.MangaBox.setChecked(False)
+        GUI.RotateBox.setChecked(False)
+        GUI.QualityBox.setChecked(False)
+        GUI.OptionsAdvanced.setEnabled(True)
+        GUI.OptionsAdvanced.setVisible(True)
+        GUI.ProcessingBox.setChecked(False)
+        GUI.UpscaleBox.setChecked(False)
+        GUI.NoRotateBox.setChecked(False)
+        GUI.BorderBox.setChecked(False)
+        GUI.WebtoonBox.setChecked(False)
+        GUI.NoDitheringBox.setChecked(False)
+        GUI.OptionsAdvancedGamma.setEnabled(True)
+        GUI.OptionsAdvancedGamma.setVisible(True)
         GUI.OptionsExpert.setEnabled(True)
-        if KFA:
-            GUI.ColorBox.setChecked(True)
-            GUI.FormatBox.setCurrentIndex(0)
-            GUI.FormatBox.setEnabled(False)
-        else:
-            GUI.FormatBox.setEnabled(True)
-            GUI.MangaBox.setChecked(False)
-            GUI.MangaBox.setEnabled(False)
+        GUI.OptionsExpert.setVisible(True)
+        GUI.ColorBox.setChecked(False)
 
     def modeConvert(self, enable):
         if self.currentMode != 3:
             GUI.BasicModeButton.setEnabled(enable)
             GUI.AdvModeButton.setEnabled(enable)
+        if self.currentMode != 1:
+            GUI.FormatBox.setEnabled(enable)
         GUI.DirectoryButton.setEnabled(enable)
         GUI.ClearButton.setEnabled(enable)
         GUI.FileButton.setEnabled(enable)
         GUI.DeviceBox.setEnabled(enable)
-        GUI.FormatBox.setEnabled(enable)
         GUI.OptionsBasic.setEnabled(enable)
         GUI.OptionsAdvanced.setEnabled(enable)
         GUI.OptionsAdvancedGamma.setEnabled(enable)
         GUI.OptionsExpert.setEnabled(enable)
+        GUI.ConvertButton.setEnabled(True)
         if enable:
             self.conversionAlive = False
             self.worker.sync()
@@ -693,13 +728,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             icon.addPixmap(QtGui.QPixmap(":/Other/icons/convert.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             GUI.ConvertButton.setIcon(icon)
             GUI.ConvertButton.setText('Convert')
-            GUI.ConvertButton.setEnabled(True)
-            if self.currentMode == 1:
-                self.modeBasic()
-            elif self.currentMode == 2:
-                self.modeAdvanced()
-            elif self.currentMode == 3:
-                self.modeExpert()
         else:
             self.conversionAlive = True
             self.worker.sync()
@@ -707,16 +735,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             icon.addPixmap(QtGui.QPixmap(":/Other/icons/clear.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             GUI.ConvertButton.setIcon(icon)
             GUI.ConvertButton.setText('Abort')
-            GUI.ConvertButton.setEnabled(True)
-
-    def changeGamma(self, value):
-        value = float(value)
-        value = '%.2f' % (value/100)
-        if float(value) <= 0.09:
-            GUI.GammaLabel.setText('Gamma: Auto')
-        else:
-            GUI.GammaLabel.setText('Gamma: ' + str(value))
-        self.GammaValue = value
 
     def toggleWebtoonBox(self, value):
         if value:
@@ -730,9 +748,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
             if not GUI.ProcessingBox.isChecked():
                 GUI.NoRotateBox.setEnabled(True)
                 GUI.QualityBox.setEnabled(True)
-            GUI.MangaBox.setEnabled(True)
-        self.changeDevice(GUI.DeviceBox.currentIndex(), False)
-        self.changeFormat()
+            if GUI.profiles[str(GUI.DeviceBox.currentText())]['MangaMode']:
+                GUI.MangaBox.setEnabled(True)
 
     def toggleNoSplitRotate(self, value):
         if value:
@@ -741,8 +758,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
         else:
             if not GUI.ProcessingBox.isChecked():
                 GUI.RotateBox.setEnabled(True)
-        self.changeDevice(GUI.DeviceBox.currentIndex(), False)
-        self.changeFormat()
 
     def toggleProcessingBox(self, value):
         if value:
@@ -766,7 +781,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.GammaLabel.setEnabled(False)
         else:
             GUI.RotateBox.setEnabled(True)
-            GUI.QualityBox.setEnabled(True)
             GUI.UpscaleBox.setEnabled(True)
             GUI.NoRotateBox.setEnabled(True)
             GUI.BorderBox.setEnabled(True)
@@ -775,56 +789,62 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.ColorBox.setEnabled(True)
             GUI.GammaSlider.setEnabled(True)
             GUI.GammaLabel.setEnabled(True)
-        self.changeDevice(GUI.DeviceBox.currentIndex(), False)
-        self.changeFormat()
+            if GUI.profiles[str(GUI.DeviceBox.currentText())]['Quality']:
+                GUI.QualityBox.setEnabled(True)
 
-    def changeDevice(self, value, showInfo=True):
-        # Other
-        if value == 15:
-            GUI.BasicModeButton.setEnabled(False)
-            GUI.AdvModeButton.setEnabled(False)
-            if showInfo:
-                self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
-                                'List of supported Non-Kindle devices</a>', 'info')
-            self.modeExpert()
-        # KFA
-        elif value == 17:
-            GUI.BasicModeButton.setEnabled(False)
-            GUI.AdvModeButton.setEnabled(False)
-            self.modeExpert(True)
+    def changeGamma(self, value):
+        value = float(value)
+        value = '%.2f' % (value/100)
+        if float(value) <= 0.09:
+            GUI.GammaLabel.setText('Gamma: Auto')
+        else:
+            GUI.GammaLabel.setText('Gamma: ' + str(value))
+        self.GammaValue = value
+
+    def changeDevice(self):
+        if self.currentMode == 1:
+            self.modeBasic()
+        elif self.currentMode == 2:
+            self.modeAdvanced()
         elif self.currentMode == 3:
+            self.modeExpert()
+        profile = GUI.profiles[str(GUI.DeviceBox.currentText())]
+        if profile['ForceExpert']:
+            self.modeExpert()
+            GUI.BasicModeButton.setEnabled(False)
+            GUI.AdvModeButton.setEnabled(False)
+        else:
             GUI.BasicModeButton.setEnabled(True)
             GUI.AdvModeButton.setEnabled(True)
-            self.modeBasic()
-        # Other, K1, K2, DX/DXG, KoMT, KoG, KoA, KoAHD
-        if value in [15, 18, 19, 2, 10, 11, 12, 13]:
-            GUI.QualityBox.setChecked(False)
-            GUI.QualityBox.setEnabled(False)
-            self.QualityBoxDisabled = True
-        # KoMT, KoG, KoA, KoAHD
-        if value in [10, 11, 12, 13]:
-            GUI.FormatBox.setCurrentIndex(2)
-        # K. Fire
-        if value in [5, 6, 7, 8]:
-            if GUI.UpscaleBox.isEnabled():
-                GUI.UpscaleBox.setChecked(True)
-        else:
-            # Other, K1, K2, DX/DXG
-            if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked() \
-                    and str(GUI.FormatBox.currentText()) != 'CBZ' and value not in [15, 18, 19, 2]:
-                GUI.QualityBox.setEnabled(True)
-                self.QualityBoxDisabled = False
+            if self.currentMode == 3:
+                self.modeBasic()
+        self.changeFormat()
+        GUI.GammaSlider.setValue(0)
+        self.changeGamma(0)
+        if profile['DefaultUpscale']:
+            GUI.UpscaleBox.setChecked(True)
 
-    def changeFormat(self):
+    def changeFormat(self, outputFormat=None):
+        profile = GUI.profiles[str(GUI.DeviceBox.currentText())]
+        if outputFormat is not None:
+            GUI.FormatBox.setCurrentIndex(outputFormat)
+        else:
+            if GUI.FormatBox.count() == 3:
+                GUI.FormatBox.setCurrentIndex(profile['DefaultFormat'])
+            else:
+                if profile['DefaultFormat'] != 0:
+                    tmpFormat = profile['DefaultFormat'] - 1
+                else:
+                    tmpFormat = 0
+                GUI.FormatBox.setCurrentIndex(tmpFormat)
+        GUI.MangaBox.setChecked(False)
+        GUI.QualityBox.setChecked(False)
         if str(GUI.FormatBox.currentText()) == 'CBZ':
-            GUI.MangaBox.setChecked(False)
             GUI.MangaBox.setEnabled(False)
-            GUI.QualityBox.setChecked(False)
             GUI.QualityBox.setEnabled(False)
         else:
-            if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked() and not self.QualityBoxDisabled:
-                GUI.QualityBox.setEnabled(True)
-            GUI.MangaBox.setEnabled(True)
+            GUI.MangaBox.setEnabled(profile['MangaMode'])
+            GUI.QualityBox.setEnabled(profile['Quality'])
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -977,7 +997,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.progress = ProgressThread()
         self.conversionAlive = False
         self.needClean = True
-        self.QualityBoxDisabled = False
         self.GammaValue = 1.0
         self.completedWork = {}
         if sys.platform.startswith('darwin'):
@@ -994,6 +1013,63 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.statusBarFontSize = 8
             self.statusBarStyle = 'QLabel{padding-top:3px;padding-bottom:3px;border-top:2px solid #C2C7CB}'
             self.tray.show()
+
+        self.profiles = {
+            "Kindle Paperwhite": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                                  'DefaultUpscale': False, 'Label': 'KHD'},
+            "Kindle": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                       'DefaultUpscale': False, 'Label': 'K345'},
+            "Kindle DX/DXG": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+                              'DefaultUpscale': False, 'Label': 'KDX'},
+            "Kindle Fire": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                            'DefaultUpscale': False, 'Label': 'KF'},
+            "K. Fire HD 7\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                               'DefaultUpscale': True, 'Label': 'KFHD'},
+            "K. Fire HD 8.9\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                                 'DefaultUpscale': True, 'Label': 'KFHD8'},
+            "K. Fire HDX 7\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                                'DefaultUpscale': True, 'Label': 'KFHDX'},
+            "K. Fire HDX 8.9\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                                  'DefaultUpscale': True, 'Label': 'KFHDX8'},
+            "Kobo Mini/Touch": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
+                                'DefaultUpscale': False, 'Label': 'KoMT'},
+            "Kobo Glow": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
+                          'DefaultUpscale': False, 'Label': 'KoG'},
+            "Kobo Aura": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
+                          'DefaultUpscale': False, 'Label': 'KoA'},
+            "Kobo Aura HD": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
+                             'DefaultUpscale': False, 'Label': 'KoAHD'},
+            "Other": {'MangaMode': False, 'Quality': False, 'ForceExpert': True, 'DefaultFormat': 1,
+                      'DefaultUpscale': False, 'Label': 'OTHER'},
+            "Kindle for Android": {'MangaMode': True, 'Quality': False, 'ForceExpert': True, 'DefaultFormat': 0,
+                                   'DefaultUpscale': False, 'Label': 'KFA'},
+            "Kindle 1": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+                         'DefaultUpscale': False, 'Label': 'K1'},
+            "Kindle 2": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+                         'DefaultUpscale': False, 'Label': 'K2'}
+        }
+        profilesGUI = [
+            "Kindle Paperwhite",
+            "Kindle",
+            "Kindle DX/DXG",
+            "Separator",
+            "Kindle Fire",
+            "K. Fire HD 7\"",
+            "K. Fire HD 8.9\"",
+            "K. Fire HDX 7\"",
+            "K. Fire HDX 8.9\"",
+            "Separator",
+            "Kobo Mini/Touch",
+            "Kobo Glow",
+            "Kobo Aura",
+            "Kobo Aura HD",
+            "Separator",
+            "Other",
+            "Separator",
+            "Kindle for Android",
+            "Kindle 1",
+            "Kindle 2",
+        ]
 
         statusBarLabel = QtGui.QLabel('<b><a href="http://kcc.vulturis.eu/">HOMEPAGE</a> - <a href="https://github.com/'
                                       'ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DONATE</a>'
@@ -1072,24 +1148,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW.connect(self.progress, QtCore.SIGNAL("addMessage"), self.addMessage)
         MW.closeEvent = self.saveSettings
 
-        for f in formats:
-            GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
-        if self.currentFormat > GUI.FormatBox.count():
-            GUI.FormatBox.setCurrentIndex(0)
-            self.currentFormat = 0
-        else:
-            GUI.FormatBox.setCurrentIndex(self.currentFormat)
-        for option in self.options:
-            if str(option) == "customWidth":
-                GUI.customWidth.setText(str(self.options[option]))
-            elif str(option) == "customHeight":
-                GUI.customHeight.setText(str(self.options[option]))
-            elif str(option) == "GammaSlider":
-                GUI.GammaSlider.setValue(int(self.options[option]))
-                self.changeGamma(int(self.options[option]))
-            else:
-                eval('GUI.' + str(option)).setCheckState(self.options[option])
-        for profile in ProfileData.ProfileLabelsGUI:
+        for profile in profilesGUI:
             if profile == "Other":
                 GUI.DeviceBox.addItem(self.icons.deviceOther, profile)
             elif profile == "Separator":
@@ -1098,20 +1157,29 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 GUI.DeviceBox.addItem(self.icons.deviceKobo, profile)
             else:
                 GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
+        for f in formats:
+            GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
         if self.lastDevice > GUI.DeviceBox.count():
-            GUI.DeviceBox.setCurrentIndex(0)
             self.lastDevice = 0
-        else:
-            GUI.DeviceBox.setCurrentIndex(self.lastDevice)
+        if self.currentFormat > GUI.FormatBox.count():
+            self.currentFormat = 0
+        GUI.DeviceBox.setCurrentIndex(self.lastDevice)
+        self.changeDevice()
+        for option in self.options:
+            if str(option) == "customWidth":
+                GUI.customWidth.setText(str(self.options[option]))
+            elif str(option) == "customHeight":
+                GUI.customHeight.setText(str(self.options[option]))
+            elif str(option) == "GammaSlider":
+                if GUI.GammaSlider.isEnabled():
+                    GUI.GammaSlider.setValue(int(self.options[option]))
+                    self.changeGamma(int(self.options[option]))
+            else:
+                if eval('GUI.' + str(option)).isEnabled():
+                    eval('GUI.' + str(option)).setCheckState(self.options[option])
+        if self.currentFormat != self.profiles[str(GUI.DeviceBox.currentText())]['DefaultFormat']:
+            self.changeFormat(self.currentFormat)
 
-        if self.currentMode == 1:
-            self.modeBasic()
-        elif self.currentMode == 2:
-            self.modeAdvanced()
-        elif self.currentMode == 3:
-            self.modeExpert()
-        self.changeDevice(self.lastDevice)
-        self.changeFormat()
         self.versionCheck.start()
         self.contentServer.start()
         self.hideProgressBar()

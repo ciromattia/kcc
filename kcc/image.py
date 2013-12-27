@@ -119,48 +119,6 @@ class ProfileData:
         'OTHER': ("Other", (0, 0), Palette16, 1.8, (0, 0)),
     }
 
-    ProfileLabels = {
-        "Kindle 1": 'K1',
-        "Kindle 2": 'K2',
-        "Kindle": 'K345',
-        "Kindle Paperwhite": 'KHD',
-        "Kindle DX/DXG": 'KDX',
-        "Kindle Fire": 'KF',
-        "K. Fire HD 7\"": 'KFHD',
-        "K. Fire HD 8.9\"": 'KFHD8',
-        "K. Fire HDX 7\"": 'KFHDX',
-        "K. Fire HDX 8.9\"": 'KFHDX8',
-        "Kobo Mini/Touch": 'KoMT',
-        "Kobo Glow": 'KoG',
-        "Kobo Aura": 'KoA',
-        "Kobo Aura HD": 'KoAHD',
-        "Kindle for Android": 'KFA',
-        "Other": 'OTHER'
-    }
-
-    ProfileLabelsGUI = [
-        "Kindle Paperwhite",
-        "Kindle",
-        "Kindle DX/DXG",
-        "Separator",
-        "Kindle Fire",
-        "K. Fire HD 7\"",
-        "K. Fire HD 8.9\"",
-        "K. Fire HDX 7\"",
-        "K. Fire HDX 8.9\"",
-        "Separator",
-        "Kobo Mini/Touch",
-        "Kobo Glow",
-        "Kobo Aura",
-        "Kobo Aura HD",
-        "Separator",
-        "Other",
-        "Separator",
-        "Kindle for Android",
-        "Kindle 1",
-        "Kindle 2",
-    ]
-
 
 class ComicPage:
     def __init__(self, source, device, fill=None):
