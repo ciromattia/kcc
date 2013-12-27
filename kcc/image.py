@@ -111,6 +111,10 @@ class ProfileData:
         'KFHD8': ("K. Fire HD 8.9\"", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
         'KFHDX': ("K. Fire HDX 7\"", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
         'KFHDX8': ("K. Fire HDX 8.9\"", (1600, 2560), PalleteNull, 1.0, (2400, 3840)),
+        'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8, (900, 1200)),
+        'KoG': ("Kobo Glow", (768, 1024), Palette16, 1.8, (1152, 1536)),
+        'KoA': ("Kobo Aura", (758, 1024), Palette16, 1.8, (1137, 1536)),
+        'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.8, (1620, 2160)),
         'KFA': ("Kindle for Android", (0, 0), PalleteNull, 1.0, (0, 0)),
         'OTHER': ("Other", (0, 0), Palette16, 1.8, (0, 0)),
     }
@@ -126,6 +130,10 @@ class ProfileData:
         "K. Fire HD 8.9\"": 'KFHD8',
         "K. Fire HDX 7\"": 'KFHDX',
         "K. Fire HDX 8.9\"": 'KFHDX8',
+        "Kobo Mini/Touch": 'KoMT',
+        "Kobo Glow": 'KoG',
+        "Kobo Aura": 'KoA',
+        "Kobo Aura HD": 'KoAHD',
         "Kindle for Android": 'KFA',
         "Other": 'OTHER'
     }
@@ -133,19 +141,24 @@ class ProfileData:
     ProfileLabelsGUI = [
         "Kindle Paperwhite",
         "Kindle",
+        "Kindle DX/DXG",
         "Separator",
+        "Kindle Fire",
         "K. Fire HD 7\"",
         "K. Fire HD 8.9\"",
         "K. Fire HDX 7\"",
         "K. Fire HDX 8.9\"",
         "Separator",
-        "Kindle for Android",
+        "Kobo Mini/Touch",
+        "Kobo Glow",
+        "Kobo Aura",
+        "Kobo Aura HD",
+        "Separator",
         "Other",
         "Separator",
+        "Kindle for Android",
         "Kindle 1",
         "Kindle 2",
-        "Kindle DX/DXG",
-        "Kindle Fire"
     ]
 
 

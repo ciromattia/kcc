@@ -865,7 +865,7 @@ def main(argv=None, qtGUI=None):
     otherOptions = OptionGroup(parser, "OTHER")
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
                            help="Device profile (Choose one among K1, K2, K345, KDX, KHD, KF, KFHD, KFHD8, KFHDX,"
-                                " KFHDX8, KFA) [Default=KHD]")
+                                " KFHDX8, KFA, KoMT, KoG, KoA, KoAHD) [Default=KHD]")
     mainOptions.add_option("-q", "--quality", type="int", dest="quality", default="0",
                            help="Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
@@ -1031,9 +1031,12 @@ def checkOptions():
         options.quality = 0
         options.panelview = False
     # Disable all Kindle features for other e-readers
-    if options.profile == 'OTHER':
+    if options.profile == 'OTHER' or 'Ko' in options.profile:
         options.panelview = False
         options.quality = 0
+        # Enable 150% zoom for all non-HD Kobo models
+        if 'Ko' in options.profile and options.profile != "KoAHD":
+            options.quality = 1
     # Kindle for Android profile require target resolution.
     if options.profile == 'KFA' and (options.customwidth == 0 or options.customheight == 0):
         print "ERROR: Kindle for Android profile require --customwidth and --customheight options!"
