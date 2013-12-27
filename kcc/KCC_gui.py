@@ -64,6 +64,8 @@ class Icons:
     def __init__(self):
         self.deviceKindle = QtGui.QIcon()
         self.deviceKindle.addPixmap(QtGui.QPixmap(":/Devices/icons/Kindle.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.deviceKobo = QtGui.QIcon()
+        self.deviceKobo.addPixmap(QtGui.QPixmap(":/Devices/icons/Kobo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.deviceOther = QtGui.QIcon()
         self.deviceOther.addPixmap(QtGui.QPixmap(":/Devices/icons/Other.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
@@ -777,14 +779,16 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.changeFormat()
 
     def changeDevice(self, value, showInfo=True):
-        if value == 9:
+        # Other
+        if value == 15:
             GUI.BasicModeButton.setEnabled(False)
             GUI.AdvModeButton.setEnabled(False)
             if showInfo:
                 self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
                                 'List of supported Non-Kindle devices</a>', 'info')
             self.modeExpert()
-        elif value == 8:
+        # KFA
+        elif value == 17:
             GUI.BasicModeButton.setEnabled(False)
             GUI.AdvModeButton.setEnabled(False)
             self.modeExpert(True)
@@ -792,26 +796,35 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.BasicModeButton.setEnabled(True)
             GUI.AdvModeButton.setEnabled(True)
             self.modeBasic()
-        if value in [9, 11, 12, 13]:
+        # Other, K1, K2, DX/DXG, KoMT, KoG, KoA, KoAHD
+        if value in [15, 18, 19, 2, 10, 11, 12, 13]:
             GUI.QualityBox.setChecked(False)
             GUI.QualityBox.setEnabled(False)
             self.QualityBoxDisabled = True
-        if value in [4, 5, 6, 7]:
+        # KoMT, KoG, KoA, KoAHD
+        if value in [10, 11, 12, 13]:
+            GUI.FormatBox.setCurrentIndex(2)
+        # K. Fire
+        if value in [5, 6, 7, 8]:
             if GUI.UpscaleBox.isEnabled():
                 GUI.UpscaleBox.setChecked(True)
         else:
+            # Other, K1, K2, DX/DXG
             if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked() \
-                    and str(GUI.FormatBox.currentText()) != 'CBZ' and value not in [9, 11, 12, 13]:
+                    and str(GUI.FormatBox.currentText()) != 'CBZ' and value not in [15, 18, 19, 2]:
                 GUI.QualityBox.setEnabled(True)
                 self.QualityBoxDisabled = False
 
     def changeFormat(self):
         if str(GUI.FormatBox.currentText()) == 'CBZ':
+            GUI.MangaBox.setChecked(False)
+            GUI.MangaBox.setEnabled(False)
             GUI.QualityBox.setChecked(False)
             GUI.QualityBox.setEnabled(False)
         else:
             if not GUI.WebtoonBox.isChecked() and not GUI.ProcessingBox.isChecked() and not self.QualityBoxDisabled:
                 GUI.QualityBox.setEnabled(True)
+            GUI.MangaBox.setEnabled(True)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -1081,6 +1094,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 GUI.DeviceBox.addItem(self.icons.deviceOther, profile)
             elif profile == "Separator":
                 GUI.DeviceBox.insertSeparator(GUI.DeviceBox.count()+1)
+            elif 'Ko' in profile:
+                GUI.DeviceBox.addItem(self.icons.deviceKobo, profile)
             else:
                 GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
         if self.lastDevice > GUI.DeviceBox.count():
