@@ -110,9 +110,6 @@ class WebServerHandler(BaseHTTPRequestHandler):
             if self.path.endswith('.mobi'):
                 mimetype = 'application/x-mobipocket-ebook'
                 sendReply = True
-            if self.path.endswith('.azw3'):
-                mimetype = 'application/x-mobipocket-ebook'
-                sendReply = True
             if self.path.endswith('.epub'):
                 mimetype = 'application/epub+zip'
                 sendReply = True
@@ -495,12 +492,8 @@ class WorkerThread(QtCore.QThread):
                                 GUI.progress.content = ''
                                 mobiPath = item.replace('.epub', '.mobi')
                                 os.remove(mobiPath + '_toclean')
-                                if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX', 'KFHDX8', 'KFA']:
-                                    move(mobiPath, mobiPath.replace('.mobi', '.azw3'))
-                                    mobiPath = item.replace('.mobi', '.azw3')
                                 GUI.completedWork[os.path.basename(mobiPath).encode('utf-8')] = mobiPath.encode('utf-8')
-                                self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files... <b>Done!</b>', 'info',
-                                          True)
+                            self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files... <b>Done!</b>', 'info', True)
                         else:
                             GUI.progress.content = ''
                             for item in outputPath:
