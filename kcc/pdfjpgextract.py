@@ -24,13 +24,16 @@ __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jas
 __docformat__ = 'restructuredtext en'
 
 import os
+from random import choice
+from string import ascii_uppercase, digits
 
 
 class PdfJpgExtract:
     def __init__(self, origFileName):
         self.origFileName = origFileName
         self.filename = os.path.splitext(origFileName)
-        self.path = self.filename[0] + "-KCC-TMP"
+        # noinspection PyUnusedLocal
+        self.path = self.filename[0] + "-KCC-TMP-" + ''.join(choice(ascii_uppercase + digits) for x in range(3))
 
     def getPath(self):
         return self.path
@@ -63,7 +66,6 @@ class PdfJpgExtract:
 
             istart += startfix
             iend += endfix
-            print "JPG %d from %d to %d" % (njpg, istart, iend)
             jpg = pdf[istart:iend]
             jpgfile = file(self.path + "/jpg%d.jpg" % njpg, "wb")
             jpgfile.write(jpg)
