@@ -816,6 +816,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.changeGamma(0)
         if profile['DefaultUpscale']:
             GUI.UpscaleBox.setChecked(True)
+        if str(GUI.DeviceBox.currentText()) == 'Other':
+            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
+                            'List of supported Non-Kindle devices.</a>', 'info')
 
     def changeFormat(self, outputFormat=None):
         profile = GUI.profiles[str(GUI.DeviceBox.currentText())]
@@ -1070,8 +1073,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
         statusBarLabel = QtGui.QLabel('<b><a href="http://kcc.vulturis.eu/">HOMEPAGE</a> - <a href="https://github.com/'
                                       'ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DONATE</a>'
-                                      ' - <a href="https://github.com/ciromattia/kcc/blob/master/README.md#kcc">README<'
-                                      '/a> - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a></b>')
+                                      ' - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a></b>')
         statusBarLabel.setAlignment(QtCore.Qt.AlignCenter)
         statusBarLabel.setStyleSheet(self.statusBarStyle)
         statusBarLabel.setOpenExternalLinks(True)
@@ -1084,7 +1086,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')
         if self.firstStart:
             self.addMessage('Since you are using <b>KCC</b> for first time please see few '
-                            '<a href="https://github.com/ciromattia/kcc#important-tips">important tips</a>.', 'info')
+                            '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
+                            'info')
         kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
         if kindleGenExitCode.wait() == 0:
             self.KindleGen = True
