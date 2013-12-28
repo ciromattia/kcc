@@ -837,14 +837,18 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 else:
                     tmpFormat = 0
                 GUI.FormatBox.setCurrentIndex(tmpFormat)
-        GUI.MangaBox.setChecked(False)
-        GUI.QualityBox.setChecked(False)
         if str(GUI.FormatBox.currentText()) == 'CBZ':
             GUI.MangaBox.setEnabled(False)
             GUI.QualityBox.setEnabled(False)
+            GUI.MangaBox.setChecked(False)
+            GUI.QualityBox.setChecked(False)
         else:
             GUI.MangaBox.setEnabled(profile['MangaMode'])
+            if not profile['MangaMode']:
+                GUI.MangaBox.setChecked(False)
             GUI.QualityBox.setEnabled(profile['Quality'])
+            if not profile['Quality']:
+                GUI.QualityBox.setChecked(False)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -1165,6 +1169,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.currentFormat = 0
         GUI.DeviceBox.setCurrentIndex(self.lastDevice)
         self.changeDevice()
+        if self.currentFormat != self.profiles[str(GUI.DeviceBox.currentText())]['DefaultFormat']:
+            self.changeFormat(self.currentFormat)
         for option in self.options:
             if str(option) == "customWidth":
                 GUI.customWidth.setText(str(self.options[option]))
@@ -1177,8 +1183,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             else:
                 if eval('GUI.' + str(option)).isEnabled():
                     eval('GUI.' + str(option)).setCheckState(self.options[option])
-        if self.currentFormat != self.profiles[str(GUI.DeviceBox.currentText())]['DefaultFormat']:
-            self.changeFormat(self.currentFormat)
 
         self.versionCheck.start()
         self.contentServer.start()
