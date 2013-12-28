@@ -27,7 +27,7 @@ You can find the latest released binary at the following links:
 - **OS X (10.7 or earlier):** Soon™
 
 ## INPUT FORMATS
-**KCC** can understand and convert, at the moment, the following file types:
+**KCC** can understand and convert, at the moment, the following input types:
 - PNG, JPG, GIF, TIFF, BMP
 - Folders
 - CBZ, ZIP
@@ -36,7 +36,7 @@ You can find the latest released binary at the following links:
 - PDF *(Extracting only contained JPG images)*
 
 ## OPTIONAL REQUIREMENTS
-- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For .mobi generation)*
+- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation)*
 - [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
 - [7za](http://www.7-zip.org/download.html) *(For 7z/CB7 support)*
 
@@ -49,27 +49,10 @@ You can find the latest released binary at the following links:
 
 ## USAGE
 
-### Important tips:
-* Use high quality source files. **This little detail have a major impact on the final result.**
-* Read tooltip of _High/Ultra quality_ option. There are many important informations there.
-* When converting images smaller than device resolution remember to enable upscaling.
-* Panel View (auto zooming every part of page) can be disabled directly on Kindle. There is no KCC option to do that.
-* Check our [wiki](https://github.com/ciromattia/kcc/wiki/Other-devices) for a list of tested Non-Kindle E-Readers.
-* The first image found will be set as the comic's cover.
-* All files/directories will be added to EPUB in alphabetical order.
-* Using high/ultra quality output option with Kindle Fire HD/HDX in most cases is just waste of space.
-* ComicRack metadata will be parsed only if they are saved in *ComicInfo.xml* file.
-
-### Calibre:
-* Calibre can be used to upload files created by KCC.
-* Uploading KCC output with Calibre will remove *Personal* tag from cover.
-* **Don't convert files created by KCC with Calibre!** Any conversion process will corrupt the file!
-* Don't use Calibre reader to preview files created by KCC. It can't parse them correctly.
-
-### GUI 
-
 Should be pretty self-explanatory. All options have detailed informations in tooltips.
 After completed conversion you should find ready file alongside the original input file (same directory).
+
+Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more details.
 
 ### Standalone `comic2ebook.py` usage:
 
