@@ -575,7 +575,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             dnames = ""
         for dname in dnames:
             if unicode(dname) != "":
-                if sys.platform == 'win32':
+                if sys.platform.startswith('win'):
                     dname = dname.replace('/', '\\')
                 self.lastPath = os.path.abspath(os.path.join(unicode(dname), os.pardir))
                 GUI.JobList.addItem(dname)
@@ -1105,8 +1105,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
         else:
             self.KindleGen = False
             formats = ['EPUB', 'CBZ']
-            self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                            '1000765211">kindlegen</a> in PATH! MOBI creation will be disabled.', 'warning')
+            if sys.platform.startswith('win'):
+                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
+                                'kindlegen</a> in KCC directory! MOBI creation will be disabled.', 'warning')
+            else:
+                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
+                                'kindlegen</a> in PATH! MOBI creation will be disabled.', 'warning')
         rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
         rarExitCode = rarExitCode.wait()
         if rarExitCode == 0 or rarExitCode == 7:
