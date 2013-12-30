@@ -151,6 +151,8 @@ class ComicPage:
         self.border = None
         self.noHPV = None
         self.noVPV = None
+        self.noPV = None
+        self.purge = False
         if fill:
             self.fill = fill
         else:
@@ -167,19 +169,23 @@ class ComicPage:
                 os.remove(os.path.join(targetdir, self.filename))
             else:
                 suffix += "_kcchq"
-            if self.noHPV:
-                suffix += "_kccnh"
-            if self.noVPV:
-                suffix += "_kccnv"
-            if self.border:
-                suffix += "_kccxl" + str(self.border[0]) + "_kccyu" + str(self.border[1]) + "_kccxr" +\
-                          str(self.border[2]) + "_kccyd" + str(self.border[3])
-            if forcepng:
-                self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"), "PNG",
-                                optimize=1)
+            if self.noPV:
+                suffix += "_kccnpv"
             else:
-                self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".jpg"), "JPEG",
-                                optimize=1)
+                if self.noHPV:
+                    suffix += "_kccnh"
+                if self.noVPV:
+                    suffix += "_kccnv"
+                if self.border:
+                    suffix += "_kccxl" + str(self.border[0]) + "_kccyu" + str(self.border[1]) + "_kccxr" +\
+                              str(self.border[2]) + "_kccyd" + str(self.border[3])
+            if not self.purge:
+                if forcepng:
+                    self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"),
+                                    "PNG", optimize=1)
+                else:
+                    self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".jpg"),
+                                    "JPEG", optimize=1)
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
@@ -211,8 +217,12 @@ class ComicPage:
             return int(round(float(x)/float(img.image.size[1]), 4) * 10000 * 1.5)
 
     def calculateBorder(self, sourceImage, isHQ=False):
+        if isHQ and sourceImage.purge:
+            self.border = [0, 0, 0, 0]
+            self.noPV = True
+            return
         if self.fill == 'white':
-            # This code trigger only when sourceImage is already saved. So we can break color quantization.
+            # Only already saved files can have P mode. So we can break color quantization.
             if sourceImage.image.mode == 'P':
                 sourceImage.image = sourceImage.image.convert('RGB')
             border = ImageChops.invert(sourceImage.image).getbbox()
@@ -246,10 +256,13 @@ class ComicPage:
             size = (self.size[0], self.size[1])
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
-        # If image is smaller than device resolution and upscale is off - Just expand it by adding margins
-        if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1] and not upscale:
-            borderw = (self.size[0] - self.image.size[0]) / 2
-            borderh = (self.size[1] - self.image.size[1]) / 2
+        # If image is smaller than target resolution and upscale is off - Just expand it by adding margins
+        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and not upscale:
+            borderw = (size[0] - self.image.size[0]) / 2
+            borderh = (size[1] - self.image.size[1]) / 2
+            # PV is disabled when source image is smaller than device screen and upscale is off - So we drop HQ image
+            if qualityMode == 2 and self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
+                self.purge = True
             self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
             return self.image
         # If stretching is on - Resize without other considerations
@@ -261,7 +274,7 @@ class ComicPage:
             self.image = self.image.resize(size, method)
             return self.image
         # Otherwise - Upscale/Downscale
-        ratioDev = float(self.size[0]) / float(self.size[1])
+        ratioDev = float(size[0]) / float(size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
             self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
@@ -426,7 +439,7 @@ class ComicPage:
 
     def getImageFill(self):
         fill = 0
-        # Search fom horizontal solid lines
+        # Search for horizontal solid lines
         startY = 0
         stopY = 4
         searching = True
@@ -440,7 +453,7 @@ class ComicPage:
                 startY = self.image.size[1] - 4
                 stopY = self.image.size[1]
                 searching = False
-        # Search fom vertical solid lines
+        # Search for vertical solid lines
         startX = 0
         stopX = 4
         searching = True

@@ -52,6 +52,10 @@ def buildHTML(path, imgfile):
             rotatedPage = True
         else:
             rotatedPage = False
+        if "_kccnpv" in str(filename):
+            noPV = True
+        else:
+            noPV = False
         if "_kccnh" in str(filename):
             noHorizontalPV = True
         else:
@@ -89,7 +93,7 @@ def buildHTML(path, imgfile):
                       "<div><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
                       imgfile, "\" class=\"singlePage\"/></div>\n"
                       ])
-        if options.panelview:
+        if options.panelview and not noPV:
             if not noHorizontalPV and not noVerticalPV:
                 if rotatedPage:
                     if options.righttoleft:
