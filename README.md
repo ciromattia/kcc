@@ -109,6 +109,7 @@ Options:
     -y HEIGHT, --height=HEIGHT
                         Height of the target device screen
     -i, --in-place      Overwrite source directory
+    -m, --merge         Combine every directory into a single image before splitting
 
   OTHER:
     -d, --debug         Create debug file for every splitted image
