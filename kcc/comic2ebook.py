@@ -712,9 +712,6 @@ def sanitizeTreeBeforeConversion(filetree):
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD)
-            # Detect corrupted files - Phase 1
-            if os.path.getsize(os.path.join(root, name)) == 0:
-                os.remove(os.path.join(root, name))
         for name in dirs:
             os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD | stat.S_IEXEC)
 
@@ -870,6 +867,25 @@ def preSplitDirectory(path):
         return [path]
 
 
+def detectCorruption(tmpPath, orgPath):
+    for root, dirs, files in os.walk(tmpPath, False):
+        for name in files:
+            if getImageFileName(name) is not None:
+                path = os.path.join(root, name)
+                pathOrg = os.path.join(orgPath, name)
+                if os.path.getsize(path) == 0:
+                    rmtree(os.path.join(tmpPath, '..', '..'), True)
+                    raise RuntimeError('Image file %s is corrupted.' % pathOrg)
+                try:
+                    img = Image.open(path)
+                    img.verify()
+                    img = Image.open(path)
+                    img.load()
+                except:
+                    rmtree(os.path.join(tmpPath, '..', '..'), True)
+                    raise RuntimeError('Image file %s is corrupted.' % pathOrg)
+
+
 def Copyright():
     print ('comic2ebook v%(__version__)s. '
            'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals())
@@ -951,6 +967,7 @@ def main(argv=None, qtGUI=None):
         parser.print_help()
         return
     path = getWorkFolder(args[0])
+    detectCorruption(path + "/OEBPS/Images/", args[0])
     checkComicInfo(path + "/OEBPS/Images/", args[0])
     if options.webtoon:
         if options.customheight > 0:
