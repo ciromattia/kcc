@@ -170,21 +170,6 @@ def splitImage(work):
         print ".",
         fileExpanded = os.path.splitext(name)
         filePath = os.path.join(path, name)
-        # Detect corrupted files
-        try:
-            Image.open(filePath)
-        except IOError:
-            raise RuntimeError('Cannot read image file %s' % filePath)
-        try:
-            image = Image.open(filePath)
-            image.verify()
-        except:
-            raise RuntimeError('Image file %s is corrupted' % filePath)
-        try:
-            image = Image.open(filePath)
-            image.load()
-        except:
-            raise RuntimeError('Image file %s is corrupted' % filePath)
         image = Image.open(filePath)
         image = image.convert('RGB')
         widthImg, heightImg = image.size

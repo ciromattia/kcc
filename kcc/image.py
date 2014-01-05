@@ -122,25 +122,8 @@ class ComicPage:
             self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = device
         except KeyError:
             raise RuntimeError('Unexpected output device %s' % device)
-        # Detect corrupted files - Phase 2
-        try:
-            self.origFileName = source
-            self.filename = os.path.basename(self.origFileName)
-            self.image = Image.open(source)
-        except IOError:
-            raise RuntimeError('Cannot read image file %s' % source)
-        # Detect corrupted files - Phase 3
-        try:
-            self.image = Image.open(source)
-            self.image.verify()
-        except:
-            raise RuntimeError('Image file %s is corrupted' % source)
-        # Detect corrupted files - Phase 4
-        try:
-            self.image = Image.open(source)
-            self.image.load()
-        except:
-            raise RuntimeError('Image file %s is corrupted' % source)
+        self.origFileName = source
+        self.filename = os.path.basename(self.origFileName)
         self.image = Image.open(source)
         self.image = self.image.convert('RGB')
         self.rotated = None
