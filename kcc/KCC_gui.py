@@ -833,7 +833,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 else:
                     tmpFormat = 0
                 GUI.FormatBox.setCurrentIndex(tmpFormat)
-        if str(GUI.FormatBox.currentText()) == 'CBZ':
+        if str(GUI.FormatBox.currentText()) == 'CBZ' or GUI.WebtoonBox.isChecked():
             GUI.MangaBox.setEnabled(False)
             GUI.QualityBox.setEnabled(False)
             GUI.MangaBox.setChecked(False)
@@ -845,6 +845,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.QualityBox.setEnabled(profile['Quality'])
             if not profile['Quality']:
                 GUI.QualityBox.setChecked(False)
+        if GUI.ProcessingBox.isChecked():
+            GUI.QualityBox.setEnabled(False)
+            GUI.QualityBox.setChecked(False)
 
     def stripTags(self, html):
         s = HTMLStripper()
