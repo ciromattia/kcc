@@ -36,6 +36,27 @@ from multiprocessing import Pool, freeze_support
 from xml.dom.minidom import parse
 from uuid import uuid4
 try:
+    # noinspection PyUnresolvedReferences
+    from PIL import Image
+    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
+        print "ERROR: Pillow 2.3.0 or newer is required!"
+        if sys.platform.startswith('linux'):
+            import Tkinter
+            import tkMessageBox
+            importRoot = Tkinter.Tk()
+            importRoot.withdraw()
+            tkMessageBox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
+        exit(1)
+except ImportError:
+    print "ERROR: Pillow is not installed!"
+    if sys.platform.startswith('linux'):
+        import Tkinter
+        import tkMessageBox
+        importRoot = Tkinter.Tk()
+        importRoot.withdraw()
+        tkMessageBox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
+    exit(1)
+try:
     from PyQt4 import QtCore
 except ImportError:
     QtCore = None
