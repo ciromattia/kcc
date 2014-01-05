@@ -953,12 +953,10 @@ def main(argv=None, qtGUI=None):
     path = getWorkFolder(args[0])
     checkComicInfo(path + "/OEBPS/Images/", args[0])
     if options.webtoon:
-        if GUI:
-            GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Splitting images')
         if options.customheight > 0:
-            comic2panel.main(['-y ' + str(options.customheight), '-i', path], qtGUI)
+            comic2panel.main(['-y ' + str(options.customheight), '-i', '-m', path], qtGUI)
         else:
-            comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', path], qtGUI)
+            comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', '-m', path], qtGUI)
     if options.imgproc:
         print "\nProcessing images..."
         if GUI:
