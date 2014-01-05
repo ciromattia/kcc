@@ -243,6 +243,9 @@ class ComicPage:
             if qualityMode == 2 and self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
                 self.purge = True
             self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
+            # Border can't be float so sometimes image might be 1px too small/large
+            if self.image.size[0] != size[0] or self.image.size[1] != size[1]:
+                self.image = ImageOps.fit(self.image, size, method=Image.BICUBIC, centering=(0.5, 0.5))
             return self.image
         # If stretching is on - Resize without other considerations
         if stretch:
