@@ -24,7 +24,6 @@ You can find the latest released binary at the following links:
 - **Windows:** [http://kcc.vulturis.eu/Windows/](http://kcc.vulturis.eu/Windows/)
 - **Linux:** [http://kcc.vulturis.eu/Linux/](http://kcc.vulturis.eu/Linux/)
 - **OS X (10.8 or later):** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
-- **OS X (10.7 or earlier):** Soon™
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
@@ -43,7 +42,7 @@ You can find the latest released binary at the following links:
 ### For compiling/running from source:
 - Python 2.7 - Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows.
 - [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt/download) - Please refer to official documentation for installing into your system.
-- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.2.1+ - For comic optimizations. Please refer to official documentation for installing into your system.
+- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.3.0+ - For comic optimizations. Please refer to official documentation for installing into your system.
 - [Psutil](https://code.google.com/p/psutil/) - Please refer to official documentation for installing into your system.
 - **To build OS X release you need a modified QT:** [patch](https://github.com/ciromattia/kcc/blob/master/other/QT-4.8.5-QListWidget.patch)
 

@@ -40,7 +40,7 @@ from xml.dom.minidom import parse
 from HTMLParser import HTMLParser
 from KCC_rc_web import WebContent
 try:
-    #noinspection PyUnresolvedReferences
+    # noinspection PyUnresolvedReferences
     from psutil import TOTAL_PHYMEM, Popen
 except ImportError:
     print "ERROR: Psutil is not installed!"
