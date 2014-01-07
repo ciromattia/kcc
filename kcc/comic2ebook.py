@@ -29,8 +29,9 @@ import re
 import stat
 import string
 import unicodedata
+import zipfile
 from tempfile import mkdtemp
-from shutil import move, copyfile, copytree, rmtree, make_archive
+from shutil import move, copyfile, copytree, rmtree
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, freeze_support
 from xml.dom.minidom import parse
@@ -258,7 +259,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "<dc:language>en-US</dc:language>\n",
                   "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n"])
     for author in options.authors:
-        f.writelines(["<dc:Creator>", author.encode('utf-8'), "</dc:Creator>\n"])
+        f.writelines(["<dc:creator>", author.encode('utf-8'), "</dc:creator>\n"])
     f.writelines(["<meta name=\"generator\" content=\"KindleComicConverter-" + __version__ + "\"/>\n",
                   "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
                   "<meta name=\"region-mag\" content=\"true\"/>\n",
@@ -305,9 +306,6 @@ def buildOPF(dstdir, title, filelist, cover=None):
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
-    f = open(os.path.join(dstdir, 'mimetype'), 'w')
-    f.write('application/epub+zip')
-    f.close()
     f = open(os.path.join(dstdir, 'META-INF', 'container.xml'), 'w')
     f.writelines(["<?xml version=\"1.0\"?>\n",
                   "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\n",
@@ -886,6 +884,21 @@ def detectCorruption(tmpPath, orgPath):
                     raise RuntimeError('Image file %s is corrupted.' % pathOrg)
 
 
+def makeZIP(zipFilename, baseDir, isEPUB=False):
+    zipFilename = os.path.abspath(zipFilename) + '.zip'
+    zipOutput = zipfile.ZipFile(zipFilename, 'w', zipfile.ZIP_DEFLATED)
+    if isEPUB:
+        zipOutput.writestr('mimetype', 'application/epub+zip', zipfile.ZIP_STORED)
+    for dirpath, dirnames, filenames in os.walk(baseDir):
+        for name in filenames:
+            path = os.path.normpath(os.path.join(dirpath, name))
+            aPath = os.path.normpath(os.path.join(dirpath.replace(baseDir, ''), name))
+            if os.path.isfile(path):
+                zipOutput.write(path, aPath)
+    zipOutput.close()
+    return zipFilename
+
+
 def Copyright():
     print ('comic2ebook v%(__version__)s. '
            'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals())
@@ -1007,7 +1020,7 @@ def main(argv=None, qtGUI=None):
                 filepath.append(getOutputFilename(args[0], options.output, '.cbz', ' ' + str(tomeNumber)))
             else:
                 filepath.append(getOutputFilename(args[0], options.output, '.cbz', ''))
-            make_archive(tome + '_comic', 'zip', tome + '/OEBPS/Images')
+            makeZIP(tome + '_comic', tome + '/OEBPS/Images')
         else:
             print "\nCreating EPUB structure..."
             genEpubStruct(tome)
@@ -1016,7 +1029,7 @@ def main(argv=None, qtGUI=None):
                 filepath.append(getOutputFilename(args[0], options.output, '.epub', ' ' + str(tomeNumber)))
             else:
                 filepath.append(getOutputFilename(args[0], options.output, '.epub', ''))
-            make_archive(tome + '_comic', 'zip', tome)
+            makeZIP(tome + '_comic', tome, True)
         move(tome + '_comic.zip', filepath[-1])
         rmtree(tome, True)
         if GUI:
