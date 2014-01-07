@@ -235,6 +235,14 @@ class ComicPage:
             size = (self.size[0], self.size[1])
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
+        # If stretching is on - Resize without other considerations
+        if stretch:
+            if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
+                method = Image.BICUBIC
+            else:
+                method = Image.ANTIALIAS
+            self.image = self.image.resize(size, method)
+            return self.image
         # If image is smaller than target resolution and upscale is off - Just expand it by adding margins
         if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and not upscale:
             borderw = (size[0] - self.image.size[0]) / 2
@@ -246,14 +254,6 @@ class ComicPage:
             # Border can't be float so sometimes image might be 1px too small/large
             if self.image.size[0] != size[0] or self.image.size[1] != size[1]:
                 self.image = ImageOps.fit(self.image, size, method=Image.BICUBIC, centering=(0.5, 0.5))
-            return self.image
-        # If stretching is on - Resize without other considerations
-        if stretch:
-            if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
-                method = Image.BICUBIC
-            else:
-                method = Image.ANTIALIAS
-            self.image = self.image.resize(size, method)
             return self.image
         # Otherwise - Upscale/Downscale
         ratioDev = float(size[0]) / float(size[1])
