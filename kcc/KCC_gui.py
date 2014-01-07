@@ -1168,6 +1168,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
         if self.lastDevice > GUI.DeviceBox.count():
             self.lastDevice = 0
+        if profilesGUI[self.lastDevice] == "Separator":
+            self.lastDevice = 0
         if self.currentFormat > GUI.FormatBox.count():
             self.currentFormat = 0
         GUI.DeviceBox.setCurrentIndex(self.lastDevice)
