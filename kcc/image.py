@@ -408,47 +408,35 @@ class ComicPage:
             RBGW.append(histogram[i] + histogram[256 + i] + histogram[512 + i])
         white = 0
         black = 0
-        for i in range(253, 256):
+        for i in range(251, 256):
             white += RBGW[i]
-        for i in range(3):
+        for i in range(5):
             black += RBGW[i]
-        if black > pixelCount*0.5 and white == 0:
+        if black > pixelCount*0.8 and white == 0:
             return 1
-        elif white > pixelCount*0.5 and black == 0:
+        elif white > pixelCount*0.8 and black == 0:
             return -1
         else:
             return False
 
-    def getImageFill(self):
+    def getImageFill(self, webtoon):
         fill = 0
-        # Search for horizontal solid lines
-        startY = 0
-        stopY = 4
-        searching = True
-        while stopY <= self.image.size[1]:
-            checkSolid = self.getImageHistogram(self.image.crop((0, startY, self.image.size[0], stopY)))
-            if checkSolid:
-                fill += checkSolid
-            startY = stopY + 1
-            stopY = startY + 4
-            if stopY > self.image.size[1] and searching:
-                startY = self.image.size[1] - 4
-                stopY = self.image.size[1]
-                searching = False
-        # Search for vertical solid lines
-        startX = 0
-        stopX = 4
-        searching = True
-        while stopX <= self.image.size[0]:
-            checkSolid = self.getImageHistogram(self.image.crop((startX, 0, stopX, self.image.size[1])))
-            if checkSolid:
-                fill += checkSolid
-            startX = stopX + 1
-            stopX = startX + 4
-            if stopX > self.image.size[0] and searching:
-                startX = self.image.size[0] - 4
-                stopX = self.image.size[0]
-                searching = False
+        if not webtoon and not self.rotated:
+            # Search for horizontal solid lines
+            startY = 0
+            while startY < self.image.size[1]:
+                checkSolid = self.getImageHistogram(self.image.crop((0, startY, self.image.size[0], startY+1)))
+                if checkSolid:
+                    fill += checkSolid
+                startY += 1
+        else:
+            # Search for vertical solid lines
+            startX = 0
+            while startX < self.image.size[0]:
+                checkSolid = self.getImageHistogram(self.image.crop((startX, 0, startX+1, self.image.size[1])))
+                if checkSolid:
+                    fill += checkSolid
+                startX += 1
         if fill > 0:
             self.fill = 'black'
         else:
