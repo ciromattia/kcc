@@ -333,7 +333,7 @@ def getImageFileName(imgfile):
 
 def applyImgOptimization(img, opt, hqImage=None):
     if not img.fill:
-        img.getImageFill()
+        img.getImageFill(opt.webtoon)
     if not opt.webtoon:
         img.cropWhiteSpace(10.0)
     if opt.cutpagenumbers and not opt.webtoon:
