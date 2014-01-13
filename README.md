@@ -306,6 +306,9 @@ The app relies and includes the following scripts/binaries:
 * Fixed stretching option
 * GUI tweaks and minor bugfixes
 
+####3.7.1:
+* Hotfixed Kobo profiles
+
 ## COPYRIGHT
 
 Copyright (c) 2012-2013 Ciro Mattia Gonano and Paweł Jastrzębski.  
