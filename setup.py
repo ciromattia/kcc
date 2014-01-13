@@ -11,7 +11,7 @@ Usage (Windows):
 from sys import platform
 
 NAME = "KindleComicConverter"
-VERSION = "3.6.2"
+VERSION = "3.7"
 MAIN = "kcc.py"
 
 if platform == "darwin":
@@ -44,7 +44,7 @@ if platform == "darwin":
                             CFBundleTypeRole='Viewer',
                         )
                     ],
-                    LSMinimumSystemVersion='10.6.0',
+                    LSMinimumSystemVersion='10.8.0',
                     LSEnvironment=dict(
                         PATH='/usr/local/bin:/usr/bin:/bin'
                     ),

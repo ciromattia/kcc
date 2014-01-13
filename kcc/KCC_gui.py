@@ -17,7 +17,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '3.6.2'
+__version__ = '3.7'
 __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
@@ -1076,7 +1076,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
         statusBarLabel = QtGui.QLabel('<b><a href="http://kcc.vulturis.eu/">HOMEPAGE</a> - <a href="https://github.com/'
                                       'ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DONATE</a>'
-                                      ' - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a></b>')
+                                      ' - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a>'
+                                      ' - <a href="http://www.mobileread.com/forums/showthread.php?t=207461">FORUM</a>'
+                                      '</b>')
         statusBarLabel.setAlignment(QtCore.Qt.AlignCenter)
         statusBarLabel.setStyleSheet(self.statusBarStyle)
         statusBarLabel.setOpenExternalLinks(True)

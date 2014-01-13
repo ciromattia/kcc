@@ -1,6 +1,6 @@
 ﻿# KCC
 
-**Kindle Comic Converter** is a Python app to convert comic files or folders to ePub or Panel View MOBI.
+**Kindle Comic Converter** is a Python app to convert comic files or folders to ePub, Panel View MOBI or E-Ink optimized CBZ.
 It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
 actually a comic to EPUB converter that every e-reader owner can happily use**_.
 It can also optionally optimize images by applying a number of transformations.
@@ -11,7 +11,8 @@ Amazon's tool is for comic publishers and involves a lot of manual effort, while
 _KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;-)
 
 ### Issues / new features / donations
-If you have some problems using KCC please [file an issue here](https://github.com/ciromattia/kcc/issues/new).  
+If you have general questions about usage, feedback etc. please [post it here](http://www.mobileread.com/forums/showthread.php?t=207461).
+If you have some **technical** problems using KCC please [file an issue here](https://github.com/ciromattia/kcc/issues/new).
 If you can fix an open issue, fork & make a pull request.  
 If you want more chances an issue is fixes or your wanted feature added, consider [placing a bounty](https://www.bountysource.com/trackers/65571-ciromattia-kcc)!  
 
@@ -23,12 +24,11 @@ If you find **KCC** valuable you can consider donating to the authors:
 You can find the latest released binary at the following links:
 - **Windows:** [http://kcc.vulturis.eu/Windows/](http://kcc.vulturis.eu/Windows/)
 - **Linux:** [http://kcc.vulturis.eu/Linux/](http://kcc.vulturis.eu/Linux/)
-- **OS X (10.8 or later):** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
+- **OS X 10.8+:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
-- PNG, JPG, GIF, TIFF, BMP
-- Folders
+- Folders containing: PNG, JPG, GIF, TIFF or BMP files
 - CBZ, ZIP
 - CBR, RAR *(With `unrar` executable)*
 - CB7, 7Z *(With `7za` executable)*
@@ -132,11 +132,14 @@ The app relies and includes the following scripts/binaries:
 * [Kindle Paperwhite](http://kcc.vulturis.eu/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.vulturis.eu/Samples/Ubunchu!-K345.mobi)
 * [Kindle DX/DXG](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
-* [Kindle Fire](http://kcc.vulturis.eu/Samples/Ubunchu!-KF.mobi)
 * [Kindle Fire HD](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD.mobi)
 * [Kindle Fire HD 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD8.mobi)
 * [Kindle Fire HDX](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX.mobi)
 * [Kindle Fire HDX 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX8.mobi)
+* [Kobo Mini/Touch](http://kcc.vulturis.eu/Samples/Ubunchu!-KoMT.cbz)
+* [Kobo Glow](http://kcc.vulturis.eu/Samples/Ubunchu!-KoG.cbz)
+* [Kobo Aura](http://kcc.vulturis.eu/Samples/Ubunchu!-KoA.cbz)
+* [Kobo Aura HD](http://kcc.vulturis.eu/Samples/Ubunchu!-KoAHD.cbz)
 
 ## CHANGELOG
 ####1.0
@@ -293,6 +296,15 @@ The app relies and includes the following scripts/binaries:
 ####3.6.2:
 * Fixed previous PNG output fix
 * Fixed Panel View anomalies
+
+####3.7:
+* Added profiles for KOBO devices
+* Improved Panel View support
+* Improved WebToon splitter
+* Improved margin color autodetection
+* Tweaked EPUB output
+* Fixed stretching option
+* GUI tweaks and minor bugfixes
 
 ## COPYRIGHT
 
