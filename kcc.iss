@@ -1,5 +1,5 @@
 ﻿#define MyAppName "Kindle Comic Converter"
-#define MyAppVersion "3.6.2"
+#define MyAppVersion "3.7"
 #define MyAppPublisher "Ciro Mattia Gonano, Paweł Jastrzębski"
 #define MyAppURL "http://kcc.vulturis.eu/"
 #define MyAppExeName "KCC.exe"
