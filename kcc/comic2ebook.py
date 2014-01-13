@@ -1088,8 +1088,8 @@ def checkOptions():
         options.panelview = False
         options.quality = 0
         # Enable 150% zoom for all non-HD Kobo models
-        if 'Ko' in options.profile and options.profile != "KoAHD":
-            options.quality = 1
+        #if 'Ko' in options.profile and options.profile != "KoAHD":
+            #options.quality = 1
     # Kindle for Android profile require target resolution.
     if options.profile == 'KFA' and (options.customwidth == 0 or options.customheight == 0):
         print "ERROR: Kindle for Android profile require --customwidth and --customheight options!"
