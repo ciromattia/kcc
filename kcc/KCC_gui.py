@@ -833,7 +833,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 else:
                     tmpFormat = 0
                 GUI.FormatBox.setCurrentIndex(tmpFormat)
-        if str(GUI.FormatBox.currentText()) == 'CBZ' or GUI.WebtoonBox.isChecked():
+        if (str(GUI.FormatBox.currentText()) == 'CBZ' and not 'Kobo' in str(GUI.DeviceBox.currentText())) or \
+                GUI.WebtoonBox.isChecked():
             GUI.MangaBox.setEnabled(False)
             GUI.QualityBox.setEnabled(False)
             GUI.MangaBox.setChecked(False)
@@ -906,6 +907,11 @@ class KCCGUI(KCC_ui.Ui_KCC):
             if self.currentMode > 2 and (str(GUI.customWidth.text()) == '' or str(GUI.customHeight.text()) == ''):
                 GUI.JobList.clear()
                 self.addMessage('Target resolution is not set!', 'error')
+                self.needClean = True
+                return
+            if 'Kobo' in str(GUI.DeviceBox.currentText()) and GUI.QualityBox.checkState() == 2:
+                GUI.JobList.clear()
+                self.addMessage('Kobo devices can\'t use ultra quality mode!', 'error')
                 self.needClean = True
                 return
             self.worker.start()
@@ -1034,13 +1040,13 @@ class KCCGUI(KCC_ui.Ui_KCC):
                                 'DefaultUpscale': True, 'Label': 'KFHDX'},
             "K. Fire HDX 8.9\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                   'DefaultUpscale': True, 'Label': 'KFHDX8'},
-            "Kobo Mini/Touch": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Mini/Touch": {'MangaMode': False, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                                 'DefaultUpscale': False, 'Label': 'KoMT'},
-            "Kobo Glow": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Glow": {'MangaMode': False, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                           'DefaultUpscale': False, 'Label': 'KoG'},
-            "Kobo Aura": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Aura": {'MangaMode': False, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                           'DefaultUpscale': False, 'Label': 'KoA'},
-            "Kobo Aura HD": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Aura HD": {'MangaMode': False, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                              'DefaultUpscale': False, 'Label': 'KoAHD'},
             "Other": {'MangaMode': False, 'Quality': False, 'ForceExpert': True, 'DefaultFormat': 1,
                       'DefaultUpscale': False, 'Label': 'OTHER'},

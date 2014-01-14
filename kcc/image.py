@@ -235,6 +235,9 @@ class ComicPage:
             size = (self.size[0], self.size[1])
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
+        # If image is small and HQ mode is on we have to force upscaling. Otherwise non-zoomed image will be distorted
+        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and qualityMode == 1 and not stretch:
+            upscale = True
         # If stretching is on - Resize without other considerations
         if stretch:
             if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
