@@ -309,6 +309,9 @@ The app relies and includes the following scripts/binaries:
 ####3.7.1:
 * Hotfixed Kobo profiles
 
+####3.7.2:
+* Fixed problems with HQ mode
+
 ## COPYRIGHT
 
 Copyright (c) 2012-2013 Ciro Mattia Gonano and Paweł Jastrzębski.  
