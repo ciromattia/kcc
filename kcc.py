@@ -27,15 +27,15 @@ import sys
 import os
 try:
     # noinspection PyUnresolvedReferences
-    from PyQt4 import QtCore, QtGui, QtNetwork
+    from PyQt5 import QtCore, QtGui, QtNetwork
 except ImportError:
-    print("ERROR: PyQT4 is not installed!")
+    print("ERROR: PyQT5 is not installed!")
     if sys.platform.startswith('linux'):
         import tkinter
         import tkinter.messagebox
         importRoot = tkinter.Tk()
         importRoot.withdraw()
-        tkinter.messagebox.showerror("KCC - Error", "PyQT4 is not installed!")
+        tkinter.messagebox.showerror("KCC - Error", "PyQT5 is not installed!")
     exit(1)
 from kcc import KCC_gui
 from multiprocessing import freeze_support

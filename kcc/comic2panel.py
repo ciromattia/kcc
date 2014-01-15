@@ -26,7 +26,7 @@ import os
 import sys
 from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
-from multiprocessing import Pool, freeze_support
+from multiprocessing import Pool
 try:
     # noinspection PyUnresolvedReferences
     from PIL import Image, ImageStat
@@ -49,7 +49,7 @@ except ImportError:
         tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
     exit(1)
 try:
-    from PyQt4 import QtCore
+    from PyQt5 import QtCore
 except ImportError:
     QtCore = None
 

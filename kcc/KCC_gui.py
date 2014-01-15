@@ -34,7 +34,7 @@ from shutil import move
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 from subprocess import STDOUT, PIPE
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 from xml.dom.minidom import parse
 from html.parser import HTMLParser
 from .KCC_rc_web import WebContent
