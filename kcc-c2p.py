@@ -23,6 +23,24 @@ __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
+# Dependiences check
+missing = []
+try:
+    # noinspection PyUnresolvedReferences
+    from PIL import Image, ImageOps, ImageStat, ImageChops
+    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
+        missing.append('Pillow 2.3.0+')
+except ImportError:
+    missing.append('Pillow 2.3.0+')
+if len(missing) > 0:
+    print('ERROR: ' + ', '.join(missing) + ' is not installed!')
+    import tkinter
+    import tkinter.messagebox
+    importRoot = tkinter.Tk()
+    importRoot.withdraw()
+    tkinter.messagebox.showerror('KCC - Error', 'ERROR: ' + ', '.join(missing) + ' is not installed!')
+    exit(1)
+
 import sys
 from multiprocessing import freeze_support
 from kcc.comic2panel import main, Copyright

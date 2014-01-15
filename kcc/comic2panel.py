@@ -27,27 +27,7 @@ import sys
 from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
-try:
-    # noinspection PyUnresolvedReferences
-    from PIL import Image, ImageStat
-    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
-        print("ERROR: Pillow 2.3.0 or newer is required!")
-        if sys.platform.startswith('linux'):
-            import tkinter
-            import tkinter.messagebox
-            importRoot = tkinter.Tk()
-            importRoot.withdraw()
-            tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
-        exit(1)
-except ImportError:
-    print("ERROR: Pillow is not installed!")
-    if sys.platform.startswith('linux'):
-        import tkinter
-        import tkinter.messagebox
-        importRoot = tkinter.Tk()
-        importRoot.withdraw()
-        tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
-    exit(1)
+from PIL import Image, ImageStat
 try:
     from PyQt5 import QtCore
 except ImportError:

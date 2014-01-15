@@ -23,22 +23,43 @@ __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
-import sys
-import os
+# Dependiences check
+missing = []
 try:
     # noinspection PyUnresolvedReferences
     from PyQt5 import QtCore, QtGui, QtNetwork, QtWidgets
 except ImportError:
-    print("ERROR: PyQT5 is not installed!")
-    if sys.platform.startswith('linux'):
-        import tkinter
-        import tkinter.messagebox
-        importRoot = tkinter.Tk()
-        importRoot.withdraw()
-        tkinter.messagebox.showerror("KCC - Error", "PyQT5 is not installed!")
+    missing.append('PyQt5')
+try:
+    # noinspection PyUnresolvedReferences
+    from psutil import TOTAL_PHYMEM, Popen
+except ImportError:
+    missing.append('psutil')
+try:
+    # noinspection PyUnresolvedReferences
+    from slugify import slugify
+except ImportError:
+    missing.append('python-slugify')
+try:
+    # noinspection PyUnresolvedReferences
+    from PIL import Image, ImageOps, ImageStat, ImageChops
+    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
+        missing.append('Pillow 2.3.0+')
+except ImportError:
+    missing.append('Pillow 2.3.0+')
+if len(missing) > 0:
+    print('ERROR: ' + ', '.join(missing) + ' is not installed!')
+    import tkinter
+    import tkinter.messagebox
+    importRoot = tkinter.Tk()
+    importRoot.withdraw()
+    tkinter.messagebox.showerror('KCC - Error', 'ERROR: ' + ', '.join(missing) + ' is not installed!')
     exit(1)
-from kcc import KCC_gui
+
+import sys
+import os
 from multiprocessing import freeze_support
+from kcc import KCC_gui
 
 # OS specific PATH variable workarounds
 if sys.platform.startswith('darwin'):
