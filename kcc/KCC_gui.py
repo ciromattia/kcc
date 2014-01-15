@@ -89,7 +89,7 @@ class HTMLStripper(HTMLParser):
 
 
 class WebServerHandler(BaseHTTPRequestHandler):
-    #noinspection PyAttributeOutsideInit
+    # noinspection PyAttributeOutsideInit, PyArgumentList
     def do_GET(self):
         if self.path == '/':
             self.path = '/index.html'
@@ -109,7 +109,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
-                self.wfile.write('<!DOCTYPE html>\n'
+                self.wfile.write(bytes('<!DOCTYPE html>\n'
                                  '<html lang="en">\n'
                                  '<head><meta charset="utf-8">\n'
                                  '<link href="' + GUI.webContent.favicon + '" rel="icon" type="image/x-icon" />\n'
@@ -118,16 +118,16 @@ class WebServerHandler(BaseHTTPRequestHandler):
                                  '<body>\n'
                                  '<div style="text-align: center; font-size:25px">\n'
                                  '<p style="font-size:50px">- <img style="vertical-align: middle" '
-                                 'alt="KCC Logo" src="' + GUI.webContent.logo + '" /> -</p>\n')
+                                 'alt="KCC Logo" src="' + GUI.webContent.logo + '" /> -</p>\n', 'UTF-8'))
                 if len(GUI.completedWork) > 0 and not GUI.conversionAlive:
                     for key in sorted(GUI.completedWork.keys()):
-                        self.wfile.write('<p><a href="' + key + '">' + key.split('.')[0] + '</a></p>\n')
+                        self.wfile.write(bytes('<p><a href="' + key + '">' + key.split('.')[0] + '</a></p>\n', 'UTF-8'))
                 else:
-                    self.wfile.write('<p style="font-weight: bold">No downloads are available.<br/>'
-                                     'Convert some files and refresh this page.</p>\n')
-                self.wfile.write('</div>\n'
+                    self.wfile.write(bytes('<p style="font-weight: bold">No downloads are available.<br/>'
+                                     'Convert some files and refresh this page.</p>\n', 'UTF-8'))
+                self.wfile.write(bytes('</div>\n'
                                  '</body>\n'
-                                 '</html>\n')
+                                 '</html>\n', 'UTF-8'))
             elif sendReply:
                 outputFile = GUI.completedWork[urllib.parse.unquote(self.path[1:])].decode('utf-8')
                 fp = open(outputFile, 'rb')
@@ -314,6 +314,8 @@ class WorkerThread(QtCore.QThread):
         # Let's make sure that we don't use too many threads
         if self.threadNumber > QtCore.QThread.idealThreadCount():
             self.threadNumber = QtCore.QThread.idealThreadCount()
+        self.progressBarTick = MW.progressBarTick
+        self.addMessage = MW.addMessage
 
     def __del__(self):
         self.wait()
@@ -331,7 +333,7 @@ class WorkerThread(QtCore.QThread):
         MW.modeConvert.emit(True)
 
     def addResult(self, output):
-        MW.progressBarTick.emit(False, False)
+        MW.progressBarTick.emit('tick')
         self.workerOutput.append(output)
 
     def run(self):
@@ -433,9 +435,9 @@ class WorkerThread(QtCore.QThread):
                 else:
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
-                    MW.progressBarTick.emit('status', 'Creating MOBI files')
-                    MW.progressBarTick.emit(len(outputPath)*2+1, False)
-                    MW.progressBarTick.emit(False, False)
+                    MW.progressBarTick.emit('Creating MOBI files')
+                    MW.progressBarTick.emit(str(len(outputPath)*2+1))
+                    MW.progressBarTick.emit('tick')
                     MW.addMessage.emit('Creating MOBI files', 'info', False)
                     GUI.progress.content = 'Creating MOBI files'
                     self.workerOutput = []
@@ -463,8 +465,6 @@ class WorkerThread(QtCore.QThread):
                     if self.kindlegenErrorCode[0] == 0:
                         GUI.progress.content = ''
                         MW.addMessage.emit('Creating MOBI files... <b>Done!</b>', 'info', True)
-                        MW.addMessage.emit('Cleaning MOBI files is currently disabled in this branch', 'info', False)
-                        GUI.progress.content = 'Cleaning MOBI files is currently disabled in this branch'
                         MW.addMessage.emit('Cleaning MOBI files', 'info', False)
                         GUI.progress.content = 'Cleaning MOBI files'
                         self.workerOutput = []
@@ -528,7 +528,7 @@ class WorkerThread(QtCore.QThread):
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def __init__(self):
-        if not sys.platform.startswith('darwin') and self.isSystemTrayAvailable():
+        if self.isSystemTrayAvailable():
             QtWidgets.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
             self.activated.connect(self.catchClicks)
 
@@ -538,23 +538,22 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         MW.activateWindow()
 
     def addTrayMessage(self, message, icon):
-        if not sys.platform.startswith('darwin'):
-            icon = eval('QtGui.QSystemTrayIcon.' + icon)
-            if self.supportsMessages() and not MW.isActiveWindow():
-                self.showMessage('Kindle Comic Converter', message, icon)
+        icon = eval('QtWidgets.QSystemTrayIcon.' + icon)
+        if self.supportsMessages() and not MW.isActiveWindow():
+            self.showMessage('Kindle Comic Converter', message, icon)
 
 
 class KCCGUI(KCC_ui.Ui_KCC):
-    # TODO: Check dialog
     def selectDir(self):
         if self.needClean:
             self.needClean = False
             GUI.JobList.clear()
         # Dirty, dirty way but OS native QFileDialogs don't support directory multiselect
-        dirDialog = QtWidgets.QFileDialog(MW, 'Select directory', self.lastPath)
+        dirDialog = QtWidgets.QFileDialog(MW, 'Select directory', self.lastPath, 'Directory (*.abcdefg)')
         dirDialog.setFileMode(dirDialog.Directory)
         dirDialog.setOption(dirDialog.ShowDirsOnly, True)
         dirDialog.setOption(dirDialog.DontUseNativeDialog, True)
+        dirDialog.setOption(dirDialog.HideNameFilterDetails, True)
         l = dirDialog.findChild(QtWidgets.QListView, "listView")
         t = dirDialog.findChild(QtWidgets.QTreeView)
         if l:
@@ -573,7 +572,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 GUI.JobList.addItem(dname)
         MW.setFocus()
 
-    # TODO: Check dialog
     def selectFile(self):
         if self.needClean:
             self.needClean = False
@@ -581,20 +579,22 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if self.UnRAR:
             if self.sevenza:
                 fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                                '*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf')
+                                                                'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf)')
             else:
                 fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                                '*.cbz *.cbr *.zip *.rar *.pdf')
+                                                                'Comic (*.cbz *.cbr *.zip *.rar *.pdf)')
         else:
             if self.sevenza:
                 fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                                '*.cbz *.cb7 *.zip *.7z *.pdf')
+                                                                'Comic (*.cbz *.cb7 *.zip *.7z *.pdf)')
             else:
                 fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                                '*.cbz *.zip *.pdf')
-        for fname in fnames:
-            if str(fname) != "":
-                self.lastPath = os.path.abspath(os.path.join(str(fname), os.pardir))
+                                                                'Comic (*.cbz *.zip *.pdf)')
+        for fname in fnames[0]:
+            if fname != '':
+                if sys.platform.startswith('win'):
+                    fname = fname.replace('/', '\\')
+                self.lastPath = os.path.abspath(os.path.join(fname, os.pardir))
                 GUI.JobList.addItem(fname)
 
     def clearJobs(self):
@@ -849,8 +849,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
         s.feed(html)
         return s.get_data()
 
-    def addMessage(self, message, icon=None, replace=False):
-        if icon:
+    def addMessage(self, message, icon, replace=False):
+        if icon != '':
             icon = eval('self.icons.' + icon)
             item = QtWidgets.QListWidgetItem(icon, '    ' + self.stripTags(message))
         else:
@@ -873,15 +873,15 @@ class KCCGUI(KCC_ui.Ui_KCC):
     def showDialog(self, message):
         QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
 
-    def updateProgressbar(self, new=False, status=False):
-        if new == "status":
-            GUI.ProgressBar.setFormat(status)
-        elif new:
-            GUI.ProgressBar.setMaximum(new - 1)
+    def updateProgressbar(self, command):
+        if command == 'tick':
+            GUI.ProgressBar.setValue(GUI.ProgressBar.value() + 1)
+        elif command.isdigit():
+            GUI.ProgressBar.setMaximum(int(command) - 1)
             GUI.ProgressBar.reset()
             GUI.ProgressBar.show()
         else:
-            GUI.ProgressBar.setValue(GUI.ProgressBar.value() + 1)
+            GUI.ProgressBar.setFormat(command)
 
     def convertStart(self):
         if self.conversionAlive:
@@ -923,6 +923,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if not GUI.ConvertButton.isEnabled():
             event.ignore()
         self.contentServer.stop()
+        self.tray.hide()
         self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())

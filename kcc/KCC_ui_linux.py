@@ -375,4 +375,4 @@ class Ui_KCC(object):
         self.ActionBasic.setText(_translate("KCC", "Basic"))
         self.ActionAdvanced.setText(_translate("KCC", "Advanced"))
 
-import KCC_rc
+from . import KCC_rc

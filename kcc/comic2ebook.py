@@ -343,7 +343,7 @@ def dirImgProcess(path):
                 pagenumber += 1
                 work.append([afile, dirpath, options])
     if GUI:
-        GUI.progressBarTick.emit(pagenumber, False)
+        GUI.progressBarTick.emit(str(pagenumber))
     if len(work) > 0:
         for i in work:
             workerPool.apply_async(func=fileImgProcess, args=(i, ), callback=fileImgProcess_tick)
@@ -365,7 +365,7 @@ def fileImgProcess_tick(output):
         workerOutput.append(output)
         workerPool.terminate()
     if GUI:
-        GUI.progressBarTick.emit(False, False)
+        GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
             workerPool.terminate()
 
@@ -793,11 +793,11 @@ def preSplitDirectory(path):
             if filesNumber > 0:
                 print('\nWARNING: Automatic output splitting failed.')
                 if GUI:
-                    GUI.progressBarTick.emit('Automatic output splitting failed. <a href='
-                                             '"https://github.com/ciromattia/kcc/wiki'
-                                             '/Automatic-output-splitting">'
-                                             'More details.</a>', 'warning', False)
-                    GUI.progressBarTick.emit('', False, False)
+                    GUI.addMessage.emit('Automatic output splitting failed. <a href='
+                                        '"https://github.com/ciromattia/kcc/wiki'
+                                        '/Automatic-output-splitting">'
+                                        'More details.</a>', 'warning', False)
+                    GUI.addMessage.emit('', '', False)
                 return [path]
             detectedSubSubdirectories = False
             detectedFilesInSubdirectories = False
@@ -808,11 +808,11 @@ def preSplitDirectory(path):
                     elif len(dirs) == 0 and detectedSubSubdirectories:
                         print('\nWARNING: Automatic output splitting failed.')
                         if GUI:
-                            GUI.progressBarTick.emit('Automatic output splitting failed. <a href='
-                                                     '"https://github.com/ciromattia/kcc/wiki'
-                                                     '/Automatic-output-splitting">'
-                                                     'More details.</a>', 'warning', False)
-                            GUI.progressBarTick.emit('', False, False)
+                            GUI.addMessage.emit('Automatic output splitting failed. <a href='
+                                                '"https://github.com/ciromattia/kcc/wiki'
+                                                '/Automatic-output-splitting">'
+                                                'More details.</a>', 'warning', False)
+                            GUI.addMessage.emit('', '', False)
                         return [path]
                     if len(files) != 0:
                         detectedFilesInSubdirectories = True
@@ -825,11 +825,11 @@ def preSplitDirectory(path):
             if detectedFilesInSubdirectories and detectedSubSubdirectories:
                 print('\nWARNING: Automatic output splitting failed.')
                 if GUI:
-                    GUI.progressBarTick.emit('Automatic output splitting failed. <a href='
-                                             '"https://github.com/ciromattia/kcc/wiki'
-                                             '/Automatic-output-splitting">'
-                                             'More details.</a>', 'warning', False)
-                    GUI.progressBarTick.emit('', False, False)
+                    GUI.addMessage.emit('Automatic output splitting failed. <a href='
+                                        '"https://github.com/ciromattia/kcc/wiki'
+                                        '/Automatic-output-splitting">'
+                                        'More details.</a>', 'warning', False)
+                    GUI.addMessage.emit('', '', False)
                 return [path]
         # Split directories
         split = splitDirectory(os.path.join(path, 'OEBPS', 'Images'), mode)
@@ -949,7 +949,7 @@ def main(argv=None, qtGUI=None):
     checkOptions()
     if qtGUI:
         GUI = qtGUI
-        GUI.progressBarTick.emit(1, False)
+        GUI.progressBarTick.emit('1')
     else:
         GUI = None
     if len(args) != 1:
@@ -966,10 +966,10 @@ def main(argv=None, qtGUI=None):
     if options.imgproc:
         print("\nProcessing images...")
         if GUI:
-            GUI.progressBarTick.emit('status', 'Processing images')
+            GUI.progressBarTick.emit('Processing images')
         dirImgProcess(path + "/OEBPS/Images/")
     if GUI:
-        GUI.progressBarTick.emit(1, False)
+        GUI.progressBarTick.emit('1')
     sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     if options.batchsplit:
         tomes = preSplitDirectory(path)
@@ -979,11 +979,11 @@ def main(argv=None, qtGUI=None):
     tomeNumber = 0
     if GUI:
         if options.cbzoutput:
-            GUI.progressBarTick.emit('status', 'Compressing CBZ files')
+            GUI.progressBarTick.emit('Compressing CBZ files')
         else:
-            GUI.progressBarTick.emit('status', 'Compressing EPUB files')
-        GUI.progressBarTick.emit(len(tomes) + 1, False)
-        GUI.progressBarTick.emit(False, False)
+            GUI.progressBarTick.emit('Compressing EPUB files')
+        GUI.progressBarTick.emit(str(len(tomes) + 1))
+        GUI.progressBarTick.emit('tick')
     options.baseTitle = options.title
     for tome in tomes:
         if len(tomes) > 1:
@@ -1009,7 +1009,7 @@ def main(argv=None, qtGUI=None):
         move(tome + '_comic.zip', filepath[-1])
         rmtree(tome, True)
         if GUI:
-            GUI.progressBarTick.emit(False, False)
+            GUI.progressBarTick.emit('tick')
     return filepath
 
 
