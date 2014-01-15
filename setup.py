@@ -44,7 +44,7 @@ if platform == "darwin":
                             CFBundleTypeRole='Viewer',
                         )
                     ],
-                    LSMinimumSystemVersion='10.6.0',
+                    LSMinimumSystemVersion='10.8.0',
                     LSEnvironment=dict(
                         PATH='/usr/local/bin:/usr/bin:/bin'
                     ),

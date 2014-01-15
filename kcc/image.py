@@ -25,27 +25,23 @@ from sys import platform
 try:
     # noinspection PyUnresolvedReferences
     from PIL import Image, ImageOps, ImageStat, ImageChops
-    if tuple(map(int, ('2.2.1'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
-        print("ERROR: Pillow 2.2.1 or newer is required!")
+    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
+        print("ERROR: Pillow 2.3.0 or newer is required!")
         if platform.startswith('linux'):
-            #noinspection PyUnresolvedReferences
             import tkinter
-            #noinspection PyUnresolvedReferences
             import tkinter.messagebox
             importRoot = tkinter.Tk()
             importRoot.withdraw()
-            tkinter.messagebox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
+            tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
         exit(1)
 except ImportError:
     print("ERROR: Pillow is not installed!")
     if platform.startswith('linux'):
-        #noinspection PyUnresolvedReferences
         import tkinter
-        #noinspection PyUnresolvedReferences
         import tkinter.messagebox
         importRoot = tkinter.Tk()
         importRoot.withdraw()
-        tkinter.messagebox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
+        tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
     exit(1)
 
 
@@ -111,42 +107,13 @@ class ProfileData:
         'KFHD8': ("K. Fire HD 8.9\"", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
         'KFHDX': ("K. Fire HDX 7\"", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
         'KFHDX8': ("K. Fire HDX 8.9\"", (1600, 2560), PalleteNull, 1.0, (2400, 3840)),
+        'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8, (900, 1200)),
+        'KoG': ("Kobo Glow", (768, 1024), Palette16, 1.8, (1152, 1536)),
+        'KoA': ("Kobo Aura", (758, 1024), Palette16, 1.8, (1137, 1536)),
+        'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.8, (1620, 2160)),
         'KFA': ("Kindle for Android", (0, 0), PalleteNull, 1.0, (0, 0)),
         'OTHER': ("Other", (0, 0), Palette16, 1.8, (0, 0)),
     }
-
-    ProfileLabels = {
-        "Kindle 1": 'K1',
-        "Kindle 2": 'K2',
-        "Kindle": 'K345',
-        "Kindle Paperwhite": 'KHD',
-        "Kindle DX/DXG": 'KDX',
-        "Kindle Fire": 'KF',
-        "K. Fire HD 7\"": 'KFHD',
-        "K. Fire HD 8.9\"": 'KFHD8',
-        "K. Fire HDX 7\"": 'KFHDX',
-        "K. Fire HDX 8.9\"": 'KFHDX8',
-        "Kindle for Android": 'KFA',
-        "Other": 'OTHER'
-    }
-
-    ProfileLabelsGUI = [
-        "Kindle Paperwhite",
-        "Kindle",
-        "Separator",
-        "K. Fire HD 7\"",
-        "K. Fire HD 8.9\"",
-        "K. Fire HDX 7\"",
-        "K. Fire HDX 8.9\"",
-        "Separator",
-        "Kindle for Android",
-        "Other",
-        "Separator",
-        "Kindle 1",
-        "Kindle 2",
-        "Kindle DX/DXG",
-        "Kindle Fire"
-    ]
 
 
 class ComicPage:
@@ -155,31 +122,16 @@ class ComicPage:
             self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = device
         except KeyError:
             raise RuntimeError('Unexpected output device %s' % device)
-        # Detect corrupted files - Phase 2
-        try:
-            self.origFileName = source
-            self.filename = os.path.basename(self.origFileName)
-            self.image = Image.open(source)
-        except IOError:
-            raise RuntimeError('Cannot read image file %s' % source)
-        # Detect corrupted files - Phase 3
-        try:
-            self.image = Image.open(source)
-            self.image.verify()
-        except:
-            raise RuntimeError('Image file %s is corrupted' % source)
-        # Detect corrupted files - Phase 4
-        try:
-            self.image = Image.open(source)
-            self.image.load()
-        except:
-            raise RuntimeError('Image file %s is corrupted' % source)
+        self.origFileName = source
+        self.filename = os.path.basename(self.origFileName)
         self.image = Image.open(source)
         self.image = self.image.convert('RGB')
         self.rotated = None
         self.border = None
         self.noHPV = None
         self.noVPV = None
+        self.noPV = None
+        self.purge = False
         if fill:
             self.fill = fill
         else:
@@ -196,19 +148,23 @@ class ComicPage:
                 os.remove(os.path.join(targetdir, self.filename))
             else:
                 suffix += "_kcchq"
-            if self.noHPV:
-                suffix += "_kccnh"
-            if self.noVPV:
-                suffix += "_kccnv"
-            if self.border:
-                suffix += "_kccxl" + str(self.border[0]) + "_kccyu" + str(self.border[1]) + "_kccxr" +\
-                          str(self.border[2]) + "_kccyd" + str(self.border[3])
-            if forcepng:
-                self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"), "PNG",
-                                optimize=1)
+            if self.noPV:
+                suffix += "_kccnpv"
             else:
-                self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".jpg"), "JPEG",
-                                optimize=1)
+                if self.noHPV:
+                    suffix += "_kccnh"
+                if self.noVPV:
+                    suffix += "_kccnv"
+                if self.border:
+                    suffix += "_kccxl" + str(self.border[0]) + "_kccyu" + str(self.border[1]) + "_kccxr" +\
+                              str(self.border[2]) + "_kccyd" + str(self.border[3])
+            if not self.purge:
+                if forcepng:
+                    self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"),
+                                    "PNG", optimize=1)
+                else:
+                    self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".jpg"),
+                                    "JPEG", optimize=1)
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
@@ -240,8 +196,12 @@ class ComicPage:
             return int(round(float(x)/float(img.image.size[1]), 4) * 10000 * 1.5)
 
     def calculateBorder(self, sourceImage, isHQ=False):
+        if isHQ and sourceImage.purge:
+            self.border = [0, 0, 0, 0]
+            self.noPV = True
+            return
         if self.fill == 'white':
-            # This code trigger only when sourceImage is already saved. So we can break color quantization.
+            # Only already saved files can have P mode. So we can break color quantization.
             if sourceImage.image.mode == 'P':
                 sourceImage.image = sourceImage.image.convert('RGB')
             border = ImageChops.invert(sourceImage.image).getbbox()
@@ -275,12 +235,9 @@ class ComicPage:
             size = (self.size[0], self.size[1])
         else:
             size = (self.panelviewsize[0], self.panelviewsize[1])
-        # If image is smaller than device resolution and upscale is off - Just expand it by adding margins
-        if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1] and not upscale:
-            borderw = (self.size[0] - self.image.size[0]) / 2
-            borderh = (self.size[1] - self.image.size[1]) / 2
-            self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
-            return self.image
+        # If image is small and HQ mode is on we have to force upscaling. Otherwise non-zoomed image will be distorted
+        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and qualityMode == 1 and not stretch:
+            upscale = True
         # If stretching is on - Resize without other considerations
         if stretch:
             if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
@@ -289,8 +246,20 @@ class ComicPage:
                 method = Image.ANTIALIAS
             self.image = self.image.resize(size, method)
             return self.image
+        # If image is smaller than target resolution and upscale is off - Just expand it by adding margins
+        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and not upscale:
+            borderw = (size[0] - self.image.size[0]) / 2
+            borderh = (size[1] - self.image.size[1]) / 2
+            # PV is disabled when source image is smaller than device screen and upscale is off - So we drop HQ image
+            if qualityMode == 2 and self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
+                self.purge = True
+            self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
+            # Border can't be float so sometimes image might be 1px too small/large
+            if self.image.size[0] != size[0] or self.image.size[1] != size[1]:
+                self.image = ImageOps.fit(self.image, size, method=Image.BICUBIC, centering=(0.5, 0.5))
+            return self.image
         # Otherwise - Upscale/Downscale
-        ratioDev = float(self.size[0]) / float(self.size[1])
+        ratioDev = float(size[0]) / float(size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
             self.image = ImageOps.expand(self.image, border=(int(diff / 2), 0), fill=fill)
@@ -433,7 +402,7 @@ class ComicPage:
             self.image = self.image.crop((0, 0, widthImg - diff, heightImg))
         return self.image
 
-    def getImageHistogram(self, image, new=True):
+    def getImageHistogram(self, image):
         histogram = image.histogram()
         RBGW = []
         pixelCount = 0
@@ -446,74 +415,35 @@ class ComicPage:
             white += RBGW[i]
         for i in range(5):
             black += RBGW[i]
-        if new:
-            if black > 0 and white == 0:
-                return 1
-            elif white > 0 and black == 0:
-                return -1
-            else:
-                return False
+        if black > pixelCount*0.8 and white == 0:
+            return 1
+        elif white > pixelCount*0.8 and black == 0:
+            return -1
         else:
-            if black > white and black > pixelCount*0.5:
-                return True
-            else:
-                return False
+            return False
 
-    def getImageFill(self, isWebToon):
-        if isWebToon:
-            fill = 0
-            fill += self.getImageHistogram(self.image.crop((0, 0, self.image.size[0], 5)), False)
-            fill += self.getImageHistogram(self.image.crop((0, self.image.size[1]-5, self.image.size[0],
-                                                            self.image.size[1])), False)
-            if fill == 2:
-                self.fill = 'black'
-            elif fill == 0:
-                self.fill = 'white'
-            else:
-                fill = 0
-                fill += self.getImageHistogram(self.image.crop((0, 0, 5, 5)), False)
-                fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, 0, self.image.size[0], 5)), False)
-                fill += self.getImageHistogram(self.image.crop((0, self.image.size[1]-5, 5, self.image.size[1])), False)
-                fill += self.getImageHistogram(self.image.crop((self.image.size[0]-5, self.image.size[1]-5,
-                                                                self.image.size[0], self.image.size[1])), False)
-                if fill > 1:
-                    self.fill = 'black'
-                else:
-                    self.fill = 'white'
-        else:
-            fill = 0
-            # Search fom horizontal solid lines
+    def getImageFill(self, webtoon):
+        fill = 0
+        if not webtoon and not self.rotated:
+            # Search for horizontal solid lines
             startY = 0
-            stopY = 3
-            searching = True
-            while stopY <= self.image.size[1]:
-                checkSolid = self.getImageHistogram(self.image.crop((0, startY, self.image.size[0], stopY)))
+            while startY < self.image.size[1]:
+                checkSolid = self.getImageHistogram(self.image.crop((0, startY, self.image.size[0], startY+1)))
                 if checkSolid:
                     fill += checkSolid
-                startY = stopY + 1
-                stopY = startY + 3
-                if stopY > self.image.size[1] and searching:
-                    startY = self.image.size[1] - 3
-                    stopY = self.image.size[1]
-                    searching = False
-            # Search fom vertical solid lines
+                startY += 1
+        else:
+            # Search for vertical solid lines
             startX = 0
-            stopX = 3
-            searching = True
-            while stopX <= self.image.size[0]:
-                checkSolid = self.getImageHistogram(self.image.crop((startX, 0, stopX, self.image.size[1])))
+            while startX < self.image.size[0]:
+                checkSolid = self.getImageHistogram(self.image.crop((startX, 0, startX+1, self.image.size[1])))
                 if checkSolid:
                     fill += checkSolid
-                startX = stopX + 1
-                stopX = startX + 3
-                if stopX > self.image.size[0] and searching:
-                    startX = self.image.size[0] - 3
-                    stopX = self.image.size[0]
-                    searching = False
-            if fill > 0:
-                self.fill = 'black'
-            else:
-                self.fill = 'white'
+                startX += 1
+        if fill > 0:
+            self.fill = 'black'
+        else:
+            self.fill = 'white'
 
     def isImageColor(self, image):
         v = ImageStat.Stat(image).var

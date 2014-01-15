@@ -29,29 +29,25 @@ from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, freeze_support
 try:
-    #noinspection PyUnresolvedReferences
+    # noinspection PyUnresolvedReferences
     from PIL import Image, ImageStat
-    if tuple(map(int, ('2.2.1'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
-        print("ERROR: Pillow 2.2.1 or newer is required!")
+    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
+        print("ERROR: Pillow 2.3.0 or newer is required!")
         if sys.platform.startswith('linux'):
-            #noinspection PyUnresolvedReferences
             import tkinter
-            #noinspection PyUnresolvedReferences
             import tkinter.messagebox
             importRoot = tkinter.Tk()
             importRoot.withdraw()
-            tkinter.messagebox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
+            tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
         exit(1)
 except ImportError:
     print("ERROR: Pillow is not installed!")
     if sys.platform.startswith('linux'):
-        #noinspection PyUnresolvedReferences
         import tkinter
-        #noinspection PyUnresolvedReferences
         import tkinter.messagebox
         importRoot = tkinter.Tk()
         importRoot.withdraw()
-        tkinter.messagebox.showerror("KCC - Error", "Pillow 2.2.1 or newer is required!")
+        tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
     exit(1)
 try:
     from PyQt4 import QtCore
@@ -71,6 +67,59 @@ def getImageFileName(imgfile):
              filename[1].lower() != '.jpeg'):
         return None
     return filename
+
+
+def walkLevel(some_dir, level=1):
+    some_dir = some_dir.rstrip(os.path.sep)
+    assert os.path.isdir(some_dir)
+    num_sep = some_dir.count(os.path.sep)
+    for root, dirs, files in os.walk(some_dir):
+        yield root, dirs, files
+        num_sep_this = root.count(os.path.sep)
+        if num_sep + level <= num_sep_this:
+            del dirs[:]
+
+
+def mergeDirectory_tick(output):
+    if output:
+        mergeWorkerOutput.append(output)
+        mergeWorkerPool.terminate()
+    if GUI:
+        GUI.emit(QtCore.SIGNAL("progressBarTick"))
+        if not GUI.conversionAlive:
+            mergeWorkerPool.terminate()
+
+
+def mergeDirectory(work):
+    try:
+        directory = work[0]
+        images = []
+        imagesClear = []
+        sizes = []
+        for root, dirs, files in walkLevel(directory, 0):
+            for name in files:
+                if getImageFileName(name) is not None:
+                    images.append([Image.open(os.path.join(root, name)), os.path.join(root, name)])
+        if len(images) > 0:
+            for i in images:
+                sizes.append(i[0].size[0])
+            mw = max(set(sizes), key=sizes.count)
+            for i in images:
+                if i[0].size[0] == mw:
+                    i[0] = i[0].convert('RGB')
+                    imagesClear.append(i)
+            h = sum(i[0].size[1] for i in imagesClear)
+            result = Image.new('RGB', (mw, h))
+            y = 0
+            for i in imagesClear:
+                result.paste(i[0], (0, y))
+                y += i[0].size[1]
+            for i in imagesClear:
+                os.remove(i[1])
+            savePath = os.path.split(imagesClear[0][1])
+            result.save(os.path.join(savePath[0], os.path.splitext(savePath[1])[0] + '.png'), 'PNG')
+    except StandardError:
+        return str(sys.exc_info()[1])
 
 
 def sanitizePanelSize(panel, opt):
@@ -121,21 +170,6 @@ def splitImage(work):
         print(".", end=' ')
         fileExpanded = os.path.splitext(name)
         filePath = os.path.join(path, name)
-        # Detect corrupted files
-        try:
-            Image.open(filePath)
-        except IOError:
-            raise RuntimeError('Cannot read image file %s' % filePath)
-        try:
-            image = Image.open(filePath)
-            image.verify()
-        except:
-            raise RuntimeError('Image file %s is corrupted' % filePath)
-        try:
-            image = Image.open(filePath)
-            image.load()
-        except:
-            raise RuntimeError('Image file %s is corrupted' % filePath)
         image = Image.open(filePath)
         image = image.convert('RGB')
         widthImg, heightImg = image.size
@@ -220,7 +254,7 @@ def Copyright():
 
 
 def main(argv=None, qtGUI=None):
-    global options, GUI, splitWorkerPool, splitWorkerOutput
+    global options, GUI, splitWorkerPool, splitWorkerOutput, mergeWorkerPool, mergeWorkerOutput
     parser = OptionParser(usage="Usage: %prog [options] comic_folder", add_help_option=False)
     mainOptions = OptionGroup(parser, "MANDATORY")
     otherOptions = OptionGroup(parser, "OTHER")
@@ -228,6 +262,8 @@ def main(argv=None, qtGUI=None):
                            help="Height of the target device screen")
     mainOptions.add_option("-i", "--in-place", action="store_true", dest="inPlace", default=False,
                            help="Overwrite source directory")
+    mainOptions.add_option("-m", "--merge", action="store_true", dest="merge", default=False,
+                           help="Combine every directory into a single image before splitting")
     otherOptions.add_option("-d", "--debug", action="store_true", dest="debug", default=False,
                             help="Create debug file for every splitted image")
     otherOptions.add_option("-h", "--help", action="help",
@@ -253,6 +289,29 @@ def main(argv=None, qtGUI=None):
             pagenumber = 0
             splitWorkerOutput = []
             splitWorkerPool = Pool()
+            if options.merge:
+                directoryNumer = 1
+                mergeWork = []
+                mergeWorkerOutput = []
+                mergeWorkerPool = Pool()
+                mergeWork.append([options.targetDir])
+                for root, dirs, files in os.walk(options.targetDir, False):
+                    for directory in dirs:
+                        directoryNumer += 1
+                        mergeWork.append([os.path.join(root, directory)])
+                if GUI:
+                    GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Combining images')
+                    GUI.emit(QtCore.SIGNAL("progressBarTick"), directoryNumer)
+                for i in mergeWork:
+                    mergeWorkerPool.apply_async(func=mergeDirectory, args=(i, ), callback=mergeDirectory_tick)
+                mergeWorkerPool.close()
+                mergeWorkerPool.join()
+                if GUI and not GUI.conversionAlive:
+                    rmtree(options.targetDir, True)
+                    raise UserWarning("Conversion interrupted.")
+                if len(mergeWorkerOutput) > 0:
+                    rmtree(options.targetDir, True)
+                    raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0])
             for root, dirs, files in os.walk(options.targetDir, False):
                 for name in files:
                     if getImageFileName(name) is not None:
@@ -261,7 +320,9 @@ def main(argv=None, qtGUI=None):
                     else:
                         os.remove(os.path.join(root, name))
             if GUI:
+                GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Splitting images')
                 GUI.emit(QtCore.SIGNAL("progressBarTick"), pagenumber)
+                GUI.emit(QtCore.SIGNAL("progressBarTick"))
             if len(work) > 0:
                 for i in work:
                     splitWorkerPool.apply_async(func=splitImage, args=(i, ), callback=splitImage_tick)

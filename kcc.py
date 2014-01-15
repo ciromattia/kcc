@@ -26,7 +26,7 @@ __docformat__ = 'restructuredtext en'
 import sys
 import os
 try:
-    #noinspection PyUnresolvedReferences
+    # noinspection PyUnresolvedReferences
     from PyQt4 import QtCore, QtGui, QtNetwork
 except ImportError:
     print("ERROR: PyQT4 is not installed!")

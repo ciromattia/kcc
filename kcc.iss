@@ -66,6 +66,7 @@ Source: "build\exe.win-amd64-2.7\sip.pyd"; DestDir: "{app}"; Flags: ignoreversio
 Source: "build\exe.win-amd64-2.7\SSLEAY32.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: "build\exe.win-amd64-2.7\unicodedata.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: "build\exe.win-amd64-2.7\_psutil_mswindows.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "other\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: Is64BitInstallMode
 ; x86 files
 Source: "build\exe.win32-2.7\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion solidbreak; Check: not Is64BitInstallMode
 Source: "build\exe.win32-2.7\_ctypes.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
@@ -91,6 +92,7 @@ Source: "build\exe.win32-2.7\sip.pyd"; DestDir: "{app}"; Flags: ignoreversion; C
 Source: "build\exe.win32-2.7\SSLEAY32.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: "build\exe.win32-2.7\unicodedata.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: "build\exe.win32-2.7\_psutil_mswindows.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "other\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: not Is64BitInstallMode
 ; Common files
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
 Source: "other\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
@@ -104,6 +106,8 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: 
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{tmp}\vcredist_x64.exe"; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: "Installing Microsoft Visual C++ 2008 Redistributable Package..."; Check: Is64BitInstallMode
+Filename: "{tmp}\vcredist_x86.exe"; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: "Installing Microsoft Visual C++ 2008 Redistributable Package..."; Check: not Is64BitInstallMode
 
 [Messages]
 WelcomeLabel1=Welcome to the KCC Setup Wizard
