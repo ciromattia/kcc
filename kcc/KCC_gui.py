@@ -25,7 +25,9 @@ __docformat__ = 'restructuredtext en'
 import os
 import sys
 import traceback
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.error
+import urllib.parse
 import socket
 from . import comic2ebook
 from . import kindlesplit
@@ -34,7 +36,7 @@ from shutil import move
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 from subprocess import STDOUT, PIPE
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 from xml.dom.minidom import parse
 from html.parser import HTMLParser
 from .KCC_rc_web import WebContent
@@ -180,14 +182,14 @@ class WebServerThread(QtCore.QThread):
             self.server = WebServerThreaded(('', 4242), WebServerHandler)
             self.running = True
             if lIP:
-                self.emit(QtCore.SIGNAL("addMessage"), '<b><a href="http://' + lIP +
-                                                       ':4242/">Content server</a></b> started.', 'info')
+                MW.addMessage.emit('<b><a href="http://' + str(lIP) + ':4242/">Content server</a></b> started.', 'info',
+                                   False)
             else:
-                self.emit(QtCore.SIGNAL("addMessage"), '<b>Content server</b> started on port 4242.', 'info')
+                MW.addMessage.emit('<b>Content server</b> started on port 4242.', 'info', False)
             while self.running:
                 self.server.handle_request()
         except Exception:
-            self.emit(QtCore.SIGNAL("addMessage"), '<b>Content server</b> failed to start!', 'error')
+            MW.addMessage.emit('<b>Content server</b> failed to start!', 'error', False)
 
     def stop(self):
         self.running = False
@@ -208,10 +210,10 @@ class VersionThread(QtCore.QThread):
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
         if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
-            self.emit(QtCore.SIGNAL("addMessage"), '<a href="http://kcc.vulturis.eu/">'
-                                                   '<b>New version is available!</b></a> '
-                                                   '(<a href="https://github.com/ciromattia/kcc/releases/">'
-                                                   'Changelog</a>)', 'warning')
+            MW.addMessage.emit('<a href="http://kcc.vulturis.eu/">'
+                               '<b>New version is available!</b></a> '
+                               '(<a href="https://github.com/ciromattia/kcc/releases/">'
+                               'Changelog</a>)', 'warning', False)
 
 
 class ProgressThread(QtCore.QThread):
@@ -229,7 +231,7 @@ class ProgressThread(QtCore.QThread):
         while self.running:
             sleep(1)
             if self.content:
-                self.emit(QtCore.SIGNAL("addMessage"), self.content + self.progress * '.', 'info', True)
+                MW.addMessage.emit(self.content + self.progress * '.', 'info', True)
                 self.progress += 1
                 if self.progress == 4:
                     self.progress = 0
@@ -335,17 +337,17 @@ class WorkerThread(QtCore.QThread):
         GUI.progress.content = ''
         GUI.progress.stop()
         GUI.needClean = True
-        self.emit(QtCore.SIGNAL("hideProgressBar"))
-        self.emit(QtCore.SIGNAL("addMessage"), '<b>Conversion interrupted.</b>', 'error')
-        self.emit(QtCore.SIGNAL("addTrayMessage"), 'Conversion interrupted.', 'Critical')
-        self.emit(QtCore.SIGNAL("modeConvert"), True)
+        MW.hideProgressBar.emit()
+        MW.addMessage.emit('<b>Conversion interrupted.</b>', 'error', False)
+        MW.addTrayMessage.emit('Conversion interrupted.', 'Critical')
+        MW.modeConvert.emit(True)
 
     def addResult(self, output):
-        self.emit(QtCore.SIGNAL("progressBarTick"))
+        MW.progressBarTick.emit(False, False)
         self.workerOutput.append(output)
 
     def run(self):
-        self.emit(QtCore.SIGNAL("modeConvert"), False)
+        MW.modeConvert.emit(False)
         profile = GUI.profiles[str(GUI.DeviceBox.currentText())]['Label']
         argv = ["--profile=" + profile]
         currentJobs = []
@@ -400,18 +402,18 @@ class WorkerThread(QtCore.QThread):
                 self.clean()
                 return
             self.errors = False
-            self.emit(QtCore.SIGNAL("addMessage"), '<b>Source:</b> ' + job, 'info')
+            MW.addMessage.emit('<b>Source:</b> ' + job, 'info', False)
             if str(GUI.FormatBox.currentText()) == 'CBZ':
-                self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ files', 'info')
+                MW.addMessage.emit('Creating CBZ files', 'info', False)
                 GUI.progress.content = 'Creating CBZ files'
             else:
-                self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB files', 'info')
+                MW.addMessage.emit('Creating EPUB files', 'info', False)
                 GUI.progress.content = 'Creating EPUB files'
             jobargv = list(argv)
             jobargv.append(job)
             try:
                 outputPath = comic2ebook.main(jobargv, self)
-                self.emit(QtCore.SIGNAL("hideProgressBar"))
+                MW.hideProgressBar.emit()
             except UserWarning as warn:
                 if not self.conversionAlive:
                     self.clean()
@@ -419,17 +421,17 @@ class WorkerThread(QtCore.QThread):
                 else:
                     GUI.progress.content = ''
                     self.errors = True
-                    self.emit(QtCore.SIGNAL("addMessage"), str(warn), 'warning')
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Failed to create output file!', 'warning')
-                    self.emit(QtCore.SIGNAL("addTrayMessage"), 'Failed to create output file!', 'Critical')
+                    MW.addMessage.emit(str(warn), 'warning', False)
+                    MW.addMessage.emit('Failed to create output file!', 'warning', False)
+                    MW.addTrayMessage.emit('Failed to create output file!', 'Critical')
             except Exception as err:
                 GUI.progress.content = ''
                 self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
-                self.emit(QtCore.SIGNAL("showDialog"), "Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
-                                                       % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
-                self.emit(QtCore.SIGNAL("addMessage"), 'Failed to create EPUB!', 'error')
-                self.emit(QtCore.SIGNAL("addTrayMessage"), 'Failed to create EPUB!', 'Critical')
+                MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
+                                   % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
+                MW.addMessage.emit('Failed to create EPUB!', 'error', False)
+                MW.addTrayMessage.emit('Failed to create EPUB!', 'Critical')
             if not self.conversionAlive:
                 for item in outputPath:
                     if os.path.exists(item):
@@ -439,14 +441,14 @@ class WorkerThread(QtCore.QThread):
             if not self.errors:
                 GUI.progress.content = ''
                 if str(GUI.FormatBox.currentText()) == 'CBZ':
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ files... <b>Done!</b>', 'info', True)
+                    MW.addMessage.emit('Creating CBZ files... <b>Done!</b>', 'info', True)
                 else:
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB files... <b>Done!</b>', 'info', True)
+                    MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
-                    self.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Creating MOBI files')
-                    self.emit(QtCore.SIGNAL("progressBarTick"), len(outputPath)*2+1)
-                    self.emit(QtCore.SIGNAL("progressBarTick"))
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI files', 'info')
+                    MW.progressBarTick.emit('status', 'Creating MOBI files')
+                    MW.progressBarTick.emit(len(outputPath)*2+1, False)
+                    MW.progressBarTick.emit(False, False)
+                    MW.addMessage.emit('Creating MOBI files', 'info', False)
                     GUI.progress.content = 'Creating MOBI files'
                     self.workerOutput = []
                     # Number of KindleGen threads depends on the size of RAM
@@ -472,44 +474,42 @@ class WorkerThread(QtCore.QThread):
                         return
                     if self.kindlegenErrorCode[0] == 0:
                         GUI.progress.content = ''
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI files... <b>Done!</b>', 'info', True)
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files is currently disabled in this branch', 'info')
+                        MW.addMessage.emit('Creating MOBI files... <b>Done!</b>', 'info', True)
+                        MW.addMessage.emit('Cleaning MOBI files is currently disabled in this branch', 'info', False)
                         GUI.progress.content = 'Cleaning MOBI files is currently disabled in this branch'
-                        #self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files', 'info')
-                        #GUI.progress.content = 'Cleaning MOBI files'
-                        #self.workerOutput = []
-                        ## Multithreading KindleUnpack in current form is a waste of resources.
-                        ## Unless we higly optimise KindleUnpack or drop 32bit support this will not change.
-                        #self.pool.setMaxThreadCount(1)
-                        #for item in outputPath:
-                        #    worker = KindleUnpackThread([item, profile])
-                        #    worker.signals.result.connect(self.addResult)
-                        #    self.pool.start(worker)
-                        #self.pool.waitForDone()
-                        #sleep(0.5)
-                        #for success in self.workerOutput:
-                        #    if not success[0]:
-                        #        self.errors = True
-                        #        print(success[1])
-                        #        break
-                        #if not self.errors:
-                        #    for item in outputPath:
-                        #        GUI.completedWork[os.path.basename(mobiPath).encode('utf-8')] = mobiPath.encode('utf-8')
-                        #    	 self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files... <b>Done!</b>', 'info', True)
-                        #            mobiPath.encode('utf-8')
-                        #        self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files... <b>Done!</b>', 'info',
-                        #                  True)
-                        #else:
-                        #    GUI.progress.content = ''
-                        #    for item in outputPath:
-                        #        mobiPath = item.replace('.epub', '.mobi')
-                        #        if os.path.exists(mobiPath):
-                        #            os.remove(mobiPath)
-                        #        if os.path.exists(mobiPath + '_toclean'):
-                        #            os.remove(mobiPath + '_toclean')
-                        #    self.emit(QtCore.SIGNAL("addMessage"), 'KindleUnpack failed to clean MOBI file!', 'error')
-                        #    self.emit(QtCore.SIGNAL("addTrayMessage"), 'KindleUnpack failed to clean MOBI file!',
-                        #              'Critical')
+                        MW.addMessage.emit('Cleaning MOBI files', 'info', False)
+                        GUI.progress.content = 'Cleaning MOBI files'
+                        self.workerOutput = []
+                        # Multithreading KindleUnpack in current form is a waste of resources.
+                        # Unless we higly optimise KindleUnpack or drop 32bit support this will not change.
+                        self.pool.setMaxThreadCount(1)
+                        for item in outputPath:
+                            worker = KindleUnpackThread([item, profile])
+                            worker.signals.result.connect(self.addResult)
+                            self.pool.start(worker)
+                        self.pool.waitForDone()
+                        sleep(0.5)
+                        for success in self.workerOutput:
+                            if not success:
+                                self.errors = True
+                                break
+                        if not self.errors:
+                            for item in outputPath:
+                                GUI.progress.content = ''
+                                mobiPath = item.replace('.epub', '.mobi')
+                                os.remove(mobiPath + '_toclean')
+                                GUI.completedWork[os.path.basename(mobiPath).encode('utf-8')] = mobiPath.encode('utf-8')
+                            MW.addMessage.emit('Cleaning MOBI files... <b>Done!</b>', 'info', True)
+                        else:
+                            GUI.progress.content = ''
+                            for item in outputPath:
+                                mobiPath = item.replace('.epub', '.mobi')
+                                if os.path.exists(mobiPath):
+                                    os.remove(mobiPath)
+                                if os.path.exists(mobiPath + '_toclean'):
+                                    os.remove(mobiPath + '_toclean')
+                            MW.addMessage.emit('KindleUnpack failed to clean MOBI file!', 'error', False)
+                            MW.addTrayMessage.emit('KindleUnpack failed to clean MOBI file!', 'Critical')
                     else:
                         GUI.progress.content = ''
                         epubSize = (os.path.getsize(self.kindlegenErrorCode[2]))/1024/1024
@@ -518,32 +518,30 @@ class WorkerThread(QtCore.QThread):
                                 os.remove(item)
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
-                        self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', 'error')
-                        self.emit(QtCore.SIGNAL("addTrayMessage"), 'KindleGen failed to create MOBI!', 'Critical')
+                        MW.addMessage.emit('KindleGen failed to create MOBI!', 'error', False)
+                        MW.addTrayMessage.emit('KindleGen failed to create MOBI!', 'Critical')
                         if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':
-                            self.emit(QtCore.SIGNAL("showDialog"), "KindleGen error:\n\n" +
-                                                                   self.kindlegenErrorCode[1])
+                            MW.showDialog.emit("KindleGen error:\n\n" + self.kindlegenErrorCode[1])
                         if self.kindlegenErrorCode[0] == 23026:
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file was too big.',
-                                      'error')
-                            self.emit(QtCore.SIGNAL("addMessage"), 'EPUB file: ' + str(epubSize) + 'MB.'
-                                                                   ' Supported size: ~300MB.', 'error')
+                            MW.addMessage.emit('Created EPUB file was too big.', 'error', False)
+                            MW.addMessage.emit('EPUB file: ' + str(epubSize) + 'MB. Supported size: ~300MB.', 'error',
+                                               False)
                 else:
                     for item in outputPath:
                         GUI.completedWork[os.path.basename(item).encode('utf-8')] = item.encode('utf-8')
         GUI.progress.content = ''
         GUI.progress.stop()
-        self.emit(QtCore.SIGNAL("hideProgressBar"))
+        MW.hideProgressBar.emit()
         GUI.needClean = True
-        self.emit(QtCore.SIGNAL("addMessage"), '<b>All jobs completed.</b>', 'info')
-        self.emit(QtCore.SIGNAL("addTrayMessage"), 'All jobs completed.', 'Information')
-        self.emit(QtCore.SIGNAL("modeConvert"), True)
+        MW.addMessage.emit('<b>All jobs completed.</b>', 'info', False)
+        MW.addTrayMessage.emit('All jobs completed.', 'Information')
+        MW.modeConvert.emit(True)
 
 
-class SystemTrayIcon(QtGui.QSystemTrayIcon):
-    def __init__(self, parent=None):
+class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
+    def __init__(self):
         if not sys.platform.startswith('darwin') and self.isSystemTrayAvailable():
-            QtGui.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
+            QtWidgets.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
             self.activated.connect(self.catchClicks)
 
     def catchClicks(self):
@@ -559,21 +557,22 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
 
 
 class KCCGUI(KCC_ui.Ui_KCC):
+    # TODO: Check dialog
     def selectDir(self):
         if self.needClean:
             self.needClean = False
             GUI.JobList.clear()
         # Dirty, dirty way but OS native QFileDialogs don't support directory multiselect
-        dirDialog = QtGui.QFileDialog(MW, 'Select directory', self.lastPath)
+        dirDialog = QtWidgets.QFileDialog(MW, 'Select directory', self.lastPath)
         dirDialog.setFileMode(dirDialog.Directory)
         dirDialog.setOption(dirDialog.ShowDirsOnly, True)
         dirDialog.setOption(dirDialog.DontUseNativeDialog, True)
-        l = dirDialog.findChild(QtGui.QListView, "listView")
-        t = dirDialog.findChild(QtGui.QTreeView)
+        l = dirDialog.findChild(QtWidgets.QListView, "listView")
+        t = dirDialog.findChild(QtWidgets.QTreeView)
         if l:
-            l.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+            l.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         if t:
-            t.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
+            t.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         if dirDialog.exec_() == 1:
             dnames = dirDialog.selectedFiles()
         else:
@@ -586,24 +585,25 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 GUI.JobList.addItem(dname)
         MW.setFocus()
 
+    # TODO: Check dialog
     def selectFile(self):
         if self.needClean:
             self.needClean = False
             GUI.JobList.clear()
         if self.UnRAR:
             if self.sevenza:
-                fnames = QtGui.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                            '*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf')
+                fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
+                                                                '*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf')
             else:
-                fnames = QtGui.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                            '*.cbz *.cbr *.zip *.rar *.pdf')
+                fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
+                                                                '*.cbz *.cbr *.zip *.rar *.pdf')
         else:
             if self.sevenza:
-                fnames = QtGui.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                            '*.cbz *.cb7 *.zip *.7z *.pdf')
+                fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
+                                                                '*.cbz *.cb7 *.zip *.7z *.pdf')
             else:
-                fnames = QtGui.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                            '*.cbz *.zip *.pdf')
+                fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
+                                                                '*.cbz *.zip *.pdf')
         for fname in fnames:
             if str(fname) != "":
                 self.lastPath = os.path.abspath(os.path.join(str(fname), os.pardir))
@@ -864,16 +864,16 @@ class KCCGUI(KCC_ui.Ui_KCC):
     def addMessage(self, message, icon=None, replace=False):
         if icon:
             icon = eval('self.icons.' + icon)
-            item = QtGui.QListWidgetItem(icon, '    ' + self.stripTags(message))
+            item = QtWidgets.QListWidgetItem(icon, '    ' + self.stripTags(message))
         else:
-            item = QtGui.QListWidgetItem('    ' + self.stripTags(message))
+            item = QtWidgets.QListWidgetItem('    ' + self.stripTags(message))
         if replace:
             GUI.JobList.takeItem(GUI.JobList.count()-1)
         # Due to lack of HTML support in QListWidgetItem we overlay text field with QLabel
         # We still fill original text field with transparent content to trigger creation of horizontal scrollbar
-        item.setTextColor(QtGui.QColor('transparent'))
-        label = QtGui.QLabel(message)
-        label.setStyleSheet('background-image:url('');background-color:rgba(255,0,0,0.5);')
+        item.setForeground(QtGui.QColor('transparent'))
+        label = QtWidgets.QLabel(message)
+        label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);')
         label.setOpenExternalLinks(True)
         font = QtGui.QFont()
         font.setPointSize(self.listFontSize)
@@ -883,7 +883,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.JobList.scrollToBottom()
 
     def showDialog(self, message):
-        QtGui.QMessageBox.critical(MW, 'KCC - Error', message, QtGui.QMessageBox.Ok)
+        QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
 
     def updateProgressbar(self, new=False, status=False):
         if new == "status":
@@ -982,6 +982,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 else:
                     self.addMessage('This file type is unsupported!', 'error')
 
+    # noinspection PyArgumentList
     def __init__(self, KCCAplication, KCCWindow):
         global APP, MW, GUI
         APP = KCCAplication
@@ -1085,11 +1086,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
             "Kindle 2",
         ]
 
-        statusBarLabel = QtGui.QLabel('<b><a href="http://kcc.vulturis.eu/">HOMEPAGE</a> - <a href="https://github.com/'
-                                      'ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DONATE</a>'
-                                      ' - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a>'
-                                      ' - <a href="http://www.mobileread.com/forums/showthread.php?t=207461">FORUM</a>'
-                                      '</b>')
+        statusBarLabel = QtWidgets.QLabel('<b><a href="http://kcc.vulturis.eu/">HOMEPAGE</a> - <a href="https://github.'
+                                          'com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DO'
+                                          'NATE</a> - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a> - <a hr'
+                                          'ef="http://www.mobileread.com/forums/showthread.php?t=207461">FORUM</a></b>')
         statusBarLabel.setAlignment(QtCore.Qt.AlignCenter)
         statusBarLabel.setStyleSheet(self.statusBarStyle)
         statusBarLabel.setOpenExternalLinks(True)
@@ -1145,7 +1145,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7za</a>!'
                             ' Processing of CB7/7Z files will be disabled.', 'warning')
 
-        APP.connect(APP, QtCore.SIGNAL('messageFromOtherInstance'), self.handleMessage)
+        APP.messageFromOtherInstance.connect(self.handleMessage)
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
         GUI.DirectoryButton.clicked.connect(self.selectDir)
@@ -1158,15 +1158,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.ProcessingBox.stateChanged.connect(self.toggleProcessingBox)
         GUI.DeviceBox.activated.connect(self.changeDevice)
         GUI.FormatBox.activated.connect(self.changeFormat)
-        MW.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
-        MW.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
-        MW.connect(self.worker, QtCore.SIGNAL("addMessage"), self.addMessage)
-        MW.connect(self.worker, QtCore.SIGNAL("addTrayMessage"), self.tray.addTrayMessage)
-        MW.connect(self.worker, QtCore.SIGNAL("showDialog"), self.showDialog)
-        MW.connect(self.worker, QtCore.SIGNAL("hideProgressBar"), self.hideProgressBar)
-        MW.connect(self.versionCheck, QtCore.SIGNAL("addMessage"), self.addMessage)
-        MW.connect(self.contentServer, QtCore.SIGNAL("addMessage"), self.addMessage)
-        MW.connect(self.progress, QtCore.SIGNAL("addMessage"), self.addMessage)
+        MW.progressBarTick.connect(self.updateProgressbar)
+        MW.modeConvert.connect(self.modeConvert)
+        MW.addMessage.connect(self.addMessage)
+        MW.addTrayMessage.connect(self.tray.addTrayMessage)
+        MW.showDialog.connect(self.showDialog)
+        MW.hideProgressBar.connect(self.hideProgressBar)
         MW.closeEvent = self.saveSettings
 
         for profile in profilesGUI:

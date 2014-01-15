@@ -599,7 +599,7 @@ p, li { white-space: pre-wrap; }
          <string>Resolution of target device.</string>
         </property>
         <property name="inputMask">
-         <string>0000; </string>
+         <string>0000</string>
         </property>
         <property name="maxLength">
          <number>4</number>
@@ -640,7 +640,7 @@ p, li { white-space: pre-wrap; }
          <string>Resolution of target device.</string>
         </property>
         <property name="inputMask">
-         <string>0000; </string>
+         <string>0000</string>
         </property>
         <property name="maxLength">
          <number>4</number>
