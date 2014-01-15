@@ -64,7 +64,7 @@ def mergeDirectory_tick(output):
         mergeWorkerOutput.append(output)
         mergeWorkerPool.terminate()
     if GUI:
-        GUI.progressBarTick.emit(False, False)
+        GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
             mergeWorkerPool.terminate()
 
@@ -132,7 +132,7 @@ def splitImage_tick(output):
         splitWorkerOutput.append(output)
         splitWorkerPool.terminate()
     if GUI:
-        GUI.progressBarTick.emit(False, False)
+        GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
             splitWorkerPool.terminate()
 
@@ -278,8 +278,8 @@ def main(argv=None, qtGUI=None):
                         directoryNumer += 1
                         mergeWork.append([os.path.join(root, directory)])
                 if GUI:
-                    GUI.progressBarTick.emit('status', 'Combining images')
-                    GUI.progressBarTick.emit(directoryNumer, False)
+                    GUI.progressBarTick.emit('Combining images')
+                    GUI.progressBarTick.emit(str(directoryNumer))
                 for i in mergeWork:
                     mergeWorkerPool.apply_async(func=mergeDirectory, args=(i, ), callback=mergeDirectory_tick)
                 mergeWorkerPool.close()
@@ -298,9 +298,9 @@ def main(argv=None, qtGUI=None):
                     else:
                         os.remove(os.path.join(root, name))
             if GUI:
-                GUI.progressBarTick.emit('status', 'Splitting images')
-                GUI.progressBarTick.emit(pagenumber, False)
-                GUI.progressBarTick.emit(False, False)
+                GUI.progressBarTick.emit('Splitting images')
+                GUI.progressBarTick.emit(str(pagenumber))
+                GUI.progressBarTick.emit('tick')
             if len(work) > 0:
                 for i in work:
                     splitWorkerPool.apply_async(func=splitImage, args=(i, ), callback=splitImage_tick)

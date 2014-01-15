@@ -120,8 +120,8 @@ class QApplicationMessaging(QtWidgets.QApplication):
 
 # Adding signals to QMainWindow
 class QMainWindowKCC(QtWidgets.QMainWindow):
-    progressBarTick = QtCore.pyqtSignal(str, str)
-    modeConvert = QtCore.pyqtSignal(str)
+    progressBarTick = QtCore.pyqtSignal(str)
+    modeConvert = QtCore.pyqtSignal(bool)
     addMessage = QtCore.pyqtSignal(str, str, bool)
     addTrayMessage = QtCore.pyqtSignal(str, str)
     showDialog = QtCore.pyqtSignal(str)

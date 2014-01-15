@@ -40,7 +40,7 @@ class PdfJpgExtract:
         return self.path
 
     def extract(self):
-        pdf = open(self.origFileName, "rb").read()
+        pdf = open(self.origFileName, "r").read()
 
         startmark = "\xff\xd8"
         startfix = 0
@@ -69,7 +69,7 @@ class PdfJpgExtract:
             iend += endfix
             jpg = pdf[istart:iend]
             jpgfile = open(self.path + "/jpg%d.jpg" % njpg, "wb")
-            jpgfile.write(jpg)
+            jpgfile.write(bytearray(jpg, 'utf-8'))
             jpgfile.close()
 
             njpg += 1
