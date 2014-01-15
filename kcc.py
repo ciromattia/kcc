@@ -94,21 +94,22 @@ class QApplicationMessaging(QtGui.QApplication):
             return True
         return False
 
-freeze_support()
-KCCAplication = QApplicationMessaging(sys.argv)
-if KCCAplication.isRunning():
+if __name__ == "__main__":
+    freeze_support()
+    KCCAplication = QApplicationMessaging(sys.argv)
+    if KCCAplication.isRunning():
+        if len(sys.argv) > 1:
+            KCCAplication.sendMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
+            sys.exit(0)
+        else:
+            messageBox = QtGui.QMessageBox()
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap(':/Icon/icons/comic2ebook.png'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            messageBox.setWindowIcon(icon)
+            QtGui.QMessageBox.critical(messageBox, 'KCC - Error', 'KCC is already running!', QtGui.QMessageBox.Ok)
+            sys.exit(1)
+    KCCWindow = QtGui.QMainWindow()
+    KCCUI = KCC_gui.KCCGUI(KCCAplication, KCCWindow)
     if len(sys.argv) > 1:
-        KCCAplication.sendMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
-        sys.exit(0)
-    else:
-        messageBox = QtGui.QMessageBox()
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(':/Icon/icons/comic2ebook.png'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        messageBox.setWindowIcon(icon)
-        QtGui.QMessageBox.critical(messageBox, 'KCC - Error', 'KCC is already running!', QtGui.QMessageBox.Ok)
-        sys.exit(1)
-KCCWindow = QtGui.QMainWindow()
-KCCUI = KCC_gui.KCCGUI(KCCAplication, KCCWindow)
-if len(sys.argv) > 1:
-    KCCUI.handleMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
-sys.exit(KCCAplication.exec_())
+        KCCUI.handleMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
+    sys.exit(KCCAplication.exec_())

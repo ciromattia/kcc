@@ -117,14 +117,14 @@ def mergeDirectory(work):
                 os.remove(i[1])
             savePath = os.path.split(imagesClear[0][1])
             result.save(os.path.join(savePath[0], os.path.splitext(savePath[1])[0] + '.png'), 'PNG')
-    except StandardError:
+    except Exception:
         return str(sys.exc_info()[1])
 
 
 def sanitizePanelSize(panel, opt):
     newPanels = []
     if panel[2] > 8 * opt.height:
-        diff = (panel[2] / 8)
+        diff = int(panel[2] / 8)
         newPanels.append([panel[0], panel[1] - diff*7, diff])
         newPanels.append([panel[1] - diff*7, panel[1] - diff*6, diff])
         newPanels.append([panel[1] - diff*6, panel[1] - diff*5, diff])
@@ -134,14 +134,14 @@ def sanitizePanelSize(panel, opt):
         newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
         newPanels.append([panel[1] - diff, panel[1], diff])
     elif panel[2] > 4 * opt.height:
-        diff = (panel[2] / 4)
+        diff = int(panel[2] / 4)
         newPanels.append([panel[0], panel[1] - diff*3, diff])
         newPanels.append([panel[1] - diff*3, panel[1] - diff*2, diff])
         newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
         newPanels.append([panel[1] - diff, panel[1], diff])
     elif panel[2] > 2 * opt.height:
-        newPanels.append([panel[0], panel[1] - (panel[2] / 2), (panel[2] / 2)])
-        newPanels.append([panel[1] - (panel[2] / 2), panel[1], (panel[2] / 2)])
+        newPanels.append([panel[0], panel[1] - int(panel[2] / 2), int(panel[2] / 2)])
+        newPanels.append([panel[1] - int(panel[2] / 2), panel[1], int(panel[2] / 2)])
     else:
         newPanels = [panel]
     return newPanels
@@ -248,8 +248,7 @@ def splitImage(work):
 
 
 def Copyright():
-    print(('comic2panel v%(__version__)s. '
-           'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
+    print(('comic2panel v%(__version__)s. Written by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
 
 
 def main(argv=None, qtGUI=None):

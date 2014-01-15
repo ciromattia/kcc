@@ -31,11 +31,11 @@ try:
 except ImportError:
     print("ERROR: Psutil is not installed!")
     if platform.startswith('linux'):
-        import Tkinter
-        import tkMessageBox
-        importRoot = Tkinter.Tk()
+        import tkinter
+        import tkinter.messagebox
+        importRoot = tkinter.Tk()
         importRoot.withdraw()
-        tkMessageBox.showerror("KCC - Error", "Psutil is not installed!")
+        tkinter.messagebox.showerror("KCC - Error", "Psutil is not installed!")
     exit(1)
 from shutil import move
 
