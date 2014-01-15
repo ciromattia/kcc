@@ -27,7 +27,7 @@ import sys
 import os
 try:
     # noinspection PyUnresolvedReferences
-    from PyQt5 import QtCore, QtGui, QtNetwork
+    from PyQt5 import QtCore, QtGui, QtNetwork, QtWidgets
 except ImportError:
     print("ERROR: PyQT5 is not installed!")
     if sys.platform.startswith('linux'):
@@ -55,9 +55,11 @@ elif sys.platform.startswith('win'):
 
 
 # Implementing detection of already running KCC instance and forwarding argv to it
-class QApplicationMessaging(QtGui.QApplication):
+class QApplicationMessaging(QtWidgets.QApplication):
+    messageFromOtherInstance = QtCore.pyqtSignal(str)
+
     def __init__(self, argv):
-        QtGui.QApplication.__init__(self, argv)
+        QtWidgets.QApplication.__init__(self, argv)
         self._memory = QtCore.QSharedMemory(self)
         self._memory.setKey('KCC')
         if self._memory.attach():
@@ -79,7 +81,7 @@ class QApplicationMessaging(QtGui.QApplication):
     def handleMessage(self):
         socket = self._server.nextPendingConnection()
         if socket.waitForReadyRead(self._timeout):
-            self.emit(QtCore.SIGNAL('messageFromOtherInstance'), socket.readAll().data().decode('utf8'))
+            self.messageFromOtherInstance.emit(socket.readAll().data().decode('utf8'))
 
     def sendMessage(self, message):
         if self.isRunning():
@@ -94,6 +96,17 @@ class QApplicationMessaging(QtGui.QApplication):
             return True
         return False
 
+
+# Adding signals to QMainWindow
+class QMainWindowKCC(QtWidgets.QMainWindow):
+    progressBarTick = QtCore.pyqtSignal(str, str)
+    modeConvert = QtCore.pyqtSignal(str)
+    addMessage = QtCore.pyqtSignal(str, str, bool)
+    addTrayMessage = QtCore.pyqtSignal(str, str)
+    showDialog = QtCore.pyqtSignal(str)
+    hideProgressBar = QtCore.pyqtSignal()
+
+
 if __name__ == "__main__":
     freeze_support()
     KCCAplication = QApplicationMessaging(sys.argv)
@@ -102,13 +115,14 @@ if __name__ == "__main__":
             KCCAplication.sendMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
             sys.exit(0)
         else:
-            messageBox = QtGui.QMessageBox()
+            messageBox = QtWidgets.QMessageBox()
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap(':/Icon/icons/comic2ebook.png'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             messageBox.setWindowIcon(icon)
-            QtGui.QMessageBox.critical(messageBox, 'KCC - Error', 'KCC is already running!', QtGui.QMessageBox.Ok)
+            QtWidgets.QMessageBox.critical(messageBox, 'KCC - Error', 'KCC is already running!',
+                                           QtWidgets.QMessageBox.Ok)
             sys.exit(1)
-    KCCWindow = QtGui.QMainWindow()
+    KCCWindow = QMainWindowKCC()
     KCCUI = KCC_gui.KCCGUI(KCCAplication, KCCWindow)
     if len(sys.argv) > 1:
         KCCUI.handleMessage(sys.argv[1].decode(sys.getfilesystemencoding()))

@@ -363,7 +363,7 @@ def dirImgProcess(path):
                 pagenumber += 1
                 work.append([afile, dirpath, options])
     if GUI:
-        GUI.emit(QtCore.SIGNAL("progressBarTick"), pagenumber)
+        GUI.progressBarTick.emit(pagenumber, False)
     if len(work) > 0:
         for i in work:
             workerPool.apply_async(func=fileImgProcess, args=(i, ), callback=fileImgProcess_tick)
@@ -385,7 +385,7 @@ def fileImgProcess_tick(output):
         workerOutput.append(output)
         workerPool.terminate()
     if GUI:
-        GUI.emit(QtCore.SIGNAL("progressBarTick"))
+        GUI.progressBarTick.emit(False, False)
         if not GUI.conversionAlive:
             workerPool.terminate()
 
@@ -813,11 +813,11 @@ def preSplitDirectory(path):
             if filesNumber > 0:
                 print('\nWARNING: Automatic output splitting failed.')
                 if GUI:
-                    GUI.emit(QtCore.SIGNAL("addMessage"), 'Automatic output splitting failed. <a href='
-                                                          '"https://github.com/ciromattia/kcc/wiki'
-                                                          '/Automatic-output-splitting">'
-                                                          'More details.</a>', 'warning')
-                    GUI.emit(QtCore.SIGNAL("addMessage"), '')
+                    GUI.progressBarTick.emit('Automatic output splitting failed. <a href='
+                                             '"https://github.com/ciromattia/kcc/wiki'
+                                             '/Automatic-output-splitting">'
+                                             'More details.</a>', 'warning', False)
+                    GUI.progressBarTick.emit('', False, False)
                 return [path]
             detectedSubSubdirectories = False
             detectedFilesInSubdirectories = False
@@ -828,11 +828,11 @@ def preSplitDirectory(path):
                     elif len(dirs) == 0 and detectedSubSubdirectories:
                         print('\nWARNING: Automatic output splitting failed.')
                         if GUI:
-                            GUI.emit(QtCore.SIGNAL("addMessage"), 'Automatic output splitting failed. <a href='
-                                                                  '"https://github.com/ciromattia/kcc/wiki'
-                                                                  '/Automatic-output-splitting">'
-                                                                  'More details.</a>', 'warning')
-                            GUI.emit(QtCore.SIGNAL("addMessage"), '')
+                            GUI.progressBarTick.emit('Automatic output splitting failed. <a href='
+                                                     '"https://github.com/ciromattia/kcc/wiki'
+                                                     '/Automatic-output-splitting">'
+                                                     'More details.</a>', 'warning', False)
+                            GUI.progressBarTick.emit('', False, False)
                         return [path]
                     if len(files) != 0:
                         detectedFilesInSubdirectories = True
@@ -845,11 +845,11 @@ def preSplitDirectory(path):
             if detectedFilesInSubdirectories and detectedSubSubdirectories:
                 print('\nWARNING: Automatic output splitting failed.')
                 if GUI:
-                    GUI.emit(QtCore.SIGNAL("addMessage"), 'Automatic output splitting failed. <a href='
-                                                          '"https://github.com/ciromattia/kcc/wiki'
-                                                          '/Automatic-output-splitting">'
-                                                          'More details.</a>', 'warning')
-                    GUI.emit(QtCore.SIGNAL("addMessage"), '')
+                    GUI.progressBarTick.emit('Automatic output splitting failed. <a href='
+                                             '"https://github.com/ciromattia/kcc/wiki'
+                                             '/Automatic-output-splitting">'
+                                             'More details.</a>', 'warning', False)
+                    GUI.progressBarTick.emit('', False, False)
                 return [path]
         # Split directories
         split = splitDirectory(os.path.join(path, 'OEBPS', 'Images'), mode)
@@ -876,7 +876,7 @@ def detectCorruption(tmpPath, orgPath):
                     img.verify()
                     img = Image.open(path)
                     img.load()
-                except:
+                except Exception:
                     rmtree(os.path.join(tmpPath, '..', '..'), True)
                     raise RuntimeError('Image file %s is corrupted.' % pathOrg)
 
@@ -969,7 +969,7 @@ def main(argv=None, qtGUI=None):
     checkOptions()
     if qtGUI:
         GUI = qtGUI
-        GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
+        GUI.progressBarTick.emit(1, False)
     else:
         GUI = None
     if len(args) != 1:
@@ -986,10 +986,10 @@ def main(argv=None, qtGUI=None):
     if options.imgproc:
         print("\nProcessing images...")
         if GUI:
-            GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Processing images')
+            GUI.progressBarTick.emit('status', 'Processing images')
         dirImgProcess(path + "/OEBPS/Images/")
     if GUI:
-        GUI.emit(QtCore.SIGNAL("progressBarTick"), 1)
+        GUI.progressBarTick.emit(1, False)
     sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     if options.batchsplit:
         tomes = preSplitDirectory(path)
@@ -999,11 +999,11 @@ def main(argv=None, qtGUI=None):
     tomeNumber = 0
     if GUI:
         if options.cbzoutput:
-            GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Compressing CBZ files')
+            GUI.progressBarTick.emit('status', 'Compressing CBZ files')
         else:
-            GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Compressing EPUB files')
-        GUI.emit(QtCore.SIGNAL("progressBarTick"), len(tomes) + 1)
-        GUI.emit(QtCore.SIGNAL("progressBarTick"))
+            GUI.progressBarTick.emit('status', 'Compressing EPUB files')
+        GUI.progressBarTick.emit(len(tomes) + 1, False)
+        GUI.progressBarTick.emit(False, False)
     options.baseTitle = options.title
     for tome in tomes:
         if len(tomes) > 1:
@@ -1029,7 +1029,7 @@ def main(argv=None, qtGUI=None):
         move(tome + '_comic.zip', filepath[-1])
         rmtree(tome, True)
         if GUI:
-            GUI.emit(QtCore.SIGNAL("progressBarTick"))
+            GUI.progressBarTick.emit(False, False)
     return filepath
 
 
