@@ -1,4 +1,3 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
@@ -1111,10 +1110,3 @@ def checkOptions():
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
-
-
-if __name__ == "__main__":
-    freeze_support()
-    Copyright()
-    main(sys.argv[1:])
-    sys.exit(0)

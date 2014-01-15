@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Based on initial version of KindleUnpack. Copyright (C) 2009 Charles M. Hannum <root@ihack.net>
@@ -382,9 +381,3 @@ class mobi_split:
 
     def getResult(self):
         return self.result_file
-
-
-if __name__ == "__main__":
-    import sys
-    mobi_split(sys.argv[1], False)
-    sys.exit(0)

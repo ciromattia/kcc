@@ -1,4 +1,3 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
@@ -344,10 +343,3 @@ def main(argv=None, qtGUI=None):
             raise UserWarning("Provided path is not a directory.")
     else:
         raise UserWarning("Target height is not set.")
-
-
-if __name__ == "__main__":
-    freeze_support()
-    Copyright()
-    main(sys.argv[1:])
-    sys.exit(0)
