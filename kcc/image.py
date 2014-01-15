@@ -21,29 +21,8 @@ __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jas
 __docformat__ = 'restructuredtext en'
 
 import os
-from sys import platform
 from functools import reduce
-try:
-    # noinspection PyUnresolvedReferences
-    from PIL import Image, ImageOps, ImageStat, ImageChops
-    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
-        print("ERROR: Pillow 2.3.0 or newer is required!")
-        if platform.startswith('linux'):
-            import tkinter
-            import tkinter.messagebox
-            importRoot = tkinter.Tk()
-            importRoot.withdraw()
-            tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
-        exit(1)
-except ImportError:
-    print("ERROR: Pillow is not installed!")
-    if platform.startswith('linux'):
-        import tkinter
-        import tkinter.messagebox
-        importRoot = tkinter.Tk()
-        importRoot.withdraw()
-        tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
-    exit(1)
+from PIL import Image, ImageOps, ImageStat, ImageChops
 
 
 class ProfileData:

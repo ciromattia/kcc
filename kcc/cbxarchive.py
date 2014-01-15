@@ -21,23 +21,11 @@ __docformat__ = 'restructuredtext en'
 
 import os
 import zipfile
-from . import rarfile
 import locale
-from sys import platform
 from subprocess import STDOUT, PIPE
-try:
-    # noinspection PyUnresolvedReferences
-    from psutil import Popen
-except ImportError:
-    print("ERROR: Psutil is not installed!")
-    if platform.startswith('linux'):
-        import tkinter
-        import tkinter.messagebox
-        importRoot = tkinter.Tk()
-        importRoot.withdraw()
-        tkinter.messagebox.showerror("KCC - Error", "Psutil is not installed!")
-    exit(1)
+from psutil import Popen
 from shutil import move
+from . import rarfile
 
 
 class CBxArchive:

@@ -26,11 +26,8 @@ import os
 import sys
 import traceback
 import urllib.request
-import urllib.error
 import urllib.parse
 import socket
-from . import comic2ebook
-from . import kindlesplit
 from time import sleep
 from shutil import move
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -39,19 +36,10 @@ from subprocess import STDOUT, PIPE
 from PyQt5 import QtGui, QtCore, QtWidgets
 from xml.dom.minidom import parse
 from html.parser import HTMLParser
-from .KCC_rc_web import WebContent
-try:
-    # noinspection PyUnresolvedReferences
-    from psutil import TOTAL_PHYMEM, Popen
-except ImportError:
-    print("ERROR: Psutil is not installed!")
-    if sys.platform.startswith('linux'):
-        import tkinter
-        import tkinter.messagebox
-        importRoot = tkinter.Tk()
-        importRoot.withdraw()
-        tkinter.messagebox.showerror("KCC - Error", "Psutil is not installed!")
-    exit(1)
+from psutil import TOTAL_PHYMEM, Popen
+from . import comic2ebook
+from . import kindlesplit
+from . import KCC_rc_web
 if sys.platform.startswith('darwin'):
     from . import KCC_ui_osx as KCC_ui
 elif sys.platform.startswith('linux'):
@@ -993,7 +981,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         # Empty string cover all versions before this system was implemented
         purgeSettingsVersions = ['']
         self.icons = Icons()
-        self.webContent = WebContent()
+        self.webContent = KCC_rc_web.WebContent()
         self.tray = SystemTrayIcon()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)

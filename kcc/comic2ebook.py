@@ -34,27 +34,7 @@ from multiprocessing import Pool
 from xml.dom.minidom import parse
 from uuid import uuid4
 from slugify import slugify
-try:
-    # noinspection PyUnresolvedReferences
-    from PIL import Image
-    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
-        print("ERROR: Pillow 2.3.0 or newer is required!")
-        if sys.platform.startswith('linux'):
-            import tkinter
-            import tkinter.messagebox
-            importRoot = tkinter.Tk()
-            importRoot.withdraw()
-            tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
-        exit(1)
-except ImportError:
-    print("ERROR: Pillow is not installed!")
-    if sys.platform.startswith('linux'):
-        import tkinter
-        import tkinter.messagebox
-        importRoot = tkinter.Tk()
-        importRoot.withdraw()
-        tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
-    exit(1)
+from PIL import Image
 try:
     from PyQt5 import QtCore
 except ImportError:
