@@ -27,12 +27,11 @@ import sys
 import re
 import stat
 import string
-import unicodedata
 import zipfile
 from tempfile import mkdtemp
 from shutil import move, copyfile, copytree, rmtree
 from optparse import OptionParser, OptionGroup
-from multiprocessing import Pool, freeze_support
+from multiprocessing import Pool
 from xml.dom.minidom import parse
 from uuid import uuid4
 from slugify import slugify
@@ -40,25 +39,25 @@ try:
     # noinspection PyUnresolvedReferences
     from PIL import Image
     if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
-        print "ERROR: Pillow 2.3.0 or newer is required!"
+        print("ERROR: Pillow 2.3.0 or newer is required!")
         if sys.platform.startswith('linux'):
-            import Tkinter
-            import tkMessageBox
-            importRoot = Tkinter.Tk()
+            import tkinter
+            import tkinter.messagebox
+            importRoot = tkinter.Tk()
             importRoot.withdraw()
-            tkMessageBox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
+            tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
         exit(1)
 except ImportError:
-    print "ERROR: Pillow is not installed!"
+    print("ERROR: Pillow is not installed!")
     if sys.platform.startswith('linux'):
-        import Tkinter
-        import tkMessageBox
-        importRoot = Tkinter.Tk()
+        import tkinter
+        import tkinter.messagebox
+        importRoot = tkinter.Tk()
         importRoot.withdraw()
-        tkMessageBox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
+        tkinter.messagebox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
     exit(1)
 try:
-    from PyQt4 import QtCore
+    from PyQt5 import QtCore
 except ImportError:
     QtCore = None
 from . import comic2panel
@@ -672,6 +671,7 @@ def checkComicInfo(path, originalPath):
         os.remove(xmlPath)
 
 
+# TODO: Check if replacement work correctly
 #def slugify(value):
 #    # Normalizes string, converts to lowercase, removes non-alpha characters and converts spaces to hyphens.
 #    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')

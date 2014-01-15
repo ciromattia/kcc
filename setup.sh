@@ -5,7 +5,7 @@ VERSION="4.0"
 
 cp kcc.py __main__.py
 zip kcc.zip __main__.py kcc/*.py
-echo "#!/usr/bin/env python2" > kcc-bin
+echo "#!/usr/bin/env python3" > kcc-bin
 cat kcc.zip >> kcc-bin
 chmod +x kcc-bin
 tar --xform s:^.*/:: --xform s/kcc-bin/kcc/ --xform s/comic2ebook/kcc/ -czf KindleComicConverter_linux_$VERSION.tar.gz kcc-bin LICENSE.txt icons/comic2ebook.png
