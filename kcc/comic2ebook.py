@@ -26,7 +26,6 @@ import os
 import sys
 import re
 import stat
-import string
 import zipfile
 from tempfile import mkdtemp
 from shutil import move, copyfile, copytree, rmtree
@@ -153,10 +152,10 @@ def buildHTML(path, imgfile):
                               "'{\"targetId\":\"" + boxes[i] + "-Panel-Parent\", \"ordinal\":" + str(order[i]),
                               "}'></a></div>\n"])
             if options.quality == 2:
-                imgfilepv = string.split(imgfile, ".")
+                imgfilepv = str.split(imgfile, ".")
                 imgfilepv[0] = imgfilepv[0].split("_kccxl")[0].replace("_kccnh", "").replace("_kccnv", "")
                 imgfilepv[0] += "_kcchq"
-                imgfilepv = string.join(imgfilepv, ".")
+                imgfilepv = ".".join(imgfilepv)
             else:
                 imgfilepv = imgfile
             if "_kccxl" in filename[0]:
@@ -210,7 +209,7 @@ def buildHTML(path, imgfile):
 
 def buildNCX(dstdir, title, chapters):
     options.uuid = str(uuid4())
-    options.uuid = options.uuid.encode('utf-8')
+    #options.uuid = options.uuid.encode('utf-8')
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
     f = open(ncxfile, "w")
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
@@ -258,7 +257,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "<dc:language>en-US</dc:language>\n",
                   "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n"])
     for author in options.authors:
-        f.writelines(["<dc:creator>", author.encode('utf-8'), "</dc:creator>\n"])
+        f.writelines(["<dc:creator>", author, "</dc:creator>\n"])
     f.writelines(["<meta name=\"generator\" content=\"KindleComicConverter-" + __version__ + "\"/>\n",
                   "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
                   "<meta name=\"region-mag\" content=\"true\"/>\n",
@@ -289,14 +288,14 @@ def buildOPF(dstdir, title, filelist, cover=None):
         filename = getImageFileName(path[1])
         uniqueid = os.path.join(folder, filename[0]).replace('/', '_').replace('\\', '_')
         reflist.append(uniqueid)
-        f.write("<item id=\"page_" + uniqueid + "\" href=\""
+        f.write("<item id=\"page_" + str(uniqueid) + "\" href=\""
                 + folder.replace('Images', 'Text') + "/" + filename[0]
                 + ".html\" media-type=\"application/xhtml+xml\"/>\n")
         if '.png' == filename[1]:
             mt = 'image/png'
         else:
             mt = 'image/jpeg'
-        f.write("<item id=\"img_" + uniqueid + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\""
+        f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\""
                 + mt + "\"/>\n")
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
     f.write("</manifest>\n<spine toc=\"ncx\">\n")
@@ -648,19 +647,19 @@ def checkComicInfo(path, originalPath):
                 titleSuffix += ' #' + xml.getElementsByTagName('Number')[0].firstChild.nodeValue
             options.title += titleSuffix
         if len(xml.getElementsByTagName('Writer')) != 0:
-            authorsTemp = string.split(xml.getElementsByTagName('Writer')[0].firstChild.nodeValue, ', ')
+            authorsTemp = str.split(xml.getElementsByTagName('Writer')[0].firstChild.nodeValue, ', ')
             for author in authorsTemp:
                 options.authors.append(author)
         if len(xml.getElementsByTagName('Penciller')) != 0:
-            authorsTemp = string.split(xml.getElementsByTagName('Penciller')[0].firstChild.nodeValue, ', ')
+            authorsTemp = str.split(xml.getElementsByTagName('Penciller')[0].firstChild.nodeValue, ', ')
             for author in authorsTemp:
                 options.authors.append(author)
         if len(xml.getElementsByTagName('Inker')) != 0:
-            authorsTemp = string.split(xml.getElementsByTagName('Inker')[0].firstChild.nodeValue, ', ')
+            authorsTemp = str.split(xml.getElementsByTagName('Inker')[0].firstChild.nodeValue, ', ')
             for author in authorsTemp:
                 options.authors.append(author)
         if len(xml.getElementsByTagName('Colorist')) != 0:
-            authorsTemp = string.split(xml.getElementsByTagName('Colorist')[0].firstChild.nodeValue, ', ')
+            authorsTemp = str.split(xml.getElementsByTagName('Colorist')[0].firstChild.nodeValue, ', ')
             for author in authorsTemp:
                 options.authors.append(author)
         if len(options.authors) > 0:
@@ -671,7 +670,7 @@ def checkComicInfo(path, originalPath):
         os.remove(xmlPath)
 
 
-# TODO: Check if replacement work correctly
+# TODO: Check if replacement work correctly. No zero padding!!!
 #def slugify(value):
 #    # Normalizes string, converts to lowercase, removes non-alpha characters and converts spaces to hyphens.
 #    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
@@ -898,8 +897,7 @@ def makeZIP(zipFilename, baseDir, isEPUB=False):
 
 
 def Copyright():
-    print(('comic2ebook v%(__version__)s. '
-           'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
+    print(('comic2ebook v%(__version__)s. Written by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
 
 
 def Usage():

@@ -27,7 +27,8 @@ import sys
 from multiprocessing import freeze_support
 from kcc.comic2panel import main, Copyright
 
-freeze_support()
-Copyright()
-main(sys.argv[1:])
-sys.exit(0)
+if __name__ == "__main__":
+    freeze_support()
+    Copyright()
+    main(sys.argv[1:])
+    sys.exit(0)

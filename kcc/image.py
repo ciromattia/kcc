@@ -22,6 +22,7 @@ __docformat__ = 'restructuredtext en'
 
 import os
 from sys import platform
+from functools import reduce
 try:
     # noinspection PyUnresolvedReferences
     from PIL import Image, ImageOps, ImageStat, ImageChops
@@ -248,8 +249,8 @@ class ComicPage:
             return self.image
         # If image is smaller than target resolution and upscale is off - Just expand it by adding margins
         if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and not upscale:
-            borderw = (size[0] - self.image.size[0]) / 2
-            borderh = (size[1] - self.image.size[1]) / 2
+            borderw = int((size[0] - self.image.size[0]) / 2)
+            borderh = int((size[1] - self.image.size[1]) / 2)
             # PV is disabled when source image is smaller than device screen and upscale is off - So we drop HQ image
             if qualityMode == 2 and self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
                 self.purge = True
@@ -265,7 +266,7 @@ class ComicPage:
             self.image = ImageOps.expand(self.image, border=(int(diff / 2), 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
-            self.image = ImageOps.expand(self.image, border=(0, diff / 2), fill=fill)
+            self.image = ImageOps.expand(self.image, border=(0, int(diff / 2)), fill=fill)
         if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
             method = Image.BICUBIC
         else:
@@ -286,12 +287,12 @@ class ComicPage:
                 self.rotated = False
                 if width > height:
                     # Source is landscape, so split by the width
-                    leftbox = (0, 0, width / 2, height)
-                    rightbox = (width / 2, 0, width, height)
+                    leftbox = (0, 0, int(width / 2), height)
+                    rightbox = (int(width / 2), 0, width, height)
                 else:
                     # Source is portrait and target is landscape, so split by the height
-                    leftbox = (0, 0, width, height / 2)
-                    rightbox = (0, height / 2, width, height)
+                    leftbox = (0, 0, width, int(height / 2))
+                    rightbox = (0, int(height / 2), width, height)
                 filename = os.path.splitext(self.filename)
                 fileone = targetdir + '/' + filename[0] + '_kcca' + filename[1]
                 filetwo = targetdir + '/' + filename[0] + '_kccb' + filename[1]
