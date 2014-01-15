@@ -29,13 +29,35 @@ import re
 import stat
 import string
 import unicodedata
+import zipfile
 from tempfile import mkdtemp
-from shutil import move, copyfile, copytree, rmtree, make_archive
+from shutil import move, copyfile, copytree, rmtree
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool, freeze_support
 from xml.dom.minidom import parse
 from uuid import uuid4
 from slugify import slugify
+try:
+    # noinspection PyUnresolvedReferences
+    from PIL import Image
+    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
+        print "ERROR: Pillow 2.3.0 or newer is required!"
+        if sys.platform.startswith('linux'):
+            import Tkinter
+            import tkMessageBox
+            importRoot = Tkinter.Tk()
+            importRoot.withdraw()
+            tkMessageBox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
+        exit(1)
+except ImportError:
+    print "ERROR: Pillow is not installed!"
+    if sys.platform.startswith('linux'):
+        import Tkinter
+        import tkMessageBox
+        importRoot = Tkinter.Tk()
+        importRoot.withdraw()
+        tkMessageBox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
+    exit(1)
 try:
     from PyQt4 import QtCore
 except ImportError:
@@ -53,6 +75,10 @@ def buildHTML(path, imgfile):
             rotatedPage = True
         else:
             rotatedPage = False
+        if "_kccnpv" in str(filename):
+            noPV = True
+        else:
+            noPV = False
         if "_kccnh" in str(filename):
             noHorizontalPV = True
         else:
@@ -90,7 +116,7 @@ def buildHTML(path, imgfile):
                       "<div><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
                       imgfile, "\" class=\"singlePage\"/></div>\n"
                       ])
-        if options.panelview:
+        if options.panelview and not noPV:
             if not noHorizontalPV and not noVerticalPV:
                 if rotatedPage:
                     if options.righttoleft:
@@ -234,7 +260,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "<dc:language>en-US</dc:language>\n",
                   "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n"])
     for author in options.authors:
-        f.writelines(["<dc:Creator>", author, "</dc:Creator>\n"])
+        f.writelines(["<dc:creator>", author.encode('utf-8'), "</dc:creator>\n"])
     f.writelines(["<meta name=\"generator\" content=\"KindleComicConverter-" + __version__ + "\"/>\n",
                   "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
                   "<meta name=\"region-mag\" content=\"true\"/>\n",
@@ -281,9 +307,6 @@ def buildOPF(dstdir, title, filelist, cover=None):
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
-    f = open(os.path.join(dstdir, 'mimetype'), 'w')
-    f.write('application/epub+zip')
-    f.close()
     f = open(os.path.join(dstdir, 'META-INF', 'container.xml'), 'w')
     f.writelines(["<?xml version=\"1.0\"?>\n",
                   "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\n",
@@ -686,9 +709,6 @@ def sanitizeTreeBeforeConversion(filetree):
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD)
-            # Detect corrupted files - Phase 1
-            if os.path.getsize(os.path.join(root, name)) == 0:
-                os.remove(os.path.join(root, name))
         for name in dirs:
             os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD | stat.S_IEXEC)
 
@@ -844,6 +864,40 @@ def preSplitDirectory(path):
         return [path]
 
 
+def detectCorruption(tmpPath, orgPath):
+    for root, dirs, files in os.walk(tmpPath, False):
+        for name in files:
+            if getImageFileName(name) is not None:
+                path = os.path.join(root, name)
+                pathOrg = os.path.join(orgPath, name)
+                if os.path.getsize(path) == 0:
+                    rmtree(os.path.join(tmpPath, '..', '..'), True)
+                    raise RuntimeError('Image file %s is corrupted.' % pathOrg)
+                try:
+                    img = Image.open(path)
+                    img.verify()
+                    img = Image.open(path)
+                    img.load()
+                except:
+                    rmtree(os.path.join(tmpPath, '..', '..'), True)
+                    raise RuntimeError('Image file %s is corrupted.' % pathOrg)
+
+
+def makeZIP(zipFilename, baseDir, isEPUB=False):
+    zipFilename = os.path.abspath(zipFilename) + '.zip'
+    zipOutput = zipfile.ZipFile(zipFilename, 'w', zipfile.ZIP_DEFLATED)
+    if isEPUB:
+        zipOutput.writestr('mimetype', 'application/epub+zip', zipfile.ZIP_STORED)
+    for dirpath, dirnames, filenames in os.walk(baseDir):
+        for name in filenames:
+            path = os.path.normpath(os.path.join(dirpath, name))
+            aPath = os.path.normpath(os.path.join(dirpath.replace(baseDir, ''), name))
+            if os.path.isfile(path):
+                zipOutput.write(path, aPath)
+    zipOutput.close()
+    return zipFilename
+
+
 def Copyright():
     print(('comic2ebook v%(__version__)s. '
            'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
@@ -864,7 +918,7 @@ def main(argv=None, qtGUI=None):
     otherOptions = OptionGroup(parser, "OTHER")
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
                            help="Device profile (Choose one among K1, K2, K345, KDX, KHD, KF, KFHD, KFHD8, KFHDX,"
-                                " KFHDX8, KFA) [Default=KHD]")
+                                " KFHDX8, KFA, KoMT, KoG, KoA, KoAHD) [Default=KHD]")
     mainOptions.add_option("-q", "--quality", type="int", dest="quality", default="0",
                            help="Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
@@ -925,14 +979,13 @@ def main(argv=None, qtGUI=None):
         parser.print_help()
         return
     path = getWorkFolder(args[0])
+    detectCorruption(path + "/OEBPS/Images/", args[0])
     checkComicInfo(path + "/OEBPS/Images/", args[0])
     if options.webtoon:
-        if GUI:
-            GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Splitting images')
         if options.customheight > 0:
-            comic2panel.main(['-y ' + str(options.customheight), '-i', path], qtGUI)
+            comic2panel.main(['-y ' + str(options.customheight), '-i', '-m', path], qtGUI)
         else:
-            comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', path], qtGUI)
+            comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', '-m', path], qtGUI)
     if options.imgproc:
         print("\nProcessing images...")
         if GUI:
@@ -966,7 +1019,7 @@ def main(argv=None, qtGUI=None):
                 filepath.append(getOutputFilename(args[0], options.output, '.cbz', ' ' + str(tomeNumber)))
             else:
                 filepath.append(getOutputFilename(args[0], options.output, '.cbz', ''))
-            make_archive(tome + '_comic', 'zip', tome + '/OEBPS/Images')
+            makeZIP(tome + '_comic', tome + '/OEBPS/Images')
         else:
             print("\nCreating EPUB structure...")
             genEpubStruct(tome)
@@ -975,7 +1028,7 @@ def main(argv=None, qtGUI=None):
                 filepath.append(getOutputFilename(args[0], options.output, '.epub', ' ' + str(tomeNumber)))
             else:
                 filepath.append(getOutputFilename(args[0], options.output, '.epub', ''))
-            make_archive(tome + '_comic', 'zip', tome)
+            makeZIP(tome + '_comic', tome, True)
         move(tome + '_comic.zip', filepath[-1])
         rmtree(tome, True)
         if GUI:
@@ -1033,6 +1086,11 @@ def checkOptions():
     if options.profile == 'OTHER':
         options.panelview = False
         options.quality = 0
+    if 'Ko' in options.profile:
+        options.panelview = False
+        # Kobo models can't use ultra quality mode
+        if options.quality == 2:
+            options.quality = 1
     # Kindle for Android profile require target resolution.
     if options.profile == 'KFA' and (options.customwidth == 0 or options.customheight == 0):
         print("ERROR: Kindle for Android profile require --customwidth and --customheight options!")

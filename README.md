@@ -1,6 +1,6 @@
 ﻿# KCC
 
-**Kindle Comic Converter** is a Python app to convert comic files or folders to ePub or Panel View MOBI.
+**Kindle Comic Converter** is a Python app to convert comic files or folders to ePub, Panel View MOBI or E-Ink optimized CBZ.
 It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
 actually a comic to EPUB converter that every e-reader owner can happily use**_.
 It can also optionally optimize images by applying a number of transformations.
@@ -11,7 +11,8 @@ Amazon's tool is for comic publishers and involves a lot of manual effort, while
 _KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;-)
 
 ### Issues / new features / donations
-If you have some problems using KCC please [file an issue here](https://github.com/ciromattia/kcc/issues/new).  
+If you have general questions about usage, feedback etc. please [post it here](http://www.mobileread.com/forums/showthread.php?t=207461).
+If you have some **technical** problems using KCC please [file an issue here](https://github.com/ciromattia/kcc/issues/new).
 If you can fix an open issue, fork & make a pull request.  
 If you want more chances an issue is fixes or your wanted feature added, consider [placing a bounty](https://www.bountysource.com/trackers/65571-ciromattia-kcc)!  
 
@@ -23,53 +24,34 @@ If you find **KCC** valuable you can consider donating to the authors:
 You can find the latest released binary at the following links:
 - **Windows:** [http://kcc.vulturis.eu/Windows/](http://kcc.vulturis.eu/Windows/)
 - **Linux:** [http://kcc.vulturis.eu/Linux/](http://kcc.vulturis.eu/Linux/)
-- **OS X (10.8 or later):** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
-- **OS X (10.7 or earlier):** Soon™
+- **OS X 10.8+:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
 
 ## INPUT FORMATS
-**KCC** can understand and convert, at the moment, the following file types:
-- PNG, JPG, GIF, TIFF, BMP
-- Folders
+**KCC** can understand and convert, at the moment, the following input types:
+- Folders containing: PNG, JPG, GIF, TIFF or BMP files
 - CBZ, ZIP
 - CBR, RAR *(With `unrar` executable)*
 - CB7, 7Z *(With `7za` executable)*
 - PDF *(Extracting only contained JPG images)*
 
 ## OPTIONAL REQUIREMENTS
-- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For .mobi generation)*
+- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation)*
 - [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
 - [7za](http://www.7-zip.org/download.html) *(For 7z/CB7 support)*
 
 ### For compiling/running from source:
 - Python 2.7 - Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows.
 - [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt/download) - Please refer to official documentation for installing into your system.
-- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.2.1+ - For comic optimizations. Please refer to official documentation for installing into your system.
+- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.3.0+ - For comic optimizations. Please refer to official documentation for installing into your system.
 - [Psutil](https://code.google.com/p/psutil/) - Please refer to official documentation for installing into your system.
 - **To build OS X release you need a modified QT:** [patch](https://github.com/ciromattia/kcc/blob/master/other/QT-4.8.5-QListWidget.patch)
 
 ## USAGE
 
-### Important tips:
-* Use high quality source files. **This little detail have a major impact on the final result.**
-* Read tooltip of _High/Ultra quality_ option. There are many important informations there.
-* When converting images smaller than device resolution remember to enable upscaling.
-* Panel View (auto zooming every part of page) can be disabled directly on Kindle. There is no KCC option to do that.
-* Check our [wiki](https://github.com/ciromattia/kcc/wiki/Other-devices) for a list of tested Non-Kindle E-Readers.
-* The first image found will be set as the comic's cover.
-* All files/directories will be added to EPUB in alphabetical order.
-* Using high/ultra quality output option with Kindle Fire HD/HDX in most cases is just waste of space.
-* ComicRack metadata will be parsed only if they are saved in *ComicInfo.xml* file.
-
-### Calibre:
-* Calibre can be used to upload files created by KCC.
-* Uploading KCC output with Calibre will remove *Personal* tag from cover.
-* **Don't convert files created by KCC with Calibre!** Any conversion process will corrupt the file!
-* Don't use Calibre reader to preview files created by KCC. It can't parse them correctly.
-
-### GUI 
-
 Should be pretty self-explanatory. All options have detailed informations in tooltips.
 After completed conversion you should find ready file alongside the original input file (same directory).
+
+Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more details.
 
 ### Standalone `comic2ebook.py` usage:
 
@@ -79,7 +61,7 @@ Usage: comic2ebook.py [options] comic_file|comic_folder
 Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
-                        Device profile (Choose one among K1, K2, K345, KDX, KHD, KF, KFHD, KFHD8, KFHDX, KFHDX8, KFA) [Default=KHD]
+                        Device profile (Choose one among K1, K2, K345, KDX, KHD, KF, KFHD, KFHD8, KFHDX, KFHDX8, KFA, KoMT, KoG, KoA, KoAHD) [Default=KHD]
     -q QUALITY, --quality=QUALITY
                         Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
     -m, --manga-style   Manga style (Right-to-left reading and splitting)
@@ -127,6 +109,7 @@ Options:
     -y HEIGHT, --height=HEIGHT
                         Height of the target device screen
     -i, --in-place      Overwrite source directory
+    -m, --merge         Combine every directory into a single image before splitting
 
   OTHER:
     -d, --debug         Create debug file for every splitted image
@@ -149,11 +132,14 @@ The app relies and includes the following scripts/binaries:
 * [Kindle Paperwhite](http://kcc.vulturis.eu/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.vulturis.eu/Samples/Ubunchu!-K345.mobi)
 * [Kindle DX/DXG](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
-* [Kindle Fire](http://kcc.vulturis.eu/Samples/Ubunchu!-KF.mobi)
 * [Kindle Fire HD](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD.mobi)
 * [Kindle Fire HD 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD8.mobi)
 * [Kindle Fire HDX](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX.mobi)
 * [Kindle Fire HDX 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX8.mobi)
+* [Kobo Mini/Touch](http://kcc.vulturis.eu/Samples/Ubunchu!-KoMT.cbz)
+* [Kobo Glow](http://kcc.vulturis.eu/Samples/Ubunchu!-KoG.cbz)
+* [Kobo Aura](http://kcc.vulturis.eu/Samples/Ubunchu!-KoA.cbz)
+* [Kobo Aura HD](http://kcc.vulturis.eu/Samples/Ubunchu!-KoAHD.cbz)
 
 ## CHANGELOG
 ####1.0
@@ -310,6 +296,21 @@ The app relies and includes the following scripts/binaries:
 ####3.6.2:
 * Fixed previous PNG output fix
 * Fixed Panel View anomalies
+
+####3.7:
+* Added profiles for KOBO devices
+* Improved Panel View support
+* Improved WebToon splitter
+* Improved margin color autodetection
+* Tweaked EPUB output
+* Fixed stretching option
+* GUI tweaks and minor bugfixes
+
+####3.7.1:
+* Hotfixed Kobo profiles
+
+####3.7.2:
+* Fixed problems with HQ mode
 
 ## COPYRIGHT
 

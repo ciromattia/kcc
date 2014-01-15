@@ -26,7 +26,7 @@ import locale
 from sys import platform
 from subprocess import STDOUT, PIPE
 try:
-    #noinspection PyUnresolvedReferences
+    # noinspection PyUnresolvedReferences
     from psutil import Popen
 except ImportError:
     print("ERROR: Psutil is not installed!")
