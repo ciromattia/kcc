@@ -129,7 +129,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
                                  '</body>\n'
                                  '</html>\n', 'UTF-8'))
             elif sendReply:
-                outputFile = GUI.completedWork[urllib.parse.unquote(self.path[1:])].decode('utf-8')
+                outputFile = GUI.completedWork[urllib.parse.unquote(self.path[1:])]
                 fp = open(outputFile, 'rb')
                 self.send_response(200)
                 self.send_header('Content-type', mimetype)
@@ -243,8 +243,7 @@ class KindleGenThread(QtCore.QRunnable):
         kindlegenError = ''
         try:
             if os.path.getsize(self.work) < 367001600:
-                output = Popen('kindlegen -locale en "' + self.work.encode(sys.getfilesystemencoding()).decode('utf-8')
-                               + '"', stdout=PIPE, stderr=STDOUT, shell=True)
+                output = Popen('kindlegen -locale en "' + self.work + '"', stdout=PIPE, stderr=STDOUT, shell=True)
                 for line in output.stdout:
                     line = line.decode('utf-8')
                     # ERROR: Generic error
@@ -486,7 +485,7 @@ class WorkerThread(QtCore.QThread):
                                 GUI.progress.content = ''
                                 mobiPath = item.replace('.epub', '.mobi')
                                 os.remove(mobiPath + '_toclean')
-                                GUI.completedWork[os.path.basename(mobiPath).encode('utf-8')] = mobiPath.encode('utf-8')
+                                GUI.completedWork[os.path.basename(mobiPath)] = mobiPath
                             MW.addMessage.emit('Cleaning MOBI files... <b>Done!</b>', 'info', True)
                         else:
                             GUI.progress.content = ''
@@ -516,7 +515,7 @@ class WorkerThread(QtCore.QThread):
                                                False)
                 else:
                     for item in outputPath:
-                        GUI.completedWork[os.path.basename(item).encode('utf-8')] = item.encode('utf-8')
+                        GUI.completedWork[os.path.basename(item)] = item
         GUI.progress.content = ''
         GUI.progress.stop()
         MW.hideProgressBar.emit()
