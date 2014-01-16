@@ -123,21 +123,21 @@ class ComicPage:
             if not color and not forcepng:
                 self.image = self.image.convert('L')
             if self.rotated:
-                suffix += "_kccrot"
+                suffix += "-kccrot"
             if wipe:
                 os.remove(os.path.join(targetdir, self.filename))
             else:
-                suffix += "_kcchq"
+                suffix += "-kcchq"
             if self.noPV:
-                suffix += "_kccnpv"
+                suffix += "-kccnpv"
             else:
                 if self.noHPV:
-                    suffix += "_kccnh"
+                    suffix += "-kccnh"
                 if self.noVPV:
-                    suffix += "_kccnv"
+                    suffix += "-kccnv"
                 if self.border:
-                    suffix += "_kccxl" + str(self.border[0]) + "_kccyu" + str(self.border[1]) + "_kccxr" +\
-                              str(self.border[2]) + "_kccyd" + str(self.border[3])
+                    suffix += "-kccxl" + str(self.border[0]) + "-kccyu" + str(self.border[1]) + "-kccxr" +\
+                              str(self.border[2]) + "-kccyd" + str(self.border[3])
             if not self.purge:
                 if forcepng:
                     self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"),
@@ -273,8 +273,8 @@ class ComicPage:
                     leftbox = (0, 0, width, int(height / 2))
                     rightbox = (0, int(height / 2), width, height)
                 filename = os.path.splitext(self.filename)
-                fileone = targetdir + '/' + filename[0] + '_kcca' + filename[1]
-                filetwo = targetdir + '/' + filename[0] + '_kccb' + filename[1]
+                fileone = targetdir + '/' + filename[0] + '-kcca' + filename[1]
+                filetwo = targetdir + '/' + filename[0] + '-kccb' + filename[1]
                 try:
                     if righttoleft:
                         pageone = self.image.crop(rightbox)
