@@ -87,14 +87,17 @@ class QApplicationMessaging(QtWidgets.QApplication):
             self._running = True
         else:
             self._running = False
-            if not self._memory.create(1):
-                raise RuntimeError(self._memory.errorString().toLocal8Bit().data())
+            self._memory.create(1)
         self._key = 'KCC'
         self._timeout = 1000
         self._server = QtNetwork.QLocalServer(self)
         if not self.isRunning():
             self._server.newConnection.connect(self.handleMessage)
             self._server.listen(self._key)
+
+    def __del__(self):
+        if self._memory.isAttached():
+            self._memory.detach()
 
     def isRunning(self):
         return self._running
@@ -137,13 +140,8 @@ if __name__ == "__main__":
             KCCAplication.sendMessage(sys.argv[1])
             sys.exit(0)
         else:
-            messageBox = QtWidgets.QMessageBox()
-            icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap(':/Icon/icons/comic2ebook.png'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-            messageBox.setWindowIcon(icon)
-            QtWidgets.QMessageBox.critical(messageBox, 'KCC - Error', 'KCC is already running!',
-                                           QtWidgets.QMessageBox.Ok)
-            sys.exit(1)
+            KCCAplication.sendMessage('ARISE')
+            sys.exit(0)
     KCCWindow = QMainWindowKCC()
     KCCUI = KCC_gui.KCCGUI(KCCAplication, KCCWindow)
     if len(sys.argv) > 1:
