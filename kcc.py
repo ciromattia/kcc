@@ -77,7 +77,7 @@ elif sys.platform.startswith('win'):
 
 # Implementing detection of already running KCC instance and forwarding argv to it
 class QApplicationMessaging(QtWidgets.QApplication):
-    messageFromOtherInstance = QtCore.pyqtSignal(str)
+    messageFromOtherInstance = QtCore.pyqtSignal(bytes)
 
     def __init__(self, argv):
         QtWidgets.QApplication.__init__(self, argv)
@@ -102,7 +102,7 @@ class QApplicationMessaging(QtWidgets.QApplication):
     def handleMessage(self):
         socket = self._server.nextPendingConnection()
         if socket.waitForReadyRead(self._timeout):
-            self.messageFromOtherInstance.emit(socket.readAll().data().decode('utf8'))
+            self.messageFromOtherInstance.emit(socket.readAll().data())
 
     def sendMessage(self, message):
         if self.isRunning():
@@ -110,7 +110,8 @@ class QApplicationMessaging(QtWidgets.QApplication):
             socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
             if not socket.waitForConnected(self._timeout):
                 return False
-            socket.write(message.encode('utf8'))
+            # noinspection PyArgumentList
+            socket.write(bytes(message, 'UTF-8'))
             if not socket.waitForBytesWritten(self._timeout):
                 return False
             socket.disconnectFromServer()
@@ -133,7 +134,7 @@ if __name__ == "__main__":
     KCCAplication = QApplicationMessaging(sys.argv)
     if KCCAplication.isRunning():
         if len(sys.argv) > 1:
-            KCCAplication.sendMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
+            KCCAplication.sendMessage(sys.argv[1])
             sys.exit(0)
         else:
             messageBox = QtWidgets.QMessageBox()
@@ -146,5 +147,5 @@ if __name__ == "__main__":
     KCCWindow = QMainWindowKCC()
     KCCUI = KCC_gui.KCCGUI(KCCAplication, KCCWindow)
     if len(sys.argv) > 1:
-        KCCUI.handleMessage(sys.argv[1].decode(sys.getfilesystemencoding()))
+        KCCUI.handleMessage(sys.argv[1])
     sys.exit(KCCAplication.exec_())

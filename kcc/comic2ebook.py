@@ -78,7 +78,7 @@ def buildHTML(path, imgfile):
         if not os.path.exists(htmlpath):
             os.makedirs(htmlpath)
         htmlfile = os.path.join(htmlpath, filename[0] + '.html')
-        f = open(htmlfile, "w")
+        f = open(htmlfile, "w", encoding='UTF-8')
         f.writelines(["<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" ",
                       "\"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
                       "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
@@ -189,9 +189,8 @@ def buildHTML(path, imgfile):
 
 def buildNCX(dstdir, title, chapters):
     options.uuid = str(uuid4())
-    #options.uuid = options.uuid.encode('utf-8')
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
-    f = open(ncxfile, "w")
+    f = open(ncxfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\" ",
                   "\"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\n",
@@ -227,7 +226,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
         writingmode = "horizontal-rl"
     else:
         writingmode = "horizontal-lr"
-    f = open(opffile, "w")
+    f = open(opffile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<package version=\"2.0\" unique-identifier=\"BookID\" ",
                   "xmlns=\"http://www.idpf.org/2007/opf\">\n",
@@ -284,7 +283,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
-    f = open(os.path.join(dstdir, 'META-INF', 'container.xml'), 'w')
+    f = open(os.path.join(dstdir, 'META-INF', 'container.xml'), 'w', encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\"?>\n",
                   "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\n",
                   "<rootfiles>\n",
@@ -426,7 +425,7 @@ def genEpubStruct(path):
     cover = None
     _, deviceres, _, _, panelviewsize = options.profileData
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
-    f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w')
+    f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w', encoding='UTF-8')
     # DON'T COMPRESS CSS. KINDLE WILL FAIL TO PARSE IT.
     # Generic Panel View support + Margins fix for Non-Kindle devices.
     f.writelines(["@page {\n",

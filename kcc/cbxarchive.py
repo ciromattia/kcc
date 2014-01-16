@@ -21,7 +21,6 @@ __docformat__ = 'restructuredtext en'
 
 import os
 import zipfile
-import locale
 from subprocess import STDOUT, PIPE
 from psutil import Popen
 from shutil import move
@@ -59,7 +58,7 @@ class CBxArchive:
         cbzFile.extractall(targetdir, filelist)
 
     def extractCBR(self, targetdir):
-        cbrFile = rarfile.RarFile(self.origFileName.encode(locale.getpreferredencoding()))
+        cbrFile = rarfile.RarFile(self.origFileName)
         filelist = []
         for f in cbrFile.namelist():
             if f.startswith('__MACOSX') or f.endswith('.DS_Store') or f.endswith('thumbs.db'):
@@ -70,16 +69,15 @@ class CBxArchive:
                 except Exception:
                     pass  # the dir exists so we are going to extract the images only.
             else:
-                filelist.append(f.encode(locale.getpreferredencoding()))
+                filelist.append(f)
         cbrFile.extractall(targetdir, filelist)
 
     def extractCB7(self, targetdir):
-        output = Popen('7za x "' + self.origFileName.encode(locale.getpreferredencoding()) +
-                       '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -o"' + targetdir + '"',
-                       stdout=PIPE, stderr=STDOUT, shell=True)
+        output = Popen('7za x "' + self.origFileName + '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -o"'
+                       + targetdir + '"', stdout=PIPE, stderr=STDOUT, shell=True)
         extracted = False
         for line in output.stdout:
-            if "Everything is Ok" in line:
+            if b"Everything is Ok" in line:
                 extracted = True
         if not extracted:
             raise OSError
@@ -97,6 +95,10 @@ class CBxArchive:
             adir.remove('ComicInfo.xml')
         if len(adir) == 1 and os.path.isdir(os.path.join(targetdir, adir[0])):
             for f in os.listdir(os.path.join(targetdir, adir[0])):
+                # If directory names contain UTF-8 chars shutil.move can't clean up the mess alone
+                if os.path.isdir(os.path.join(targetdir, f)):
+                    os.rename(os.path.join(targetdir, adir[0], f), os.path.join(targetdir, adir[0], f + '-A'))
+                    f += '-A'
                 move(os.path.join(targetdir, adir[0], f), targetdir)
             os.rmdir(os.path.join(targetdir, adir[0]))
         return targetdir
