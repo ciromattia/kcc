@@ -289,7 +289,6 @@ class KindleUnpackThread(QtCore.QRunnable):
             open(mobiPath, 'wb').write(mobisplit.getResult())
             self.signals.result.emit([True])
         except Exception as err:
-            traceback.print_exc()
             self.signals.result.emit([False, format(err)])
 
 
@@ -729,7 +728,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.QualityBox.setChecked(False)
             GUI.MangaBox.setEnabled(False)
             GUI.MangaBox.setChecked(False)
-            self.addMessage('If images will be too dark after conversion: Set <i>Gamma</i> to 1.0.', 'info')
         else:
             if not GUI.ProcessingBox.isChecked():
                 GUI.NoRotateBox.setEnabled(True)

@@ -414,8 +414,6 @@ def fileImgProcess(work):
                 applyImgOptimization(img2, opt, img)
                 img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
     except Exception:
-        import traceback
-        traceback.print_tb(sys.exc_info()[2])
         return str(sys.exc_info()[1])
 
 
@@ -1081,4 +1079,4 @@ def checkOptions():
                       (int(X*1.5), int(Y*1.5)))
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
-    options.profileData = image.ProfileData.Profiles[options.profile]
+        options.profileData = image.ProfileData.Profiles[options.profile]
