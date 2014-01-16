@@ -83,7 +83,6 @@ class CBxArchive:
             raise OSError
 
     def extract(self, targetdir):
-        print("\n" + targetdir + "\n")
         if self.compressor == 'rar':
             self.extractCBR(targetdir)
         elif self.compressor == 'zip':
