@@ -945,7 +945,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
     def handleMessage(self, message):
         MW.raise_()
         MW.activateWindow()
-        if not self.conversionAlive:
+        message = message.decode('UTF-8')
+        if not self.conversionAlive and message != 'ARISE':
             if self.needClean:
                 self.needClean = False
                 GUI.JobList.clear()

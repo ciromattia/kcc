@@ -1079,4 +1079,4 @@ def checkOptions():
                       (int(X*1.5), int(Y*1.5)))
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
-        options.profileData = image.ProfileData.Profiles[options.profile]
+    options.profileData = image.ProfileData.Profiles[options.profile]
