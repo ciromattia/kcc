@@ -411,7 +411,7 @@ class WorkerThread(QtCore.QThread):
                     GUI.progress.content = ''
                     self.errors = True
                     MW.addMessage.emit(str(warn), 'warning', False)
-                    MW.addMessage.emit('Failed to create output file!', 'warning', False)
+                    MW.addMessage.emit('Failed to create output file!', 'error', False)
                     MW.addTrayMessage.emit('Failed to create output file!', 'Critical')
             except Exception as err:
                 GUI.progress.content = ''
