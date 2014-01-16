@@ -28,7 +28,6 @@ from random import choice
 from string import ascii_uppercase, digits
 
 
-#TODO: Check entire code. Replacing file() with open() is not enought.
 class PdfJpgExtract:
     def __init__(self, origFileName):
         self.origFileName = origFileName
@@ -40,38 +39,34 @@ class PdfJpgExtract:
         return self.path
 
     def extract(self):
-        pdf = open(self.origFileName, "r").read()
-
-        startmark = "\xff\xd8"
+        pdf = open(self.origFileName, "rb").read()
+        startmark = b"\xff\xd8"
         startfix = 0
-        endmark = "\xff\xd9"
+        endmark = b"\xff\xd9"
         endfix = 2
         i = 0
-
         njpg = 0
         os.makedirs(self.path)
         while True:
-            istream = pdf.find("stream", i)
+            istream = pdf.find(b"stream", i)
             if istream < 0:
                 break
             istart = pdf.find(startmark, istream, istream + 20)
             if istart < 0:
                 i = istream + 20
                 continue
-            iend = pdf.find("endstream", istart)
+            iend = pdf.find(b"endstream", istart)
             if iend < 0:
                 raise Exception("Didn't find end of stream!")
             iend = pdf.find(endmark, iend - 20)
             if iend < 0:
                 raise Exception("Didn't find end of JPG!")
-
             istart += startfix
             iend += endfix
             jpg = pdf[istart:iend]
             jpgfile = open(self.path + "/jpg%d.jpg" % njpg, "wb")
-            jpgfile.write(bytearray(jpg, 'utf-8'))
+            jpgfile.write(jpg)
             jpgfile.close()
-
             njpg += 1
             i = iend
         return self.path, njpg
