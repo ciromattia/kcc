@@ -712,6 +712,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             icon.addPixmap(QtGui.QPixmap(":/Other/icons/convert.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             GUI.ConvertButton.setIcon(icon)
             GUI.ConvertButton.setText('Convert')
+            GUI.Form.setAcceptDrops(True)
         else:
             self.conversionAlive = True
             self.worker.sync()
@@ -719,6 +720,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             icon.addPixmap(QtGui.QPixmap(":/Other/icons/clear.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             GUI.ConvertButton.setIcon(icon)
             GUI.ConvertButton.setText('Abort')
+            GUI.Form.setAcceptDrops(False)
 
     def toggleWebtoonBox(self, value):
         if value:
@@ -943,7 +945,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
     def handleMessage(self, message):
         MW.raise_()
         MW.activateWindow()
-        message = message.decode('UTF-8')
+        if type(message) is bytes:
+            message = message.decode('UTF-8')
         if not self.conversionAlive and message != 'ARISE':
             if self.needClean:
                 self.needClean = False
@@ -966,6 +969,16 @@ class KCCGUI(KCC_ui.Ui_KCC):
                     GUI.JobList.addItem(message)
                 else:
                     self.addMessage('This file type is unsupported!', 'error')
+
+    def dragAndDrop(self, e):
+        e.accept()
+
+    def dragAndDropAccepted(self, e):
+        for message in e.mimeData().urls():
+            message = urllib.parse.unquote(message.toString().replace('file:///', ''))
+            if sys.platform.startswith('win'):
+                message = message.replace('/', '\\')
+            self.handleMessage(message)
 
     # noinspection PyArgumentList
     def __init__(self, KCCAplication, KCCWindow):
@@ -1151,6 +1164,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW.showDialog.connect(self.showDialog)
         MW.hideProgressBar.connect(self.hideProgressBar)
         MW.closeEvent = self.saveSettings
+
+        GUI.Form.setAcceptDrops(True)
+        GUI.Form.dragEnterEvent = self.dragAndDrop
+        GUI.Form.dropEvent = self.dragAndDropAccepted
 
         for profile in profilesGUI:
             if profile == "Other":
