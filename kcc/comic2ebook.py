@@ -33,7 +33,7 @@ from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
 from xml.dom.minidom import parse
 from uuid import uuid4
-from slugify import slugify
+from slugify import slugify as slugifyExt
 from PIL import Image
 try:
     from PyQt5 import QtCore
@@ -48,19 +48,19 @@ from . import pdfjpgextract
 def buildHTML(path, imgfile):
     filename = getImageFileName(imgfile)
     if filename is not None:
-        if "_kccrot" in str(filename):
+        if "-kccrot" in str(filename):
             rotatedPage = True
         else:
             rotatedPage = False
-        if "_kccnpv" in str(filename):
+        if "-kccnpv" in str(filename):
             noPV = True
         else:
             noPV = False
-        if "_kccnh" in str(filename):
+        if "-kccnh" in str(filename):
             noHorizontalPV = True
         else:
             noHorizontalPV = False
-        if "_kccnv" in str(filename):
+        if "-kccnv" in str(filename):
             noVerticalPV = True
         else:
             noVerticalPV = False
@@ -133,13 +133,13 @@ def buildHTML(path, imgfile):
                               "}'></a></div>\n"])
             if options.quality == 2:
                 imgfilepv = str.split(imgfile, ".")
-                imgfilepv[0] = imgfilepv[0].split("_kccxl")[0].replace("_kccnh", "").replace("_kccnv", "")
-                imgfilepv[0] += "_kcchq"
+                imgfilepv[0] = imgfilepv[0].split("-kccxl")[0].replace("-kccnh", "").replace("-kccnv", "")
+                imgfilepv[0] += "-kcchq"
                 imgfilepv = ".".join(imgfilepv)
             else:
                 imgfilepv = imgfile
-            if "_kccxl" in filename[0]:
-                borders = filename[0].split('_kccxl')[1]
+            if "-kccxl" in filename[0]:
+                borders = filename[0].split('-kccxl')[1]
                 borders = re.findall('[0-9]{1,6}', borders)
                 xl = borders[0].lstrip("0")
                 yu = borders[1].lstrip("0")
@@ -539,7 +539,7 @@ def genEpubStruct(path):
         chapter = False
         for afile in filenames:
             filename = getImageFileName(afile)
-            if filename is not None and not "_kcchq" in filename[0]:
+            if filename is not None and not "-kcchq" in filename[0]:
                 filelist.append(buildHTML(dirpath, afile))
                 if not chapter:
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
@@ -649,15 +649,10 @@ def checkComicInfo(path, originalPath):
         os.remove(xmlPath)
 
 
-# TODO: Check if replacement work correctly. No zero padding!!!
-#def slugify(value):
-#    # Normalizes string, converts to lowercase, removes non-alpha characters and converts spaces to hyphens.
-#    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-#    value = re.sub('[^\w\s\.-]', '', value).strip().lower()
-#    value = re.sub('[-\.\s]+', '-', value)
-#    value = re.sub(r'([0-9]+)', r'00000\1', value)
-#    value = re.sub(r'0*([0-9]{6,})', r'\1', value)
-#    return value
+def slugify(value):
+    value = slugifyExt(value)
+    value = re.sub(r'0*([0-9]{4,})', r'\1', re.sub(r'([0-9]+)', r'0000\1', value))
+    return value
 
 
 def sanitizeTree(filetree):
