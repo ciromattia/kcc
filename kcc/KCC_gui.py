@@ -601,12 +601,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
     def modeBasic(self):
         self.currentMode = 1
         if sys.platform.startswith('darwin'):
-            MW.setMinimumSize(QtCore.QSize(420, 291))
             MW.setMaximumSize(QtCore.QSize(420, 291))
+            MW.setMinimumSize(QtCore.QSize(420, 291))
             MW.resize(420, 291)
         else:
-            MW.setMinimumSize(QtCore.QSize(420, 287))
             MW.setMaximumSize(QtCore.QSize(420, 287))
+            MW.setMinimumSize(QtCore.QSize(420, 287))
             MW.resize(420, 287)
         GUI.BasicModeButton.setEnabled(True)
         GUI.AdvModeButton.setEnabled(True)
@@ -634,8 +634,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
     def modeAdvanced(self):
         self.currentMode = 2
-        MW.setMinimumSize(QtCore.QSize(420, 365))
         MW.setMaximumSize(QtCore.QSize(420, 365))
+        MW.setMinimumSize(QtCore.QSize(420, 365))
         MW.resize(420, 365)
         GUI.BasicModeButton.setEnabled(True)
         GUI.AdvModeButton.setEnabled(True)
@@ -663,8 +663,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
     def modeExpert(self):
         self.currentMode = 3
-        MW.setMinimumSize(QtCore.QSize(420, 397))
         MW.setMaximumSize(QtCore.QSize(420, 397))
+        MW.setMinimumSize(QtCore.QSize(420, 397))
         MW.resize(420, 397)
         GUI.BasicModeButton.setEnabled(False)
         GUI.AdvModeButton.setEnabled(False)
@@ -732,7 +732,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             if not GUI.ProcessingBox.isChecked():
                 GUI.NoRotateBox.setEnabled(True)
                 GUI.QualityBox.setEnabled(True)
-            if GUI.profiles[str(GUI.DeviceBox.currentText())]['MangaMode']:
                 GUI.MangaBox.setEnabled(True)
 
     def toggleNoSplitRotate(self, value):
@@ -745,6 +744,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
     def toggleProcessingBox(self, value):
         if value:
+            GUI.MangaBox.setEnabled(False)
+            GUI.MangaBox.setChecked(False)
             GUI.RotateBox.setEnabled(False)
             GUI.RotateBox.setChecked(False)
             GUI.QualityBox.setEnabled(False)
@@ -764,6 +765,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.GammaSlider.setEnabled(False)
             GUI.GammaLabel.setEnabled(False)
         else:
+            GUI.MangaBox.setEnabled(True)
             GUI.RotateBox.setEnabled(True)
             GUI.UpscaleBox.setEnabled(True)
             GUI.NoRotateBox.setEnabled(True)
@@ -775,6 +777,11 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.GammaLabel.setEnabled(True)
             if GUI.profiles[str(GUI.DeviceBox.currentText())]['Quality']:
                 GUI.QualityBox.setEnabled(True)
+
+    def toggleQualityBox(self, value):
+        if value == 2 and 'Kobo' in str(GUI.DeviceBox.currentText()):
+            self.addMessage('Kobo devices can\'t use ultra quality mode!', 'warning')
+            GUI.QualityBox.setCheckState(0)
 
     def changeGamma(self, value):
         value = float(value)
@@ -824,16 +831,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 else:
                     tmpFormat = 0
                 GUI.FormatBox.setCurrentIndex(tmpFormat)
-        if (str(GUI.FormatBox.currentText()) == 'CBZ' and not 'Kobo' in str(GUI.DeviceBox.currentText())) or \
-                GUI.WebtoonBox.isChecked():
+        if GUI.WebtoonBox.isChecked():
             GUI.MangaBox.setEnabled(False)
             GUI.QualityBox.setEnabled(False)
             GUI.MangaBox.setChecked(False)
             GUI.QualityBox.setChecked(False)
         else:
-            GUI.MangaBox.setEnabled(profile['MangaMode'])
-            if not profile['MangaMode']:
-                GUI.MangaBox.setChecked(False)
             GUI.QualityBox.setEnabled(profile['Quality'])
             if not profile['Quality']:
                 GUI.QualityBox.setChecked(False)
@@ -898,11 +901,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             if self.currentMode > 2 and (str(GUI.customWidth.text()) == '' or str(GUI.customHeight.text()) == ''):
                 GUI.JobList.clear()
                 self.addMessage('Target resolution is not set!', 'error')
-                self.needClean = True
-                return
-            if 'Kobo' in str(GUI.DeviceBox.currentText()) and GUI.QualityBox.checkState() == 2:
-                GUI.JobList.clear()
-                self.addMessage('Kobo devices can\'t use ultra quality mode!', 'error')
                 self.needClean = True
                 return
             self.worker.start()
@@ -1017,37 +1015,37 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.tray.show()
 
         self.profiles = {
-            "Kindle Paperwhite": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Paperwhite": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                   'DefaultUpscale': False, 'Label': 'KHD'},
-            "Kindle": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K345'},
-            "Kindle DX/DXG": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'Label': 'KDX'},
-            "Kindle Fire": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Fire": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                             'DefaultUpscale': False, 'Label': 'KF'},
-            "K. Fire HD 7\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "K. Fire HD 7\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                'DefaultUpscale': True, 'Label': 'KFHD'},
-            "K. Fire HD 8.9\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "K. Fire HD 8.9\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                  'DefaultUpscale': True, 'Label': 'KFHD8'},
-            "K. Fire HDX 7\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "K. Fire HDX 7\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                 'DefaultUpscale': True, 'Label': 'KFHDX'},
-            "K. Fire HDX 8.9\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "K. Fire HDX 8.9\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                   'DefaultUpscale': True, 'Label': 'KFHDX8'},
-            "Kobo Mini/Touch": {'MangaMode': False, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Mini/Touch": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                                 'DefaultUpscale': False, 'Label': 'KoMT'},
-            "Kobo Glow": {'MangaMode': False, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Glow": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                           'DefaultUpscale': False, 'Label': 'KoG'},
-            "Kobo Aura": {'MangaMode': False, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Aura": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                           'DefaultUpscale': False, 'Label': 'KoA'},
-            "Kobo Aura HD": {'MangaMode': False, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Aura HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                              'DefaultUpscale': False, 'Label': 'KoAHD'},
-            "Other": {'MangaMode': False, 'Quality': False, 'ForceExpert': True, 'DefaultFormat': 1,
+            "Other": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 1,
                       'DefaultUpscale': False, 'Label': 'OTHER'},
-            "Kindle for Android": {'MangaMode': True, 'Quality': False, 'ForceExpert': True, 'DefaultFormat': 0,
+            "Kindle for Android": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 0,
                                    'DefaultUpscale': False, 'Label': 'KFA'},
-            "Kindle 1": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 1": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K1'},
-            "Kindle 2": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 2": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K2'}
         }
         profilesGUI = [
@@ -1143,6 +1141,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.NoRotateBox.stateChanged.connect(self.toggleNoSplitRotate)
         GUI.WebtoonBox.stateChanged.connect(self.toggleWebtoonBox)
         GUI.ProcessingBox.stateChanged.connect(self.toggleProcessingBox)
+        GUI.QualityBox.stateChanged.connect(self.toggleQualityBox)
         GUI.DeviceBox.activated.connect(self.changeDevice)
         GUI.FormatBox.activated.connect(self.changeFormat)
         MW.progressBarTick.connect(self.updateProgressbar)
