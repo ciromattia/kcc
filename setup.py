@@ -59,7 +59,7 @@ elif platform == "win32":
                                                  ['other/7za.exe', '7za.exe'],
                                                  ['other/Additional-LICENSE.txt', 'Additional-LICENSE.txt']
                                                  ], "compressed": True,
-                               "excludes": ['Tkinter']}},
+                               "excludes": ['tkinter']}},
         executables=[Executable(MAIN,
                                 base=base,
                                 targetName="KCC.exe",
@@ -89,7 +89,7 @@ setup(
 if platform == "darwin":
     from os import chmod, makedirs
     from shutil import copyfile
-    makedirs('dist/' + NAME + '.app/Contents/PlugIns/platform')
-    copyfile('other/libqcocoa.dylib', 'dist/' + NAME + '.app/Contents/PlugIns/platform')
+    makedirs('dist/' + NAME + '.app/Contents/PlugIns/platforms')
+    copyfile('other/libqcocoa.dylib', 'dist/' + NAME + '.app/Contents/PlugIns/platforms/libqcocoa.dylib')
     chmod('dist/' + NAME + '.app/Contents/Resources/unrar', 0o777)
     chmod('dist/' + NAME + '.app/Contents/Resources/7za', 0o777)
