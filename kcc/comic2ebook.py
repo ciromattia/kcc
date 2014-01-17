@@ -187,7 +187,7 @@ def buildHTML(path, imgfile):
         return path, imgfile
 
 
-def buildNCX(dstdir, title, chapters):
+def buildNCX(dstdir, title, chapters, chapterNames):
     options.uuid = str(uuid4())
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
     f = open(ncxfile, "w", encoding='UTF-8')
@@ -208,7 +208,7 @@ def buildNCX(dstdir, title, chapters):
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
         if os.path.basename(folder) != "Text":
-            title = os.path.basename(folder)
+            title = chapterNames[os.path.basename(folder)]
         filename = getImageFileName(os.path.join(folder, chapter[1]))
         f.write("<navPoint id=\"" + folder.replace('/', '_').replace('\\', '_') + "\"><navLabel><text>"
                 + title + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/")
@@ -417,7 +417,7 @@ def fileImgProcess(work):
         return str(sys.exc_info()[1])
 
 
-def genEpubStruct(path):
+def genEpubStruct(path, chapterNames):
     filelist = []
     chapterlist = []
     cover = None
@@ -546,7 +546,7 @@ def genEpubStruct(path):
                     cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
                                          'cover' + getImageFileName(filelist[-1][1])[1])
                     copyfile(os.path.join(filelist[-1][0], filelist[-1][1]), cover)
-    buildNCX(path, options.title, chapterlist)
+    buildNCX(path, options.title, chapterlist, chapterNames)
     # Ensure we're sorting files alphabetically
     convert = lambda text: int(text) if text.isdigit() else text
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
@@ -654,6 +654,7 @@ def slugify(value):
 
 
 def sanitizeTree(filetree):
+    chapterNames = {}
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
             if name.startswith('.') or name.lower() == 'thumbs.db':
@@ -669,10 +670,13 @@ def sanitizeTree(filetree):
             if name.startswith('.'):
                 os.remove(os.path.join(root, name))
             else:
+                tmpName = name
                 slugified = slugify(name)
                 while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
                     slugified += "A"
+                chapterNames[slugified] = tmpName
                 os.rename(os.path.join(root, name), os.path.join(root, slugified))
+    return chapterNames
 
 
 def sanitizeTreeBeforeConversion(filetree):
@@ -962,7 +966,7 @@ def main(argv=None, qtGUI=None):
         dirImgProcess(path + "/OEBPS/Images/")
     if GUI:
         GUI.progressBarTick.emit('1')
-    sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     if options.batchsplit:
         tomes = preSplitDirectory(path)
     else:
@@ -991,7 +995,7 @@ def main(argv=None, qtGUI=None):
             makeZIP(tome + '_comic', tome + '/OEBPS/Images')
         else:
             print("\nCreating EPUB structure...")
-            genEpubStruct(tome)
+            genEpubStruct(tome, chapterNames)
             # actually zip the ePub
             if len(tomes) > 1:
                 filepath.append(getOutputFilename(args[0], options.output, '.epub', ' ' + str(tomeNumber)))
