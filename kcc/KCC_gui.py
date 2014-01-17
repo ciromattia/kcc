@@ -978,6 +978,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
             message = urllib.parse.unquote(message.toString().replace('file:///', ''))
             if sys.platform.startswith('win'):
                 message = message.replace('/', '\\')
+            else:
+                message = '/' + message
             self.handleMessage(message)
 
     # noinspection PyArgumentList
