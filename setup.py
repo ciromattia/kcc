@@ -23,12 +23,9 @@ if platform == "darwin":
             py2app=dict(
                 argv_emulation=True,
                 iconfile='icons/comic2ebook.icns',
-                includes=['PIL', 'sip', 'PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui', 'PyQt4.QtNetwork'],
-                qt_plugins=[],
-                excludes=['PyQt4.QtDeclarative', 'PyQt4.QtDesigner', 'PyQt4.QtHelp', 'PyQt4.QtMultimedia',
-                          'PyQt4.QtOpenGL', 'PyQt4.QtScript', 'PyQt4.QtScriptTools', 'PyQt4.QtSql', 'PyQt4.QtSvg',
-                          'PyQt4.QtXmlPatterns', 'PyQt4.QtXml', 'PyQt4.QtWebKit', 'PyQt4.QtTest', 'Tkinter'],
-                resources=['LICENSE.txt', 'other/Additional-LICENSE.txt', 'other/unrar', 'other/7za'],
+                includes=['PIL', 'sip', 'PyQt5', 'PyQt5.QtCore', 'PyQt5.QtGui', 'PyQt5.QtNetwork', 'PyQt5.QtWidgets',
+                          'PyQt5.QtPrintSupport'],
+                resources=['LICENSE.txt', 'other/qt.conf', 'other/Additional-LICENSE.txt', 'other/unrar', 'other/7za'],
                 plist=dict(
                     CFBundleName=NAME,
                     CFBundleShortVersionString=VERSION,
@@ -90,6 +87,9 @@ setup(
 )
 
 if platform == "darwin":
-    from os import chmod
+    from os import chmod, makedirs
+    from shutil import copyfile
+    makedirs('dist/' + NAME + '.app/Contents/PlugIns/platform')
+    copyfile('other/libqcocoa.dylib', 'dist/' + NAME + '.app/Contents/PlugIns/platform')
     chmod('dist/' + NAME + '.app/Contents/Resources/unrar', 0o777)
     chmod('dist/' + NAME + '.app/Contents/Resources/7za', 0o777)
