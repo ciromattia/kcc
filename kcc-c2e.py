@@ -43,12 +43,16 @@ try:
 except ImportError:
     missing.append('Pillow 2.3.0+')
 if len(missing) > 0:
-    print('ERROR: ' + ', '.join(missing) + ' is not installed!')
-    import tkinter
-    import tkinter.messagebox
-    importRoot = tkinter.Tk()
-    importRoot.withdraw()
-    tkinter.messagebox.showerror('KCC - Error', 'ERROR: ' + ', '.join(missing) + ' is not installed!')
+    try:
+        # noinspection PyUnresolvedReferences
+        import tkinter
+        # noinspection PyUnresolvedReferences
+        import tkinter.messagebox
+        importRoot = tkinter.Tk()
+        importRoot.withdraw()
+        tkinter.messagebox.showerror('KCC - Error', 'ERROR: ' + ', '.join(missing) + ' is not installed!')
+    except ImportError:
+        print('ERROR: ' + ', '.join(missing) + ' is not installed!')
     exit(1)
 
 import sys
