@@ -48,12 +48,16 @@ try:
 except ImportError:
     missing.append('Pillow 2.3.0+')
 if len(missing) > 0:
-    print('ERROR: ' + ', '.join(missing) + ' is not installed!')
-    import tkinter
-    import tkinter.messagebox
-    importRoot = tkinter.Tk()
-    importRoot.withdraw()
-    tkinter.messagebox.showerror('KCC - Error', 'ERROR: ' + ', '.join(missing) + ' is not installed!')
+    try:
+        # noinspection PyUnresolvedReferences
+        import tkinter
+        # noinspection PyUnresolvedReferences
+        import tkinter.messagebox
+        importRoot = tkinter.Tk()
+        importRoot.withdraw()
+        tkinter.messagebox.showerror('KCC - Error', 'ERROR: ' + ', '.join(missing) + ' is not installed!')
+    except ImportError:
+        print('ERROR: ' + ', '.join(missing) + ' is not installed!')
     exit(1)
 
 import sys
@@ -94,10 +98,6 @@ class QApplicationMessaging(QtWidgets.QApplication):
         if not self.isRunning():
             self._server.newConnection.connect(self.handleMessage)
             self._server.listen(self._key)
-
-    def __del__(self):
-        if self._memory.isAttached():
-            self._memory.detach()
 
     def isRunning(self):
         return self._running
