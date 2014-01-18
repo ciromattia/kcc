@@ -1023,16 +1023,20 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.statusBarFontSize = 10
             self.statusBarStyle = 'QLabel{padding-top:2px;padding-bottom:3px;}'
             self.ProgressBar.setStyleSheet('QProgressBar{padding-top:5px;text-align:center;}')
+            self.tray.show()
         elif sys.platform.startswith('linux'):
             self.listFontSize = 8
             self.statusBarFontSize = 8
             self.statusBarStyle = 'QLabel{padding-top:5px;padding-bottom:3px;}'
             self.statusBar.setStyleSheet('QStatusBar::item{border:0px;border-top:2px solid #C2C7CB;}')
+            # Linux implementation QSystemTrayIcon is simply broken in Qt 5.2.0
+            #self.tray.show()
         else:
             self.listFontSize = 9
             self.statusBarFontSize = 8
             self.statusBarStyle = 'QLabel{padding-top:3px;padding-bottom:3px}'
             self.statusBar.setStyleSheet('QStatusBar::item{border:0px;border-top:2px solid #C2C7CB;}')
+            self.tray.show()
 
         self.profiles = {
             "Kindle Paperwhite": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -1217,4 +1221,3 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW.setWindowTitle("Kindle Comic Converter " + __version__)
         MW.show()
         MW.raise_()
-        self.tray.show()
