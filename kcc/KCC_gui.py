@@ -546,29 +546,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if self.needClean:
             self.needClean = False
             GUI.JobList.clear()
-        # Dirty, dirty way but OS native QFileDialogs don't support directory multiselect
-        dirDialog = QtWidgets.QFileDialog(MW, 'Select directory', self.lastPath, 'Directory (*.abcdefg)')
-        dirDialog.setFileMode(dirDialog.Directory)
-        dirDialog.setOption(dirDialog.ShowDirsOnly, True)
-        dirDialog.setOption(dirDialog.DontUseNativeDialog, True)
-        dirDialog.setOption(dirDialog.HideNameFilterDetails, True)
-        l = dirDialog.findChild(QtWidgets.QListView, "listView")
-        t = dirDialog.findChild(QtWidgets.QTreeView)
-        if l:
-            l.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        if t:
-            t.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        if dirDialog.exec_() == 1:
-            dnames = dirDialog.selectedFiles()
-        else:
-            dnames = ""
-        for dname in dnames:
-            if str(dname) != "":
-                if sys.platform.startswith('win'):
-                    dname = dname.replace('/', '\\')
-                self.lastPath = os.path.abspath(os.path.join(str(dname), os.pardir))
-                GUI.JobList.addItem(dname)
-        MW.setFocus()
+        dname = QtWidgets.QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
+        if dname != '':
+            if sys.platform.startswith('win'):
+                dname = dname.replace('/', '\\')
+            self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
+            GUI.JobList.addItem(dname)
 
     def selectFile(self):
         if self.needClean:
