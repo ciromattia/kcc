@@ -584,8 +584,7 @@ def getWorkFolder(afile):
                 path = cbx.extract(workdir)
             except OSError:
                 rmtree(workdir, True)
-                print('UnRAR/7za not found or file failed to extract!')
-                sys.exit(21)
+                raise UserWarning("Failed to extract file.")
         else:
             rmtree(workdir, True)
             raise TypeError

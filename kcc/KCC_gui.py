@@ -880,6 +880,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.ProgressBar.setValue(GUI.ProgressBar.value() + 1)
         elif command.isdigit():
             GUI.ProgressBar.setMaximum(int(command) - 1)
+            GUI.BasicModeButton.hide()
+            GUI.AdvModeButton.hide()
             GUI.ProgressBar.reset()
             GUI.ProgressBar.show()
         else:
@@ -909,6 +911,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
     def hideProgressBar(self):
         GUI.ProgressBar.hide()
+        GUI.BasicModeButton.show()
+        GUI.AdvModeButton.show()
 
     def saveSettings(self, event):
         if self.conversionAlive:
@@ -1017,15 +1021,18 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if sys.platform.startswith('darwin'):
             self.listFontSize = 11
             self.statusBarFontSize = 10
-            self.statusBarStyle = 'QLabel{padding-top:5px;padding-bottom:5px;border-top:2px solid #C2C7CB}'
+            self.statusBarStyle = 'QLabel{padding-top:2px;padding-bottom:3px;}'
+            self.ProgressBar.setStyleSheet('QProgressBar{padding-top:5px;text-align:center;}')
         elif sys.platform.startswith('linux'):
             self.listFontSize = 8
             self.statusBarFontSize = 8
-            self.statusBarStyle = 'QLabel{padding-top:2px;padding-bottom:3px;border-top:2px solid #C2C7CB}'
+            self.statusBarStyle = 'QLabel{padding-top:5px;padding-bottom:3px;}'
+            self.statusBar.setStyleSheet('QStatusBar::item{border:0px;border-top:2px solid #C2C7CB;}')
         else:
             self.listFontSize = 9
             self.statusBarFontSize = 8
-            self.statusBarStyle = 'QLabel{padding-top:3px;padding-bottom:3px;border-top:2px solid #C2C7CB}'
+            self.statusBarStyle = 'QLabel{padding-top:3px;padding-bottom:3px}'
+            self.statusBar.setStyleSheet('QStatusBar::item{border:0px;border-top:2px solid #C2C7CB;}')
 
         self.profiles = {
             "Kindle Paperwhite": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
