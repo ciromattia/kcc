@@ -99,6 +99,11 @@ class QApplicationMessaging(QtWidgets.QApplication):
             self._server.newConnection.connect(self.handleMessage)
             self._server.listen(self._key)
 
+    def __del__(self):
+        if self._memory.isAttached():
+            self._memory.detach()
+            self._server.close()
+
     def isRunning(self):
         return self._running
 

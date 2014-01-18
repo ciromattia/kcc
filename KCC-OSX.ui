@@ -581,7 +581,7 @@
       <x>10</x>
       <y>10</y>
       <width>401</width>
-      <height>35</height>
+      <height>29</height>
      </rect>
     </property>
     <property name="font">
@@ -591,9 +591,6 @@
       <weight>75</weight>
       <bold>true</bold>
      </font>
-    </property>
-    <property name="autoFillBackground">
-     <bool>true</bool>
     </property>
     <property name="value">
      <number>0</number>
