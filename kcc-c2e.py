@@ -23,6 +23,11 @@ __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
+import sys
+if sys.version_info[0] != 3:
+    print('ERROR: This is Python 3 script!')
+    exit(1)
+
 # Dependiences check
 missing = []
 try:
@@ -55,7 +60,6 @@ if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
     exit(1)
 
-import sys
 from multiprocessing import freeze_support
 from kcc.comic2ebook import main, Copyright
 

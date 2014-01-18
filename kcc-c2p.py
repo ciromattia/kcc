@@ -18,6 +18,11 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
+import sys
+if sys.version_info[0] != 3:
+    print('ERROR: This is Python 3 script!')
+    exit(1)
+
 __version__ = '4.0'
 __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
@@ -45,7 +50,6 @@ if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
     exit(1)
 
-import sys
 from multiprocessing import freeze_support
 from kcc.comic2panel import main, Copyright
 
