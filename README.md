@@ -39,12 +39,16 @@ You can find the latest released binary at the following links:
 - [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
 - [7za](http://www.7-zip.org/download.html) *(For 7z/CB7 support)*
 
-### For compiling/running from source:
+### For running from source:
 - Python 3.3
 - [PyQt5](http://www.riverbankcomputing.co.uk/software/pyqt/download5)
 - [Pillow](http://pypi.python.org/pypi/Pillow/) 2.3.0+
 - [psutil](https://pypi.python.org/pypi/psutil)
 - [python-slugify](http://pypi.python.org/pypi/python-slugify)
+
+### For freezing code:
+- Windows - [cx_Freeze](https://bitbucket.org/anthony_tuininga/cx_freeze) version 4.3.2 with [this](https://bitbucket.org/anthony_tuininga/cx_freeze/pull-request/29/conversions-to-support-untranslated-wide) patchset.
+- OS X - [py2app](https://bitbucket.org/ronaldoussoren/py2app) HEAD version.
 
 ## USAGE
 
@@ -313,6 +317,9 @@ The app relies and includes the following scripts/binaries:
 * Fixed problems with HQ mode
 
 ####4.0:
+
+## KNOWN ISSUES
+Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
 ## COPYRIGHT
 
