@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Wed Jan 15 11:34:09 2014
+# Created: Mon Jan 20 10:34:14 2014
 #      by: PyQt5 UI code generator 5.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -260,7 +260,7 @@ class Ui_KCC(object):
     def retranslateUi(self, KCC):
         _translate = QtCore.QCoreApplication.translate
         KCC.setWindowTitle(_translate("KCC", "Kindle Comic Converter"))
-        self.ProcessingBox.setToolTip(_translate("KCC", "Disable image optimizations."))
+        self.ProcessingBox.setToolTip(_translate("KCC", "<html><head/><body><p>Disable image optimizations.<br/>Input images must be already resized.</p></body></html>"))
         self.ProcessingBox.setText(_translate("KCC", "No optimisation"))
         self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>"))
         self.UpscaleBox.setText(_translate("KCC", "Stretch/Upscale"))

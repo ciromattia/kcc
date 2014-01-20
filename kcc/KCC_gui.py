@@ -756,7 +756,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             if not GUI.ProcessingBox.isChecked():
                 GUI.NoRotateBox.setEnabled(True)
                 GUI.QualityBox.setEnabled(True)
-                GUI.MangaBox.setEnabled(True)
+            GUI.MangaBox.setEnabled(True)
 
     def toggleNoSplitRotate(self, value):
         if value:
@@ -768,8 +768,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
     def toggleProcessingBox(self, value):
         if value:
-            GUI.MangaBox.setEnabled(False)
-            GUI.MangaBox.setChecked(False)
             GUI.RotateBox.setEnabled(False)
             GUI.RotateBox.setChecked(False)
             GUI.QualityBox.setEnabled(False)
@@ -789,7 +787,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.GammaSlider.setEnabled(False)
             GUI.GammaLabel.setEnabled(False)
         else:
-            GUI.MangaBox.setEnabled(True)
             GUI.RotateBox.setEnabled(True)
             GUI.UpscaleBox.setEnabled(True)
             GUI.NoRotateBox.setEnabled(True)
