@@ -248,7 +248,7 @@ class ProgressThread(QtCore.QThread):
         self.running = True
         while self.running:
             sleep(1)
-            if self.content:
+            if self.content and GUI.conversionAlive:
                 MW.addMessage.emit(self.content + self.progress * '.', 'info', True)
                 self.progress += 1
                 if self.progress == 4:
@@ -948,7 +948,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if not GUI.ConvertButton.isEnabled():
             event.ignore()
         self.contentServer.stop()
-        self.tray.hide()
         self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
@@ -969,6 +968,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
                                            'customHeight': GUI.customHeight.text(),
                                            'GammaSlider': float(self.GammaValue)*100})
         self.settings.sync()
+        if not sys.platform.startswith('linux'):
+            self.tray.hide()
 
     def handleMessage(self, message):
         MW.raise_()
@@ -1026,7 +1027,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
         purgeSettingsVersions = ['']
         self.icons = Icons()
         self.webContent = KCC_rc_web.WebContent()
-        self.tray = SystemTrayIcon()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         if self.settingsVersion in purgeSettingsVersions:
@@ -1051,20 +1051,22 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.statusBarFontSize = 10
             self.statusBarStyle = 'QLabel{padding-top:2px;padding-bottom:3px;}'
             self.ProgressBar.setStyleSheet('QProgressBar{padding-top:5px;text-align:center;}')
+            self.tray = SystemTrayIcon()
             self.tray.show()
+            MW.addTrayMessage.connect(self.tray.addTrayMessage)
         elif sys.platform.startswith('linux'):
             self.listFontSize = 8
             self.statusBarFontSize = 8
             self.statusBarStyle = 'QLabel{padding-top:5px;padding-bottom:3px;}'
             self.statusBar.setStyleSheet('QStatusBar::item{border:0px;border-top:2px solid #C2C7CB;}')
-            # Linux implementation QSystemTrayIcon is simply broken in Qt 5.2.0
-            #self.tray.show()
         else:
             self.listFontSize = 9
             self.statusBarFontSize = 8
             self.statusBarStyle = 'QLabel{padding-top:3px;padding-bottom:3px}'
             self.statusBar.setStyleSheet('QStatusBar::item{border:0px;border-top:2px solid #C2C7CB;}')
+            self.tray = SystemTrayIcon()
             self.tray.show()
+            MW.addTrayMessage.connect(self.tray.addTrayMessage)
 
         self.profiles = {
             "Kindle Paperwhite": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -1199,7 +1201,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW.progressBarTick.connect(self.updateProgressbar)
         MW.modeConvert.connect(self.modeConvert)
         MW.addMessage.connect(self.addMessage)
-        MW.addTrayMessage.connect(self.tray.addTrayMessage)
         MW.showDialog.connect(self.showDialog)
         MW.hideProgressBar.connect(self.hideProgressBar)
         MW.forceShutdown.connect(self.forceShutdown)
