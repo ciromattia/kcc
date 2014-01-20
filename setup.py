@@ -37,8 +37,9 @@ if platform == "darwin":
                     CFBundleDocumentTypes=[
                         dict(
                             CFBundleTypeExtensions=['cbz', 'cbr', 'cb7', 'zip', 'rar', '7z', 'pdf'],
+                            CFBundleTypeName='Comics',
                             CFBundleTypeIconFile='comic2ebook.icns',
-                            CFBundleTypeRole='Viewer',
+                            CFBundleTypeRole='Editor',
                         )
                     ],
                     LSMinimumSystemVersion='10.8.0',
@@ -51,13 +52,19 @@ if platform == "darwin":
         )
     )
 elif platform == "win32":
+    import platform
     from cx_Freeze import setup, Executable
+    if platform.architecture()[0] == '64bit':
+        library = 'libEGL64.dll'
+    else:
+        library = 'libEGL32.dll'
     base = "Win32GUI"
     extra_options = dict(
         options={"build_exe": {"include_files": ['LICENSE.txt',
                                                  ['other/UnRAR.exe', 'UnRAR.exe'],
                                                  ['other/7za.exe', '7za.exe'],
-                                                 ['other/Additional-LICENSE.txt', 'Additional-LICENSE.txt']
+                                                 ['other/Additional-LICENSE.txt', 'Additional-LICENSE.txt'],
+                                                 ['other/' + library, 'libEGL.dll']
                                                  ], "compressed": True,
                                "excludes": ['tkinter']}},
         executables=[Executable(MAIN,
