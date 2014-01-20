@@ -134,11 +134,13 @@ class QApplicationMessaging(QtWidgets.QApplication):
 # Adding signals to QMainWindow
 class QMainWindowKCC(QtWidgets.QMainWindow):
     progressBarTick = QtCore.pyqtSignal(str)
-    modeConvert = QtCore.pyqtSignal(bool)
+    modeConvert = QtCore.pyqtSignal(int)
     addMessage = QtCore.pyqtSignal(str, str, bool)
     addTrayMessage = QtCore.pyqtSignal(str, str)
-    showDialog = QtCore.pyqtSignal(str)
+    showDialog = QtCore.pyqtSignal(str, str)
     hideProgressBar = QtCore.pyqtSignal()
+    forceShutdown = QtCore.pyqtSignal()
+    dialogAnswer = QtCore.pyqtSignal(int)
 
 
 if __name__ == "__main__":

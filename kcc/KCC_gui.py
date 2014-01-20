@@ -186,6 +186,7 @@ class WebServerThread(QtCore.QThread):
 class VersionThread(QtCore.QThread):
     def __init__(self):
         QtCore.QThread.__init__(self)
+        self.newVersion = ''
 
     def __del__(self):
         self.wait()
@@ -198,10 +199,39 @@ class VersionThread(QtCore.QThread):
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
         if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
-            MW.addMessage.emit('<a href="http://kcc.vulturis.eu/">'
-                               '<b>New version is available!</b></a> '
-                               '(<a href="https://github.com/ciromattia/kcc/releases/">'
-                               'Changelog</a>)', 'warning', False)
+            if sys.platform.startswith('win'):
+                self.newVersion = latestVersion
+                MW.showDialog.emit('<b>New version released!</b> <a href="https://github.com/ciromattia/kcc/releases/">'
+                                   'See changelog.</a><<br/><br/>Installed version: ' + __version__ +
+                                   '<br/>Current version: ' + latestVersion +
+                                   '<br/><br/>Would you like to start automatic update?', 'question')
+            else:
+                MW.addMessage.emit('<a href="http://kcc.vulturis.eu/">'
+                                   '<b>New version is available!</b></a> '
+                                   '(<a href="https://github.com/ciromattia/kcc/releases/">'
+                                   'Changelog</a>)', 'warning', False)
+
+    def getNewVersion(self, dialogAnswer):
+        if dialogAnswer == QtWidgets.QMessageBox.Yes:
+            try:
+                MW.modeConvert.emit(-1)
+                MW.progressBarTick.emit('Downloading update')
+                path = urllib.request.urlretrieve('http://kcc.vulturis.eu/Windows/KindleComicConverter_win_' +
+                                                  self.newVersion + '.exe', reporthook=self.getNewVersionTick)
+                move(path[0], path[0] + '.exe')
+                MW.hideProgressBar.emit()
+                MW.modeConvert.emit(1)
+                Popen(path[0] + '.exe  /SP- /silent /noicons')
+                MW.forceShutdown.emit()
+            except Exception:
+                MW.addMessage.emit('Failed to download update!', 'warning', False)
+                MW.hideProgressBar.emit()
+                MW.modeConvert.emit(1)
+
+    def getNewVersionTick(self, size, blockSize, totalSize):
+        if size == 0:
+            MW.progressBarTick.emit(str(int(totalSize / blockSize)))
+        MW.progressBarTick.emit('tick')
 
 
 class ProgressThread(QtCore.QThread):
@@ -328,14 +358,14 @@ class WorkerThread(QtCore.QThread):
         MW.hideProgressBar.emit()
         MW.addMessage.emit('<b>Conversion interrupted.</b>', 'error', False)
         MW.addTrayMessage.emit('Conversion interrupted.', 'Critical')
-        MW.modeConvert.emit(True)
+        MW.modeConvert.emit(1)
 
     def addResult(self, output):
         MW.progressBarTick.emit('tick')
         self.workerOutput.append(output)
 
     def run(self):
-        MW.modeConvert.emit(False)
+        MW.modeConvert.emit(0)
         profile = GUI.profiles[str(GUI.DeviceBox.currentText())]['Label']
         argv = ["--profile=" + profile]
         currentJobs = []
@@ -417,7 +447,7 @@ class WorkerThread(QtCore.QThread):
                 self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
                 MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
-                                   % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
+                                   % (jobargv[-1], str(err), traceback.format_tb(traceback_)), 'error')
                 MW.addMessage.emit('Failed to create EPUB!', 'error', False)
                 MW.addTrayMessage.emit('Failed to create EPUB!', 'Critical')
             if not self.conversionAlive:
@@ -507,7 +537,7 @@ class WorkerThread(QtCore.QThread):
                         MW.addMessage.emit('KindleGen failed to create MOBI!', 'error', False)
                         MW.addTrayMessage.emit('KindleGen failed to create MOBI!', 'Critical')
                         if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':
-                            MW.showDialog.emit("KindleGen error:\n\n" + self.kindlegenErrorCode[1])
+                            MW.showDialog.emit("KindleGen error:\n\n" + self.kindlegenErrorCode[1], 'error')
                         if self.kindlegenErrorCode[0] == 23026:
                             MW.addMessage.emit('Created EPUB file was too big.', 'error', False)
                             MW.addMessage.emit('EPUB file: ' + str(epubSize) + 'MB. Supported size: ~300MB.', 'error',
@@ -521,7 +551,7 @@ class WorkerThread(QtCore.QThread):
         GUI.needClean = True
         MW.addMessage.emit('<b>All jobs completed.</b>', 'info', False)
         MW.addTrayMessage.emit('All jobs completed.', 'Information')
-        MW.modeConvert.emit(True)
+        MW.modeConvert.emit(1)
 
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
@@ -674,21 +704,25 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.ColorBox.setChecked(False)
 
     def modeConvert(self, enable):
+        if enable < 1:
+            status = False
+        else:
+            status = True
         if self.currentMode != 3:
-            GUI.BasicModeButton.setEnabled(enable)
-            GUI.AdvModeButton.setEnabled(enable)
+            GUI.BasicModeButton.setEnabled(status)
+            GUI.AdvModeButton.setEnabled(status)
         if self.currentMode != 1:
-            GUI.FormatBox.setEnabled(enable)
-        GUI.DirectoryButton.setEnabled(enable)
-        GUI.ClearButton.setEnabled(enable)
-        GUI.FileButton.setEnabled(enable)
-        GUI.DeviceBox.setEnabled(enable)
-        GUI.OptionsBasic.setEnabled(enable)
-        GUI.OptionsAdvanced.setEnabled(enable)
-        GUI.OptionsAdvancedGamma.setEnabled(enable)
-        GUI.OptionsExpert.setEnabled(enable)
+            GUI.FormatBox.setEnabled(status)
+        GUI.DirectoryButton.setEnabled(status)
+        GUI.ClearButton.setEnabled(status)
+        GUI.FileButton.setEnabled(status)
+        GUI.DeviceBox.setEnabled(status)
+        GUI.OptionsBasic.setEnabled(status)
+        GUI.OptionsAdvanced.setEnabled(status)
+        GUI.OptionsAdvancedGamma.setEnabled(status)
+        GUI.OptionsExpert.setEnabled(status)
         GUI.ConvertButton.setEnabled(True)
-        if enable:
+        if enable == 1:
             self.conversionAlive = False
             self.worker.sync()
             icon = QtGui.QIcon()
@@ -696,13 +730,18 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.ConvertButton.setIcon(icon)
             GUI.ConvertButton.setText('Convert')
             GUI.Form.setAcceptDrops(True)
-        else:
+        elif enable == 0:
             self.conversionAlive = True
             self.worker.sync()
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap(":/Other/icons/clear.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             GUI.ConvertButton.setIcon(icon)
             GUI.ConvertButton.setText('Abort')
+            GUI.Form.setAcceptDrops(False)
+        elif enable == -1:
+            self.conversionAlive = True
+            self.worker.sync()
+            GUI.ConvertButton.setEnabled(False)
             GUI.Form.setAcceptDrops(False)
 
     def toggleWebtoonBox(self, value):
@@ -855,8 +894,13 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.JobList.setItemWidget(item, label)
         GUI.JobList.scrollToBottom()
 
-    def showDialog(self, message):
-        QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
+    def showDialog(self, message, kind):
+        if kind == 'error':
+            QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
+        elif kind == 'question':
+            dialogResponse = QtWidgets.QMessageBox.question(MW, 'KCC - Question', message,
+                                                            QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+            MW.dialogAnswer.emit(dialogResponse)
 
     def updateProgressbar(self, command):
         if command == 'tick':
@@ -968,6 +1012,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
             else:
                 message = '/' + message
             self.handleMessage(message)
+
+    def forceShutdown(self):
+        self.saveSettings(None)
+        sys.exit(0)
 
     # noinspection PyArgumentList
     def __init__(self, KCCAplication, KCCWindow):
@@ -1157,6 +1205,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW.addTrayMessage.connect(self.tray.addTrayMessage)
         MW.showDialog.connect(self.showDialog)
         MW.hideProgressBar.connect(self.hideProgressBar)
+        MW.forceShutdown.connect(self.forceShutdown)
+        MW.dialogAnswer.connect(self.versionCheck.getNewVersion)
         MW.closeEvent = self.saveSettings
 
         GUI.Form.setAcceptDrops(True)
@@ -1196,11 +1246,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
             else:
                 if eval('GUI.' + str(option)).isEnabled():
                     eval('GUI.' + str(option)).setCheckState(self.options[option])
-
-        self.versionCheck.start()
-        self.contentServer.start()
         self.hideProgressBar()
         self.worker.sync()
+        self.versionCheck.start()
+        self.contentServer.start()
         MW.setWindowTitle("Kindle Comic Converter " + __version__)
         MW.show()
         MW.raise_()
