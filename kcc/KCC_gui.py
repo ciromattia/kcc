@@ -514,6 +514,12 @@ class WorkerThread(QtCore.QThread):
                                 GUI.progress.content = ''
                                 mobiPath = item.replace('.epub', '.mobi')
                                 os.remove(mobiPath + '_toclean')
+                                if GUI.targetDirectory and GUI.targetDirectory != os.path.split(mobiPath)[0]:
+                                    try:
+                                        move(mobiPath, GUI.targetDirectory)
+                                        mobiPath = os.path.join(GUI.targetDirectory, os.path.basename(mobiPath))
+                                    except Exception:
+                                        pass
                                 GUI.completedWork[os.path.basename(mobiPath)] = mobiPath
                             MW.addMessage.emit('Cleaning MOBI files... <b>Done!</b>', 'info', True)
                         else:
@@ -544,6 +550,12 @@ class WorkerThread(QtCore.QThread):
                                                False)
                 else:
                     for item in outputPath:
+                        if GUI.targetDirectory and GUI.targetDirectory != os.path.split(item)[0]:
+                            try:
+                                move(item, GUI.targetDirectory)
+                                item = os.path.join(GUI.targetDirectory, os.path.basename(item))
+                            except Exception:
+                                pass
                         GUI.completedWork[os.path.basename(item)] = item
         GUI.progress.content = ''
         GUI.progress.stop()
@@ -918,6 +930,17 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.conversionAlive = False
             self.worker.sync()
         else:
+            # noinspection PyArgumentList
+            if QtWidgets.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
+                dname = QtWidgets.QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
+                if dname != '':
+                    if sys.platform.startswith('win'):
+                        dname = dname.replace('/', '\\')
+                    GUI.targetDirectory = dname
+                else:
+                    GUI.targetDirectory = ''
+            else:
+                GUI.targetDirectory = ''
             self.progress.start()
             if self.needClean:
                 self.needClean = False
@@ -1046,6 +1069,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.needClean = True
         self.GammaValue = 1.0
         self.completedWork = {}
+        self.targetDirectory = ''
         if sys.platform.startswith('darwin'):
             self.listFontSize = 11
             self.statusBarFontSize = 10

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-Linux.ui'
 #
-# Created: Mon Jan 20 10:34:24 2014
+# Created: Mon Jan 20 22:02:12 2014
 #      by: PyQt5 UI code generator 5.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -343,6 +343,7 @@ class Ui_KCC(object):
         self.NoRotateBox.setText(_translate("KCC", "No split/rotate"))
         self.DeviceBox.setToolTip(_translate("KCC", "Target device."))
         self.FormatBox.setToolTip(_translate("KCC", "Output format."))
+        self.ConvertButton.setToolTip(_translate("KCC", "<html><head/><body><p>Shift+Click to select the output directory.</p></body></html>"))
         self.ConvertButton.setText(_translate("KCC", "Convert"))
         self.DirectoryButton.setText(_translate("KCC", "Add directory"))
         self.FileButton.setText(_translate("KCC", "Add file"))
