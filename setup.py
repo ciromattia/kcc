@@ -52,9 +52,9 @@ if platform == "darwin":
         )
     )
 elif platform == "win32":
-    import platform
+    import platform as arch
     from cx_Freeze import setup, Executable
-    if platform.architecture()[0] == '64bit':
+    if arch.architecture()[0] == '64bit':
         library = 'libEGL64.dll'
     else:
         library = 'libEGL32.dll'
