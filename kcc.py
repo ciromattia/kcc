@@ -108,6 +108,14 @@ class QApplicationMessaging(QtWidgets.QApplication):
             self._memory.detach()
             self._server.close()
 
+    def event(self, e):
+        if e.type() == QtCore.QEvent.FileOpen:
+            # noinspection PyArgumentList
+            self.messageFromOtherInstance.emit(bytes(e.file(), 'UTF-8'))
+            return True
+        else:
+            return QtWidgets.QApplication.event(self, e)
+
     def isRunning(self):
         return self._running
 
