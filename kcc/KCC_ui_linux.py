@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-Linux.ui'
 #
-# Created: Mon Jan 20 22:02:12 2014
+# Created: Tue Jan 21 10:54:38 2014
 #      by: PyQt5 UI code generator 5.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -329,49 +329,63 @@ class Ui_KCC(object):
     def retranslateUi(self, KCC):
         _translate = QtCore.QCoreApplication.translate
         KCC.setWindowTitle(_translate("KCC", "Kindle Comic Converter"))
-        self.ProcessingBox.setToolTip(_translate("KCC", "<html><head/><body><p>Disable image optimizations.<br/>Input images must be already resized.</p></body></html>"))
+        self.ProcessingBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Disable image optimizations.<br/>Input images must be already resized.</p></body></html>"))
         self.ProcessingBox.setText(_translate("KCC", "No optimisation"))
         self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>"))
         self.UpscaleBox.setText(_translate("KCC", "Stretch/Upscale"))
-        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable auto-splitting of webtoons like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>Pages with a low width, high height and vertical panel flow.</p></body></html>"))
+        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Enable auto-splitting of webtoons like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>Pages with a low width, high height and vertical panel flow.</p></body></html>"))
         self.WebtoonBox.setText(_translate("KCC", "Webtoon mode"))
-        self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p>Create PNG files instead JPEG.<br/>Quality increase is not noticeable on most of devices.<br/>Output files <span style=\" font-weight:600;\">might</span> be smaller.<br/><span style=\" font-weight:600;\">MOBI conversion will be much slower.</span></p></body></html>"))
+        self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Create PNG files instead JPEG.<br/>Quality increase is not noticeable on most of devices.<br/>Output files <span style=\" font-weight:600;\">might</span> be smaller.<br/><span style=\" font-weight:600;\">MOBI conversion will be much slower.</span></p></body></html>"))
         self.NoDitheringBox.setText(_translate("KCC", "PNG output"))
         self.BorderBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Autodetection<br/></span>Color of margins fill will be detected automatically.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - White<br/></span>Margins will be filled with white color.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Black<br/></span>Margins will be filled with black color.</p></body></html>"))
         self.BorderBox.setText(_translate("KCC", "W/B margins"))
-        self.NoRotateBox.setToolTip(_translate("KCC", "<html><head/><body><p>Disable splitting and rotation.</p></body></html>"))
+        self.NoRotateBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Disable splitting and rotation.</p></body></html>"))
         self.NoRotateBox.setText(_translate("KCC", "No split/rotate"))
-        self.DeviceBox.setToolTip(_translate("KCC", "Target device."))
-        self.FormatBox.setToolTip(_translate("KCC", "Output format."))
-        self.ConvertButton.setToolTip(_translate("KCC", "<html><head/><body><p>Shift+Click to select the output directory.</p></body></html>"))
+        self.DeviceBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Target device.</p></body></html>"))
+        self.FormatBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Output format.</p></body></html>"))
+        self.ConvertButton.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Shift+Click to select the output directory.</p></body></html>"))
         self.ConvertButton.setText(_translate("KCC", "Convert"))
         self.DirectoryButton.setText(_translate("KCC", "Add directory"))
         self.FileButton.setText(_translate("KCC", "Add file"))
         self.ClearButton.setText(_translate("KCC", "Clear list"))
-        self.MangaBox.setToolTip(_translate("KCC", "Enable right-to-left reading."))
+        self.MangaBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Enable right-to-left reading.</p></body></html>"))
         self.MangaBox.setText(_translate("KCC", "Manga mode"))
         self.QualityBox.setToolTip(_translate("KCC", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Sans\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-weight:600; text-decoration: underline;\">Unchecked - Normal quality mode<br /></span><span style=\" font-family:\'MS Shell Dlg 2\'; font-style:italic;\">Use it when Panel View support is not needed.</span><span style=\" font-family:\'MS Shell Dlg 2\'; font-weight:600; text-decoration: underline;\"><br /></span><span style=\" font-family:\'MS Shell Dlg 2\';\">- Maximum quality when zoom is not enabled.<br />- Poor quality when zoom is enabled.<br />- Lowest file size.</span></p>\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode<br /></span><span style=\" font-family:\'MS Shell Dlg 2\'; font-style:italic;\">Not zoomed image </span><span style=\" font-family:\'MS Shell Dlg 2\'; font-weight:600; font-style:italic;\">might </span><span style=\" font-family:\'MS Shell Dlg 2\'; font-style:italic;\">be a little blurry.<br /></span><span style=\" font-family:\'MS Shell Dlg 2\'; font-style:italic;\">Smaller images might be forcefully upscaled in this mode.</span><span style=\" font-family:\'MS Shell Dlg 2\'; font-weight:600; text-decoration: underline;\"><br /></span><span style=\" font-family:\'MS Shell Dlg 2\';\">- Medium/High quality when zoom is not enabled.<br />- Maximum quality when zoom is enabled.</span></p>\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode<br /></span><span style=\" font-family:\'MS Shell Dlg 2\'; font-style:italic;\">Maximum possible quality.</span><span style=\" font-family:\'MS Shell Dlg 2\'; font-weight:600; text-decoration: underline;\"><br /></span><span style=\" font-family:\'MS Shell Dlg 2\';\">- Maximum quality when zoom is not enabled.<br />- Maximum quality when zoom is enabled.<br />- Very high file size.</span></p></body></html>"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Normal quality mode</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">Use it when Panel View support is not needed.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Maximum quality when zoom is not enabled.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Poor quality when zoom is enabled.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Lowest file size.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">Not zoomed image might be a little blurry.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">Smaller images might be forcefully upscaled in this mode.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Medium/High quality when zoom is not enabled.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Maximum quality when zoom is enabled.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-style:italic;\">Maximum possible quality.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Maximum quality when zoom is not enabled.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Maximum quality when zoom is enabled.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Very high file size.</p></body></html>"))
         self.QualityBox.setText(_translate("KCC", "High/Ultra quality"))
-        self.RotateBox.setToolTip(_translate("KCC", "<html><head/><body><p>Disable splitting of two-page spreads.<br/>They will be rotated instead.</p></body></html>"))
+        self.RotateBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Disable splitting of two-page spreads.<br/>They will be rotated instead.</p></body></html>"))
         self.RotateBox.setText(_translate("KCC", "Horizontal mode"))
         self.BasicModeButton.setText(_translate("KCC", "Basic"))
         self.AdvModeButton.setText(_translate("KCC", "Advanced"))
         self.GammaLabel.setText(_translate("KCC", "Gamma: Auto"))
-        self.ColorBox.setToolTip(_translate("KCC", "<html><head/><body><p>Don\'t convert images to grayscale.</p></body></html>"))
+        self.ColorBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Don\'t convert images to grayscale.</p></body></html>"))
         self.ColorBox.setText(_translate("KCC", "Color mode"))
-        self.wLabel.setToolTip(_translate("KCC", "Resolution of target device."))
+        self.wLabel.setToolTip(_translate("KCC", "<html><head/><body><p>Resolution of target device.</p></body></html>"))
         self.wLabel.setText(_translate("KCC", "Custom width: "))
-        self.customWidth.setToolTip(_translate("KCC", "Resolution of target device."))
+        self.customWidth.setToolTip(_translate("KCC", "<html><head/><body><p>Resolution of target device.</p></body></html>"))
         self.customWidth.setInputMask(_translate("KCC", "0000"))
-        self.hLabel.setToolTip(_translate("KCC", "Resolution of target device."))
+        self.hLabel.setToolTip(_translate("KCC", "<html><head/><body><p>Resolution of target device.</p></body></html>"))
         self.hLabel.setText(_translate("KCC", "Custom height: "))
-        self.customHeight.setToolTip(_translate("KCC", "Resolution of target device."))
+        self.customHeight.setToolTip(_translate("KCC", "<html><head/><body><p>Resolution of target device.</p></body></html>"))
         self.customHeight.setInputMask(_translate("KCC", "0000"))
         self.ActionBasic.setText(_translate("KCC", "Basic"))
         self.ActionAdvanced.setText(_translate("KCC", "Advanced"))
