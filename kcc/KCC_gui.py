@@ -1032,6 +1032,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 message = message.replace('/', '\\')
             else:
                 message = '/' + message
+                if message[-1] == '/':
+                    message = message[:-1]
             self.handleMessage(message)
 
     def forceShutdown(self):
