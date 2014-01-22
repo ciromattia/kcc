@@ -19,11 +19,12 @@ __license__ = 'ISC'
 __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
+import sys
 import os
 import zipfile
 from subprocess import STDOUT, PIPE
 from psutil import Popen
-from shutil import move
+from shutil import move, copy
 from . import rarfile
 
 
@@ -73,6 +74,10 @@ class CBxArchive:
         cbrFile.extractall(targetdir, filelist)
 
     def extractCB7(self, targetdir):
+        # Workaround for some wide UTF-8 + Popen abnormalities
+        if sys.platform.startswith('darwin'):
+            copy(self.origFileName, os.path.join(os.path.dirname(self.origFileName), 'TMP_KCC_TMP'))
+            self.origFileName = os.path.join(os.path.dirname(self.origFileName), 'TMP_KCC_TMP')
         output = Popen('7za x "' + self.origFileName + '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -o"'
                        + targetdir + '"', stdout=PIPE, stderr=STDOUT, shell=True)
         extracted = False
@@ -81,6 +86,8 @@ class CBxArchive:
                 extracted = True
         if not extracted:
             raise OSError
+        if sys.platform.startswith('darwin'):
+            os.remove(self.origFileName)
 
     def extract(self, targetdir):
         if self.compressor == 'rar':
