@@ -5,10 +5,13 @@ cx_Freeze build script for KCC.
 Usage (Mac OS X):
     python setup.py py2app
 
-Usage (Windows):
+Usage (Windows/Linux):
     python setup.py build
 """
-from sys import platform
+from sys import platform, version_info
+if version_info[0] != 3:
+    print('ERROR: This is Python 3 script!')
+    exit(1)
 
 NAME = "KindleComicConverter"
 VERSION = "4.0"
@@ -60,24 +63,40 @@ elif platform == "win32":
         library = 'libEGL32.dll'
     base = "Win32GUI"
     extra_options = dict(
-        options={"build_exe": {"include_files": ['LICENSE.txt',
+        options={"build_exe": {"optimize": 2,
+                               "include_files": ['LICENSE.txt',
                                                  ['other/UnRAR.exe', 'UnRAR.exe'],
                                                  ['other/7za.exe', '7za.exe'],
                                                  ['other/Additional-LICENSE.txt', 'Additional-LICENSE.txt'],
                                                  ['other/' + library, 'libEGL.dll']
-                                                 ], "compressed": True,
+                                                 ],
+                               "copy_dependent_files": True,
+                               "create_shared_zip": False,
+                               "append_script_to_exe": True,
                                "excludes": ['tkinter']}},
         executables=[Executable(MAIN,
                                 base=base,
                                 targetName="KCC.exe",
                                 icon="icons/comic2ebook.ico",
-                                copyDependentFiles=True,
-                                appendScriptToExe=True,
-                                appendScriptToLibrary=False,
-                                compress=True)])
+                                compress=False)])
 else:
-    print('Please use setup.sh to build Linux package.')
-    exit()
+    import platform as arch
+    import os
+    from cx_Freeze import setup, Executable
+    if arch.architecture()[0] == '64bit':
+        library = 'x86_64'
+    else:
+        library = 'x86'
+    extra_options = dict(
+        options={"build_exe": {"optimize": 2,
+                               "copy_dependent_files": True,
+                               "create_shared_zip": False,
+                               "append_script_to_exe": True,
+                               "init_script": os.path.join(os.getcwd(), 'other', 'LinuxInit.py'),
+                               "excludes": ['tkinter']}},
+        executables=[Executable(MAIN,
+                                base=None,
+                                compress=False)])
 
 #noinspection PyUnboundLocalVariable
 setup(
@@ -100,3 +119,16 @@ if platform == "darwin":
     copyfile('other/libqcocoa.dylib', 'dist/' + NAME + '.app/Contents/PlugIns/platforms/libqcocoa.dylib')
     chmod('dist/' + NAME + '.app/Contents/Resources/unrar', 0o777)
     chmod('dist/' + NAME + '.app/Contents/Resources/7za', 0o777)
+
+if platform == "linux":
+    from os import chmod, makedirs, remove
+    from shutil import copyfile, copytree
+    makedirs('dist/kcc/bin')
+    # noinspection PyUnboundLocalVariable
+    copyfile('build/exe.linux-' + library + '-3.3/kcc', 'dist/kcc/bin/kcc')
+    chmod('dist/kcc/bin/kcc', 0o755)
+    # noinspection PyUnboundLocalVariable
+    copytree('build/exe.linux-' + library + '-3.3', 'dist/kcc/lib')
+    remove('dist/kcc/lib/kcc')
+    copyfile('LICENSE.txt', 'dist/kcc/LICENSE.txt')
+    copyfile('icons/comic2ebook.png', 'dist/kcc/kcc.png')

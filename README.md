@@ -24,7 +24,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 You can find the latest released binary at the following links:
 - **Windows:** [http://kcc.vulturis.eu/Windows/](http://kcc.vulturis.eu/Windows/)
 - **Linux:** [http://kcc.vulturis.eu/Linux/](http://kcc.vulturis.eu/Linux/)
-- **OS X 10.8+:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
+- **OS X (10.8+):** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
@@ -46,8 +46,14 @@ You can find the latest released binary at the following links:
 - [psutil](https://pypi.python.org/pypi/psutil)
 - [python-slugify](http://pypi.python.org/pypi/python-slugify)
 
+On Debian based distributions these two commands should install all dependencies:
+```
+sudo apt-get install python3 python3-dev python3-pip python3-pyqt5 libtiff-dev libpng-dev libjpeg-dev p7zip-full unrar
+sudo pip3 install pillow python-slugify psutil
+```
+
 ### For freezing code:
-- Windows - [cx_Freeze](https://bitbucket.org/anthony_tuininga/cx_freeze) version 4.3.2 with [this](https://bitbucket.org/anthony_tuininga/cx_freeze/pull-request/29/conversions-to-support-untranslated-wide) patchset.
+- Windows/Linux - [cx_Freeze](https://bitbucket.org/anthony_tuininga/cx_freeze) version 4.3.2 with [this](https://bitbucket.org/anthony_tuininga/cx_freeze/pull-request/29/conversions-to-support-untranslated-wide) patchset.
 - OS X - [py2app](https://bitbucket.org/ronaldoussoren/py2app) HEAD version.
 
 ## USAGE
