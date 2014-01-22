@@ -53,7 +53,7 @@ sudo pip3 install pillow python-slugify psutil
 ```
 
 ### For freezing code:
-- Windows/Linux - [cx_Freeze](https://bitbucket.org/anthony_tuininga/cx_freeze) version 4.3.2 with [this](https://bitbucket.org/anthony_tuininga/cx_freeze/pull-request/29/conversions-to-support-untranslated-wide) patchset.
+- Windows - [cx_Freeze](https://bitbucket.org/anthony_tuininga/cx_freeze) version 4.3.2 with [this](https://bitbucket.org/anthony_tuininga/cx_freeze/pull-request/29/conversions-to-support-untranslated-wide) patchset.
 - OS X - [py2app](https://bitbucket.org/ronaldoussoren/py2app) HEAD version.
 
 ## USAGE
