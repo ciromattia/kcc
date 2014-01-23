@@ -112,6 +112,7 @@ class ComicPage:
         self.noVPV = None
         self.noPV = None
         self.purge = False
+        self.hq = False
         if fill:
             self.fill = fill
         else:
@@ -119,30 +120,37 @@ class ComicPage:
 
     def saveToDir(self, targetdir, forcepng, color):
         try:
-            suffix = ""
+            flags = []
+            filename = os.path.join(targetdir, os.path.splitext(self.filename)[0])
+            if not filename.endswith('-KCC-A') and not filename.endswith('-KCC-B'):
+                filename += '-KCC'
             if not color and not forcepng:
                 self.image = self.image.convert('L')
             if self.rotated:
-                suffix += "-kccrot"
-            else:
-                suffix += "-kcchq"
+                flags.append('Rotated')
+            if self.hq:
+                flags.append('HighQuality')
+                filename += '-HQ'
             if self.noPV:
-                suffix += "-kccnpv"
+                flags.append('NoPanelView')
             else:
                 if self.noHPV:
-                    suffix += "-kccnh"
+                    flags.append('NoHorizontalPanelView')
                 if self.noVPV:
-                    suffix += "-kccnv"
+                    flags.append('NoVerticalPanelView')
                 if self.border:
-                    suffix += "-kccxl" + str(self.border[0]) + "-kccyu" + str(self.border[1]) + "-kccxr" +\
-                              str(self.border[2]) + "-kccyd" + str(self.border[3])
+                    flags.append("Margins-" + str(self.border[0]) + "-" + str(self.border[1]) + "-"
+                                 + str(self.border[2]) + "-" + str(self.border[3]))
             if not self.purge:
                 if forcepng:
-                    self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"),
-                                    "PNG", optimize=1)
+                    filename += ".png"
+                    self.image.save(filename,  "PNG", optimize=1)
                 else:
-                    self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".jpg"),
-                                    "JPEG", optimize=1)
+                    filename += ".jpg"
+                    self.image.save(filename, "JPEG", optimize=1)
+                return [filename, flags]
+            else:
+                return None
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
@@ -211,7 +219,10 @@ class ComicPage:
         # Set target size
         if qualityMode == 0:
             size = (self.size[0], self.size[1])
+        elif qualityMode == 1:
+            size = (self.panelviewsize[0], self.panelviewsize[1])
         else:
+            self.hq = True
             size = (self.panelviewsize[0], self.panelviewsize[1])
         # If image is small and HQ mode is on we have to force upscaling. Otherwise non-zoomed image will be distorted
         if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and qualityMode == 1 and not stretch:
@@ -271,8 +282,8 @@ class ComicPage:
                     leftbox = (0, 0, width, int(height / 2))
                     rightbox = (0, int(height / 2), width, height)
                 filename = os.path.splitext(self.filename)
-                fileone = targetdir + '/' + filename[0] + '-kcca' + filename[1]
-                filetwo = targetdir + '/' + filename[0] + '-kccb' + filename[1]
+                fileone = targetdir + '/' + filename[0] + '-KCC-A' + filename[1]
+                filetwo = targetdir + '/' + filename[0] + '-KCC-B' + filename[1]
                 try:
                     if righttoleft:
                         pageone = self.image.crop(rightbox)
