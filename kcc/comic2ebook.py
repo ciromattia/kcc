@@ -45,22 +45,22 @@ from . import cbxarchive
 from . import pdfjpgextract
 
 
-def buildHTML(path, imgfile):
+def buildHTML(path, imgfile, imgfilepath):
     filename = getImageFileName(imgfile)
     if filename is not None:
-        if "-kccrot" in str(filename):
+        if "Rotated" in theGreatIndex[imgfilepath]:
             rotatedPage = True
         else:
             rotatedPage = False
-        if "-kccnpv" in str(filename):
+        if "NoPanelView" in theGreatIndex[imgfilepath]:
             noPV = True
         else:
             noPV = False
-        if "-kccnh" in str(filename):
+        if "NoHorizontalPanelView" in theGreatIndex[imgfilepath]:
             noHorizontalPV = True
         else:
             noHorizontalPV = False
-        if "-kccnv" in str(filename):
+        if "NoVerticalPanelView" in theGreatIndex[imgfilepath]:
             noVerticalPV = True
         else:
             noVerticalPV = False
@@ -133,39 +133,11 @@ def buildHTML(path, imgfile):
                               "}'></a></div>\n"])
             if options.quality == 2:
                 imgfilepv = str.split(imgfile, ".")
-                imgfilepv[0] = imgfilepv[0].split("-kccxl")[0].replace("-kccnh", "").replace("-kccnv", "")
-                imgfilepv[0] += "-kcchq"
+                imgfilepv[0] += "-hq"
                 imgfilepv = ".".join(imgfilepv)
             else:
                 imgfilepv = imgfile
-            if "-kccxl" in filename[0]:
-                borders = filename[0].split('-kccxl')[1]
-                borders = re.findall('[0-9]{1,6}', borders)
-                xl = borders[0].lstrip("0")
-                yu = borders[1].lstrip("0")
-                xr = borders[2].lstrip("0")
-                yd = borders[3].lstrip("0")
-                if xl != "":
-                    xl = "-" + str(float(xl)/100) + "%"
-                else:
-                    xl = "0%"
-                if xr != "":
-                    xr = "-" + str(float(xr)/100) + "%"
-                else:
-                    xr = "0%"
-                if yu != "":
-                    yu = "-" + str(float(yu)/100) + "%"
-                else:
-                    yu = "0%"
-                if yd != "":
-                    yd = "-" + str(float(yd)/100) + "%"
-                else:
-                    yd = "0%"
-            else:
-                xl = "0%"
-                yu = "0%"
-                xr = "0%"
-                yd = "0%"
+            xl, yu, xr, yd = checkMargins(imgfilepath)
             boxStyles = {"BoxTL": "left:" + xl + ";top:" + yu + ";",
                          "BoxTR": "right:" + xr + ";top:" + yu + ";",
                          "BoxBL": "left:" + xl + ";bottom:" + yd + ";",
@@ -185,6 +157,34 @@ def buildHTML(path, imgfile):
         f.writelines(["</div>\n</body>\n</html>"])
         f.close()
         return path, imgfile
+
+
+def checkMargins(path):
+    for flag in theGreatIndex[path]:
+        if "Margins-" in flag:
+            flag = flag.split('-')
+            xl = flag[1]
+            yu = flag[2]
+            xr = flag[3]
+            yd = flag[4]
+            if xl != "0":
+                xl = "-" + str(float(xl)/100) + "%"
+            else:
+                xl = "0%"
+            if xr != "0":
+                xr = "-" + str(float(xr)/100) + "%"
+            else:
+                xr = "0%"
+            if yu != "0":
+                yu = "-" + str(float(yu)/100) + "%"
+            else:
+                yu = "0%"
+            if yd != "0":
+                yd = "-" + str(float(yd)/100) + "%"
+            else:
+                yd = "0%"
+            return xl, yu, xr, yd
+    return '0%', '0%', '0%', '0%'
 
 
 def buildNCX(dstdir, title, chapters, chapterNames):
@@ -331,10 +331,11 @@ def applyImgOptimization(img, opt, hqImage=None):
 
 
 def dirImgProcess(path):
-    global workerPool, workerOutput
+    global workerPool, workerOutput, theGreatIndex
     workerPool = Pool()
     workerOutput = []
     work = []
+    theGreatIndex = {}
     pagenumber = 0
     for (dirpath, dirnames, filenames) in os.walk(path):
         for afile in filenames:
@@ -360,9 +361,15 @@ def dirImgProcess(path):
 
 
 def fileImgProcess_tick(output):
-    if output:
+    if isinstance(output, str):
         workerOutput.append(output)
         workerPool.terminate()
+    else:
+        for page in output:
+            if page is not None:
+                if sys.platform.startswith('win'):
+                    page[0] = page[0].replace('/', '\\')
+                theGreatIndex[page[0]] = page[1]
     if GUI:
         GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
@@ -374,6 +381,7 @@ def fileImgProcess(work):
         afile = work[0]
         dirpath = work[1]
         opt = work[2]
+        output = []
         if opt.verbose:
             print("Optimizing " + afile + " for " + opt.profile)
         else:
@@ -392,26 +400,21 @@ def fileImgProcess(work):
                 print("Splitted " + afile)
             img0 = image.ComicPage(split[0], opt.profileData)
             applyImgOptimization(img0, opt)
-            img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor)
+            output.append(img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
             img1 = image.ComicPage(split[1], opt.profileData)
             applyImgOptimization(img1, opt)
-            img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor)
-            if wipe:
-                os.remove(os.path.join(dirpath, img0.filename))
-                os.remove(os.path.join(dirpath, img1.filename))
+            output.append(img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
             if opt.quality == 2:
                 img0b = image.ComicPage(split[0], opt.profileData, img0.fill)
                 applyImgOptimization(img0b, opt, img0)
-                img0b.saveToDir(dirpath, opt.forcepng, opt.forcecolor)
+                output.append(img0b.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
                 img1b = image.ComicPage(split[1], opt.profileData, img1.fill)
                 applyImgOptimization(img1b, opt, img1)
-                img1b.saveToDir(dirpath, opt.forcepng, opt.forcecolor)
-                os.remove(os.path.join(dirpath, img0b.filename))
-                os.remove(os.path.join(dirpath, img1b.filename))
+                output.append(img1b.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
             os.remove(img.origFileName)
         else:
             applyImgOptimization(img, opt)
-            img.saveToDir(dirpath, opt.forcepng, opt.forcecolor)
+            output.append(img.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
             if wipe:
                 os.remove(os.path.join(dirpath, img.filename))
             if opt.quality == 2:
@@ -420,8 +423,9 @@ def fileImgProcess(work):
                     img2.image = img2.image.rotate(90)
                     img2.rotated = True
                 applyImgOptimization(img2, opt, img)
-                img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor)
+                output.append(img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
                 os.remove(os.path.join(dirpath, img2.filename))
+        return output
     except Exception:
         return str(sys.exc_info()[1])
 
@@ -546,8 +550,9 @@ def genEpubStruct(path, chapterNames):
         chapter = False
         for afile in filenames:
             filename = getImageFileName(afile)
-            if filename is not None and not "-kcchq" in filename[0]:
-                filelist.append(buildHTML(dirpath, afile))
+            if filename is not None and not ('-kcc-hq' in filename[0] or '-kcc-a-hq' in filename[0]
+                                             or '-kcc-b-hq' in filename[0]):
+                filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
                 if not chapter:
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
                     chapter = True
@@ -674,6 +679,8 @@ def sanitizeTree(filetree):
                         != slugified.upper():
                     slugified += "A"
                 os.rename(os.path.join(root, name), os.path.join(root, slugified + splitname[1]))
+                theGreatIndex[os.path.join(root, slugified + splitname[1])] = theGreatIndex[os.path.join(root, name)]
+                del theGreatIndex[os.path.join(root, name)]
         for name in dirs:
             if name.startswith('.'):
                 os.remove(os.path.join(root, name))
