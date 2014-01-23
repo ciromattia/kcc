@@ -392,27 +392,36 @@ def fileImgProcess(work):
                 print("Splitted " + afile)
             img0 = image.ComicPage(split[0], opt.profileData)
             applyImgOptimization(img0, opt)
-            img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+            img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor)
             img1 = image.ComicPage(split[1], opt.profileData)
             applyImgOptimization(img1, opt)
-            img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+            img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor)
+            if wipe:
+                os.remove(os.path.join(dirpath, img0.filename))
+                os.remove(os.path.join(dirpath, img1.filename))
             if opt.quality == 2:
                 img0b = image.ComicPage(split[0], opt.profileData, img0.fill)
                 applyImgOptimization(img0b, opt, img0)
-                img0b.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
+                img0b.saveToDir(dirpath, opt.forcepng, opt.forcecolor)
                 img1b = image.ComicPage(split[1], opt.profileData, img1.fill)
                 applyImgOptimization(img1b, opt, img1)
-                img1b.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
+                img1b.saveToDir(dirpath, opt.forcepng, opt.forcecolor)
+                os.remove(os.path.join(dirpath, img0b.filename))
+                os.remove(os.path.join(dirpath, img1b.filename))
+            os.remove(img.origFileName)
         else:
             applyImgOptimization(img, opt)
-            img.saveToDir(dirpath, opt.forcepng, opt.forcecolor, wipe)
+            img.saveToDir(dirpath, opt.forcepng, opt.forcecolor)
+            if wipe:
+                os.remove(os.path.join(dirpath, img.filename))
             if opt.quality == 2:
                 img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData, img.fill)
                 if img.rotated:
                     img2.image = img2.image.rotate(90)
                     img2.rotated = True
                 applyImgOptimization(img2, opt, img)
-                img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor, True)
+                img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor)
+                os.remove(os.path.join(dirpath, img2.filename))
     except Exception:
         return str(sys.exc_info()[1])
 

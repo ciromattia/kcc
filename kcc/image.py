@@ -117,15 +117,13 @@ class ComicPage:
         else:
             self.fill = None
 
-    def saveToDir(self, targetdir, forcepng, color, wipe):
+    def saveToDir(self, targetdir, forcepng, color):
         try:
             suffix = ""
             if not color and not forcepng:
                 self.image = self.image.convert('L')
             if self.rotated:
                 suffix += "-kccrot"
-            if wipe:
-                os.remove(os.path.join(targetdir, self.filename))
             else:
                 suffix += "-kcchq"
             if self.noPV:
@@ -284,7 +282,6 @@ class ComicPage:
                         pagetwo = self.image.crop(rightbox)
                     pageone.save(fileone)
                     pagetwo.save(filetwo)
-                    os.remove(self.origFileName)
                 except IOError as e:
                     raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
                 return fileone, filetwo
