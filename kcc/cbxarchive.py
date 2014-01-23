@@ -84,10 +84,10 @@ class CBxArchive:
         for line in output.stdout:
             if b"Everything is Ok" in line:
                 extracted = True
-        if not extracted:
-            raise OSError
         if sys.platform.startswith('darwin'):
             os.remove(self.origFileName)
+        if not extracted:
+            raise OSError
 
     def extract(self, targetdir):
         if self.compressor == 'rar':
