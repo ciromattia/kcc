@@ -35,6 +35,7 @@ from xml.dom.minidom import parse
 from uuid import uuid4
 from slugify import slugify as slugifyExt
 from PIL import Image
+from hashlib import md5
 try:
     from PyQt5 import QtCore
 except ImportError:
@@ -45,7 +46,19 @@ from . import cbxarchive
 from . import pdfjpgextract
 
 
+def md5Checksum(filePath):
+    with open(filePath, 'rb') as fh:
+        m = md5()
+        while True:
+            data = fh.read(8192)
+            if not data:
+                break
+            m.update(data)
+        return m.hexdigest()
+
+
 def buildHTML(path, imgfile, imgfilepath):
+    imgfilepath = md5Checksum(imgfilepath)
     filename = getImageFileName(imgfile)
     if filename is not None:
         if "Rotated" in theGreatIndex[imgfilepath]:
@@ -671,7 +684,6 @@ def slugify(value):
 
 
 def sanitizeTree(filetree):
-    global theGreatIndex
     chapterNames = {}
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
@@ -687,8 +699,6 @@ def sanitizeTree(filetree):
                 key = os.path.join(root, name)
                 if key != newKey:
                     os.rename(key, newKey)
-                    theGreatIndex[newKey] = theGreatIndex[key]
-                    del theGreatIndex[key]
         for name in dirs:
             if name.startswith('.'):
                 os.remove(os.path.join(root, name))
@@ -702,14 +712,6 @@ def sanitizeTree(filetree):
                 key = os.path.join(root, name)
                 if key != newKey:
                     os.rename(key, newKey)
-                    theGreatIndexTmp = theGreatIndex.copy()
-                    for keyI in theGreatIndex:
-                        if key in keyI:
-                            newKeyI = keyI.replace(key, newKey)
-                            if newKeyI != keyI:
-                                theGreatIndexTmp[newKeyI] = theGreatIndexTmp[keyI]
-                                del theGreatIndexTmp[keyI]
-                    theGreatIndex = theGreatIndexTmp.copy()
     return chapterNames
 
 
