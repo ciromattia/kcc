@@ -21,8 +21,20 @@ __copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jas
 __docformat__ = 'restructuredtext en'
 
 import os
+from hashlib import md5
 from functools import reduce
 from PIL import Image, ImageOps, ImageStat, ImageChops
+
+
+def md5Checksum(filePath):
+    with open(filePath, 'rb') as fh:
+        m = md5()
+        while True:
+            data = fh.read(8192)
+            if not data:
+                break
+            m.update(data)
+        return m.hexdigest()
 
 
 class ProfileData:
@@ -146,7 +158,7 @@ class ComicPage:
                 else:
                     filename += ".jpg"
                     self.image.save(filename, "JPEG", optimize=1)
-                return [filename, flags]
+                return [md5Checksum(filename), flags]
             else:
                 return None
         except IOError as e:
