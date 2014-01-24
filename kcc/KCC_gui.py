@@ -37,6 +37,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from xml.dom.minidom import parse
 from html.parser import HTMLParser
 from psutil import TOTAL_PHYMEM, Popen
+from hashlib import md5
 from . import comic2ebook
 from . import kindlesplit
 from . import KCC_rc_web
@@ -187,9 +188,20 @@ class VersionThread(QtCore.QThread):
     def __init__(self):
         QtCore.QThread.__init__(self)
         self.newVersion = ''
+        self.md5 = ''
 
     def __del__(self):
         self.wait()
+
+    def md5Checksum(self, filePath):
+        with open(filePath, 'rb') as fh:
+            m = md5()
+            while True:
+                data = fh.read(8192)
+                if not data:
+                    break
+                m.update(data)
+            return m.hexdigest()
 
     def run(self):
         try:
@@ -201,6 +213,7 @@ class VersionThread(QtCore.QThread):
         if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
             if sys.platform.startswith('win'):
                 self.newVersion = latestVersion
+                self.md5 = XML.childNodes[0].getElementsByTagName('WindowsMD5')[0].childNodes[0].toxml()
                 MW.showDialog.emit('<b>New version released!</b> <a href="https://github.com/ciromattia/kcc/releases/">'
                                    'See changelog.</a><<br/><br/>Installed version: ' + __version__ +
                                    '<br/>Current version: ' + latestVersion +
@@ -218,6 +231,8 @@ class VersionThread(QtCore.QThread):
                 MW.progressBarTick.emit('Downloading update')
                 path = urllib.request.urlretrieve('http://kcc.vulturis.eu/Windows/KindleComicConverter_win_' +
                                                   self.newVersion + '.exe', reporthook=self.getNewVersionTick)
+                if self.md5 != self.md5Checksum(path[0]):
+                    raise Exception
                 move(path[0], path[0] + '.exe')
                 MW.hideProgressBar.emit()
                 MW.modeConvert.emit(1)
