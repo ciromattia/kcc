@@ -121,9 +121,7 @@ class ComicPage:
     def saveToDir(self, targetdir, forcepng, color):
         try:
             flags = []
-            filename = os.path.join(targetdir, os.path.splitext(self.filename)[0])
-            if not filename.endswith('-KCC-A') and not filename.endswith('-KCC-B'):
-                filename += '-KCC'
+            filename = os.path.join(targetdir, os.path.splitext(self.filename)[0]) + '-KCC'
             if not color and not forcepng:
                 self.image = self.image.convert('L')
             if self.rotated:
@@ -282,8 +280,8 @@ class ComicPage:
                     leftbox = (0, 0, width, int(height / 2))
                     rightbox = (0, int(height / 2), width, height)
                 filename = os.path.splitext(self.filename)
-                fileone = targetdir + '/' + filename[0] + '-KCC-A' + filename[1]
-                filetwo = targetdir + '/' + filename[0] + '-KCC-B' + filename[1]
+                fileone = targetdir + '/' + filename[0] + '-A' + filename[1]
+                filetwo = targetdir + '/' + filename[0] + '-B' + filename[1]
                 try:
                     if righttoleft:
                         pageone = self.image.crop(rightbox)
