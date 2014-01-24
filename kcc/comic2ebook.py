@@ -404,6 +404,9 @@ def fileImgProcess(work):
             img1 = image.ComicPage(split[1], opt.profileData)
             applyImgOptimization(img1, opt)
             output.append(img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
+            if wipe:
+                os.remove(img0.origFileName)
+                os.remove(img1.origFileName)
             if opt.quality == 2:
                 img0b = image.ComicPage(split[0], opt.profileData, img0.fill)
                 applyImgOptimization(img0b, opt, img0)
@@ -411,12 +414,14 @@ def fileImgProcess(work):
                 img1b = image.ComicPage(split[1], opt.profileData, img1.fill)
                 applyImgOptimization(img1b, opt, img1)
                 output.append(img1b.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
+                os.remove(img0.origFileName)
+                os.remove(img1.origFileName)
             os.remove(img.origFileName)
         else:
             applyImgOptimization(img, opt)
             output.append(img.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
             if wipe:
-                os.remove(os.path.join(dirpath, img.filename))
+                os.remove(img.origFileName)
             if opt.quality == 2:
                 img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData, img.fill)
                 if img.rotated:
@@ -424,7 +429,7 @@ def fileImgProcess(work):
                     img2.rotated = True
                 applyImgOptimization(img2, opt, img)
                 output.append(img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-                os.remove(os.path.join(dirpath, img2.filename))
+                os.remove(img.origFileName)
         return output
     except Exception:
         return str(sys.exc_info()[1])
@@ -550,8 +555,7 @@ def genEpubStruct(path, chapterNames):
         chapter = False
         for afile in filenames:
             filename = getImageFileName(afile)
-            if filename is not None and not ('-kcc-hq' in filename[0] or '-kcc-a-hq' in filename[0]
-                                             or '-kcc-b-hq' in filename[0]):
+            if filename is not None and not '-kcc-hq' in filename[0]:
                 filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
                 if not chapter:
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
@@ -667,6 +671,7 @@ def slugify(value):
 
 
 def sanitizeTree(filetree):
+    global theGreatIndex
     chapterNames = {}
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
@@ -678,9 +683,12 @@ def sanitizeTree(filetree):
                 while os.path.exists(os.path.join(root, slugified + splitname[1])) and splitname[0].upper()\
                         != slugified.upper():
                     slugified += "A"
-                os.rename(os.path.join(root, name), os.path.join(root, slugified + splitname[1]))
-                theGreatIndex[os.path.join(root, slugified + splitname[1])] = theGreatIndex[os.path.join(root, name)]
-                del theGreatIndex[os.path.join(root, name)]
+                newKey = os.path.join(root, slugified + splitname[1])
+                key = os.path.join(root, name)
+                if key != newKey:
+                    os.rename(key, newKey)
+                    theGreatIndex[newKey] = theGreatIndex[key]
+                    del theGreatIndex[key]
         for name in dirs:
             if name.startswith('.'):
                 os.remove(os.path.join(root, name))
@@ -690,7 +698,18 @@ def sanitizeTree(filetree):
                 while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
                     slugified += "A"
                 chapterNames[slugified] = tmpName
-                os.rename(os.path.join(root, name), os.path.join(root, slugified))
+                newKey = os.path.join(root, slugified)
+                key = os.path.join(root, name)
+                if key != newKey:
+                    os.rename(key, newKey)
+                    theGreatIndexTmp = theGreatIndex.copy()
+                    for keyI in theGreatIndex:
+                        if key in keyI:
+                            newKeyI = keyI.replace(key, newKey)
+                            if newKeyI != keyI:
+                                theGreatIndexTmp[newKeyI] = theGreatIndexTmp[keyI]
+                                del theGreatIndexTmp[keyI]
+                    theGreatIndex = theGreatIndexTmp.copy()
     return chapterNames
 
 
