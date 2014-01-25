@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-OSX.ui'
 #
-# Created: Tue Jan 21 10:56:30 2014
+# Created: Sat Jan 25 17:37:10 2014
 #      by: PyQt5 UI code generator 5.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -373,7 +373,7 @@ class Ui_KCC(object):
         self.ClearButton.setText(_translate("KCC", "Clear list"))
         self.MangaBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Enable right-to-left reading.</p></body></html>"))
         self.MangaBox.setText(_translate("KCC", "Manga mode"))
-        self.QualityBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Normal quality mode<br/></span><span style=\" font-style:italic;\">Use it when Panel View support is not needed.<br/></span>- Maximum quality when zoom is not enabled.<br/>- Poor quality when zoom is enabled.<br/>- Lowest file size.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode<br/></span><span style=\" font-style:italic;\">Not zoomed image might be a little blurry.<br/>Smaller images might be forcefully upscaled in this mode.<br/></span>- Medium/High quality when zoom is not enabled.<br/>- Maximum quality when zoom is enabled.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode<br/></span><span style=\" font-style:italic;\">Maximum possible quality.<br/></span>- Maximum quality when zoom is not enabled.<br/>- Maximum quality when zoom is enabled.<br/>- Very high file size.</p></body></html>"))
+        self.QualityBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Normal quality mode<br/></span><span style=\" font-style:italic;\">Use it when Panel View support is not needed.<br/></span>- Maximum quality when zoom is not enabled.<br/>- Poor quality when zoom is enabled.<br/>- Lowest file size.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode<br/></span><span style=\" font-style:italic;\">Not zoomed image </span><span style=\" font-weight:600; font-style:italic;\">might</span><span style=\" font-style:italic;\"> be a little blurry.<br/></span>- High quality when zoom is not enabled.<br/>- Maximum quality when zoom is enabled.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode<br/></span><span style=\" font-style:italic;\">Maximum possible quality.<br/></span>- Maximum quality when zoom is not enabled.<br/>- Maximum quality when zoom is enabled.<br/>- Very high file size.</p></body></html>"))
         self.QualityBox.setText(_translate("KCC", "High/Ultra quality"))
         self.RotateBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Disable splitting of two-page spreads.<br/>They will be rotated instead.</p></body></html>"))
         self.RotateBox.setText(_translate("KCC", "Horizontal mode"))
