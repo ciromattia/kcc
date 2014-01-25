@@ -121,26 +121,26 @@ class ComicPage:
 
     def saveToDir(self, targetdir, forcepng, color):
         try:
-            flags = []
-            filename = os.path.join(targetdir, os.path.splitext(self.filename)[0]) + '-KCC'
-            if not color and not forcepng:
-                self.image = self.image.convert('L')
-            if self.rotated:
-                flags.append('Rotated')
-            if self.hq:
-                flags.append('HighQuality')
-                filename += '-HQ'
-            if self.noPV:
-                flags.append('NoPanelView')
-            else:
-                if self.noHPV:
-                    flags.append('NoHorizontalPanelView')
-                if self.noVPV:
-                    flags.append('NoVerticalPanelView')
-                if self.border:
-                    flags.append("Margins-" + str(self.border[0]) + "-" + str(self.border[1]) + "-"
-                                 + str(self.border[2]) + "-" + str(self.border[3]))
             if not self.purge:
+                flags = []
+                filename = os.path.join(targetdir, os.path.splitext(self.filename)[0]) + '-KCC'
+                if not color and not forcepng:
+                    self.image = self.image.convert('L')
+                if self.rotated:
+                    flags.append('Rotated')
+                if self.hq:
+                    flags.append('HighQuality')
+                    filename += '-HQ'
+                if self.noPV:
+                    flags.append('NoPanelView')
+                else:
+                    if self.noHPV:
+                        flags.append('NoHorizontalPanelView')
+                    if self.noVPV:
+                        flags.append('NoVerticalPanelView')
+                    if self.border:
+                        flags.append("Margins-" + str(self.border[0]) + "-" + str(self.border[1]) + "-"
+                                     + str(self.border[2]) + "-" + str(self.border[3]))
                 if forcepng:
                     filename += ".png"
                     self.image.save(filename,  "PNG", optimize=1)
@@ -181,7 +181,7 @@ class ComicPage:
             return int(round(float(x)/float(img.image.size[1]), 4) * 10000 * 1.5)
 
     def calculateBorder(self, sourceImage, isHQ=False):
-        if isHQ and sourceImage.purge:
+        if (isHQ and sourceImage.purge) or self.noPV:
             self.border = [0, 0, 0, 0]
             self.noPV = True
             return
@@ -218,14 +218,18 @@ class ComicPage:
         # Set target size
         if qualityMode == 0:
             size = (self.size[0], self.size[1])
+        elif qualityMode == 1 and not stretch and not upscale and self.image.size[0] <=\
+                self.size[0] and self.image.size[1] <= self.size[1]:
+            size = (self.size[0], self.size[1])
         elif qualityMode == 1:
             size = (self.panelviewsize[0], self.panelviewsize[1])
+        elif qualityMode == 2 and not stretch and not upscale and self.image.size[0] <=\
+                self.size[0] and self.image.size[1] <= self.size[1]:
+            self.purge = True
+            return self.image
         else:
             self.hq = True
             size = (self.panelviewsize[0], self.panelviewsize[1])
-        # If image is small and HQ mode is on we have to force upscaling. Otherwise non-zoomed image will be distorted
-        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and qualityMode == 1 and not stretch:
-            upscale = True
         # If stretching is on - Resize without other considerations
         if stretch:
             if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
@@ -238,9 +242,9 @@ class ComicPage:
         if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and not upscale:
             borderw = int((size[0] - self.image.size[0]) / 2)
             borderh = int((size[1] - self.image.size[1]) / 2)
-            # PV is disabled when source image is smaller than device screen and upscale is off - So we drop HQ image
-            if qualityMode == 2 and self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
-                self.purge = True
+            # PV is disabled when source image is smaller than device screen and upscale is off
+            if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
+                self.noPV = True
             self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
             # Border can't be float so sometimes image might be 1px too small/large
             if self.image.size[0] != size[0] or self.image.size[1] != size[1]:

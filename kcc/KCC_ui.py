@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Tue Jan 21 10:54:31 2014
+# Created: Sat Jan 25 17:36:53 2014
 #      by: PyQt5 UI code generator 5.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -281,13 +281,7 @@ class Ui_KCC(object):
         self.ClearButton.setText(_translate("KCC", "Clear list"))
         self.MangaBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Enable right-to-left reading.</p></body></html>"))
         self.MangaBox.setText(_translate("KCC", "Manga mode"))
-        self.QualityBox.setToolTip(_translate("KCC", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body>\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Normal quality mode<br /></span><span style=\" font-style:italic;\">Use it when Panel View support is not needed.</span><span style=\" font-weight:600; text-decoration: underline;\"><br /></span>- Maximum quality when zoom is not enabled.<br />- Poor quality when zoom is enabled.<br />- Lowest file size.</p>\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode<br /></span><span style=\" font-style:italic;\">Not zoomed image </span><span style=\" font-weight:600; font-style:italic;\">might </span><span style=\" font-style:italic;\">be a little blurry.<br />Smaller images might be forcefully upscaled in this mode.</span><span style=\" font-weight:600; text-decoration: underline;\"><br /></span>- Medium/High quality when zoom is not enabled.<br />- Maximum quality when zoom is enabled.</p>\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode<br /></span><span style=\" font-style:italic;\">Maximum possible quality.</span><span style=\" font-weight:600; text-decoration: underline;\"><br /></span>- Maximum quality when zoom is not enabled.<br />- Maximum quality when zoom is enabled.<br />- Very high file size.</p></body></html>"))
+        self.QualityBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Normal quality mode<br/></span><span style=\" font-style:italic;\">Use it when Panel View support is not needed.</span><span style=\" font-weight:600; text-decoration: underline;\"><br/></span>- Maximum quality when zoom is not enabled.<br/>- Poor quality when zoom is enabled.<br/>- Lowest file size.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode<br/></span><span style=\" font-style:italic;\">Not zoomed images </span><span style=\" font-weight:600; font-style:italic;\">might </span><span style=\" font-style:italic;\">be blurry.</span><span style=\" font-weight:600; text-decoration: underline;\"><br/></span>- High quality when zoom is not enabled.<br/>- Maximum quality when zoom is enabled.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode<br/></span><span style=\" font-style:italic;\">Maximum possible quality.</span><span style=\" font-weight:600; text-decoration: underline;\"><br/></span>- Maximum quality when zoom is not enabled.<br/>- Maximum quality when zoom is enabled.<br/>- Very high file size.</p></body></html>"))
         self.QualityBox.setText(_translate("KCC", "High/Ultra quality"))
         self.RotateBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Disable splitting of two-page spreads.<br/>They will be rotated instead.</p></body></html>"))
         self.RotateBox.setText(_translate("KCC", "Horizontal mode"))
