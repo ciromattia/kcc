@@ -981,7 +981,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
         self.settings.setValue('currentFormat', GUI.FormatBox.currentIndex())
         self.settings.setValue('currentMode', self.currentMode)
-        self.settings.setValue('firstStart', False)
+        self.settings.setValue('startNumber', self.startNumber + 1)
         self.settings.setValue('options', {'MangaBox': GUI.MangaBox.checkState(),
                                            'RotateBox': GUI.RotateBox.checkState(),
                                            'QualityBox': GUI.QualityBox.checkState(),
@@ -1066,7 +1066,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
         self.currentMode = self.settings.value('currentMode', 1, type=int)
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
-        self.firstStart = self.settings.value('firstStart', True, type=bool)
+        self.startNumber = self.settings.value('startNumber', 0, type=int)
         self.options = self.settings.value('options', {'GammaSlider': 0})
         self.worker = WorkerThread()
         self.versionCheck = VersionThread()
@@ -1170,8 +1170,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')
-        if self.firstStart:
-            self.addMessage('Since you are using <b>KCC</b> for first time please see few '
+        if self.startNumber < 5:
+            self.addMessage('Since you are new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
         kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
