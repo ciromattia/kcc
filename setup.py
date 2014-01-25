@@ -33,7 +33,7 @@ if platform == "darwin":
                     CFBundleName=NAME,
                     CFBundleShortVersionString=VERSION,
                     CFBundleGetInfoString=NAME + " " + VERSION +
-                    ", written 2012-2013 by Ciro Mattia Gonano and Pawel Jastrzebski",
+                    ", written 2012-2014 by Ciro Mattia Gonano and Pawel Jastrzebski",
                     CFBundleExecutable=NAME,
                     CFBundleIdentifier='com.github.ciromattia.kcc',
                     CFBundleSignature='dplt',

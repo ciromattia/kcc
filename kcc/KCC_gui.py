@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
+# Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -19,15 +19,15 @@
 
 __version__ = '4.0'
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
+__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import os
 import sys
-import traceback
-import urllib.request
-import urllib.parse
-import socket
+from urllib.parse import unquote
+from urllib.request import urlopen, urlretrieve
+from socket import gethostbyname_ex, gethostname
+from traceback import format_tb
 from time import sleep
 from shutil import move
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -37,7 +37,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from xml.dom.minidom import parse
 from html.parser import HTMLParser
 from psutil import TOTAL_PHYMEM, Popen
-from hashlib import md5
+from .shared import md5Checksum
 from . import comic2ebook
 from . import kindlesplit
 from . import KCC_rc_web
@@ -130,7 +130,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
                                  '</body>\n'
                                  '</html>\n', 'UTF-8'))
             elif sendReply:
-                outputFile = GUI.completedWork[urllib.parse.unquote(self.path[1:])]
+                outputFile = GUI.completedWork[unquote(self.path[1:])]
                 fp = open(outputFile, 'rb')
                 self.send_response(200)
                 self.send_header('Content-type', mimetype)
@@ -163,7 +163,7 @@ class WebServerThread(QtCore.QThread):
     def run(self):
         try:
             # Sweet cross-platform one-liner to get LAN ip address
-            lIP = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
+            lIP = [ip for ip in gethostbyname_ex(gethostname())[2] if not ip.startswith("127.")][:1][0]
         except Exception:
             # Sadly it can fail on some Linux configurations
             lIP = None
@@ -193,19 +193,9 @@ class VersionThread(QtCore.QThread):
     def __del__(self):
         self.wait()
 
-    def md5Checksum(self, filePath):
-        with open(filePath, 'rb') as fh:
-            m = md5()
-            while True:
-                data = fh.read(8192)
-                if not data:
-                    break
-                m.update(data)
-            return m.hexdigest()
-
     def run(self):
         try:
-            XML = urllib.request.urlopen('http://kcc.vulturis.eu/Version.php')
+            XML = urlopen('http://kcc.vulturis.eu/Version.php')
             XML = parse(XML)
         except Exception:
             return
@@ -229,9 +219,9 @@ class VersionThread(QtCore.QThread):
             try:
                 MW.modeConvert.emit(-1)
                 MW.progressBarTick.emit('Downloading update')
-                path = urllib.request.urlretrieve('http://kcc.vulturis.eu/Windows/KindleComicConverter_win_' +
-                                                  self.newVersion + '.exe', reporthook=self.getNewVersionTick)
-                if self.md5 != self.md5Checksum(path[0]):
+                path = urlretrieve('http://kcc.vulturis.eu/Windows/KindleComicConverter_win_'
+                                   + self.newVersion + '.exe', reporthook=self.getNewVersionTick)
+                if self.md5 != md5Checksum(path[0]):
                     raise Exception
                 move(path[0], path[0] + '.exe')
                 MW.hideProgressBar.emit()
@@ -462,7 +452,7 @@ class WorkerThread(QtCore.QThread):
                 self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
                 MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
-                                   % (jobargv[-1], str(err), traceback.format_tb(traceback_)), 'error')
+                                   % (jobargv[-1], str(err), format_tb(traceback_)), 'error')
                 MW.addMessage.emit('Failed to create EPUB!', 'error', False)
                 MW.addTrayMessage.emit('Failed to create EPUB!', 'Critical')
             if not self.conversionAlive:
@@ -1042,7 +1032,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
     def dragAndDropAccepted(self, e):
         for message in e.mimeData().urls():
-            message = urllib.parse.unquote(message.toString().replace('file:///', ''))
+            message = unquote(message.toString().replace('file:///', ''))
             if sys.platform.startswith('win'):
                 message = message.replace('/', '\\')
             else:

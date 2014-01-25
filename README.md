@@ -329,5 +329,5 @@ Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
 ## COPYRIGHT
 
-Copyright (c) 2012-2013 Ciro Mattia Gonano and Paweł Jastrzębski.  
+Copyright (c) 2012-2014 Ciro Mattia Gonano and Paweł Jastrzębski.
 **KCC** is released under ISC LICENSE; see LICENSE.txt for further details.
