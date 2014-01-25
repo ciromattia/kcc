@@ -1,7 +1,7 @@
 # Copyright (C) 2010  Alex Yatskov
 # Copyright (C) 2011  Stanislav (proDOOMman) Kosolapov <prodoomman@gmail.com>
-# Copyright (C) 2012-2013  Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (C) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
+# Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,24 +17,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
+__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import os
-from hashlib import md5
 from functools import reduce
 from PIL import Image, ImageOps, ImageStat, ImageChops
-
-
-def md5Checksum(filePath):
-    with open(filePath, 'rb') as fh:
-        m = md5()
-        while True:
-            data = fh.read(8192)
-            if not data:
-                break
-            m.update(data)
-        return m.hexdigest()
+from .shared import md5Checksum
 
 
 class ProfileData:

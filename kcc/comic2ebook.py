@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
+# Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -17,16 +17,17 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
+
 __version__ = '4.0'
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
+__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import os
 import sys
-import re
-import stat
-import zipfile
+from re import split, sub
+from stat import S_IWRITE, S_IREAD, S_IEXEC
+from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp
 from shutil import move, copyfile, copytree, rmtree
 from optparse import OptionParser, OptionGroup
@@ -35,26 +36,15 @@ from xml.dom.minidom import parse
 from uuid import uuid4
 from slugify import slugify as slugifyExt
 from PIL import Image
-from hashlib import md5
 try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
+from .shared import md5Checksum, getImageFileName, walkLevel
 from . import comic2panel
 from . import image
 from . import cbxarchive
 from . import pdfjpgextract
-
-
-def md5Checksum(filePath):
-    with open(filePath, 'rb') as fh:
-        m = md5()
-        while True:
-            data = fh.read(8192)
-            if not data:
-                break
-            m.update(data)
-        return m.hexdigest()
 
 
 def buildHTML(path, imgfile, imgfilepath):
@@ -307,20 +297,6 @@ def buildOPF(dstdir, title, filelist, cover=None):
     return
 
 
-def getImageFileName(imgfile):
-    filename = os.path.splitext(imgfile)
-    if filename[0].startswith('.') or\
-            (filename[1].lower() != '.png' and
-             filename[1].lower() != '.jpg' and
-             filename[1].lower() != '.gif' and
-             filename[1].lower() != '.tif' and
-             filename[1].lower() != '.tiff' and
-             filename[1].lower() != '.bmp' and
-             filename[1].lower() != '.jpeg'):
-        return None
-    return filename
-
-
 def applyImgOptimization(img, opt, hqImage=None):
     if not img.fill:
         img.getImageFill(opt.webtoon)
@@ -405,26 +381,26 @@ def fileImgProcess(work):
         else:
             wipe = True
         if opt.nosplitrotate:
-            split = None
+            splitter = None
         else:
-            split = img.splitPage(dirpath, opt.righttoleft, opt.rotate)
-        if split is not None:
+            splitter = img.splitPage(dirpath, opt.righttoleft, opt.rotate)
+        if splitter is not None:
             if opt.verbose:
                 print("Splitted " + afile)
-            img0 = image.ComicPage(split[0], opt.profileData)
+            img0 = image.ComicPage(splitter[0], opt.profileData)
             applyImgOptimization(img0, opt)
             output.append(img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-            img1 = image.ComicPage(split[1], opt.profileData)
+            img1 = image.ComicPage(splitter[1], opt.profileData)
             applyImgOptimization(img1, opt)
             output.append(img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
             if wipe:
                 os.remove(img0.origFileName)
                 os.remove(img1.origFileName)
             if opt.quality == 2:
-                img0b = image.ComicPage(split[0], opt.profileData, img0.fill)
+                img0b = image.ComicPage(splitter[0], opt.profileData, img0.fill)
                 applyImgOptimization(img0b, opt, img0)
                 output.append(img0b.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-                img1b = image.ComicPage(split[1], opt.profileData, img1.fill)
+                img1b = image.ComicPage(splitter[1], opt.profileData, img1.fill)
                 applyImgOptimization(img1b, opt, img1)
                 output.append(img1b.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
                 os.remove(img0.origFileName)
@@ -580,7 +556,7 @@ def genEpubStruct(path, chapterNames):
     buildNCX(path, options.title, chapterlist, chapterNames)
     # Ensure we're sorting files alphabetically
     convert = lambda text: int(text) if text.isdigit() else text
-    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    alphanum_key = lambda key: [convert(c) for c in split('([0-9]+)', key)]
     filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(path, options.title, filelist, cover)
 
@@ -679,7 +655,7 @@ def checkComicInfo(path, originalPath):
 
 def slugify(value):
     value = slugifyExt(value)
-    value = re.sub(r'0*([0-9]{4,})', r'\1', re.sub(r'([0-9]+)', r'0000\1', value))
+    value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value))
     return value
 
 
@@ -718,9 +694,9 @@ def sanitizeTree(filetree):
 def sanitizeTreeBeforeConversion(filetree):
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
-            os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD)
+            os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
-            os.chmod(os.path.join(root, name), stat.S_IWRITE | stat.S_IREAD | stat.S_IEXEC)
+            os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
 
 
 def getDirectorySize(start_path='.'):
@@ -737,17 +713,6 @@ def createNewTome():
     tomePath = os.path.join(tomePathRoot, 'OEBPS', 'Images')
     os.makedirs(tomePath)
     return tomePath, tomePathRoot
-
-
-def walkLevel(some_dir, level=1):
-    some_dir = some_dir.rstrip(os.path.sep)
-    assert os.path.isdir(some_dir)
-    num_sep = some_dir.count(os.path.sep)
-    for root, dirs, files in os.walk(some_dir):
-        yield root, dirs, files
-        num_sep_this = root.count(os.path.sep)
-        if num_sep + level <= num_sep_this:
-            del dirs[:]
 
 
 def splitDirectory(path, mode):
@@ -864,9 +829,9 @@ def preSplitDirectory(path):
                     GUI.addMessage.emit('', '', False)
                 return [path]
         # Split directories
-        split = splitDirectory(os.path.join(path, 'OEBPS', 'Images'), mode)
+        splitter = splitDirectory(os.path.join(path, 'OEBPS', 'Images'), mode)
         path = [path]
-        for tome in split:
+        for tome in splitter:
             path.append(tome)
         return path
     else:
@@ -895,9 +860,9 @@ def detectCorruption(tmpPath, orgPath):
 
 def makeZIP(zipFilename, baseDir, isEPUB=False):
     zipFilename = os.path.abspath(zipFilename) + '.zip'
-    zipOutput = zipfile.ZipFile(zipFilename, 'w', zipfile.ZIP_DEFLATED)
+    zipOutput = ZipFile(zipFilename, 'w', ZIP_DEFLATED)
     if isEPUB:
-        zipOutput.writestr('mimetype', 'application/epub+zip', zipfile.ZIP_STORED)
+        zipOutput.writestr('mimetype', 'application/epub+zip', ZIP_STORED)
     for dirpath, dirnames, filenames in os.walk(baseDir):
         for name in filenames:
             path = os.path.normpath(os.path.join(dirpath, name))

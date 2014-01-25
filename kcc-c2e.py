@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
+# Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -20,7 +20,7 @@
 
 __version__ = '4.0'
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
+__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import sys

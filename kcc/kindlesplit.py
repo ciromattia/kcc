@@ -2,7 +2,7 @@
 #
 # Based on initial version of KindleUnpack. Copyright (C) 2009 Charles M. Hannum <root@ihack.net>
 # Improvements Copyright (C) 2009-2012 P. Durrant, K. Hendricks, S. Siebert, fandrieu, DiapDealer, nickredding
-# Changes for KCC Copyright (C) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
+# Changes for KCC Copyright (C) 2013-2014 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

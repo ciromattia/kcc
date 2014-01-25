@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
+# Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -17,9 +17,10 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
+
 __version__ = '4.0'
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
+__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import os
@@ -28,35 +29,11 @@ from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
 from PIL import Image, ImageStat
+from .shared import getImageFileName, walkLevel
 try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
-
-
-def getImageFileName(imgfile):
-    filename = os.path.splitext(imgfile)
-    if filename[0].startswith('.') or\
-            (filename[1].lower() != '.png' and
-             filename[1].lower() != '.jpg' and
-             filename[1].lower() != '.gif' and
-             filename[1].lower() != '.tif' and
-             filename[1].lower() != '.tiff' and
-             filename[1].lower() != '.bmp' and
-             filename[1].lower() != '.jpeg'):
-        return None
-    return filename
-
-
-def walkLevel(some_dir, level=1):
-    some_dir = some_dir.rstrip(os.path.sep)
-    assert os.path.isdir(some_dir)
-    num_sep = some_dir.count(os.path.sep)
-    for root, dirs, files in os.walk(some_dir):
-        yield root, dirs, files
-        num_sep_this = root.count(os.path.sep)
-        if num_sep + level <= num_sep_this:
-            del dirs[:]
 
 
 def mergeDirectory_tick(output):

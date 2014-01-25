@@ -1,5 +1,5 @@
-# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
+# Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -15,13 +15,14 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
+
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
+__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import sys
 import os
-import zipfile
+from zipfile import is_zipfile, ZipFile
 from subprocess import STDOUT, PIPE
 from psutil import Popen
 from shutil import move, copy
@@ -31,7 +32,7 @@ from . import rarfile
 class CBxArchive:
     def __init__(self, origFileName):
         self.origFileName = origFileName
-        if zipfile.is_zipfile(origFileName):
+        if is_zipfile(origFileName):
             self.compressor = 'zip'
         elif rarfile.is_rarfile(origFileName):
             self.compressor = 'rar'
@@ -44,7 +45,7 @@ class CBxArchive:
         return self.compressor is not None
 
     def extractCBZ(self, targetdir):
-        cbzFile = zipfile.ZipFile(self.origFileName)
+        cbzFile = ZipFile(self.origFileName)
         filelist = []
         for f in cbzFile.namelist():
             if f.startswith('__MACOSX') or f.endswith('.DS_Store') or f.endswith('thumbs.db'):
