@@ -107,6 +107,7 @@ class ComicPage:
         self.filename = os.path.basename(self.origFileName)
         self.image = Image.open(source)
         self.image = self.image.convert('RGB')
+        self.color = self.isImageColor()
         self.rotated = None
         self.border = None
         self.noHPV = None
@@ -156,7 +157,7 @@ class ComicPage:
     def optimizeImage(self, gamma):
         if gamma < 0.1:
             gamma = self.gamma
-            if self.gamma != 1.0 and self.isImageColor(self.image):
+            if self.gamma != 1.0 and self.color:
                 gamma = 1.0
         if gamma == 1.0:
             self.image = ImageOps.autocontrast(self.image)
@@ -414,30 +415,37 @@ class ComicPage:
             return False
 
     def getImageFill(self, webtoon):
+        if not webtoon and self.color:
+            self.fill = 'black'
+            return
         fill = 0
         if not webtoon and not self.rotated:
             # Search for horizontal solid lines
             startY = 0
             while startY < self.image.size[1]:
-                checkSolid = self.getImageHistogram(self.image.crop((0, startY, self.image.size[0], startY+1)))
+                if startY + 5 > self.image.size[1]:
+                    startY = self.image.size[1] - 5
+                checkSolid = self.getImageHistogram(self.image.crop((0, startY, self.image.size[0], startY+5)))
                 if checkSolid:
                     fill += checkSolid
-                startY += 1
+                startY += 5
         else:
             # Search for vertical solid lines
             startX = 0
             while startX < self.image.size[0]:
-                checkSolid = self.getImageHistogram(self.image.crop((startX, 0, startX+1, self.image.size[1])))
+                if startX + 5 > self.image.size[0]:
+                    startX = self.image.size[0] - 5
+                checkSolid = self.getImageHistogram(self.image.crop((startX, 0, startX+5, self.image.size[1])))
                 if checkSolid:
                     fill += checkSolid
-                startX += 1
+                startX += 5
         if fill > 0:
             self.fill = 'black'
         else:
             self.fill = 'white'
 
-    def isImageColor(self, image):
-        v = ImageStat.Stat(image).var
+    def isImageColor(self):
+        v = ImageStat.Stat(self.image).var
         isMonochromatic = reduce(lambda x, y: x and y < 0.005, v, True)
         if isMonochromatic:
             # Monochromatic
