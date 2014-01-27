@@ -105,7 +105,6 @@ Options:
                         Replace screen height provided by device profile
 
   OTHER:
-    -v, --verbose       Verbose output
     -h, --help          Show this help message and exit
 ```
 

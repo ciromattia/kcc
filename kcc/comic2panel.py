@@ -123,7 +123,6 @@ def splitImage(work):
         # Harcoded opttions
         threshold = 1.0
         delta = 15
-        print(".", end=' ')
         fileExpanded = os.path.splitext(name)
         filePath = os.path.join(path, name)
         image = Image.open(filePath)
@@ -236,15 +235,15 @@ def main(argv=None, qtGUI=None):
     if options.height > 0:
         options.sourceDir = args[0]
         options.targetDir = args[0] + "-Splitted"
-        print("\nSplitting images...")
         if os.path.isdir(options.sourceDir):
             rmtree(options.targetDir, True)
             copytree(options.sourceDir, options.targetDir)
             work = []
-            pagenumber = 0
+            pagenumber = 1
             splitWorkerOutput = []
             splitWorkerPool = Pool()
             if options.merge:
+                print("\nMerging images...")
                 directoryNumer = 1
                 mergeWork = []
                 mergeWorkerOutput = []
@@ -267,6 +266,7 @@ def main(argv=None, qtGUI=None):
                 if len(mergeWorkerOutput) > 0:
                     rmtree(options.targetDir, True)
                     raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0])
+            print("\nSplitting images...")
             for root, dirs, files in os.walk(options.targetDir, False):
                 for name in files:
                     if getImageFileName(name) is not None:
