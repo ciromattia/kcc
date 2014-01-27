@@ -371,10 +371,6 @@ def fileImgProcess(work):
         dirpath = work[1]
         opt = work[2]
         output = []
-        if opt.verbose:
-            print("Optimizing " + afile + " for " + opt.profile)
-        else:
-            print(".", end=' ')
         img = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
         if opt.quality == 2:
             wipe = False
@@ -385,8 +381,6 @@ def fileImgProcess(work):
         else:
             splitter = img.splitPage(dirpath, opt.righttoleft, opt.rotate)
         if splitter is not None:
-            if opt.verbose:
-                print("Splitted " + afile)
             img0 = image.ComicPage(splitter[0], opt.profileData)
             applyImgOptimization(img0, opt)
             output.append(img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
@@ -933,8 +927,6 @@ def main(argv=None, qtGUI=None):
                                     help="Replace screen width provided by device profile")
     customProfileOptions.add_option("--customheight", type="int", dest="customheight", default=0,
                                     help="Replace screen height provided by device profile")
-    otherOptions.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
-                            help="Verbose output")
     otherOptions.add_option("-h", "--help", action="help",
                             help="Show this help message and exit")
     parser.add_option_group(mainOptions)
@@ -953,6 +945,7 @@ def main(argv=None, qtGUI=None):
         parser.print_help()
         return
     path = getWorkFolder(args[0])
+    print("\nChecking images...")
     detectCorruption(path + "/OEBPS/Images/", args[0])
     checkComicInfo(path + "/OEBPS/Images/", args[0])
     if options.webtoon:
