@@ -1,5 +1,5 @@
 ﻿#define MyAppName "Kindle Comic Converter"
-#define MyAppVersion "3.7.2"
+#define MyAppVersion "4.0"
 #define MyAppPublisher "Ciro Mattia Gonano, Paweł Jastrzębski"
 #define MyAppURL "http://kcc.vulturis.eu/"
 #define MyAppExeName "KCC.exe"
@@ -12,7 +12,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-AppCopyright=Copyright (C) 2012-2013 Ciro Mattia Gonano and Paweł Jastrzębski
+AppCopyright=Copyright (C) 2012-2014 Ciro Mattia Gonano and Paweł Jastrzębski
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
@@ -42,56 +42,18 @@ Name: "CB7association"; Description: "CB7"; GroupDescription: "File associations
 
 [Files]
 ; x64 files
-Source: "build\exe.win-amd64-2.7\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\_ctypes.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\_hashlib.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\_multiprocessing.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\_socket.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\_ssl.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\bz2.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\LIBEAY32.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\library.zip"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\PIL._imaging.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\PIL._imagingft.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\pyexpat.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\PyQt4.QtCore.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\PyQt4.QtGui.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\PyQt4.QtNetwork.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\python27.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\QtCore4.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\QtGui4.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\QtNetwork4.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\select.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\sip.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\SSLEAY32.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\unicodedata.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-2.7\_psutil_mswindows.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "build\exe.win-amd64-3.3\imageformats\*"; DestDir: "{app}\imageformats\"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "build\exe.win-amd64-3.3\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "build\exe.win-amd64-3.3\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "build\exe.win-amd64-3.3\*.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "build\exe.win-amd64-3.3\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: "other\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: Is64BitInstallMode
 ; x86 files
-Source: "build\exe.win32-2.7\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion solidbreak; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\_ctypes.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\_hashlib.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\_multiprocessing.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\_socket.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\_ssl.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\bz2.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\LIBEAY32.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\library.zip"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\PIL._imaging.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\PIL._imagingft.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\pyexpat.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\PyQt4.QtCore.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\PyQt4.QtGui.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\PyQt4.QtNetwork.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\python27.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\QtCore4.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\QtGui4.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\QtNetwork4.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\select.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\sip.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\SSLEAY32.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\unicodedata.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-2.7\_psutil_mswindows.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "build\exe.win32-3.3\imageformats\*"; DestDir: "{app}\imageformats\"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "build\exe.win32-3.3\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "build\exe.win32-3.3\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "build\exe.win32-3.3\*.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "build\exe.win32-3.3\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: "other\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: not Is64BitInstallMode
 ; Common files
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
@@ -105,9 +67,9 @@ Name: "{group}\Readme"; Filename: "https://github.com/ciromattia/kcc#kcc"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-Filename: "{tmp}\vcredist_x64.exe"; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: "Installing Microsoft Visual C++ 2008 Redistributable Package..."; Check: Is64BitInstallMode
-Filename: "{tmp}\vcredist_x86.exe"; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: "Installing Microsoft Visual C++ 2008 Redistributable Package..."; Check: not Is64BitInstallMode
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall
+Filename: "{tmp}\vcredist_x64.exe"; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: "Installing Microsoft Visual C++ 2010 Redistributable Package..."; Check: Is64BitInstallMode
+Filename: "{tmp}\vcredist_x86.exe"; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: "Installing Microsoft Visual C++ 2010 Redistributable Package..."; Check: not Is64BitInstallMode
 
 [Messages]
 WelcomeLabel1=Welcome to the KCC Setup Wizard

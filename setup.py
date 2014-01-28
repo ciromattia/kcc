@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 """
 cx_Freeze build script for KCC.
 
@@ -8,10 +8,13 @@ Usage (Mac OS X):
 Usage (Windows):
     python setup.py build
 """
-from sys import platform
+from sys import platform, version_info
+if version_info[0] != 3:
+    print('ERROR: This is Python 3 script!')
+    exit(1)
 
 NAME = "KindleComicConverter"
-VERSION = "3.7.2"
+VERSION = "4.0"
 MAIN = "kcc.py"
 
 if platform == "darwin":
@@ -23,25 +26,23 @@ if platform == "darwin":
             py2app=dict(
                 argv_emulation=True,
                 iconfile='icons/comic2ebook.icns',
-                includes=['PIL', 'sip', 'PyQt4', 'PyQt4.QtCore', 'PyQt4.QtGui', 'PyQt4.QtNetwork'],
-                qt_plugins=[],
-                excludes=['PyQt4.QtDeclarative', 'PyQt4.QtDesigner', 'PyQt4.QtHelp', 'PyQt4.QtMultimedia',
-                          'PyQt4.QtOpenGL', 'PyQt4.QtScript', 'PyQt4.QtScriptTools', 'PyQt4.QtSql', 'PyQt4.QtSvg',
-                          'PyQt4.QtXmlPatterns', 'PyQt4.QtXml', 'PyQt4.QtWebKit', 'PyQt4.QtTest', 'Tkinter'],
-                resources=['LICENSE.txt', 'other/Additional-LICENSE.txt', 'other/unrar', 'other/7za'],
+                includes=['PIL', 'sip', 'PyQt5', 'PyQt5.QtCore', 'PyQt5.QtGui', 'PyQt5.QtNetwork', 'PyQt5.QtWidgets',
+                          'PyQt5.QtPrintSupport'],
+                resources=['LICENSE.txt', 'other/qt.conf', 'other/Additional-LICENSE.txt', 'other/unrar', 'other/7za'],
                 plist=dict(
                     CFBundleName=NAME,
                     CFBundleShortVersionString=VERSION,
                     CFBundleGetInfoString=NAME + " " + VERSION +
-                    ", written 2012-2013 by Ciro Mattia Gonano and Pawel Jastrzebski",
+                    ", written 2012-2014 by Ciro Mattia Gonano and Pawel Jastrzebski",
                     CFBundleExecutable=NAME,
                     CFBundleIdentifier='com.github.ciromattia.kcc',
                     CFBundleSignature='dplt',
                     CFBundleDocumentTypes=[
                         dict(
                             CFBundleTypeExtensions=['cbz', 'cbr', 'cb7', 'zip', 'rar', '7z', 'pdf'],
+                            CFBundleTypeName='Comics',
                             CFBundleTypeIconFile='comic2ebook.icns',
-                            CFBundleTypeRole='Viewer',
+                            CFBundleTypeRole='Editor',
                         )
                     ],
                     LSMinimumSystemVersion='10.8.0',
@@ -54,25 +55,32 @@ if platform == "darwin":
         )
     )
 elif platform == "win32":
+    import platform as arch
     from cx_Freeze import setup, Executable
+    if arch.architecture()[0] == '64bit':
+        library = 'libEGL64.dll'
+    else:
+        library = 'libEGL32.dll'
     base = "Win32GUI"
     extra_options = dict(
-        options={"build_exe": {"include_files": ['LICENSE.txt',
+        options={"build_exe": {"optimize": 2,
+                               "include_files": ['LICENSE.txt',
                                                  ['other/UnRAR.exe', 'UnRAR.exe'],
                                                  ['other/7za.exe', '7za.exe'],
-                                                 ['other/Additional-LICENSE.txt', 'Additional-LICENSE.txt']
-                                                 ], "compressed": True,
-                               "excludes": ['Tkinter']}},
+                                                 ['other/Additional-LICENSE.txt', 'Additional-LICENSE.txt'],
+                                                 ['other/' + library, 'libEGL.dll']
+                                                 ],
+                               "copy_dependent_files": True,
+                               "create_shared_zip": False,
+                               "append_script_to_exe": True,
+                               "excludes": ['tkinter']}},
         executables=[Executable(MAIN,
                                 base=base,
                                 targetName="KCC.exe",
                                 icon="icons/comic2ebook.ico",
-                                copyDependentFiles=True,
-                                appendScriptToExe=True,
-                                appendScriptToLibrary=False,
-                                compress=True)])
+                                compress=False)])
 else:
-    print 'Please use setup.sh to build Linux package.'
+    print('Please use setup.sh to build Linux package.')
     exit()
 
 #noinspection PyUnboundLocalVariable
@@ -85,11 +93,13 @@ setup(
     license="ISC License (ISCL)",
     keywords="kindle comic mobipocket mobi cbz cbr manga",
     url="http://github.com/ciromattia/kcc",
-    packages=['kcc'], requires=['Pillow'],
     **extra_options
 )
 
 if platform == "darwin":
-    from os import chmod
-    chmod('dist/' + NAME + '.app/Contents/Resources/unrar', 0777)
-    chmod('dist/' + NAME + '.app/Contents/Resources/7za', 0777)
+    from os import chmod, makedirs
+    from shutil import copyfile
+    makedirs('dist/' + NAME + '.app/Contents/PlugIns/platforms')
+    copyfile('other/libqcocoa.dylib', 'dist/' + NAME + '.app/Contents/PlugIns/platforms/libqcocoa.dylib')
+    chmod('dist/' + NAME + '.app/Contents/Resources/unrar', 0o777)
+    chmod('dist/' + NAME + '.app/Contents/Resources/7za', 0o777)

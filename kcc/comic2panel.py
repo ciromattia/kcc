@@ -1,8 +1,7 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
+# Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -18,66 +17,23 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 #
-__version__ = '3.7.2'
+
+__version__ = '4.0'
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
+__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import os
 import sys
 from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
-from multiprocessing import Pool, freeze_support
+from multiprocessing import Pool
+from PIL import Image, ImageStat
+from .shared import getImageFileName, walkLevel
 try:
-    # noinspection PyUnresolvedReferences
-    from PIL import Image, ImageStat
-    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
-        print "ERROR: Pillow 2.3.0 or newer is required!"
-        if sys.platform.startswith('linux'):
-            import Tkinter
-            import tkMessageBox
-            importRoot = Tkinter.Tk()
-            importRoot.withdraw()
-            tkMessageBox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
-        exit(1)
-except ImportError:
-    print "ERROR: Pillow is not installed!"
-    if sys.platform.startswith('linux'):
-        import Tkinter
-        import tkMessageBox
-        importRoot = Tkinter.Tk()
-        importRoot.withdraw()
-        tkMessageBox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
-    exit(1)
-try:
-    from PyQt4 import QtCore
+    from PyQt5 import QtCore
 except ImportError:
     QtCore = None
-
-
-def getImageFileName(imgfile):
-    filename = os.path.splitext(imgfile)
-    if filename[0].startswith('.') or\
-            (filename[1].lower() != '.png' and
-             filename[1].lower() != '.jpg' and
-             filename[1].lower() != '.gif' and
-             filename[1].lower() != '.tif' and
-             filename[1].lower() != '.tiff' and
-             filename[1].lower() != '.bmp' and
-             filename[1].lower() != '.jpeg'):
-        return None
-    return filename
-
-
-def walkLevel(some_dir, level=1):
-    some_dir = some_dir.rstrip(os.path.sep)
-    assert os.path.isdir(some_dir)
-    num_sep = some_dir.count(os.path.sep)
-    for root, dirs, files in os.walk(some_dir):
-        yield root, dirs, files
-        num_sep_this = root.count(os.path.sep)
-        if num_sep + level <= num_sep_this:
-            del dirs[:]
 
 
 def mergeDirectory_tick(output):
@@ -85,7 +41,7 @@ def mergeDirectory_tick(output):
         mergeWorkerOutput.append(output)
         mergeWorkerPool.terminate()
     if GUI:
-        GUI.emit(QtCore.SIGNAL("progressBarTick"))
+        GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
             mergeWorkerPool.terminate()
 
@@ -118,14 +74,14 @@ def mergeDirectory(work):
                 os.remove(i[1])
             savePath = os.path.split(imagesClear[0][1])
             result.save(os.path.join(savePath[0], os.path.splitext(savePath[1])[0] + '.png'), 'PNG')
-    except StandardError:
+    except Exception:
         return str(sys.exc_info()[1])
 
 
 def sanitizePanelSize(panel, opt):
     newPanels = []
     if panel[2] > 8 * opt.height:
-        diff = (panel[2] / 8)
+        diff = int(panel[2] / 8)
         newPanels.append([panel[0], panel[1] - diff*7, diff])
         newPanels.append([panel[1] - diff*7, panel[1] - diff*6, diff])
         newPanels.append([panel[1] - diff*6, panel[1] - diff*5, diff])
@@ -135,14 +91,14 @@ def sanitizePanelSize(panel, opt):
         newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
         newPanels.append([panel[1] - diff, panel[1], diff])
     elif panel[2] > 4 * opt.height:
-        diff = (panel[2] / 4)
+        diff = int(panel[2] / 4)
         newPanels.append([panel[0], panel[1] - diff*3, diff])
         newPanels.append([panel[1] - diff*3, panel[1] - diff*2, diff])
         newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
         newPanels.append([panel[1] - diff, panel[1], diff])
     elif panel[2] > 2 * opt.height:
-        newPanels.append([panel[0], panel[1] - (panel[2] / 2), (panel[2] / 2)])
-        newPanels.append([panel[1] - (panel[2] / 2), panel[1], (panel[2] / 2)])
+        newPanels.append([panel[0], panel[1] - int(panel[2] / 2), int(panel[2] / 2)])
+        newPanels.append([panel[1] - int(panel[2] / 2), panel[1], int(panel[2] / 2)])
     else:
         newPanels = [panel]
     return newPanels
@@ -153,7 +109,7 @@ def splitImage_tick(output):
         splitWorkerOutput.append(output)
         splitWorkerPool.terminate()
     if GUI:
-        GUI.emit(QtCore.SIGNAL("progressBarTick"))
+        GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
             splitWorkerPool.terminate()
 
@@ -167,7 +123,6 @@ def splitImage(work):
         # Harcoded opttions
         threshold = 1.0
         delta = 15
-        print ".",
         fileExpanded = os.path.splitext(name)
         filePath = os.path.join(path, name)
         image = Image.open(filePath)
@@ -244,13 +199,12 @@ def splitImage(work):
                                               str(pageNumber) + '.png'), 'PNG')
                     pageNumber += 1
             os.remove(filePath)
-    except StandardError:
+    except Exception:
         return str(sys.exc_info()[1])
 
 
 def Copyright():
-    print ('comic2panel v%(__version__)s. '
-           'Written 2013 by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals())
+    print(('comic2panel v%(__version__)s. Written by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
 
 
 def main(argv=None, qtGUI=None):
@@ -281,15 +235,15 @@ def main(argv=None, qtGUI=None):
     if options.height > 0:
         options.sourceDir = args[0]
         options.targetDir = args[0] + "-Splitted"
-        print "\nSplitting images..."
         if os.path.isdir(options.sourceDir):
             rmtree(options.targetDir, True)
             copytree(options.sourceDir, options.targetDir)
             work = []
-            pagenumber = 0
+            pagenumber = 1
             splitWorkerOutput = []
             splitWorkerPool = Pool()
             if options.merge:
+                print("\nMerging images...")
                 directoryNumer = 1
                 mergeWork = []
                 mergeWorkerOutput = []
@@ -300,8 +254,8 @@ def main(argv=None, qtGUI=None):
                         directoryNumer += 1
                         mergeWork.append([os.path.join(root, directory)])
                 if GUI:
-                    GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Combining images')
-                    GUI.emit(QtCore.SIGNAL("progressBarTick"), directoryNumer)
+                    GUI.progressBarTick.emit('Combining images')
+                    GUI.progressBarTick.emit(str(directoryNumer))
                 for i in mergeWork:
                     mergeWorkerPool.apply_async(func=mergeDirectory, args=(i, ), callback=mergeDirectory_tick)
                 mergeWorkerPool.close()
@@ -312,6 +266,7 @@ def main(argv=None, qtGUI=None):
                 if len(mergeWorkerOutput) > 0:
                     rmtree(options.targetDir, True)
                     raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0])
+            print("\nSplitting images...")
             for root, dirs, files in os.walk(options.targetDir, False):
                 for name in files:
                     if getImageFileName(name) is not None:
@@ -320,9 +275,9 @@ def main(argv=None, qtGUI=None):
                     else:
                         os.remove(os.path.join(root, name))
             if GUI:
-                GUI.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Splitting images')
-                GUI.emit(QtCore.SIGNAL("progressBarTick"), pagenumber)
-                GUI.emit(QtCore.SIGNAL("progressBarTick"))
+                GUI.progressBarTick.emit('Splitting images')
+                GUI.progressBarTick.emit(str(pagenumber))
+                GUI.progressBarTick.emit('tick')
             if len(work) > 0:
                 for i in work:
                     splitWorkerPool.apply_async(func=splitImage, args=(i, ), callback=splitImage_tick)
@@ -344,10 +299,3 @@ def main(argv=None, qtGUI=None):
             raise UserWarning("Provided path is not a directory.")
     else:
         raise UserWarning("Target height is not set.")
-
-
-if __name__ == "__main__":
-    freeze_support()
-    Copyright()
-    main(sys.argv[1:])
-    sys.exit(0)

@@ -1,7 +1,7 @@
 # Copyright (C) 2010  Alex Yatskov
 # Copyright (C) 2011  Stanislav (proDOOMman) Kosolapov <prodoomman@gmail.com>
-# Copyright (C) 2012-2013  Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (C) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
+# Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,32 +17,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
+__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import os
-from sys import platform
-try:
-    # noinspection PyUnresolvedReferences
-    from PIL import Image, ImageOps, ImageStat, ImageChops
-    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
-        print "ERROR: Pillow 2.3.0 or newer is required!"
-        if platform.startswith('linux'):
-            import Tkinter
-            import tkMessageBox
-            importRoot = Tkinter.Tk()
-            importRoot.withdraw()
-            tkMessageBox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
-        exit(1)
-except ImportError:
-    print "ERROR: Pillow is not installed!"
-    if platform.startswith('linux'):
-        import Tkinter
-        import tkMessageBox
-        importRoot = Tkinter.Tk()
-        importRoot.withdraw()
-        tkMessageBox.showerror("KCC - Error", "Pillow 2.3.0 or newer is required!")
-    exit(1)
+from functools import reduce
+from PIL import Image, ImageOps, ImageStat, ImageChops
+from .shared import md5Checksum
 
 
 class ProfileData:
@@ -126,52 +107,57 @@ class ComicPage:
         self.filename = os.path.basename(self.origFileName)
         self.image = Image.open(source)
         self.image = self.image.convert('RGB')
+        self.color = self.isImageColor()
         self.rotated = None
         self.border = None
         self.noHPV = None
         self.noVPV = None
         self.noPV = None
         self.purge = False
+        self.hq = False
         if fill:
             self.fill = fill
         else:
             self.fill = None
 
-    def saveToDir(self, targetdir, forcepng, color, wipe):
+    def saveToDir(self, targetdir, forcepng, color):
         try:
-            suffix = ""
-            if not color and not forcepng:
-                self.image = self.image.convert('L')
-            if self.rotated:
-                suffix += "_kccrot"
-            if wipe:
-                os.remove(os.path.join(targetdir, self.filename))
-            else:
-                suffix += "_kcchq"
-            if self.noPV:
-                suffix += "_kccnpv"
-            else:
-                if self.noHPV:
-                    suffix += "_kccnh"
-                if self.noVPV:
-                    suffix += "_kccnv"
-                if self.border:
-                    suffix += "_kccxl" + str(self.border[0]) + "_kccyu" + str(self.border[1]) + "_kccxr" +\
-                              str(self.border[2]) + "_kccyd" + str(self.border[3])
             if not self.purge:
-                if forcepng:
-                    self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".png"),
-                                    "PNG", optimize=1)
+                flags = []
+                filename = os.path.join(targetdir, os.path.splitext(self.filename)[0]) + '-KCC'
+                if not color and not forcepng:
+                    self.image = self.image.convert('L')
+                if self.rotated:
+                    flags.append('Rotated')
+                if self.hq:
+                    flags.append('HighQuality')
+                    filename += '-HQ'
+                if self.noPV:
+                    flags.append('NoPanelView')
                 else:
-                    self.image.save(os.path.join(targetdir, os.path.splitext(self.filename)[0] + suffix + ".jpg"),
-                                    "JPEG", optimize=1)
+                    if self.noHPV:
+                        flags.append('NoHorizontalPanelView')
+                    if self.noVPV:
+                        flags.append('NoVerticalPanelView')
+                    if self.border:
+                        flags.append("Margins-" + str(self.border[0]) + "-" + str(self.border[1]) + "-"
+                                     + str(self.border[2]) + "-" + str(self.border[3]))
+                if forcepng:
+                    filename += ".png"
+                    self.image.save(filename,  "PNG", optimize=1)
+                else:
+                    filename += ".jpg"
+                    self.image.save(filename, "JPEG", optimize=1)
+                return [md5Checksum(filename), flags]
+            else:
+                return None
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
     def optimizeImage(self, gamma):
         if gamma < 0.1:
             gamma = self.gamma
-            if self.gamma != 1.0 and self.isImageColor(self.image):
+            if self.gamma != 1.0 and self.color:
                 gamma = 1.0
         if gamma == 1.0:
             self.image = ImageOps.autocontrast(self.image)
@@ -196,7 +182,7 @@ class ComicPage:
             return int(round(float(x)/float(img.image.size[1]), 4) * 10000 * 1.5)
 
     def calculateBorder(self, sourceImage, isHQ=False):
-        if isHQ and sourceImage.purge:
+        if (isHQ and sourceImage.purge) or self.noPV:
             self.border = [0, 0, 0, 0]
             self.noPV = True
             return
@@ -233,11 +219,18 @@ class ComicPage:
         # Set target size
         if qualityMode == 0:
             size = (self.size[0], self.size[1])
-        else:
+        elif qualityMode == 1 and not stretch and not upscale and self.image.size[0] <=\
+                self.size[0] and self.image.size[1] <= self.size[1]:
+            size = (self.size[0], self.size[1])
+        elif qualityMode == 1:
             size = (self.panelviewsize[0], self.panelviewsize[1])
-        # If image is small and HQ mode is on we have to force upscaling. Otherwise non-zoomed image will be distorted
-        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and qualityMode == 1 and not stretch:
-            upscale = True
+        elif qualityMode == 2 and not stretch and not upscale and self.image.size[0] <=\
+                self.size[0] and self.image.size[1] <= self.size[1]:
+            self.purge = True
+            return self.image
+        else:
+            self.hq = True
+            size = (self.panelviewsize[0], self.panelviewsize[1])
         # If stretching is on - Resize without other considerations
         if stretch:
             if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
@@ -248,11 +241,11 @@ class ComicPage:
             return self.image
         # If image is smaller than target resolution and upscale is off - Just expand it by adding margins
         if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and not upscale:
-            borderw = (size[0] - self.image.size[0]) / 2
-            borderh = (size[1] - self.image.size[1]) / 2
-            # PV is disabled when source image is smaller than device screen and upscale is off - So we drop HQ image
-            if qualityMode == 2 and self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
-                self.purge = True
+            borderw = int((size[0] - self.image.size[0]) / 2)
+            borderh = int((size[1] - self.image.size[1]) / 2)
+            # PV is disabled when source image is smaller than device screen and upscale is off
+            if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
+                self.noPV = True
             self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
             # Border can't be float so sometimes image might be 1px too small/large
             if self.image.size[0] != size[0] or self.image.size[1] != size[1]:
@@ -262,10 +255,10 @@ class ComicPage:
         ratioDev = float(size[0]) / float(size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
             diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-            self.image = ImageOps.expand(self.image, border=(diff / 2, 0), fill=fill)
+            self.image = ImageOps.expand(self.image, border=(int(diff / 2), 0), fill=fill)
         elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
             diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
-            self.image = ImageOps.expand(self.image, border=(0, diff / 2), fill=fill)
+            self.image = ImageOps.expand(self.image, border=(0, int(diff / 2)), fill=fill)
         if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
             method = Image.BICUBIC
         else:
@@ -286,15 +279,15 @@ class ComicPage:
                 self.rotated = False
                 if width > height:
                     # Source is landscape, so split by the width
-                    leftbox = (0, 0, width / 2, height)
-                    rightbox = (width / 2, 0, width, height)
+                    leftbox = (0, 0, int(width / 2), height)
+                    rightbox = (int(width / 2), 0, width, height)
                 else:
                     # Source is portrait and target is landscape, so split by the height
-                    leftbox = (0, 0, width, height / 2)
-                    rightbox = (0, height / 2, width, height)
+                    leftbox = (0, 0, width, int(height / 2))
+                    rightbox = (0, int(height / 2), width, height)
                 filename = os.path.splitext(self.filename)
-                fileone = targetdir + '/' + filename[0] + '_kcca' + filename[1]
-                filetwo = targetdir + '/' + filename[0] + '_kccb' + filename[1]
+                fileone = targetdir + '/' + filename[0] + '-A' + filename[1]
+                filetwo = targetdir + '/' + filename[0] + '-B' + filename[1]
                 try:
                     if righttoleft:
                         pageone = self.image.crop(rightbox)
@@ -304,7 +297,6 @@ class ComicPage:
                         pagetwo = self.image.crop(rightbox)
                     pageone.save(fileone)
                     pagetwo.save(filetwo)
-                    os.remove(self.origFileName)
                 except IOError as e:
                     raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
                 return fileone, filetwo
@@ -423,30 +415,37 @@ class ComicPage:
             return False
 
     def getImageFill(self, webtoon):
+        if not webtoon and self.color:
+            self.fill = 'black'
+            return
         fill = 0
         if not webtoon and not self.rotated:
             # Search for horizontal solid lines
             startY = 0
             while startY < self.image.size[1]:
-                checkSolid = self.getImageHistogram(self.image.crop((0, startY, self.image.size[0], startY+1)))
+                if startY + 5 > self.image.size[1]:
+                    startY = self.image.size[1] - 5
+                checkSolid = self.getImageHistogram(self.image.crop((0, startY, self.image.size[0], startY+5)))
                 if checkSolid:
                     fill += checkSolid
-                startY += 1
+                startY += 5
         else:
             # Search for vertical solid lines
             startX = 0
             while startX < self.image.size[0]:
-                checkSolid = self.getImageHistogram(self.image.crop((startX, 0, startX+1, self.image.size[1])))
+                if startX + 5 > self.image.size[0]:
+                    startX = self.image.size[0] - 5
+                checkSolid = self.getImageHistogram(self.image.crop((startX, 0, startX+5, self.image.size[1])))
                 if checkSolid:
                     fill += checkSolid
-                startX += 1
+                startX += 5
         if fill > 0:
             self.fill = 'black'
         else:
             self.fill = 'white'
 
-    def isImageColor(self, image):
-        v = ImageStat.Stat(image).var
+    def isImageColor(self):
+        v = ImageStat.Stat(self.image).var
         isMonochromatic = reduce(lambda x, y: x and y < 0.005, v, True)
         if isMonochromatic:
             # Monochromatic
