@@ -165,7 +165,7 @@ class ComicPage:
             self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: 255 * (a / 255.) ** gamma))
 
     def quantizeImage(self):
-        colors = len(self.palette) / 3
+        colors = len(self.palette) // 3
         if colors < 256:
             self.palette += self.palette[:3] * (256 - colors)
         palImg = Image.new('P', (1, 1))
@@ -322,7 +322,7 @@ class ComicPage:
             oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0]
             diff += delta
             while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] - oldStat > 0\
-                    and diff < heightImg / 4:
+                    and diff < heightImg // 4:
                 oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0]
                 diff += delta
             diff -= delta
@@ -331,7 +331,7 @@ class ComicPage:
             oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg,
                                                       heightImg - pageNumberCut2))).var[0]
             while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg - pageNumberCut2))).var[0]\
-                    < fixedThreshold + oldStat and diff < heightImg / 4:
+                    < fixedThreshold + oldStat and diff < heightImg // 4:
                 diff += delta
             diff -= delta
             pageNumberCut3 = diff
