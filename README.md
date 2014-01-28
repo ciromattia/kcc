@@ -24,7 +24,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 You can find the latest released binary at the following links:
 - **Windows:** [http://kcc.vulturis.eu/Windows/](http://kcc.vulturis.eu/Windows/)
 - **Linux:** [http://kcc.vulturis.eu/Linux/](http://kcc.vulturis.eu/Linux/)
-- **OS X 10.8+:** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
+- **OS X (10.8+):** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
@@ -39,12 +39,22 @@ You can find the latest released binary at the following links:
 - [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
 - [7za](http://www.7-zip.org/download.html) *(For 7z/CB7 support)*
 
-### For compiling/running from source:
-- Python 2.7 - Included in MacOS and Linux, follow the [official documentation](http://www.python.org/getit/windows/) to install on Windows.
-- [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt/download) - Please refer to official documentation for installing into your system.
-- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.3.0+ - For comic optimizations. Please refer to official documentation for installing into your system.
-- [Psutil](https://code.google.com/p/psutil/) - Please refer to official documentation for installing into your system.
-- **To build OS X release you need a modified QT:** [patch](https://github.com/ciromattia/kcc/blob/master/other/QT-4.8.5-QListWidget.patch)
+### For running from source:
+- Python 3.3
+- [PyQt5](http://www.riverbankcomputing.co.uk/software/pyqt/download5)
+- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.3.0+
+- [psutil](https://pypi.python.org/pypi/psutil)
+- [python-slugify](http://pypi.python.org/pypi/python-slugify)
+
+On Debian based distributions these two commands should install all dependencies:
+```
+sudo apt-get install python3 python3-dev python3-pip python3-pyqt5 libtiff-dev libpng-dev libjpeg-dev p7zip-full unrar
+sudo pip3 install pillow python-slugify psutil
+```
+
+### For freezing code:
+- Windows - [cx_Freeze](https://bitbucket.org/anthony_tuininga/cx_freeze) version 4.3.2 with [this](https://bitbucket.org/anthony_tuininga/cx_freeze/pull-request/29/conversions-to-support-untranslated-wide) patchset.
+- OS X - [py2app](https://bitbucket.org/ronaldoussoren/py2app) HEAD version.
 
 ## USAGE
 
@@ -95,7 +105,6 @@ Options:
                         Replace screen height provided by device profile
 
   OTHER:
-    -v, --verbose       Verbose output
     -h, --help          Show this help message and exit
 ```
 
@@ -312,7 +321,21 @@ The app relies and includes the following scripts/binaries:
 ####3.7.2:
 * Fixed problems with HQ mode
 
-## COPYRIGHT
+####4.0:
+* KCC now use Python 3.3 and Qt 5.2
+* Full UTF-8 awareness
+* CBZ output now support Manga mode
+* Improved Panel View support and margin color detection
+* Added drag&drop support
+* Output directory can be now selected
+* Windows release now have auto-updater
+* Names of chapters on Kindle should be now more user friendly
+* Fixed OSX file association support
+* Many extensive internal changes and tweaks
 
-Copyright (c) 2012-2013 Ciro Mattia Gonano and Paweł Jastrzębski.  
+## KNOWN ISSUES
+Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
+
+## COPYRIGHT
+Copyright (c) 2012-2014 Ciro Mattia Gonano and Paweł Jastrzębski.
 **KCC** is released under ISC LICENSE; see LICENSE.txt for further details.

@@ -108,6 +108,8 @@ if sys.hexversion < 0x3000000:
     # py2.6 has broken bytes()
     def bytes(s, enc):
         return str(s)
+else:
+    unicode = str
 
 # see if compat bytearray() is needed
 try:
@@ -187,10 +189,6 @@ NEED_COMMENTS = 1
 
 #: whether to convert comments to unicode strings
 UNICODE_COMMENTS = 0
-
-#: When RAR is corrupt, stopping on bad header is better
-#: On unknown/misparsed RAR headers reporting is better
-REPORT_BAD_HEADER = 0
 
 #: Convert RAR time tuple into datetime() object
 USE_DATETIME = 0
@@ -340,9 +338,11 @@ class RarSignalExit(RarExecError):
     """Unrar exited with signal"""
 
 
-def is_rarfile(fn):
+def is_rarfile(xfile):
     '''Check quickly whether file is rar archive.'''
-    buf = open(fn, "rb").read(len(RAR_ID))
+    fd = XFile(xfile)
+    buf = fd.read(len(RAR_ID))
+    fd.close()
     return buf == RAR_ID
 
 
@@ -453,11 +453,12 @@ class RarFile(object):
     '''Parse RAR structure, provide access to files in archive.
     '''
 
-    #: Archive comment.  Byte string or None.  Use UNICODE_COMMENTS
+    #: Archive comment.  Byte string or None.  Use :data:`UNICODE_COMMENTS`
     #: to get automatic decoding to unicode.
     comment = None
 
-    def __init__(self, rarfile, mode="r", charset=None, info_callback=None, crc_check = True):
+    def __init__(self, rarfile, mode="r", charset=None, info_callback=None,
+                 crc_check = True, errors = "stop"):
         """Open and parse a RAR archive.
         
         Parameters:
@@ -472,6 +473,9 @@ class RarFile(object):
                 debug callback, gets to see all archive entries.
             crc_check
                 set to False to disable CRC checks
+            errors
+                Either "stop" to quietly stop parsing on errors,
+                or "strict" to raise errors.  Default is "stop".
         """
         self.rarfile = rarfile
         self.comment = None
@@ -484,6 +488,13 @@ class RarFile(object):
         self._password = None
         self._crc_check = crc_check
         self._vol_list = []
+
+        if errors == "stop":
+            self._strict = False
+        elif errors == "strict":
+            self._strict = True
+        else:
+            raise ValueError("Invalid value for 'errors' parameter.")
 
         self._main = None
 
@@ -548,8 +559,9 @@ class RarFile(object):
         '''Returns file-like object (:class:`RarExtFile`),
         from where the data can be read.
         
-        The object implements io.RawIOBase interface, so it can
-        be further wrapped with io.BufferedReader and io.TextIOWrapper.
+        The object implements :class:`io.RawIOBase` interface, so it can
+        be further wrapped with :class:`io.BufferedReader`
+        and :class:`io.TextIOWrapper`.
 
         On older Python where io module is not available, it implements
         only .read(), .seek(), .tell() and .close() methods.
@@ -588,16 +600,19 @@ class RarFile(object):
             psw = None
 
         # is temp write usable?
-        if not USE_EXTRACT_HACK or not self._main:
+        use_hack = 1
+        if not self._main:
             use_hack = 0
         elif self._main.flags & (RAR_MAIN_SOLID | RAR_MAIN_PASSWORD):
             use_hack = 0
         elif inf.flags & (RAR_FILE_SPLIT_BEFORE | RAR_FILE_SPLIT_AFTER):
             use_hack = 0
+        elif is_filelike(self.rarfile):
+            pass
         elif inf.file_size > HACK_SIZE_LIMIT:
             use_hack = 0
-        else:
-            use_hack = 1
+        elif not USE_EXTRACT_HACK:
+            use_hack = 0
 
         # now extract
         if inf.compress_type == RAR_M0 and (inf.flags & RAR_FILE_PASSWORD) == 0:
@@ -610,7 +625,7 @@ class RarFile(object):
     def read(self, fname, psw = None):
         """Return uncompressed data for archive entry.
         
-        For longer files using .open() may be better idea.
+        For longer files using :meth:`RarFile.open` may be better idea.
 
         Parameters:
 
@@ -641,7 +656,7 @@ class RarFile(object):
         Parameters:
 
             member
-                filename or RarInfo instance
+                filename or :class:`RarInfo` instance
             path
                 optional destination path
             pwd
@@ -661,7 +676,7 @@ class RarFile(object):
             path
                 optional destination path
             members
-                optional filename or RarInfo instance list to extract
+                optional filename or :class:`RarInfo` instance list to extract
             pwd
                 optional password to use
         """
@@ -687,9 +702,22 @@ class RarFile(object):
         output = p.communicate()[0]
         check_returncode(p, output)
 
+    def strerror(self):
+        """Return error string if parsing failed,
+        or None if no problems.
+        """
+        return self._parse_error
+
     ##
     ## private methods
     ##
+
+    def _set_error(self, msg, *args):
+        if args:
+            msg = msg % args
+        self._parse_error = msg
+        if self._strict:
+            raise BadRarFile(msg)
 
     # store entry
     def _process_entry(self, item):
@@ -738,7 +766,7 @@ class RarFile(object):
                 self._fd = None
 
     def _parse_real(self):
-        fd = open(self.rarfile, "rb")
+        fd = XFile(self.rarfile)
         self._fd = fd
         id = fd.read(len(RAR_ID))
         if id != RAR_ID:
@@ -757,9 +785,13 @@ class RarFile(object):
             if not h:
                 if more_vols:
                     volume += 1
-                    volfile = self._next_volname(volfile)
                     fd.close()
-                    fd = open(volfile, "rb")
+                    try:
+                        volfile = self._next_volname(volfile)
+                        fd = XFile(volfile)
+                    except IOError:
+                        self._set_error("Cannot open next volume: %s", volfile)
+                        break
                     self._fd = fd
                     more_vols = 0
                     endarc = 0
@@ -824,8 +856,7 @@ class RarFile(object):
             # now read actual header
             return self._parse_block_header(fd)
         except struct.error:
-            if REPORT_BAD_HEADER:
-                raise BadRarFile('Broken header in RAR file')
+            self._set_error('Broken header in RAR file')
             return None
 
     # common header
@@ -852,8 +883,7 @@ class RarFile(object):
 
         # unexpected EOF?
         if len(h.header_data) != h.header_size:
-            if REPORT_BAD_HEADER:
-                raise BadRarFile('Unexpected EOF when reading header')
+            self._set_error('Unexpected EOF when reading header')
             return None
 
         # block has data assiciated with it?
@@ -896,18 +926,9 @@ class RarFile(object):
         if h.header_crc == calc_crc:
             return h
 
-        # need to panic?
-        if REPORT_BAD_HEADER:
-            xlen = len(crcdat)
-            crcdat = h.header_data[2:]
-            msg = 'Header CRC error (%02x): exp=%x got=%x (xlen = %d)' % ( h.type, h.header_crc, calc_crc, xlen )
-            xlen = len(crcdat)
-            while xlen >= S_BLK_HDR.size - 2:
-                crc = crc32(crcdat[:xlen]) & 0xFFFF
-                if crc == h.header_crc:
-                    msg += ' / crc match, xlen = %d' % xlen
-                xlen -= 1
-            raise BadRarFile(msg)
+        # header parsing failed.
+        self._set_error('Header CRC error (%02x): exp=%x got=%x (xlen = %d)',
+                h.type, h.header_crc, calc_crc, len(crcdat))
 
         # instead panicing, send eof
         return None
@@ -1053,6 +1074,8 @@ class RarFile(object):
 
     # given current vol name, construct next one
     def _next_volname(self, volfile):
+        if is_filelike(volfile):
+            raise IOError("Working on single FD")
         if self._main.flags & RAR_MAIN_NEWNUMBERING:
             return self._next_newvol(volfile)
         return self._next_oldvol(volfile)
@@ -1093,7 +1116,7 @@ class RarFile(object):
         BSIZE = 32*1024
 
         size = inf.compress_size + inf.header_size
-        rf = open(inf.volume_file, "rb", 0)
+        rf = XFile(inf.volume_file, 0)
         rf.seek(inf.header_offset)
 
         tmpfd, tmpname = mkstemp(suffix='.rar')
@@ -1125,7 +1148,7 @@ class RarFile(object):
     def _read_comment_v3(self, inf, psw=None):
 
         # read data
-        rf = open(inf.volume_file, "rb")
+        rf = XFile(inf.volume_file)
         rf.seek(inf.file_offset)
         data = rf.read(inf.compress_size)
         rf.close()
@@ -1146,6 +1169,8 @@ class RarFile(object):
 
     # extract using unrar
     def _open_unrar(self, rarfile, inf, psw = None, tmpfile = None):
+        if is_filelike(rarfile):
+            raise ValueError("Cannot use unrar directly on memory buffer")
         cmd = [UNRAR_TOOL] + list(OPEN_ARGS)
         if psw is not None:
             cmd.append("-p" + psw)
@@ -1553,7 +1578,7 @@ class DirectReader(RarExtFile):
         RarExtFile._open(self)
 
         self.volfile = self.inf.volume_file
-        self.fd = open(self.volfile, "rb", 0)
+        self.fd = XFile(self.volfile, 0)
         self.fd.seek(self.inf.header_offset, 0)
         self.cur = self.rf._parse_header(self.fd)
         self.cur_avail = self.cur.add_size
@@ -1705,9 +1730,46 @@ class HeaderDecrypt:
 
         return res
 
+# handle (filename|filelike) object
+class XFile(object):
+    __slots__ = ('_fd', '_need_close')
+    def __init__(self, xfile, bufsize = 1024):
+        if is_filelike(xfile):
+            self._need_close = False
+            self._fd = xfile
+            self._fd.seek(0)
+        else:
+            self._need_close = True
+            self._fd = open(xfile, 'rb', bufsize)
+    def read(self, n=None):
+        return self._fd.read(n)
+    def tell(self):
+        return self._fd.tell()
+    def seek(self, ofs, whence=0):
+        return self._fd.seek(ofs, whence)
+    def readinto(self, dst):
+        return self._fd.readinto(dst)
+    def close(self):
+        if self._need_close:
+            self._fd.close()
+    def __enter__(self):
+        return self
+    def __exit__(self, typ, val, tb):
+        self.close()
+
 ##
 ## Utility functions
 ##
+
+def is_filelike(obj):
+    if isinstance(obj, str) or isinstance(obj, unicode):
+        return False
+    res = True
+    for a in ('read', 'tell', 'seek'):
+        res = res and hasattr(obj, a)
+    if not res:
+        raise ValueError("Invalid object passed as file")
+    return True
 
 def rar3_s2k(psw, salt):
     """String-to-key hash for RAR3."""
@@ -1874,4 +1936,3 @@ def check_returncode(p, out):
         msg = "%s [%d]" % (exc.__doc__, p.returncode)
 
     raise exc(msg)
-

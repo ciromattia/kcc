@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2012-2013 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
+# Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
+# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -17,46 +17,36 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '3.7.2'
+__version__ = '4.0'
 __license__ = 'ISC'
-__copyright__ = '2012-2013, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
+__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
 
 import os
 import sys
-import traceback
-import urllib2
-import socket
-import comic2ebook
-import kindlesplit
-from string import split
+from urllib.parse import unquote
+from urllib.request import urlopen, urlretrieve
+from socket import gethostbyname_ex, gethostname
+from traceback import format_tb
 from time import sleep
 from shutil import move
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-from SocketServer import ThreadingMixIn
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from socketserver import ThreadingMixIn
 from subprocess import STDOUT, PIPE
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 from xml.dom.minidom import parse
-from HTMLParser import HTMLParser
-from KCC_rc_web import WebContent
-try:
-    # noinspection PyUnresolvedReferences
-    from psutil import TOTAL_PHYMEM, Popen
-except ImportError:
-    print "ERROR: Psutil is not installed!"
-    if sys.platform.startswith('linux'):
-        import Tkinter
-        import tkMessageBox
-        importRoot = Tkinter.Tk()
-        importRoot.withdraw()
-        tkMessageBox.showerror("KCC - Error", "Psutil is not installed!")
-    exit(1)
+from html.parser import HTMLParser
+from psutil import TOTAL_PHYMEM, Popen
+from .shared import md5Checksum
+from . import comic2ebook
+from . import kindlesplit
+from . import KCC_rc_web
 if sys.platform.startswith('darwin'):
-    import KCC_ui_osx as KCC_ui
+    from . import KCC_ui_osx as KCC_ui
 elif sys.platform.startswith('linux'):
-    import KCC_ui_linux as KCC_ui
+    from . import KCC_ui_linux as KCC_ui
 else:
-    import KCC_ui
+    from . import KCC_ui
 
 
 class Icons:
@@ -100,7 +90,7 @@ class HTMLStripper(HTMLParser):
 
 
 class WebServerHandler(BaseHTTPRequestHandler):
-    #noinspection PyAttributeOutsideInit
+    # noinspection PyAttributeOutsideInit, PyArgumentList
     def do_GET(self):
         if self.path == '/':
             self.path = '/index.html'
@@ -120,7 +110,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
-                self.wfile.write('<!DOCTYPE html>\n'
+                self.wfile.write(bytes('<!DOCTYPE html>\n'
                                  '<html lang="en">\n'
                                  '<head><meta charset="utf-8">\n'
                                  '<link href="' + GUI.webContent.favicon + '" rel="icon" type="image/x-icon" />\n'
@@ -129,18 +119,18 @@ class WebServerHandler(BaseHTTPRequestHandler):
                                  '<body>\n'
                                  '<div style="text-align: center; font-size:25px">\n'
                                  '<p style="font-size:50px">- <img style="vertical-align: middle" '
-                                 'alt="KCC Logo" src="' + GUI.webContent.logo + '" /> -</p>\n')
+                                 'alt="KCC Logo" src="' + GUI.webContent.logo + '" /> -</p>\n', 'UTF-8'))
                 if len(GUI.completedWork) > 0 and not GUI.conversionAlive:
-                    for key in sorted(GUI.completedWork.iterkeys()):
-                        self.wfile.write('<p><a href="' + key + '">' + split(key, '.')[0] + '</a></p>\n')
+                    for key in sorted(GUI.completedWork.keys()):
+                        self.wfile.write(bytes('<p><a href="' + key + '">' + key.split('.')[0] + '</a></p>\n', 'UTF-8'))
                 else:
-                    self.wfile.write('<p style="font-weight: bold">No downloads are available.<br/>'
-                                     'Convert some files and refresh this page.</p>\n')
-                self.wfile.write('</div>\n'
+                    self.wfile.write(bytes('<p style="font-weight: bold">No downloads are available.<br/>'
+                                     'Convert some files and refresh this page.</p>\n', 'UTF-8'))
+                self.wfile.write(bytes('</div>\n'
                                  '</body>\n'
-                                 '</html>\n')
+                                 '</html>\n', 'UTF-8'))
             elif sendReply:
-                outputFile = GUI.completedWork[urllib2.unquote(self.path[1:])].decode('utf-8')
+                outputFile = GUI.completedWork[unquote(self.path[1:])]
                 fp = open(outputFile, 'rb')
                 self.send_response(200)
                 self.send_header('Content-type', mimetype)
@@ -173,22 +163,22 @@ class WebServerThread(QtCore.QThread):
     def run(self):
         try:
             # Sweet cross-platform one-liner to get LAN ip address
-            lIP = [ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1][0]
-        except StandardError:
+            lIP = [ip for ip in gethostbyname_ex(gethostname())[2] if not ip.startswith("127.")][:1][0]
+        except Exception:
             # Sadly it can fail on some Linux configurations
             lIP = None
         try:
             self.server = WebServerThreaded(('', 4242), WebServerHandler)
             self.running = True
             if lIP:
-                self.emit(QtCore.SIGNAL("addMessage"), '<b><a href="http://' + lIP +
-                                                       ':4242/">Content server</a></b> started.', 'info')
+                MW.addMessage.emit('<b><a href="http://' + str(lIP) + ':4242/">Content server</a></b> started.', 'info',
+                                   False)
             else:
-                self.emit(QtCore.SIGNAL("addMessage"), '<b>Content server</b> started on port 4242.', 'info')
+                MW.addMessage.emit('<b>Content server</b> started on port 4242.', 'info', False)
             while self.running:
                 self.server.handle_request()
-        except StandardError:
-            self.emit(QtCore.SIGNAL("addMessage"), '<b>Content server</b> failed to start!', 'error')
+        except Exception:
+            MW.addMessage.emit('<b>Content server</b> failed to start!', 'error', False)
 
     def stop(self):
         self.running = False
@@ -197,22 +187,56 @@ class WebServerThread(QtCore.QThread):
 class VersionThread(QtCore.QThread):
     def __init__(self):
         QtCore.QThread.__init__(self)
+        self.newVersion = ''
+        self.md5 = ''
 
     def __del__(self):
         self.wait()
 
     def run(self):
         try:
-            XML = urllib2.urlopen('http://kcc.vulturis.eu/Version.php')
+            XML = urlopen('http://kcc.vulturis.eu/Version.php')
             XML = parse(XML)
-        except StandardError:
+        except Exception:
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
         if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
-            self.emit(QtCore.SIGNAL("addMessage"), '<a href="http://kcc.vulturis.eu/">'
-                                                   '<b>New version is available!</b></a> '
-                                                   '(<a href="https://github.com/ciromattia/kcc/releases/">'
-                                                   'Changelog</a>)', 'warning')
+            if sys.platform.startswith('win'):
+                self.newVersion = latestVersion
+                self.md5 = XML.childNodes[0].getElementsByTagName('WindowsMD5')[0].childNodes[0].toxml()
+                MW.showDialog.emit('<b>New version released!</b> <a href="https://github.com/ciromattia/kcc/releases/">'
+                                   'See changelog.</a><<br/><br/>Installed version: ' + __version__ +
+                                   '<br/>Current version: ' + latestVersion +
+                                   '<br/><br/>Would you like to start automatic update?', 'question')
+            else:
+                MW.addMessage.emit('<a href="http://kcc.vulturis.eu/">'
+                                   '<b>New version is available!</b></a> '
+                                   '(<a href="https://github.com/ciromattia/kcc/releases/">'
+                                   'Changelog</a>)', 'warning', False)
+
+    def getNewVersion(self, dialogAnswer):
+        if dialogAnswer == QtWidgets.QMessageBox.Yes:
+            try:
+                MW.modeConvert.emit(-1)
+                MW.progressBarTick.emit('Downloading update')
+                path = urlretrieve('http://kcc.vulturis.eu/Windows/KindleComicConverter_win_'
+                                   + self.newVersion + '.exe', reporthook=self.getNewVersionTick)
+                if self.md5 != md5Checksum(path[0]):
+                    raise Exception
+                move(path[0], path[0] + '.exe')
+                MW.hideProgressBar.emit()
+                MW.modeConvert.emit(1)
+                Popen(path[0] + '.exe  /SP- /silent /noicons')
+                MW.forceShutdown.emit()
+            except Exception:
+                MW.addMessage.emit('Failed to download update!', 'warning', False)
+                MW.hideProgressBar.emit()
+                MW.modeConvert.emit(1)
+
+    def getNewVersionTick(self, size, blockSize, totalSize):
+        if size == 0:
+            MW.progressBarTick.emit(str(int(totalSize / blockSize)))
+        MW.progressBarTick.emit('tick')
 
 
 class ProgressThread(QtCore.QThread):
@@ -229,8 +253,8 @@ class ProgressThread(QtCore.QThread):
         self.running = True
         while self.running:
             sleep(1)
-            if self.content:
-                self.emit(QtCore.SIGNAL("addMessage"), self.content + self.progress * '.', 'info', True)
+            if self.content and GUI.conversionAlive:
+                MW.addMessage.emit(self.content + self.progress * '.', 'info', True)
                 self.progress += 1
                 if self.progress == 4:
                     self.progress = 0
@@ -254,9 +278,9 @@ class KindleGenThread(QtCore.QRunnable):
         kindlegenError = ''
         try:
             if os.path.getsize(self.work) < 367001600:
-                output = Popen('kindlegen -locale en "' + self.work.encode(sys.getfilesystemencoding()) + '"',
-                               stdout=PIPE, stderr=STDOUT, shell=True)
+                output = Popen('kindlegen -locale en "' + self.work + '"', stdout=PIPE, stderr=STDOUT, shell=True)
                 for line in output.stdout:
+                    line = line.decode('utf-8')
                     # ERROR: Generic error
                     if "Error(" in line:
                         kindlegenErrorCode = 1
@@ -270,9 +294,10 @@ class KindleGenThread(QtCore.QRunnable):
                 # ERROR: EPUB too big
                 kindlegenErrorCode = 23026
             self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
-        except StandardError:
-            # ERROR: Unknown generic error
+        except Exception as err:
+            # ERROR: KCC unknown generic error
             kindlegenErrorCode = 1
+            kindlegenError = format(err)
             self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
 
 
@@ -298,8 +323,8 @@ class KindleUnpackThread(QtCore.QRunnable):
             mobisplit = kindlesplit.mobi_split(mobiPath + '_toclean', newKindle)
             open(mobiPath, 'wb').write(mobisplit.getResult())
             self.signals.result.emit([True])
-        except StandardError:
-            self.signals.result.emit([False])
+        except Exception as err:
+            self.signals.result.emit([False, format(err)])
 
 
 class WorkerThread(QtCore.QThread):
@@ -322,6 +347,8 @@ class WorkerThread(QtCore.QThread):
         # Let's make sure that we don't use too many threads
         if self.threadNumber > QtCore.QThread.idealThreadCount():
             self.threadNumber = QtCore.QThread.idealThreadCount()
+        self.progressBarTick = MW.progressBarTick
+        self.addMessage = MW.addMessage
 
     def __del__(self):
         self.wait()
@@ -333,17 +360,17 @@ class WorkerThread(QtCore.QThread):
         GUI.progress.content = ''
         GUI.progress.stop()
         GUI.needClean = True
-        self.emit(QtCore.SIGNAL("hideProgressBar"))
-        self.emit(QtCore.SIGNAL("addMessage"), '<b>Conversion interrupted.</b>', 'error')
-        self.emit(QtCore.SIGNAL("addTrayMessage"), 'Conversion interrupted.', 'Critical')
-        self.emit(QtCore.SIGNAL("modeConvert"), True)
+        MW.hideProgressBar.emit()
+        MW.addMessage.emit('<b>Conversion interrupted.</b>', 'error', False)
+        MW.addTrayMessage.emit('Conversion interrupted.', 'Critical')
+        MW.modeConvert.emit(1)
 
     def addResult(self, output):
-        self.emit(QtCore.SIGNAL("progressBarTick"))
+        MW.progressBarTick.emit('tick')
         self.workerOutput.append(output)
 
     def run(self):
-        self.emit(QtCore.SIGNAL("modeConvert"), False)
+        MW.modeConvert.emit(0)
         profile = GUI.profiles[str(GUI.DeviceBox.currentText())]['Label']
         argv = ["--profile=" + profile]
         currentJobs = []
@@ -390,7 +417,7 @@ class WorkerThread(QtCore.QThread):
         for i in range(GUI.JobList.count()):
             # Make sure that we don't consider any system message as job to do
             if GUI.JobList.item(i).icon().isNull():
-                currentJobs.append(unicode(GUI.JobList.item(i).text()))
+                currentJobs.append(str(GUI.JobList.item(i).text()))
         GUI.JobList.clear()
         for job in currentJobs:
             sleep(0.5)
@@ -398,18 +425,18 @@ class WorkerThread(QtCore.QThread):
                 self.clean()
                 return
             self.errors = False
-            self.emit(QtCore.SIGNAL("addMessage"), '<b>Source:</b> ' + job, 'info')
+            MW.addMessage.emit('<b>Source:</b> ' + job, 'info', False)
             if str(GUI.FormatBox.currentText()) == 'CBZ':
-                self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ files', 'info')
+                MW.addMessage.emit('Creating CBZ files', 'info', False)
                 GUI.progress.content = 'Creating CBZ files'
             else:
-                self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB files', 'info')
+                MW.addMessage.emit('Creating EPUB files', 'info', False)
                 GUI.progress.content = 'Creating EPUB files'
             jobargv = list(argv)
             jobargv.append(job)
             try:
                 outputPath = comic2ebook.main(jobargv, self)
-                self.emit(QtCore.SIGNAL("hideProgressBar"))
+                MW.hideProgressBar.emit()
             except UserWarning as warn:
                 if not self.conversionAlive:
                     self.clean()
@@ -417,17 +444,17 @@ class WorkerThread(QtCore.QThread):
                 else:
                     GUI.progress.content = ''
                     self.errors = True
-                    self.emit(QtCore.SIGNAL("addMessage"), str(warn), 'warning')
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Failed to create output file!', 'warning')
-                    self.emit(QtCore.SIGNAL("addTrayMessage"), 'Failed to create output file!', 'Critical')
+                    MW.addMessage.emit(str(warn), 'warning', False)
+                    MW.addMessage.emit('Failed to create output file!', 'error', False)
+                    MW.addTrayMessage.emit('Failed to create output file!', 'Critical')
             except Exception as err:
                 GUI.progress.content = ''
                 self.errors = True
                 type_, value_, traceback_ = sys.exc_info()
-                self.emit(QtCore.SIGNAL("showDialog"), "Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
-                                                       % (jobargv[-1], str(err), traceback.format_tb(traceback_)))
-                self.emit(QtCore.SIGNAL("addMessage"), 'Failed to create EPUB!', 'error')
-                self.emit(QtCore.SIGNAL("addTrayMessage"), 'Failed to create EPUB!', 'Critical')
+                MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
+                                   % (jobargv[-1], str(err), format_tb(traceback_)), 'error')
+                MW.addMessage.emit('Failed to create EPUB!', 'error', False)
+                MW.addTrayMessage.emit('Failed to create EPUB!', 'Critical')
             if not self.conversionAlive:
                 for item in outputPath:
                     if os.path.exists(item):
@@ -437,14 +464,14 @@ class WorkerThread(QtCore.QThread):
             if not self.errors:
                 GUI.progress.content = ''
                 if str(GUI.FormatBox.currentText()) == 'CBZ':
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating CBZ files... <b>Done!</b>', 'info', True)
+                    MW.addMessage.emit('Creating CBZ files... <b>Done!</b>', 'info', True)
                 else:
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating EPUB files... <b>Done!</b>', 'info', True)
+                    MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
-                    self.emit(QtCore.SIGNAL("progressBarTick"), 'status', 'Creating MOBI files')
-                    self.emit(QtCore.SIGNAL("progressBarTick"), len(outputPath)*2+1)
-                    self.emit(QtCore.SIGNAL("progressBarTick"))
-                    self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI files', 'info')
+                    MW.progressBarTick.emit('Creating MOBI files')
+                    MW.progressBarTick.emit(str(len(outputPath)*2+1))
+                    MW.progressBarTick.emit('tick')
+                    MW.addMessage.emit('Creating MOBI files', 'info', False)
                     GUI.progress.content = 'Creating MOBI files'
                     self.workerOutput = []
                     # Number of KindleGen threads depends on the size of RAM
@@ -470,8 +497,8 @@ class WorkerThread(QtCore.QThread):
                         return
                     if self.kindlegenErrorCode[0] == 0:
                         GUI.progress.content = ''
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Creating MOBI files... <b>Done!</b>', 'info', True)
-                        self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files', 'info')
+                        MW.addMessage.emit('Creating MOBI files... <b>Done!</b>', 'info', True)
+                        MW.addMessage.emit('Cleaning MOBI files', 'info', False)
                         GUI.progress.content = 'Cleaning MOBI files'
                         self.workerOutput = []
                         # Multithreading KindleUnpack in current form is a waste of resources.
@@ -492,8 +519,14 @@ class WorkerThread(QtCore.QThread):
                                 GUI.progress.content = ''
                                 mobiPath = item.replace('.epub', '.mobi')
                                 os.remove(mobiPath + '_toclean')
-                                GUI.completedWork[os.path.basename(mobiPath).encode('utf-8')] = mobiPath.encode('utf-8')
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Cleaning MOBI files... <b>Done!</b>', 'info', True)
+                                if GUI.targetDirectory and GUI.targetDirectory != os.path.split(mobiPath)[0]:
+                                    try:
+                                        move(mobiPath, GUI.targetDirectory)
+                                        mobiPath = os.path.join(GUI.targetDirectory, os.path.basename(mobiPath))
+                                    except Exception:
+                                        pass
+                                GUI.completedWork[os.path.basename(mobiPath)] = mobiPath
+                            MW.addMessage.emit('Cleaning MOBI files... <b>Done!</b>', 'info', True)
                         else:
                             GUI.progress.content = ''
                             for item in outputPath:
@@ -502,9 +535,8 @@ class WorkerThread(QtCore.QThread):
                                     os.remove(mobiPath)
                                 if os.path.exists(mobiPath + '_toclean'):
                                     os.remove(mobiPath + '_toclean')
-                            self.emit(QtCore.SIGNAL("addMessage"), 'KindleUnpack failed to clean MOBI file!', 'error')
-                            self.emit(QtCore.SIGNAL("addTrayMessage"), 'KindleUnpack failed to clean MOBI file!',
-                                      'Critical')
+                            MW.addMessage.emit('KindleUnpack failed to clean MOBI file!', 'error', False)
+                            MW.addTrayMessage.emit('KindleUnpack failed to clean MOBI file!', 'Critical')
                     else:
                         GUI.progress.content = ''
                         epubSize = (os.path.getsize(self.kindlegenErrorCode[2]))/1024/1024
@@ -513,32 +545,36 @@ class WorkerThread(QtCore.QThread):
                                 os.remove(item)
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
-                        self.emit(QtCore.SIGNAL("addMessage"), 'KindleGen failed to create MOBI!', 'error')
-                        self.emit(QtCore.SIGNAL("addTrayMessage"), 'KindleGen failed to create MOBI!', 'Critical')
+                        MW.addMessage.emit('KindleGen failed to create MOBI!', 'error', False)
+                        MW.addTrayMessage.emit('KindleGen failed to create MOBI!', 'Critical')
                         if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':
-                            self.emit(QtCore.SIGNAL("showDialog"), "KindleGen error:\n\n" +
-                                                                   self.kindlegenErrorCode[1])
+                            MW.showDialog.emit("KindleGen error:\n\n" + self.kindlegenErrorCode[1], 'error')
                         if self.kindlegenErrorCode[0] == 23026:
-                            self.emit(QtCore.SIGNAL("addMessage"), 'Created EPUB file was too big.',
-                                      'error')
-                            self.emit(QtCore.SIGNAL("addMessage"), 'EPUB file: ' + str(epubSize) + 'MB.'
-                                                                   ' Supported size: ~300MB.', 'error')
+                            MW.addMessage.emit('Created EPUB file was too big.', 'error', False)
+                            MW.addMessage.emit('EPUB file: ' + str(epubSize) + 'MB. Supported size: ~300MB.', 'error',
+                                               False)
                 else:
                     for item in outputPath:
-                        GUI.completedWork[os.path.basename(item).encode('utf-8')] = item.encode('utf-8')
+                        if GUI.targetDirectory and GUI.targetDirectory != os.path.split(item)[0]:
+                            try:
+                                move(item, GUI.targetDirectory)
+                                item = os.path.join(GUI.targetDirectory, os.path.basename(item))
+                            except Exception:
+                                pass
+                        GUI.completedWork[os.path.basename(item)] = item
         GUI.progress.content = ''
         GUI.progress.stop()
-        self.emit(QtCore.SIGNAL("hideProgressBar"))
+        MW.hideProgressBar.emit()
         GUI.needClean = True
-        self.emit(QtCore.SIGNAL("addMessage"), '<b>All jobs completed.</b>', 'info')
-        self.emit(QtCore.SIGNAL("addTrayMessage"), 'All jobs completed.', 'Information')
-        self.emit(QtCore.SIGNAL("modeConvert"), True)
+        MW.addMessage.emit('<b>All jobs completed.</b>', 'info', False)
+        MW.addTrayMessage.emit('All jobs completed.', 'Information')
+        MW.modeConvert.emit(1)
 
 
-class SystemTrayIcon(QtGui.QSystemTrayIcon):
+class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def __init__(self):
-        if not sys.platform.startswith('darwin') and self.isSystemTrayAvailable():
-            QtGui.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
+        if self.isSystemTrayAvailable():
+            QtWidgets.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
             self.activated.connect(self.catchClicks)
 
     def catchClicks(self):
@@ -547,10 +583,9 @@ class SystemTrayIcon(QtGui.QSystemTrayIcon):
         MW.activateWindow()
 
     def addTrayMessage(self, message, icon):
-        if not sys.platform.startswith('darwin'):
-            icon = eval('QtGui.QSystemTrayIcon.' + icon)
-            if self.supportsMessages() and not MW.isActiveWindow():
-                self.showMessage('Kindle Comic Converter', message, icon)
+        icon = eval('QtWidgets.QSystemTrayIcon.' + icon)
+        if self.supportsMessages() and not MW.isActiveWindow():
+            self.showMessage('Kindle Comic Converter', message, icon)
 
 
 class KCCGUI(KCC_ui.Ui_KCC):
@@ -558,28 +593,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if self.needClean:
             self.needClean = False
             GUI.JobList.clear()
-        # Dirty, dirty way but OS native QFileDialogs don't support directory multiselect
-        dirDialog = QtGui.QFileDialog(MW, 'Select directory', self.lastPath)
-        dirDialog.setFileMode(dirDialog.Directory)
-        dirDialog.setOption(dirDialog.ShowDirsOnly, True)
-        dirDialog.setOption(dirDialog.DontUseNativeDialog, True)
-        l = dirDialog.findChild(QtGui.QListView, "listView")
-        t = dirDialog.findChild(QtGui.QTreeView)
-        if l:
-            l.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
-        if t:
-            t.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
-        if dirDialog.exec_() == 1:
-            dnames = dirDialog.selectedFiles()
-        else:
-            dnames = ""
-        for dname in dnames:
-            if unicode(dname) != "":
-                if sys.platform.startswith('win'):
-                    dname = dname.replace('/', '\\')
-                self.lastPath = os.path.abspath(os.path.join(unicode(dname), os.pardir))
-                GUI.JobList.addItem(dname)
-        MW.setFocus()
+        dname = QtWidgets.QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
+        if dname != '':
+            if sys.platform.startswith('win'):
+                dname = dname.replace('/', '\\')
+            self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
+            GUI.JobList.addItem(dname)
 
     def selectFile(self):
         if self.needClean:
@@ -587,21 +606,23 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.JobList.clear()
         if self.UnRAR:
             if self.sevenza:
-                fnames = QtGui.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                            '*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf')
+                fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
+                                                                'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf)')
             else:
-                fnames = QtGui.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                            '*.cbz *.cbr *.zip *.rar *.pdf')
+                fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
+                                                                'Comic (*.cbz *.cbr *.zip *.rar *.pdf)')
         else:
             if self.sevenza:
-                fnames = QtGui.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                            '*.cbz *.cb7 *.zip *.7z *.pdf')
+                fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
+                                                                'Comic (*.cbz *.cb7 *.zip *.7z *.pdf)')
             else:
-                fnames = QtGui.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                            '*.cbz *.zip *.pdf')
-        for fname in fnames:
-            if unicode(fname) != "":
-                self.lastPath = os.path.abspath(os.path.join(unicode(fname), os.pardir))
+                fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
+                                                                'Comic (*.cbz *.zip *.pdf)')
+        for fname in fnames[0]:
+            if fname != '':
+                if sys.platform.startswith('win'):
+                    fname = fname.replace('/', '\\')
+                self.lastPath = os.path.abspath(os.path.join(fname, os.pardir))
                 GUI.JobList.addItem(fname)
 
     def clearJobs(self):
@@ -610,12 +631,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
     def modeBasic(self):
         self.currentMode = 1
         if sys.platform.startswith('darwin'):
-            MW.setMinimumSize(QtCore.QSize(420, 291))
             MW.setMaximumSize(QtCore.QSize(420, 291))
+            MW.setMinimumSize(QtCore.QSize(420, 291))
             MW.resize(420, 291)
         else:
-            MW.setMinimumSize(QtCore.QSize(420, 287))
             MW.setMaximumSize(QtCore.QSize(420, 287))
+            MW.setMinimumSize(QtCore.QSize(420, 287))
             MW.resize(420, 287)
         GUI.BasicModeButton.setEnabled(True)
         GUI.AdvModeButton.setEnabled(True)
@@ -643,8 +664,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
     def modeAdvanced(self):
         self.currentMode = 2
-        MW.setMinimumSize(QtCore.QSize(420, 365))
         MW.setMaximumSize(QtCore.QSize(420, 365))
+        MW.setMinimumSize(QtCore.QSize(420, 365))
         MW.resize(420, 365)
         GUI.BasicModeButton.setEnabled(True)
         GUI.AdvModeButton.setEnabled(True)
@@ -672,8 +693,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
     def modeExpert(self):
         self.currentMode = 3
-        MW.setMinimumSize(QtCore.QSize(420, 397))
         MW.setMaximumSize(QtCore.QSize(420, 397))
+        MW.setMinimumSize(QtCore.QSize(420, 397))
         MW.resize(420, 397)
         GUI.BasicModeButton.setEnabled(False)
         GUI.AdvModeButton.setEnabled(False)
@@ -700,34 +721,45 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.ColorBox.setChecked(False)
 
     def modeConvert(self, enable):
+        if enable < 1:
+            status = False
+        else:
+            status = True
         if self.currentMode != 3:
-            GUI.BasicModeButton.setEnabled(enable)
-            GUI.AdvModeButton.setEnabled(enable)
+            GUI.BasicModeButton.setEnabled(status)
+            GUI.AdvModeButton.setEnabled(status)
         if self.currentMode != 1:
-            GUI.FormatBox.setEnabled(enable)
-        GUI.DirectoryButton.setEnabled(enable)
-        GUI.ClearButton.setEnabled(enable)
-        GUI.FileButton.setEnabled(enable)
-        GUI.DeviceBox.setEnabled(enable)
-        GUI.OptionsBasic.setEnabled(enable)
-        GUI.OptionsAdvanced.setEnabled(enable)
-        GUI.OptionsAdvancedGamma.setEnabled(enable)
-        GUI.OptionsExpert.setEnabled(enable)
+            GUI.FormatBox.setEnabled(status)
+        GUI.DirectoryButton.setEnabled(status)
+        GUI.ClearButton.setEnabled(status)
+        GUI.FileButton.setEnabled(status)
+        GUI.DeviceBox.setEnabled(status)
+        GUI.OptionsBasic.setEnabled(status)
+        GUI.OptionsAdvanced.setEnabled(status)
+        GUI.OptionsAdvancedGamma.setEnabled(status)
+        GUI.OptionsExpert.setEnabled(status)
         GUI.ConvertButton.setEnabled(True)
-        if enable:
+        if enable == 1:
             self.conversionAlive = False
             self.worker.sync()
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap(":/Other/icons/convert.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             GUI.ConvertButton.setIcon(icon)
             GUI.ConvertButton.setText('Convert')
-        else:
+            GUI.Form.setAcceptDrops(True)
+        elif enable == 0:
             self.conversionAlive = True
             self.worker.sync()
             icon = QtGui.QIcon()
             icon.addPixmap(QtGui.QPixmap(":/Other/icons/clear.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
             GUI.ConvertButton.setIcon(icon)
             GUI.ConvertButton.setText('Abort')
+            GUI.Form.setAcceptDrops(False)
+        elif enable == -1:
+            self.conversionAlive = True
+            self.worker.sync()
+            GUI.ConvertButton.setEnabled(False)
+            GUI.Form.setAcceptDrops(False)
 
     def toggleWebtoonBox(self, value):
         if value:
@@ -741,8 +773,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             if not GUI.ProcessingBox.isChecked():
                 GUI.NoRotateBox.setEnabled(True)
                 GUI.QualityBox.setEnabled(True)
-            if GUI.profiles[str(GUI.DeviceBox.currentText())]['MangaMode']:
-                GUI.MangaBox.setEnabled(True)
+            GUI.MangaBox.setEnabled(True)
 
     def toggleNoSplitRotate(self, value):
         if value:
@@ -784,6 +815,11 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.GammaLabel.setEnabled(True)
             if GUI.profiles[str(GUI.DeviceBox.currentText())]['Quality']:
                 GUI.QualityBox.setEnabled(True)
+
+    def toggleQualityBox(self, value):
+        if value == 2 and 'Kobo' in str(GUI.DeviceBox.currentText()):
+            self.addMessage('Kobo devices can\'t use ultra quality mode!', 'warning')
+            GUI.QualityBox.setCheckState(0)
 
     def changeGamma(self, value):
         value = float(value)
@@ -833,16 +869,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 else:
                     tmpFormat = 0
                 GUI.FormatBox.setCurrentIndex(tmpFormat)
-        if (str(GUI.FormatBox.currentText()) == 'CBZ' and not 'Kobo' in str(GUI.DeviceBox.currentText())) or \
-                GUI.WebtoonBox.isChecked():
+        if GUI.WebtoonBox.isChecked():
             GUI.MangaBox.setEnabled(False)
             GUI.QualityBox.setEnabled(False)
             GUI.MangaBox.setChecked(False)
             GUI.QualityBox.setChecked(False)
         else:
-            GUI.MangaBox.setEnabled(profile['MangaMode'])
-            if not profile['MangaMode']:
-                GUI.MangaBox.setChecked(False)
             GUI.QualityBox.setEnabled(profile['Quality'])
             if not profile['Quality']:
                 GUI.QualityBox.setChecked(False)
@@ -855,19 +887,19 @@ class KCCGUI(KCC_ui.Ui_KCC):
         s.feed(html)
         return s.get_data()
 
-    def addMessage(self, message, icon=None, replace=False):
-        if icon:
+    def addMessage(self, message, icon, replace=False):
+        if icon != '':
             icon = eval('self.icons.' + icon)
-            item = QtGui.QListWidgetItem(icon, '    ' + self.stripTags(message))
+            item = QtWidgets.QListWidgetItem(icon, '    ' + self.stripTags(message))
         else:
-            item = QtGui.QListWidgetItem('    ' + self.stripTags(message))
+            item = QtWidgets.QListWidgetItem('    ' + self.stripTags(message))
         if replace:
             GUI.JobList.takeItem(GUI.JobList.count()-1)
         # Due to lack of HTML support in QListWidgetItem we overlay text field with QLabel
         # We still fill original text field with transparent content to trigger creation of horizontal scrollbar
-        item.setTextColor(QtGui.QColor('transparent'))
-        label = QtGui.QLabel(message)
-        label.setStyleSheet('background-image:url('');background-color:rgba(255,0,0,0.5);')
+        item.setForeground(QtGui.QColor('transparent'))
+        label = QtWidgets.QLabel(message)
+        label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);')
         label.setOpenExternalLinks(True)
         font = QtGui.QFont()
         font.setPointSize(self.listFontSize)
@@ -876,18 +908,25 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.JobList.setItemWidget(item, label)
         GUI.JobList.scrollToBottom()
 
-    def showDialog(self, message):
-        QtGui.QMessageBox.critical(MW, 'KCC - Error', message, QtGui.QMessageBox.Ok)
+    def showDialog(self, message, kind):
+        if kind == 'error':
+            QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
+        elif kind == 'question':
+            dialogResponse = QtWidgets.QMessageBox.question(MW, 'KCC - Question', message,
+                                                            QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+            MW.dialogAnswer.emit(dialogResponse)
 
-    def updateProgressbar(self, new=False, status=False):
-        if new == "status":
-            GUI.ProgressBar.setFormat(status)
-        elif new:
-            GUI.ProgressBar.setMaximum(new - 1)
+    def updateProgressbar(self, command):
+        if command == 'tick':
+            GUI.ProgressBar.setValue(GUI.ProgressBar.value() + 1)
+        elif command.isdigit():
+            GUI.ProgressBar.setMaximum(int(command) - 1)
+            GUI.BasicModeButton.hide()
+            GUI.AdvModeButton.hide()
             GUI.ProgressBar.reset()
             GUI.ProgressBar.show()
         else:
-            GUI.ProgressBar.setValue(GUI.ProgressBar.value() + 1)
+            GUI.ProgressBar.setFormat(command)
 
     def convertStart(self):
         if self.conversionAlive:
@@ -896,6 +935,17 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.conversionAlive = False
             self.worker.sync()
         else:
+            # noinspection PyArgumentList
+            if QtWidgets.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
+                dname = QtWidgets.QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
+                if dname != '':
+                    if sys.platform.startswith('win'):
+                        dname = dname.replace('/', '\\')
+                    GUI.targetDirectory = dname
+                else:
+                    GUI.targetDirectory = ''
+            else:
+                GUI.targetDirectory = ''
             self.progress.start()
             if self.needClean:
                 self.needClean = False
@@ -909,15 +959,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 self.addMessage('Target resolution is not set!', 'error')
                 self.needClean = True
                 return
-            if 'Kobo' in str(GUI.DeviceBox.currentText()) and GUI.QualityBox.checkState() == 2:
-                GUI.JobList.clear()
-                self.addMessage('Kobo devices can\'t use ultra quality mode!', 'error')
-                self.needClean = True
-                return
             self.worker.start()
 
     def hideProgressBar(self):
         GUI.ProgressBar.hide()
+        GUI.BasicModeButton.show()
+        GUI.AdvModeButton.show()
 
     def saveSettings(self, event):
         if self.conversionAlive:
@@ -934,26 +981,30 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
         self.settings.setValue('currentFormat', GUI.FormatBox.currentIndex())
         self.settings.setValue('currentMode', self.currentMode)
-        self.settings.setValue('firstStart', False)
-        self.settings.setValue('options', QtCore.QVariant({'MangaBox': GUI.MangaBox.checkState(),
-                                                           'RotateBox': GUI.RotateBox.checkState(),
-                                                           'QualityBox': GUI.QualityBox.checkState(),
-                                                           'ProcessingBox': GUI.ProcessingBox.checkState(),
-                                                           'UpscaleBox': GUI.UpscaleBox.checkState(),
-                                                           'NoRotateBox': GUI.NoRotateBox.checkState(),
-                                                           'BorderBox': GUI.BorderBox.checkState(),
-                                                           'WebtoonBox': GUI.WebtoonBox.checkState(),
-                                                           'NoDitheringBox': GUI.NoDitheringBox.checkState(),
-                                                           'ColorBox': GUI.ColorBox.checkState(),
-                                                           'customWidth': GUI.customWidth.text(),
-                                                           'customHeight': GUI.customHeight.text(),
-                                                           'GammaSlider': float(self.GammaValue)*100}))
+        self.settings.setValue('startNumber', self.startNumber + 1)
+        self.settings.setValue('options', {'MangaBox': GUI.MangaBox.checkState(),
+                                           'RotateBox': GUI.RotateBox.checkState(),
+                                           'QualityBox': GUI.QualityBox.checkState(),
+                                           'ProcessingBox': GUI.ProcessingBox.checkState(),
+                                           'UpscaleBox': GUI.UpscaleBox.checkState(),
+                                           'NoRotateBox': GUI.NoRotateBox.checkState(),
+                                           'BorderBox': GUI.BorderBox.checkState(),
+                                           'WebtoonBox': GUI.WebtoonBox.checkState(),
+                                           'NoDitheringBox': GUI.NoDitheringBox.checkState(),
+                                           'ColorBox': GUI.ColorBox.checkState(),
+                                           'customWidth': GUI.customWidth.text(),
+                                           'customHeight': GUI.customHeight.text(),
+                                           'GammaSlider': float(self.GammaValue)*100})
         self.settings.sync()
+        if not sys.platform.startswith('linux'):
+            self.tray.hide()
 
     def handleMessage(self, message):
         MW.raise_()
         MW.activateWindow()
-        if not self.conversionAlive:
+        if type(message) is bytes:
+            message = message.decode('UTF-8')
+        if not self.conversionAlive and message != 'ARISE':
             if self.needClean:
                 self.needClean = False
                 GUI.JobList.clear()
@@ -976,6 +1027,25 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 else:
                     self.addMessage('This file type is unsupported!', 'error')
 
+    def dragAndDrop(self, e):
+        e.accept()
+
+    def dragAndDropAccepted(self, e):
+        for message in e.mimeData().urls():
+            message = unquote(message.toString().replace('file:///', ''))
+            if sys.platform.startswith('win'):
+                message = message.replace('/', '\\')
+            else:
+                message = '/' + message
+                if message[-1] == '/':
+                    message = message[:-1]
+            self.handleMessage(message)
+
+    def forceShutdown(self):
+        self.saveSettings(None)
+        sys.exit(0)
+
+    # noinspection PyArgumentList
     def __init__(self, KCCAplication, KCCWindow):
         global APP, MW, GUI
         APP = KCCAplication
@@ -986,8 +1056,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         # Empty string cover all versions before this system was implemented
         purgeSettingsVersions = ['']
         self.icons = Icons()
-        self.webContent = WebContent()
-        self.tray = SystemTrayIcon()
+        self.webContent = KCC_rc_web.WebContent()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         if self.settingsVersion in purgeSettingsVersions:
@@ -997,9 +1066,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
         self.currentMode = self.settings.value('currentMode', 1, type=int)
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
-        self.firstStart = self.settings.value('firstStart', True, type=bool)
-        self.options = self.settings.value('options', QtCore.QVariant({'GammaSlider': 0}))
-        self.options = self.options.toPyObject()
+        self.startNumber = self.settings.value('startNumber', 0, type=int)
+        self.options = self.settings.value('options', {'GammaSlider': 0})
         self.worker = WorkerThread()
         self.versionCheck = VersionThread()
         self.contentServer = WebServerThread()
@@ -1008,53 +1076,61 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.needClean = True
         self.GammaValue = 1.0
         self.completedWork = {}
+        self.targetDirectory = ''
         if sys.platform.startswith('darwin'):
             self.listFontSize = 11
             self.statusBarFontSize = 10
-            self.statusBarStyle = 'QLabel{padding-top:5px;padding-bottom:5px;border-top:2px solid #C2C7CB}'
+            self.statusBarStyle = 'QLabel{padding-top:2px;padding-bottom:3px;}'
+            self.ProgressBar.setStyleSheet('QProgressBar{padding-top:5px;text-align:center;}')
+            self.tray = SystemTrayIcon()
+            self.tray.show()
+            MW.addTrayMessage.connect(self.tray.addTrayMessage)
         elif sys.platform.startswith('linux'):
             self.listFontSize = 8
             self.statusBarFontSize = 8
-            self.statusBarStyle = 'QLabel{padding-top:5px;padding-bottom:3px;border-top:2px solid #C2C7CB}'
-            self.tray.show()
+            self.statusBarStyle = 'QLabel{padding-top:5px;padding-bottom:3px;}'
+            self.statusBar.setStyleSheet('QStatusBar::item{border:0px;border-top:2px solid #C2C7CB;}')
         else:
             self.listFontSize = 9
             self.statusBarFontSize = 8
-            self.statusBarStyle = 'QLabel{padding-top:3px;padding-bottom:3px;border-top:2px solid #C2C7CB}'
+            self.statusBarStyle = 'QLabel{padding-top:3px;padding-bottom:3px}'
+            self.statusBar.setStyleSheet('QStatusBar::item{border:0px;border-top:2px solid #C2C7CB;}')
+            self.tray = SystemTrayIcon()
             self.tray.show()
+            MW.addTrayMessage.connect(self.tray.addTrayMessage)
 
         self.profiles = {
-            "Kindle Paperwhite": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Paperwhite": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                   'DefaultUpscale': False, 'Label': 'KHD'},
-            "Kindle": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K345'},
-            "Kindle DX/DXG": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'Label': 'KDX'},
-            "Kindle Fire": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Fire": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                             'DefaultUpscale': False, 'Label': 'KF'},
-            "K. Fire HD 7\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "K. Fire HD 7\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                'DefaultUpscale': True, 'Label': 'KFHD'},
-            "K. Fire HD 8.9\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "K. Fire HD 8.9\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                  'DefaultUpscale': True, 'Label': 'KFHD8'},
-            "K. Fire HDX 7\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "K. Fire HDX 7\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                 'DefaultUpscale': True, 'Label': 'KFHDX'},
-            "K. Fire HDX 8.9\"": {'MangaMode': True, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "K. Fire HDX 8.9\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                   'DefaultUpscale': True, 'Label': 'KFHDX8'},
-            "Kobo Mini/Touch": {'MangaMode': False, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Mini/Touch": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                                 'DefaultUpscale': False, 'Label': 'KoMT'},
-            "Kobo Glow": {'MangaMode': False, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Glow": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                           'DefaultUpscale': False, 'Label': 'KoG'},
-            "Kobo Aura": {'MangaMode': False, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Aura": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                           'DefaultUpscale': False, 'Label': 'KoA'},
-            "Kobo Aura HD": {'MangaMode': False, 'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Aura HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                              'DefaultUpscale': False, 'Label': 'KoAHD'},
-            "Other": {'MangaMode': False, 'Quality': False, 'ForceExpert': True, 'DefaultFormat': 1,
+            "Other": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 1,
                       'DefaultUpscale': False, 'Label': 'OTHER'},
-            "Kindle for Android": {'MangaMode': True, 'Quality': False, 'ForceExpert': True, 'DefaultFormat': 0,
+            "Kindle for Android": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 0,
                                    'DefaultUpscale': False, 'Label': 'KFA'},
-            "Kindle 1": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 1": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K1'},
-            "Kindle 2": {'MangaMode': False, 'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 2": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K2'}
         }
         profilesGUI = [
@@ -1080,11 +1156,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
             "Kindle 2",
         ]
 
-        statusBarLabel = QtGui.QLabel('<b><a href="http://kcc.vulturis.eu/">HOMEPAGE</a> - <a href="https://github.com/'
-                                      'ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DONATE</a>'
-                                      ' - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a>'
-                                      ' - <a href="http://www.mobileread.com/forums/showthread.php?t=207461">FORUM</a>'
-                                      '</b>')
+        statusBarLabel = QtWidgets.QLabel('<b><a href="http://kcc.vulturis.eu/">HOMEPAGE</a> - <a href="https://github.'
+                                          'com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DO'
+                                          'NATE</a> - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a> - <a hr'
+                                          'ef="http://www.mobileread.com/forums/showthread.php?t=207461">FORUM</a></b>')
         statusBarLabel.setAlignment(QtCore.Qt.AlignCenter)
         statusBarLabel.setStyleSheet(self.statusBarStyle)
         statusBarLabel.setOpenExternalLinks(True)
@@ -1095,8 +1170,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')
-        if self.firstStart:
-            self.addMessage('Since you are using <b>KCC</b> for first time please see few '
+        if self.startNumber < 5:
+            self.addMessage('Since you are new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
         kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
@@ -1105,7 +1180,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
             formats = ['MOBI', 'EPUB', 'CBZ']
             versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
             for line in versionCheck.stdout:
-                if "Amazon kindlegen" in line:
+                line = line.decode("utf-8")
+                if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if tuple(map(int, (versionCheck.split(".")))) < tuple(map(int, ('2.9'.split(".")))):
                         self.addMessage('Your <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
@@ -1139,7 +1215,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7za</a>!'
                             ' Processing of CB7/7Z files will be disabled.', 'warning')
 
-        APP.connect(APP, QtCore.SIGNAL('messageFromOtherInstance'), self.handleMessage)
+        APP.messageFromOtherInstance.connect(self.handleMessage)
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
         GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
         GUI.DirectoryButton.clicked.connect(self.selectDir)
@@ -1150,18 +1226,21 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.NoRotateBox.stateChanged.connect(self.toggleNoSplitRotate)
         GUI.WebtoonBox.stateChanged.connect(self.toggleWebtoonBox)
         GUI.ProcessingBox.stateChanged.connect(self.toggleProcessingBox)
+        GUI.QualityBox.stateChanged.connect(self.toggleQualityBox)
         GUI.DeviceBox.activated.connect(self.changeDevice)
         GUI.FormatBox.activated.connect(self.changeFormat)
-        MW.connect(self.worker, QtCore.SIGNAL("progressBarTick"), self.updateProgressbar)
-        MW.connect(self.worker, QtCore.SIGNAL("modeConvert"), self.modeConvert)
-        MW.connect(self.worker, QtCore.SIGNAL("addMessage"), self.addMessage)
-        MW.connect(self.worker, QtCore.SIGNAL("addTrayMessage"), self.tray.addTrayMessage)
-        MW.connect(self.worker, QtCore.SIGNAL("showDialog"), self.showDialog)
-        MW.connect(self.worker, QtCore.SIGNAL("hideProgressBar"), self.hideProgressBar)
-        MW.connect(self.versionCheck, QtCore.SIGNAL("addMessage"), self.addMessage)
-        MW.connect(self.contentServer, QtCore.SIGNAL("addMessage"), self.addMessage)
-        MW.connect(self.progress, QtCore.SIGNAL("addMessage"), self.addMessage)
+        MW.progressBarTick.connect(self.updateProgressbar)
+        MW.modeConvert.connect(self.modeConvert)
+        MW.addMessage.connect(self.addMessage)
+        MW.showDialog.connect(self.showDialog)
+        MW.hideProgressBar.connect(self.hideProgressBar)
+        MW.forceShutdown.connect(self.forceShutdown)
+        MW.dialogAnswer.connect(self.versionCheck.getNewVersion)
         MW.closeEvent = self.saveSettings
+
+        GUI.Form.setAcceptDrops(True)
+        GUI.Form.dragEnterEvent = self.dragAndDrop
+        GUI.Form.dropEvent = self.dragAndDropAccepted
 
         for profile in profilesGUI:
             if profile == "Other":
@@ -1196,11 +1275,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
             else:
                 if eval('GUI.' + str(option)).isEnabled():
                     eval('GUI.' + str(option)).setCheckState(self.options[option])
-
-        self.versionCheck.start()
-        self.contentServer.start()
         self.hideProgressBar()
         self.worker.sync()
+        self.versionCheck.start()
+        self.contentServer.start()
         MW.setWindowTitle("Kindle Comic Converter " + __version__)
         MW.show()
         MW.raise_()

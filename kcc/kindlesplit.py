@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
+#
 # Based on initial version of KindleUnpack. Copyright (C) 2009 Charles M. Hannum <root@ihack.net>
 # Improvements Copyright (C) 2009-2012 P. Durrant, K. Hendricks, S. Siebert, fandrieu, DiapDealer, nickredding
-# Changes for KCC Copyright (C) 2013 Pawel Jastrzebski <pawelj@vulturis.eu>
+# Changes for KCC Copyright (C) 2013-2014 Pawel Jastrzebski <pawelj@vulturis.eu>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -98,10 +100,10 @@ def nullsection(datain, secno):  # make it zero-length without deleting it
         datalst.append(struct.pack('>L', ofs) + struct.pack('>L', flgval))
     lpad = zerosecstart - (first_pdb_record + 8*nsec)
     if lpad > 0:
-        datalst.append('\0' * lpad)
+        datalst.append(b'\0' * lpad)
     datalst.append(datain[zerosecstart: secstart])
     datalst.append(datain[secend:])
-    dataout = "".join(datalst)
+    dataout = b"".join(datalst)
     return dataout
 
 
@@ -128,10 +130,10 @@ def deletesectionrange(datain, firstsec, lastsec):  # delete a range of sections
         datalst.append(struct.pack('>L', ofs) + struct.pack('>L', flgval))
     lpad = newstart - (first_pdb_record + 8*(nsec - (lastsec - firstsec + 1)))
     if lpad > 0:
-        datalst.append('\0' * lpad)
+        datalst.append(b'\0' * lpad)
     datalst.append(datain[zerosecstart:firstsecstart])
     datalst.append(datain[lastsecend:])
-    dataout = "".join(datalst)
+    dataout = b"".join(datalst)
     return dataout
 
 
@@ -158,11 +160,11 @@ def insertsection(datain, secno, secdata):  # insert a new section
         datalst.append(struct.pack('>L', ofs) + struct.pack('>L', flgval))
     lpad = newstart - (first_pdb_record + 8*(nsec + 1))
     if lpad > 0:
-        datalst.append('\0' * lpad)
+        datalst.append(b'\0' * lpad)
     datalst.append(datain[zerosecstart:secstart])
     datalst.append(secdata)
     datalst.append(datain[secstart:])
-    dataout = "".join(datalst)
+    dataout = b"".join(datalst)
     return dataout
 
 
@@ -284,7 +286,7 @@ class mobi_split:
                 # datain_rec0 = del_exth(datain_rec0,534)
                 # don't remove the EXTH 125 KF8 Count of Resources, seems to be present in mobi6 files as well
                 # set the EXTH 129 KF8 Masthead / Cover Image string to the null string
-                datain_rec0 = write_exth(datain_rec0, 129, '')
+                datain_rec0 = write_exth(datain_rec0, 129, b'')
                 # don't remove the EXTH 131 KF8 Unidentified Count, seems to be present in mobi6 files as well
 
                 # Make sure we have an ASIN & cdeType set...
