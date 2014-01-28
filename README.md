@@ -322,11 +322,20 @@ The app relies and includes the following scripts/binaries:
 * Fixed problems with HQ mode
 
 ####4.0:
+* KCC now use Python 3.3 and Qt 5.2
+* Full UTF-8 awareness
+* CBZ output now support Manga mode
+* Improved Panel View support and margin color detection
+* Added drag&drop support
+* Output directory can be now selected
+* Windows release now have auto-updater
+* Names of chapters on Kindle should be now more user friendly
+* Fixed OSX file association support
+* Many extensive internal changes and tweaks
 
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
 ## COPYRIGHT
-
 Copyright (c) 2012-2014 Ciro Mattia Gonano and Paweł Jastrzębski.
 **KCC** is released under ISC LICENSE; see LICENSE.txt for further details.
