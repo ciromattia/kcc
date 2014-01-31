@@ -415,9 +415,6 @@ class ComicPage:
             return False
 
     def getImageFill(self, webtoon):
-        if not webtoon and self.color:
-            self.fill = 'black'
-            return
         fill = 0
         if not webtoon and not self.rotated:
             # Search for horizontal solid lines
