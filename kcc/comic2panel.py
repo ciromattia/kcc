@@ -52,27 +52,31 @@ def mergeDirectory(work):
         images = []
         imagesClear = []
         sizes = []
+        h = 0
         for root, dirs, files in walkLevel(directory, 0):
             for name in files:
                 if getImageFileName(name) is not None:
-                    images.append([Image.open(os.path.join(root, name)), os.path.join(root, name)])
+                    i = Image.open(os.path.join(root, name))
+                    images.append([os.path.join(root, name), i.size[0], i.size[1]])
+                    sizes.append(i.size[0])
         if len(images) > 0:
-            for i in images:
-                sizes.append(i[0].size[0])
             mw = max(set(sizes), key=sizes.count)
             for i in images:
-                if i[0].size[0] == mw:
-                    i[0] = i[0].convert('RGB')
-                    imagesClear.append(i)
-            h = sum(i[0].size[1] for i in imagesClear)
+                if i[1] == mw:
+                    h += i[2]
+                    imagesClear.append(i[0])
+            # Silently drop directories that contain too many images
+            if h > 262144:
+                return None
             result = Image.new('RGB', (mw, h))
             y = 0
             for i in imagesClear:
-                result.paste(i[0], (0, y))
-                y += i[0].size[1]
-            for i in imagesClear:
-                os.remove(i[1])
-            savePath = os.path.split(imagesClear[0][1])
+                img = Image.open(i)
+                img = img.convert('RGB')
+                result.paste(img, (0, y))
+                y += img.size[1]
+                os.remove(i)
+            savePath = os.path.split(imagesClear[0])
             result.save(os.path.join(savePath[0], os.path.splitext(savePath[1])[0] + '.png'), 'PNG')
     except Exception:
         return str(sys.exc_info()[1])
