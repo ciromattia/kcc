@@ -333,6 +333,12 @@ The app relies and includes the following scripts/binaries:
 * Fixed OSX file association support
 * Many extensive internal changes and tweaks
 
+####4.0.1:
+* Fixed file lock problems that plagued some Windows users
+* Fixed content server failing to start on Windows
+* Improved performance of WebToon splitter
+* Tweaked margin color detection
+
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
