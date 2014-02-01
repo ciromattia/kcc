@@ -320,11 +320,12 @@ def applyImgOptimization(img, opt, hqImage=None):
 
 
 def dirImgProcess(path):
-    global workerPool, workerOutput, theGreatIndex
+    global workerPool, workerOutput, theGreatIndex, theGreatWipe
     workerPool = Pool()
     workerOutput = []
     work = []
     theGreatIndex = {}
+    theGreatWipe = []
     pagenumber = 0
     for (dirpath, dirnames, filenames) in os.walk(path):
         for afile in filenames:
@@ -344,6 +345,9 @@ def dirImgProcess(path):
         if len(workerOutput) > 0:
             rmtree(os.path.join(path, '..', '..'), True)
             raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0])
+        for file in theGreatWipe:
+            if os.path.isfile(file):
+                os.remove(file)
     else:
         rmtree(os.path.join(path, '..', '..'), True)
         raise UserWarning("Source directory is empty.")
@@ -356,9 +360,10 @@ def fileImgProcess_tick(output):
     else:
         for page in output:
             if page is not None:
-                if sys.platform.startswith('win'):
-                    page[0] = page[0].replace('/', '\\')
-                theGreatIndex[page[0]] = page[1]
+                if isinstance(page, str):
+                    theGreatWipe.append(page)
+                else:
+                    theGreatIndex[page[0]] = page[1]
     if GUI:
         GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
@@ -388,8 +393,8 @@ def fileImgProcess(work):
             applyImgOptimization(img1, opt)
             output.append(img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
             if wipe:
-                os.remove(img0.origFileName)
-                os.remove(img1.origFileName)
+                output.append(img0.origFileName)
+                output.append(img1.origFileName)
             if opt.quality == 2:
                 img0b = image.ComicPage(splitter[0], opt.profileData, img0.fill)
                 applyImgOptimization(img0b, opt, img0)
@@ -397,14 +402,14 @@ def fileImgProcess(work):
                 img1b = image.ComicPage(splitter[1], opt.profileData, img1.fill)
                 applyImgOptimization(img1b, opt, img1)
                 output.append(img1b.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-                os.remove(img0.origFileName)
-                os.remove(img1.origFileName)
-            os.remove(img.origFileName)
+                output.append(img0.origFileName)
+                output.append(img1.origFileName)
+            output.append(img.origFileName)
         else:
             applyImgOptimization(img, opt)
             output.append(img.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
             if wipe:
-                os.remove(img.origFileName)
+                output.append(img.origFileName)
             if opt.quality == 2:
                 img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData, img.fill)
                 if img.rotated:
@@ -412,7 +417,7 @@ def fileImgProcess(work):
                     img2.rotated = True
                 applyImgOptimization(img2, opt, img)
                 output.append(img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-                os.remove(img.origFileName)
+                output.append(img.origFileName)
         return output
     except Exception:
         return str(sys.exc_info()[1])
@@ -946,8 +951,8 @@ def main(argv=None, qtGUI=None):
         return
     path = getWorkFolder(args[0])
     print("\nChecking images...")
-    detectCorruption(path + "/OEBPS/Images/", args[0])
-    checkComicInfo(path + "/OEBPS/Images/", args[0])
+    detectCorruption(os.path.join(path, "OEBPS", "Images"), args[0])
+    checkComicInfo(os.path.join(path, "OEBPS", "Images"), args[0])
     if options.webtoon:
         if options.customheight > 0:
             comic2panel.main(['-y ' + str(options.customheight), '-i', '-m', path], qtGUI)
@@ -957,7 +962,7 @@ def main(argv=None, qtGUI=None):
         print("\nProcessing images...")
         if GUI:
             GUI.progressBarTick.emit('Processing images')
-        dirImgProcess(path + "/OEBPS/Images/")
+        dirImgProcess(os.path.join(path, "OEBPS", "Images"))
     if GUI:
         GUI.progressBarTick.emit('1')
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
@@ -986,7 +991,7 @@ def main(argv=None, qtGUI=None):
                 filepath.append(getOutputFilename(args[0], options.output, '.cbz', ' ' + str(tomeNumber)))
             else:
                 filepath.append(getOutputFilename(args[0], options.output, '.cbz', ''))
-            makeZIP(tome + '_comic', tome + '/OEBPS/Images')
+            makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
         else:
             print("\nCreating EPUB structure...")
             genEpubStruct(tome, chapterNames)
@@ -1010,9 +1015,10 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
         if wantedname.endswith(ext):
             filename = os.path.abspath(wantedname)
         elif os.path.isdir(srcpath):
-            filename = os.path.abspath(options.output) + "/" + os.path.basename(srcpath) + ext
+            filename = os.path.join(os.path.abspath(options.output), os.path.basename(srcpath) + ext)
         else:
-            filename = os.path.abspath(options.output) + "/" + os.path.basename(os.path.splitext(srcpath)[0]) + ext
+            filename = os.path.join(os.path.abspath(options.output),
+                                    os.path.basename(os.path.splitext(srcpath)[0]) + ext)
     elif os.path.isdir(srcpath):
         filename = srcpath + tomeNumber + ext
     else:
