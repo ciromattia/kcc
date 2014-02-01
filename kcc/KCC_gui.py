@@ -450,9 +450,9 @@ class WorkerThread(QtCore.QThread):
             except Exception as err:
                 GUI.progress.content = ''
                 self.errors = True
-                type_, value_, traceback_ = sys.exc_info()
+                _, _, traceback = sys.exc_info()
                 MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
-                                   % (jobargv[-1], str(err), format_tb(traceback_)), 'error')
+                                   % (jobargv[-1], str(err), "".join(format_tb(traceback))), 'error')
                 MW.addMessage.emit('Failed to create EPUB!', 'error', False)
                 MW.addTrayMessage.emit('Failed to create EPUB!', 'Critical')
             if not self.conversionAlive:
