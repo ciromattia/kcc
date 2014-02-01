@@ -73,6 +73,7 @@ elif platform == "win32":
                                "copy_dependent_files": True,
                                "create_shared_zip": False,
                                "append_script_to_exe": True,
+                               "replace_paths": '*=',
                                "excludes": ['tkinter']}},
         executables=[Executable(MAIN,
                                 base=base,
