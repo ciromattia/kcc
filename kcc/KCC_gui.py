@@ -195,6 +195,7 @@ class VersionThread(QtCore.QThread):
 
     def run(self):
         try:
+            sleep(1)
             XML = urlopen('http://kcc.vulturis.eu/Version.php')
             XML = parse(XML)
         except Exception:
