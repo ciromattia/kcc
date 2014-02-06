@@ -78,6 +78,16 @@ if sys.platform.startswith('darwin'):
 elif sys.platform.startswith('win'):
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
+
+        # Implementing dummy stdout and stderr for frozen Windows release
+        class fakestd(object):
+            def write(self, string):
+                pass
+
+            def flush(self):
+                pass
+        sys.stdout = fakestd()
+        sys.stderr = fakestd()
     else:
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/;' + os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
