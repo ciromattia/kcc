@@ -673,7 +673,7 @@ def sanitizeTree(filetree):
                 newKey = os.path.join(root, slugified + splitname[1])
                 key = os.path.join(root, name)
                 if key != newKey:
-                    os.rename(key, newKey)
+                    os.replace(key, newKey)
         for name in dirs:
             if name.startswith('.'):
                 os.remove(os.path.join(root, name))
@@ -686,7 +686,7 @@ def sanitizeTree(filetree):
                 newKey = os.path.join(root, slugified)
                 key = os.path.join(root, name)
                 if key != newKey:
-                    os.rename(key, newKey)
+                    os.replace(key, newKey)
     return chapterNames
 
 
