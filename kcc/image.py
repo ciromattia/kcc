@@ -223,6 +223,9 @@ class ComicPage:
                 self.size[0] and self.image.size[1] <= self.size[1]:
             size = (self.size[0], self.size[1])
         elif qualityMode == 1:
+            # Forcing upscale to make sure that margins will be not too big
+            if not stretch:
+                upscale = True
             size = (self.panelviewsize[0], self.panelviewsize[1])
         elif qualityMode == 2 and not stretch and not upscale and self.image.size[0] <=\
                 self.size[0] and self.image.size[1] <= self.size[1]:
