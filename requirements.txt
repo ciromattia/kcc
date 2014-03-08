@@ -1,0 +1,4 @@
+Pillow==2.3.0
+Unidecode==0.04.14
+psutil==1.2.1
+python-slugify==0.0.7
