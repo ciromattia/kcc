@@ -339,6 +339,10 @@ The app relies and includes the following scripts/binaries:
 * Improved performance of WebToon splitter
 * Tweaked margin color detection
 
+####4.0.2:
+* Fixed some Windows and OSX specific bugs
+* Fixed problem with marigns when using HQ mode
+
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
