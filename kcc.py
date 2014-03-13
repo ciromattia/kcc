@@ -37,7 +37,7 @@ except ImportError:
     missing.append('PyQt5')
 try:
     # noinspection PyUnresolvedReferences
-    from psutil import TOTAL_PHYMEM, Popen
+    from psutil import virtual_memory, Popen
 except ImportError:
     missing.append('psutil')
 try:

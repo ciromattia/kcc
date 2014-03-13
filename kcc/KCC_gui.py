@@ -36,7 +36,7 @@ from subprocess import STDOUT, PIPE
 from PyQt5 import QtGui, QtCore, QtWidgets
 from xml.dom.minidom import parse
 from html.parser import HTMLParser
-from psutil import TOTAL_PHYMEM, Popen
+from psutil import virtual_memory, Popen
 from .shared import md5Checksum
 from . import comic2ebook
 from . import kindlesplit
@@ -338,7 +338,7 @@ class WorkerThread(QtCore.QThread):
         self.kindlegenErrorCode = [0]
         self.workerOutput = []
         # Let's make sure that we don't fill the memory
-        availableMemory = TOTAL_PHYMEM/1000000000
+        availableMemory = virtual_memory().total/1000000000
         if availableMemory <= 2:
             self.threadNumber = 1
         elif 2 < availableMemory <= 4:
