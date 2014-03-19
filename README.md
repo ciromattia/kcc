@@ -53,8 +53,8 @@ sudo pip3 install pillow python-slugify psutil
 ```
 
 ### For freezing code:
-- Windows - [cx_Freeze](https://bitbucket.org/anthony_tuininga/cx_freeze) version 4.3.2 with [this](https://bitbucket.org/anthony_tuininga/cx_freeze/pull-request/29/conversions-to-support-untranslated-wide) patchset.
-- OS X - [py2app](https://bitbucket.org/ronaldoussoren/py2app) HEAD version.
+- Windows - [cx_Freeze](https://bitbucket.org/anthony_tuininga/cx_freeze) HEAD version with [this](https://bitbucket.org/anthony_tuininga/cx_freeze/pull-request/29/conversions-to-support-untranslated-wide) patchset.
+- OS X - [py2app](https://bitbucket.org/ronaldoussoren/py2app) 0.8+
 
 ## USAGE
 
@@ -63,10 +63,10 @@ After completed conversion you should find ready file alongside the original inp
 
 Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more details.
 
-### Standalone `comic2ebook.py` usage:
+### Standalone `kcc-c2e.py` usage:
 
 ```
-Usage: comic2ebook.py [options] comic_file|comic_folder
+Usage: kcc-c2e [options] comic_file|comic_folder
 
 Options:
   MAIN:
@@ -108,10 +108,10 @@ Options:
     -h, --help          Show this help message and exit
 ```
 
-### Standalone `comic2panel.py` usage:
+### Standalone `kcc-c2p.py` usage:
 
 ```
-Usage: comic2panel.py [options] comic_folder
+Usage: kcc-c2p [options] comic_folder
 
 Options:
   MANDATORY:

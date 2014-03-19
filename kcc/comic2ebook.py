@@ -883,7 +883,7 @@ def Usage():
 
 def main(argv=None, qtGUI=None):
     global parser, options, GUI
-    parser = OptionParser(usage="Usage: %prog [options] comic_file|comic_folder", add_help_option=False)
+    parser = OptionParser(usage="Usage: kcc-c2e [options] comic_file|comic_folder", add_help_option=False)
     mainOptions = OptionGroup(parser, "MAIN")
     processingOptions = OptionGroup(parser, "PROCESSING")
     outputOptions = OptionGroup(parser, "OUTPUT SETTINGS")
