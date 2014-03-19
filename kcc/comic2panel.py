@@ -213,7 +213,7 @@ def Copyright():
 
 def main(argv=None, qtGUI=None):
     global options, GUI, splitWorkerPool, splitWorkerOutput, mergeWorkerPool, mergeWorkerOutput
-    parser = OptionParser(usage="Usage: %prog [options] comic_folder", add_help_option=False)
+    parser = OptionParser(usage="Usage: kcc-c2p [options] comic_folder", add_help_option=False)
     mainOptions = OptionGroup(parser, "MANDATORY")
     otherOptions = OptionGroup(parser, "OTHER")
     mainOptions.add_option("-y", "--height", type="int", dest="height", default=0,
