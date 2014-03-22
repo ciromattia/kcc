@@ -36,7 +36,7 @@ from subprocess import STDOUT, PIPE
 from PyQt5 import QtGui, QtCore, QtWidgets
 from xml.dom.minidom import parse
 from html.parser import HTMLParser
-from psutil import virtual_memory, Popen
+from psutil import virtual_memory, Popen, Process, BELOW_NORMAL_PRIORITY_CLASS
 from .shared import md5Checksum
 from . import comic2ebook
 from . import kindlesplit
@@ -1099,6 +1099,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.tray = SystemTrayIcon()
             self.tray.show()
             MW.addTrayMessage.connect(self.tray.addTrayMessage)
+            # Decrease priority to increase system responsiveness during conversion
+            self.p = Process(os.getpid())
+            self.p.nice(BELOW_NORMAL_PRIORITY_CLASS)
+            self.p.ionice(1)
 
         self.profiles = {
             "Kindle Paperwhite": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
