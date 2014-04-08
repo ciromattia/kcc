@@ -51,21 +51,27 @@ def buildHTML(path, imgfile, imgfilepath):
     imgfilepath = md5Checksum(imgfilepath)
     filename = getImageFileName(imgfile)
     if filename is not None:
-        if "Rotated" in theGreatIndex[imgfilepath]:
-            rotatedPage = True
+        if options.imgproc:
+            if "Rotated" in theGreatIndex[imgfilepath]:
+                rotatedPage = True
+            else:
+                rotatedPage = False
+            if "NoPanelView" in theGreatIndex[imgfilepath]:
+                noPV = True
+            else:
+                noPV = False
+            if "NoHorizontalPanelView" in theGreatIndex[imgfilepath]:
+                noHorizontalPV = True
+            else:
+                noHorizontalPV = False
+            if "NoVerticalPanelView" in theGreatIndex[imgfilepath]:
+                noVerticalPV = True
+            else:
+                noVerticalPV = False
         else:
             rotatedPage = False
-        if "NoPanelView" in theGreatIndex[imgfilepath]:
-            noPV = True
-        else:
             noPV = False
-        if "NoHorizontalPanelView" in theGreatIndex[imgfilepath]:
-            noHorizontalPV = True
-        else:
             noHorizontalPV = False
-        if "NoVerticalPanelView" in theGreatIndex[imgfilepath]:
-            noVerticalPV = True
-        else:
             noVerticalPV = False
         htmlpath = ''
         postfix = ''
@@ -163,30 +169,31 @@ def buildHTML(path, imgfile, imgfilepath):
 
 
 def checkMargins(path):
-    for flag in theGreatIndex[path]:
-        if "Margins-" in flag:
-            flag = flag.split('-')
-            xl = flag[1]
-            yu = flag[2]
-            xr = flag[3]
-            yd = flag[4]
-            if xl != "0":
-                xl = "-" + str(float(xl)/100) + "%"
-            else:
-                xl = "0%"
-            if xr != "0":
-                xr = "-" + str(float(xr)/100) + "%"
-            else:
-                xr = "0%"
-            if yu != "0":
-                yu = "-" + str(float(yu)/100) + "%"
-            else:
-                yu = "0%"
-            if yd != "0":
-                yd = "-" + str(float(yd)/100) + "%"
-            else:
-                yd = "0%"
-            return xl, yu, xr, yd
+    if options.imgproc:
+        for flag in theGreatIndex[path]:
+            if "Margins-" in flag:
+                flag = flag.split('-')
+                xl = flag[1]
+                yu = flag[2]
+                xr = flag[3]
+                yd = flag[4]
+                if xl != "0":
+                    xl = "-" + str(float(xl)/100) + "%"
+                else:
+                    xl = "0%"
+                if xr != "0":
+                    xr = "-" + str(float(xr)/100) + "%"
+                else:
+                    xr = "0%"
+                if yu != "0":
+                    yu = "-" + str(float(yu)/100) + "%"
+                else:
+                    yu = "0%"
+                if yd != "0":
+                    yd = "-" + str(float(yd)/100) + "%"
+                else:
+                    yd = "0%"
+                return xl, yu, xr, yd
     return '0%', '0%', '0%', '0%'
 
 
