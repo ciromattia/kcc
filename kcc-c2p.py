@@ -18,15 +18,15 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-import sys
-if sys.version_info[0] != 3:
-    print('ERROR: This is Python 3 script!')
-    exit(1)
-
 __version__ = '4.0.2'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
 __docformat__ = 'restructuredtext en'
+
+import sys
+if sys.version_info[0] != 3:
+    print('ERROR: This is Python 3 script!')
+    exit(1)
 
 # Dependiences check
 missing = []

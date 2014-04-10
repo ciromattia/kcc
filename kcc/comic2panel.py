@@ -124,7 +124,7 @@ def splitImage(work):
         path = work[0]
         name = work[1]
         opt = work[2]
-        # Harcoded opttions
+        # Hardcoded options
         threshold = 1.0
         delta = 15
         fileExpanded = os.path.splitext(name)
