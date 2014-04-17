@@ -540,7 +540,7 @@ class WorkerThread(QtCore.QThread):
                             MW.addTrayMessage.emit('KindleUnpack failed to clean MOBI file!', 'Critical')
                     else:
                         GUI.progress.content = ''
-                        epubSize = (os.path.getsize(self.kindlegenErrorCode[2]))/1024/1024
+                        epubSize = (os.path.getsize(self.kindlegenErrorCode[2]))//1024//1024
                         for item in outputPath:
                             if os.path.exists(item):
                                 os.remove(item)
