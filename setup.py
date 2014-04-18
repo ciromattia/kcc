@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-cx_Freeze build script for KCC.
+cx_Freeze/py2app build script for KCC.
 
 Usage (Mac OS X):
     python setup.py py2app

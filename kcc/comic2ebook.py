@@ -308,7 +308,7 @@ def applyImgOptimization(img, opt, hqImage=None):
     if not img.fill:
         img.getImageFill(opt.webtoon)
     if not opt.webtoon:
-        img.cropWhiteSpace(10.0)
+        img.cropWhiteSpace()
     if opt.cutpagenumbers and not opt.webtoon:
         img.cutPageNumber()
     img.optimizeImage(opt.gamma)
@@ -1016,6 +1016,8 @@ def main(argv=None, qtGUI=None):
 
 
 def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
+    if srcpath[-1] == os.path.sep:
+        srcpath = srcpath[:-1]
     if not ext.startswith('.'):
         ext = '.' + ext
     if wantedname is not None:
