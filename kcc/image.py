@@ -362,27 +362,28 @@ class ComicPage:
             self.image = self.image.crop((0, 0, widthImg, heightImg - diff))
         return self.image
 
-    def cropWhiteSpace(self, threshold):
+    def cropWhiteSpace(self):
         if ImageChops.invert(self.image).getbbox() is not None:
             widthImg, heightImg = self.image.size
             delta = 10
             diff = delta
+            fixedThreshold = 0.1
             # top
-            while ImageStat.Stat(self.image.crop((0, 0, widthImg, diff))).var[0] < threshold and diff < heightImg:
+            while ImageStat.Stat(self.image.crop((0, 0, widthImg, diff))).var[0] < fixedThreshold and diff < heightImg:
                 diff += delta
             diff -= delta
             self.image = self.image.crop((0, diff, widthImg, heightImg))
             widthImg, heightImg = self.image.size
             diff = delta
             # left
-            while ImageStat.Stat(self.image.crop((0, 0, diff, heightImg))).var[0] < threshold and diff < widthImg:
+            while ImageStat.Stat(self.image.crop((0, 0, diff, heightImg))).var[0] < fixedThreshold and diff < widthImg:
                 diff += delta
             diff -= delta
             self.image = self.image.crop((diff, 0, widthImg, heightImg))
             widthImg, heightImg = self.image.size
             diff = delta
             # down
-            while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] < threshold\
+            while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] < fixedThreshold\
                     and diff < heightImg:
                 diff += delta
             diff -= delta
@@ -390,7 +391,7 @@ class ComicPage:
             widthImg, heightImg = self.image.size
             diff = delta
             # right
-            while ImageStat.Stat(self.image.crop((widthImg - diff, 0, widthImg, heightImg))).var[0] < threshold\
+            while ImageStat.Stat(self.image.crop((widthImg - diff, 0, widthImg, heightImg))).var[0] < fixedThreshold\
                     and diff < widthImg:
                 diff += delta
             diff -= delta
