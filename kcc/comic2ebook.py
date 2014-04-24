@@ -729,7 +729,7 @@ def splitDirectory(path, mode):
         for root, dirs, files in walkLevel(path, 0):
             for name in files:
                 size = os.path.getsize(os.path.join(root, name))
-                if currentSize + size > 262144000:
+                if currentSize + size > 314572800:
                     currentTarget, pathRoot = createNewTome()
                     output.append(pathRoot)
                     currentSize = size
@@ -741,7 +741,7 @@ def splitDirectory(path, mode):
         for root, dirs, files in walkLevel(path, 0):
             for name in dirs:
                 size = getDirectorySize(os.path.join(root, name))
-                if currentSize + size > 262144000:
+                if currentSize + size > 314572800:
                     currentTarget, pathRoot = createNewTome()
                     output.append(pathRoot)
                     currentSize = size
@@ -755,7 +755,7 @@ def splitDirectory(path, mode):
             for name in dirs:
                 size = getDirectorySize(os.path.join(root, name))
                 currentSize = 0
-                if size > 262144000:
+                if size > 314572800:
                     if not firstTome:
                         currentTarget, pathRoot = createNewTome()
                         output.append(pathRoot)
@@ -764,7 +764,7 @@ def splitDirectory(path, mode):
                     for rootInside, dirsInside, filesInside in walkLevel(os.path.join(root, name), 0):
                         for nameInside in dirsInside:
                             size = getDirectorySize(os.path.join(rootInside, nameInside))
-                            if currentSize + size > 262144000:
+                            if currentSize + size > 314572800:
                                 currentTarget, pathRoot = createNewTome()
                                 output.append(pathRoot)
                                 currentSize = size
@@ -784,7 +784,7 @@ def splitDirectory(path, mode):
 
 #noinspection PyUnboundLocalVariable
 def preSplitDirectory(path):
-    if getDirectorySize(os.path.join(path, 'OEBPS', 'Images')) > 262144000:
+    if getDirectorySize(os.path.join(path, 'OEBPS', 'Images')) > 314572800:
         # Detect directory stucture
         for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 0):
             subdirectoryNumber = len(dirs)

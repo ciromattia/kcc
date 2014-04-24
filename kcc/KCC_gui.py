@@ -285,7 +285,8 @@ class KindleGenThread(QtCore.QRunnable):
         kindlegenError = ''
         try:
             if os.path.getsize(self.work) < 367001600:
-                output = Popen('kindlegen -locale en "' + self.work + '"', stdout=PIPE, stderr=STDOUT, shell=True)
+                output = Popen('kindlegen -dont_append_source -locale en "' + self.work + '"', stdout=PIPE,
+                               stderr=STDOUT, shell=True)
                 for line in output.stdout:
                     line = line.decode('utf-8')
                     # ERROR: Generic error
@@ -503,6 +504,7 @@ class WorkerThread(QtCore.QThread):
                         for item in outputPath:
                             if os.path.exists(item):
                                 os.remove(item)
+                            sleep(1)
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
                         self.clean()
@@ -557,6 +559,7 @@ class WorkerThread(QtCore.QThread):
                         for item in outputPath:
                             if os.path.exists(item):
                                 os.remove(item)
+                            sleep(1)
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
                         MW.addMessage.emit('KindleGen failed to create ' + extensionC + '!', 'error', False)
@@ -565,7 +568,7 @@ class WorkerThread(QtCore.QThread):
                             MW.showDialog.emit("KindleGen error:\n\n" + self.kindlegenErrorCode[1], 'error')
                         if self.kindlegenErrorCode[0] == 23026:
                             MW.addMessage.emit('Created EPUB file was too big.', 'error', False)
-                            MW.addMessage.emit('EPUB file: ' + str(epubSize) + 'MB. Supported size: ~300MB.', 'error',
+                            MW.addMessage.emit('EPUB file: ' + str(epubSize) + 'MB. Supported size: ~350MB.', 'error',
                                                False)
                 else:
                     for item in outputPath:
