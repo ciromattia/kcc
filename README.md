@@ -40,8 +40,8 @@ You can find the latest released binary at the following links:
 - [7za](http://www.7-zip.org/download.html) *(For 7z/CB7 support)*
 
 ### For running from source:
-- Python 3.3
-- [PyQt5](http://www.riverbankcomputing.co.uk/software/pyqt/download5)
+- Python 3.3+
+- [PyQt5](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.2.0+
 - [Pillow](http://pypi.python.org/pypi/Pillow/) 2.3.0+
 - [psutil](https://pypi.python.org/pypi/psutil) 2.0+
 - [python-slugify](http://pypi.python.org/pypi/python-slugify)
@@ -126,15 +126,15 @@ Options:
 ```
 
 ## CREDITS
-**KCC** is made by [Ciro Mattia Gonano](http://github.com/ciromattia) and [Paweł Jastrzębski](http://github.com/AcidWeb)
+**KCC** is made by [Ciro Mattia Gonano](http://github.com/ciromattia) and [Paweł Jastrzębski](http://github.com/AcidWeb).
 
-This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published [here](http://www.mobileread.com/forums/showthread.php?t=192783))
+This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published [here](http://www.mobileread.com/forums/showthread.php?t=192783)).
 
 The app relies and includes the following scripts/binaries:
 
- - `KindleUnpack` script by Charles **M. Hannum, P. Durrant, K. Hendricks, S. Siebert, fandrieu, DiapDealer, nickredding**. Released with GPLv3 License.
+ - `KindleUnpack` script by Charles **M. Hannum, P. Durrant, K. Hendricks, S. Siebert, fandrieu, DiapDealer, nickredding**. Released with GPL-3 License.
  - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>. Released with ISC License.
- - `image.py` class from **Alex Yatskov**'s [Mangle](http://foosoft.net/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches.
+ - `image.py` class from **Alex Yatskov**'s [Mangle](https://github.com/FooSoft/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches.
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
 ## SAMPLE FILES CREATED BY KCC
@@ -348,4 +348,5 @@ Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
 ## COPYRIGHT
 Copyright (c) 2012-2014 Ciro Mattia Gonano and Paweł Jastrzębski.
+
 **KCC** is released under GNU General Public License v3 (GPL-3). See LICENSE.txt for further details.
