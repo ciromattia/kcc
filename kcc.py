@@ -28,30 +28,34 @@ if sys.version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
     exit(1)
 
-# Dependiences check
+# Dependency check
 missing = []
 try:
     # noinspection PyUnresolvedReferences
-    from PyQt5 import QtCore, QtGui, QtNetwork, QtWidgets
+    from PyQt5 import QtCore, QtNetwork, QtWidgets
+    if tuple(map(int, ('5.2.1'.split(".")))) > tuple(map(int, (QtCore.qVersion().split(".")))):
+        missing.append('PyQt5 5.2.1+')
 except ImportError:
-    missing.append('PyQt5')
+    missing.append('PyQt5 5.2.1+')
 try:
     # noinspection PyUnresolvedReferences
-    from psutil import virtual_memory, Popen
+    import psutil
+    if tuple(map(int, ('2.0.0'.split(".")))) > tuple(map(int, psutil.version_info)):
+        missing.append('psutil 2.0.0+')
 except ImportError:
-    missing.append('psutil')
+    missing.append('psutil 2.0.0+')
 try:
     # noinspection PyUnresolvedReferences
-    from slugify import slugify
-except ImportError:
-    missing.append('python-slugify')
-try:
-    # noinspection PyUnresolvedReferences
-    from PIL import Image, ImageOps, ImageStat, ImageChops
-    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
+    import PIL
+    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (PIL.PILLOW_VERSION.split(".")))):
         missing.append('Pillow 2.3.0+')
 except ImportError:
     missing.append('Pillow 2.3.0+')
+try:
+    # noinspection PyUnresolvedReferences
+    import slugify
+except ImportError:
+    missing.append('python-slugify')
 if len(missing) > 0:
     try:
         # noinspection PyUnresolvedReferences

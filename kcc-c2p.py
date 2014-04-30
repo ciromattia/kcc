@@ -28,12 +28,12 @@ if sys.version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
     exit(1)
 
-# Dependiences check
+# Dependency check
 missing = []
 try:
     # noinspection PyUnresolvedReferences
-    from PIL import Image, ImageOps, ImageStat, ImageChops
-    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (Image.PILLOW_VERSION.split(".")))):
+    import PIL
+    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (PIL.PILLOW_VERSION.split(".")))):
         missing.append('Pillow 2.3.0+')
 except ImportError:
     missing.append('Pillow 2.3.0+')
