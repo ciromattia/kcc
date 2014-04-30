@@ -49,7 +49,7 @@ if platform == "darwin":
                     LSEnvironment=dict(
                         PATH='/usr/local/bin:/usr/bin:/bin'
                     ),
-                    NSHumanReadableCopyright='GNU General Public License v3 (GPL-3)'
+                    NSHumanReadableCopyright='ISC License (ISCL)'
                 )
             )
         )
@@ -91,7 +91,7 @@ setup(
     author="Ciro Mattia Gonano, Pawel Jastrzebski",
     author_email="ciromattia@gmail.com, pawelj@vulturis.eu",
     description="A tool to convert comics (CBR/CBZ/PDFs/image folders) to MOBI.",
-    license="GNU General Public License v3 (GPL-3)",
+    license="ISC License (ISCL)",
     keywords="kindle comic mobipocket mobi cbz cbr manga",
     url="http://github.com/ciromattia/kcc",
     **extra_options
