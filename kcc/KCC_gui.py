@@ -1013,8 +1013,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                                            'customHeight': GUI.customHeight.text(),
                                            'GammaSlider': float(self.GammaValue)*100})
         self.settings.sync()
-        if not sys.platform.startswith('linux'):
-            self.tray.hide()
+        self.tray.hide()
 
     def handleMessage(self, message):
         MW.raise_()
@@ -1089,6 +1088,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.versionCheck = VersionThread()
         self.contentServer = WebServerThread()
         self.progress = ProgressThread()
+        self.tray = SystemTrayIcon()
         self.conversionAlive = False
         self.needClean = True
         self.GammaValue = 1.0
@@ -1099,9 +1099,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.statusBarFontSize = 10
             self.statusBarStyle = 'QLabel{padding-top:2px;padding-bottom:3px;}'
             self.ProgressBar.setStyleSheet('QProgressBar{padding-top:5px;text-align:center;}')
-            self.tray = SystemTrayIcon()
-            self.tray.show()
-            MW.addTrayMessage.connect(self.tray.addTrayMessage)
         elif sys.platform.startswith('linux'):
             self.listFontSize = 8
             self.statusBarFontSize = 8
@@ -1112,9 +1109,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.statusBarFontSize = 8
             self.statusBarStyle = 'QLabel{padding-top:3px;padding-bottom:3px}'
             self.statusBar.setStyleSheet('QStatusBar::item{border:0px;border-top:2px solid #C2C7CB;}')
-            self.tray = SystemTrayIcon()
-            self.tray.show()
-            MW.addTrayMessage.connect(self.tray.addTrayMessage)
             # Decrease priority to increase system responsiveness during conversion
             from psutil import BELOW_NORMAL_PRIORITY_CLASS
             self.p = Process(os.getpid())
@@ -1259,6 +1253,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW.forceShutdown.connect(self.forceShutdown)
         MW.dialogAnswer.connect(self.versionCheck.getNewVersion)
         MW.closeEvent = self.saveSettings
+        MW.addTrayMessage.connect(self.tray.addTrayMessage)
 
         GUI.Form.setAcceptDrops(True)
         GUI.Form.dragEnterEvent = self.dragAndDrop
@@ -1301,6 +1296,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.worker.sync()
         self.versionCheck.start()
         self.contentServer.start()
+        self.tray.show()
         MW.setWindowTitle("Kindle Comic Converter " + __version__)
         MW.show()
         MW.raise_()
