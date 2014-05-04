@@ -58,8 +58,8 @@ class Icons:
         self.deviceOther = QtGui.QIcon()
         self.deviceOther.addPixmap(QtGui.QPixmap(":/Devices/icons/Other.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
-        self.MOBIAZW3Format = QtGui.QIcon()
-        self.MOBIAZW3Format.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.MOBIFormat = QtGui.QIcon()
+        self.MOBIFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.CBZFormat = QtGui.QIcon()
         self.CBZFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/CBZ.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.EPUBFormat = QtGui.QIcon()
@@ -100,9 +100,6 @@ class WebServerHandler(BaseHTTPRequestHandler):
             if self.path.endswith('.mobi'):
                 mimetype = 'application/x-mobipocket-ebook'
                 sendReply = True
-            if self.path.endswith('.azw3'):
-                mimetype = 'application/x-mobipocket-ebook'
-                sendReply = True
             if self.path.endswith('.epub'):
                 mimetype = 'application/epub+zip'
                 sendReply = True
@@ -133,12 +130,9 @@ class WebServerHandler(BaseHTTPRequestHandler):
                                  '</body>\n'
                                  '</html>\n', 'UTF-8'))
             elif sendReply:
-                # Some Kindle browsers don't suport AZW3 extension
-                filename = unquote(self.path[1:]).replace('.azw3', '.azw')
                 outputFile = GUI.completedWork[unquote(self.path[1:])]
                 fp = open(outputFile, 'rb')
                 self.send_response(200)
-                self.send_header('Content-disposition', 'attachment;filename="' + filename + '"')
                 self.send_header('Content-type', mimetype)
                 self.send_header('Content-Length', os.path.getsize(outputFile))
                 self.end_headers()
@@ -317,17 +311,19 @@ class KindleUnpackThread(QtCore.QRunnable):
 
     def run(self):
         item = self.work[0]
-        extension = self.work[1]
+        profile = self.work[1]
         os.remove(item)
-        if extension == '.azw3':
-            newKindle = True
-        else:
-            newKindle = False
         mobiPath = item.replace('.epub', '.mobi')
         move(mobiPath, mobiPath + '_toclean')
         try:
+            # MOBI file produced by KindleGen is hybrid. KF8 + M7 + Source header
+            # KindleSplit is removing redundant data as we need only KF8 part for new Kindle models
+            if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX', 'KFHDX8', 'KFA']:
+                newKindle = True
+            else:
+                newKindle = False
             mobisplit = kindlesplit.mobi_split(mobiPath + '_toclean', newKindle)
-            open(mobiPath.replace('.mobi', extension), 'wb').write(mobisplit.getResult())
+            open(mobiPath, 'wb').write(mobisplit.getResult())
             self.signals.result.emit([True])
         except Exception as err:
             self.signals.result.emit([False, format(err)])
@@ -378,13 +374,6 @@ class WorkerThread(QtCore.QThread):
     def run(self):
         MW.modeConvert.emit(0)
         profile = GUI.profiles[str(GUI.DeviceBox.currentText())]['Label']
-        # Extenstion is purely cosmetic
-        if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX', 'KFHDX8', 'KFA']:
-            extension = '.azw3'
-            extensionC = 'AZW3'
-        else:
-            extension = '.mobi'
-            extensionC = 'MOBI'
         argv = ["--profile=" + profile]
         currentJobs = []
         if GUI.MangaBox.isChecked():
@@ -420,7 +409,7 @@ class WorkerThread(QtCore.QThread):
             if float(GUI.GammaValue) > 0.09:
                 # noinspection PyTypeChecker
                 argv.append("--gamma=" + GUI.GammaValue)
-            if str(GUI.FormatBox.currentText()) == 'MOBI/AZW3':
+            if str(GUI.FormatBox.currentText()) == 'MOBI':
                 argv.append("--batchsplit")
         if GUI.currentMode > 2:
             argv.append("--customwidth=" + str(GUI.customWidth.text()))
@@ -480,12 +469,12 @@ class WorkerThread(QtCore.QThread):
                     MW.addMessage.emit('Creating CBZ files... <b>Done!</b>', 'info', True)
                 else:
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
-                if str(GUI.FormatBox.currentText()) == 'MOBI/AZW3':
-                    MW.progressBarTick.emit('Creating ' + extensionC + ' files')
+                if str(GUI.FormatBox.currentText()) == 'MOBI':
+                    MW.progressBarTick.emit('Creating MOBI files')
                     MW.progressBarTick.emit(str(len(outputPath)*2+1))
                     MW.progressBarTick.emit('tick')
-                    MW.addMessage.emit('Creating ' + extensionC + ' files', 'info', False)
-                    GUI.progress.content = 'Creating ' + extensionC + ' files'
+                    MW.addMessage.emit('Creating MOBI files', 'info', False)
+                    GUI.progress.content = 'Creating MOBI files'
                     self.workerOutput = []
                     # Number of KindleGen threads depends on the size of RAM
                     self.pool.setMaxThreadCount(self.threadNumber)
@@ -511,15 +500,15 @@ class WorkerThread(QtCore.QThread):
                         return
                     if self.kindlegenErrorCode[0] == 0:
                         GUI.progress.content = ''
-                        MW.addMessage.emit('Creating ' + extensionC + ' files... <b>Done!</b>', 'info', True)
-                        MW.addMessage.emit('Cleaning ' + extensionC + ' files', 'info', False)
-                        GUI.progress.content = 'Cleaning ' + extensionC + ' files'
+                        MW.addMessage.emit('Creating MOBI files... <b>Done!</b>', 'info', True)
+                        MW.addMessage.emit('Cleaning MOBI files', 'info', False)
+                        GUI.progress.content = 'Cleaning MOBI files'
                         self.workerOutput = []
                         # Multithreading KindleUnpack in current form is a waste of resources.
                         # Unless we higly optimise KindleUnpack or drop 32bit support this will not change.
                         self.pool.setMaxThreadCount(1)
                         for item in outputPath:
-                            worker = KindleUnpackThread([item, extension])
+                            worker = KindleUnpackThread([item, profile])
                             worker.signals.result.connect(self.addResult)
                             self.pool.start(worker)
                         self.pool.waitForDone()
@@ -533,7 +522,6 @@ class WorkerThread(QtCore.QThread):
                                 GUI.progress.content = ''
                                 mobiPath = item.replace('.epub', '.mobi')
                                 os.remove(mobiPath + '_toclean')
-                                mobiPath = item.replace('.epub', extension)
                                 if GUI.targetDirectory and GUI.targetDirectory != os.path.split(mobiPath)[0]:
                                     try:
                                         move(mobiPath, GUI.targetDirectory)
@@ -541,18 +529,17 @@ class WorkerThread(QtCore.QThread):
                                     except Exception:
                                         pass
                                 GUI.completedWork[os.path.basename(mobiPath)] = mobiPath
-                            MW.addMessage.emit('Cleaning ' + extensionC + ' files... <b>Done!</b>', 'info', True)
+                            MW.addMessage.emit('Cleaning MOBI files... <b>Done!</b>', 'info', True)
                         else:
                             GUI.progress.content = ''
                             for item in outputPath:
-                                mobiPath = item.replace('.epub', extension)
+                                mobiPath = item.replace('.epub', '.mobi')
                                 if os.path.exists(mobiPath):
                                     os.remove(mobiPath)
-                                mobiPath = item.replace('.epub', '.mobi')
                                 if os.path.exists(mobiPath + '_toclean'):
                                     os.remove(mobiPath + '_toclean')
-                            MW.addMessage.emit('KindleUnpack failed to clean ' + extensionC + ' file!', 'error', False)
-                            MW.addTrayMessage.emit('KindleUnpack failed to clean ' + extensionC + ' file!', 'Critical')
+                            MW.addMessage.emit('KindleUnpack failed to clean MOBI file!', 'error', False)
+                            MW.addTrayMessage.emit('KindleUnpack failed to clean MOBI file!', 'Critical')
                     else:
                         GUI.progress.content = ''
                         epubSize = (os.path.getsize(self.kindlegenErrorCode[2]))//1024//1024
@@ -562,8 +549,8 @@ class WorkerThread(QtCore.QThread):
                             sleep(1)
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
-                        MW.addMessage.emit('KindleGen failed to create ' + extensionC + '!', 'error', False)
-                        MW.addTrayMessage.emit('KindleGen failed to create ' + extensionC + '!', 'Critical')
+                        MW.addMessage.emit('KindleGen failed to create MOBI!', 'error', False)
+                        MW.addTrayMessage.emit('KindleGen failed to create MOBI!', 'Critical')
                         if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':
                             MW.showDialog.emit("KindleGen error:\n\n" + self.kindlegenErrorCode[1], 'error')
                         if self.kindlegenErrorCode[0] == 23026:
@@ -1193,7 +1180,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
         if kindleGenExitCode.wait() == 0:
             self.KindleGen = True
-            formats = ['MOBI/AZW3', 'EPUB', 'CBZ']
+            formats = ['MOBI', 'EPUB', 'CBZ']
             versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
             for line in versionCheck.stdout:
                 line = line.decode("utf-8")
@@ -1201,7 +1188,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if tuple(map(int, (versionCheck.split(".")))) < tuple(map(int, ('2.9'.split(".")))):
                         self.addMessage('Your <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                        '1000765211">kindlegen</a> is outdated! Creating MOBI/AZW3 might fail.'
+                                        '1000765211">kindlegen</a> is outdated! Creating MOBI might fail.'
                                         ' Please update <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
                                         '1000765211">kindlegen</a> from Amazon\'s website.', 'warning')
                     break
@@ -1210,10 +1197,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
             formats = ['EPUB', 'CBZ']
             if sys.platform.startswith('win'):
                 self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
-                                'kindlegen</a> in KCC directory! MOBI/AZW3 creation will be disabled.', 'warning')
+                                'kindlegen</a> in KCC directory! MOBI creation will be disabled.', 'warning')
             else:
                 self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
-                                'kindlegen</a> in PATH! MOBI/AZW3 creation will be disabled.', 'warning')
+                                'kindlegen</a> in PATH! MOBI creation will be disabled.', 'warning')
         rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
         rarExitCode = rarExitCode.wait()
         if rarExitCode == 0 or rarExitCode == 7:
@@ -1269,7 +1256,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             else:
                 GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
         for f in formats:
-            GUI.FormatBox.addItem(eval('self.icons.' + f.replace('/', '') + 'Format'), f)
+            GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
         if self.lastDevice > GUI.DeviceBox.count():
             self.lastDevice = 0
         if profilesGUI[self.lastDevice] == "Separator":
