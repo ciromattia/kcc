@@ -506,7 +506,7 @@ class WorkerThread(QtCore.QThread):
                         self.pool.waitForDone()
                         sleep(0.5)
                         for success in self.workerOutput:
-                            if not success:
+                            if not success[0]:
                                 self.errors = True
                                 break
                         if not self.errors:

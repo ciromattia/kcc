@@ -140,7 +140,7 @@ class DualMobiMetaFix:
         self.datain = open(infile, 'rb').read()
         self.datain_rec0 = readsection(self.datain, 0)
         # noinspection PyArgumentList
-        self.asin = bytes(uuid4(), 'UTF-8')
+        self.asin = bytes(str(uuid4()), 'UTF-8')
 
         # in the first mobi header
         # add 501 to "EBOK", add 113 as asin, add 504 as asin
