@@ -39,7 +39,7 @@ from html.parser import HTMLParser
 from psutil import virtual_memory, Popen, Process
 from .shared import md5Checksum
 from . import comic2ebook
-from . import kindlesplit
+from . import dualmetafix
 from . import KCC_rc_web
 if sys.platform.startswith('darwin'):
     from . import KCC_ui_osx as KCC_ui
@@ -303,27 +303,20 @@ class KindleGenThread(QtCore.QRunnable):
             self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
 
 
-class KindleUnpackThread(QtCore.QRunnable):
+class DualMetaFixThread(QtCore.QRunnable):
     def __init__(self, batch):
-        super(KindleUnpackThread, self).__init__()
+        super(DualMetaFixThread, self).__init__()
         self.signals = WorkerSignals()
         self.work = batch
 
     def run(self):
-        item = self.work[0]
-        profile = self.work[1]
+        item = self.work
         os.remove(item)
         mobiPath = item.replace('.epub', '.mobi')
         move(mobiPath, mobiPath + '_toclean')
         try:
-            # MOBI file produced by KindleGen is hybrid. KF8 + M7 + Source header
-            # KindleSplit is removing redundant data as we need only KF8 part for new Kindle models
-            if profile in ['K345', 'KHD', 'KF', 'KFHD', 'KFHD8', 'KFHDX', 'KFHDX8', 'KFA']:
-                newKindle = True
-            else:
-                newKindle = False
-            mobisplit = kindlesplit.mobi_split(mobiPath + '_toclean', newKindle)
-            open(mobiPath, 'wb').write(mobisplit.getResult())
+            mobiedit = dualmetafix.DualMobiMetaFix(mobiPath + '_toclean')
+            open(mobiPath, 'wb').write(mobiedit.getresult())
             self.signals.result.emit([True])
         except Exception as err:
             self.signals.result.emit([False, format(err)])
@@ -501,14 +494,13 @@ class WorkerThread(QtCore.QThread):
                     if self.kindlegenErrorCode[0] == 0:
                         GUI.progress.content = ''
                         MW.addMessage.emit('Creating MOBI files... <b>Done!</b>', 'info', True)
-                        MW.addMessage.emit('Cleaning MOBI files', 'info', False)
-                        GUI.progress.content = 'Cleaning MOBI files'
+                        MW.addMessage.emit('Processing MOBI files', 'info', False)
+                        GUI.progress.content = 'Processing MOBI files'
                         self.workerOutput = []
-                        # Multithreading KindleUnpack in current form is a waste of resources.
-                        # Unless we higly optimise KindleUnpack or drop 32bit support this will not change.
+                        # DualMetaFix is very fast and there is not reason to use multithreading.
                         self.pool.setMaxThreadCount(1)
                         for item in outputPath:
-                            worker = KindleUnpackThread([item, profile])
+                            worker = DualMetaFixThread(item)
                             worker.signals.result.connect(self.addResult)
                             self.pool.start(worker)
                         self.pool.waitForDone()
@@ -529,7 +521,7 @@ class WorkerThread(QtCore.QThread):
                                     except Exception:
                                         pass
                                 GUI.completedWork[os.path.basename(mobiPath)] = mobiPath
-                            MW.addMessage.emit('Cleaning MOBI files... <b>Done!</b>', 'info', True)
+                            MW.addMessage.emit('Processing MOBI files... <b>Done!</b>', 'info', True)
                         else:
                             GUI.progress.content = ''
                             for item in outputPath:
@@ -538,8 +530,8 @@ class WorkerThread(QtCore.QThread):
                                     os.remove(mobiPath)
                                 if os.path.exists(mobiPath + '_toclean'):
                                     os.remove(mobiPath + '_toclean')
-                            MW.addMessage.emit('KindleUnpack failed to clean MOBI file!', 'error', False)
-                            MW.addTrayMessage.emit('KindleUnpack failed to clean MOBI file!', 'Critical')
+                            MW.addMessage.emit('Failed to process MOBI file!', 'error', False)
+                            MW.addTrayMessage.emit('Failed to process MOBI file!', 'Critical')
                     else:
                         GUI.progress.content = ''
                         epubSize = (os.path.getsize(self.kindlegenErrorCode[2]))//1024//1024
