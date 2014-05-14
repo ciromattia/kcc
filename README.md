@@ -22,9 +22,9 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
-- **Windows:** [http://kcc.vulturis.eu/Windows/](http://kcc.vulturis.eu/Windows/)
-- **Linux:** [http://kcc.vulturis.eu/Linux/](http://kcc.vulturis.eu/Linux/)
-- **OS X (10.8+):** [http://kcc.vulturis.eu/OSX/](http://kcc.vulturis.eu/OSX/)
+- **Windows:** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
+- **Linux:** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
+- **OS X (10.8+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
@@ -138,17 +138,17 @@ The app relies and includes the following scripts/binaries:
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
 ## SAMPLE FILES CREATED BY KCC
-* [Kindle Paperwhite](http://kcc.vulturis.eu/Samples/Ubunchu!-KPW.mobi)
-* [Kindle](http://kcc.vulturis.eu/Samples/Ubunchu!-K345.mobi)
-* [Kindle DX/DXG](http://kcc.vulturis.eu/Samples/Ubunchu!-KDX.mobi)
-* [Kindle Fire HD](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD.mobi)
-* [Kindle Fire HD 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHD8.mobi)
-* [Kindle Fire HDX](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX.mobi)
-* [Kindle Fire HDX 8.9"](http://kcc.vulturis.eu/Samples/Ubunchu!-KFHDX8.mobi)
-* [Kobo Mini/Touch](http://kcc.vulturis.eu/Samples/Ubunchu!-KoMT.cbz)
-* [Kobo Glow](http://kcc.vulturis.eu/Samples/Ubunchu!-KoG.cbz)
-* [Kobo Aura](http://kcc.vulturis.eu/Samples/Ubunchu!-KoA.cbz)
-* [Kobo Aura HD](http://kcc.vulturis.eu/Samples/Ubunchu!-KoAHD.cbz)
+* [Kindle Paperwhite](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
+* [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K345.mobi)
+* [Kindle DX/DXG](http://kcc.iosphe.re/Samples/Ubunchu!-KDX.mobi)
+* [Kindle Fire HD](http://kcc.iosphe.re/Samples/Ubunchu!-KFHD.mobi)
+* [Kindle Fire HD 8.9"](http://kcc.iosphe.re/Samples/Ubunchu!-KFHD8.mobi)
+* [Kindle Fire HDX](http://kcc.iosphe.re/Samples/Ubunchu!-KFHDX.mobi)
+* [Kindle Fire HDX 8.9"](http://kcc.iosphe.re/Samples/Ubunchu!-KFHDX8.mobi)
+* [Kobo Mini/Touch](http://kcc.iosphe.re/Samples/Ubunchu!-KoMT.cbz)
+* [Kobo Glow](http://kcc.iosphe.re/Samples/Ubunchu!-KoG.cbz)
+* [Kobo Aura](http://kcc.iosphe.re/Samples/Ubunchu!-KoA.cbz)
+* [Kobo Aura HD](http://kcc.iosphe.re/Samples/Ubunchu!-KoAHD.cbz)
 
 ## CHANGELOG
 ####1.0
