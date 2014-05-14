@@ -89,7 +89,7 @@ setup(
     name=NAME,
     version=VERSION,
     author="Ciro Mattia Gonano, Pawel Jastrzebski",
-    author_email="ciromattia@gmail.com, pawelj@vulturis.eu",
+    author_email="ciromattia@gmail.com, pawelj@iosphe.re",
     description="A tool to convert comics (CBR/CBZ/PDFs/image folders) to MOBI.",
     license="ISC License (ISCL)",
     keywords="kindle comic mobipocket mobi cbz cbr manga",

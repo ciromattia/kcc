@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@vulturis.eu>
+# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -19,7 +19,7 @@
 
 __version__ = '4.0.2'
 __license__ = 'ISC'
-__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@vulturis.eu>'
+__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
 
 import os
@@ -196,7 +196,7 @@ class VersionThread(QtCore.QThread):
     def run(self):
         try:
             sleep(1)
-            XML = urlopen('http://kcc.vulturis.eu/Version.php')
+            XML = urlopen('http://kcc.iosphe.re/Version.php')
             XML = parse(XML)
         except Exception:
             return
@@ -210,7 +210,7 @@ class VersionThread(QtCore.QThread):
                                    '<br/>Current version: ' + latestVersion +
                                    '<br/><br/>Would you like to start automatic update?', 'question')
             else:
-                MW.addMessage.emit('<a href="http://kcc.vulturis.eu/">'
+                MW.addMessage.emit('<a href="http://kcc.iosphe.re/">'
                                    '<b>New version is available!</b></a> '
                                    '(<a href="https://github.com/ciromattia/kcc/releases/">'
                                    'Changelog</a>)', 'warning', False)
@@ -220,7 +220,7 @@ class VersionThread(QtCore.QThread):
             try:
                 MW.modeConvert.emit(-1)
                 MW.progressBarTick.emit('Downloading update')
-                path = urlretrieve('http://kcc.vulturis.eu/Windows/KindleComicConverter_win_'
+                path = urlretrieve('http://kcc.iosphe.re/Windows/KindleComicConverter_win_'
                                    + self.newVersion + '.exe', reporthook=self.getNewVersionTick)
                 if self.md5 != md5Checksum(path[0]):
                     raise Exception
@@ -1151,7 +1151,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             "Kindle 2",
         ]
 
-        statusBarLabel = QtWidgets.QLabel('<b><a href="http://kcc.vulturis.eu/">HOMEPAGE</a> - <a href="https://github.'
+        statusBarLabel = QtWidgets.QLabel('<b><a href="http://kcc.iosphe.re/">HOMEPAGE</a> - <a href="https://github.'
                                           'com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DO'
                                           'NATE</a> - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a> - <a hr'
                                           'ef="http://www.mobileread.com/forums/showthread.php?t=207461">FORUM</a></b>')
