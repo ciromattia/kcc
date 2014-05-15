@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Sat Jan 25 17:36:53 2014
-#      by: PyQt5 UI code generator 5.2
+# Created: Thu May 15 19:36:32 2014
+#      by: PyQt5 UI code generator 5.2.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -264,7 +264,7 @@ class Ui_KCC(object):
         self.ProcessingBox.setText(_translate("KCC", "No optimisation"))
         self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>"))
         self.UpscaleBox.setText(_translate("KCC", "Stretch/Upscale"))
-        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Enable auto-splitting of webtoons like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>Pages with a low width, high height and vertical panel flow.</p></body></html>"))
+        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\"white-space:pre\">Enable auto-splitting of webtoons like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>This mode is created for pages with a low width, high height and vertical panel flow.</p></body></html>"))
         self.WebtoonBox.setText(_translate("KCC", "Webtoon mode"))
         self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Create PNG files instead JPEG.<br/>Quality increase is not noticeable on most of devices.<br/>Output files <span style=\" font-weight:600;\">might</span> be smaller.<br/><span style=\" font-weight:600;\">MOBI conversion will be much slower.</span></p></body></html>"))
         self.NoDitheringBox.setText(_translate("KCC", "PNG output"))
@@ -281,7 +281,7 @@ class Ui_KCC(object):
         self.ClearButton.setText(_translate("KCC", "Clear list"))
         self.MangaBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Enable right-to-left reading.</p></body></html>"))
         self.MangaBox.setText(_translate("KCC", "Manga mode"))
-        self.QualityBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Normal quality mode<br/></span><span style=\" font-style:italic;\">Use it when Panel View support is not needed.</span><span style=\" font-weight:600; text-decoration: underline;\"><br/></span>- Maximum quality when zoom is not enabled.<br/>- Poor quality when zoom is enabled.<br/>- Lowest file size.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode<br/></span><span style=\" font-style:italic;\">Not zoomed images </span><span style=\" font-weight:600; font-style:italic;\">might </span><span style=\" font-style:italic;\">be blurry.</span><span style=\" font-weight:600; text-decoration: underline;\"><br/></span>- High quality when zoom is not enabled.<br/>- Maximum quality when zoom is enabled.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode<br/></span><span style=\" font-style:italic;\">Maximum possible quality.</span><span style=\" font-weight:600; text-decoration: underline;\"><br/></span>- Maximum quality when zoom is not enabled.<br/>- Maximum quality when zoom is enabled.<br/>- Very high file size.</p></body></html>"))
+        self.QualityBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Normal quality mode<br/></span><span style=\" font-style:italic;\">Use it when zoom is not needed.</span><span style=\" font-weight:600; text-decoration: underline;\"><br/></span>Overall quality: ★★★★★<br/>Zoom quality: ★<br/>File size: ★</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode<br/></span><span style=\" font-style:italic;\">A compromise between quality and size.</span><span style=\" font-weight:600; text-decoration: underline;\"><br/></span>Overall quality: ★★★★<br/>Zoom quality: ★★★<br/>File size: ★★★</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode<br/></span><span style=\" font-style:italic;\">Highest possible quality. Recommended.</span><span style=\" font-weight:600; text-decoration: underline;\"><br/></span>Overall quality: ★★★★★<br/>Zoom quality: ★★★★★<br/>File size: ★★★★★</p></body></html>"))
         self.QualityBox.setText(_translate("KCC", "High/Ultra quality"))
         self.RotateBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Disable splitting of two-page spreads.<br/>They will be rotated instead.</p></body></html>"))
         self.RotateBox.setText(_translate("KCC", "Horizontal mode"))
