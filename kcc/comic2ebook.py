@@ -887,14 +887,16 @@ def Usage():
     parser.print_help()
 
 
-def main(argv=None, qtGUI=None):
-    global parser, options, GUI
+def makeParser():
+    """Create and return an option parser set up with kcc's options."""
     parser = OptionParser(usage="Usage: kcc-c2e [options] comic_file|comic_folder", add_help_option=False)
+
     mainOptions = OptionGroup(parser, "MAIN")
     processingOptions = OptionGroup(parser, "PROCESSING")
     outputOptions = OptionGroup(parser, "OUTPUT SETTINGS")
     customProfileOptions = OptionGroup(parser, "CUSTOM PROFILE")
     otherOptions = OptionGroup(parser, "OTHER")
+
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
                            help="Device profile (Choose one among K1, K2, K345, KDX, KHD, KF, KFHD, KFHD8, KFHDX,"
                                 " KFHDX8, KFA, KoMT, KoG, KoA, KoAHD) [Default=KHD]")
@@ -904,6 +906,7 @@ def main(argv=None, qtGUI=None):
                            help="Manga style (Right-to-left reading and splitting)")
     mainOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
                            help="Webtoon processing mode"),
+
     outputOptions.add_option("-o", "--output", action="store", dest="output", default=None,
                              help="Output generated file to specified directory or file")
     outputOptions.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
@@ -912,6 +915,7 @@ def main(argv=None, qtGUI=None):
                              help="Outputs a CBZ archive and does not generate EPUB")
     outputOptions.add_option("--batchsplit", action="store_true", dest="batchsplit", default=False,
                              help="Split output into multiple files"),
+
     processingOptions.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
                                  help="Disable autodetection and force black borders")
     processingOptions.add_option("--whiteborders", action="store_true", dest="white_borders", default=False,
@@ -934,17 +938,28 @@ def main(argv=None, qtGUI=None):
                                  help="Stretch images to device's resolution")
     processingOptions.add_option("--upscale", action="store_true", dest="upscale", default=False,
                                  help="Resize images smaller than device's resolution")
+
     customProfileOptions.add_option("--customwidth", type="int", dest="customwidth", default=0,
                                     help="Replace screen width provided by device profile")
     customProfileOptions.add_option("--customheight", type="int", dest="customheight", default=0,
                                     help="Replace screen height provided by device profile")
+
     otherOptions.add_option("-h", "--help", action="help",
                             help="Show this help message and exit")
+
     parser.add_option_group(mainOptions)
     parser.add_option_group(outputOptions)
     parser.add_option_group(processingOptions)
     parser.add_option_group(customProfileOptions)
     parser.add_option_group(otherOptions)
+
+    return parser
+
+
+def main(argv=None, qtGUI=None):
+    global parser, options, GUI
+
+    parser = makeParser()
     options, args = parser.parse_args(argv)
     checkOptions()
     if qtGUI:
@@ -959,6 +974,7 @@ def main(argv=None, qtGUI=None):
     source = args[0]
     outputPath = makeBook(source, qtGUI=qtGUI)
     return outputPath
+
 
 def makeBook(source, qtGUI=None):
     """Generates EPUB/CBZ comic ebook from a bunch of images."""
