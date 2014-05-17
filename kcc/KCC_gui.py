@@ -367,49 +367,64 @@ class WorkerThread(QtCore.QThread):
 
     def run(self):
         MW.modeConvert.emit(0)
+
+        parser = comic2ebook.makeParser()
+        options, _ = parser.parse_args()
+
         profile = GUI.profiles[str(GUI.DeviceBox.currentText())]['Label']
-        argv = ["--profile=" + profile]
+        options.profile = profile
+        argv = ''
         currentJobs = []
+
+        # Basic mode settings
         if GUI.MangaBox.isChecked():
-            argv.append("--manga-style")
+            options.righttoleft = True
         if GUI.RotateBox.isChecked():
-            argv.append("--rotate")
+            options.roate = True
         if GUI.QualityBox.checkState() == 1:
-            argv.append("--quality=1")
+            options.quality = 1
         elif GUI.QualityBox.checkState() == 2:
-            argv.append("--quality=2")
+            options.quality = 2
         if str(GUI.FormatBox.currentText()) == 'CBZ':
-            argv.append("--cbz-output")
+            options.cbzoutput = True
         if GUI.currentMode == 1:
             if profile in ['KFHD', 'KFHD8', 'KFHDX', 'KFHDX8']:
-                argv.append("--upscale")
+                options.upscale = True
+
+        # Advanced mode settings
         if GUI.currentMode > 1:
             if GUI.ProcessingBox.isChecked():
-                argv.append("--noprocessing")
+                options.imgproc = False
             if GUI.NoRotateBox.isChecked():
-                argv.append("--nosplitrotate")
+                options.nosplitrotate = True
             if GUI.UpscaleBox.checkState() == 1:
-                argv.append("--stretch")
+                options.stretch = True
             elif GUI.UpscaleBox.checkState() == 2:
-                argv.append("--upscale")
+                options.upscale = True
             if GUI.BorderBox.checkState() == 1:
-                argv.append("--whiteborders")
+                options.white_borders = True
             elif GUI.BorderBox.checkState() == 2:
-                argv.append("--blackborders")
+                options.black_borders = True
             if GUI.NoDitheringBox.isChecked():
-                argv.append("--forcepng")
+                options.forcepng = True
             if GUI.WebtoonBox.isChecked():
-                argv.append("--webtoon")
+                options.webtoon = True
             if float(GUI.GammaValue) > 0.09:
                 # noinspection PyTypeChecker
-                argv.append("--gamma=" + GUI.GammaValue)
+                options.gamma = float(GUI.GammaValue)
             if str(GUI.FormatBox.currentText()) == 'MOBI':
-                argv.append("--batchsplit")
+                options.batchsplit = True
+
+        # Other/custom settings.
         if GUI.currentMode > 2:
-            argv.append("--customwidth=" + str(GUI.customWidth.text()))
-            argv.append("--customheight=" + str(GUI.customHeight.text()))
+            options.customwidth = str(GUI.customWidth.text())
+            options.customheight = str(GUI.customHeight.text())
             if GUI.ColorBox.isChecked():
-                argv.append("--forcecolor")
+                options.forcecolor = True
+
+        comic2ebook.options = options
+        comic2ebook.checkOptions()
+
         for i in range(GUI.JobList.count()):
             # Make sure that we don't consider any system message as job to do
             if GUI.JobList.item(i).icon().isNull():
