@@ -955,62 +955,85 @@ def main(argv=None, qtGUI=None):
     if len(args) != 1:
         parser.print_help()
         return
-    path = getWorkFolder(args[0])
+
+    source = args[0]
+    outputPath = makeBook(source, qtGUI=qtGUI)
+    return outputPath
+
+def makeBook(source, qtGUI=None):
+    """Generates EPUB/CBZ comic ebook from a bunch of images."""
+    global GUI
+    GUI = qtGUI
+    path = getWorkFolder(source)
     print("\nChecking images...")
-    detectCorruption(os.path.join(path, "OEBPS", "Images"), args[0])
-    checkComicInfo(os.path.join(path, "OEBPS", "Images"), args[0])
+    detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
+    checkComicInfo(os.path.join(path, "OEBPS", "Images"), source)
+
     if options.webtoon:
         if options.customheight > 0:
             comic2panel.main(['-y ' + str(options.customheight), '-i', '-m', path], qtGUI)
         else:
             comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', '-m', path], qtGUI)
+
     if options.imgproc:
         print("\nProcessing images...")
         if GUI:
             GUI.progressBarTick.emit('Processing images')
         dirImgProcess(os.path.join(path, "OEBPS", "Images"))
+
     if GUI:
         GUI.progressBarTick.emit('1')
+
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+
     if options.batchsplit:
         tomes = preSplitDirectory(path)
     else:
         tomes = [path]
+
     filepath = []
     tomeNumber = 0
+
     if GUI:
         if options.cbzoutput:
             GUI.progressBarTick.emit('Compressing CBZ files')
         else:
-            GUI.progressBarTick.emit('Compressing EPUB files')
+            GUI.progressBarTick.emit('Compressing EPUgB files')
         GUI.progressBarTick.emit(str(len(tomes) + 1))
         GUI.progressBarTick.emit('tick')
+
     options.baseTitle = options.title
+
     for tome in tomes:
         if len(tomes) > 1:
             tomeNumber += 1
             options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
+
         if options.cbzoutput:
             # if CBZ output wanted, compress all images and return filepath
             print("\nCreating CBZ file...")
             if len(tomes) > 1:
-                filepath.append(getOutputFilename(args[0], options.output, '.cbz', ' ' + str(tomeNumber)))
+                filepath.append(getOutputFilename(source, options.output, '.cbz', ' ' + str(tomeNumber)))
             else:
-                filepath.append(getOutputFilename(args[0], options.output, '.cbz', ''))
+                filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
             makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
+
         else:
             print("\nCreating EPUB structure...")
             genEpubStruct(tome, chapterNames)
             # actually zip the ePub
             if len(tomes) > 1:
-                filepath.append(getOutputFilename(args[0], options.output, '.epub', ' ' + str(tomeNumber)))
+                filepath.append(getOutputFilename(source, options.output, '.epub', ' ' + str(tomeNumber)))
             else:
-                filepath.append(getOutputFilename(args[0], options.output, '.epub', ''))
+                filepath.append(getOutputFilename(source, options.output, '.epub', ''))
             makeZIP(tome + '_comic', tome, True)
+
         move(tome + '_comic.zip', filepath[-1])
         rmtree(tome, True)
+
         if GUI:
             GUI.progressBarTick.emit('tick')
+
     return filepath
 
 
