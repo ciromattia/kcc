@@ -446,7 +446,7 @@ class WorkerThread(QtCore.QThread):
             jobargv = list(argv)
             jobargv.append(job)
             try:
-                outputPath = comic2ebook.main(jobargv, self)
+                outputPath = comic2ebook.makeBook(job, self)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
                 if not self.conversionAlive:
