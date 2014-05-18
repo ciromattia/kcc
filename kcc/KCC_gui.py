@@ -278,7 +278,7 @@ class KindleGenThread(QtCore.QRunnable):
         kindlegenErrorCode = 0
         kindlegenError = ''
         try:
-            if os.path.getsize(self.work) < 367001600:
+            if os.path.getsize(self.work) < 629145600:
                 output = Popen('kindlegen -dont_append_source -locale en "' + self.work + '"', stdout=PIPE,
                                stderr=STDOUT, shell=True)
                 for line in output.stdout:

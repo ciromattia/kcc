@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC-OSX.ui'
 #
-# Created: Thu May 15 19:36:50 2014
+# Created: Sun May 18 09:08:44 2014
 #      by: PyQt5 UI code generator 5.2.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -373,7 +373,7 @@ class Ui_KCC(object):
         self.ClearButton.setText(_translate("KCC", "Clear list"))
         self.MangaBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Enable right-to-left reading.</p></body></html>"))
         self.MangaBox.setText(_translate("KCC", "Manga mode"))
-        self.QualityBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Normal quality mode</span><br/><span style=\" font-style:italic;\">Use it when zoom is not needed.</span><br/>Overall quality: ★★★★★<br/>Zoom quality: ★<br/>File size: ★<br/><br/><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode</span><br/><span style=\" font-style:italic;\">A compromise between quality and size.</span><br/>Overall quality: ★★★★<br/>Zoom quality: ★★★<br/>File size: ★★★<br/><br/><span style=\" font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode</span><br/><span style=\" font-style:italic;\">Highest possible quality. Recommended.</span><br/>Overall quality: ★★★★★<br/>Zoom quality: ★★★★★<br/>File size: ★★★★★</p></body></html>"))
+        self.QualityBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Normal quality mode</span><br/>Maximal quality of images but very poor magnification quality.<br/>Use it only when zoom is not needed or output files needs to be small.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode</span><br/>In most cases high quality of images and magnification.<br/>Overall quality highly depends on the resolution of source files.<br/>On Kindle models older than Paperwhite non-zoomed images might be a little blurred.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode</span><br/>Highest possible quality. Output files will be big.</p></body></html>"))
         self.QualityBox.setText(_translate("KCC", "High/Ultra quality"))
         self.RotateBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Disable splitting of two-page spreads.<br/>They will be rotated instead.</p></body></html>"))
         self.RotateBox.setText(_translate("KCC", "Horizontal mode"))

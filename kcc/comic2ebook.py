@@ -231,7 +231,10 @@ def buildNCX(dstdir, title, chapters, chapterNames):
 def buildOPF(dstdir, title, filelist, cover=None):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
     profilelabel, deviceres, palette, gamma, panelviewsize = options.profileData
-    imgres = str(deviceres[0]) + "x" + str(deviceres[1])
+    if options.quality == 1:
+        imgres = str(panelviewsize[0]) + "x" + str(panelviewsize[1])
+    else:
+        imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if options.righttoleft:
         writingmode = "horizontal-rl"
     else:
@@ -729,7 +732,7 @@ def splitDirectory(path, mode):
         for root, dirs, files in walkLevel(path, 0):
             for name in files:
                 size = os.path.getsize(os.path.join(root, name))
-                if currentSize + size > 314572800:
+                if currentSize + size > 419430400:
                     currentTarget, pathRoot = createNewTome()
                     output.append(pathRoot)
                     currentSize = size
@@ -741,7 +744,7 @@ def splitDirectory(path, mode):
         for root, dirs, files in walkLevel(path, 0):
             for name in dirs:
                 size = getDirectorySize(os.path.join(root, name))
-                if currentSize + size > 314572800:
+                if currentSize + size > 419430400:
                     currentTarget, pathRoot = createNewTome()
                     output.append(pathRoot)
                     currentSize = size
@@ -755,7 +758,7 @@ def splitDirectory(path, mode):
             for name in dirs:
                 size = getDirectorySize(os.path.join(root, name))
                 currentSize = 0
-                if size > 314572800:
+                if size > 419430400:
                     if not firstTome:
                         currentTarget, pathRoot = createNewTome()
                         output.append(pathRoot)
@@ -764,7 +767,7 @@ def splitDirectory(path, mode):
                     for rootInside, dirsInside, filesInside in walkLevel(os.path.join(root, name), 0):
                         for nameInside in dirsInside:
                             size = getDirectorySize(os.path.join(rootInside, nameInside))
-                            if currentSize + size > 314572800:
+                            if currentSize + size > 419430400:
                                 currentTarget, pathRoot = createNewTome()
                                 output.append(pathRoot)
                                 currentSize = size
@@ -784,65 +787,61 @@ def splitDirectory(path, mode):
 
 #noinspection PyUnboundLocalVariable
 def preSplitDirectory(path):
-    if getDirectorySize(os.path.join(path, 'OEBPS', 'Images')) > 314572800:
-        # Detect directory stucture
-        for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 0):
-            subdirectoryNumber = len(dirs)
-            filesNumber = len(files)
-        if subdirectoryNumber == 0:
-            # No subdirectories
-            mode = 0
-        else:
-            if filesNumber > 0:
-                print('\nWARNING: Automatic output splitting failed.')
-                if GUI:
-                    GUI.addMessage.emit('Automatic output splitting failed. <a href='
-                                        '"https://github.com/ciromattia/kcc/wiki'
-                                        '/Automatic-output-splitting">'
-                                        'More details.</a>', 'warning', False)
-                    GUI.addMessage.emit('', '', False)
-                return [path]
-            detectedSubSubdirectories = False
-            detectedFilesInSubdirectories = False
-            for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 1):
-                if root != os.path.join(path, 'OEBPS', 'Images'):
-                    if len(dirs) != 0:
-                        detectedSubSubdirectories = True
-                    elif len(dirs) == 0 and detectedSubSubdirectories:
-                        print('\nWARNING: Automatic output splitting failed.')
-                        if GUI:
-                            GUI.addMessage.emit('Automatic output splitting failed. <a href='
-                                                '"https://github.com/ciromattia/kcc/wiki'
-                                                '/Automatic-output-splitting">'
-                                                'More details.</a>', 'warning', False)
-                            GUI.addMessage.emit('', '', False)
-                        return [path]
-                    if len(files) != 0:
-                        detectedFilesInSubdirectories = True
-            if detectedSubSubdirectories:
-                # Two levels of subdirectories
-                mode = 2
-            else:
-                # One level of subdirectories
-                mode = 1
-            if detectedFilesInSubdirectories and detectedSubSubdirectories:
-                print('\nWARNING: Automatic output splitting failed.')
-                if GUI:
-                    GUI.addMessage.emit('Automatic output splitting failed. <a href='
-                                        '"https://github.com/ciromattia/kcc/wiki'
-                                        '/Automatic-output-splitting">'
-                                        'More details.</a>', 'warning', False)
-                    GUI.addMessage.emit('', '', False)
-                return [path]
-        # Split directories
-        splitter = splitDirectory(os.path.join(path, 'OEBPS', 'Images'), mode)
-        path = [path]
-        for tome in splitter:
-            path.append(tome)
-        return path
+    # Detect directory stucture
+    for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 0):
+        subdirectoryNumber = len(dirs)
+        filesNumber = len(files)
+    if subdirectoryNumber == 0:
+        # No subdirectories
+        mode = 0
     else:
-        # No splitting is necessary
-        return [path]
+        if filesNumber > 0:
+            print('\nWARNING: Automatic output splitting failed.')
+            if GUI:
+                GUI.addMessage.emit('Automatic output splitting failed. <a href='
+                                    '"https://github.com/ciromattia/kcc/wiki'
+                                    '/Automatic-output-splitting">'
+                                    'More details.</a>', 'warning', False)
+                GUI.addMessage.emit('', '', False)
+            return [path]
+        detectedSubSubdirectories = False
+        detectedFilesInSubdirectories = False
+        for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 1):
+            if root != os.path.join(path, 'OEBPS', 'Images'):
+                if len(dirs) != 0:
+                    detectedSubSubdirectories = True
+                elif len(dirs) == 0 and detectedSubSubdirectories:
+                    print('\nWARNING: Automatic output splitting failed.')
+                    if GUI:
+                        GUI.addMessage.emit('Automatic output splitting failed. <a href='
+                                            '"https://github.com/ciromattia/kcc/wiki'
+                                            '/Automatic-output-splitting">'
+                                            'More details.</a>', 'warning', False)
+                        GUI.addMessage.emit('', '', False)
+                    return [path]
+                if len(files) != 0:
+                    detectedFilesInSubdirectories = True
+        if detectedSubSubdirectories:
+            # Two levels of subdirectories
+            mode = 2
+        else:
+            # One level of subdirectories
+            mode = 1
+        if detectedFilesInSubdirectories and detectedSubSubdirectories:
+            print('\nWARNING: Automatic output splitting failed.')
+            if GUI:
+                GUI.addMessage.emit('Automatic output splitting failed. <a href='
+                                    '"https://github.com/ciromattia/kcc/wiki'
+                                    '/Automatic-output-splitting">'
+                                    'More details.</a>', 'warning', False)
+                GUI.addMessage.emit('', '', False)
+            return [path]
+    # Split directories
+    splitter = splitDirectory(os.path.join(path, 'OEBPS', 'Images'), mode)
+    path = [path]
+    for tome in splitter:
+        path.append(tome)
+    return path
 
 
 def detectCorruption(tmpPath, orgPath):
