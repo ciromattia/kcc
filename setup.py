@@ -6,7 +6,7 @@ Usage (Mac OS X):
     python setup.py py2app
 
 Usage (Windows):
-    python setup.py build
+    python setup.py py2exe
 """
 from sys import platform, version_info
 if version_info[0] != 3:
@@ -55,31 +55,61 @@ if platform == "darwin":
         )
     )
 elif platform == "win32":
+    # noinspection PyUnresolvedReferences
+    import py2exe
     import platform as arch
-    from cx_Freeze import setup, Executable
+    from distutils.core import setup
     if arch.architecture()[0] == '64bit':
-        library = 'libEGL64.dll'
+        suffix = '_64'
     else:
-        library = 'libEGL32.dll'
-    base = "Win32GUI"
+        suffix = ''
+    additional_files = [('imageformats', ['C:\Python33' + suffix +
+                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qgif.dll',
+                                          'C:\Python33' + suffix +
+                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qico.dll',
+                                          'C:\Python33' + suffix +
+                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qjpeg.dll',
+                                          'C:\Python33' + suffix +
+                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qmng.dll',
+                                          'C:\Python33' + suffix +
+                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qsvg.dll',
+                                          'C:\Python33' + suffix +
+                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qtga.dll',
+                                          'C:\Python33' + suffix +
+                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qtiff.dll',
+                                          'C:\Python33' + suffix +
+                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qwbmp.dll']),
+                        ('platforms', ['C:\Python33' + suffix +
+                                       '\Lib\site-packages\PyQt5\plugins\platforms\qminimal.dll',
+                                       'C:\Python33' + suffix +
+                                       '\Lib\site-packages\PyQt5\plugins\platforms\qoffscreen.dll',
+                                       'C:\Python33' + suffix +
+                                       '\Lib\site-packages\PyQt5\plugins\platforms\qwindows.dll']),
+                        ('', ['LICENSE.txt',
+                              'other\\7za.exe',
+                              'other\\UnRAR.exe',
+                              'other\\Additional-LICENSE.txt',
+                              'other\\7za.exe',
+                              'C:\Python33' + suffix + '\Lib\site-packages\PyQt5\libEGL.dll'])]
     extra_options = dict(
-        options={"build_exe": {"optimize": 2,
-                               "include_files": ['LICENSE.txt',
-                                                 ['other/UnRAR.exe', 'UnRAR.exe'],
-                                                 ['other/7za.exe', '7za.exe'],
-                                                 ['other/Additional-LICENSE.txt', 'Additional-LICENSE.txt'],
-                                                 ['other/' + library, 'libEGL.dll']
-                                                 ],
-                               "copy_dependent_files": True,
-                               "create_shared_zip": False,
-                               "append_script_to_exe": True,
-                               "replace_paths": '*=',
-                               "excludes": ['tkinter']}},
-        executables=[Executable(MAIN,
-                                base=base,
-                                targetName="KCC.exe",
-                                icon="icons/comic2ebook.ico",
-                                compress=False)])
+        options={'py2exe': {"bundle_files": 2,
+                            "dll_excludes": ["tcl85.dll", "tk85.dll"],
+                            "dist_dir": "dist" + suffix,
+                            "compressed": True,
+                            "includes": ["sip"],
+                            "excludes": ["tkinter"],
+                            "optimize": 2}},
+        windows=[{"script": "kcc.py",
+                  "dest_base": "KCC",
+                  "version": VERSION,
+                  "copyright": "Ciro Mattia Gonano, Pawel Jastrzebski © 2014",
+                  "legal_copyright": "ISC License (ISCL)",
+                  "product_version": VERSION,
+                  "product_name": "Kindle Comic Converter",
+                  "file_description": "Kindle Comic Converter",
+                  "icon_resources": [(1, "icons\comic2ebook.ico")]}],
+        zipfile=None,
+        data_files=additional_files)
 else:
     print('Please use setup.sh to build Linux package.')
     exit()
