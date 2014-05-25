@@ -41,7 +41,7 @@ You can find the latest released binary at the following links:
 
 ### For running from source:
 - Python 3.3+
-- [PyQt5](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.2.1+
+- [PyQt5](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.2.0+
 - [Pillow](http://pypi.python.org/pypi/Pillow/) 2.3.0+
 - [psutil](https://pypi.python.org/pypi/psutil) 2.0+
 - [python-slugify](http://pypi.python.org/pypi/python-slugify)

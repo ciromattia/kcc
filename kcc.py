@@ -33,10 +33,10 @@ missing = []
 try:
     # noinspection PyUnresolvedReferences
     from PyQt5 import QtCore, QtNetwork, QtWidgets
-    if tuple(map(int, ('5.2.1'.split(".")))) > tuple(map(int, (QtCore.qVersion().split(".")))):
-        missing.append('PyQt5 5.2.1+')
+    if tuple(map(int, ('5.2.0'.split(".")))) > tuple(map(int, (QtCore.qVersion().split(".")))):
+        missing.append('PyQt5 5.2.0+')
 except ImportError:
-    missing.append('PyQt5 5.2.1+')
+    missing.append('PyQt5 5.2.0+')
 try:
     # noinspection PyUnresolvedReferences
     import psutil
