@@ -42,18 +42,16 @@ Name: "CB7association"; Description: "CB7"; GroupDescription: "File associations
 
 [Files]
 ; x64 files
-Source: "build\exe.win-amd64-3.3\imageformats\*"; DestDir: "{app}\imageformats\"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-3.3\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-3.3\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-3.3\*.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "build\exe.win-amd64-3.3\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "dist_64\imageformats\*"; DestDir: "{app}\imageformats\"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "dist_64\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "dist_64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "dist_64\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: "other\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: Is64BitInstallMode
 ; x86 files
-Source: "build\exe.win32-3.3\imageformats\*"; DestDir: "{app}\imageformats\"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-3.3\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-3.3\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-3.3\*.pyd"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "build\exe.win32-3.3\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "dist\imageformats\*"; DestDir: "{app}\imageformats\"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "dist\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "dist\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: "other\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: not Is64BitInstallMode
 ; Common files
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
