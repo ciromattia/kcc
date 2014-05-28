@@ -1001,8 +1001,7 @@ def main(argv=None, qtGUI=None):
             item = item.replace('.epub', '.mobi')
             move(item, item + '_toclean')
             try:
-                cleaned = DualMobiMetaFix(item + '_toclean')
-                open(item, 'wb').write(cleaned.getresult())
+                DualMobiMetaFix(item + '_toclean', item, bytes(str(uuid4()), 'UTF-8'))
                 os.remove(item + '_toclean')
             except Exception as err:    # DualMetaFixException
                 if os.path.exists(item):
