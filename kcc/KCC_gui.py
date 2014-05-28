@@ -37,6 +37,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from xml.dom.minidom import parse
 from html.parser import HTMLParser
 from psutil import virtual_memory, Popen, Process
+from uuid import uuid4
 from .shared import md5Checksum
 from . import comic2ebook
 from . import dualmetafix
@@ -315,8 +316,8 @@ class DualMetaFixThread(QtCore.QRunnable):
         mobiPath = item.replace('.epub', '.mobi')
         move(mobiPath, mobiPath + '_toclean')
         try:
-            mobiedit = dualmetafix.DualMobiMetaFix(mobiPath + '_toclean')
-            open(mobiPath, 'wb').write(mobiedit.getresult())
+            # noinspection PyArgumentList
+            dualmetafix.DualMobiMetaFix(mobiPath + '_toclean', mobiPath, bytes(str(uuid4()), 'UTF-8'))
             self.signals.result.emit([True])
         except Exception as err:
             self.signals.result.emit([False, format(err)])
