@@ -48,6 +48,7 @@ from . import comic2panel
 from . import image
 from . import cbxarchive
 from . import pdfjpgextract
+from .dualmetafix import DualMobiMetaFix
 
 
 def buildHTML(path, imgfile, imgfilepath):
@@ -995,6 +996,23 @@ def main(argv=None, qtGUI=None):
                     os.remove(item.replace('.epub', '.mobi'))
                 print("Error with %s" % item)
                 exit(errorString)
+
+        for item in outputPath:
+            # Clean .mobis
+            os.remove(item) # Remove the .epub
+            item = item.replace('.epub', '.mobi')
+            move(item, item + '_toclean')
+            try:
+                cleaned = DualMobiMetaFix(item + '_toclean')
+                open(item, 'wb').write(cleaned.getresult())
+                os.remove(item + '_toclean')
+            except Exception as err:    # DualMetaFixException
+                if os.path.exists(item):
+                    os.remove(item)
+                if os.path.exists(item + '_toclean'):
+                    os.remove(item + '_toclean')
+                print('Failed to process MOBI file! %s' % err)
+                exit(1)
 
 
 def makeBook(source, qtGUI=None):
