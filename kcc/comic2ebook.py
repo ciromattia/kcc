@@ -29,13 +29,16 @@ from re import split, sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp
+from time import sleep
 from shutil import move, copyfile, copytree, rmtree
+from subprocess import STDOUT, PIPE
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
 from xml.dom.minidom import parse
 from uuid import uuid4
 from slugify import slugify as slugifyExt
 from PIL import Image
+from psutil import virtual_memory, Popen, Process
 try:
     from PyQt5 import QtCore
 except ImportError:
@@ -913,6 +916,8 @@ def makeParser():
                              help="Comic title [Default=filename or directory name]")
     outputOptions.add_option("--cbz-output", action="store_true", dest="cbzoutput", default=False,
                              help="Outputs a CBZ archive and does not generate EPUB")
+    outputOptions.add_option("--mobi-output", action="store_true", dest="mobioutput", default=False,
+                             help="Output a MOBI file.")
     outputOptions.add_option("--batchsplit", action="store_true", dest="batchsplit", default=False,
                              help="Split output into multiple files"),
 
@@ -973,7 +978,21 @@ def main(argv=None, qtGUI=None):
 
     source = args[0]
     outputPath = makeBook(source, qtGUI=qtGUI)
-    return outputPath
+
+    if options.mobioutput:
+        for item in outputPath:
+            kindlegenErrorCode, kindlegenError, source = kindleConvert(item)
+            if kindlegenErrorCode != 0:
+                # Error encountered while running kindlegen. Clean up.
+                print("Error converting %s: %s" % (source, kindlegenError))
+                if os.path.exists(item):
+                    os.remove(item)
+                sleep(1)
+                if os.path.exists(item.replace('.epub', '.mobi')):
+                    os.remove(item.replace('.epub', '.mobi'))
+                print("Error with %s" % item)
+                exit(kindlegenErrorCode)
+
 
 
 def makeBook(source, qtGUI=None):
@@ -1131,3 +1150,34 @@ def checkOptions():
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
+
+
+def kindleConvert(source):
+    """Compile one ebook. Wrapper for kindlegen."""
+    print("\nCreating MOBI...")
+    kindlegenErrorCode = 0
+    kindlegenError = ''
+    try:
+        if os.path.getsize(source) < 629145600:
+            output = Popen('kindlegen -dont_append_source -locale en "' + source + '"', stdout=PIPE,
+                           stderr=STDOUT, shell=True)
+            for line in output.stdout:
+                line = line.decode('utf-8')
+                # ERROR: Generic error
+                if "Error(" in line:
+                    kindlegenErrorCode = 1
+                    kindlegenError = line
+                # ERROR: EPUB too big
+                if ":E23026:" in line:
+                    kindlegenErrorCode = 23026
+                if kindlegenErrorCode > 0:
+                    break
+        else:
+            # ERROR: EPUB too big
+            kindlegenErrorCode = 23026
+        return (kindlegenErrorCode, kindlegenError, source)
+    except Exception as err:
+        # ERROR: KCC unknown generic error
+        kindlegenErrorCode = 1
+        kindlegenError = format(err)
+        return (kindlegenErrorCode, kindlegenError, source)
