@@ -981,9 +981,7 @@ def main(argv=None, qtGUI=None):
     outputPath = makeBook(source, qtGUI=qtGUI)
 
     if options.mobioutput:
-        kindlePool = Pool()
-        kindleOutput = kindlePool.map_async(kindleConvert, outputPath)
-        results = kindleOutput.get()
+        results = batchConvert(outputPath)
 
         for result in results:
             errorCode, errorString, item = result
@@ -1201,3 +1199,11 @@ def kindleConvert(source):
         kindlegenErrorCode = 1
         kindlegenError = format(err)
         return (kindlegenErrorCode, kindlegenError, source)
+
+
+def batchConvert(sources):
+    """Compile multiple ebooks concurrently."""
+    kindlePool = Pool()
+    kindleOutput = kindlePool.map_async(kindleConvert, sources)
+    results = kindleOutput.get()
+    return results
