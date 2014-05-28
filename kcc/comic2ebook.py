@@ -1124,6 +1124,15 @@ def checkOptions():
         options.bordersColor = "white"
     if options.black_borders:
         options.bordersColor = "black"
+
+    # Turn on mobi output for Kindles
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K345' or options.profile == 'KDX'\
+        or options.profile == 'KHD' or options.profile == 'KF' or options.profile == 'KFHD'\
+        or options.profile == 'KFHD8' or options.profile == 'KFHDX' or options.profile == 'KFHDX8'\
+        or options.profile == 'KFA' or options.profile == 'KoMT' or options.profile == 'KoG'\
+        or options.profile == 'KoA' or options.profile == 'KoAHD':
+        options.mobioutput = True
+
     # Disabling grayscale conversion for Kindle Fire family.
     if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8' or options.profile == 'KFHDX'\
        or options.profile == 'KFHDX8' or options.forcecolor:
