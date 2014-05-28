@@ -269,41 +269,6 @@ class WorkerSignals(QtCore.QObject):
     result = QtCore.pyqtSignal(list)
 
 
-class KindleGenThread(QtCore.QRunnable):
-    def __init__(self, batch):
-        super(KindleGenThread, self).__init__()
-        self.signals = WorkerSignals()
-        self.work = batch
-
-    def run(self):
-        kindlegenErrorCode = 0
-        kindlegenError = ''
-        try:
-            if os.path.getsize(self.work) < 629145600:
-                output = Popen('kindlegen -dont_append_source -locale en "' + self.work + '"', stdout=PIPE,
-                               stderr=STDOUT, shell=True)
-                for line in output.stdout:
-                    line = line.decode('utf-8')
-                    # ERROR: Generic error
-                    if "Error(" in line:
-                        kindlegenErrorCode = 1
-                        kindlegenError = line
-                    # ERROR: EPUB too big
-                    if ":E23026:" in line:
-                        kindlegenErrorCode = 23026
-                    if kindlegenErrorCode > 0:
-                        break
-            else:
-                # ERROR: EPUB too big
-                kindlegenErrorCode = 23026
-            self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
-        except Exception as err:
-            # ERROR: KCC unknown generic error
-            kindlegenErrorCode = 1
-            kindlegenError = format(err)
-            self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
-
-
 class DualMetaFixThread(QtCore.QRunnable):
     def __init__(self, batch):
         super(DualMetaFixThread, self).__init__()
@@ -487,12 +452,9 @@ class WorkerThread(QtCore.QThread):
                     self.workerOutput = []
                     # Number of KindleGen threads depends on the size of RAM
                     self.pool.setMaxThreadCount(self.threadNumber)
-                    for item in outputPath:
-                        worker = KindleGenThread(item)
-                        worker.signals.result.connect(self.addResult)
-                        self.pool.start(worker)
-                    self.pool.waitForDone()
-                    sleep(0.5)
+
+                    self.workerOutput = comic2ebook.batchConvert(outputPath)
+
                     self.kindlegenErrorCode = [0]
                     for errors in self.workerOutput:
                         if errors[0] != 0:
