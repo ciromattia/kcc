@@ -980,19 +980,21 @@ def main(argv=None, qtGUI=None):
     outputPath = makeBook(source, qtGUI=qtGUI)
 
     if options.mobioutput:
-        for item in outputPath:
-            kindlegenErrorCode, kindlegenError, source = kindleConvert(item)
-            if kindlegenErrorCode != 0:
-                # Error encountered while running kindlegen. Clean up.
-                print("Error converting %s: %s" % (source, kindlegenError))
+        kindlePool = Pool()
+        kindleOutput = kindlePool.map_async(kindleConvert, outputPath)
+        results = kindleOutput.get()
+
+        for result in results:
+            errorCode, errorString, item = result
+            if errorCode != 0:
+                print("Error converting %s: %s" % (item, errorString))
                 if os.path.exists(item):
                     os.remove(item)
                 sleep(1)
                 if os.path.exists(item.replace('.epub', '.mobi')):
                     os.remove(item.replace('.epub', '.mobi'))
                 print("Error with %s" % item)
-                exit(kindlegenErrorCode)
-
+                exit(errorString)
 
 
 def makeBook(source, qtGUI=None):
