@@ -380,7 +380,7 @@ class WorkerThread(QtCore.QThread):
         if GUI.MangaBox.isChecked():
             options.righttoleft = True
         if GUI.RotateBox.isChecked():
-            options.roate = True
+            options.rotate = True
         if GUI.QualityBox.checkState() == 1:
             options.quality = 1
         elif GUI.QualityBox.checkState() == 2:
