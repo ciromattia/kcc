@@ -269,41 +269,6 @@ class WorkerSignals(QtCore.QObject):
     result = QtCore.pyqtSignal(list)
 
 
-class KindleGenThread(QtCore.QRunnable):
-    def __init__(self, batch):
-        super(KindleGenThread, self).__init__()
-        self.signals = WorkerSignals()
-        self.work = batch
-
-    def run(self):
-        kindlegenErrorCode = 0
-        kindlegenError = ''
-        try:
-            if os.path.getsize(self.work) < 629145600:
-                output = Popen('kindlegen -dont_append_source -locale en "' + self.work + '"', stdout=PIPE,
-                               stderr=STDOUT, shell=True)
-                for line in output.stdout:
-                    line = line.decode('utf-8')
-                    # ERROR: Generic error
-                    if "Error(" in line:
-                        kindlegenErrorCode = 1
-                        kindlegenError = line
-                    # ERROR: EPUB too big
-                    if ":E23026:" in line:
-                        kindlegenErrorCode = 23026
-                    if kindlegenErrorCode > 0:
-                        break
-            else:
-                # ERROR: EPUB too big
-                kindlegenErrorCode = 23026
-            self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
-        except Exception as err:
-            # ERROR: KCC unknown generic error
-            kindlegenErrorCode = 1
-            kindlegenError = format(err)
-            self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
-
-
 class DualMetaFixThread(QtCore.QRunnable):
     def __init__(self, batch):
         super(DualMetaFixThread, self).__init__()
@@ -367,49 +332,64 @@ class WorkerThread(QtCore.QThread):
 
     def run(self):
         MW.modeConvert.emit(0)
+
+        parser = comic2ebook.makeParser()
+        options, _ = parser.parse_args()
+
         profile = GUI.profiles[str(GUI.DeviceBox.currentText())]['Label']
-        argv = ["--profile=" + profile]
+        options.profile = profile
+        argv = ''
         currentJobs = []
+
+        # Basic mode settings
         if GUI.MangaBox.isChecked():
-            argv.append("--manga-style")
+            options.righttoleft = True
         if GUI.RotateBox.isChecked():
-            argv.append("--rotate")
+            options.roate = True
         if GUI.QualityBox.checkState() == 1:
-            argv.append("--quality=1")
+            options.quality = 1
         elif GUI.QualityBox.checkState() == 2:
-            argv.append("--quality=2")
+            options.quality = 2
         if str(GUI.FormatBox.currentText()) == 'CBZ':
-            argv.append("--cbz-output")
+            options.cbzoutput = True
         if GUI.currentMode == 1:
             if profile in ['KFHD', 'KFHD8', 'KFHDX', 'KFHDX8']:
-                argv.append("--upscale")
+                options.upscale = True
+
+        # Advanced mode settings
         if GUI.currentMode > 1:
             if GUI.ProcessingBox.isChecked():
-                argv.append("--noprocessing")
+                options.imgproc = False
             if GUI.NoRotateBox.isChecked():
-                argv.append("--nosplitrotate")
+                options.nosplitrotate = True
             if GUI.UpscaleBox.checkState() == 1:
-                argv.append("--stretch")
+                options.stretch = True
             elif GUI.UpscaleBox.checkState() == 2:
-                argv.append("--upscale")
+                options.upscale = True
             if GUI.BorderBox.checkState() == 1:
-                argv.append("--whiteborders")
+                options.white_borders = True
             elif GUI.BorderBox.checkState() == 2:
-                argv.append("--blackborders")
+                options.black_borders = True
             if GUI.NoDitheringBox.isChecked():
-                argv.append("--forcepng")
+                options.forcepng = True
             if GUI.WebtoonBox.isChecked():
-                argv.append("--webtoon")
+                options.webtoon = True
             if float(GUI.GammaValue) > 0.09:
                 # noinspection PyTypeChecker
-                argv.append("--gamma=" + GUI.GammaValue)
+                options.gamma = float(GUI.GammaValue)
             if str(GUI.FormatBox.currentText()) == 'MOBI':
-                argv.append("--batchsplit")
+                options.batchsplit = True
+
+        # Other/custom settings.
         if GUI.currentMode > 2:
-            argv.append("--customwidth=" + str(GUI.customWidth.text()))
-            argv.append("--customheight=" + str(GUI.customHeight.text()))
+            options.customwidth = str(GUI.customWidth.text())
+            options.customheight = str(GUI.customHeight.text())
             if GUI.ColorBox.isChecked():
-                argv.append("--forcecolor")
+                options.forcecolor = True
+
+        comic2ebook.options = options
+        comic2ebook.checkOptions()
+
         for i in range(GUI.JobList.count()):
             # Make sure that we don't consider any system message as job to do
             if GUI.JobList.item(i).icon().isNull():
@@ -431,7 +411,7 @@ class WorkerThread(QtCore.QThread):
             jobargv = list(argv)
             jobargv.append(job)
             try:
-                outputPath = comic2ebook.main(jobargv, self)
+                outputPath = comic2ebook.makeBook(job, self)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
                 if not self.conversionAlive:
@@ -472,12 +452,9 @@ class WorkerThread(QtCore.QThread):
                     self.workerOutput = []
                     # Number of KindleGen threads depends on the size of RAM
                     self.pool.setMaxThreadCount(self.threadNumber)
-                    for item in outputPath:
-                        worker = KindleGenThread(item)
-                        worker.signals.result.connect(self.addResult)
-                        self.pool.start(worker)
-                    self.pool.waitForDone()
-                    sleep(0.5)
+
+                    self.workerOutput = comic2ebook.batchConvert(outputPath)
+
                     self.kindlegenErrorCode = [0]
                     for errors in self.workerOutput:
                         if errors[0] != 0:

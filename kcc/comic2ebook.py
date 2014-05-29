@@ -29,13 +29,16 @@ from re import split, sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp
+from time import sleep
 from shutil import move, copyfile, copytree, rmtree
+from subprocess import STDOUT, PIPE
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
 from xml.dom.minidom import parse
 from uuid import uuid4
 from slugify import slugify as slugifyExt
 from PIL import Image
+from psutil import virtual_memory, Popen, Process
 try:
     from PyQt5 import QtCore
 except ImportError:
@@ -45,6 +48,7 @@ from . import comic2panel
 from . import image
 from . import cbxarchive
 from . import pdfjpgextract
+from .dualmetafix import DualMobiMetaFix
 
 
 def buildHTML(path, imgfile, imgfilepath):
@@ -887,14 +891,16 @@ def Usage():
     parser.print_help()
 
 
-def main(argv=None, qtGUI=None):
-    global parser, options, GUI
+def makeParser():
+    """Create and return an option parser set up with kcc's options."""
     parser = OptionParser(usage="Usage: kcc-c2e [options] comic_file|comic_folder", add_help_option=False)
+
     mainOptions = OptionGroup(parser, "MAIN")
     processingOptions = OptionGroup(parser, "PROCESSING")
     outputOptions = OptionGroup(parser, "OUTPUT SETTINGS")
     customProfileOptions = OptionGroup(parser, "CUSTOM PROFILE")
     otherOptions = OptionGroup(parser, "OTHER")
+
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
                            help="Device profile (Choose one among K1, K2, K345, KDX, KHD, KF, KFHD, KFHD8, KFHDX,"
                                 " KFHDX8, KFA, KoMT, KoG, KoA, KoAHD) [Default=KHD]")
@@ -904,14 +910,18 @@ def main(argv=None, qtGUI=None):
                            help="Manga style (Right-to-left reading and splitting)")
     mainOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
                            help="Webtoon processing mode"),
+
     outputOptions.add_option("-o", "--output", action="store", dest="output", default=None,
                              help="Output generated file to specified directory or file")
     outputOptions.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                              help="Comic title [Default=filename or directory name]")
     outputOptions.add_option("--cbz-output", action="store_true", dest="cbzoutput", default=False,
                              help="Outputs a CBZ archive and does not generate EPUB")
+    outputOptions.add_option("--mobi-output", action="store_true", dest="mobioutput", default=False,
+                             help="Output a MOBI file.")
     outputOptions.add_option("--batchsplit", action="store_true", dest="batchsplit", default=False,
                              help="Split output into multiple files"),
+
     processingOptions.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
                                  help="Disable autodetection and force black borders")
     processingOptions.add_option("--whiteborders", action="store_true", dest="white_borders", default=False,
@@ -934,17 +944,28 @@ def main(argv=None, qtGUI=None):
                                  help="Stretch images to device's resolution")
     processingOptions.add_option("--upscale", action="store_true", dest="upscale", default=False,
                                  help="Resize images smaller than device's resolution")
+
     customProfileOptions.add_option("--customwidth", type="int", dest="customwidth", default=0,
                                     help="Replace screen width provided by device profile")
     customProfileOptions.add_option("--customheight", type="int", dest="customheight", default=0,
                                     help="Replace screen height provided by device profile")
+
     otherOptions.add_option("-h", "--help", action="help",
                             help="Show this help message and exit")
+
     parser.add_option_group(mainOptions)
     parser.add_option_group(outputOptions)
     parser.add_option_group(processingOptions)
     parser.add_option_group(customProfileOptions)
     parser.add_option_group(otherOptions)
+
+    return parser
+
+
+def main(argv=None, qtGUI=None):
+    global parser, options, GUI
+
+    parser = makeParser()
     options, args = parser.parse_args(argv)
     checkOptions()
     if qtGUI:
@@ -955,62 +976,116 @@ def main(argv=None, qtGUI=None):
     if len(args) != 1:
         parser.print_help()
         return
-    path = getWorkFolder(args[0])
+
+    source = args[0]
+    outputPath = makeBook(source, qtGUI=qtGUI)
+
+    if options.mobioutput:
+        results = batchConvert(outputPath)
+
+        for result in results:
+            errorCode, errorString, item = result
+            if errorCode != 0:
+                print("Error converting %s: %s" % (item, errorString))
+                if os.path.exists(item):
+                    os.remove(item)
+                sleep(1)
+                if os.path.exists(item.replace('.epub', '.mobi')):
+                    os.remove(item.replace('.epub', '.mobi'))
+                print("Error with %s" % item)
+                exit(errorString)
+
+        for item in outputPath:
+            # Clean .mobis
+            os.remove(item) # Remove the .epub
+            item = item.replace('.epub', '.mobi')
+            move(item, item + '_toclean')
+            try:
+                DualMobiMetaFix(item + '_toclean', item, bytes(str(uuid4()), 'UTF-8'))
+                os.remove(item + '_toclean')
+            except Exception as err:    # DualMetaFixException
+                if os.path.exists(item):
+                    os.remove(item)
+                if os.path.exists(item + '_toclean'):
+                    os.remove(item + '_toclean')
+                print('Failed to process MOBI file! %s' % err)
+                exit(1)
+
+
+def makeBook(source, qtGUI=None):
+    """Generates EPUB/CBZ comic ebook from a bunch of images."""
+    global GUI
+    GUI = qtGUI
+    path = getWorkFolder(source)
     print("\nChecking images...")
-    detectCorruption(os.path.join(path, "OEBPS", "Images"), args[0])
-    checkComicInfo(os.path.join(path, "OEBPS", "Images"), args[0])
+    detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
+    checkComicInfo(os.path.join(path, "OEBPS", "Images"), source)
+
     if options.webtoon:
         if options.customheight > 0:
             comic2panel.main(['-y ' + str(options.customheight), '-i', '-m', path], qtGUI)
         else:
             comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', '-m', path], qtGUI)
+
     if options.imgproc:
         print("\nProcessing images...")
         if GUI:
             GUI.progressBarTick.emit('Processing images')
         dirImgProcess(os.path.join(path, "OEBPS", "Images"))
+
     if GUI:
         GUI.progressBarTick.emit('1')
+
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+
     if options.batchsplit:
         tomes = preSplitDirectory(path)
     else:
         tomes = [path]
+
     filepath = []
     tomeNumber = 0
+
     if GUI:
         if options.cbzoutput:
             GUI.progressBarTick.emit('Compressing CBZ files')
         else:
-            GUI.progressBarTick.emit('Compressing EPUB files')
+            GUI.progressBarTick.emit('Compressing EPUgB files')
         GUI.progressBarTick.emit(str(len(tomes) + 1))
         GUI.progressBarTick.emit('tick')
+
     options.baseTitle = options.title
+
     for tome in tomes:
         if len(tomes) > 1:
             tomeNumber += 1
             options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
+
         if options.cbzoutput:
             # if CBZ output wanted, compress all images and return filepath
             print("\nCreating CBZ file...")
             if len(tomes) > 1:
-                filepath.append(getOutputFilename(args[0], options.output, '.cbz', ' ' + str(tomeNumber)))
+                filepath.append(getOutputFilename(source, options.output, '.cbz', ' ' + str(tomeNumber)))
             else:
-                filepath.append(getOutputFilename(args[0], options.output, '.cbz', ''))
+                filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
             makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
+
         else:
             print("\nCreating EPUB structure...")
             genEpubStruct(tome, chapterNames)
             # actually zip the ePub
             if len(tomes) > 1:
-                filepath.append(getOutputFilename(args[0], options.output, '.epub', ' ' + str(tomeNumber)))
+                filepath.append(getOutputFilename(source, options.output, '.epub', ' ' + str(tomeNumber)))
             else:
-                filepath.append(getOutputFilename(args[0], options.output, '.epub', ''))
+                filepath.append(getOutputFilename(source, options.output, '.epub', ''))
             makeZIP(tome + '_comic', tome, True)
+
         move(tome + '_comic.zip', filepath[-1])
         rmtree(tome, True)
+
         if GUI:
             GUI.progressBarTick.emit('tick')
+
     return filepath
 
 
@@ -1048,6 +1123,15 @@ def checkOptions():
         options.bordersColor = "white"
     if options.black_borders:
         options.bordersColor = "black"
+
+    # Turn on mobi output for Kindles
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K345' or options.profile == 'KDX'\
+        or options.profile == 'KHD' or options.profile == 'KF' or options.profile == 'KFHD'\
+        or options.profile == 'KFHD8' or options.profile == 'KFHDX' or options.profile == 'KFHDX8'\
+        or options.profile == 'KFA' or options.profile == 'KoMT' or options.profile == 'KoG'\
+        or options.profile == 'KoA' or options.profile == 'KoAHD':
+        options.mobioutput = True
+
     # Disabling grayscale conversion for Kindle Fire family.
     if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8' or options.profile == 'KFHDX'\
        or options.profile == 'KFHDX8' or options.forcecolor:
@@ -1092,3 +1176,42 @@ def checkOptions():
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
+
+
+def kindleConvert(source):
+    """Compile one ebook. Wrapper for kindlegen."""
+    print("\nCreating MOBI...")
+    kindlegenErrorCode = 0
+    kindlegenError = ''
+    try:
+        if os.path.getsize(source) < 629145600:
+            output = Popen('kindlegen -dont_append_source -locale en "' + source + '"', stdout=PIPE,
+                           stderr=STDOUT, shell=True)
+            for line in output.stdout:
+                line = line.decode('utf-8')
+                # ERROR: Generic error
+                if "Error(" in line:
+                    kindlegenErrorCode = 1
+                    kindlegenError = line
+                # ERROR: EPUB too big
+                if ":E23026:" in line:
+                    kindlegenErrorCode = 23026
+                if kindlegenErrorCode > 0:
+                    break
+        else:
+            # ERROR: EPUB too big
+            kindlegenErrorCode = 23026
+        return (kindlegenErrorCode, kindlegenError, source)
+    except Exception as err:
+        # ERROR: KCC unknown generic error
+        kindlegenErrorCode = 1
+        kindlegenError = format(err)
+        return (kindlegenErrorCode, kindlegenError, source)
+
+
+def batchConvert(sources):
+    """Compile multiple ebooks concurrently."""
+    kindlePool = Pool()
+    kindleOutput = kindlePool.map_async(kindleConvert, sources)
+    results = kindleOutput.get()
+    return results
