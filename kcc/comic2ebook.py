@@ -225,7 +225,6 @@ def buildNCX(dstdir, title, chapters, chapterNames):
                 + ".html\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
-    return
 
 
 def buildOPF(dstdir, title, filelist, cover=None):
@@ -304,7 +303,6 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "</rootfiles>\n",
                   "</container>"])
     f.close()
-    return
 
 
 def applyImgOptimization(img, opt, hqImage=None):
@@ -952,7 +950,6 @@ def makeParser():
     psr.add_option_group(processingOptions)
     psr.add_option_group(customProfileOptions)
     psr.add_option_group(otherOptions)
-
     return psr
 
 
@@ -1030,7 +1027,6 @@ def makeBook(source, qtGUI=None):
             else:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
             makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
-
         else:
             print("\nCreating EPUB structure...")
             genEpubStruct(tome, chapterNames)
@@ -1046,7 +1042,6 @@ def makeBook(source, qtGUI=None):
 
         if GUI:
             GUI.progressBarTick.emit('tick')
-
     return filepath
 
 
