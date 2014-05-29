@@ -572,6 +572,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def __init__(self):
         if self.isSystemTrayAvailable():
             QtWidgets.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
+            # noinspection PyUnresolvedReferences
             self.activated.connect(self.catchClicks)
 
     def catchClicks(self):
