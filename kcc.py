@@ -114,6 +114,7 @@ class QApplicationMessaging(QtWidgets.QApplication):
         self._timeout = 1000
         self._server = QtNetwork.QLocalServer(self)
         if not self.isRunning():
+            # noinspection PyUnresolvedReferences
             self._server.newConnection.connect(self.handleMessage)
             self._server.listen(self._key)
 

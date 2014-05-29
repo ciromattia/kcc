@@ -63,34 +63,34 @@ elif platform == "win32":
         suffix = '_64'
     else:
         suffix = ''
-    additional_files = [('imageformats', ['C:\Python33' + suffix +
+    additional_files = [('imageformats', ['C:\Python34' + suffix +
                                           '\Lib\site-packages\PyQt5\plugins\imageformats\qgif.dll',
-                                          'C:\Python33' + suffix +
+                                          'C:\Python34' + suffix +
                                           '\Lib\site-packages\PyQt5\plugins\imageformats\qico.dll',
-                                          'C:\Python33' + suffix +
+                                          'C:\Python34' + suffix +
                                           '\Lib\site-packages\PyQt5\plugins\imageformats\qjpeg.dll',
-                                          'C:\Python33' + suffix +
+                                          'C:\Python34' + suffix +
                                           '\Lib\site-packages\PyQt5\plugins\imageformats\qmng.dll',
-                                          'C:\Python33' + suffix +
+                                          'C:\Python34' + suffix +
                                           '\Lib\site-packages\PyQt5\plugins\imageformats\qsvg.dll',
-                                          'C:\Python33' + suffix +
+                                          'C:\Python34' + suffix +
                                           '\Lib\site-packages\PyQt5\plugins\imageformats\qtga.dll',
-                                          'C:\Python33' + suffix +
+                                          'C:\Python34' + suffix +
                                           '\Lib\site-packages\PyQt5\plugins\imageformats\qtiff.dll',
-                                          'C:\Python33' + suffix +
+                                          'C:\Python34' + suffix +
                                           '\Lib\site-packages\PyQt5\plugins\imageformats\qwbmp.dll']),
-                        ('platforms', ['C:\Python33' + suffix +
+                        ('platforms', ['C:\Python34' + suffix +
                                        '\Lib\site-packages\PyQt5\plugins\platforms\qminimal.dll',
-                                       'C:\Python33' + suffix +
+                                       'C:\Python34' + suffix +
                                        '\Lib\site-packages\PyQt5\plugins\platforms\qoffscreen.dll',
-                                       'C:\Python33' + suffix +
+                                       'C:\Python34' + suffix +
                                        '\Lib\site-packages\PyQt5\plugins\platforms\qwindows.dll']),
                         ('', ['LICENSE.txt',
                               'other\\7za.exe',
                               'other\\UnRAR.exe',
                               'other\\Additional-LICENSE.txt',
                               'other\\7za.exe',
-                              'C:\Python33' + suffix + '\Lib\site-packages\PyQt5\libEGL.dll'])]
+                              'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libEGL.dll'])]
     extra_options = dict(
         options={'py2exe': {"bundle_files": 2,
                             "dll_excludes": ["tcl85.dll", "tk85.dll"],
