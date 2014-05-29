@@ -889,13 +889,13 @@ def Usage():
 
 def makeParser():
     """Create and return an option parser set up with kcc's options."""
-    parser = OptionParser(usage="Usage: kcc-c2e [options] comic_file|comic_folder", add_help_option=False)
+    psr = OptionParser(usage="Usage: kcc-c2e [options] comic_file|comic_folder", add_help_option=False)
 
-    mainOptions = OptionGroup(parser, "MAIN")
-    processingOptions = OptionGroup(parser, "PROCESSING")
-    outputOptions = OptionGroup(parser, "OUTPUT SETTINGS")
-    customProfileOptions = OptionGroup(parser, "CUSTOM PROFILE")
-    otherOptions = OptionGroup(parser, "OTHER")
+    mainOptions = OptionGroup(psr, "MAIN")
+    processingOptions = OptionGroup(psr, "PROCESSING")
+    outputOptions = OptionGroup(psr, "OUTPUT SETTINGS")
+    customProfileOptions = OptionGroup(psr, "CUSTOM PROFILE")
+    otherOptions = OptionGroup(psr, "OTHER")
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
                            help="Device profile (Choose one among K1, K2, K345, KDX, KHD, KF, KFHD, KFHD8, KFHDX,"
@@ -947,18 +947,17 @@ def makeParser():
     otherOptions.add_option("-h", "--help", action="help",
                             help="Show this help message and exit")
 
-    parser.add_option_group(mainOptions)
-    parser.add_option_group(outputOptions)
-    parser.add_option_group(processingOptions)
-    parser.add_option_group(customProfileOptions)
-    parser.add_option_group(otherOptions)
+    psr.add_option_group(mainOptions)
+    psr.add_option_group(outputOptions)
+    psr.add_option_group(processingOptions)
+    psr.add_option_group(customProfileOptions)
+    psr.add_option_group(otherOptions)
 
-    return parser
+    return psr
 
 
 def main(argv=None, qtGUI=None):
     global parser, options, GUI
-
     parser = makeParser()
     options, args = parser.parse_args(argv)
     checkOptions()
@@ -970,9 +969,7 @@ def main(argv=None, qtGUI=None):
     if len(args) != 1:
         parser.print_help()
         return
-
-    source = args[0]
-    outputPath = makeBook(source, qtGUI=qtGUI)
+    outputPath = makeBook(args[0], qtGUI=qtGUI)
     return outputPath
 
 
@@ -1014,7 +1011,7 @@ def makeBook(source, qtGUI=None):
         if options.cbzoutput:
             GUI.progressBarTick.emit('Compressing CBZ files')
         else:
-            GUI.progressBarTick.emit('Compressing EPUgB files')
+            GUI.progressBarTick.emit('Compressing EPUB files')
         GUI.progressBarTick.emit(str(len(tomes) + 1))
         GUI.progressBarTick.emit('tick')
 
