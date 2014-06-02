@@ -29,7 +29,7 @@ from re import split, sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp
-from shutil import move, copyfile, copytree, rmtree
+from shutil import move, copytree, rmtree
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
 from xml.dom.minidom import parse
@@ -559,7 +559,7 @@ def genEpubStruct(path, chapterNames):
                 if cover is None:
                     cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
                                          'cover' + getImageFileName(filelist[-1][1])[1])
-                    copyfile(os.path.join(filelist[-1][0], filelist[-1][1]), cover)
+                    image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover)
     buildNCX(path, options.title, chapterlist, chapterNames)
     # Ensure we're sorting files alphabetically
     convert = lambda text: int(text) if text.isdigit() else text

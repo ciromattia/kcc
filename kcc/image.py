@@ -144,7 +144,7 @@ class ComicPage:
                                      + str(self.border[2]) + "-" + str(self.border[3]))
                 if forcepng:
                     filename += ".png"
-                    self.image.save(filename,  "PNG", optimize=1)
+                    self.image.save(filename, "PNG", optimize=1)
                 else:
                     filename += ".jpg"
                     self.image.save(filename, "JPEG", optimize=1)
@@ -469,3 +469,35 @@ class ComicPage:
             else:
                 # Detection failed
                 return False
+
+
+class Cover:
+    def __init__(self, source, target):
+        self.source = source
+        self.target = target
+        self.image = Image.open(source)
+        self.image = self.image.convert('RGB')
+        self.process()
+        self.save()
+
+    def trim(self):
+        bg = Image.new(self.image.mode, self.image.size, self.image.getpixel((0, 0)))
+        diff = ImageChops.difference(self.image, bg)
+        diff = ImageChops.add(diff, diff, 2.0, -100)
+        bbox = diff.getbbox()
+        if bbox:
+            return self.image.crop(bbox)
+        else:
+            return self.image
+
+    def process(self):
+        self.image = self.trim()
+
+    def save(self):
+        try:
+            if os.path.splitext(self.source)[1].lower() == '.png':
+                self.image.save(self.target, "PNG", optimize=1)
+            else:
+                self.image.save(self.target, "JPEG", optimize=1)
+        except IOError:
+            raise RuntimeError('Failed to save cover')
