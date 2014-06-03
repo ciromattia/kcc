@@ -343,6 +343,13 @@ The app relies and includes the following scripts/binaries:
 * Fixed some Windows and OSX specific bugs
 * Fixed problem with marigns when using HQ mode
 
+####4.1:
+* Greatly increased speed of MOBI creation. A big thank you to Kevin Hendricks for code contributions!
+* Improved performance on Windows
+* Improved MOBI splitting and changed maximal size of output file
+* Fixed _No optimization_ mode
+* Multiple small tweaks nad minor bug fixes
+
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
