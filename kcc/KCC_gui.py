@@ -1188,6 +1188,11 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.addMessage('Since you are new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
+        if not sys.platform.startswith('win'):
+            try:
+                os.chmod('/usr/local/bin/kindlegen', 0o755)
+            except Exception:
+                pass
         kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
         if kindleGenExitCode.wait() == 0:
             self.KindleGen = True
