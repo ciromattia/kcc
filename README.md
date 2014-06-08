@@ -17,8 +17,12 @@ If you can fix an open issue, fork & make a pull request.
 If you want more chances an issue is fixes or your wanted feature added, consider [placing a bounty](https://www.bountysource.com/trackers/65571-ciromattia-kcc)!  
 
 If you find **KCC** valuable you can consider donating to the authors:
-  * Ciro Mattia Gonano: [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D8WNYNPBGDAS2) [![Flattr this](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/2260449/ciromattiakcc-on-GitHub)
-  * Paweł Jastrzębski: [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS) [![1W15wwqsfd7wbaZ6wvSJf1LW1bz6q5L8b](http://s30.postimg.org/6z3kwvdlp/BC_Rnd.png)](bitcoin:1W15wwqsfd7wbaZ6wvSJf1LW1bz6q5L8b?label=KCC) [1W15wwqsfd7wbaZ6wvSJf1LW1bz6q5L8b](bitcoin:1W15wwqsfd7wbaZ6wvSJf1LW1bz6q5L8b?label=KCC)
+- Ciro Mattia Gonano:
+ - [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D8WNYNPBGDAS2)
+ - [![Flattr this](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/2260449/ciromattiakcc-on-GitHub)
+- Paweł Jastrzębski:
+ - [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
+ - Bitcoin: 1W15wwqsfd7wbaZ6wvSJf1LW1bz6q5L8b
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
@@ -54,7 +58,7 @@ sudo pip3 install pillow python-slugify psutil
 
 ### For freezing code:
 - Windows - [py2exe](https://pypi.python.org/pypi/py2exe) 0.9.2+
-- OS X - [py2app](https://bitbucket.org/ronaldoussoren/py2app) 0.8+
+- OS X - [py2app](https://bitbucket.org/ronaldoussoren/py2app) 0.8.0+
 
 ## USAGE
 
@@ -344,7 +348,7 @@ The app relies and includes the following scripts/binaries:
 * Fixed problem with marigns when using HQ mode
 
 ####4.1:
-* Greatly increased speed of MOBI creation. A big thank you to Kevin Hendricks for code contributions!
+* Thanks to code contributed by Kevin Hendricks speed of MOBI creation was greatly increased
 * Improved performance on Windows
 * Improved MOBI splitting and changed maximal size of output file
 * Fixed _No optimization_ mode
