@@ -63,10 +63,10 @@ if len(missing) > 0:
     exit(1)
 
 from multiprocessing import freeze_support
-from kcc.comic2ebook import main, Copyright
+from kcc.comic2ebook import main
 
 if __name__ == "__main__":
     freeze_support()
-    Copyright()
+    print(('comic2ebook v%(__version__)s. Written by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
     main(sys.argv[1:])
     sys.exit(0)

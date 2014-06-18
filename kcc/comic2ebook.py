@@ -47,24 +47,36 @@ from . import cbxarchive
 from . import pdfjpgextract
 
 
+def main(argv=None):
+    global options
+    parser = makeParser()
+    options, args = parser.parse_args(argv)
+    checkOptions()
+    if len(args) != 1:
+        parser.print_help()
+        return
+    outputPath = makeBook(args[0])
+    return outputPath
+
+
 def buildHTML(path, imgfile, imgfilepath):
     imgfilepath = md5Checksum(imgfilepath)
     filename = getImageFileName(imgfile)
     if filename is not None:
         if options.imgproc:
-            if "Rotated" in theGreatIndex[imgfilepath]:
+            if "Rotated" in options.imgIndex[imgfilepath]:
                 rotatedPage = True
             else:
                 rotatedPage = False
-            if "NoPanelView" in theGreatIndex[imgfilepath]:
+            if "NoPanelView" in options.imgIndex[imgfilepath]:
                 noPV = True
             else:
                 noPV = False
-            if "NoHorizontalPanelView" in theGreatIndex[imgfilepath]:
+            if "NoHorizontalPanelView" in options.imgIndex[imgfilepath]:
                 noHorizontalPV = True
             else:
                 noHorizontalPV = False
-            if "NoVerticalPanelView" in theGreatIndex[imgfilepath]:
+            if "NoVerticalPanelView" in options.imgIndex[imgfilepath]:
                 noVerticalPV = True
             else:
                 noVerticalPV = False
@@ -146,7 +158,7 @@ def buildHTML(path, imgfile, imgfilepath):
                 imgfilepv = ".".join(imgfilepv)
             else:
                 imgfilepv = imgfile
-            xl, yu, xr, yd = checkMargins(imgfilepath)
+            xl, yu, xr, yd = detectMargins(imgfilepath)
             boxStyles = {"BoxTL": "left:" + xl + ";top:" + yu + ";",
                          "BoxTR": "right:" + xr + ";top:" + yu + ";",
                          "BoxBL": "left:" + xl + ";bottom:" + yd + ";",
@@ -166,35 +178,6 @@ def buildHTML(path, imgfile, imgfilepath):
         f.writelines(["</div>\n</body>\n</html>"])
         f.close()
         return path, imgfile
-
-
-def checkMargins(path):
-    if options.imgproc:
-        for flag in theGreatIndex[path]:
-            if "Margins-" in flag:
-                flag = flag.split('-')
-                xl = flag[1]
-                yu = flag[2]
-                xr = flag[3]
-                yd = flag[4]
-                if xl != "0":
-                    xl = "-" + str(float(xl)/100) + "%"
-                else:
-                    xl = "0%"
-                if xr != "0":
-                    xr = "-" + str(float(xr)/100) + "%"
-                else:
-                    xr = "0%"
-                if yu != "0":
-                    yu = "-" + str(float(yu)/100) + "%"
-                else:
-                    yu = "0%"
-                if yd != "0":
-                    yd = "-" + str(float(yd)/100) + "%"
-                else:
-                    yd = "0%"
-                return xl, yu, xr, yd
-    return '0%', '0%', '0%', '0%'
 
 
 def buildNCX(dstdir, title, chapters, chapterNames):
@@ -305,133 +288,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
     f.close()
 
 
-def applyImgOptimization(img, opt, hqImage=None):
-    if not img.fill:
-        img.getImageFill(opt.webtoon)
-    if not opt.webtoon:
-        img.cropWhiteSpace()
-    if opt.cutpagenumbers and not opt.webtoon:
-        img.cutPageNumber()
-    img.optimizeImage(opt.gamma)
-    if hqImage:
-        img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, 0)
-        img.calculateBorder(hqImage, True)
-    else:
-        img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, opt.quality)
-        if opt.panelview:
-            if opt.quality == 0:
-                img.calculateBorder(img)
-            elif opt.quality == 1:
-                img.calculateBorder(img, True)
-    if opt.forcepng and not opt.forcecolor:
-        img.quantizeImage()
-
-
-def dirImgProcess(path):
-    global workerPool, workerOutput, theGreatIndex, theGreatWipe
-    workerPool = Pool()
-    workerOutput = []
-    work = []
-    theGreatIndex = {}
-    theGreatWipe = []
-    pagenumber = 0
-    for (dirpath, dirnames, filenames) in os.walk(path):
-        for afile in filenames:
-            if getImageFileName(afile) is not None:
-                pagenumber += 1
-                work.append([afile, dirpath, options])
-    if GUI:
-        GUI.progressBarTick.emit(str(pagenumber))
-    if len(work) > 0:
-        for i in work:
-            workerPool.apply_async(func=fileImgProcess, args=(i, ), callback=fileImgProcess_tick)
-        workerPool.close()
-        workerPool.join()
-        if GUI and not GUI.conversionAlive:
-            rmtree(os.path.join(path, '..', '..'), True)
-            raise UserWarning("Conversion interrupted.")
-        if len(workerOutput) > 0:
-            rmtree(os.path.join(path, '..', '..'), True)
-            raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0])
-        for file in theGreatWipe:
-            if os.path.isfile(file):
-                os.remove(file)
-    else:
-        rmtree(os.path.join(path, '..', '..'), True)
-        raise UserWarning("Source directory is empty.")
-
-
-def fileImgProcess_tick(output):
-    if isinstance(output, str):
-        workerOutput.append(output)
-        workerPool.terminate()
-    else:
-        for page in output:
-            if page is not None:
-                if isinstance(page, str):
-                    theGreatWipe.append(page)
-                else:
-                    theGreatIndex[page[0]] = page[1]
-    if GUI:
-        GUI.progressBarTick.emit('tick')
-        if not GUI.conversionAlive:
-            workerPool.terminate()
-
-
-def fileImgProcess(work):
-    try:
-        afile = work[0]
-        dirpath = work[1]
-        opt = work[2]
-        output = []
-        img = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
-        if opt.quality == 2:
-            wipe = False
-        else:
-            wipe = True
-        if opt.nosplitrotate:
-            splitter = None
-        else:
-            splitter = img.splitPage(dirpath, opt.righttoleft, opt.rotate)
-        if splitter is not None:
-            img0 = image.ComicPage(splitter[0], opt.profileData)
-            applyImgOptimization(img0, opt)
-            output.append(img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-            img1 = image.ComicPage(splitter[1], opt.profileData)
-            applyImgOptimization(img1, opt)
-            output.append(img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-            if wipe:
-                output.append(img0.origFileName)
-                output.append(img1.origFileName)
-            if opt.quality == 2:
-                img0b = image.ComicPage(splitter[0], opt.profileData, img0.fill)
-                applyImgOptimization(img0b, opt, img0)
-                output.append(img0b.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-                img1b = image.ComicPage(splitter[1], opt.profileData, img1.fill)
-                applyImgOptimization(img1b, opt, img1)
-                output.append(img1b.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-                output.append(img0.origFileName)
-                output.append(img1.origFileName)
-            output.append(img.origFileName)
-        else:
-            applyImgOptimization(img, opt)
-            output.append(img.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-            if wipe:
-                output.append(img.origFileName)
-            if opt.quality == 2:
-                img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData, img.fill)
-                if img.rotated:
-                    img2.image = img2.image.rotate(90)
-                    img2.rotated = True
-                applyImgOptimization(img2, opt, img)
-                output.append(img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-                output.append(img.origFileName)
-        return output
-    except Exception:
-        return str(sys.exc_info()[1])
-
-
-def genEpubStruct(path, chapterNames):
+def buildEPUB(path, chapterNames):
     filelist = []
     chapterlist = []
     cover = None
@@ -568,6 +425,132 @@ def genEpubStruct(path, chapterNames):
     buildOPF(path, options.title, filelist, cover)
 
 
+def imgOptimization(img, opt, hqImage=None):
+    if not img.fill:
+        img.getImageFill(opt.webtoon)
+    if not opt.webtoon:
+        img.cropWhiteSpace()
+    if opt.cutpagenumbers and not opt.webtoon:
+        img.cutPageNumber()
+    img.optimizeImage(opt.gamma)
+    if hqImage:
+        img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, 0)
+        img.calculateBorder(hqImage, True)
+    else:
+        img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, opt.quality)
+        if opt.panelview:
+            if opt.quality == 0:
+                img.calculateBorder(img)
+            elif opt.quality == 1:
+                img.calculateBorder(img, True)
+    if opt.forcepng and not opt.forcecolor:
+        img.quantizeImage()
+
+
+def imgDirectoryProcessing(path):
+    global workerPool, workerOutput
+    workerPool = Pool()
+    workerOutput = []
+    options.imgIndex = {}
+    options.imgPurgeIndex = []
+    work = []
+    pagenumber = 0
+    for (dirpath, dirnames, filenames) in os.walk(path):
+        for afile in filenames:
+            if getImageFileName(afile) is not None:
+                pagenumber += 1
+                work.append([afile, dirpath, options])
+    if GUI:
+        GUI.progressBarTick.emit(str(pagenumber))
+    if len(work) > 0:
+        for i in work:
+            workerPool.apply_async(func=imgFileProcessing, args=(i, ), callback=imgFileProcessingTick)
+        workerPool.close()
+        workerPool.join()
+        if GUI and not GUI.conversionAlive:
+            rmtree(os.path.join(path, '..', '..'), True)
+            raise UserWarning("Conversion interrupted.")
+        if len(workerOutput) > 0:
+            rmtree(os.path.join(path, '..', '..'), True)
+            raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0])
+        for file in options.imgPurgeIndex:
+            if os.path.isfile(file):
+                os.remove(file)
+    else:
+        rmtree(os.path.join(path, '..', '..'), True)
+        raise UserWarning("Source directory is empty.")
+
+
+def imgFileProcessingTick(output):
+    if isinstance(output, str):
+        workerOutput.append(output)
+        workerPool.terminate()
+    else:
+        for page in output:
+            if page is not None:
+                if isinstance(page, str):
+                    options.imgPurgeIndex.append(page)
+                else:
+                    options.imgIndex[page[0]] = page[1]
+    if GUI:
+        GUI.progressBarTick.emit('tick')
+        if not GUI.conversionAlive:
+            workerPool.terminate()
+
+
+def imgFileProcessing(work):
+    try:
+        afile = work[0]
+        dirpath = work[1]
+        opt = work[2]
+        output = []
+        img = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
+        if opt.quality == 2:
+            wipe = False
+        else:
+            wipe = True
+        if opt.nosplitrotate:
+            splitter = None
+        else:
+            splitter = img.splitPage(dirpath, opt.righttoleft, opt.rotate)
+        if splitter is not None:
+            img0 = image.ComicPage(splitter[0], opt.profileData)
+            imgOptimization(img0, opt)
+            output.append(img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
+            img1 = image.ComicPage(splitter[1], opt.profileData)
+            imgOptimization(img1, opt)
+            output.append(img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
+            if wipe:
+                output.append(img0.origFileName)
+                output.append(img1.origFileName)
+            if opt.quality == 2:
+                img0b = image.ComicPage(splitter[0], opt.profileData, img0.fill)
+                imgOptimization(img0b, opt, img0)
+                output.append(img0b.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
+                img1b = image.ComicPage(splitter[1], opt.profileData, img1.fill)
+                imgOptimization(img1b, opt, img1)
+                output.append(img1b.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
+                output.append(img0.origFileName)
+                output.append(img1.origFileName)
+            output.append(img.origFileName)
+        else:
+            imgOptimization(img, opt)
+            output.append(img.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
+            if wipe:
+                output.append(img.origFileName)
+            if opt.quality == 2:
+                img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData, img.fill)
+                if img.rotated:
+                    img2.image = img2.image.rotate(90)
+                    img2.rotated = True
+                imgOptimization(img2, opt, img)
+                output.append(img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
+                output.append(img.origFileName)
+        return output
+    except Exception:
+        return str(sys.exc_info()[1])
+
+
 def getWorkFolder(afile):
     if len(afile) > 240:
         raise UserWarning("Path is too long.")
@@ -579,7 +562,7 @@ def getWorkFolder(afile):
             if len(fullPath) > 240:
                 raise UserWarning("Path is too long.")
             copytree(afile, fullPath)
-            sanitizeTreeBeforeConversion(fullPath)
+            sanitizePermissions(fullPath)
             return workdir
         except OSError:
             rmtree(workdir, True)
@@ -609,7 +592,33 @@ def getWorkFolder(afile):
     return path
 
 
-def checkComicInfo(path, originalPath):
+def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
+    if srcpath[-1] == os.path.sep:
+        srcpath = srcpath[:-1]
+    if not ext.startswith('.'):
+        ext = '.' + ext
+    if wantedname is not None:
+        if wantedname.endswith(ext):
+            filename = os.path.abspath(wantedname)
+        elif os.path.isdir(srcpath):
+            filename = os.path.join(os.path.abspath(options.output), os.path.basename(srcpath) + ext)
+        else:
+            filename = os.path.join(os.path.abspath(options.output),
+                                    os.path.basename(os.path.splitext(srcpath)[0]) + ext)
+    elif os.path.isdir(srcpath):
+        filename = srcpath + tomeNumber + ext
+    else:
+        filename = os.path.splitext(srcpath)[0] + tomeNumber + ext
+    if os.path.isfile(filename):
+        counter = 0
+        basename = os.path.splitext(filename)[0]
+        while os.path.isfile(basename + '_kcc' + str(counter) + ext):
+            counter += 1
+        filename = basename + '_kcc' + str(counter) + ext
+    return filename
+
+
+def getComicInfo(path, originalPath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.authors = ['KCC']
     titleSuffix = ''
@@ -660,52 +669,6 @@ def checkComicInfo(path, originalPath):
         os.remove(xmlPath)
 
 
-def slugify(value):
-    value = slugifyExt(value)
-    value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value))
-    return value
-
-
-def sanitizeTree(filetree):
-    chapterNames = {}
-    for root, dirs, files in os.walk(filetree, False):
-        for name in files:
-            if name.startswith('.') or name.lower() == 'thumbs.db':
-                os.remove(os.path.join(root, name))
-            else:
-                splitname = os.path.splitext(name)
-                slugified = slugify(splitname[0])
-                while os.path.exists(os.path.join(root, slugified + splitname[1])) and splitname[0].upper()\
-                        != slugified.upper():
-                    slugified += "A"
-                newKey = os.path.join(root, slugified + splitname[1])
-                key = os.path.join(root, name)
-                if key != newKey:
-                    os.replace(key, newKey)
-        for name in dirs:
-            if name.startswith('.'):
-                os.remove(os.path.join(root, name))
-            else:
-                tmpName = name
-                slugified = slugify(name)
-                while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
-                    slugified += "A"
-                chapterNames[slugified] = tmpName
-                newKey = os.path.join(root, slugified)
-                key = os.path.join(root, name)
-                if key != newKey:
-                    os.replace(key, newKey)
-    return chapterNames
-
-
-def sanitizeTreeBeforeConversion(filetree):
-    for root, dirs, files in os.walk(filetree, False):
-        for name in files:
-            os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
-        for name in dirs:
-            os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
-
-
 def getDirectorySize(start_path='.'):
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(start_path):
@@ -715,14 +678,100 @@ def getDirectorySize(start_path='.'):
     return total_size
 
 
-def createNewTome():
-    tomePathRoot = mkdtemp('', 'KCC-TMP-')
-    tomePath = os.path.join(tomePathRoot, 'OEBPS', 'Images')
-    os.makedirs(tomePath)
-    return tomePath, tomePathRoot
+def sanitizeTree(filetree):
+    chapterNames = {}
+    for root, dirs, files in os.walk(filetree, False):
+        for name in files:
+            splitname = os.path.splitext(name)
+            slugified = slugify(splitname[0])
+            while os.path.exists(os.path.join(root, slugified + splitname[1])) and splitname[0].upper()\
+                    != slugified.upper():
+                slugified += "A"
+            newKey = os.path.join(root, slugified + splitname[1])
+            key = os.path.join(root, name)
+            if key != newKey:
+                os.replace(key, newKey)
+        for name in dirs:
+            tmpName = name
+            slugified = slugify(name)
+            while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
+                slugified += "A"
+            chapterNames[slugified] = tmpName
+            newKey = os.path.join(root, slugified)
+            key = os.path.join(root, name)
+            if key != newKey:
+                os.replace(key, newKey)
+    return chapterNames
 
 
-def splitDirectory(path, mode):
+def sanitizePermissions(filetree):
+    for root, dirs, files in os.walk(filetree, False):
+        for name in files:
+            os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
+        for name in dirs:
+            os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
+
+
+#noinspection PyUnboundLocalVariable
+def splitDirectory(path):
+    # Detect directory stucture
+    for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 0):
+        subdirectoryNumber = len(dirs)
+        filesNumber = len(files)
+    if subdirectoryNumber == 0:
+        # No subdirectories
+        mode = 0
+    else:
+        if filesNumber > 0:
+            print('\nWARNING: Automatic output splitting failed.')
+            if GUI:
+                GUI.addMessage.emit('Automatic output splitting failed. <a href='
+                                    '"https://github.com/ciromattia/kcc/wiki'
+                                    '/Automatic-output-splitting">'
+                                    'More details.</a>', 'warning', False)
+                GUI.addMessage.emit('', '', False)
+            return [path]
+        detectedSubSubdirectories = False
+        detectedFilesInSubdirectories = False
+        for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 1):
+            if root != os.path.join(path, 'OEBPS', 'Images'):
+                if len(dirs) != 0:
+                    detectedSubSubdirectories = True
+                elif len(dirs) == 0 and detectedSubSubdirectories:
+                    print('\nWARNING: Automatic output splitting failed.')
+                    if GUI:
+                        GUI.addMessage.emit('Automatic output splitting failed. <a href='
+                                            '"https://github.com/ciromattia/kcc/wiki'
+                                            '/Automatic-output-splitting">'
+                                            'More details.</a>', 'warning', False)
+                        GUI.addMessage.emit('', '', False)
+                    return [path]
+                if len(files) != 0:
+                    detectedFilesInSubdirectories = True
+        if detectedSubSubdirectories:
+            # Two levels of subdirectories
+            mode = 2
+        else:
+            # One level of subdirectories
+            mode = 1
+        if detectedFilesInSubdirectories and detectedSubSubdirectories:
+            print('\nWARNING: Automatic output splitting failed.')
+            if GUI:
+                GUI.addMessage.emit('Automatic output splitting failed. <a href='
+                                    '"https://github.com/ciromattia/kcc/wiki'
+                                    '/Automatic-output-splitting">'
+                                    'More details.</a>', 'warning', False)
+                GUI.addMessage.emit('', '', False)
+            return [path]
+    # Split directories
+    splitter = splitProcess(os.path.join(path, 'OEBPS', 'Images'), mode)
+    path = [path]
+    for tome in splitter:
+        path.append(tome)
+    return path
+
+
+def splitProcess(path, mode):
     output = []
     currentSize = 0
     currentTarget = path
@@ -783,65 +832,6 @@ def splitDirectory(path, mode):
     return output
 
 
-#noinspection PyUnboundLocalVariable
-def preSplitDirectory(path):
-    # Detect directory stucture
-    for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 0):
-        subdirectoryNumber = len(dirs)
-        filesNumber = len(files)
-    if subdirectoryNumber == 0:
-        # No subdirectories
-        mode = 0
-    else:
-        if filesNumber > 0:
-            print('\nWARNING: Automatic output splitting failed.')
-            if GUI:
-                GUI.addMessage.emit('Automatic output splitting failed. <a href='
-                                    '"https://github.com/ciromattia/kcc/wiki'
-                                    '/Automatic-output-splitting">'
-                                    'More details.</a>', 'warning', False)
-                GUI.addMessage.emit('', '', False)
-            return [path]
-        detectedSubSubdirectories = False
-        detectedFilesInSubdirectories = False
-        for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 1):
-            if root != os.path.join(path, 'OEBPS', 'Images'):
-                if len(dirs) != 0:
-                    detectedSubSubdirectories = True
-                elif len(dirs) == 0 and detectedSubSubdirectories:
-                    print('\nWARNING: Automatic output splitting failed.')
-                    if GUI:
-                        GUI.addMessage.emit('Automatic output splitting failed. <a href='
-                                            '"https://github.com/ciromattia/kcc/wiki'
-                                            '/Automatic-output-splitting">'
-                                            'More details.</a>', 'warning', False)
-                        GUI.addMessage.emit('', '', False)
-                    return [path]
-                if len(files) != 0:
-                    detectedFilesInSubdirectories = True
-        if detectedSubSubdirectories:
-            # Two levels of subdirectories
-            mode = 2
-        else:
-            # One level of subdirectories
-            mode = 1
-        if detectedFilesInSubdirectories and detectedSubSubdirectories:
-            print('\nWARNING: Automatic output splitting failed.')
-            if GUI:
-                GUI.addMessage.emit('Automatic output splitting failed. <a href='
-                                    '"https://github.com/ciromattia/kcc/wiki'
-                                    '/Automatic-output-splitting">'
-                                    'More details.</a>', 'warning', False)
-                GUI.addMessage.emit('', '', False)
-            return [path]
-    # Split directories
-    splitter = splitDirectory(os.path.join(path, 'OEBPS', 'Images'), mode)
-    path = [path]
-    for tome in splitter:
-        path.append(tome)
-    return path
-
-
 def detectCorruption(tmpPath, orgPath):
     for root, dirs, files in os.walk(tmpPath, False):
         for name in files:
@@ -861,6 +851,48 @@ def detectCorruption(tmpPath, orgPath):
                     raise RuntimeError('Image file %s is corrupted.' % pathOrg)
 
 
+def detectMargins(path):
+    if options.imgproc:
+        for flag in options.imgIndex[path]:
+            if "Margins-" in flag:
+                flag = flag.split('-')
+                xl = flag[1]
+                yu = flag[2]
+                xr = flag[3]
+                yd = flag[4]
+                if xl != "0":
+                    xl = "-" + str(float(xl)/100) + "%"
+                else:
+                    xl = "0%"
+                if xr != "0":
+                    xr = "-" + str(float(xr)/100) + "%"
+                else:
+                    xr = "0%"
+                if yu != "0":
+                    yu = "-" + str(float(yu)/100) + "%"
+                else:
+                    yu = "0%"
+                if yd != "0":
+                    yd = "-" + str(float(yd)/100) + "%"
+                else:
+                    yd = "0%"
+                return xl, yu, xr, yd
+    return '0%', '0%', '0%', '0%'
+
+
+def createNewTome():
+    tomePathRoot = mkdtemp('', 'KCC-TMP-')
+    tomePath = os.path.join(tomePathRoot, 'OEBPS', 'Images')
+    os.makedirs(tomePath)
+    return tomePath, tomePathRoot
+
+
+def slugify(value):
+    value = slugifyExt(value)
+    value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value))
+    return value
+
+
 def makeZIP(zipFilename, baseDir, isEPUB=False):
     zipFilename = os.path.abspath(zipFilename) + '.zip'
     zipOutput = ZipFile(zipFilename, 'w', ZIP_DEFLATED)
@@ -874,15 +906,6 @@ def makeZIP(zipFilename, baseDir, isEPUB=False):
                 zipOutput.write(path, aPath)
     zipOutput.close()
     return zipFilename
-
-
-def Copyright():
-    print(('comic2ebook v%(__version__)s. Written by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
-
-
-def Usage():
-    print("Generates EPUB/CBZ comic ebook from a bunch of images.")
-    parser.print_help()
 
 
 def makeParser():
@@ -953,124 +976,6 @@ def makeParser():
     return psr
 
 
-def main(argv=None, qtGUI=None):
-    global parser, options, GUI
-    parser = makeParser()
-    options, args = parser.parse_args(argv)
-    checkOptions()
-    if qtGUI:
-        GUI = qtGUI
-        GUI.progressBarTick.emit('1')
-    else:
-        GUI = None
-    if len(args) != 1:
-        parser.print_help()
-        return
-    outputPath = makeBook(args[0], qtGUI=qtGUI)
-    return outputPath
-
-
-def makeBook(source, qtGUI=None):
-    """Generates EPUB/CBZ comic ebook from a bunch of images."""
-    global GUI
-    GUI = qtGUI
-    path = getWorkFolder(source)
-    print("\nChecking images...")
-    detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
-    checkComicInfo(os.path.join(path, "OEBPS", "Images"), source)
-
-    if options.webtoon:
-        if options.customheight > 0:
-            comic2panel.main(['-y ' + str(options.customheight), '-i', '-m', path], qtGUI)
-        else:
-            comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', '-m', path], qtGUI)
-
-    if options.imgproc:
-        print("\nProcessing images...")
-        if GUI:
-            GUI.progressBarTick.emit('Processing images')
-        dirImgProcess(os.path.join(path, "OEBPS", "Images"))
-
-    if GUI:
-        GUI.progressBarTick.emit('1')
-
-    chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
-
-    if options.batchsplit:
-        tomes = preSplitDirectory(path)
-    else:
-        tomes = [path]
-
-    filepath = []
-    tomeNumber = 0
-
-    if GUI:
-        if options.cbzoutput:
-            GUI.progressBarTick.emit('Compressing CBZ files')
-        else:
-            GUI.progressBarTick.emit('Compressing EPUB files')
-        GUI.progressBarTick.emit(str(len(tomes) + 1))
-        GUI.progressBarTick.emit('tick')
-
-    options.baseTitle = options.title
-
-    for tome in tomes:
-        if len(tomes) > 1:
-            tomeNumber += 1
-            options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
-
-        if options.cbzoutput:
-            # if CBZ output wanted, compress all images and return filepath
-            print("\nCreating CBZ file...")
-            if len(tomes) > 1:
-                filepath.append(getOutputFilename(source, options.output, '.cbz', ' ' + str(tomeNumber)))
-            else:
-                filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
-            makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
-        else:
-            print("\nCreating EPUB structure...")
-            genEpubStruct(tome, chapterNames)
-            # actually zip the ePub
-            if len(tomes) > 1:
-                filepath.append(getOutputFilename(source, options.output, '.epub', ' ' + str(tomeNumber)))
-            else:
-                filepath.append(getOutputFilename(source, options.output, '.epub', ''))
-            makeZIP(tome + '_comic', tome, True)
-
-        move(tome + '_comic.zip', filepath[-1])
-        rmtree(tome, True)
-
-        if GUI:
-            GUI.progressBarTick.emit('tick')
-    return filepath
-
-
-def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
-    if srcpath[-1] == os.path.sep:
-        srcpath = srcpath[:-1]
-    if not ext.startswith('.'):
-        ext = '.' + ext
-    if wantedname is not None:
-        if wantedname.endswith(ext):
-            filename = os.path.abspath(wantedname)
-        elif os.path.isdir(srcpath):
-            filename = os.path.join(os.path.abspath(options.output), os.path.basename(srcpath) + ext)
-        else:
-            filename = os.path.join(os.path.abspath(options.output),
-                                    os.path.basename(os.path.splitext(srcpath)[0]) + ext)
-    elif os.path.isdir(srcpath):
-        filename = srcpath + tomeNumber + ext
-    else:
-        filename = os.path.splitext(srcpath)[0] + tomeNumber + ext
-    if os.path.isfile(filename):
-        counter = 0
-        basename = os.path.splitext(filename)[0]
-        while os.path.isfile(basename + '_kcc' + str(counter) + ext):
-            counter += 1
-        filename = basename + '_kcc' + str(counter) + ext
-    return filename
-
-
 def checkOptions():
     global options
     options.panelview = True
@@ -1123,3 +1028,68 @@ def checkOptions():
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
+
+
+def makeBook(source, qtGUI=None):
+    """Generates EPUB/CBZ comic ebook from a bunch of images."""
+    global GUI
+    GUI = qtGUI
+    if GUI:
+        GUI.progressBarTick.emit('1')
+    path = getWorkFolder(source)
+    print("\nChecking images...")
+    detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
+    getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
+    if options.webtoon:
+        if options.customheight > 0:
+            comic2panel.main(['-y ' + str(options.customheight), '-i', '-m', path], qtGUI)
+        else:
+            comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', '-m', path], qtGUI)
+    if options.imgproc:
+        print("\nProcessing images...")
+        if GUI:
+            GUI.progressBarTick.emit('Processing images')
+        imgDirectoryProcessing(os.path.join(path, "OEBPS", "Images"))
+    if GUI:
+        GUI.progressBarTick.emit('1')
+    chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    if options.batchsplit:
+        tomes = splitDirectory(path)
+    else:
+        tomes = [path]
+    filepath = []
+    tomeNumber = 0
+    if GUI:
+        if options.cbzoutput:
+            GUI.progressBarTick.emit('Compressing CBZ files')
+        else:
+            GUI.progressBarTick.emit('Compressing EPUB files')
+        GUI.progressBarTick.emit(str(len(tomes) + 1))
+        GUI.progressBarTick.emit('tick')
+    options.baseTitle = options.title
+    for tome in tomes:
+        if len(tomes) > 1:
+            tomeNumber += 1
+            options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
+        if options.cbzoutput:
+            # if CBZ output wanted, compress all images and return filepath
+            print("\nCreating CBZ file...")
+            if len(tomes) > 1:
+                filepath.append(getOutputFilename(source, options.output, '.cbz', ' ' + str(tomeNumber)))
+            else:
+                filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
+            makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
+        else:
+            print("\nCreating EPUB structure...")
+            buildEPUB(tome, chapterNames)
+            # actually zip the ePub
+            if len(tomes) > 1:
+                filepath.append(getOutputFilename(source, options.output, '.epub', ' ' + str(tomeNumber)))
+            else:
+                filepath.append(getOutputFilename(source, options.output, '.epub', ''))
+            makeZIP(tome + '_comic', tome, True)
+        move(tome + '_comic.zip', filepath[-1])
+        rmtree(tome, True)
+        if GUI:
+            GUI.progressBarTick.emit('tick')
+    return filepath
