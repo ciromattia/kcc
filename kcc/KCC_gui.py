@@ -873,14 +873,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if outputFormat is not None:
             GUI.FormatBox.setCurrentIndex(outputFormat)
         else:
-            if GUI.FormatBox.count() == 3:
-                GUI.FormatBox.setCurrentIndex(profile['DefaultFormat'])
-            else:
-                if profile['DefaultFormat'] != 0:
-                    tmpFormat = profile['DefaultFormat'] - 1
-                else:
-                    tmpFormat = 0
-                GUI.FormatBox.setCurrentIndex(tmpFormat)
+            GUI.FormatBox.setCurrentIndex(profile['DefaultFormat'])
         if GUI.WebtoonBox.isChecked():
             GUI.MangaBox.setEnabled(False)
             GUI.QualityBox.setEnabled(False)
@@ -973,6 +966,15 @@ class KCCGUI(KCC_ui.Ui_KCC):
             if self.currentMode > 2 and (str(GUI.customWidth.text()) == '' or str(GUI.customHeight.text()) == ''):
                 GUI.JobList.clear()
                 self.addMessage('Target resolution is not set!', 'error')
+                self.needClean = True
+                return
+            if str(GUI.FormatBox.currentText()) == 'MOBI' and not GUI.KindleGen:
+                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
+                                '<b>KindleGen</b></a>! MOBI conversion is not possible!', 'error')
+                if sys.platform.startswith('win'):
+                    self.addMessage('Download it and place EXE in KCC directory.', 'error')
+                else:
+                    self.addMessage('Download it, and place executable in /usr/local/bin directory.', 'error')
                 self.needClean = True
                 return
             self.worker.start()
@@ -1198,7 +1200,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
         kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
         if kindleGenExitCode.wait() == 0:
             self.KindleGen = True
-            formats = ['MOBI', 'EPUB', 'CBZ']
             versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
             for line in versionCheck.stdout:
                 line = line.decode("utf-8")
@@ -1212,13 +1213,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
                     break
         else:
             self.KindleGen = False
-            formats = ['EPUB', 'CBZ']
-            if sys.platform.startswith('win'):
-                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
-                                'kindlegen</a> in KCC directory! MOBI creation will be disabled.', 'warning')
-            else:
-                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
-                                'kindlegen</a> in PATH! MOBI creation will be disabled.', 'warning')
         rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
         rarExitCode = rarExitCode.wait()
         if rarExitCode == 0 or rarExitCode == 7:
@@ -1273,7 +1267,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 GUI.DeviceBox.addItem(self.icons.deviceKobo, profile)
             else:
                 GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
-        for f in formats:
+        for f in ['MOBI', 'EPUB', 'CBZ']:
             GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
         if self.lastDevice > GUI.DeviceBox.count():
             self.lastDevice = 0
