@@ -1015,6 +1015,9 @@ def checkOptions():
     # CBZ files on Kindle DX/DXG support higher resolution
     if options.profile == 'KDX' and options.cbzoutput:
         options.customheight = 1200
+    # Ultra mode don't work with CBZ format
+    if options.quality == 2 and options.cbzoutput:
+        options.quality = 1
     # Override profile data
     if options.customwidth != 0 or options.customheight != 0:
         X = image.ProfileData.Profiles[options.profile][1][0]
