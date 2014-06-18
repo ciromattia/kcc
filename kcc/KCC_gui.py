@@ -196,7 +196,6 @@ class VersionThread(QtCore.QThread):
 
     def run(self):
         try:
-            sleep(1)
             XML = urlopen('http://kcc.iosphe.re/Version.php')
             XML = parse(XML)
         except Exception:
@@ -493,7 +492,6 @@ class WorkerThread(QtCore.QThread):
                         worker.signals.result.connect(self.addResult)
                         self.pool.start(worker)
                     self.pool.waitForDone()
-                    sleep(0.5)
                     self.kindlegenErrorCode = [0]
                     for errors in self.workerOutput:
                         if errors[0] != 0:
@@ -503,7 +501,6 @@ class WorkerThread(QtCore.QThread):
                         for item in outputPath:
                             if os.path.exists(item):
                                 os.remove(item)
-                            sleep(1)
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
                         self.clean()
@@ -521,7 +518,6 @@ class WorkerThread(QtCore.QThread):
                             worker.signals.result.connect(self.addResult)
                             self.pool.start(worker)
                         self.pool.waitForDone()
-                        sleep(0.5)
                         for success in self.workerOutput:
                             if not success[0]:
                                 self.errors = True
@@ -555,7 +551,6 @@ class WorkerThread(QtCore.QThread):
                         for item in outputPath:
                             if os.path.exists(item):
                                 os.remove(item)
-                            sleep(1)
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
                         MW.addMessage.emit('KindleGen failed to create MOBI!', 'error', False)
