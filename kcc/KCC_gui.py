@@ -829,6 +829,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if value == 2 and 'Kobo' in str(GUI.DeviceBox.currentText()):
             self.addMessage('Kobo devices can\'t use ultra quality mode!', 'warning')
             GUI.QualityBox.setCheckState(0)
+        elif value == 2 and 'CBZ' in str(GUI.FormatBox.currentText()):
+            self.addMessage('CBZ format don\'t support ultra quality mode!', 'warning')
+            GUI.QualityBox.setCheckState(0)
 
     def changeGamma(self, value):
         value = float(value)
@@ -856,7 +859,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.AdvModeButton.setEnabled(True)
             if self.currentMode == 3:
                 self.modeBasic()
-        self.changeFormat()
+        self.changeFormat(event=False)
         GUI.GammaSlider.setValue(0)
         self.changeGamma(0)
         if profile['DefaultUpscale']:
@@ -865,7 +868,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
                             'List of supported Non-Kindle devices.</a>', 'info')
 
-    def changeFormat(self, outputFormat=None):
+    def changeFormat(self, outputFormat=None, event=True):
         profile = GUI.profiles[str(GUI.DeviceBox.currentText())]
         if outputFormat is not None:
             GUI.FormatBox.setCurrentIndex(outputFormat)
@@ -890,6 +893,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if GUI.ProcessingBox.isChecked():
             GUI.QualityBox.setEnabled(False)
             GUI.QualityBox.setChecked(False)
+        if event and GUI.QualityBox.isEnabled() and 'CBZ' in str(GUI.FormatBox.currentText()) and\
+                GUI.QualityBox.checkState() == 2:
+            self.addMessage('CBZ format don\'t support ultra quality mode!', 'warning')
+            GUI.QualityBox.setCheckState(0)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -1277,7 +1284,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.DeviceBox.setCurrentIndex(self.lastDevice)
         self.changeDevice()
         if self.currentFormat != self.profiles[str(GUI.DeviceBox.currentText())]['DefaultFormat']:
-            self.changeFormat(self.currentFormat)
+            self.changeFormat(self.currentFormat, False)
         for option in self.options:
             if str(option) == "customWidth":
                 GUI.customWidth.setText(str(self.options[option]))
