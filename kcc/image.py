@@ -16,11 +16,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+__version__ = '4.1'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
 
 import os
+from io import BytesIO
+from urllib.request import Request, urlopen
 from functools import reduce
 from PIL import Image, ImageOps, ImageStat, ImageChops
 from .shared import md5Checksum
@@ -472,13 +475,36 @@ class ComicPage:
 
 
 class Cover:
-    def __init__(self, source, target):
+    def __init__(self, source, target, opt, tomeNumber):
+        self.options = opt
         self.source = source
         self.target = target
-        self.image = Image.open(source)
+        if tomeNumber == 0:
+            self.tomeNumber = 1
+        else:
+            self.tomeNumber = tomeNumber
+        if self.tomeNumber in self.options.remoteCovers:
+            try:
+                source = urlopen(Request(self.options.remoteCovers[self.tomeNumber],
+                                         headers={'User-Agent': 'KindleComicConverter/' + __version__})).read()
+                self.image = Image.open(BytesIO(source))
+                self.processExternal()
+            except Exception:
+                self.image = Image.open(source)
+                self.processInternal()
+        else:
+            self.image = Image.open(source)
+            self.processInternal()
+
+    def processInternal(self):
         self.image = self.image.convert('RGB')
-        self.process()
+        self.image = self.trim()
         self.save()
+
+    def processExternal(self):
+        self.image = self.image.convert('RGB')
+        self.image.thumbnail(self.options.profileData[1], Image.ANTIALIAS)
+        self.save(True)
 
     def trim(self):
         bg = Image.new(self.image.mode, self.image.size, self.image.getpixel((0, 0)))
@@ -490,12 +516,13 @@ class Cover:
         else:
             return self.image
 
-    def process(self):
-        self.image = self.trim()
-
-    def save(self):
+    def save(self, external=False):
+        if external:
+            source = self.options.remoteCovers[self.tomeNumber].split('/')[-1]
+        else:
+            source = self.source
         try:
-            if os.path.splitext(self.source)[1].lower() == '.png':
+            if os.path.splitext(source)[1].lower() == '.png':
                 self.image.save(self.target, "PNG", optimize=1)
             else:
                 self.image.save(self.target, "JPEG", optimize=1)
