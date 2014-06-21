@@ -25,7 +25,9 @@ __docformat__ = 'restructuredtext en'
 
 import os
 import sys
-from re import split, sub
+from json import loads
+from urllib.request import Request, urlopen
+from re import split, sub, compile
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp
@@ -288,7 +290,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
     f.close()
 
 
-def buildEPUB(path, chapterNames):
+def buildEPUB(path, chapterNames, tomeNumber):
     filelist = []
     chapterlist = []
     cover = None
@@ -416,7 +418,7 @@ def buildEPUB(path, chapterNames):
                 if cover is None:
                     cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
                                          'cover' + getImageFileName(filelist[-1][1])[1])
-                    image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover)
+                    image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options, tomeNumber)
     buildNCX(path, options.title, chapterlist, chapterNames)
     # Ensure we're sorting files alphabetically
     convert = lambda text: int(text) if text.isdigit() else text
@@ -621,6 +623,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
 def getComicInfo(path, originalPath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.authors = ['KCC']
+    options.remoteCovers = {}
     titleSuffix = ''
     if options.title == 'defaulttitle':
         defaultTitle = True
@@ -666,7 +669,25 @@ def getComicInfo(path, originalPath):
             options.authors.sort()
         else:
             options.authors = ['KCC']
+        if len(xml.getElementsByTagName('ScanInformation')) != 0:
+            coverId = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
+            coverId = compile('(MCD\\()(\\d+)(\\))').search(coverId)
+            if coverId:
+                options.remoteCovers = getCoversFromMCB(coverId.group(2))
         os.remove(xmlPath)
+
+
+def getCoversFromMCB(mangaID):
+    covers = {}
+    try:
+        jsonRaw = urlopen(Request('http://manga.joentjuh.nl/json/series/' + mangaID + '/',
+                                  headers={'User-Agent': 'KindleComicConverter/' + __version__}))
+        jsonData = loads(jsonRaw.readall().decode('utf-8'))
+        for volume in jsonData['volumes']:
+            covers[int(volume['volume'])] = volume['releases'][0]['files']['front']['url']
+    except Exception:
+        return {}
+    return covers
 
 
 def getDirectorySize(start_path='.'):
@@ -1084,7 +1105,7 @@ def makeBook(source, qtGUI=None):
             makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
         else:
             print("\nCreating EPUB structure...")
-            buildEPUB(tome, chapterNames)
+            buildEPUB(tome, chapterNames, tomeNumber)
             # actually zip the ePub
             if len(tomes) > 1:
                 filepath.append(getOutputFilename(source, options.output, '.epub', ' ' + str(tomeNumber)))
