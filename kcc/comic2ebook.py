@@ -64,122 +64,121 @@ def main(argv=None):
 def buildHTML(path, imgfile, imgfilepath):
     imgfilepath = md5Checksum(imgfilepath)
     filename = getImageFileName(imgfile)
-    if filename is not None:
-        if options.imgproc:
-            if "Rotated" in options.imgIndex[imgfilepath]:
-                rotatedPage = True
-            else:
-                rotatedPage = False
-            if "NoPanelView" in options.imgIndex[imgfilepath]:
-                noPV = True
-            else:
-                noPV = False
-            if "NoHorizontalPanelView" in options.imgIndex[imgfilepath]:
-                noHorizontalPV = True
-            else:
-                noHorizontalPV = False
-            if "NoVerticalPanelView" in options.imgIndex[imgfilepath]:
-                noVerticalPV = True
-            else:
-                noVerticalPV = False
+    if options.imgproc:
+        if "Rotated" in options.imgIndex[imgfilepath]:
+            rotatedPage = True
         else:
             rotatedPage = False
+        if "NoPanelView" in options.imgIndex[imgfilepath]:
+            noPV = True
+        else:
             noPV = False
+        if "NoHorizontalPanelView" in options.imgIndex[imgfilepath]:
+            noHorizontalPV = True
+        else:
             noHorizontalPV = False
+        if "NoVerticalPanelView" in options.imgIndex[imgfilepath]:
+            noVerticalPV = True
+        else:
             noVerticalPV = False
-        htmlpath = ''
-        postfix = ''
-        backref = 1
-        head = path
-        while True:
-            head, tail = os.path.split(head)
-            if tail == 'Images':
-                htmlpath = os.path.join(head, 'Text', postfix)
-                break
-            postfix = tail + "/" + postfix
-            backref += 1
-        if not os.path.exists(htmlpath):
-            os.makedirs(htmlpath)
-        htmlfile = os.path.join(htmlpath, filename[0] + '.html')
-        f = open(htmlfile, "w", encoding='UTF-8')
-        f.writelines(["<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" ",
-                      "\"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
-                      "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
-                      "<head>\n",
-                      "<title>", filename[0], "</title>\n",
-                      "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
-                      "<link href=\"", "../" * (backref - 1),
-                      "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
-                      "</head>\n",
-                      "<body>\n",
-                      "<div class=\"fs\">\n",
-                      "<div><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
-                      imgfile, "\" class=\"singlePage\"/></div>\n"
-                      ])
-        if options.panelview and not noPV:
-            if not noHorizontalPV and not noVerticalPV:
-                if rotatedPage:
-                    if options.righttoleft:
-                        order = [1, 3, 2, 4]
-                    else:
-                        order = [2, 4, 1, 3]
+    else:
+        rotatedPage = False
+        noPV = False
+        noHorizontalPV = False
+        noVerticalPV = False
+    htmlpath = ''
+    postfix = ''
+    backref = 1
+    head = path
+    while True:
+        head, tail = os.path.split(head)
+        if tail == 'Images':
+            htmlpath = os.path.join(head, 'Text', postfix)
+            break
+        postfix = tail + "/" + postfix
+        backref += 1
+    if not os.path.exists(htmlpath):
+        os.makedirs(htmlpath)
+    htmlfile = os.path.join(htmlpath, filename[0] + '.html')
+    f = open(htmlfile, "w", encoding='UTF-8')
+    f.writelines(["<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" ",
+                  "\"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
+                  "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
+                  "<head>\n",
+                  "<title>", filename[0], "</title>\n",
+                  "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
+                  "<link href=\"", "../" * (backref - 1),
+                  "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
+                  "</head>\n",
+                  "<body>\n",
+                  "<div class=\"fs\">\n",
+                  "<div><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                  imgfile, "\" class=\"singlePage\"/></div>\n"
+                  ])
+    if options.panelview and not noPV:
+        if not noHorizontalPV and not noVerticalPV:
+            if rotatedPage:
+                if options.righttoleft:
+                    order = [1, 3, 2, 4]
                 else:
-                    if options.righttoleft:
-                        order = [2, 1, 4, 3]
-                    else:
-                        order = [1, 2, 3, 4]
-                boxes = ["BoxTL", "BoxTR", "BoxBL", "BoxBR"]
-            elif noHorizontalPV and not noVerticalPV:
-                if rotatedPage:
-                    if options.righttoleft:
-                        order = [1, 2]
-                    else:
-                        order = [2, 1]
+                    order = [2, 4, 1, 3]
+            else:
+                if options.righttoleft:
+                    order = [2, 1, 4, 3]
                 else:
-                    order = [1, 2]
-                boxes = ["BoxT", "BoxB"]
-            elif not noHorizontalPV and noVerticalPV:
-                if rotatedPage:
+                    order = [1, 2, 3, 4]
+            boxes = ["BoxTL", "BoxTR", "BoxBL", "BoxBR"]
+        elif noHorizontalPV and not noVerticalPV:
+            if rotatedPage:
+                if options.righttoleft:
                     order = [1, 2]
                 else:
-                    if options.righttoleft:
-                        order = [2, 1]
-                    else:
-                        order = [1, 2]
-                boxes = ["BoxL", "BoxR"]
+                    order = [2, 1]
             else:
-                order = [1]
-                boxes = ["BoxC"]
-            for i in range(0, len(boxes)):
-                f.writelines(["<div id=\"" + boxes[i] + "\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                              "'{\"targetId\":\"" + boxes[i] + "-Panel-Parent\", \"ordinal\":" + str(order[i]),
-                              "}'></a></div>\n"])
-            if options.quality == 2:
-                imgfilepv = str.split(imgfile, ".")
-                imgfilepv[0] += "-hq"
-                imgfilepv = ".".join(imgfilepv)
+                order = [1, 2]
+            boxes = ["BoxT", "BoxB"]
+        elif not noHorizontalPV and noVerticalPV:
+            if rotatedPage:
+                order = [1, 2]
             else:
-                imgfilepv = imgfile
-            xl, yu, xr, yd = detectMargins(imgfilepath)
-            boxStyles = {"BoxTL": "left:" + xl + ";top:" + yu + ";",
-                         "BoxTR": "right:" + xr + ";top:" + yu + ";",
-                         "BoxBL": "left:" + xl + ";bottom:" + yd + ";",
-                         "BoxBR": "right:" + xr + ";bottom:" + yd + ";",
-                         "BoxT": "left:-25%;top:" + yu + ";",
-                         "BoxB": "left:-25%;bottom:" + yd + ";",
-                         "BoxL": "left:" + xl + ";top:-25%;",
-                         "BoxR": "right:" + xr + ";top:-25%;",
-                         "BoxC": "left:-25%;top:-25%;"
-                         }
-            for box in boxes:
-                f.writelines(["<div id=\"" + box + "-Panel-Parent\" class=\"target-mag-parent\"><div id=\"",
-                              "Generic-Panel\" class=\"target-mag\"><img style=\"" + boxStyles[box] + "\" src=\"",
-                              "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
-                              "\"/></div></div>\n",
-                              ])
-        f.writelines(["</div>\n</body>\n</html>"])
-        f.close()
-        return path, imgfile
+                if options.righttoleft:
+                    order = [2, 1]
+                else:
+                    order = [1, 2]
+            boxes = ["BoxL", "BoxR"]
+        else:
+            order = [1]
+            boxes = ["BoxC"]
+        for i in range(0, len(boxes)):
+            f.writelines(["<div id=\"" + boxes[i] + "\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                          "'{\"targetId\":\"" + boxes[i] + "-Panel-Parent\", \"ordinal\":" + str(order[i]),
+                          "}'></a></div>\n"])
+        if options.quality == 2:
+            imgfilepv = str.split(imgfile, ".")
+            imgfilepv[0] += "-hq"
+            imgfilepv = ".".join(imgfilepv)
+        else:
+            imgfilepv = imgfile
+        xl, yu, xr, yd = detectMargins(imgfilepath)
+        boxStyles = {"BoxTL": "left:" + xl + ";top:" + yu + ";",
+                     "BoxTR": "right:" + xr + ";top:" + yu + ";",
+                     "BoxBL": "left:" + xl + ";bottom:" + yd + ";",
+                     "BoxBR": "right:" + xr + ";bottom:" + yd + ";",
+                     "BoxT": "left:-25%;top:" + yu + ";",
+                     "BoxB": "left:-25%;bottom:" + yd + ";",
+                     "BoxL": "left:" + xl + ";top:-25%;",
+                     "BoxR": "right:" + xr + ";top:-25%;",
+                     "BoxC": "left:-25%;top:-25%;"
+                     }
+        for box in boxes:
+            f.writelines(["<div id=\"" + box + "-Panel-Parent\" class=\"target-mag-parent\"><div id=\"",
+                          "Generic-Panel\" class=\"target-mag\"><img style=\"" + boxStyles[box] + "\" src=\"",
+                          "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
+                          "\"/></div></div>\n",
+                          ])
+    f.writelines(["</div>\n</body>\n</html>"])
+    f.close()
+    return path, imgfile
 
 
 def buildNCX(dstdir, title, chapters, chapterNames):
@@ -410,7 +409,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
         chapter = False
         for afile in filenames:
             filename = getImageFileName(afile)
-            if filename is not None and not '-kcc-hq' in filename[0]:
+            if not '-kcc-hq' in filename[0]:
                 filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
                 if not chapter:
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
@@ -459,9 +458,8 @@ def imgDirectoryProcessing(path):
     pagenumber = 0
     for (dirpath, dirnames, filenames) in os.walk(path):
         for afile in filenames:
-            if getImageFileName(afile) is not None:
-                pagenumber += 1
-                work.append([afile, dirpath, options])
+            pagenumber += 1
+            work.append([afile, dirpath, options])
     if GUI:
         GUI.progressBarTick.emit(str(pagenumber))
     if len(work) > 0:
@@ -870,6 +868,8 @@ def detectCorruption(tmpPath, orgPath):
                 except Exception:
                     rmtree(os.path.join(tmpPath, '..', '..'), True)
                     raise RuntimeError('Image file %s is corrupted.' % pathOrg)
+            else:
+                os.remove(os.path.join(root, name))
 
 
 def detectMargins(path):
@@ -1062,8 +1062,8 @@ def makeBook(source, qtGUI=None):
         GUI.progressBarTick.emit('1')
     path = getWorkFolder(source)
     print("\nChecking images...")
-    detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
+    detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
     if options.webtoon:
         if options.customheight > 0:
             comic2panel.main(['-y ' + str(options.customheight), '-i', '-m', path], qtGUI)
