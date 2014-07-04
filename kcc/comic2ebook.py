@@ -723,6 +723,24 @@ def sanitizeTree(filetree):
     return chapterNames
 
 
+def sanitizeTreeKobo(filetree):
+    pageNumber = 0
+    for root, dirs, files in os.walk(filetree):
+        files.sort()
+        dirs.sort()
+        for name in files:
+            splitname = os.path.splitext(name)
+            slugified = str(pageNumber).zfill(5)
+            pageNumber += 1
+            while os.path.exists(os.path.join(root, slugified + splitname[1])) and splitname[0].upper()\
+                    != slugified.upper():
+                slugified += "A"
+            newKey = os.path.join(root, slugified + splitname[1])
+            key = os.path.join(root, name)
+            if key != newKey:
+                os.replace(key, newKey)
+
+
 def sanitizePermissions(filetree):
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
@@ -1077,6 +1095,8 @@ def makeBook(source, qtGUI=None):
     if GUI:
         GUI.progressBarTick.emit('1')
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    if 'Ko' in options.profile and options.cbzoutput:
+        sanitizeTreeKobo(os.path.join(path, 'OEBPS', 'Images'))
     if options.batchsplit:
         tomes = splitDirectory(path)
     else:
