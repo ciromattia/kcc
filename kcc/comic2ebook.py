@@ -1065,8 +1065,8 @@ def checkOptions():
             X = options.customwidth
         if options.customheight != 0:
             Y = options.customheight
-        newProfile = ("Custom", (X, Y), image.ProfileData.Palette16, image.ProfileData.Profiles[options.profile][3],
-                      (int(X*1.5), int(Y*1.5)))
+        newProfile = ("Custom", (int(X), int(Y)), image.ProfileData.Palette16,
+                      image.ProfileData.Profiles[options.profile][3], (int(int(X)*1.5), int(int(Y)*1.5)))
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
