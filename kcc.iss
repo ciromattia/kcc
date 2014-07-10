@@ -30,6 +30,7 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 ChangesAssociations=True
 InfoAfterFile=other\InstallWarning.rtf
 SignTool=SignTool /d $q{#MyAppName}$q /du $q{#MyAppURL}$q $f
+MinVersion=0,6.0
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
