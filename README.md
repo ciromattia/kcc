@@ -26,7 +26,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
-- **Windows:** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
+- **Windows (Vista or newer):** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
 - **Linux:** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
 - **OS X (10.8+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
 
@@ -46,7 +46,7 @@ You can find the latest released binary at the following links:
 ### For running from source:
 - Python 3.3+
 - [PyQt5](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.2.0+
-- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.3.0+
+- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.5.0+
 - [psutil](https://pypi.python.org/pypi/psutil) 2.0+
 - [python-slugify](http://pypi.python.org/pypi/python-slugify)
 
@@ -353,6 +353,13 @@ The app relies and includes the following scripts/binaries:
 * Improved MOBI splitting and changed maximal size of output file
 * Fixed _No optimization_ mode
 * Multiple small tweaks nad minor bug fixes
+
+####4.2:
+* Added [Manga Cover Database](http://manga.joentjuh.nl/) support
+* Officially dropped Windows XP support
+* Fixed _Other_ profile
+* Fixed problems with page order on stock KOBO CBZ reader
+* Many other small bug fixes and tweaks
 
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).

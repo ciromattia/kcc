@@ -18,7 +18,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-__version__ = '4.1'
+__version__ = '4.2'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -36,7 +36,7 @@ except ImportError:
     QtCore = None
 
 
-def mergeDirectory_tick(output):
+def mergeDirectoryTick(output):
     if output:
         mergeWorkerOutput.append(output)
         mergeWorkerPool.terminate()
@@ -108,7 +108,7 @@ def sanitizePanelSize(panel, opt):
     return newPanels
 
 
-def splitImage_tick(output):
+def splitImageTick(output):
     if output:
         splitWorkerOutput.append(output)
         splitWorkerPool.terminate()
@@ -207,10 +207,6 @@ def splitImage(work):
         return str(sys.exc_info()[1])
 
 
-def Copyright():
-    print(('comic2panel v%(__version__)s. Written by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
-
-
 def main(argv=None, qtGUI=None):
     global options, GUI, splitWorkerPool, splitWorkerOutput, mergeWorkerPool, mergeWorkerOutput
     parser = OptionParser(usage="Usage: kcc-c2p [options] comic_folder", add_help_option=False)
@@ -261,7 +257,7 @@ def main(argv=None, qtGUI=None):
                     GUI.progressBarTick.emit('Combining images')
                     GUI.progressBarTick.emit(str(directoryNumer))
                 for i in mergeWork:
-                    mergeWorkerPool.apply_async(func=mergeDirectory, args=(i, ), callback=mergeDirectory_tick)
+                    mergeWorkerPool.apply_async(func=mergeDirectory, args=(i, ), callback=mergeDirectoryTick)
                 mergeWorkerPool.close()
                 mergeWorkerPool.join()
                 if GUI and not GUI.conversionAlive:
@@ -284,7 +280,7 @@ def main(argv=None, qtGUI=None):
                 GUI.progressBarTick.emit('tick')
             if len(work) > 0:
                 for i in work:
-                    splitWorkerPool.apply_async(func=splitImage, args=(i, ), callback=splitImage_tick)
+                    splitWorkerPool.apply_async(func=splitImage, args=(i, ), callback=splitImageTick)
                 splitWorkerPool.close()
                 splitWorkerPool.join()
                 if GUI and not GUI.conversionAlive:

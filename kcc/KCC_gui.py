@@ -17,7 +17,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '4.1'
+__version__ = '4.2'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -38,6 +38,7 @@ from xml.dom.minidom import parse
 from html.parser import HTMLParser
 from psutil import virtual_memory, Popen, Process
 from uuid import uuid4
+from copy import copy
 from .shared import md5Checksum
 from . import comic2ebook
 from . import dualmetafix
@@ -196,7 +197,6 @@ class VersionThread(QtCore.QThread):
 
     def run(self):
         try:
-            sleep(1)
             XML = urlopen('http://kcc.iosphe.re/Version.php')
             XML = parse(XML)
         except Exception:
@@ -422,9 +422,6 @@ class WorkerThread(QtCore.QThread):
             if GUI.ColorBox.isChecked():
                 options.forcecolor = True
 
-        comic2ebook.options = options
-        comic2ebook.checkOptions()
-
         for i in range(GUI.JobList.count()):
             # Make sure that we don't consider any system message as job to do
             if GUI.JobList.item(i).icon().isNull():
@@ -446,7 +443,8 @@ class WorkerThread(QtCore.QThread):
             jobargv = list(argv)
             jobargv.append(job)
             try:
-                comic2ebook.options.title = 'defaulttitle'
+                comic2ebook.options = copy(options)
+                comic2ebook.checkOptions()
                 outputPath = comic2ebook.makeBook(job, self)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
@@ -493,7 +491,6 @@ class WorkerThread(QtCore.QThread):
                         worker.signals.result.connect(self.addResult)
                         self.pool.start(worker)
                     self.pool.waitForDone()
-                    sleep(0.5)
                     self.kindlegenErrorCode = [0]
                     for errors in self.workerOutput:
                         if errors[0] != 0:
@@ -503,7 +500,6 @@ class WorkerThread(QtCore.QThread):
                         for item in outputPath:
                             if os.path.exists(item):
                                 os.remove(item)
-                            sleep(1)
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
                         self.clean()
@@ -521,7 +517,6 @@ class WorkerThread(QtCore.QThread):
                             worker.signals.result.connect(self.addResult)
                             self.pool.start(worker)
                         self.pool.waitForDone()
-                        sleep(0.5)
                         for success in self.workerOutput:
                             if not success[0]:
                                 self.errors = True
@@ -555,7 +550,6 @@ class WorkerThread(QtCore.QThread):
                         for item in outputPath:
                             if os.path.exists(item):
                                 os.remove(item)
-                            sleep(1)
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
                         MW.addMessage.emit('KindleGen failed to create MOBI!', 'error', False)
@@ -834,6 +828,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if value == 2 and 'Kobo' in str(GUI.DeviceBox.currentText()):
             self.addMessage('Kobo devices can\'t use ultra quality mode!', 'warning')
             GUI.QualityBox.setCheckState(0)
+        elif value == 2 and 'CBZ' in str(GUI.FormatBox.currentText()):
+            self.addMessage('CBZ format don\'t support ultra quality mode!', 'warning')
+            GUI.QualityBox.setCheckState(0)
 
     def changeGamma(self, value):
         value = float(value)
@@ -861,7 +858,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.AdvModeButton.setEnabled(True)
             if self.currentMode == 3:
                 self.modeBasic()
-        self.changeFormat()
+        self.changeFormat(event=False)
         GUI.GammaSlider.setValue(0)
         self.changeGamma(0)
         if profile['DefaultUpscale']:
@@ -870,19 +867,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
                             'List of supported Non-Kindle devices.</a>', 'info')
 
-    def changeFormat(self, outputFormat=None):
+    def changeFormat(self, outputFormat=None, event=True):
         profile = GUI.profiles[str(GUI.DeviceBox.currentText())]
         if outputFormat is not None:
             GUI.FormatBox.setCurrentIndex(outputFormat)
         else:
-            if GUI.FormatBox.count() == 3:
-                GUI.FormatBox.setCurrentIndex(profile['DefaultFormat'])
-            else:
-                if profile['DefaultFormat'] != 0:
-                    tmpFormat = profile['DefaultFormat'] - 1
-                else:
-                    tmpFormat = 0
-                GUI.FormatBox.setCurrentIndex(tmpFormat)
+            GUI.FormatBox.setCurrentIndex(profile['DefaultFormat'])
         if GUI.WebtoonBox.isChecked():
             GUI.MangaBox.setEnabled(False)
             GUI.QualityBox.setEnabled(False)
@@ -895,6 +885,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if GUI.ProcessingBox.isChecked():
             GUI.QualityBox.setEnabled(False)
             GUI.QualityBox.setChecked(False)
+        if event and GUI.QualityBox.isEnabled() and 'CBZ' in str(GUI.FormatBox.currentText()) and\
+                GUI.QualityBox.checkState() == 2:
+            self.addMessage('CBZ format don\'t support ultra quality mode!', 'warning')
+            GUI.QualityBox.setCheckState(0)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -971,6 +965,15 @@ class KCCGUI(KCC_ui.Ui_KCC):
             if self.currentMode > 2 and (str(GUI.customWidth.text()) == '' or str(GUI.customHeight.text()) == ''):
                 GUI.JobList.clear()
                 self.addMessage('Target resolution is not set!', 'error')
+                self.needClean = True
+                return
+            if str(GUI.FormatBox.currentText()) == 'MOBI' and not GUI.KindleGen:
+                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
+                                '<b>KindleGen</b></a>! MOBI conversion is not possible!', 'error')
+                if sys.platform.startswith('win'):
+                    self.addMessage('Download it and place EXE in KCC directory.', 'error')
+                else:
+                    self.addMessage('Download it, and place executable in /usr/local/bin directory.', 'error')
                 self.needClean = True
                 return
             self.worker.start()
@@ -1196,7 +1199,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
         kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
         if kindleGenExitCode.wait() == 0:
             self.KindleGen = True
-            formats = ['MOBI', 'EPUB', 'CBZ']
             versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
             for line in versionCheck.stdout:
                 line = line.decode("utf-8")
@@ -1210,13 +1212,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
                     break
         else:
             self.KindleGen = False
-            formats = ['EPUB', 'CBZ']
-            if sys.platform.startswith('win'):
-                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
-                                'kindlegen</a> in KCC directory! MOBI creation will be disabled.', 'warning')
-            else:
-                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
-                                'kindlegen</a> in PATH! MOBI creation will be disabled.', 'warning')
         rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
         rarExitCode = rarExitCode.wait()
         if rarExitCode == 0 or rarExitCode == 7:
@@ -1271,7 +1266,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 GUI.DeviceBox.addItem(self.icons.deviceKobo, profile)
             else:
                 GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
-        for f in formats:
+        for f in ['MOBI', 'EPUB', 'CBZ']:
             GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
         if self.lastDevice > GUI.DeviceBox.count():
             self.lastDevice = 0
@@ -1282,7 +1277,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.DeviceBox.setCurrentIndex(self.lastDevice)
         self.changeDevice()
         if self.currentFormat != self.profiles[str(GUI.DeviceBox.currentText())]['DefaultFormat']:
-            self.changeFormat(self.currentFormat)
+            self.changeFormat(self.currentFormat, False)
         for option in self.options:
             if str(option) == "customWidth":
                 GUI.customWidth.setText(str(self.options[option]))
