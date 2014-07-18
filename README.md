@@ -26,7 +26,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
-- **Windows:** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
+- **Windows (Vista or newer):** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
 - **Linux:** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
 - **OS X (10.8+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
 
@@ -353,6 +353,13 @@ The app relies and includes the following scripts/binaries:
 * Improved MOBI splitting and changed maximal size of output file
 * Fixed _No optimization_ mode
 * Multiple small tweaks nad minor bug fixes
+
+####4.2:
+* Added [Manga Cover Database](http://manga.joentjuh.nl/) support
+* Officially dropped Windows XP support
+* Fixed _Other_ profile
+* Fixed problems with page order on stock KOBO CBZ reader
+* Many other small bug fixes and tweaks
 
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
