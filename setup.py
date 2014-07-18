@@ -14,7 +14,7 @@ if version_info[0] != 3:
     exit(1)
 
 NAME = "KindleComicConverter"
-VERSION = "4.1"
+VERSION = "4.2"
 MAIN = "kcc.py"
 
 if platform == "darwin":
