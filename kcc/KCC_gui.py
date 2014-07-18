@@ -38,6 +38,7 @@ from xml.dom.minidom import parse
 from html.parser import HTMLParser
 from psutil import virtual_memory, Popen, Process
 from uuid import uuid4
+from copy import copy
 from .shared import md5Checksum
 from . import comic2ebook
 from . import dualmetafix
@@ -421,9 +422,6 @@ class WorkerThread(QtCore.QThread):
             if GUI.ColorBox.isChecked():
                 options.forcecolor = True
 
-        comic2ebook.options = options
-        comic2ebook.checkOptions()
-
         for i in range(GUI.JobList.count()):
             # Make sure that we don't consider any system message as job to do
             if GUI.JobList.item(i).icon().isNull():
@@ -445,7 +443,8 @@ class WorkerThread(QtCore.QThread):
             jobargv = list(argv)
             jobargv.append(job)
             try:
-                comic2ebook.options.title = 'defaulttitle'
+                comic2ebook.options = copy(options)
+                comic2ebook.checkOptions()
                 outputPath = comic2ebook.makeBook(job, self)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
