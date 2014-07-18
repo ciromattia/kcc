@@ -18,7 +18,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '4.1'
+__version__ = '4.2'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -47,10 +47,10 @@ except ImportError:
 try:
     # noinspection PyUnresolvedReferences
     import PIL
-    if tuple(map(int, ('2.3.0'.split(".")))) > tuple(map(int, (PIL.PILLOW_VERSION.split(".")))):
-        missing.append('Pillow 2.3.0+')
+    if tuple(map(int, ('2.5.0'.split(".")))) > tuple(map(int, (PIL.PILLOW_VERSION.split(".")))):
+        missing.append('Pillow 2.5.0+')
 except ImportError:
-    missing.append('Pillow 2.3.0+')
+    missing.append('Pillow 2.5.0+')
 try:
     # noinspection PyUnresolvedReferences
     import slugify

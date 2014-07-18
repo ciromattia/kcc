@@ -1,5 +1,5 @@
 ﻿#define MyAppName "Kindle Comic Converter"
-#define MyAppVersion "4.1"
+#define MyAppVersion "4.2"
 #define MyAppPublisher "Ciro Mattia Gonano, Paweł Jastrzębski"
 #define MyAppURL "http://kcc.iosphe.re/"
 #define MyAppExeName "KCC.exe"
@@ -30,6 +30,7 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 ChangesAssociations=True
 InfoAfterFile=other\InstallWarning.rtf
 SignTool=SignTool /d $q{#MyAppName}$q /du $q{#MyAppURL}$q $f
+MinVersion=0,6.0
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
