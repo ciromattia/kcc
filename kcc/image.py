@@ -24,6 +24,7 @@ __docformat__ = 'restructuredtext en'
 import os
 from io import BytesIO
 from urllib.request import Request, urlopen
+from urllib.parse import quote
 from functools import reduce
 from PIL import Image, ImageOps, ImageStat, ImageChops
 from .shared import md5Checksum
@@ -485,7 +486,7 @@ class Cover:
             self.tomeNumber = tomeNumber
         if self.tomeNumber in self.options.remoteCovers:
             try:
-                source = urlopen(Request(self.options.remoteCovers[self.tomeNumber],
+                source = urlopen(Request(quote(self.options.remoteCovers[self.tomeNumber]).replace('%3A', ':', 1),
                                          headers={'User-Agent': 'KindleComicConverter/' + __version__})).read()
                 self.image = Image.open(BytesIO(source))
                 self.processExternal()
