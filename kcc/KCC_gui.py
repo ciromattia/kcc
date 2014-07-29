@@ -1121,7 +1121,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                                   'DefaultUpscale': False, 'Label': 'KHD'},
             "Kindle": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K345'},
-            "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'Label': 'KDX'},
             "Kindle Fire": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                             'DefaultUpscale': False, 'Label': 'KF'},
