@@ -425,7 +425,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
 
 def imgOptimization(img, opt, hqImage=None):
     if not img.fill:
-        img.getImageFill(opt.webtoon)
+        img.getImageFill()
     if not opt.webtoon:
         img.cropWhiteSpace()
     if opt.cutpagenumbers and not opt.webtoon:
