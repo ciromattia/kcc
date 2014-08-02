@@ -491,6 +491,8 @@ class WorkerThread(QtCore.QThread):
                         worker.signals.result.connect(self.addResult)
                         self.pool.start(worker)
                     self.pool.waitForDone()
+                    while len(self.workerOutput) != len(outputPath):
+                        sleep(0.1)
                     self.kindlegenErrorCode = [0]
                     for errors in self.workerOutput:
                         if errors[0] != 0:
@@ -517,6 +519,8 @@ class WorkerThread(QtCore.QThread):
                             worker.signals.result.connect(self.addResult)
                             self.pool.start(worker)
                         self.pool.waitForDone()
+                        while len(self.workerOutput) != len(outputPath):
+                            sleep(0.1)
                         for success in self.workerOutput:
                             if not success[0]:
                                 self.errors = True
