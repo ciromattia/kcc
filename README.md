@@ -361,6 +361,13 @@ The app relies and includes the following scripts/binaries:
 * Fixed problems with page order on stock KOBO CBZ reader
 * Many other small bug fixes and tweaks
 
+####4.2.1:
+* Improved margin color detection 
+* Fixed random crashes of MOBI processing step
+* Fixed resizing problems in high quality mode
+* Fixed some MCD support bugs
+* Default output format for Kindle DX is now CBZ
+
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
