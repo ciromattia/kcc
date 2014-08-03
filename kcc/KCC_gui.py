@@ -17,7 +17,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '4.2'
+__version__ = '4.2.1'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -491,6 +491,8 @@ class WorkerThread(QtCore.QThread):
                         worker.signals.result.connect(self.addResult)
                         self.pool.start(worker)
                     self.pool.waitForDone()
+                    while len(self.workerOutput) != len(outputPath):
+                        sleep(0.1)
                     self.kindlegenErrorCode = [0]
                     for errors in self.workerOutput:
                         if errors[0] != 0:
@@ -517,6 +519,8 @@ class WorkerThread(QtCore.QThread):
                             worker.signals.result.connect(self.addResult)
                             self.pool.start(worker)
                         self.pool.waitForDone()
+                        while len(self.workerOutput) != len(outputPath):
+                            sleep(0.1)
                         for success in self.workerOutput:
                             if not success[0]:
                                 self.errors = True
@@ -1121,7 +1125,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                                   'DefaultUpscale': False, 'Label': 'KHD'},
             "Kindle": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K345'},
-            "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'Label': 'KDX'},
             "Kindle Fire": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                             'DefaultUpscale': False, 'Label': 'KF'},

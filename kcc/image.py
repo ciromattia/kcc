@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = '4.2'
+__version__ = '4.2.1'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -24,6 +24,7 @@ __docformat__ = 'restructuredtext en'
 import os
 from io import BytesIO
 from urllib.request import Request, urlopen
+from urllib.parse import quote
 from functools import reduce
 from PIL import Image, ImageOps, ImageStat, ImageChops
 from .shared import md5Checksum
@@ -403,50 +404,44 @@ class ComicPage:
 
     def getImageHistogram(self, image):
         histogram = image.histogram()
-        RBGW = []
-        pixelCount = 0
-        for i in range(256):
-            pixelCount += histogram[i] + histogram[256 + i] + histogram[512 + i]
-            RBGW.append(histogram[i] + histogram[256 + i] + histogram[512 + i])
-        white = 0
-        black = 0
-        for i in range(251, 256):
-            white += RBGW[i]
-        for i in range(5):
-            black += RBGW[i]
-        if black > pixelCount*0.8 and white == 0:
-            return 1
-        elif white > pixelCount*0.8 and black == 0:
+        if histogram[0] == 0:
             return -1
+        elif histogram[255] == 0:
+            return 1
         else:
-            return False
+            return 0
 
-    def getImageFill(self, webtoon):
-        fill = 0
-        if not webtoon and not self.rotated:
-            # Search for horizontal solid lines
-            startY = 0
-            while startY < self.image.size[1]:
-                if startY + 5 > self.image.size[1]:
-                    startY = self.image.size[1] - 5
-                checkSolid = self.getImageHistogram(self.image.crop((0, startY, self.image.size[0], startY+5)))
-                if checkSolid:
-                    fill += checkSolid
-                startY += 5
+    def getImageFill(self):
+        bw = self.image.convert('L').point(lambda x: 0 if x < 128 else 255, '1')
+        imageBoxA = bw.getbbox()
+        imageBoxB = ImageChops.invert(bw).getbbox()
+        if imageBoxA is None or imageBoxB is None:
+            surfaceB, surfaceW = 0, 0
         else:
-            # Search for vertical solid lines
-            startX = 0
-            while startX < self.image.size[0]:
-                if startX + 5 > self.image.size[0]:
-                    startX = self.image.size[0] - 5
-                checkSolid = self.getImageHistogram(self.image.crop((startX, 0, startX+5, self.image.size[1])))
-                if checkSolid:
-                    fill += checkSolid
-                startX += 5
-        if fill > 0:
+            surfaceB = (imageBoxA[2] - imageBoxA[0]) * (imageBoxA[3] - imageBoxA[1])
+            surfaceW = (imageBoxB[2] - imageBoxB[0]) * (imageBoxB[3] - imageBoxB[1])
+        if surfaceW < surfaceB:
+            self.fill = 'white'
+        elif surfaceW > surfaceB:
             self.fill = 'black'
         else:
-            self.fill = 'white'
+            fill = 0
+            startY = 0
+            while startY < bw.size[1]:
+                if startY + 5 > bw.size[1]:
+                    startY = bw.size[1] - 5
+                fill += self.getImageHistogram(bw.crop((0, startY, bw.size[0], startY+5)))
+                startY += 5
+            startX = 0
+            while startX < bw.size[0]:
+                if startX + 5 > bw.size[0]:
+                    startX = bw.size[0] - 5
+                fill += self.getImageHistogram(bw.crop((startX, 0, startX+5, bw.size[1])))
+                startX += 5
+            if fill > 0:
+                self.fill = 'black'
+            else:
+                self.fill = 'white'
 
     def isImageColor(self):
         v = ImageStat.Stat(self.image).var
@@ -485,7 +480,7 @@ class Cover:
             self.tomeNumber = tomeNumber
         if self.tomeNumber in self.options.remoteCovers:
             try:
-                source = urlopen(Request(self.options.remoteCovers[self.tomeNumber],
+                source = urlopen(Request(quote(self.options.remoteCovers[self.tomeNumber]).replace('%3A', ':', 1),
                                          headers={'User-Agent': 'KindleComicConverter/' + __version__})).read()
                 self.image = Image.open(BytesIO(source))
                 self.processExternal()

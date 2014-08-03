@@ -18,7 +18,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-__version__ = '4.2'
+__version__ = '4.2.1'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -214,10 +214,6 @@ def buildNCX(dstdir, title, chapters, chapterNames):
 def buildOPF(dstdir, title, filelist, cover=None):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
     profilelabel, deviceres, palette, gamma, panelviewsize = options.profileData
-    if options.quality == 1:
-        imgres = str(panelviewsize[0]) + "x" + str(panelviewsize[1])
-    else:
-        imgres = str(deviceres[0]) + "x" + str(deviceres[1])
     if options.righttoleft:
         writingmode = "horizontal-rl"
     else:
@@ -244,7 +240,8 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "<meta name=\"fixed-layout\" content=\"true\"/>\n"
                   "<meta name=\"rendition:orientation\" content=\"portrait\"/>\n",
                   "<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
-                  "<meta name=\"original-resolution\" content=\"", imgres, "\"/>\n",
+                  "<meta name=\"original-resolution\" content=\"",
+                  str(deviceres[0]) + "x" + str(deviceres[1]), "\"/>\n",
                   "<meta name=\"primary-writing-mode\" content=\"", writingmode, "\"/>\n",
                   "<meta name=\"ke-border-color\" content=\"#ffffff\"/>\n",
                   "<meta name=\"ke-border-width\" content=\"0\"/>\n",
@@ -428,7 +425,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
 
 def imgOptimization(img, opt, hqImage=None):
     if not img.fill:
-        img.getImageFill(opt.webtoon)
+        img.getImageFill()
     if not opt.webtoon:
         img.cropWhiteSpace()
     if opt.cutpagenumbers and not opt.webtoon:
