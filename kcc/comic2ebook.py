@@ -871,7 +871,7 @@ def detectCorruption(tmpPath, orgPath):
         for name in files:
             if getImageFileName(name) is not None:
                 path = os.path.join(root, name)
-                pathOrg = os.path.join(orgPath, name)
+                pathOrg = orgPath + path.split('OEBPS' + os.path.sep + 'Images')[1]
                 if os.path.getsize(path) == 0:
                     rmtree(os.path.join(tmpPath, '..', '..'), True)
                     raise RuntimeError('Image file %s is corrupted.' % pathOrg)

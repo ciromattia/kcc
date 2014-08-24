@@ -365,6 +365,12 @@ class WorkerThread(QtCore.QThread):
         MW.progressBarTick.emit('tick')
         self.workerOutput.append(output)
 
+    def sanitizeTrace(self, traceback):
+        return ''.join(format_tb(traceback))\
+            .replace('C:\\Users\\AcidWeb\\Documents\\Projekty\\KCC\\', '')\
+            .replace('C:\\Python34\\', '')\
+            .replace('C:\\Python34_64\\', '')
+
     def run(self):
         MW.modeConvert.emit(0)
 
@@ -462,7 +468,7 @@ class WorkerThread(QtCore.QThread):
                 self.errors = True
                 _, _, traceback = sys.exc_info()
                 MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
-                                   % (jobargv[-1], str(err), "".join(format_tb(traceback))), 'error')
+                                   % (jobargv[-1], str(err), self.sanitizeTrace(traceback)), 'error')
                 MW.addMessage.emit('Failed to create EPUB!', 'error', False)
                 MW.addTrayMessage.emit('Failed to create EPUB!', 'Critical')
             if not self.conversionAlive:
