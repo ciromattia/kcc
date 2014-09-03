@@ -96,6 +96,7 @@ class ProfileData:
         'KoG': ("Kobo Glow", (768, 1024), Palette16, 1.8, (1152, 1536)),
         'KoA': ("Kobo Aura", (758, 1024), Palette16, 1.8, (1137, 1536)),
         'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.8, (1620, 2160)),
+        'KoAH2O': ("Kobo Aura HD", (1080, 1430), Palette16, 1.8, (1620, 2145)),
         'KFA': ("Kindle for Android", (0, 0), PalleteNull, 1.0, (0, 0)),
         'OTHER': ("Other", (0, 0), Palette16, 1.8, (0, 0)),
     }
