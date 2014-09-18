@@ -75,7 +75,7 @@ Usage: kcc-c2e [options] comic_file|comic_folder
 Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
-                        Device profile (Choose one among K1, K2, K345, KDX, KHD, KF, KFHD, KFHD8, KFHDX, KFHDX8, KFA, KoMT, KoG, KoA, KoAHD, KoAH2O) [Default=KHD]
+                        Device profile (Choose one among K1, K2, K345, KDX, KPW, KV, KFHD, KFHDX, KFHDX8, KFA, KoMT, KoG, KoA, KoAHD, KoAH2O) [Default=KV]
     -q QUALITY, --quality=QUALITY
                         Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
     -m, --manga-style   Manga style (Right-to-left reading and splitting)
@@ -142,18 +142,18 @@ The app relies and includes the following scripts/binaries:
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
 ## SAMPLE FILES CREATED BY KCC
+* [Kindle Voyage](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
 * [Kindle Paperwhite](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K345.mobi)
 * [Kindle DX/DXG](http://kcc.iosphe.re/Samples/Ubunchu!-KDX.mobi)
 * [Kindle Fire HD](http://kcc.iosphe.re/Samples/Ubunchu!-KFHD.mobi)
-* [Kindle Fire HD 8.9"](http://kcc.iosphe.re/Samples/Ubunchu!-KFHD8.mobi)
 * [Kindle Fire HDX](http://kcc.iosphe.re/Samples/Ubunchu!-KFHDX.mobi)
-* [Kindle Fire HDX 8.9"](http://kcc.iosphe.re/Samples/Ubunchu!-KFHDX8.mobi)
+* [Kindle Fire HDX 8.9](http://kcc.iosphe.re/Samples/Ubunchu!-KFHDX8.mobi)
 * [Kobo Mini/Touch](http://kcc.iosphe.re/Samples/Ubunchu!-KoMT.cbz)
 * [Kobo Glow](http://kcc.iosphe.re/Samples/Ubunchu!-KoG.cbz)
 * [Kobo Aura](http://kcc.iosphe.re/Samples/Ubunchu!-KoA.cbz)
 * [Kobo Aura HD](http://kcc.iosphe.re/Samples/Ubunchu!-KoAHD.cbz)
-* [Kobo Aura H20](http://kcc.iosphe.re/Samples/Ubunchu!-KoAH2O.cbz)
+* [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu!-KoAH2O.cbz)
 
 ## CHANGELOG
 ####1.0

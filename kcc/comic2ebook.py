@@ -954,9 +954,9 @@ def makeParser():
     customProfileOptions = OptionGroup(psr, "CUSTOM PROFILE")
     otherOptions = OptionGroup(psr, "OTHER")
 
-    mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KHD",
-                           help="Device profile (Choose one among K1, K2, K345, KDX, KHD, KF, KFHD, KFHD8, KFHDX,"
-                                " KFHDX8, KFA, KoMT, KoG, KoA, KoAHD, KoAH2O) [Default=KHD]")
+    mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
+                           help="Device profile (Choose one among K1, K2, K345, KDX, KPW, KV, KFHD, KFHDX, KFHDX8, KFA,"
+                                " KoMT, KoG, KoA, KoAHD, KoAH2O) [Default=KV]")
     mainOptions.add_option("-q", "--quality", type="int", dest="quality", default="0",
                            help="Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
@@ -1021,8 +1021,7 @@ def checkOptions():
     if options.black_borders:
         options.bordersColor = "black"
     # Disabling grayscale conversion for Kindle Fire family.
-    if options.profile == 'KF' or options.profile == 'KFHD' or options.profile == 'KFHD8' or options.profile == 'KFHDX'\
-       or options.profile == 'KFHDX8' or options.forcecolor:
+    if 'KFH' in options.profile or options.forcecolor:
         options.forcecolor = True
     else:
         options.forcecolor = False

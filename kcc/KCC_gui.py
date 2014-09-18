@@ -394,7 +394,7 @@ class WorkerThread(QtCore.QThread):
         if str(GUI.FormatBox.currentText()) == 'CBZ':
             options.cbzoutput = True
         if GUI.currentMode == 1:
-            if profile in ['KFHD', 'KFHD8', 'KFHDX', 'KFHDX8']:
+            if 'KFH' in profile:
                 options.upscale = True
 
         # Advanced mode settings
@@ -1127,22 +1127,20 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.p.ionice(1)
 
         self.profiles = {
+            "Kindle Voyage": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                              'DefaultUpscale': False, 'Label': 'KV'},
             "Kindle Paperwhite": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                                  'DefaultUpscale': False, 'Label': 'KHD'},
+                                  'DefaultUpscale': False, 'Label': 'KPW'},
             "Kindle": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K345'},
             "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'Label': 'KDX'},
-            "Kindle Fire": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                            'DefaultUpscale': False, 'Label': 'KF'},
-            "K. Fire HD 7\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                               'DefaultUpscale': True, 'Label': 'KFHD'},
-            "K. Fire HD 8.9\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                                 'DefaultUpscale': True, 'Label': 'KFHD8'},
-            "K. Fire HDX 7\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                                'DefaultUpscale': True, 'Label': 'KFHDX'},
-            "K. Fire HDX 8.9\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                                  'DefaultUpscale': True, 'Label': 'KFHDX8'},
+            "K. Fire HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                           'DefaultUpscale': True, 'Label': 'KFHD'},
+            "K. Fire HDX": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                            'DefaultUpscale': True, 'Label': 'KFHDX'},
+            "K. Fire HDX 8.9": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                                'DefaultUpscale': True, 'Label': 'KFHDX8'},
             "Kobo Mini/Touch": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                                 'DefaultUpscale': False, 'Label': 'KoMT'},
             "Kobo Glow": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
@@ -1163,15 +1161,13 @@ class KCCGUI(KCC_ui.Ui_KCC):
                          'DefaultUpscale': False, 'Label': 'K2'}
         }
         profilesGUI = [
+            "Kindle Voyage",
             "Kindle Paperwhite",
             "Kindle",
-            "Kindle DX/DXG",
             "Separator",
-            "Kindle Fire",
-            "K. Fire HD 7\"",
-            "K. Fire HD 8.9\"",
-            "K. Fire HDX 7\"",
-            "K. Fire HDX 8.9\"",
+            "K. Fire HD",
+            "K. Fire HDX",
+            "K. Fire HDX 8.9",
             "Separator",
             "Kobo Mini/Touch",
             "Kobo Glow",
@@ -1184,6 +1180,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             "Kindle for Android",
             "Kindle 1",
             "Kindle 2",
+            "Kindle DX/DXG",
         ]
 
         statusBarLabel = QtWidgets.QLabel('<b><a href="http://kcc.iosphe.re/">HOMEPAGE</a> - <a href="https://github.'
