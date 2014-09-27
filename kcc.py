@@ -103,24 +103,22 @@ class QApplicationMessaging(QtWidgets.QApplication):
 
     def __init__(self, argv):
         QtWidgets.QApplication.__init__(self, argv)
-        self._memory = QtCore.QSharedMemory(self)
-        self._memory.setKey('KCC')
-        if self._memory.attach():
-            self._running = True
-        else:
-            self._running = False
-            self._memory.create(1)
         self._key = 'KCC'
         self._timeout = 1000
-        self._server = QtNetwork.QLocalServer(self)
-        if not self.isRunning():
+        self._locked = False
+        socket = QtNetwork.QLocalSocket(self)
+        socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
+        if not socket.waitForConnected(self._timeout):
+            self._server = QtNetwork.QLocalServer(self)
             # noinspection PyUnresolvedReferences
             self._server.newConnection.connect(self.handleMessage)
             self._server.listen(self._key)
+        else:
+            self._locked = True
+        socket.disconnectFromServer()
 
-    def shutdown(self):
-        if self._memory.isAttached():
-            self._memory.detach()
+    def __del__(self):
+        if not self._locked:
             self._server.close()
 
     def event(self, e):
@@ -132,7 +130,7 @@ class QApplicationMessaging(QtWidgets.QApplication):
             return QtWidgets.QApplication.event(self, e)
 
     def isRunning(self):
-        return self._running
+        return self._locked
 
     def handleMessage(self):
         socket = self._server.nextPendingConnection()
@@ -140,18 +138,13 @@ class QApplicationMessaging(QtWidgets.QApplication):
             self.messageFromOtherInstance.emit(socket.readAll().data())
 
     def sendMessage(self, message):
-        if self.isRunning():
-            socket = QtNetwork.QLocalSocket(self)
-            socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
-            if not socket.waitForConnected(self._timeout):
-                return False
-            # noinspection PyArgumentList
-            socket.write(bytes(message, 'UTF-8'))
-            if not socket.waitForBytesWritten(self._timeout):
-                return False
-            socket.disconnectFromServer()
-            return True
-        return False
+        socket = QtNetwork.QLocalSocket(self)
+        socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
+        socket.waitForConnected(self._timeout)
+        # noinspection PyArgumentList
+        socket.write(bytes(message, 'UTF-8'))
+        socket.waitForBytesWritten(self._timeout)
+        socket.disconnectFromServer()
 
 
 # Adding signals to QMainWindow

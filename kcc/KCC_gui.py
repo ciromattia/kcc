@@ -1024,7 +1024,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
                                            'GammaSlider': float(self.GammaValue)*100})
         self.settings.sync()
         self.tray.hide()
-        APP.shutdown()
 
     def handleMessage(self, message):
         MW.raise_()
