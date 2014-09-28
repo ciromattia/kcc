@@ -67,6 +67,8 @@ After completed conversion you should find ready file alongside the original inp
 
 Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more details.
 
+CLI version of KCC is intended for power users. It is not idiot-proof like GUI :-)
+
 ### Standalone `kcc-c2e.py` usage:
 
 ```
@@ -75,7 +77,9 @@ Usage: kcc-c2e [options] comic_file|comic_folder
 Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
-                        Device profile (Choose one among K1, K2, K345, KDX, KPW, KV, KFHD, KFHDX, KFHDX8, KFA, KoMT, KoG, KoA, KoAHD, KoAH2O) [Default=KV]
+                        Device profile (Available options: K1, K2, K345, KDX,
+                        KPW, KV, KFHD, KFHDX, KFHDX8, KFA, KoMT, KoG, KoA,
+                        KoAHD, KoAH2O) [Default=KV]
     -q QUALITY, --quality=QUALITY
                         Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
     -m, --manga-style   Manga style (Right-to-left reading and splitting)
@@ -86,7 +90,8 @@ Options:
                         Output generated file to specified directory or file
     -t TITLE, --title=TITLE
                         Comic title [Default=filename or directory name]
-    --cbz-output        Outputs a CBZ archive and does not generate EPUB
+    -f FORMAT, --format=FORMAT
+                        Output format (Available options: Auto, MOBI, EPUB, CBZ) [Default=Auto]
     --batchsplit        Split output into multiple files
 
   PROCESSING:

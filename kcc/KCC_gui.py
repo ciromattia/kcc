@@ -36,12 +36,10 @@ from subprocess import STDOUT, PIPE
 from PyQt5 import QtGui, QtCore, QtWidgets
 from xml.dom.minidom import parse
 from html.parser import HTMLParser
-from psutil import virtual_memory, Popen, Process
-from uuid import uuid4
+from psutil import Popen, Process
 from copy import copy
 from .shared import md5Checksum
 from . import comic2ebook
-from . import dualmetafix
 from . import KCC_rc_web
 if sys.platform.startswith('darwin'):
     from . import KCC_ui_osx as KCC_ui
@@ -265,84 +263,14 @@ class ProgressThread(QtCore.QThread):
         self.running = False
 
 
-class WorkerSignals(QtCore.QObject):
-    result = QtCore.pyqtSignal(list)
-
-
-class KindleGenThread(QtCore.QRunnable):
-    def __init__(self, batch):
-        super(KindleGenThread, self).__init__()
-        self.signals = WorkerSignals()
-        self.work = batch
-
-    def run(self):
-        kindlegenErrorCode = 0
-        kindlegenError = ''
-        try:
-            if os.path.getsize(self.work) < 629145600:
-                output = Popen('kindlegen -dont_append_source -locale en "' + self.work + '"', stdout=PIPE,
-                               stderr=STDOUT, shell=True)
-                for line in output.stdout:
-                    line = line.decode('utf-8')
-                    # ERROR: Generic error
-                    if "Error(" in line:
-                        kindlegenErrorCode = 1
-                        kindlegenError = line
-                    # ERROR: EPUB too big
-                    if ":E23026:" in line:
-                        kindlegenErrorCode = 23026
-                    if kindlegenErrorCode > 0:
-                        break
-            else:
-                # ERROR: EPUB too big
-                kindlegenErrorCode = 23026
-            self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
-        except Exception as err:
-            # ERROR: KCC unknown generic error
-            kindlegenErrorCode = 1
-            kindlegenError = format(err)
-            self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
-
-
-class DualMetaFixThread(QtCore.QRunnable):
-    def __init__(self, batch):
-        super(DualMetaFixThread, self).__init__()
-        self.signals = WorkerSignals()
-        self.work = batch
-
-    def run(self):
-        item = self.work
-        os.remove(item)
-        mobiPath = item.replace('.epub', '.mobi')
-        move(mobiPath, mobiPath + '_toclean')
-        try:
-            # noinspection PyArgumentList
-            dualmetafix.DualMobiMetaFix(mobiPath + '_toclean', mobiPath, bytes(str(uuid4()), 'UTF-8'))
-            self.signals.result.emit([True])
-        except Exception as err:
-            self.signals.result.emit([False, format(err)])
-
-
 class WorkerThread(QtCore.QThread):
     #noinspection PyArgumentList
     def __init__(self):
         QtCore.QThread.__init__(self)
-        self.pool = QtCore.QThreadPool()
         self.conversionAlive = False
         self.errors = False
         self.kindlegenErrorCode = [0]
         self.workerOutput = []
-        # Let's make sure that we don't fill the memory
-        availableMemory = virtual_memory().total/1000000000
-        if availableMemory <= 2:
-            self.threadNumber = 1
-        elif 2 < availableMemory <= 4:
-            self.threadNumber = 2
-        else:
-            self.threadNumber = 4
-        # Let's make sure that we don't use too many threads
-        if self.threadNumber > QtCore.QThread.idealThreadCount():
-            self.threadNumber = QtCore.QThread.idealThreadCount()
         self.progressBarTick = MW.progressBarTick
         self.addMessage = MW.addMessage
 
@@ -360,10 +288,6 @@ class WorkerThread(QtCore.QThread):
         MW.addMessage.emit('<b>Conversion interrupted.</b>', 'error', False)
         MW.addTrayMessage.emit('Conversion interrupted.', 'Critical')
         MW.modeConvert.emit(1)
-
-    def addResult(self, output):
-        MW.progressBarTick.emit('tick')
-        self.workerOutput.append(output)
 
     def sanitizeTrace(self, traceback):
         return ''.join(format_tb(traceback))\
@@ -391,8 +315,7 @@ class WorkerThread(QtCore.QThread):
             options.quality = 1
         elif GUI.QualityBox.checkState() == 2:
             options.quality = 2
-        if str(GUI.FormatBox.currentText()) == 'CBZ':
-            options.cbzoutput = True
+        options.format = str(GUI.FormatBox.currentText())
         if GUI.currentMode == 1:
             if 'KFH' in profile:
                 options.upscale = True
@@ -416,10 +339,7 @@ class WorkerThread(QtCore.QThread):
             if GUI.WebtoonBox.isChecked():
                 options.webtoon = True
             if float(GUI.GammaValue) > 0.09:
-                # noinspection PyTypeChecker
                 options.gamma = float(GUI.GammaValue)
-            if str(GUI.FormatBox.currentText()) == 'MOBI':
-                options.batchsplit = True
 
         # Other/custom settings.
         if GUI.currentMode > 2:
@@ -489,16 +409,10 @@ class WorkerThread(QtCore.QThread):
                     MW.progressBarTick.emit('tick')
                     MW.addMessage.emit('Creating MOBI files', 'info', False)
                     GUI.progress.content = 'Creating MOBI files'
-                    self.workerOutput = []
-                    # Number of KindleGen threads depends on the size of RAM
-                    self.pool.setMaxThreadCount(self.threadNumber)
+                    work = []
                     for item in outputPath:
-                        worker = KindleGenThread(item)
-                        worker.signals.result.connect(self.addResult)
-                        self.pool.start(worker)
-                    self.pool.waitForDone()
-                    while len(self.workerOutput) != len(outputPath):
-                        sleep(0.1)
+                        work.append([item])
+                    self.workerOutput = comic2ebook.makeMOBI(work, self)
                     self.kindlegenErrorCode = [0]
                     for errors in self.workerOutput:
                         if errors[0] != 0:
@@ -518,15 +432,9 @@ class WorkerThread(QtCore.QThread):
                         MW.addMessage.emit('Processing MOBI files', 'info', False)
                         GUI.progress.content = 'Processing MOBI files'
                         self.workerOutput = []
-                        # DualMetaFix is very fast and there is not reason to use multithreading.
-                        self.pool.setMaxThreadCount(1)
                         for item in outputPath:
-                            worker = DualMetaFixThread(item)
-                            worker.signals.result.connect(self.addResult)
-                            self.pool.start(worker)
-                        self.pool.waitForDone()
-                        while len(self.workerOutput) != len(outputPath):
-                            sleep(0.1)
+                            self.workerOutput.append(comic2ebook.makeMOBIFix(item))
+                            MW.progressBarTick.emit('tick')
                         for success in self.workerOutput:
                             if not success[0]:
                                 self.errors = True
