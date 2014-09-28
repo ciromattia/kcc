@@ -18,7 +18,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-__version__ = '4.2.1'
+__version__ = '4.3'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -749,7 +749,7 @@ def sanitizePermissions(filetree):
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
 
 
-#noinspection PyUnboundLocalVariable
+# noinspection PyUnboundLocalVariable
 def splitDirectory(path):
     # Detect directory stucture
     for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 0):
@@ -948,7 +948,7 @@ def makeZIP(zipFilename, baseDir, isEPUB=False):
 
 
 def makeParser():
-    """Create and return an option parser set up with kcc's options."""
+    """Create and return an option parser set up with KCC options."""
     psr = OptionParser(usage="Usage: kcc-c2e [options] comic_file|comic_folder", add_help_option=False)
 
     mainOptions = OptionGroup(psr, "MAIN")
@@ -1148,7 +1148,6 @@ def makeBook(source, qtGUI=None):
             tomeNumber += 1
             options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
         if options.format == 'CBZ':
-            # if CBZ output wanted, compress all images and return filepath
             print("\nCreating CBZ file...")
             if len(tomes) > 1:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ' ' + str(tomeNumber)))
@@ -1158,7 +1157,6 @@ def makeBook(source, qtGUI=None):
         else:
             print("\nCreating EPUB file...")
             buildEPUB(tome, chapterNames, tomeNumber)
-            # actually zip the ePub
             if len(tomes) > 1:
                 filepath.append(getOutputFilename(source, options.output, '.epub', ' ' + str(tomeNumber)))
             else:

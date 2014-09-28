@@ -18,7 +18,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-__version__ = '4.2.1'
+__version__ = '4.3'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -118,7 +118,6 @@ def splitImageTick(output):
             splitWorkerPool.terminate()
 
 
-#noinspection PyUnboundLocalVariable
 def splitImage(work):
     try:
         path = work[0]
@@ -165,6 +164,7 @@ def splitImage(work):
                     for panel in panelsCleaned:
                         panels.append(panel)
             if opt.debug:
+                # noinspection PyUnboundLocalVariable
                 debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG')
 
             # Create virtual pages

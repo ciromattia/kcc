@@ -18,7 +18,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '4.2.1'
+__version__ = '4.3'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -84,14 +84,14 @@ elif sys.platform.startswith('win'):
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
 
         # Implementing dummy stdout and stderr for frozen Windows release
-        class fakestd(object):
+        class FakeSTD(object):
             def write(self, string):
                 pass
 
             def flush(self):
                 pass
-        sys.stdout = fakestd()
-        sys.stderr = fakestd()
+        sys.stdout = FakeSTD()
+        sys.stderr = FakeSTD()
     else:
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/;' + os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -123,7 +123,6 @@ class QApplicationMessaging(QtWidgets.QApplication):
 
     def event(self, e):
         if e.type() == QtCore.QEvent.FileOpen:
-            # noinspection PyArgumentList
             self.messageFromOtherInstance.emit(bytes(e.file(), 'UTF-8'))
             return True
         else:
@@ -141,7 +140,6 @@ class QApplicationMessaging(QtWidgets.QApplication):
         socket = QtNetwork.QLocalSocket(self)
         socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
         socket.waitForConnected(self._timeout)
-        # noinspection PyArgumentList
         socket.write(bytes(message, 'UTF-8'))
         socket.waitForBytesWritten(self._timeout)
         socket.disconnectFromServer()
