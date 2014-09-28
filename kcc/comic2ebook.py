@@ -38,6 +38,8 @@ from xml.dom.minidom import parse
 from uuid import uuid4
 from slugify import slugify as slugifyExt
 from PIL import Image
+from subprocess import STDOUT, PIPE
+from psutil import Popen, virtual_memory
 try:
     from PyQt5 import QtCore
 except ImportError:
@@ -47,6 +49,7 @@ from . import comic2panel
 from . import image
 from . import cbxarchive
 from . import pdfjpgextract
+from . import dualmetafix
 
 
 def main(argv=None):
@@ -955,8 +958,8 @@ def makeParser():
     otherOptions = OptionGroup(psr, "OTHER")
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
-                           help="Device profile (Choose one among K1, K2, K345, KDX, KPW, KV, KFHD, KFHDX, KFHDX8, KFA,"
-                                " KoMT, KoG, KoA, KoAHD, KoAH2O) [Default=KV]")
+                           help="Device profile (Available options: K1, K2, K345, KDX, KPW, KV, KFHD, KFHDX, KFHDX8,"
+                                " KFA, KoMT, KoG, KoA, KoAHD, KoAH2O) [Default=KV]")
     mainOptions.add_option("-q", "--quality", type="int", dest="quality", default="0",
                            help="Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
@@ -968,8 +971,8 @@ def makeParser():
                              help="Output generated file to specified directory or file")
     outputOptions.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                              help="Comic title [Default=filename or directory name]")
-    outputOptions.add_option("--cbz-output", action="store_true", dest="cbzoutput", default=False,
-                             help="Outputs a CBZ archive and does not generate EPUB")
+    outputOptions.add_option("-f", "--format", action="store", dest="format", default="Auto",
+                             help="Output format (Available options: Auto, MOBI, EPUB, CBZ) [Default=Auto]")
     outputOptions.add_option("--batchsplit", action="store_true", dest="batchsplit", default=False,
                              help="Split output into multiple files"),
 
@@ -1016,10 +1019,20 @@ def checkOptions():
     global options
     options.panelview = True
     options.bordersColor = None
+    if options.format == 'Auto':
+        if options.profile in ['K1', 'K2', 'K345', 'KPW', 'KV', 'KFHD', 'KFHDX', 'KFHDX8', 'KFA']:
+            options.format = 'MOBI'
+        elif options.profile in ['Other']:
+            options.format = 'EPUB'
+        elif options.profile in ['KDX', 'KoMT', 'KoG', 'KoA', 'KoAHD', 'KoAH2O']:
+            options.format = 'CBZ'
     if options.white_borders:
-        options.bordersColor = "white"
+        options.bordersColor = 'white'
     if options.black_borders:
-        options.bordersColor = "black"
+        options.bordersColor = 'black'
+    # Splitting MOBI is not optional
+    if options.format == 'MOBI':
+        options.batchsplit = True
     # Disabling grayscale conversion for Kindle Fire family.
     if 'KFH' in options.profile or options.forcecolor:
         options.forcecolor = True
@@ -1048,10 +1061,10 @@ def checkOptions():
         print("ERROR: Kindle for Android profile require --customwidth and --customheight options!")
         sys.exit(1)
     # CBZ files on Kindle DX/DXG support higher resolution
-    if options.profile == 'KDX' and options.cbzoutput:
+    if options.profile == 'KDX' and options.format == 'CBZ':
         options.customheight = 1200
     # Ultra mode don't work with CBZ format
-    if options.quality == 2 and options.cbzoutput:
+    if options.quality == 2 and options.format == 'CBZ':
         options.quality = 1
     # Override profile data
     if options.customwidth != 0 or options.customheight != 0:
@@ -1069,7 +1082,7 @@ def checkOptions():
 
 
 def makeBook(source, qtGUI=None):
-    """Generates EPUB/CBZ comic ebook from a bunch of images."""
+    """Generates MOBI/EPUB/CBZ comic ebook from a bunch of images."""
     global GUI
     GUI = qtGUI
     if GUI:
@@ -1091,7 +1104,7 @@ def makeBook(source, qtGUI=None):
     if GUI:
         GUI.progressBarTick.emit('1')
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
-    if 'Ko' in options.profile and options.cbzoutput:
+    if 'Ko' in options.profile and options.format == 'CBZ':
         sanitizeTreeKobo(os.path.join(path, 'OEBPS', 'Images'))
     if options.batchsplit:
         tomes = splitDirectory(path)
@@ -1100,7 +1113,7 @@ def makeBook(source, qtGUI=None):
     filepath = []
     tomeNumber = 0
     if GUI:
-        if options.cbzoutput:
+        if options.format == 'CBZ':
             GUI.progressBarTick.emit('Compressing CBZ files')
         else:
             GUI.progressBarTick.emit('Compressing EPUB files')
@@ -1111,7 +1124,7 @@ def makeBook(source, qtGUI=None):
         if len(tomes) > 1:
             tomeNumber += 1
             options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
-        if options.cbzoutput:
+        if options.format == 'CBZ':
             # if CBZ output wanted, compress all images and return filepath
             print("\nCreating CBZ file...")
             if len(tomes) > 1:
@@ -1120,7 +1133,7 @@ def makeBook(source, qtGUI=None):
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
             makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
         else:
-            print("\nCreating EPUB structure...")
+            print("\nCreating EPUB file...")
             buildEPUB(tome, chapterNames, tomeNumber)
             # actually zip the ePub
             if len(tomes) > 1:
@@ -1132,4 +1145,92 @@ def makeBook(source, qtGUI=None):
         rmtree(tome, True)
         if GUI:
             GUI.progressBarTick.emit('tick')
+    if not GUI and options.format == 'MOBI':
+        print("\nCreating MOBI file...")
+        work = []
+        for i in filepath:
+            work.append([i])
+        output = makeMOBI(work, GUI)
+        for errors in output:
+            if errors[0] != 0:
+                print('KINDLEGEN ERROR!')
+                print(errors)
+                return filepath
+        for i in filepath:
+            output = makeMOBIFix(i)
+            if not output[0]:
+                print('DUALMETAFIX ERROR!')
+                return filepath
+            else:
+                os.remove(i.replace('.epub', '.mobi') + '_toclean')
     return filepath
+
+
+def makeMOBIFix(item):
+    os.remove(item)
+    mobiPath = item.replace('.epub', '.mobi')
+    move(mobiPath, mobiPath + '_toclean')
+    try:
+        dualmetafix.DualMobiMetaFix(mobiPath + '_toclean', mobiPath, bytes(str(uuid4()), 'UTF-8'))
+        return [True]
+    except Exception as err:
+        return [False, format(err)]
+
+
+def makeMOBIWorkerTick(output):
+    makeMOBIWorkerOutput.append(output)
+    if output[0] != 0:
+        makeMOBIWorkerPool.terminate()
+    if GUI:
+        GUI.progressBarTick.emit('tick')
+        if not GUI.conversionAlive:
+            makeMOBIWorkerPool.terminate()
+
+
+def makeMOBIWorker(item):
+    item = item[0]
+    kindlegenErrorCode = 0
+    kindlegenError = ''
+    try:
+        if os.path.getsize(item) < 629145600:
+            output = Popen('kindlegen -dont_append_source -locale en "' + item + '"',
+                           stdout=PIPE, stderr=STDOUT, shell=True)
+            for line in output.stdout:
+                line = line.decode('utf-8')
+                # ERROR: Generic error
+                if "Error(" in line:
+                    kindlegenErrorCode = 1
+                    kindlegenError = line
+                # ERROR: EPUB too big
+                if ":E23026:" in line:
+                    kindlegenErrorCode = 23026
+                if kindlegenErrorCode > 0:
+                    break
+        else:
+            # ERROR: EPUB too big
+            kindlegenErrorCode = 23026
+        return [kindlegenErrorCode, kindlegenError, item]
+    except Exception as err:
+        # ERROR: KCC unknown generic error
+        kindlegenErrorCode = 1
+        kindlegenError = format(err)
+        return [kindlegenErrorCode, kindlegenError, item]
+
+
+def makeMOBI(work, qtGUI=None):
+    global GUI, makeMOBIWorkerPool, makeMOBIWorkerOutput
+    GUI = qtGUI
+    makeMOBIWorkerOutput = []
+    availableMemory = virtual_memory().total/1000000000
+    if availableMemory <= 2:
+        threadNumber = 1
+    elif 2 < availableMemory <= 4:
+        threadNumber = 2
+    else:
+        threadNumber = 4
+    makeMOBIWorkerPool = Pool(threadNumber)
+    for i in work:
+        makeMOBIWorkerPool.apply_async(func=makeMOBIWorker, args=(i, ), callback=makeMOBIWorkerTick)
+    makeMOBIWorkerPool.close()
+    makeMOBIWorkerPool.join()
+    return makeMOBIWorkerOutput
