@@ -1,13 +1,13 @@
 ﻿# KCC
 
-**Kindle Comic Converter** is a Python app to convert comic files or folders to ePub, Panel View MOBI or E-Ink optimized CBZ.
+**Kindle Comic Converter** is a Python app to convert comic/manga files or folders to ePub, Panel View MOBI or E-Ink optimized CBZ.
 It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
-actually a comic to EPUB converter that every e-reader owner can happily use**_.
+actually a comic/manga to EPUB converter that every e-reader owner can happily use**_.
 It can also optionally optimize images by applying a number of transformations.
 
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.  
-Amazon's tool is for comic publishers and involves a lot of manual effort, while **KCC** is for comic readers.
+Amazon's tool is for comic publishers and involves a lot of manual effort, while **KCC** is for comic/manga readers.
 _KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;-)
 
 ### Issues / new features / donations
@@ -36,7 +36,7 @@ You can find the latest released binary at the following links:
 - CBZ, ZIP
 - CBR, RAR *(With `unrar` executable)*
 - CB7, 7Z *(With `7za` executable)*
-- PDF *(Extracting only contained JPG images)*
+- PDF *(Only extracting JPG images)*
 
 ## OPTIONAL REQUIREMENTS
 - [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation)*
@@ -139,7 +139,7 @@ Options:
 
 This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published [here](http://www.mobileread.com/forums/showthread.php?t=192783)).
 
-The app relies and includes the following scripts/binaries:
+The app relies and includes the following scripts:
 
  - `DualMetaFix` script by **K. Hendricks**. Released with GPL-3 License.
  - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>. Released with ISC License.
@@ -151,9 +151,6 @@ The app relies and includes the following scripts/binaries:
 * [Kindle Paperwhite](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K345.mobi)
 * [Kindle DX/DXG](http://kcc.iosphe.re/Samples/Ubunchu!-KDX.mobi)
-* [Kindle Fire HD](http://kcc.iosphe.re/Samples/Ubunchu!-KFHD.mobi)
-* [Kindle Fire HDX](http://kcc.iosphe.re/Samples/Ubunchu!-KFHDX.mobi)
-* [Kindle Fire HDX 8.9](http://kcc.iosphe.re/Samples/Ubunchu!-KFHDX8.mobi)
 * [Kobo Mini/Touch](http://kcc.iosphe.re/Samples/Ubunchu!-KoMT.cbz)
 * [Kobo Glow](http://kcc.iosphe.re/Samples/Ubunchu!-KoG.cbz)
 * [Kobo Aura](http://kcc.iosphe.re/Samples/Ubunchu!-KoA.cbz)
@@ -373,6 +370,11 @@ The app relies and includes the following scripts/binaries:
 * Fixed resizing problems in high quality mode
 * Fixed some MCD support bugs
 * Default output format for Kindle DX is now CBZ
+
+####4.3:
+* Added profiles for Kindle Voyage and Kobo Aura H2O
+* Added missing features to CLI version
+* Other minor bug fixes
 
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).

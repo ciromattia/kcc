@@ -14,7 +14,7 @@ if version_info[0] != 3:
     exit(1)
 
 NAME = "KindleComicConverter"
-VERSION = "4.2.1"
+VERSION = "4.3"
 MAIN = "kcc.py"
 
 if platform == "darwin":
@@ -93,7 +93,7 @@ else:
     print('Please use setup.sh to build Linux package.')
     exit()
 
-#noinspection PyUnboundLocalVariable
+# noinspection PyUnboundLocalVariable
 setup(
     name=NAME,
     version=VERSION,
