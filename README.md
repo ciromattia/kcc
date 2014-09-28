@@ -1,7 +1,7 @@
 ﻿# KCC
 
-**Kindle Comic Converter** is a Python app to convert comic/manga files or folders to ePub, Panel View MOBI or E-Ink optimized CBZ.
-It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
+**Kindle Comic Converter** is a Python app to convert comic/manga files or folders to EPUB, Panel View MOBI or E-Ink optimized CBZ.
+It was initially developed for Kindle but since version 2.2 it outputs valid EPUB 2.0 so _**despite its name, KCC is
 actually a comic/manga to EPUB converter that every e-reader owner can happily use**_.
 It can also optionally optimize images by applying a number of transformations.
 
@@ -67,7 +67,7 @@ After completed conversion you should find ready file alongside the original inp
 
 Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more details.
 
-CLI version of KCC is intended for power users. It is not idiot-proof like GUI :-)
+CLI version of **KCC** is intended for power users. It is not idiot-proof like GUI :-)
 
 ### Standalone `kcc-c2e.py` usage:
 
@@ -91,7 +91,8 @@ Options:
     -t TITLE, --title=TITLE
                         Comic title [Default=filename or directory name]
     -f FORMAT, --format=FORMAT
-                        Output format (Available options: Auto, MOBI, EPUB, CBZ) [Default=Auto]
+                        Output format (Available options: Auto, MOBI,
+						EPUB, CBZ) [Default=Auto]
     --batchsplit        Split output into multiple files
 
   PROCESSING:
@@ -150,7 +151,7 @@ The app relies and includes the following scripts:
 * [Kindle Voyage](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
 * [Kindle Paperwhite](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K345.mobi)
-* [Kindle DX/DXG](http://kcc.iosphe.re/Samples/Ubunchu!-KDX.mobi)
+* [Kindle DX/DXG](http://kcc.iosphe.re/Samples/Ubunchu!-KDX.cbz)
 * [Kobo Mini/Touch](http://kcc.iosphe.re/Samples/Ubunchu!-KoMT.cbz)
 * [Kobo Glow](http://kcc.iosphe.re/Samples/Ubunchu!-KoG.cbz)
 * [Kobo Aura](http://kcc.iosphe.re/Samples/Ubunchu!-KoA.cbz)
@@ -191,11 +192,11 @@ The app relies and includes the following scripts:
 * Added basic error reporting
 
 ####2.2:
-* Added (valid!) ePub 2.0 output  
+* Added (valid!) EPUB 2.0 output  
 * Rename .zip files to .cbz to avoid overwriting
 
 ####2.3
-* Fixed win32 ePub generation, folder handling, filenames with spaces and subfolders
+* Fixed win32 EPUB generation, folder handling, filenames with spaces and subfolders
 
 ####2.4
 * Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)  
@@ -203,22 +204,22 @@ The app relies and includes the following scripts:
 
 ####2.5
 * Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).  
-* Fixes epub containing zipped itself (#10)  
+* Fixes EPUB containing zipped itself (#10)  
 
 ####2.6
 * Added --rotate option to rotate landscape images instead of splitting them (#16, #24)  
-* Added --output option to customize ePub output dir/file (#22)  
-* Add rendition:layout and rendition:orientation ePub meta tags (supported by new kindlegen 2.8)  
+* Added --output option to customize EPUB output dir/file (#22)  
+* Add rendition:layout and rendition:orientation EPUB meta tags (supported by new kindlegen 2.8)  
 * Fixed natural sorting for files (#18)
 
 ####2.7
 * Lots of GUI improvements (#27, #13)  
 * Added gamma support within --gamma option (defaults to profile-specified gamma) (#26, #27)  
 * Added --nodithering option to prevent dithering optimizations (#27)  
-* Epub margins support (#30)  
+* EPUB margins support (#30)  
 * Fixed no file added if file has no spaces on Windows (#25)  
 * Gracefully exit if unrar missing (#15)  
-* Do not call kindlegen if source epub is bigger than 320MB (#17)  
+* Do not call kindlegen if source EPUB is bigger than 320MB (#17)  
 * Get filetype from magic number (#14)   
 * PDF conversion works again  
 
@@ -232,7 +233,7 @@ The app relies and includes the following scripts:
 * Optimized archive extraction for zip/rar files (#40)  
 
 ####2.9
-* Added support for generating a plain CBZ (skipping all the EPUB/Mobi generation) (#45)  
+* Added support for generating a plain CBZ (skipping all the EPUB/MOBI generation) (#45)  
 * Prevent output file overwriting the source one: if a duplicate name is detected, append _kcc to the name  
 * Rarfile library updated to 2.6  
 * Added GIF, TIFF and BMP to supported formats (#42)  
@@ -240,7 +241,7 @@ The app relies and includes the following scripts:
 
 ####2.10:
 * Multiprocessing support
-* Kindle Fire support (color ePub/Mobi)
+* Kindle Fire support (color EPUB/MOBI)
 * Panel View support for horizontal content
 * Fixed panel order for horizontal pages when --rotate is enabled
 * Disabled cropping and page number cutting for blank pages
