@@ -1081,12 +1081,35 @@ def checkOptions():
     options.profileData = image.ProfileData.Profiles[options.profile]
 
 
+def checkTools(source):
+    source = source.upper()
+    if source.endswith('.CBR') or source.endswith('.RAR'):
+        rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
+        rarExitCode = rarExitCode.wait()
+        if rarExitCode != 0 and rarExitCode != 7:
+            print('\nUnRAR is missing!')
+            exit(1)
+    elif source.endswith('.CB7') or source.endswith('.7Z'):
+        sevenzaExitCode = Popen('7za', stdout=PIPE, stderr=STDOUT, shell=True)
+        sevenzaExitCode = sevenzaExitCode.wait()
+        if sevenzaExitCode != 0 and sevenzaExitCode != 7:
+            print('\n7za is missing!')
+            exit(1)
+    if options.format == 'MOBI':
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+        if kindleGenExitCode.wait() != 0:
+            print('\nKindleGen is missing!')
+            exit(1)
+
+
 def makeBook(source, qtGUI=None):
     """Generates MOBI/EPUB/CBZ comic ebook from a bunch of images."""
     global GUI
     GUI = qtGUI
     if GUI:
         GUI.progressBarTick.emit('1')
+    else:
+        checkTools(source)
     path = getWorkFolder(source)
     print("\nChecking images...")
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
