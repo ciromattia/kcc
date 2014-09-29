@@ -1,13 +1,13 @@
 ﻿# KCC
 
-**Kindle Comic Converter** is a Python app to convert comic files or folders to ePub, Panel View MOBI or E-Ink optimized CBZ.
-It was initally developed for Kindle but since v2.2 it outputs valid ePub 2.0 so _**despite its name, KCC is
-actually a comic to EPUB converter that every e-reader owner can happily use**_.
+**Kindle Comic Converter** is a Python app to convert comic/manga files or folders to EPUB, Panel View MOBI or E-Ink optimized CBZ.
+It was initially developed for Kindle but since version 2.2 it outputs valid EPUB 2.0 so _**despite its name, KCC is
+actually a comic/manga to EPUB converter that every e-reader owner can happily use**_.
 It can also optionally optimize images by applying a number of transformations.
 
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.  
-Amazon's tool is for comic publishers and involves a lot of manual effort, while **KCC** is for comic readers.
+Amazon's tool is for comic publishers and involves a lot of manual effort, while **KCC** is for comic/manga readers.
 _KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;-)
 
 ### Issues / new features / donations
@@ -36,7 +36,7 @@ You can find the latest released binary at the following links:
 - CBZ, ZIP
 - CBR, RAR *(With `unrar` executable)*
 - CB7, 7Z *(With `7za` executable)*
-- PDF *(Extracting only contained JPG images)*
+- PDF *(Only extracting JPG images)*
 
 ## OPTIONAL REQUIREMENTS
 - [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation)*
@@ -67,6 +67,8 @@ After completed conversion you should find ready file alongside the original inp
 
 Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more details.
 
+CLI version of **KCC** is intended for power users. It is not idiot-proof like GUI :-)
+
 ### Standalone `kcc-c2e.py` usage:
 
 ```
@@ -75,7 +77,9 @@ Usage: kcc-c2e [options] comic_file|comic_folder
 Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
-                        Device profile (Choose one among K1, K2, K345, KDX, KHD, KF, KFHD, KFHD8, KFHDX, KFHDX8, KFA, KoMT, KoG, KoA, KoAHD) [Default=KHD]
+                        Device profile (Available options: K1, K2, K345, KDX,
+                        KPW, KV, KFHD, KFHDX, KFHDX8, KFA, KoMT, KoG, KoA,
+                        KoAHD, KoAH2O) [Default=KV]
     -q QUALITY, --quality=QUALITY
                         Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
     -m, --manga-style   Manga style (Right-to-left reading and splitting)
@@ -86,7 +90,9 @@ Options:
                         Output generated file to specified directory or file
     -t TITLE, --title=TITLE
                         Comic title [Default=filename or directory name]
-    --cbz-output        Outputs a CBZ archive and does not generate EPUB
+    -f FORMAT, --format=FORMAT
+                        Output format (Available options: Auto, MOBI,
+						EPUB, CBZ) [Default=Auto]
     --batchsplit        Split output into multiple files
 
   PROCESSING:
@@ -134,7 +140,7 @@ Options:
 
 This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published [here](http://www.mobileread.com/forums/showthread.php?t=192783)).
 
-The app relies and includes the following scripts/binaries:
+The app relies and includes the following scripts:
 
  - `DualMetaFix` script by **K. Hendricks**. Released with GPL-3 License.
  - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>. Released with ISC License.
@@ -142,17 +148,15 @@ The app relies and includes the following scripts/binaries:
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
 ## SAMPLE FILES CREATED BY KCC
+* [Kindle Voyage](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
 * [Kindle Paperwhite](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K345.mobi)
-* [Kindle DX/DXG](http://kcc.iosphe.re/Samples/Ubunchu!-KDX.mobi)
-* [Kindle Fire HD](http://kcc.iosphe.re/Samples/Ubunchu!-KFHD.mobi)
-* [Kindle Fire HD 8.9"](http://kcc.iosphe.re/Samples/Ubunchu!-KFHD8.mobi)
-* [Kindle Fire HDX](http://kcc.iosphe.re/Samples/Ubunchu!-KFHDX.mobi)
-* [Kindle Fire HDX 8.9"](http://kcc.iosphe.re/Samples/Ubunchu!-KFHDX8.mobi)
+* [Kindle DX/DXG](http://kcc.iosphe.re/Samples/Ubunchu!-KDX.cbz)
 * [Kobo Mini/Touch](http://kcc.iosphe.re/Samples/Ubunchu!-KoMT.cbz)
 * [Kobo Glow](http://kcc.iosphe.re/Samples/Ubunchu!-KoG.cbz)
 * [Kobo Aura](http://kcc.iosphe.re/Samples/Ubunchu!-KoA.cbz)
 * [Kobo Aura HD](http://kcc.iosphe.re/Samples/Ubunchu!-KoAHD.cbz)
+* [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu!-KoAH2O.cbz)
 
 ## CHANGELOG
 ####1.0
@@ -188,11 +192,11 @@ The app relies and includes the following scripts/binaries:
 * Added basic error reporting
 
 ####2.2:
-* Added (valid!) ePub 2.0 output  
+* Added (valid!) EPUB 2.0 output  
 * Rename .zip files to .cbz to avoid overwriting
 
 ####2.3
-* Fixed win32 ePub generation, folder handling, filenames with spaces and subfolders
+* Fixed win32 EPUB generation, folder handling, filenames with spaces and subfolders
 
 ####2.4
 * Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)  
@@ -200,22 +204,22 @@ The app relies and includes the following scripts/binaries:
 
 ####2.5
 * Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).  
-* Fixes epub containing zipped itself (#10)  
+* Fixes EPUB containing zipped itself (#10)  
 
 ####2.6
 * Added --rotate option to rotate landscape images instead of splitting them (#16, #24)  
-* Added --output option to customize ePub output dir/file (#22)  
-* Add rendition:layout and rendition:orientation ePub meta tags (supported by new kindlegen 2.8)  
+* Added --output option to customize EPUB output dir/file (#22)  
+* Add rendition:layout and rendition:orientation EPUB meta tags (supported by new kindlegen 2.8)  
 * Fixed natural sorting for files (#18)
 
 ####2.7
 * Lots of GUI improvements (#27, #13)  
 * Added gamma support within --gamma option (defaults to profile-specified gamma) (#26, #27)  
 * Added --nodithering option to prevent dithering optimizations (#27)  
-* Epub margins support (#30)  
+* EPUB margins support (#30)  
 * Fixed no file added if file has no spaces on Windows (#25)  
 * Gracefully exit if unrar missing (#15)  
-* Do not call kindlegen if source epub is bigger than 320MB (#17)  
+* Do not call kindlegen if source EPUB is bigger than 320MB (#17)  
 * Get filetype from magic number (#14)   
 * PDF conversion works again  
 
@@ -229,7 +233,7 @@ The app relies and includes the following scripts/binaries:
 * Optimized archive extraction for zip/rar files (#40)  
 
 ####2.9
-* Added support for generating a plain CBZ (skipping all the EPUB/Mobi generation) (#45)  
+* Added support for generating a plain CBZ (skipping all the EPUB/MOBI generation) (#45)  
 * Prevent output file overwriting the source one: if a duplicate name is detected, append _kcc to the name  
 * Rarfile library updated to 2.6  
 * Added GIF, TIFF and BMP to supported formats (#42)  
@@ -237,7 +241,7 @@ The app relies and includes the following scripts/binaries:
 
 ####2.10:
 * Multiprocessing support
-* Kindle Fire support (color ePub/Mobi)
+* Kindle Fire support (color EPUB/MOBI)
 * Panel View support for horizontal content
 * Fixed panel order for horizontal pages when --rotate is enabled
 * Disabled cropping and page number cutting for blank pages
@@ -367,6 +371,11 @@ The app relies and includes the following scripts/binaries:
 * Fixed resizing problems in high quality mode
 * Fixed some MCD support bugs
 * Default output format for Kindle DX is now CBZ
+
+####4.3:
+* Added profiles for Kindle Voyage and Kobo Aura H2O
+* Added missing features to CLI version
+* Other minor bug fixes
 
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).

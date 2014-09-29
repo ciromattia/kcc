@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-cx_Freeze/py2app build script for KCC.
-
-Usage (Mac OS X):
-    python setup.py py2app
+py2exe/py2app build script for KCC.
 
 Usage (Windows):
     python setup.py py2exe
+
+Usage (Mac OS X):
+    python setup.py py2app
 """
 from sys import platform, version_info
 if version_info[0] != 3:
@@ -14,7 +14,7 @@ if version_info[0] != 3:
     exit(1)
 
 NAME = "KindleComicConverter"
-VERSION = "4.2.1"
+VERSION = "4.3"
 MAIN = "kcc.py"
 
 if platform == "darwin":
@@ -63,43 +63,22 @@ elif platform == "win32":
         suffix = '_64'
     else:
         suffix = ''
-    additional_files = [('imageformats', ['C:\Python34' + suffix +
-                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qgif.dll',
-                                          'C:\Python34' + suffix +
-                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qico.dll',
-                                          'C:\Python34' + suffix +
-                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qjpeg.dll',
-                                          'C:\Python34' + suffix +
-                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qmng.dll',
-                                          'C:\Python34' + suffix +
-                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qsvg.dll',
-                                          'C:\Python34' + suffix +
-                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qtga.dll',
-                                          'C:\Python34' + suffix +
-                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qtiff.dll',
-                                          'C:\Python34' + suffix +
-                                          '\Lib\site-packages\PyQt5\plugins\imageformats\qwbmp.dll']),
-                        ('platforms', ['C:\Python34' + suffix +
-                                       '\Lib\site-packages\PyQt5\plugins\platforms\qminimal.dll',
-                                       'C:\Python34' + suffix +
-                                       '\Lib\site-packages\PyQt5\plugins\platforms\qoffscreen.dll',
-                                       'C:\Python34' + suffix +
+    additional_files = [('platforms', ['C:\Python34' + suffix +
                                        '\Lib\site-packages\PyQt5\plugins\platforms\qwindows.dll']),
                         ('', ['LICENSE.txt',
                               'other\\7za.exe',
                               'other\\UnRAR.exe',
                               'other\\Additional-LICENSE.txt',
-                              'other\\7za.exe',
                               'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libEGL.dll'])]
     extra_options = dict(
-        options={'py2exe': {"bundle_files": 2,
+        options={'py2exe': {"bundle_files": 1,
                             "dll_excludes": ["tcl85.dll", "tk85.dll"],
                             "dist_dir": "dist" + suffix,
                             "compressed": True,
                             "includes": ["sip"],
                             "excludes": ["tkinter"],
                             "optimize": 2}},
-        windows=[{"script": "kcc.py",
+        windows=[{"script": MAIN,
                   "dest_base": "KCC",
                   "version": VERSION,
                   "copyright": "Ciro Mattia Gonano, Pawel Jastrzebski © 2014",
@@ -114,7 +93,7 @@ else:
     print('Please use setup.sh to build Linux package.')
     exit()
 
-#noinspection PyUnboundLocalVariable
+# noinspection PyUnboundLocalVariable
 setup(
     name=NAME,
     version=VERSION,

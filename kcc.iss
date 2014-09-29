@@ -1,5 +1,5 @@
 ﻿#define MyAppName "Kindle Comic Converter"
-#define MyAppVersion "4.2.1"
+#define MyAppVersion "4.3"
 #define MyAppPublisher "Ciro Mattia Gonano, Paweł Jastrzębski"
 #define MyAppURL "http://kcc.iosphe.re/"
 #define MyAppExeName "KCC.exe"
@@ -43,13 +43,11 @@ Name: "CB7association"; Description: "CB7"; GroupDescription: "File associations
 
 [Files]
 ; x64 files
-Source: "dist_64\imageformats\*"; DestDir: "{app}\imageformats\"; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: "dist_64\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: "dist_64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: "dist_64\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: "other\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: Is64BitInstallMode
 ; x86 files
-Source: "dist\imageformats\*"; DestDir: "{app}\imageformats\"; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: "dist\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: "dist\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode

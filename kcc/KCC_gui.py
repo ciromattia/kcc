@@ -17,7 +17,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '4.2.1'
+__version__ = '4.3'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -36,12 +36,10 @@ from subprocess import STDOUT, PIPE
 from PyQt5 import QtGui, QtCore, QtWidgets
 from xml.dom.minidom import parse
 from html.parser import HTMLParser
-from psutil import virtual_memory, Popen, Process
-from uuid import uuid4
+from psutil import Popen, Process
 from copy import copy
 from .shared import md5Checksum
 from . import comic2ebook
-from . import dualmetafix
 from . import KCC_rc_web
 if sys.platform.startswith('darwin'):
     from . import KCC_ui_osx as KCC_ui
@@ -265,84 +263,14 @@ class ProgressThread(QtCore.QThread):
         self.running = False
 
 
-class WorkerSignals(QtCore.QObject):
-    result = QtCore.pyqtSignal(list)
-
-
-class KindleGenThread(QtCore.QRunnable):
-    def __init__(self, batch):
-        super(KindleGenThread, self).__init__()
-        self.signals = WorkerSignals()
-        self.work = batch
-
-    def run(self):
-        kindlegenErrorCode = 0
-        kindlegenError = ''
-        try:
-            if os.path.getsize(self.work) < 629145600:
-                output = Popen('kindlegen -dont_append_source -locale en "' + self.work + '"', stdout=PIPE,
-                               stderr=STDOUT, shell=True)
-                for line in output.stdout:
-                    line = line.decode('utf-8')
-                    # ERROR: Generic error
-                    if "Error(" in line:
-                        kindlegenErrorCode = 1
-                        kindlegenError = line
-                    # ERROR: EPUB too big
-                    if ":E23026:" in line:
-                        kindlegenErrorCode = 23026
-                    if kindlegenErrorCode > 0:
-                        break
-            else:
-                # ERROR: EPUB too big
-                kindlegenErrorCode = 23026
-            self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
-        except Exception as err:
-            # ERROR: KCC unknown generic error
-            kindlegenErrorCode = 1
-            kindlegenError = format(err)
-            self.signals.result.emit([kindlegenErrorCode, kindlegenError, self.work])
-
-
-class DualMetaFixThread(QtCore.QRunnable):
-    def __init__(self, batch):
-        super(DualMetaFixThread, self).__init__()
-        self.signals = WorkerSignals()
-        self.work = batch
-
-    def run(self):
-        item = self.work
-        os.remove(item)
-        mobiPath = item.replace('.epub', '.mobi')
-        move(mobiPath, mobiPath + '_toclean')
-        try:
-            # noinspection PyArgumentList
-            dualmetafix.DualMobiMetaFix(mobiPath + '_toclean', mobiPath, bytes(str(uuid4()), 'UTF-8'))
-            self.signals.result.emit([True])
-        except Exception as err:
-            self.signals.result.emit([False, format(err)])
-
-
 class WorkerThread(QtCore.QThread):
-    #noinspection PyArgumentList
+    # noinspection PyArgumentList
     def __init__(self):
         QtCore.QThread.__init__(self)
-        self.pool = QtCore.QThreadPool()
         self.conversionAlive = False
         self.errors = False
         self.kindlegenErrorCode = [0]
         self.workerOutput = []
-        # Let's make sure that we don't fill the memory
-        availableMemory = virtual_memory().total/1000000000
-        if availableMemory <= 2:
-            self.threadNumber = 1
-        elif 2 < availableMemory <= 4:
-            self.threadNumber = 2
-        else:
-            self.threadNumber = 4
-        # Let's make sure that we don't use too many threads
-        if self.threadNumber > QtCore.QThread.idealThreadCount():
-            self.threadNumber = QtCore.QThread.idealThreadCount()
         self.progressBarTick = MW.progressBarTick
         self.addMessage = MW.addMessage
 
@@ -361,9 +289,11 @@ class WorkerThread(QtCore.QThread):
         MW.addTrayMessage.emit('Conversion interrupted.', 'Critical')
         MW.modeConvert.emit(1)
 
-    def addResult(self, output):
-        MW.progressBarTick.emit('tick')
-        self.workerOutput.append(output)
+    def sanitizeTrace(self, traceback):
+        return ''.join(format_tb(traceback))\
+            .replace('C:\\Users\\AcidWeb\\Documents\\Projekty\\KCC\\', '')\
+            .replace('C:\\Python34\\', '')\
+            .replace('C:\\Python34_64\\', '')
 
     def run(self):
         MW.modeConvert.emit(0)
@@ -385,10 +315,9 @@ class WorkerThread(QtCore.QThread):
             options.quality = 1
         elif GUI.QualityBox.checkState() == 2:
             options.quality = 2
-        if str(GUI.FormatBox.currentText()) == 'CBZ':
-            options.cbzoutput = True
+        options.format = str(GUI.FormatBox.currentText())
         if GUI.currentMode == 1:
-            if profile in ['KFHD', 'KFHD8', 'KFHDX', 'KFHDX8']:
+            if 'KFH' in profile:
                 options.upscale = True
 
         # Advanced mode settings
@@ -410,10 +339,7 @@ class WorkerThread(QtCore.QThread):
             if GUI.WebtoonBox.isChecked():
                 options.webtoon = True
             if float(GUI.GammaValue) > 0.09:
-                # noinspection PyTypeChecker
                 options.gamma = float(GUI.GammaValue)
-            if str(GUI.FormatBox.currentText()) == 'MOBI':
-                options.batchsplit = True
 
         # Other/custom settings.
         if GUI.currentMode > 2:
@@ -462,7 +388,7 @@ class WorkerThread(QtCore.QThread):
                 self.errors = True
                 _, _, traceback = sys.exc_info()
                 MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
-                                   % (jobargv[-1], str(err), "".join(format_tb(traceback))), 'error')
+                                   % (jobargv[-1], str(err), self.sanitizeTrace(traceback)), 'error')
                 MW.addMessage.emit('Failed to create EPUB!', 'error', False)
                 MW.addTrayMessage.emit('Failed to create EPUB!', 'Critical')
             if not self.conversionAlive:
@@ -483,16 +409,10 @@ class WorkerThread(QtCore.QThread):
                     MW.progressBarTick.emit('tick')
                     MW.addMessage.emit('Creating MOBI files', 'info', False)
                     GUI.progress.content = 'Creating MOBI files'
-                    self.workerOutput = []
-                    # Number of KindleGen threads depends on the size of RAM
-                    self.pool.setMaxThreadCount(self.threadNumber)
+                    work = []
                     for item in outputPath:
-                        worker = KindleGenThread(item)
-                        worker.signals.result.connect(self.addResult)
-                        self.pool.start(worker)
-                    self.pool.waitForDone()
-                    while len(self.workerOutput) != len(outputPath):
-                        sleep(0.1)
+                        work.append([item])
+                    self.workerOutput = comic2ebook.makeMOBI(work, self)
                     self.kindlegenErrorCode = [0]
                     for errors in self.workerOutput:
                         if errors[0] != 0:
@@ -512,15 +432,9 @@ class WorkerThread(QtCore.QThread):
                         MW.addMessage.emit('Processing MOBI files', 'info', False)
                         GUI.progress.content = 'Processing MOBI files'
                         self.workerOutput = []
-                        # DualMetaFix is very fast and there is not reason to use multithreading.
-                        self.pool.setMaxThreadCount(1)
                         for item in outputPath:
-                            worker = DualMetaFixThread(item)
-                            worker.signals.result.connect(self.addResult)
-                            self.pool.start(worker)
-                        self.pool.waitForDone()
-                        while len(self.workerOutput) != len(outputPath):
-                            sleep(0.1)
+                            self.workerOutput.append(comic2ebook.makeMOBIFix(item))
+                            MW.progressBarTick.emit('tick')
                         for success in self.workerOutput:
                             if not success[0]:
                                 self.errors = True
@@ -1018,7 +932,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
                                            'GammaSlider': float(self.GammaValue)*100})
         self.settings.sync()
         self.tray.hide()
-        APP.shutdown()
 
     def handleMessage(self, message):
         MW.raise_()
@@ -1121,22 +1034,20 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.p.ionice(1)
 
         self.profiles = {
+            "Kindle Voyage": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                              'DefaultUpscale': False, 'Label': 'KV'},
             "Kindle Paperwhite": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                                  'DefaultUpscale': False, 'Label': 'KHD'},
+                                  'DefaultUpscale': False, 'Label': 'KPW'},
             "Kindle": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K345'},
             "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'Label': 'KDX'},
-            "Kindle Fire": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                            'DefaultUpscale': False, 'Label': 'KF'},
-            "K. Fire HD 7\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                               'DefaultUpscale': True, 'Label': 'KFHD'},
-            "K. Fire HD 8.9\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                                 'DefaultUpscale': True, 'Label': 'KFHD8'},
-            "K. Fire HDX 7\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                                'DefaultUpscale': True, 'Label': 'KFHDX'},
-            "K. Fire HDX 8.9\"": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                                  'DefaultUpscale': True, 'Label': 'KFHDX8'},
+            "K. Fire HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                           'DefaultUpscale': True, 'Label': 'KFHD'},
+            "K. Fire HDX": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                            'DefaultUpscale': True, 'Label': 'KFHDX'},
+            "K. Fire HDX 8.9": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                                'DefaultUpscale': True, 'Label': 'KFHDX8'},
             "Kobo Mini/Touch": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                                 'DefaultUpscale': False, 'Label': 'KoMT'},
             "Kobo Glow": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
@@ -1145,6 +1056,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
                           'DefaultUpscale': False, 'Label': 'KoA'},
             "Kobo Aura HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                              'DefaultUpscale': False, 'Label': 'KoAHD'},
+            "Kobo Aura H2O": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+                              'DefaultUpscale': False, 'Label': 'KoAH2O'},
             "Other": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 1,
                       'DefaultUpscale': False, 'Label': 'OTHER'},
             "Kindle for Android": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 0,
@@ -1155,26 +1068,26 @@ class KCCGUI(KCC_ui.Ui_KCC):
                          'DefaultUpscale': False, 'Label': 'K2'}
         }
         profilesGUI = [
+            "Kindle Voyage",
             "Kindle Paperwhite",
             "Kindle",
-            "Kindle DX/DXG",
             "Separator",
-            "Kindle Fire",
-            "K. Fire HD 7\"",
-            "K. Fire HD 8.9\"",
-            "K. Fire HDX 7\"",
-            "K. Fire HDX 8.9\"",
+            "K. Fire HD",
+            "K. Fire HDX",
+            "K. Fire HDX 8.9",
             "Separator",
             "Kobo Mini/Touch",
             "Kobo Glow",
             "Kobo Aura",
             "Kobo Aura HD",
+            "Kobo Aura H2O",
             "Separator",
             "Other",
             "Separator",
             "Kindle for Android",
             "Kindle 1",
             "Kindle 2",
+            "Kindle DX/DXG",
         ]
 
         statusBarLabel = QtWidgets.QLabel('<b><a href="http://kcc.iosphe.re/">HOMEPAGE</a> - <a href="https://github.'

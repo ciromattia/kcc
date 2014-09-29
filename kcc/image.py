@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = '4.2.1'
+__version__ = '4.3'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -85,18 +85,18 @@ class ProfileData:
         'K1': ("Kindle 1", (600, 670), Palette4, 1.8, (900, 1005)),
         'K2': ("Kindle 2", (600, 670), Palette15, 1.8, (900, 1005)),
         'K345': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
-        'KHD': ("Kindle Paperwhite", (758, 1024), Palette16, 1.8, (1137, 1536)),
         'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8, (1236, 1500)),
-        'KF': ("Kindle Fire", (600, 1024), PalleteNull, 1.0, (900, 1536)),
-        'KFHD': ("K. Fire HD 7\"", (800, 1280), PalleteNull, 1.0, (1200, 1920)),
-        'KFHD8': ("K. Fire HD 8.9\"", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
-        'KFHDX': ("K. Fire HDX 7\"", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
-        'KFHDX8': ("K. Fire HDX 8.9\"", (1600, 2560), PalleteNull, 1.0, (2400, 3840)),
+        'KPW': ("Kindle Paperwhite", (758, 1024), Palette16, 1.8, (1137, 1536)),
+        'KV': ("Kindle Voyage", (1080, 1440), Palette16, 1.8, (1620, 2160)),
+        'KFHD': ("K. Fire HD", (800, 1280), PalleteNull, 1.0, (1200, 1920)),
+        'KFHDX': ("K. Fire HDX", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
+        'KFHDX8': ("K. Fire HDX 8.9", (1600, 2560), PalleteNull, 1.0, (2400, 3840)),
+        'KFA': ("Kindle for Android", (0, 0), PalleteNull, 1.0, (0, 0)),
         'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8, (900, 1200)),
         'KoG': ("Kobo Glow", (768, 1024), Palette16, 1.8, (1152, 1536)),
         'KoA': ("Kobo Aura", (758, 1024), Palette16, 1.8, (1137, 1536)),
         'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.8, (1620, 2160)),
-        'KFA': ("Kindle for Android", (0, 0), PalleteNull, 1.0, (0, 0)),
+        'KoAH2O': ("Kobo Aura H2O", (1080, 1430), Palette16, 1.8, (1620, 2145)),
         'OTHER': ("Other", (0, 0), Palette16, 1.8, (0, 0)),
     }
 
