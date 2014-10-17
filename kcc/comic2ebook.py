@@ -1144,7 +1144,10 @@ def makeBook(source, qtGUI=None):
         GUI.progressBarTick.emit('tick')
     options.baseTitle = options.title
     for tome in tomes:
-        if len(tomes) > 1:
+        if len(tomes) > 9:
+            tomeNumber += 1
+            options.title = options.baseTitle + ' [' + str(tomeNumber).zfill(2) + '/' + str(len(tomes)).zfill(2) + ']'
+        elif len(tomes) > 1:
             tomeNumber += 1
             options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
         if options.format == 'CBZ':
