@@ -25,6 +25,7 @@ __docformat__ = 'restructuredtext en'
 
 import os
 import sys
+from glob import glob
 from json import loads
 from urllib.request import Request, urlopen
 from re import split, sub, compile
@@ -57,11 +58,15 @@ def main(argv=None):
     parser = makeParser()
     options, args = parser.parse_args(argv)
     checkOptions()
-    if len(args) < 1:
+    if len(args) == 0:
         parser.print_help()
         return
-    for source in args:
-        if len(args) > 1:
+    sources = [source for arg in args for source in glob(arg)]
+    if len(sources) == 0:
+        print('No matching files found.')
+        return
+    for source in sources:
+        if len(sources) > 1:
             print('\nWorking on {}...'.format(source))
         outputPath = makeBook(source)
     return outputPath
