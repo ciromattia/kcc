@@ -57,10 +57,13 @@ def main(argv=None):
     parser = makeParser()
     options, args = parser.parse_args(argv)
     checkOptions()
-    if len(args) != 1:
+    if len(args) < 1:
         parser.print_help()
         return
-    outputPath = makeBook(args[0])
+    for source in args:
+        if len(args) > 1:
+            print('\nWorking on {}...'.format(source))
+        outputPath = makeBook(source)
     return outputPath
 
 
