@@ -25,6 +25,7 @@ __docformat__ = 'restructuredtext en'
 
 import os
 import sys
+from copy import copy
 from glob import glob
 from json import loads
 from urllib.request import Request, urlopen
@@ -56,18 +57,20 @@ from . import dualmetafix
 def main(argv=None):
     global options
     parser = makeParser()
-    options, args = parser.parse_args(argv)
-    checkOptions()
+    optionstemplate, args = parser.parse_args(argv)
     if len(args) == 0:
         parser.print_help()
         return
-    sources = [source for arg in args for source in glob(arg)]
+    sources = set([source for arg in args for source in glob(arg)])
+    outputPath = []
     if len(sources) == 0:
         print('No matching files found.')
         return
     for source in sources:
+        options = copy(optionstemplate)
+        checkOptions()
         if len(sources) > 1:
-            print('\nWorking on {}...'.format(source))
+            print('\nWorking on ' + source)
         outputPath = makeBook(source)
     return outputPath
 
