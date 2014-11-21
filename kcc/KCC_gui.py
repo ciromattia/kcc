@@ -111,15 +111,15 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
                 self.wfile.write(bytes('<!DOCTYPE html>\n'
-                                 '<html lang="en">\n'
-                                 '<head><meta charset="utf-8">\n'
-                                 '<link href="' + GUI.webContent.favicon + '" rel="icon" type="image/x-icon" />\n'
-                                 '<title>Kindle Comic Converter</title>\n'
-                                 '</head>\n'
-                                 '<body>\n'
-                                 '<div style="text-align: center; font-size:25px">\n'
-                                 '<p style="font-size:50px">- <img style="vertical-align: middle" '
-                                 'alt="KCC Logo" src="' + GUI.webContent.logo + '" /> -</p>\n', 'UTF-8'))
+                                       '<html lang="en">\n'
+                                       '<head><meta charset="utf-8">\n'
+                                       '<link href="' + GUI.webContent.favicon + '" rel="icon" type="image/x-icon" />\n'
+                                       '<title>Kindle Comic Converter</title>\n'
+                                       '</head>\n'
+                                       '<body>\n'
+                                       '<div style="text-align: center; font-size:25px">\n'
+                                       '<p style="font-size:50px">- <img style="vertical-align: middle" '
+                                       'alt="KCC Logo" src="' + GUI.webContent.logo + '" /> -</p>\n', 'UTF-8'))
                 if len(GUI.completedWork) > 0 and not GUI.conversionAlive:
                     for key in sorted(GUI.completedWork.keys()):
                         self.wfile.write(bytes('<p><a href="' + key + '">' + key.split('.')[0] + '</a></p>\n', 'UTF-8'))
@@ -127,8 +127,8 @@ class WebServerHandler(BaseHTTPRequestHandler):
                     self.wfile.write(bytes('<p style="font-weight: bold">No downloads are available.<br/>'
                                      'Convert some files and refresh this page.</p>\n', 'UTF-8'))
                 self.wfile.write(bytes('</div>\n'
-                                 '</body>\n'
-                                 '</html>\n', 'UTF-8'))
+                                       '</body>\n'
+                                       '</html>\n', 'UTF-8'))
             elif sendReply:
                 outputFile = GUI.completedWork[unquote(self.path[1:])]
                 fp = open(outputFile, 'rb')
