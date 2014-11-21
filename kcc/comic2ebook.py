@@ -420,7 +420,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
         chapter = False
         for afile in filenames:
             filename = getImageFileName(afile)
-            if not '-kcc-hq' in filename[0]:
+            if '-kcc-hq' not in filename[0]:
                 filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
                 if not chapter:
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
