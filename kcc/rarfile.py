@@ -178,6 +178,23 @@ EXTRACT_ARGS = ('x', '-y', '-idq')
 #: args for testrar()
 TEST_ARGS = ('t', '-idq')
 
+#
+# Allow use of tool that is not compatible with unrar.
+#
+# By default use 'bsdtar' which is 'tar' program that
+# sits on top of libarchive.
+#
+# Problems with libarchive RAR backend:
+# - Does not support solid archives.
+# - Does not support password-protected archives.
+#
+
+ALT_TOOL = 'bsdtar'
+ALT_OPEN_ARGS = ('-x', '--to-stdout', '-f')
+ALT_EXTRACT_ARGS = ('-x', '-f')
+ALT_TEST_ARGS = ('-t', '-f')
+ALT_CHECK_ARGS = ('--help',)
+
 #: whether to speed up decompression by using tmp archive
 USE_EXTRACT_HACK = 1
 
@@ -336,6 +353,8 @@ class RarUnknownError(RarExecError):
     """Unknown exit code"""
 class RarSignalExit(RarExecError):
     """Unrar exited with signal"""
+class RarCannotExec(RarExecError):
+    """Executable not found."""
 
 
 def is_rarfile(xfile):
@@ -693,10 +712,7 @@ class RarFile(object):
         """Let 'unrar' test the archive.
         """
         cmd = [UNRAR_TOOL] + list(TEST_ARGS)
-        if self._password is not None:
-            cmd.append('-p' + self._password)
-        else:
-            cmd.append('-p-')
+        add_password_arg(cmd, self._password)
         cmd.append(self.rarfile)
         p = custom_popen(cmd)
         output = p.communicate()[0]
@@ -1172,8 +1188,7 @@ class RarFile(object):
         if is_filelike(rarfile):
             raise ValueError("Cannot use unrar directly on memory buffer")
         cmd = [UNRAR_TOOL] + list(OPEN_ARGS)
-        if psw is not None:
-            cmd.append("-p" + psw)
+        add_password_arg(cmd, psw)
         cmd.append(rarfile)
 
         # not giving filename avoids encoding related problems
@@ -1205,10 +1220,7 @@ class RarFile(object):
 
         # pasoword
         psw = psw or self._password
-        if psw is not None:
-            cmd.append('-p' + psw)
-        else:
-            cmd.append('-p-')
+        add_password_arg(cmd, psw)
 
         # rar file
         cmd.append(self.rarfile)
@@ -1830,10 +1842,7 @@ def rar_decompress(vers, meth, data, declen=0, flags=0, crc=0, psw=None, salt=No
         tmpf.close()
 
         cmd = [UNRAR_TOOL] + list(OPEN_ARGS)
-        if psw is not None and (flags & RAR_FILE_PASSWORD):
-            cmd.append("-p" + psw)
-        else:
-            cmd.append("-p-")
+        add_password_arg(cmd, psw, (flags & RAR_FILE_PASSWORD))
         cmd.append(tmpname)
 
         p = custom_popen(cmd)
@@ -1902,9 +1911,26 @@ def custom_popen(cmd):
     except OSError:
         ex = sys.exc_info()[1]
         if ex.errno == errno.ENOENT:
-            raise RarExecError("Unrar not installed? (rarfile.UNRAR_TOOL=%r)" % UNRAR_TOOL)
+            raise RarCannotExec("Unrar not installed? (rarfile.UNRAR_TOOL=%r)" % UNRAR_TOOL)
         raise
     return p
+
+def custom_check(cmd, ignore_retcode=False):
+    """Run command, collect output, raise error if needed."""
+    p = custom_popen(cmd)
+    out, err = p.communicate()
+    if p.returncode and not ignore_retcode:
+        raise RarExecError("Check-run failed")
+    return out
+
+def add_password_arg(cmd, psw, required=False):
+    """Append password switch to commandline."""
+    if UNRAR_TOOL == ALT_TOOL:
+        return
+    if psw is not None:
+        cmd.append('-p' + psw)
+    else:
+        cmd.append('-p-')
 
 def check_returncode(p, out):
     """Raise exception according to unrar exit code"""
@@ -1920,6 +1946,8 @@ def check_returncode(p, out):
         RarWarning, RarFatalError, RarCRCError, RarLockedArchiveError,
         RarWriteError, RarOpenError, RarUserError, RarMemoryError,
         RarCreateError, RarNoFilesError] # codes from rar.txt
+    if UNRAR_TOOL == ALT_TOOL:
+        errmap = [None]
     if code > 0 and code < len(errmap):
         exc = errmap[code]
     elif code == 255:
@@ -1936,3 +1964,24 @@ def check_returncode(p, out):
         msg = "%s [%d]" % (exc.__doc__, p.returncode)
 
     raise exc(msg)
+
+#
+# Check if unrar works
+#
+
+try:
+    # does UNRAR_TOOL work?
+    custom_check([UNRAR_TOOL], True)
+except RarCannotExec:
+    try:
+        # does ALT_TOOL work?
+        custom_check([ALT_TOOL] + list(ALT_CHECK_ARGS), True)
+        # replace config
+        UNRAR_TOOL = ALT_TOOL
+        OPEN_ARGS = ALT_OPEN_ARGS
+        EXTRACT_ARGS = ALT_EXTRACT_ARGS
+        TEST_ARGS = ALT_TEST_ARGS
+    except RarCannotExec:
+        # no usable tool, only uncompressed archives work
+        pass
+
