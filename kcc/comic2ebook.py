@@ -18,16 +18,18 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-__version__ = '4.3'
+__version__ = '4.3.1'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
 
 import os
 import sys
+from copy import copy
+from glob import glob
 from json import loads
 from urllib.request import Request, urlopen
-from re import split, sub, compile
+from re import split, sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp
@@ -55,12 +57,21 @@ from . import dualmetafix
 def main(argv=None):
     global options
     parser = makeParser()
-    options, args = parser.parse_args(argv)
-    checkOptions()
-    if len(args) != 1:
+    optionstemplate, args = parser.parse_args(argv)
+    if len(args) == 0:
         parser.print_help()
         return
-    outputPath = makeBook(args[0])
+    sources = set([source for arg in args for source in glob(arg)])
+    outputPath = []
+    if len(sources) == 0:
+        print('No matching files found.')
+        return
+    for source in sources:
+        options = copy(optionstemplate)
+        checkOptions()
+        if len(sources) > 1:
+            print('\nWorking on ' + source)
+        outputPath = makeBook(source)
     return outputPath
 
 
@@ -409,7 +420,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
         chapter = False
         for afile in filenames:
             filename = getImageFileName(afile)
-            if not '-kcc-hq' in filename[0]:
+            if '-kcc-hq' not in filename[0]:
                 filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
                 if not chapter:
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
@@ -667,11 +678,12 @@ def getComicInfo(path, originalPath):
             options.authors.sort()
         else:
             options.authors = ['KCC']
-        if len(xml.getElementsByTagName('ScanInformation')) != 0:
-            coverId = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
-            coverId = compile('(MCD\\()(\\d+)(\\))').search(coverId)
-            if coverId:
-                options.remoteCovers = getCoversFromMCB(coverId.group(2))
+        # Disabled due to closure of MCD
+        # if len(xml.getElementsByTagName('ScanInformation')) != 0:
+        #    coverId = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
+        #    coverId = compile('(MCD\\()(\\d+)(\\))').search(coverId)
+        #    if coverId:
+        #        options.remoteCovers = getCoversFromMCB(coverId.group(2))
         os.remove(xmlPath)
 
 
@@ -1144,7 +1156,10 @@ def makeBook(source, qtGUI=None):
         GUI.progressBarTick.emit('tick')
     options.baseTitle = options.title
     for tome in tomes:
-        if len(tomes) > 1:
+        if len(tomes) > 9:
+            tomeNumber += 1
+            options.title = options.baseTitle + ' [' + str(tomeNumber).zfill(2) + '/' + str(len(tomes)).zfill(2) + ']'
+        elif len(tomes) > 1:
             tomeNumber += 1
             options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
         if options.format == 'CBZ':
