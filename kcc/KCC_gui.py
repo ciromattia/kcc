@@ -1016,7 +1016,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.listFontSize = 11
             self.statusBarFontSize = 10
             self.statusBarStyle = 'QLabel{padding-top:2px;padding-bottom:3px;}'
-            self.ProgressBar.setStyleSheet('QProgressBar{padding-top:5px;text-align:center;}')
+            self.ProgressBar.setStyleSheet('QProgressBar{font-size:13px;text-align:center;'
+                                           'border:2px solid grey;border-radius:5px;}'
+                                           'QProgressBar::chunk{background-color:steelblue;width:20px;}')
         elif sys.platform.startswith('linux'):
             self.listFontSize = 8
             self.statusBarFontSize = 8
