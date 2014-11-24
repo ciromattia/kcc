@@ -1,7 +1,7 @@
 #!/bin/bash
 # Linux Python package build script
 
-VERSION="4.3"
+VERSION="4.3.1"
 
 cp kcc.py __main__.py
 zip kcc.zip __main__.py kcc/*.py
