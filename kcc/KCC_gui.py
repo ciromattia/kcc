@@ -17,7 +17,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '4.3'
+__version__ = '4.3.1'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -111,15 +111,15 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
                 self.wfile.write(bytes('<!DOCTYPE html>\n'
-                                 '<html lang="en">\n'
-                                 '<head><meta charset="utf-8">\n'
-                                 '<link href="' + GUI.webContent.favicon + '" rel="icon" type="image/x-icon" />\n'
-                                 '<title>Kindle Comic Converter</title>\n'
-                                 '</head>\n'
-                                 '<body>\n'
-                                 '<div style="text-align: center; font-size:25px">\n'
-                                 '<p style="font-size:50px">- <img style="vertical-align: middle" '
-                                 'alt="KCC Logo" src="' + GUI.webContent.logo + '" /> -</p>\n', 'UTF-8'))
+                                       '<html lang="en">\n'
+                                       '<head><meta charset="utf-8">\n'
+                                       '<link href="' + GUI.webContent.favicon + '" rel="icon" type="image/x-icon" />\n'
+                                       '<title>Kindle Comic Converter</title>\n'
+                                       '</head>\n'
+                                       '<body>\n'
+                                       '<div style="text-align: center; font-size:25px">\n'
+                                       '<p style="font-size:50px">- <img style="vertical-align: middle" '
+                                       'alt="KCC Logo" src="' + GUI.webContent.logo + '" /> -</p>\n', 'UTF-8'))
                 if len(GUI.completedWork) > 0 and not GUI.conversionAlive:
                     for key in sorted(GUI.completedWork.keys()):
                         self.wfile.write(bytes('<p><a href="' + key + '">' + key.split('.')[0] + '</a></p>\n', 'UTF-8'))
@@ -127,8 +127,8 @@ class WebServerHandler(BaseHTTPRequestHandler):
                     self.wfile.write(bytes('<p style="font-weight: bold">No downloads are available.<br/>'
                                      'Convert some files and refresh this page.</p>\n', 'UTF-8'))
                 self.wfile.write(bytes('</div>\n'
-                                 '</body>\n'
-                                 '</html>\n', 'UTF-8'))
+                                       '</body>\n'
+                                       '</html>\n', 'UTF-8'))
             elif sendReply:
                 outputFile = GUI.completedWork[unquote(self.path[1:])]
                 fp = open(outputFile, 'rb')
@@ -1016,7 +1016,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.listFontSize = 11
             self.statusBarFontSize = 10
             self.statusBarStyle = 'QLabel{padding-top:2px;padding-bottom:3px;}'
-            self.ProgressBar.setStyleSheet('QProgressBar{padding-top:5px;text-align:center;}')
+            self.ProgressBar.setStyleSheet('QProgressBar{font-size:13px;text-align:center;'
+                                           'border:2px solid grey;border-radius:5px;}'
+                                           'QProgressBar::chunk{background-color:steelblue;width:20px;}')
         elif sys.platform.startswith('linux'):
             self.listFontSize = 8
             self.statusBarFontSize = 8

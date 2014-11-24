@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = '4.3'
+__version__ = '4.3.1'
 __license__ = 'ISC'
 __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -87,7 +87,7 @@ class ProfileData:
         'K345': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
         'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8, (1236, 1500)),
         'KPW': ("Kindle Paperwhite", (758, 1024), Palette16, 1.8, (1137, 1536)),
-        'KV': ("Kindle Voyage", (1080, 1440), Palette16, 1.8, (1620, 2160)),
+        'KV': ("Kindle Voyage", (1072, 1448), Palette16, 1.8, (1608, 2172)),
         'KFHD': ("K. Fire HD", (800, 1280), PalleteNull, 1.0, (1200, 1920)),
         'KFHDX': ("K. Fire HDX", (1200, 1920), PalleteNull, 1.0, (1800, 2880)),
         'KFHDX8': ("K. Fire HDX 8.9", (1600, 2560), PalleteNull, 1.0, (2400, 3840)),

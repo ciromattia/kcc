@@ -14,7 +14,7 @@ if version_info[0] != 3:
     exit(1)
 
 NAME = "KindleComicConverter"
-VERSION = "4.3"
+VERSION = "4.3.1"
 MAIN = "kcc.py"
 
 if platform == "darwin":
@@ -47,7 +47,7 @@ if platform == "darwin":
                     ],
                     LSMinimumSystemVersion='10.8.0',
                     LSEnvironment=dict(
-                        PATH='/usr/local/bin:/usr/bin:/bin'
+                        PATH='./../Resources:/usr/local/bin:/usr/bin:/bin'
                     ),
                     NSHumanReadableCopyright='ISC License (ISCL)'
                 )
