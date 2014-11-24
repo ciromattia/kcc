@@ -29,7 +29,7 @@ from copy import copy
 from glob import glob
 from json import loads
 from urllib.request import Request, urlopen
-from re import split, sub, compile
+from re import split, sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp
@@ -678,11 +678,12 @@ def getComicInfo(path, originalPath):
             options.authors.sort()
         else:
             options.authors = ['KCC']
-        if len(xml.getElementsByTagName('ScanInformation')) != 0:
-            coverId = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
-            coverId = compile('(MCD\\()(\\d+)(\\))').search(coverId)
-            if coverId:
-                options.remoteCovers = getCoversFromMCB(coverId.group(2))
+        # Disabled due to closure of MCD
+        # if len(xml.getElementsByTagName('ScanInformation')) != 0:
+        #    coverId = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
+        #    coverId = compile('(MCD\\()(\\d+)(\\))').search(coverId)
+        #    if coverId:
+        #        options.remoteCovers = getCoversFromMCB(coverId.group(2))
         os.remove(xmlPath)
 
 
