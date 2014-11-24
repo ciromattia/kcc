@@ -377,6 +377,13 @@ The app relies and includes the following scripts:
 * Added missing features to CLI version
 * Other minor bug fixes
 
+####4.3.1:
+* Fixed Kindle Voyage profile
+* Fixed some bugs in OS X release
+* CLI version now support multiple input files at once
+* Disabled MCB support
+* Other minor tweaks
+
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
