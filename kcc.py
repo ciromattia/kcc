@@ -24,9 +24,30 @@ __copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jas
 __docformat__ = 'restructuredtext en'
 
 import sys
+import os
 if sys.version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
     exit(1)
+
+# OS specific PATH variable workarounds
+if sys.platform.startswith('darwin') and 'RESOURCEPATH' not in os.environ:
+    os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/:' + os.environ['PATH']
+elif sys.platform.startswith('win'):
+    if getattr(sys, 'frozen', False):
+        os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
+
+        # Implementing dummy stdout and stderr for frozen Windows release
+        class FakeSTD(object):
+            def write(self, string):
+                pass
+
+            def flush(self):
+                pass
+        sys.stdout = FakeSTD()
+        sys.stderr = FakeSTD()
+    else:
+        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/;' + os.environ['PATH']
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Dependency check
 missing = []
@@ -69,29 +90,8 @@ if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
     exit(1)
 
-import os
 from multiprocessing import freeze_support
 from kcc import KCC_gui
-
-# OS specific PATH variable workarounds
-if sys.platform.startswith('darwin') and 'RESOURCEPATH' not in os.environ:
-    os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/:' + os.environ['PATH']
-elif sys.platform.startswith('win'):
-    if getattr(sys, 'frozen', False):
-        os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
-
-        # Implementing dummy stdout and stderr for frozen Windows release
-        class FakeSTD(object):
-            def write(self, string):
-                pass
-
-            def flush(self):
-                pass
-        sys.stdout = FakeSTD()
-        sys.stderr = FakeSTD()
-    else:
-        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/;' + os.environ['PATH']
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Implementing detection of already running KCC instance and forwarding argv to it
