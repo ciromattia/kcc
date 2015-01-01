@@ -457,12 +457,6 @@
       <height>18</height>
      </size>
     </property>
-    <property name="verticalScrollMode">
-     <enum>QAbstractItemView::ScrollPerPixel</enum>
-    </property>
-    <property name="horizontalScrollMode">
-     <enum>QAbstractItemView::ScrollPerPixel</enum>
-    </property>
    </widget>
    <widget class="QPushButton" name="BasicModeButton">
     <property name="geometry">
