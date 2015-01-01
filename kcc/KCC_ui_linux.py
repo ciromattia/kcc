@@ -182,8 +182,6 @@ class Ui_KCC(object):
         self.JobList.setProperty("showDropIndicator", False)
         self.JobList.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.JobList.setIconSize(QtCore.QSize(18, 18))
-        self.JobList.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
-        self.JobList.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.JobList.setObjectName("JobList")
         self.BasicModeButton = QtWidgets.QPushButton(self.Form)
         self.BasicModeButton.setGeometry(QtCore.QRect(10, 10, 195, 32))

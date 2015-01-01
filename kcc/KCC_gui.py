@@ -525,6 +525,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 dname = dname.replace('/', '\\')
             self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
             GUI.JobList.addItem(dname)
+            GUI.JobList.scrollToBottom()
 
     def selectFile(self):
         if self.needClean:
@@ -550,6 +551,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                     fname = fname.replace('/', '\\')
                 self.lastPath = os.path.abspath(os.path.join(fname, os.pardir))
                 GUI.JobList.addItem(fname)
+                GUI.JobList.scrollToBottom()
 
     def clearJobs(self):
         GUI.JobList.clear()
@@ -954,10 +956,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
                     formats = ['.cbz', '.zip', '.pdf']
             if os.path.isdir(message):
                 GUI.JobList.addItem(message)
+                GUI.JobList.scrollToBottom()
             elif os.path.isfile(message):
                 extension = os.path.splitext(message)
                 if extension[1].lower() in formats:
                     GUI.JobList.addItem(message)
+                    GUI.JobList.scrollToBottom()
                 else:
                     self.addMessage('This file type is unsupported!', 'error')
 
