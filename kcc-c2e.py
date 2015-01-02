@@ -40,10 +40,10 @@ except ImportError:
 try:
     # noinspection PyUnresolvedReferences
     import PIL
-    if tuple(map(int, ('2.5.0'.split(".")))) > tuple(map(int, (PIL.PILLOW_VERSION.split(".")))):
-        missing.append('Pillow 2.5.0+')
+    if tuple(map(int, ('2.7.0'.split(".")))) > tuple(map(int, (PIL.PILLOW_VERSION.split(".")))):
+        missing.append('Pillow 2.7.0+')
 except ImportError:
-    missing.append('Pillow 2.5.0+')
+    missing.append('Pillow 2.7.0+')
 try:
     # noinspection PyUnresolvedReferences
     import slugify

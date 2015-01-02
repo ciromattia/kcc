@@ -144,14 +144,14 @@ class ComicPage:
                     if self.noVPV:
                         flags.append('NoVerticalPanelView')
                     if self.border:
-                        flags.append("Margins-" + str(self.border[0]) + "-" + str(self.border[1]) + "-"
-                                     + str(self.border[2]) + "-" + str(self.border[3]))
+                        flags.append('Margins-' + str(self.border[0]) + '-' + str(self.border[1]) + '-'
+                                     + str(self.border[2]) + '-' + str(self.border[3]))
                 if forcepng:
-                    filename += ".png"
-                    self.image.save(filename, "PNG", optimize=1)
+                    filename += '.png'
+                    self.image.save(filename, 'PNG', optimize=1)
                 else:
-                    filename += ".jpg"
-                    self.image.save(filename, "JPEG", optimize=1)
+                    filename += '.jpg'
+                    self.image.save(filename, 'JPEG', optimize=1, quality=80)
                 return [md5Checksum(filename), flags]
             else:
                 return None
@@ -243,7 +243,7 @@ class ComicPage:
             if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
                 method = Image.BICUBIC
             else:
-                method = Image.ANTIALIAS
+                method = Image.LANCZOS
             self.image = self.image.resize(size, method)
             return self.image
         # If image is smaller than target resolution and upscale is off - Just expand it by adding margins
@@ -269,7 +269,7 @@ class ComicPage:
         if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
             method = Image.BICUBIC
         else:
-            method = Image.ANTIALIAS
+            method = Image.LANCZOS
         self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
         return self.image
 
@@ -279,7 +279,7 @@ class ComicPage:
         # Only split if origin is not oriented the same as target
         if (width > height) != (dstwidth > dstheight):
             if rotate:
-                self.image = self.image.rotate(90)
+                self.image = self.image.rotate(90, Image.BICUBIC, True)
                 self.rotated = True
                 return None
             else:
@@ -292,9 +292,9 @@ class ComicPage:
                     # Source is portrait and target is landscape, so split by the height
                     leftbox = (0, 0, width, int(height / 2))
                     rightbox = (0, int(height / 2), width, height)
-                filename = os.path.splitext(self.filename)
-                fileone = targetdir + '/' + filename[0] + '-A' + filename[1]
-                filetwo = targetdir + '/' + filename[0] + '-B' + filename[1]
+                filename = os.path.splitext(self.filename)[0]
+                fileone = targetdir + '/' + filename + '-AAA.png'
+                filetwo = targetdir + '/' + filename + '-BBB.png'
                 try:
                     if righttoleft:
                         pageone = self.image.crop(rightbox)
@@ -302,8 +302,8 @@ class ComicPage:
                     else:
                         pageone = self.image.crop(leftbox)
                         pagetwo = self.image.crop(rightbox)
-                    pageone.save(fileone)
-                    pagetwo.save(filetwo)
+                    pageone.save(fileone, 'PNG', optimize=1)
+                    pagetwo.save(filetwo, 'PNG', optimize=1)
                 except IOError as e:
                     raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
                 return fileone, filetwo
@@ -498,7 +498,7 @@ class Cover:
 
     def processExternal(self):
         self.image = self.image.convert('RGB')
-        self.image.thumbnail(self.options.profileData[1], Image.ANTIALIAS)
+        self.image.thumbnail(self.options.profileData[1], Image.LANCZOS)
         self.save(True)
 
     def trim(self):
@@ -520,6 +520,6 @@ class Cover:
             if os.path.splitext(source)[1].lower() == '.png':
                 self.image.save(self.target, "PNG", optimize=1)
             else:
-                self.image.save(self.target, "JPEG", optimize=1)
+                self.image.save(self.target, "JPEG", optimize=1, quality=80)
         except IOError:
             raise RuntimeError('Failed to save cover')

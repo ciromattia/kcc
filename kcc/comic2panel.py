@@ -77,7 +77,7 @@ def mergeDirectory(work):
                 y += img.size[1]
                 os.remove(i)
             savePath = os.path.split(imagesClear[0])
-            result.save(os.path.join(savePath[0], os.path.splitext(savePath[1])[0] + '.png'), 'PNG')
+            result.save(os.path.join(savePath[0], os.path.splitext(savePath[1])[0] + '.png'), 'PNG', optimize=1)
     except Exception:
         return str(sys.exc_info()[1])
 
@@ -165,7 +165,7 @@ def splitImage(work):
                         panels.append(panel)
             if opt.debug:
                 # noinspection PyUnboundLocalVariable
-                debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG')
+                debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG', optimize=1)
 
             # Create virtual pages
             pages = []
@@ -200,7 +200,7 @@ def splitImage(work):
                         newPage.paste(panelImg, (0, targetHeight))
                         targetHeight += panels[panel][2]
                     newPage.save(os.path.join(path, fileExpanded[0] + '-' +
-                                              str(pageNumber) + '.png'), 'PNG')
+                                              str(pageNumber) + '.png'), 'PNG', optimize=1)
                     pageNumber += 1
             os.remove(filePath)
     except Exception:
