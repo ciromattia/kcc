@@ -25,17 +25,11 @@ from hashlib import md5
 
 
 def getImageFileName(imgfile):
-    filename = os.path.splitext(imgfile)
-    if filename[0].startswith('.') or\
-            (filename[1].lower() != '.png' and
-             filename[1].lower() != '.jpg' and
-             filename[1].lower() != '.gif' and
-             filename[1].lower() != '.tif' and
-             filename[1].lower() != '.tiff' and
-             filename[1].lower() != '.bmp' and
-             filename[1].lower() != '.jpeg'):
+    name, ext = os.path.splitext(imgfile)
+    ext = ext.lower()
+    if name.startswith('.') or (ext != '.png' and ext != '.jpg' and ext != '.jpeg' and ext != '.gif'):
         return None
-    return filename
+    return [name, ext]
 
 
 def walkLevel(some_dir, level=1):

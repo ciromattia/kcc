@@ -552,7 +552,7 @@ def imgFileProcessing(work):
             if opt.quality == 2:
                 img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData, img.fill)
                 if img.rotated:
-                    img2.image = img2.image.rotate(90)
+                    img2.image = img2.image.rotate(90, Image.BICUBIC, True)
                     img2.rotated = True
                 imgOptimization(img2, opt, img)
                 output.append(img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
