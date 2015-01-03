@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2015 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -20,7 +20,7 @@
 
 __version__ = '4.3.1'
 __license__ = 'ISC'
-__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
+__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
 
 import sys
@@ -28,39 +28,8 @@ if sys.version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
     exit(1)
 
-# Dependency check
-missing = []
-try:
-    # noinspection PyUnresolvedReferences
-    import psutil
-    if tuple(map(int, ('2.0.0'.split(".")))) > tuple(map(int, psutil.version_info)):
-        missing.append('psutil 2.0.0+')
-except ImportError:
-    missing.append('psutil 2.0.0+')
-try:
-    # noinspection PyUnresolvedReferences
-    import PIL
-    if tuple(map(int, ('2.7.0'.split(".")))) > tuple(map(int, (PIL.PILLOW_VERSION.split(".")))):
-        missing.append('Pillow 2.7.0+')
-except ImportError:
-    missing.append('Pillow 2.7.0+')
-try:
-    # noinspection PyUnresolvedReferences
-    import slugify
-except ImportError:
-    missing.append('python-slugify')
-if len(missing) > 0:
-    try:
-        # noinspection PyUnresolvedReferences
-        import tkinter
-        # noinspection PyUnresolvedReferences
-        import tkinter.messagebox
-        importRoot = tkinter.Tk()
-        importRoot.withdraw()
-        tkinter.messagebox.showerror('KCC - Error', 'ERROR: ' + ', '.join(missing) + ' is not installed!')
-    except ImportError:
-        print('ERROR: ' + ', '.join(missing) + ' is not installed!')
-    exit(1)
+from kcc.shared import dependencyCheck
+dependencyCheck(2)
 
 from multiprocessing import freeze_support
 from kcc.comic2ebook import main

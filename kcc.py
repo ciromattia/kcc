@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2015 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -20,16 +20,16 @@
 
 __version__ = '4.3.1'
 __license__ = 'ISC'
-__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
+__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
 
 import sys
-import os
 if sys.version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
     exit(1)
 
 # OS specific PATH variable workarounds
+import os
 if sys.platform.startswith('darwin') and 'RESOURCEPATH' not in os.environ:
     os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/:' + os.environ['PATH']
 elif sys.platform.startswith('win'):
@@ -49,123 +49,23 @@ elif sys.platform.startswith('win'):
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/;' + os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-# Dependency check
-missing = []
-try:
-    # noinspection PyUnresolvedReferences
-    from PyQt5 import QtCore, QtNetwork, QtWidgets
-    if tuple(map(int, ('5.2.0'.split(".")))) > tuple(map(int, (QtCore.qVersion().split(".")))):
-        missing.append('PyQt5 5.2.0+')
-except ImportError:
-    missing.append('PyQt5 5.2.0+')
-try:
-    # noinspection PyUnresolvedReferences
-    import psutil
-    if tuple(map(int, ('2.0.0'.split(".")))) > tuple(map(int, psutil.version_info)):
-        missing.append('psutil 2.0.0+')
-except ImportError:
-    missing.append('psutil 2.0.0+')
-try:
-    # noinspection PyUnresolvedReferences
-    import PIL
-    if tuple(map(int, ('2.7.0'.split(".")))) > tuple(map(int, (PIL.PILLOW_VERSION.split(".")))):
-        missing.append('Pillow 2.7.0+')
-except ImportError:
-    missing.append('Pillow 2.7.0+')
-try:
-    # noinspection PyUnresolvedReferences
-    import slugify
-except ImportError:
-    missing.append('python-slugify')
-if len(missing) > 0:
-    try:
-        # noinspection PyUnresolvedReferences
-        import tkinter
-        # noinspection PyUnresolvedReferences
-        import tkinter.messagebox
-        importRoot = tkinter.Tk()
-        importRoot.withdraw()
-        tkinter.messagebox.showerror('KCC - Error', 'ERROR: ' + ', '.join(missing) + ' is not installed!')
-    except ImportError:
-        print('ERROR: ' + ', '.join(missing) + ' is not installed!')
-    exit(1)
+from kcc.shared import dependencyCheck
+dependencyCheck(3)
 
 from multiprocessing import freeze_support
 from kcc import KCC_gui
 
-
-# Implementing detection of already running KCC instance and forwarding argv to it
-class QApplicationMessaging(QtWidgets.QApplication):
-    messageFromOtherInstance = QtCore.pyqtSignal(bytes)
-
-    def __init__(self, argv):
-        QtWidgets.QApplication.__init__(self, argv)
-        self._key = 'KCC'
-        self._timeout = 1000
-        self._locked = False
-        socket = QtNetwork.QLocalSocket(self)
-        socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
-        if not socket.waitForConnected(self._timeout):
-            self._server = QtNetwork.QLocalServer(self)
-            # noinspection PyUnresolvedReferences
-            self._server.newConnection.connect(self.handleMessage)
-            self._server.listen(self._key)
-        else:
-            self._locked = True
-        socket.disconnectFromServer()
-
-    def __del__(self):
-        if not self._locked:
-            self._server.close()
-
-    def event(self, e):
-        if e.type() == QtCore.QEvent.FileOpen:
-            self.messageFromOtherInstance.emit(bytes(e.file(), 'UTF-8'))
-            return True
-        else:
-            return QtWidgets.QApplication.event(self, e)
-
-    def isRunning(self):
-        return self._locked
-
-    def handleMessage(self):
-        socket = self._server.nextPendingConnection()
-        if socket.waitForReadyRead(self._timeout):
-            self.messageFromOtherInstance.emit(socket.readAll().data())
-
-    def sendMessage(self, message):
-        socket = QtNetwork.QLocalSocket(self)
-        socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
-        socket.waitForConnected(self._timeout)
-        socket.write(bytes(message, 'UTF-8'))
-        socket.waitForBytesWritten(self._timeout)
-        socket.disconnectFromServer()
-
-
-# Adding signals to QMainWindow
-class QMainWindowKCC(QtWidgets.QMainWindow):
-    progressBarTick = QtCore.pyqtSignal(str)
-    modeConvert = QtCore.pyqtSignal(int)
-    addMessage = QtCore.pyqtSignal(str, str, bool)
-    addTrayMessage = QtCore.pyqtSignal(str, str)
-    showDialog = QtCore.pyqtSignal(str, str)
-    hideProgressBar = QtCore.pyqtSignal()
-    forceShutdown = QtCore.pyqtSignal()
-    dialogAnswer = QtCore.pyqtSignal(int)
-
-
 if __name__ == "__main__":
     freeze_support()
-    KCCAplication = QApplicationMessaging(sys.argv)
+    KCCAplication = KCC_gui.QApplicationMessaging(sys.argv)
     if KCCAplication.isRunning():
         if len(sys.argv) > 1:
             KCCAplication.sendMessage(sys.argv[1])
-            sys.exit(0)
         else:
             KCCAplication.sendMessage('ARISE')
-            sys.exit(0)
-    KCCWindow = QMainWindowKCC()
-    KCCUI = KCC_gui.KCCGUI(KCCAplication, KCCWindow)
-    if len(sys.argv) > 1:
-        KCCUI.handleMessage(sys.argv[1])
-    sys.exit(KCCAplication.exec_())
+    else:
+        KCCWindow = KCC_gui.QMainWindowKCC()
+        KCCUI = KCC_gui.KCCGUI(KCCAplication, KCCWindow)
+        if len(sys.argv) > 1:
+            KCCUI.handleMessage(sys.argv[1])
+        sys.exit(KCCAplication.exec_())
