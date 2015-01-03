@@ -27,6 +27,7 @@ from subprocess import STDOUT, PIPE
 from psutil import Popen
 from shutil import move, copy
 from . import rarfile
+from .shared import check7ZFile as is_7zfile
 
 
 class CBxArchive:
@@ -36,7 +37,7 @@ class CBxArchive:
             self.compressor = 'zip'
         elif rarfile.is_rarfile(origFileName):
             self.compressor = 'rar'
-        elif origFileName.endswith('.7z') or origFileName.endswith('.cb7'):
+        elif is_7zfile(origFileName):
             self.compressor = '7z'
         else:
             self.compressor = None

@@ -52,3 +52,9 @@ def md5Checksum(filePath):
                 break
             m.update(data)
         return m.hexdigest()
+
+
+def check7ZFile(filePath):
+    with open(filePath, 'rb') as fh:
+        header = fh.read(6)
+    return header == b"7z\xbc\xaf'\x1c"
