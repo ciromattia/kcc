@@ -28,7 +28,7 @@ import sys
 from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
-from PIL import Image, ImageStat
+from PIL import Image, ImageStat, ImageOps
 from .shared import getImageFileName, walkLevel
 try:
     from PyQt5 import QtCore
@@ -50,9 +50,9 @@ def mergeDirectory(work):
     try:
         directory = work[0]
         images = []
-        imagesClear = []
+        imagesValid = []
         sizes = []
-        h = 0
+        targetHeight = 0
         for root, dirs, files in walkLevel(directory, 0):
             for name in files:
                 if getImageFileName(name) is not None:
@@ -60,31 +60,34 @@ def mergeDirectory(work):
                     images.append([os.path.join(root, name), i.size[0], i.size[1]])
                     sizes.append(i.size[0])
         if len(images) > 0:
-            mw = max(set(sizes), key=sizes.count)
+            targetWidth = max(set(sizes), key=sizes.count)
             for i in images:
-                if i[1] == mw:
-                    h += i[2]
-                    imagesClear.append(i[0])
+                if i[1] <= targetWidth:
+                    targetHeight += i[2]
+                    imagesValid.append(i[0])
             # Silently drop directories that contain too many images
-            if h > 262144:
+            # 131072 = GIMP_MAX_IMAGE_SIZE / 4
+            if targetHeight > 131072:
                 return None
-            result = Image.new('RGB', (mw, h))
+            result = Image.new('RGB', (targetWidth, targetHeight))
             y = 0
-            for i in imagesClear:
+            for i in imagesValid:
                 img = Image.open(i)
                 img = img.convert('RGB')
+                if img.size[0] < targetWidth:
+                    img = ImageOps.fit(img, (targetWidth, img.size[1]), method=Image.BICUBIC, centering=(0.5, 0.5))
                 result.paste(img, (0, y))
                 y += img.size[1]
                 os.remove(i)
-            savePath = os.path.split(imagesClear[0])
-            result.save(os.path.join(savePath[0], os.path.splitext(savePath[1])[0] + '.png'), 'PNG', optimize=1)
+            savePath = os.path.split(imagesValid[0])
+            result.save(os.path.join(savePath[0], os.path.splitext(savePath[1])[0] + '.png'), 'PNG')
     except Exception:
         return str(sys.exc_info()[1])
 
 
 def sanitizePanelSize(panel, opt):
     newPanels = []
-    if panel[2] > 8 * opt.height:
+    if panel[2] > 6 * opt.height:
         diff = int(panel[2] / 8)
         newPanels.append([panel[0], panel[1] - diff*7, diff])
         newPanels.append([panel[1] - diff*7, panel[1] - diff*6, diff])
@@ -94,13 +97,13 @@ def sanitizePanelSize(panel, opt):
         newPanels.append([panel[1] - diff*3, panel[1] - diff*2, diff])
         newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
         newPanels.append([panel[1] - diff, panel[1], diff])
-    elif panel[2] > 4 * opt.height:
+    elif panel[2] > 3 * opt.height:
         diff = int(panel[2] / 4)
         newPanels.append([panel[0], panel[1] - diff*3, diff])
         newPanels.append([panel[1] - diff*3, panel[1] - diff*2, diff])
         newPanels.append([panel[1] - diff*2, panel[1] - diff, diff])
         newPanels.append([panel[1] - diff, panel[1], diff])
-    elif panel[2] > 2 * opt.height:
+    elif panel[2] > 1.5 * opt.height:
         newPanels.append([panel[0], panel[1] - int(panel[2] / 2), int(panel[2] / 2)])
         newPanels.append([panel[1] - int(panel[2] / 2), panel[1], int(panel[2] / 2)])
     else:
@@ -165,7 +168,7 @@ def splitImage(work):
                         panels.append(panel)
             if opt.debug:
                 # noinspection PyUnboundLocalVariable
-                debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG', optimize=1)
+                debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG')
 
             # Create virtual pages
             pages = []
@@ -199,8 +202,7 @@ def splitImage(work):
                         panelImg = image.crop([0, panels[panel][0], widthImg, panels[panel][1]])
                         newPage.paste(panelImg, (0, targetHeight))
                         targetHeight += panels[panel][2]
-                    newPage.save(os.path.join(path, fileExpanded[0] + '-' +
-                                              str(pageNumber) + '.png'), 'PNG', optimize=1)
+                    newPage.save(os.path.join(path, fileExpanded[0] + '-' + str(pageNumber) + '.png'), 'PNG')
                     pageNumber += 1
             os.remove(filePath)
     except Exception:

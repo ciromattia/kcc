@@ -824,11 +824,15 @@ def splitProcess(path, mode):
     output = []
     currentSize = 0
     currentTarget = path
+    if options.webtoon:
+        targetSize = 104857600
+    else:
+        targetSize = 419430400
     if mode == 0:
         for root, dirs, files in walkLevel(path, 0):
             for name in files:
                 size = os.path.getsize(os.path.join(root, name))
-                if currentSize + size > 419430400:
+                if currentSize + size > targetSize:
                     currentTarget, pathRoot = createNewTome()
                     output.append(pathRoot)
                     currentSize = size
@@ -840,7 +844,7 @@ def splitProcess(path, mode):
         for root, dirs, files in walkLevel(path, 0):
             for name in dirs:
                 size = getDirectorySize(os.path.join(root, name))
-                if currentSize + size > 419430400:
+                if currentSize + size > targetSize:
                     currentTarget, pathRoot = createNewTome()
                     output.append(pathRoot)
                     currentSize = size
@@ -854,7 +858,7 @@ def splitProcess(path, mode):
             for name in dirs:
                 size = getDirectorySize(os.path.join(root, name))
                 currentSize = 0
-                if size > 419430400:
+                if size > targetSize:
                     if not firstTome:
                         currentTarget, pathRoot = createNewTome()
                         output.append(pathRoot)
@@ -863,7 +867,7 @@ def splitProcess(path, mode):
                     for rootInside, dirsInside, filesInside in walkLevel(os.path.join(root, name), 0):
                         for nameInside in dirsInside:
                             size = getDirectorySize(os.path.join(rootInside, nameInside))
-                            if currentSize + size > 419430400:
+                            if currentSize + size > targetSize:
                                 currentTarget, pathRoot = createNewTome()
                                 output.append(pathRoot)
                                 currentSize = size
