@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'KCC-Linux.ui'
 #
-# Created: Sun May 18 09:08:37 2014
-#      by: PyQt5 UI code generator 5.2.1
+# Created: Sun Jan  4 10:06:14 2015
+#      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -179,6 +179,7 @@ class Ui_KCC(object):
         self.JobList.setFont(font)
         self.JobList.setFocusPolicy(QtCore.Qt.NoFocus)
         self.JobList.setStyleSheet("QListWidget#JobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;}QScrollBar:vertical{border:1px solid #999;background:#FFF;width:5px;margin:0}QScrollBar::handle:vertical{background:DarkGray;min-height:0}QScrollBar::add-line:vertical{height:0;background:DarkGray;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:vertical{height:0;background:DarkGray;subcontrol-position:top;subcontrol-origin:margin}QScrollBar:horizontal{border:1px solid #999;background:#FFF;height:5px;margin:0}QScrollBar::handle:horizontal{background:DarkGray;min-width:0}QScrollBar::add-line:horizontal{width:0;background:DarkGray;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:horizontal{width:0;background:DarkGray;subcontrol-position:top;subcontrol-origin:margin}")
+        self.JobList.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.JobList.setProperty("showDropIndicator", False)
         self.JobList.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.JobList.setIconSize(QtCore.QSize(18, 18))
@@ -329,28 +330,30 @@ class Ui_KCC(object):
     def retranslateUi(self, KCC):
         _translate = QtCore.QCoreApplication.translate
         KCC.setWindowTitle(_translate("KCC", "Kindle Comic Converter"))
-        self.ProcessingBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Disable image optimizations.<br/>Input images must be already resized.</p></body></html>"))
+        self.ProcessingBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Disable image optimizations.<br/><span style=\" font-weight:600;\">Input images must be already resized.</span></p></body></html>"))
         self.ProcessingBox.setText(_translate("KCC", "No optimisation"))
         self.UpscaleBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>"))
         self.UpscaleBox.setText(_translate("KCC", "Stretch/Upscale"))
-        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p>Enable auto-splitting of webtoons like <span style=\" font-style:italic;\">Tower of God</span> or <span style=\" font-style:italic;\">Noblesse</span>.<br/>This mode was created for pages with a low width, high height and vertical panel flow.</p></body></html>"))
+        self.WebtoonBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Enable special parsing mode for WebToons.</p></body></html>"))
         self.WebtoonBox.setText(_translate("KCC", "Webtoon mode"))
         self.NoDitheringBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Create PNG files instead JPEG.<br/>Quality increase is not noticeable on most of devices.<br/>Output files <span style=\" font-weight:600;\">might</span> be smaller.<br/><span style=\" font-weight:600;\">MOBI conversion will be much slower.</span></p></body></html>"))
         self.NoDitheringBox.setText(_translate("KCC", "PNG output"))
         self.BorderBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Autodetection<br/></span>Color of margins fill will be detected automatically.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - White<br/></span>Margins will be filled with white color.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Black<br/></span>Margins will be filled with black color.</p></body></html>"))
         self.BorderBox.setText(_translate("KCC", "W/B margins"))
-        self.NoRotateBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Disable splitting and rotation.</p></body></html>"))
+        self.NoRotateBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Disable page splitting and rotation.</p></body></html>"))
         self.NoRotateBox.setText(_translate("KCC", "No split/rotate"))
         self.DeviceBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Target device.</p></body></html>"))
         self.FormatBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Output format.</p></body></html>"))
-        self.ConvertButton.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Shift+Click to select the output directory.</p></body></html>"))
+        self.ConvertButton.setToolTip(_translate("KCC", "<html><head/><body><p  style=\'white-space:pre\'>Shift+Click to select the output directory.</p></body></html>"))
         self.ConvertButton.setText(_translate("KCC", "Convert"))
+        self.DirectoryButton.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Add directory containing JPG, PNG or GIF files to queue.<br/><span style=\" font-weight:600;\">CBR, CBZ and CB7 files inside will not be processed!</span></p></body></html>"))
         self.DirectoryButton.setText(_translate("KCC", "Add directory"))
+        self.FileButton.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Add CBR, CBZ, CB7 or PDF file to queue.</p></body></html>"))
         self.FileButton.setText(_translate("KCC", "Add file"))
         self.ClearButton.setText(_translate("KCC", "Clear list"))
         self.MangaBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Enable right-to-left reading.</p></body></html>"))
         self.MangaBox.setText(_translate("KCC", "Manga mode"))
-        self.QualityBox.setToolTip(_translate("KCC", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Normal quality mode</span><br/>Maximal quality of images but very poor magnification quality.<br/>Use it only when zoom is not needed or output files needs to be small.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - High quality mode</span><br/>In most cases high quality of images and magnification.<br/>Overall quality highly depends on the resolution of source files.<br/>On Kindle models older than Paperwhite non-zoomed images might be a little blurred.<br/><br/><span style=\" font-weight:600; text-decoration: underline;\">Checked - Ultra quality mode</span><br/>Highest possible quality. Output files will be big.</p></body></html>"))
+        self.QualityBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Quality of Panel View/zoom. Highly impact size of output file.<br/><span style=\" font-weight:600;\">This option control only quality of magnification!</span></p></body></html>"))
         self.QualityBox.setText(_translate("KCC", "High/Ultra quality"))
         self.RotateBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Disable splitting of two-page spreads.<br/>They will be rotated instead.</p></body></html>"))
         self.RotateBox.setText(_translate("KCC", "Horizontal mode"))
@@ -359,13 +362,13 @@ class Ui_KCC(object):
         self.GammaLabel.setText(_translate("KCC", "Gamma: Auto"))
         self.ColorBox.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Don\'t convert images to grayscale.</p></body></html>"))
         self.ColorBox.setText(_translate("KCC", "Color mode"))
-        self.wLabel.setToolTip(_translate("KCC", "<html><head/><body><p>Resolution of target device.</p></body></html>"))
+        self.wLabel.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Resolution of target device.</p></body></html>"))
         self.wLabel.setText(_translate("KCC", "Custom width: "))
-        self.customWidth.setToolTip(_translate("KCC", "<html><head/><body><p>Resolution of target device.</p></body></html>"))
+        self.customWidth.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Resolution of target device.</p></body></html>"))
         self.customWidth.setInputMask(_translate("KCC", "0000"))
-        self.hLabel.setToolTip(_translate("KCC", "<html><head/><body><p>Resolution of target device.</p></body></html>"))
+        self.hLabel.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Resolution of target device.</p></body></html>"))
         self.hLabel.setText(_translate("KCC", "Custom height: "))
-        self.customHeight.setToolTip(_translate("KCC", "<html><head/><body><p>Resolution of target device.</p></body></html>"))
+        self.customHeight.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Resolution of target device.</p></body></html>"))
         self.customHeight.setInputMask(_translate("KCC", "0000"))
         self.ActionBasic.setText(_translate("KCC", "Basic"))
         self.ActionAdvanced.setText(_translate("KCC", "Advanced"))

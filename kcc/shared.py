@@ -1,5 +1,5 @@
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2015 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -17,25 +17,35 @@
 #
 
 __license__ = 'ISC'
-__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
+__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
 
 import os
 from hashlib import md5
+from html.parser import HTMLParser
+
+
+class HTMLStripper(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.reset()
+        self.strict = False
+        self.convert_charrefs = True
+        self.fed = []
+
+    def handle_data(self, d):
+        self.fed.append(d)
+
+    def get_data(self):
+        return ''.join(self.fed)
 
 
 def getImageFileName(imgfile):
-    filename = os.path.splitext(imgfile)
-    if filename[0].startswith('.') or\
-            (filename[1].lower() != '.png' and
-             filename[1].lower() != '.jpg' and
-             filename[1].lower() != '.gif' and
-             filename[1].lower() != '.tif' and
-             filename[1].lower() != '.tiff' and
-             filename[1].lower() != '.bmp' and
-             filename[1].lower() != '.jpeg'):
+    name, ext = os.path.splitext(imgfile)
+    ext = ext.lower()
+    if name.startswith('.') or (ext != '.png' and ext != '.jpg' and ext != '.jpeg' and ext != '.gif'):
         return None
-    return filename
+    return [name, ext]
 
 
 def walkLevel(some_dir, level=1):
@@ -58,3 +68,48 @@ def md5Checksum(filePath):
                 break
             m.update(data)
         return m.hexdigest()
+
+
+def check7ZFile(filePath):
+    with open(filePath, 'rb') as fh:
+        header = fh.read(6)
+    return header == b"7z\xbc\xaf'\x1c"
+
+
+# noinspection PyUnresolvedReferences
+def dependencyCheck(level):
+    missing = []
+    if level > 2:
+        try:
+            from PyQt5 import QtCore, QtNetwork, QtWidgets
+            if tuple(map(int, ('5.2.0'.split(".")))) > tuple(map(int, (QtCore.qVersion().split(".")))):
+                missing.append('PyQt5 5.2.0+')
+        except ImportError:
+            missing.append('PyQt5 5.2.0+')
+    if level > 1:
+        try:
+            import psutil
+            if tuple(map(int, ('2.0.0'.split(".")))) > tuple(map(int, psutil.version_info)):
+                missing.append('psutil 2.0.0+')
+        except ImportError:
+            missing.append('psutil 2.0.0+')
+        try:
+            import slugify
+        except ImportError:
+            missing.append('python-slugify')
+    try:
+        import PIL
+        if tuple(map(int, ('2.7.0'.split(".")))) > tuple(map(int, (PIL.PILLOW_VERSION.split(".")))):
+            missing.append('Pillow 2.7.0+')
+    except ImportError:
+        missing.append('Pillow 2.7.0+')
+    if len(missing) > 0:
+        try:
+            import tkinter
+            import tkinter.messagebox
+            importRoot = tkinter.Tk()
+            importRoot.withdraw()
+            tkinter.messagebox.showerror('KCC - Error', 'ERROR: ' + ', '.join(missing) + ' is not installed!')
+        except ImportError:
+            print('ERROR: ' + ', '.join(missing) + ' is not installed!')
+        exit(1)

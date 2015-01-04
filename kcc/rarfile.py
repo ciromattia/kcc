@@ -1,6 +1,6 @@
 # rarfile.py
 #
-# Copyright (c) 2005-2013  Marko Kreen <markokr@gmail.com>
+# Copyright (c) 2005-2014  Marko Kreen <markokr@gmail.com>
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -74,7 +74,7 @@ For more details, refer to source.
 
 """
 
-__version__ = '2.6'
+__version__ = '2.7-kcc'
 
 # export only interesting items
 __all__ = ['is_rarfile', 'RarInfo', 'RarFile', 'RarExtFile']
@@ -196,7 +196,7 @@ ALT_TEST_ARGS = ('-t', '-f')
 ALT_CHECK_ARGS = ('--help',)
 
 #: whether to speed up decompression by using tmp archive
-USE_EXTRACT_HACK = 1
+USE_EXTRACT_HACK = 0
 
 #: limit the filesize for tmp archive usage
 HACK_SIZE_LIMIT = 20*1024*1024
@@ -295,6 +295,7 @@ RAR_M5 = 0x35
 ##
 
 RAR_ID = bytes("Rar!\x1a\x07\x00", 'ascii')
+RAR5_ID = bytes("Rar!\x1a\x07\x01", 'ascii')
 ZERO = bytes("\0", 'ascii')
 EMPTY = bytes("", 'ascii')
 
@@ -362,7 +363,10 @@ def is_rarfile(xfile):
     fd = XFile(xfile)
     buf = fd.read(len(RAR_ID))
     fd.close()
-    return buf == RAR_ID
+    if buf == RAR_ID or buf == RAR5_ID:
+        return True
+    else:
+        return False
 
 
 class RarInfo(object):
@@ -785,7 +789,7 @@ class RarFile(object):
         fd = XFile(self.rarfile)
         self._fd = fd
         id = fd.read(len(RAR_ID))
-        if id != RAR_ID:
+        if id != RAR_ID and id != RAR5_ID:
             raise NotRarFile("Not a Rar archive: "+self.rarfile)
 
         volume = 0  # first vol (.rar) is 0
