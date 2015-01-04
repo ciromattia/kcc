@@ -30,8 +30,11 @@ if sys.version_info[0] != 3:
 
 # OS specific PATH variable workarounds
 import os
-if sys.platform.startswith('darwin') and 'RESOURCEPATH' not in os.environ:
-    os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/:' + os.environ['PATH']
+if sys.platform.startswith('darwin'):
+    if 'RESOURCEPATH' not in os.environ:
+        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/:' + os.environ['PATH']
+    else:
+        os.environ['PATH'] = './../Resources:/usr/local/bin:/usr/bin:/bin'
 elif sys.platform.startswith('win'):
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
