@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2015 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -17,9 +17,9 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '4.3.1'
+__version__ = '4.4'
 __license__ = 'ISC'
-__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
+__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
 
 import os
@@ -33,12 +33,11 @@ from shutil import move
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 from subprocess import STDOUT, PIPE
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.dom.minidom import parse
-from html.parser import HTMLParser
 from psutil import Popen, Process
 from copy import copy
-from .shared import md5Checksum
+from .shared import md5Checksum, HTMLStripper
 from . import comic2ebook
 from . import KCC_rc_web
 if sys.platform.startswith('darwin'):
@@ -47,6 +46,64 @@ elif sys.platform.startswith('linux'):
     from . import KCC_ui_linux as KCC_ui
 else:
     from . import KCC_ui
+
+
+class QApplicationMessaging(QtWidgets.QApplication):
+    messageFromOtherInstance = QtCore.pyqtSignal(bytes)
+
+    def __init__(self, argv):
+        QtWidgets.QApplication.__init__(self, argv)
+        self._key = 'KCC'
+        self._timeout = 1000
+        self._locked = False
+        socket = QtNetwork.QLocalSocket(self)
+        socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
+        if not socket.waitForConnected(self._timeout):
+            self._server = QtNetwork.QLocalServer(self)
+            # noinspection PyUnresolvedReferences
+            self._server.newConnection.connect(self.handleMessage)
+            self._server.listen(self._key)
+        else:
+            self._locked = True
+        socket.disconnectFromServer()
+
+    def __del__(self):
+        if not self._locked:
+            self._server.close()
+
+    def event(self, e):
+        if e.type() == QtCore.QEvent.FileOpen:
+            self.messageFromOtherInstance.emit(bytes(e.file(), 'UTF-8'))
+            return True
+        else:
+            return QtWidgets.QApplication.event(self, e)
+
+    def isRunning(self):
+        return self._locked
+
+    def handleMessage(self):
+        socket = self._server.nextPendingConnection()
+        if socket.waitForReadyRead(self._timeout):
+            self.messageFromOtherInstance.emit(socket.readAll().data())
+
+    def sendMessage(self, message):
+        socket = QtNetwork.QLocalSocket(self)
+        socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
+        socket.waitForConnected(self._timeout)
+        socket.write(bytes(message, 'UTF-8'))
+        socket.waitForBytesWritten(self._timeout)
+        socket.disconnectFromServer()
+
+
+class QMainWindowKCC(QtWidgets.QMainWindow):
+    progressBarTick = QtCore.pyqtSignal(str)
+    modeConvert = QtCore.pyqtSignal(int)
+    addMessage = QtCore.pyqtSignal(str, str, bool)
+    addTrayMessage = QtCore.pyqtSignal(str, str)
+    showDialog = QtCore.pyqtSignal(str, str)
+    hideProgressBar = QtCore.pyqtSignal()
+    forceShutdown = QtCore.pyqtSignal()
+    dialogAnswer = QtCore.pyqtSignal(int)
 
 
 class Icons:
@@ -74,19 +131,6 @@ class Icons:
 
         self.programIcon = QtGui.QIcon()
         self.programIcon.addPixmap(QtGui.QPixmap(":/Icon/icons/comic2ebook.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-
-
-class HTMLStripper(HTMLParser):
-    def __init__(self):
-        HTMLParser.__init__(self)
-        self.reset()
-        self.fed = []
-
-    def handle_data(self, d):
-        self.fed.append(d)
-
-    def get_data(self):
-        return ''.join(self.fed)
 
 
 class WebServerHandler(BaseHTTPRequestHandler):
@@ -525,6 +569,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 dname = dname.replace('/', '\\')
             self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
             GUI.JobList.addItem(dname)
+            GUI.JobList.scrollToBottom()
 
     def selectFile(self):
         if self.needClean:
@@ -550,6 +595,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                     fname = fname.replace('/', '\\')
                 self.lastPath = os.path.abspath(os.path.join(fname, os.pardir))
                 GUI.JobList.addItem(fname)
+                GUI.JobList.scrollToBottom()
 
     def clearJobs(self):
         GUI.JobList.clear()
@@ -885,15 +931,19 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 self.addMessage('Target resolution is not set!', 'error')
                 self.needClean = True
                 return
-            if str(GUI.FormatBox.currentText()) == 'MOBI' and not GUI.KindleGen:
-                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
-                                '<b>KindleGen</b></a>! MOBI conversion is not possible!', 'error')
-                if sys.platform.startswith('win'):
-                    self.addMessage('Download it and place EXE in KCC directory.', 'error')
-                else:
-                    self.addMessage('Download it, and place executable in /usr/local/bin directory.', 'error')
-                self.needClean = True
-                return
+            if str(GUI.FormatBox.currentText()) == 'MOBI' and not self.KindleGen:
+                self.detectKindleGen()
+                if not self.KindleGen:
+                    GUI.JobList.clear()
+                    self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html'
+                                    '?ie=UTF8&docId=1000765211"><b>KindleGen</b></a>!'
+                                    ' MOBI conversion is unavailable!', 'error')
+                    if sys.platform.startswith('win'):
+                        self.addMessage('Download it and place EXE in KCC directory.', 'error')
+                    else:
+                        self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
+                    self.needClean = True
+                    return
             self.worker.start()
 
     def hideProgressBar(self):
@@ -954,10 +1004,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
                     formats = ['.cbz', '.zip', '.pdf']
             if os.path.isdir(message):
                 GUI.JobList.addItem(message)
+                GUI.JobList.scrollToBottom()
             elif os.path.isfile(message):
                 extension = os.path.splitext(message)
                 if extension[1].lower() in formats:
                     GUI.JobList.addItem(message)
+                    GUI.JobList.scrollToBottom()
                 else:
                     self.addMessage('This file type is unsupported!', 'error')
 
@@ -978,6 +1030,36 @@ class KCCGUI(KCC_ui.Ui_KCC):
     def forceShutdown(self):
         self.saveSettings(None)
         sys.exit(0)
+
+    def detectKindleGen(self, startup=False):
+        if not sys.platform.startswith('win'):
+            try:
+                os.chmod('/usr/local/bin/kindlegen', 0o755)
+            except Exception:
+                pass
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+        if kindleGenExitCode.wait() == 0:
+            self.KindleGen = True
+            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+            for line in versionCheck.stdout:
+                line = line.decode("utf-8")
+                if 'Amazon kindlegen' in line:
+                    versionCheck = line.split('V')[1].split(' ')[0]
+                    if tuple(map(int, (versionCheck.split(".")))) < tuple(map(int, ('2.9'.split(".")))):
+                        self.addMessage('Your <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
+                                        '1000765211">KindleGen</a> is outdated! Creating MOBI might fail.'
+                                        ' Please update <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
+                                        '1000765211">KindleGen</a> from Amazon\'s website.', 'warning')
+                    break
+        else:
+            self.KindleGen = False
+            if startup:
+                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
+                                '<b>KindleGen</b></a>! MOBI conversion will be unavailable!', 'error')
+                if sys.platform.startswith('win'):
+                    self.addMessage('Download it and place EXE in KCC directory.', 'error')
+                else:
+                    self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
 
     # noinspection PyArgumentList
     def __init__(self, KCCAplication, KCCWindow):
@@ -1009,6 +1091,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.tray = SystemTrayIcon()
         self.conversionAlive = False
         self.needClean = True
+        self.KindleGen = False
         self.GammaValue = 1.0
         self.completedWork = {}
         self.targetDirectory = ''
@@ -1022,7 +1105,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         elif sys.platform.startswith('linux'):
             self.listFontSize = 8
             self.statusBarFontSize = 8
-            self.statusBarStyle = 'QLabel{padding-top:5px;padding-bottom:3px;}'
+            self.statusBarStyle = 'QLabel{padding-top:3px;padding-bottom:3px;}'
             self.statusBar.setStyleSheet('QStatusBar::item{border:0px;border-top:2px solid #C2C7CB;}')
         else:
             self.listFontSize = 9
@@ -1110,27 +1193,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.addMessage('Since you are new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        if not sys.platform.startswith('win'):
-            try:
-                os.chmod('/usr/local/bin/kindlegen', 0o755)
-            except Exception:
-                pass
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
-        if kindleGenExitCode.wait() == 0:
-            self.KindleGen = True
-            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
-            for line in versionCheck.stdout:
-                line = line.decode("utf-8")
-                if 'Amazon kindlegen' in line:
-                    versionCheck = line.split('V')[1].split(' ')[0]
-                    if tuple(map(int, (versionCheck.split(".")))) < tuple(map(int, ('2.9'.split(".")))):
-                        self.addMessage('Your <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                        '1000765211">kindlegen</a> is outdated! Creating MOBI might fail.'
-                                        ' Please update <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                        '1000765211">kindlegen</a> from Amazon\'s website.', 'warning')
-                    break
-        else:
-            self.KindleGen = False
         rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
         rarExitCode = rarExitCode.wait()
         if rarExitCode == 0 or rarExitCode == 7:
@@ -1147,6 +1209,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.sevenza = False
             self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7za</a>!'
                             ' Processing of CB7/7Z files will be disabled.', 'warning')
+        self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
         GUI.BasicModeButton.clicked.connect(self.modeBasic)

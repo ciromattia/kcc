@@ -14,7 +14,7 @@ if version_info[0] != 3:
     exit(1)
 
 NAME = "KindleComicConverter"
-VERSION = "4.3.1"
+VERSION = "4.4"
 MAIN = "kcc.py"
 
 if platform == "darwin":
@@ -33,7 +33,7 @@ if platform == "darwin":
                     CFBundleName=NAME,
                     CFBundleShortVersionString=VERSION,
                     CFBundleGetInfoString=NAME + " " + VERSION +
-                    ", written 2012-2014 by Ciro Mattia Gonano and Pawel Jastrzebski",
+                    ", written 2012-2015 by Ciro Mattia Gonano and Pawel Jastrzebski",
                     CFBundleExecutable=NAME,
                     CFBundleIdentifier='com.github.ciromattia.kcc',
                     CFBundleSignature='dplt',
@@ -81,7 +81,7 @@ elif platform == "win32":
         windows=[{"script": MAIN,
                   "dest_base": "KCC",
                   "version": VERSION,
-                  "copyright": "Ciro Mattia Gonano, Pawel Jastrzebski © 2014",
+                  "copyright": "Ciro Mattia Gonano, Pawel Jastrzebski © 2012-2015",
                   "legal_copyright": "ISC License (ISCL)",
                   "product_version": VERSION,
                   "product_name": "Kindle Comic Converter",

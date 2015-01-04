@@ -1,5 +1,5 @@
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2015 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -17,7 +17,7 @@
 #
 
 __license__ = 'ISC'
-__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
+__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
 
 import sys
@@ -27,6 +27,7 @@ from subprocess import STDOUT, PIPE
 from psutil import Popen
 from shutil import move, copy
 from . import rarfile
+from .shared import check7ZFile as is_7zfile
 
 
 class CBxArchive:
@@ -36,7 +37,7 @@ class CBxArchive:
             self.compressor = 'zip'
         elif rarfile.is_rarfile(origFileName):
             self.compressor = 'rar'
-        elif origFileName.endswith('.7z') or origFileName.endswith('.cb7'):
+        elif is_7zfile(origFileName):
             self.compressor = '7z'
         else:
             self.compressor = None

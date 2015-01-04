@@ -13,8 +13,7 @@ _KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll
 ### Issues / new features / donations
 If you have general questions about usage, feedback etc. please [post it here](http://www.mobileread.com/forums/showthread.php?t=207461).
 If you have some **technical** problems using KCC please [file an issue here](https://github.com/ciromattia/kcc/issues/new).
-If you can fix an open issue, fork & make a pull request.  
-If you want more chances an issue is fixes or your wanted feature added, consider [placing a bounty](https://www.bountysource.com/trackers/65571-ciromattia-kcc)!  
+If you can fix an open issue, fork & make a pull request.
 
 If you find **KCC** valuable you can consider donating to the authors:
 - Ciro Mattia Gonano:
@@ -32,7 +31,7 @@ You can find the latest released binary at the following links:
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
-- Folders containing: PNG, JPG, GIF, TIFF or BMP files
+- Folders containing: PNG, JPG or GIF files
 - CBZ, ZIP
 - CBR, RAR *(With `unrar` executable)*
 - CB7, 7Z *(With `7za` executable)*
@@ -46,19 +45,19 @@ You can find the latest released binary at the following links:
 ### For running from source:
 - Python 3.3+
 - [PyQt5](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.2.0+
-- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.5.0+
+- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.7.0+
 - [psutil](https://pypi.python.org/pypi/psutil) 2.0+
 - [python-slugify](http://pypi.python.org/pypi/python-slugify)
 
 On Debian based distributions these two commands should install all dependencies:
 ```
-sudo apt-get install python3 python3-dev python3-pip python3-pyqt5 libtiff-dev libpng-dev libjpeg-dev p7zip-full unrar
+sudo apt-get install python3 python3-dev python3-pip python3-pyqt5 libpng-dev libjpeg-dev p7zip-full unrar
 sudo pip3 install pillow python-slugify psutil
 ```
 
 ### For freezing code:
-- Windows - [py2exe](https://pypi.python.org/pypi/py2exe) 0.9.2+
-- OS X - [py2app](https://bitbucket.org/ronaldoussoren/py2app) 0.8.0+
+- Windows - [py2exe](https://pypi.python.org/pypi/py2exe) 0.9.2.2+
+- OS X - [py2app](https://bitbucket.org/ronaldoussoren/py2app) 0.9.0+
 
 ## USAGE
 
@@ -143,7 +142,7 @@ This script born as a cross-platform alternative to `KindleComicParser` by **Dc5
 The app relies and includes the following scripts:
 
  - `DualMetaFix` script by **K. Hendricks**. Released with GPL-3 License.
- - `rarfile.py` script &copy; 2005-2011 **Marko Kreen** <markokr@gmail.com>. Released with ISC License.
+ - `rarfile.py` script &copy; 2005-2014 **Marko Kreen** <markokr@gmail.com>. Released with ISC License.
  - `image.py` class from **Alex Yatskov**'s [Mangle](https://github.com/FooSoft/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches.
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
@@ -159,113 +158,115 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu!-KoAH2O.cbz)
 
 ## CHANGELOG
-####1.0
-* Initial version
+####4.4:
+* Improved speed and quality of conversion
+* Added RAR5 support
+* Dropped BMP and TIFF support
+* Fixed some WebToon mode bugs
+* Fixed CBR parsing on OSX
 
-####1.1
-* Added support for CBZ/CBR files in comic2ebook.py
+####4.3.1:
+* Fixed Kindle Voyage profile
+* Fixed some bugs in OS X release
+* CLI version now support multiple input files at once
+* Disabled MCB support
+* Other minor tweaks
 
-####1.1.1
-* Added support for CBZ/CBR files in Kindle Comic Converter
+####4.3:
+* Added profiles for Kindle Voyage and Kobo Aura H2O
+* Added missing features to CLI version
+* Other minor bug fixes
 
-####1.2
-* Comic optimizations! Split pages not target-oriented (landscape with portrait target or portrait with landscape target), add palette and other image optimizations from Mangle. WARNING: PIL is required for all image mangling!
+####4.2.1:
+* Improved margin color detection 
+* Fixed random crashes of MOBI processing step
+* Fixed resizing problems in high quality mode
+* Fixed some MCD support bugs
+* Default output format for Kindle DX is now CBZ
 
-####1.3
-* Fixed an issue in OPF generation for device resolution  
-* Reworked options system (call with -h option to get the inline help)
+####4.2:
+* Added [Manga Cover Database](http://manga.joentjuh.nl/) support
+* Officially dropped Windows XP support
+* Fixed _Other_ profile
+* Fixed problems with page order on stock KOBO CBZ reader
+* Many other small bug fixes and tweaks
 
-####1.4
-* Added some options for controlling image optimization  
-* Further optimization (ImageOps, page numbering cut, autocontrast)
+####4.1:
+* Thanks to code contributed by Kevin Hendricks speed of MOBI creation was greatly increased
+* Improved performance on Windows
+* Improved MOBI splitting and changed maximal size of output file
+* Fixed _No optimization_ mode
+* Multiple small tweaks nad minor bug fixes
 
-####1.4.1
-* Fixed a serious bug on resizing when img ratio was bigger than device one
+####4.0.2:
+* Fixed some Windows and OSX specific bugs
+* Fixed problem with marigns when using HQ mode
 
-####1.5
-* Added subfolder support for multiple chapters.
+####4.0.1:
+* Fixed file lock problems that plagued some Windows users
+* Fixed content server failing to start on Windows
+* Improved performance of WebToon splitter
+* Tweaked margin color detection
 
-####2.0
-* GUI! AppleScript is gone and Tk is used to provide cross-platform GUI support.
+####4.0:
+* KCC now use Python 3.3 and Qt 5.2
+* Full UTF-8 awareness
+* CBZ output now support Manga mode
+* Improved Panel View support and margin color detection
+* Added drag&drop support
+* Output directory can be now selected
+* Windows release now have auto-updater
+* Names of chapters on Kindle should be now more user friendly
+* Fixed OSX file association support
+* Many extensive internal changes and tweaks
 
-####2.1
-* Added basic error reporting
+####3.7.2:
+* Fixed problems with HQ mode
 
-####2.2:
-* Added (valid!) EPUB 2.0 output  
-* Rename .zip files to .cbz to avoid overwriting
+####3.7.1:
+* Hotfixed Kobo profiles
 
-####2.3
-* Fixed win32 EPUB generation, folder handling, filenames with spaces and subfolders
+####3.7:
+* Added profiles for KOBO devices
+* Improved Panel View support
+* Improved WebToon splitter
+* Improved margin color autodetection
+* Tweaked EPUB output
+* Fixed stretching option
+* GUI tweaks and minor bugfixes
 
-####2.4
-* Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)  
-* Fixed "add folders" from GUI.
+####3.6.2:
+* Fixed previous PNG output fix
+* Fixed Panel View anomalies
 
-####2.5
-* Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).  
-* Fixes EPUB containing zipped itself (#10)  
+####3.6.1:
+* Fixed PNG output
 
-####2.6
-* Added --rotate option to rotate landscape images instead of splitting them (#16, #24)  
-* Added --output option to customize EPUB output dir/file (#22)  
-* Add rendition:layout and rendition:orientation EPUB meta tags (supported by new kindlegen 2.8)  
-* Fixed natural sorting for files (#18)
+####3.6:
+* Increased quality of Panel View zoom
+* Creation of multipart MOBI output is now faster on machines with 4GB+ RAM
+* Automatic gamma correction now distinguishes color and grayscale images
+* Added ComicRack metadata parser
+* Implemented new method to detect border color in non-webtoon comics
+* Upscaling is now enabled by default for Kindle Fire HD/HDX
+* Windows nad Linux releases now have tray icon
+* Fixed Kindle Fire HDX 7" output
+* Increased target resolution for Kindle DX/DXG CBZ output
 
-####2.7
-* Lots of GUI improvements (#27, #13)  
-* Added gamma support within --gamma option (defaults to profile-specified gamma) (#26, #27)  
-* Added --nodithering option to prevent dithering optimizations (#27)  
-* EPUB margins support (#30)  
-* Fixed no file added if file has no spaces on Windows (#25)  
-* Gracefully exit if unrar missing (#15)  
-* Do not call kindlegen if source EPUB is bigger than 320MB (#17)  
-* Get filetype from magic number (#14)   
-* PDF conversion works again  
+####3.5:
+* Added simple content server - Converted files can be now delivered wireless
+* Added proper Windows installer
+* Improved multiprocessing speed
+* GUI tweaks and minor bug fixes
 
-####2.8
-* Updated rarfile library  
-* Panel View support + HQ support (#36) - new option: --nopanelviewhq
-* Split profiles for K4NT and K4T  
-* Rewrite of Landscape Mode support (huge readability improvement for KPW)  
-* Upscale use now BILINEAR method  
-* Added generic CSS file  
-* Optimized archive extraction for zip/rar files (#40)  
-
-####2.9
-* Added support for generating a plain CBZ (skipping all the EPUB/MOBI generation) (#45)  
-* Prevent output file overwriting the source one: if a duplicate name is detected, append _kcc to the name  
-* Rarfile library updated to 2.6  
-* Added GIF, TIFF and BMP to supported formats (#42)  
-* Filenames slugifications (#28, #31, #9, #8)
-
-####2.10:
-* Multiprocessing support
-* Kindle Fire support (color EPUB/MOBI)
-* Panel View support for horizontal content
-* Fixed panel order for horizontal pages when --rotate is enabled
-* Disabled cropping and page number cutting for blank pages
-* Fixed some slugify issues with specific file naming conventions (#50, #51)
-
-####3.0:
-* New QT GUI
-* Merge with AWKCC
-* Added ultra quality mode
-* Added support for custom width/height
-* Added option to disable color conversion
-
-####3.1:
-* Added profile: Kindle for Android
-* Add file/directory dialogs now support multiselect
-* Many small fixes and tweaks
-
-####3.2:
-* Too big EPUB files are now splitted before conversion to MOBI
-* Added experimental parser of manga webtoons
-* Improved error handling
-
-####3.2.1:
-* Hotfixed crash occurring on OS with Russian locale
+####3.4:
+* Improved PNG output
+* Increased quality of upscaling
+* Added support of file association - KCC can now open CBZ, CBR, CB7, ZIP, RAR, 7Z and PDF files directly
+* Paths that contain UTF-8 characters are now supported
+* Migrated to new version of Pillow library
+* Merged DX and DXG profiles
+* Many other minor bug fixes and GUI tweaks
 
 ####3.3:
 * Margins are now automatically omitted in Panel View mode
@@ -281,112 +282,117 @@ The app relies and includes the following scripts:
 * Windows release is now bundled with UnRAR and 7za
 * Small GUI tweaks
 
-####3.4:
-* Improved PNG output
-* Increased quality of upscaling
-* Added support of file association - KCC can now open CBZ, CBR, CB7, ZIP, RAR, 7Z and PDF files directly
-* Paths that contain UTF-8 characters are now supported
-* Migrated to new version of Pillow library
-* Merged DX and DXG profiles
-* Many other minor bug fixes and GUI tweaks
+####3.2:
+* Too big EPUB files are now splitted before conversion to MOBI
+* Added experimental parser of manga webtoons
+* Improved error handling
 
-####3.5:
-* Added simple content server - Converted files can be now delivered wireless
-* Added proper Windows installer
-* Improved multiprocessing speed
-* GUI tweaks and minor bug fixes
+####3.2.1:
+* Hotfixed crash occurring on OS with Russian locale
 
-####3.6:
-* Increased quality of Panel View zoom
-* Creation of multipart MOBI output is now faster on machines with 4GB+ RAM
-* Automatic gamma correction now distinguishes color and grayscale images
-* Added ComicRack metadata parser
-* Implemented new method to detect border color in non-webtoon comics
-* Upscaling is now enabled by default for Kindle Fire HD/HDX
-* Windows nad Linux releases now have tray icon
-* Fixed Kindle Fire HDX 7" output
-* Increased target resolution for Kindle DX/DXG CBZ output
+####3.1:
+* Added profile: Kindle for Android
+* Add file/directory dialogs now support multiselect
+* Many small fixes and tweaks
 
-####3.6.1:
-* Fixed PNG output
+####3.0:
+* New QT GUI
+* Merge with AWKCC
+* Added ultra quality mode
+* Added support for custom width/height
+* Added option to disable color conversion
 
-####3.6.2:
-* Fixed previous PNG output fix
-* Fixed Panel View anomalies
+####2.10:
+* Multiprocessing support
+* Kindle Fire support (color EPUB/MOBI)
+* Panel View support for horizontal content
+* Fixed panel order for horizontal pages when --rotate is enabled
+* Disabled cropping and page number cutting for blank pages
+* Fixed some slugify issues with specific file naming conventions (#50, #51)
 
-####3.7:
-* Added profiles for KOBO devices
-* Improved Panel View support
-* Improved WebToon splitter
-* Improved margin color autodetection
-* Tweaked EPUB output
-* Fixed stretching option
-* GUI tweaks and minor bugfixes
+####2.9
+* Added support for generating a plain CBZ (skipping all the EPUB/MOBI generation) (#45)  
+* Prevent output file overwriting the source one: if a duplicate name is detected, append _kcc to the name  
+* Rarfile library updated to 2.6  
+* Added GIF, TIFF and BMP to supported formats (#42)  
+* Filenames slugifications (#28, #31, #9, #8)
 
-####3.7.1:
-* Hotfixed Kobo profiles
+####2.8
+* Updated rarfile library  
+* Panel View support + HQ support (#36) - new option: --nopanelviewhq
+* Split profiles for K4NT and K4T  
+* Rewrite of Landscape Mode support (huge readability improvement for KPW)  
+* Upscale use now BILINEAR method  
+* Added generic CSS file  
+* Optimized archive extraction for zip/rar files (#40)  
 
-####3.7.2:
-* Fixed problems with HQ mode
+####2.7
+* Lots of GUI improvements (#27, #13)  
+* Added gamma support within --gamma option (defaults to profile-specified gamma) (#26, #27)  
+* Added --nodithering option to prevent dithering optimizations (#27)  
+* EPUB margins support (#30)  
+* Fixed no file added if file has no spaces on Windows (#25)  
+* Gracefully exit if unrar missing (#15)  
+* Do not call kindlegen if source EPUB is bigger than 320MB (#17)  
+* Get filetype from magic number (#14)   
+* PDF conversion works again  
 
-####4.0:
-* KCC now use Python 3.3 and Qt 5.2
-* Full UTF-8 awareness
-* CBZ output now support Manga mode
-* Improved Panel View support and margin color detection
-* Added drag&drop support
-* Output directory can be now selected
-* Windows release now have auto-updater
-* Names of chapters on Kindle should be now more user friendly
-* Fixed OSX file association support
-* Many extensive internal changes and tweaks
+####2.6
+* Added --rotate option to rotate landscape images instead of splitting them (#16, #24)  
+* Added --output option to customize EPUB output dir/file (#22)  
+* Add rendition:layout and rendition:orientation EPUB meta tags (supported by new kindlegen 2.8)  
+* Fixed natural sorting for files (#18)
 
-####4.0.1:
-* Fixed file lock problems that plagued some Windows users
-* Fixed content server failing to start on Windows
-* Improved performance of WebToon splitter
-* Tweaked margin color detection
+####2.5
+* Added --black-borders option to set added borders black when page's ratio is not the device's one (#11).  
+* Fixes EPUB containing zipped itself (#10)  
 
-####4.0.2:
-* Fixed some Windows and OSX specific bugs
-* Fixed problem with marigns when using HQ mode
+####2.4
+* Use temporary directory as workdir (fixes converting from external volumes and zipfiles renaming)  
+* Fixed "add folders" from GUI.
 
-####4.1:
-* Thanks to code contributed by Kevin Hendricks speed of MOBI creation was greatly increased
-* Improved performance on Windows
-* Improved MOBI splitting and changed maximal size of output file
-* Fixed _No optimization_ mode
-* Multiple small tweaks nad minor bug fixes
+####2.3
+* Fixed win32 EPUB generation, folder handling, filenames with spaces and subfolders
 
-####4.2:
-* Added [Manga Cover Database](http://manga.joentjuh.nl/) support
-* Officially dropped Windows XP support
-* Fixed _Other_ profile
-* Fixed problems with page order on stock KOBO CBZ reader
-* Many other small bug fixes and tweaks
+####2.2:
+* Added (valid!) EPUB 2.0 output  
+* Rename .zip files to .cbz to avoid overwriting
 
-####4.2.1:
-* Improved margin color detection 
-* Fixed random crashes of MOBI processing step
-* Fixed resizing problems in high quality mode
-* Fixed some MCD support bugs
-* Default output format for Kindle DX is now CBZ
+####2.1
+* Added basic error reporting
 
-####4.3:
-* Added profiles for Kindle Voyage and Kobo Aura H2O
-* Added missing features to CLI version
-* Other minor bug fixes
+####2.0
+* GUI! AppleScript is gone and Tk is used to provide cross-platform GUI support.
 
-####4.3.1:
-* Fixed Kindle Voyage profile
-* Fixed some bugs in OS X release
-* CLI version now support multiple input files at once
-* Disabled MCB support
-* Other minor tweaks
+####1.5
+* Added subfolder support for multiple chapters.
+
+####1.4.1
+* Fixed a serious bug on resizing when img ratio was bigger than device one
+
+####1.4
+* Added some options for controlling image optimization  
+* Further optimization (ImageOps, page numbering cut, autocontrast)
+
+####1.3
+* Fixed an issue in OPF generation for device resolution  
+* Reworked options system (call with -h option to get the inline help)
+
+####1.2
+* Comic optimizations! Split pages not target-oriented (landscape with portrait target or portrait with landscape target), add palette and other image optimizations from Mangle. WARNING: PIL is required for all image mangling!
+
+####1.1.1
+* Added support for CBZ/CBR files in Kindle Comic Converter
+
+####1.1
+* Added support for CBZ/CBR files in comic2ebook.py
+
+####1.0
+* Initial version
 
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
 ## COPYRIGHT
-Copyright (c) 2012-2014 Ciro Mattia Gonano and Paweł Jastrzębski.
+Copyright (c) 2012-2015 Ciro Mattia Gonano and Paweł Jastrzębski.
 **KCC** is released under ISC LICENSE; see LICENSE.txt for further details.

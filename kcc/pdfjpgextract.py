@@ -1,5 +1,5 @@
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2015 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Based upon the code snippet by Ned Batchelder
 # (http://nedbatchelder.com/blog/200712/extracting_jpgs_from_pdfs.html)
@@ -20,7 +20,7 @@
 #
 
 __license__ = 'ISC'
-__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
+__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
 
 import os

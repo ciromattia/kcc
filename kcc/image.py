@@ -1,7 +1,7 @@
 # Copyright (C) 2010  Alex Yatskov
 # Copyright (C) 2011  Stanislav (proDOOMman) Kosolapov <prodoomman@gmail.com>
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2014 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2015 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,9 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = '4.3.1'
+__version__ = '4.4'
 __license__ = 'ISC'
-__copyright__ = '2012-2014, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
+__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
 
 import os
@@ -102,16 +102,15 @@ class ProfileData:
 
 
 class ComicPage:
-    def __init__(self, source, device, fill=None):
+    def __init__(self, source, options, fill=None):
         try:
-            self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = device
+            self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = options.profileData
         except KeyError:
-            raise RuntimeError('Unexpected output device %s' % device)
+            raise RuntimeError('Unexpected output device %s' % options.profileData)
         self.origFileName = source
         self.filename = os.path.basename(self.origFileName)
         self.image = Image.open(source)
         self.image = self.image.convert('RGB')
-        self.color = self.isImageColor()
         self.rotated = None
         self.border = None
         self.noHPV = None
@@ -119,17 +118,22 @@ class ComicPage:
         self.noPV = None
         self.purge = False
         self.hq = False
+        self.opt = options
         if fill:
             self.fill = fill
         else:
             self.fill = None
+        if options.webtoon:
+            self.color = True
+        else:
+            self.color = self.isImageColor()
 
-    def saveToDir(self, targetdir, forcepng, color):
+    def saveToDir(self, targetdir):
         try:
             if not self.purge:
                 flags = []
                 filename = os.path.join(targetdir, os.path.splitext(self.filename)[0]) + '-KCC'
-                if not color and not forcepng:
+                if not self.opt.forcecolor and not self.opt.forcepng:
                     self.image = self.image.convert('L')
                 if self.rotated:
                     flags.append('Rotated')
@@ -144,21 +148,22 @@ class ComicPage:
                     if self.noVPV:
                         flags.append('NoVerticalPanelView')
                     if self.border:
-                        flags.append("Margins-" + str(self.border[0]) + "-" + str(self.border[1]) + "-"
-                                     + str(self.border[2]) + "-" + str(self.border[3]))
-                if forcepng:
-                    filename += ".png"
-                    self.image.save(filename, "PNG", optimize=1)
+                        flags.append('Margins-' + str(self.border[0]) + '-' + str(self.border[1]) + '-'
+                                     + str(self.border[2]) + '-' + str(self.border[3]))
+                if self.opt.forcepng:
+                    filename += '.png'
+                    self.image.save(filename, 'PNG', optimize=1)
                 else:
-                    filename += ".jpg"
-                    self.image.save(filename, "JPEG", optimize=1)
+                    filename += '.jpg'
+                    self.image.save(filename, 'JPEG', optimize=1, quality=80)
                 return [md5Checksum(filename), flags]
             else:
                 return None
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
-    def optimizeImage(self, gamma):
+    def optimizeImage(self):
+        gamma = self.opt.gamma
         if gamma < 0.1:
             gamma = self.gamma
             if self.gamma != 1.0 and self.color:
@@ -215,7 +220,12 @@ class ComicPage:
             self.noHPV = True
             self.noVPV = True
 
-    def resizeImage(self, upscale=False, stretch=False, bordersColor=None, qualityMode=0):
+    def resizeImage(self, qualityMode=None):
+        upscale = self.opt.upscale
+        stretch = self.opt.stretch
+        bordersColor = self.opt.bordersColor
+        if qualityMode is None:
+            qualityMode = self.opt.quality
         if bordersColor:
             fill = bordersColor
         else:
@@ -243,7 +253,7 @@ class ComicPage:
             if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
                 method = Image.BICUBIC
             else:
-                method = Image.ANTIALIAS
+                method = Image.LANCZOS
             self.image = self.image.resize(size, method)
             return self.image
         # If image is smaller than target resolution and upscale is off - Just expand it by adding margins
@@ -269,17 +279,17 @@ class ComicPage:
         if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
             method = Image.BICUBIC
         else:
-            method = Image.ANTIALIAS
+            method = Image.LANCZOS
         self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
         return self.image
 
-    def splitPage(self, targetdir, righttoleft=False, rotate=False):
+    def splitPage(self, targetdir):
         width, height = self.image.size
         dstwidth, dstheight = self.size
         # Only split if origin is not oriented the same as target
         if (width > height) != (dstwidth > dstheight):
-            if rotate:
-                self.image = self.image.rotate(90)
+            if self.opt.rotate:
+                self.image = self.image.rotate(90, Image.BICUBIC, True)
                 self.rotated = True
                 return None
             else:
@@ -292,18 +302,18 @@ class ComicPage:
                     # Source is portrait and target is landscape, so split by the height
                     leftbox = (0, 0, width, int(height / 2))
                     rightbox = (0, int(height / 2), width, height)
-                filename = os.path.splitext(self.filename)
-                fileone = targetdir + '/' + filename[0] + '-A' + filename[1]
-                filetwo = targetdir + '/' + filename[0] + '-B' + filename[1]
+                filename = os.path.splitext(self.filename)[0]
+                fileone = targetdir + '/' + filename + '-AAA.png'
+                filetwo = targetdir + '/' + filename + '-BBB.png'
                 try:
-                    if righttoleft:
+                    if self.opt.righttoleft:
                         pageone = self.image.crop(rightbox)
                         pagetwo = self.image.crop(leftbox)
                     else:
                         pageone = self.image.crop(leftbox)
                         pagetwo = self.image.crop(rightbox)
-                    pageone.save(fileone)
-                    pagetwo.save(filetwo)
+                    pageone.save(fileone, 'PNG', optimize=1)
+                    pagetwo.save(filetwo, 'PNG', optimize=1)
                 except IOError as e:
                     raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
                 return fileone, filetwo
@@ -417,13 +427,16 @@ class ComicPage:
         imageBoxB = ImageChops.invert(bw).getbbox()
         if imageBoxA is None or imageBoxB is None:
             surfaceB, surfaceW = 0, 0
+            diff = 0
         else:
             surfaceB = (imageBoxA[2] - imageBoxA[0]) * (imageBoxA[3] - imageBoxA[1])
             surfaceW = (imageBoxB[2] - imageBoxB[0]) * (imageBoxB[3] - imageBoxB[1])
-        if surfaceW < surfaceB:
-            self.fill = 'white'
-        elif surfaceW > surfaceB:
-            self.fill = 'black'
+            diff = ((max(surfaceB, surfaceW) - min(surfaceB, surfaceW)) / min(surfaceB, surfaceW)) * 100
+        if diff > 0.5:
+            if surfaceW < surfaceB:
+                self.fill = 'white'
+            elif surfaceW > surfaceB:
+                self.fill = 'black'
         else:
             fill = 0
             startY = 0
@@ -498,7 +511,7 @@ class Cover:
 
     def processExternal(self):
         self.image = self.image.convert('RGB')
-        self.image.thumbnail(self.options.profileData[1], Image.ANTIALIAS)
+        self.image.thumbnail(self.options.profileData[1], Image.LANCZOS)
         self.save(True)
 
     def trim(self):
@@ -520,6 +533,6 @@ class Cover:
             if os.path.splitext(source)[1].lower() == '.png':
                 self.image.save(self.target, "PNG", optimize=1)
             else:
-                self.image.save(self.target, "JPEG", optimize=1)
+                self.image.save(self.target, "JPEG", optimize=1, quality=80)
         except IOError:
             raise RuntimeError('Failed to save cover')
