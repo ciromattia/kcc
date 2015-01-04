@@ -444,12 +444,12 @@ def imgOptimization(img, opt, hqImage=None):
         img.cropWhiteSpace()
     if opt.cutpagenumbers and not opt.webtoon:
         img.cutPageNumber()
-    img.optimizeImage(opt.gamma)
+    img.optimizeImage()
     if hqImage:
-        img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, 0)
+        img.resizeImage(0)
         img.calculateBorder(hqImage, True)
     else:
-        img.resizeImage(opt.upscale, opt.stretch, opt.bordersColor, opt.quality)
+        img.resizeImage()
         if opt.panelview:
             if opt.quality == 0:
                 img.calculateBorder(img)
@@ -515,7 +515,7 @@ def imgFileProcessing(work):
         dirpath = work[1]
         opt = work[2]
         output = []
-        img = image.ComicPage(os.path.join(dirpath, afile), opt.profileData)
+        img = image.ComicPage(os.path.join(dirpath, afile), opt)
         if opt.quality == 2:
             wipe = False
         else:
@@ -523,39 +523,39 @@ def imgFileProcessing(work):
         if opt.nosplitrotate:
             splitter = None
         else:
-            splitter = img.splitPage(dirpath, opt.righttoleft, opt.rotate)
+            splitter = img.splitPage(dirpath)
         if splitter is not None:
-            img0 = image.ComicPage(splitter[0], opt.profileData)
+            img0 = image.ComicPage(splitter[0], opt)
             imgOptimization(img0, opt)
-            output.append(img0.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-            img1 = image.ComicPage(splitter[1], opt.profileData)
+            output.append(img0.saveToDir(dirpath))
+            img1 = image.ComicPage(splitter[1], opt)
             imgOptimization(img1, opt)
-            output.append(img1.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
+            output.append(img1.saveToDir(dirpath))
             if wipe:
                 output.append(img0.origFileName)
                 output.append(img1.origFileName)
             if opt.quality == 2:
-                img0b = image.ComicPage(splitter[0], opt.profileData, img0.fill)
+                img0b = image.ComicPage(splitter[0], opt, img0.fill)
                 imgOptimization(img0b, opt, img0)
-                output.append(img0b.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
-                img1b = image.ComicPage(splitter[1], opt.profileData, img1.fill)
+                output.append(img0b.saveToDir(dirpath))
+                img1b = image.ComicPage(splitter[1], opt, img1.fill)
                 imgOptimization(img1b, opt, img1)
-                output.append(img1b.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
+                output.append(img1b.saveToDir(dirpath))
                 output.append(img0.origFileName)
                 output.append(img1.origFileName)
             output.append(img.origFileName)
         else:
             imgOptimization(img, opt)
-            output.append(img.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
+            output.append(img.saveToDir(dirpath))
             if wipe:
                 output.append(img.origFileName)
             if opt.quality == 2:
-                img2 = image.ComicPage(os.path.join(dirpath, afile), opt.profileData, img.fill)
+                img2 = image.ComicPage(os.path.join(dirpath, afile), opt, img.fill)
                 if img.rotated:
                     img2.image = img2.image.rotate(90, Image.BICUBIC, True)
                     img2.rotated = True
                 imgOptimization(img2, opt, img)
-                output.append(img2.saveToDir(dirpath, opt.forcepng, opt.forcecolor))
+                output.append(img2.saveToDir(dirpath))
                 output.append(img.origFileName)
         return output
     except Exception:
