@@ -931,15 +931,19 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 self.addMessage('Target resolution is not set!', 'error')
                 self.needClean = True
                 return
-            if str(GUI.FormatBox.currentText()) == 'MOBI' and not GUI.KindleGen:
-                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
-                                '<b>KindleGen</b></a>! MOBI conversion is not possible!', 'error')
-                if sys.platform.startswith('win'):
-                    self.addMessage('Download it and place EXE in KCC directory.', 'error')
-                else:
-                    self.addMessage('Download it, and place executable in /usr/local/bin directory.', 'error')
-                self.needClean = True
-                return
+            if str(GUI.FormatBox.currentText()) == 'MOBI' and not self.KindleGen:
+                self.detectKindleGen()
+                if not self.KindleGen:
+                    GUI.JobList.clear()
+                    self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html'
+                                    '?ie=UTF8&docId=1000765211"><b>KindleGen</b></a>!'
+                                    ' MOBI conversion is unavailable!', 'error')
+                    if sys.platform.startswith('win'):
+                        self.addMessage('Download it and place EXE in KCC directory.', 'error')
+                    else:
+                        self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
+                    self.needClean = True
+                    return
             self.worker.start()
 
     def hideProgressBar(self):
@@ -1027,6 +1031,36 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.saveSettings(None)
         sys.exit(0)
 
+    def detectKindleGen(self, startup=False):
+        if not sys.platform.startswith('win'):
+            try:
+                os.chmod('/usr/local/bin/kindlegen', 0o755)
+            except Exception:
+                pass
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+        if kindleGenExitCode.wait() == 0:
+            self.KindleGen = True
+            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+            for line in versionCheck.stdout:
+                line = line.decode("utf-8")
+                if 'Amazon kindlegen' in line:
+                    versionCheck = line.split('V')[1].split(' ')[0]
+                    if tuple(map(int, (versionCheck.split(".")))) < tuple(map(int, ('2.9'.split(".")))):
+                        self.addMessage('Your <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
+                                        '1000765211">KindleGen</a> is outdated! Creating MOBI might fail.'
+                                        ' Please update <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
+                                        '1000765211">KindleGen</a> from Amazon\'s website.', 'warning')
+                    break
+        else:
+            self.KindleGen = False
+            if startup:
+                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
+                                '<b>KindleGen</b></a>! MOBI conversion will be unavailable!', 'error')
+                if sys.platform.startswith('win'):
+                    self.addMessage('Download it and place EXE in KCC directory.', 'error')
+                else:
+                    self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
+
     # noinspection PyArgumentList
     def __init__(self, KCCAplication, KCCWindow):
         global APP, MW, GUI
@@ -1057,6 +1091,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.tray = SystemTrayIcon()
         self.conversionAlive = False
         self.needClean = True
+        self.KindleGen = False
         self.GammaValue = 1.0
         self.completedWork = {}
         self.targetDirectory = ''
@@ -1158,27 +1193,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.addMessage('Since you are new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        if not sys.platform.startswith('win'):
-            try:
-                os.chmod('/usr/local/bin/kindlegen', 0o755)
-            except Exception:
-                pass
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
-        if kindleGenExitCode.wait() == 0:
-            self.KindleGen = True
-            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
-            for line in versionCheck.stdout:
-                line = line.decode("utf-8")
-                if 'Amazon kindlegen' in line:
-                    versionCheck = line.split('V')[1].split(' ')[0]
-                    if tuple(map(int, (versionCheck.split(".")))) < tuple(map(int, ('2.9'.split(".")))):
-                        self.addMessage('Your <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                        '1000765211">kindlegen</a> is outdated! Creating MOBI might fail.'
-                                        ' Please update <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                        '1000765211">kindlegen</a> from Amazon\'s website.', 'warning')
-                    break
-        else:
-            self.KindleGen = False
         rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
         rarExitCode = rarExitCode.wait()
         if rarExitCode == 0 or rarExitCode == 7:
@@ -1195,6 +1209,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.sevenza = False
             self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7za</a>!'
                             ' Processing of CB7/7Z files will be disabled.', 'warning')
+        self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
         GUI.BasicModeButton.clicked.connect(self.modeBasic)
