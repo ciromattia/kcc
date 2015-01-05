@@ -37,6 +37,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.dom.minidom import parse
 from psutil import Popen, Process
 from copy import copy
+from distutils.version import StrictVersion
 from .shared import md5Checksum, HTMLStripper
 from . import comic2ebook
 from . import KCC_rc_web
@@ -244,7 +245,7 @@ class VersionThread(QtCore.QThread):
         except Exception:
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
-        if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
+        if StrictVersion(latestVersion) > StrictVersion(__version__):
             if sys.platform.startswith('win'):
                 self.newVersion = latestVersion
                 self.md5 = XML.childNodes[0].getElementsByTagName('WindowsMD5')[0].childNodes[0].toxml()
@@ -1045,11 +1046,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 line = line.decode("utf-8")
                 if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
-                    if tuple(map(int, (versionCheck.split(".")))) < tuple(map(int, ('2.9'.split(".")))):
+                    if StrictVersion(versionCheck) < StrictVersion('2.9'):
                         self.addMessage('Your <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                        '1000765211">KindleGen</a> is outdated! Creating MOBI might fail.'
-                                        ' Please update <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                        '1000765211">KindleGen</a> from Amazon\'s website.', 'warning')
+                                        '1000765211">KindleGen</a> is outdated! MOBI conversion might fail.', 'warning')
                     break
         else:
             self.KindleGen = False
