@@ -104,7 +104,6 @@ class QMainWindowKCC(QtWidgets.QMainWindow):
     showDialog = QtCore.pyqtSignal(str, str)
     hideProgressBar = QtCore.pyqtSignal()
     forceShutdown = QtCore.pyqtSignal()
-    dialogAnswer = QtCore.pyqtSignal(int)
 
 
 class Icons:
@@ -234,6 +233,8 @@ class VersionThread(QtCore.QThread):
         QtCore.QThread.__init__(self)
         self.newVersion = ''
         self.md5 = ''
+        self.barProgress = 0
+        self.answer = None
 
     def __del__(self):
         self.wait()
@@ -250,17 +251,23 @@ class VersionThread(QtCore.QThread):
                 self.newVersion = latestVersion
                 self.md5 = XML.childNodes[0].getElementsByTagName('WindowsMD5')[0].childNodes[0].toxml()
                 MW.showDialog.emit('<b>New version released!</b> <a href="https://github.com/ciromattia/kcc/releases/">'
-                                   'See changelog.</a><<br/><br/>Installed version: ' + __version__ +
+                                   'See changelog.</a><br/><br/>Installed version: ' + __version__ +
                                    '<br/>Current version: ' + latestVersion +
                                    '<br/><br/>Would you like to start automatic update?', 'question')
+                self.getNewVersion()
             else:
                 MW.addMessage.emit('<a href="http://kcc.iosphe.re/">'
                                    '<b>New version is available!</b></a> '
                                    '(<a href="https://github.com/ciromattia/kcc/releases/">'
                                    'Changelog</a>)', 'warning', False)
 
-    def getNewVersion(self, dialogAnswer):
-        if dialogAnswer == QtWidgets.QMessageBox.Yes:
+    def setAnswer(self, dialogAnswer):
+        self.answer = dialogAnswer
+
+    def getNewVersion(self):
+        while self.answer is None:
+            sleep(1)
+        if self.answer == QtWidgets.QMessageBox.Yes:
             try:
                 MW.modeConvert.emit(-1)
                 MW.progressBarTick.emit('Downloading update')
@@ -279,9 +286,12 @@ class VersionThread(QtCore.QThread):
                 MW.modeConvert.emit(1)
 
     def getNewVersionTick(self, size, blockSize, totalSize):
+        progress = int((size / (totalSize // blockSize)) * 100)
         if size == 0:
-            MW.progressBarTick.emit(str(int(totalSize / blockSize)))
-        MW.progressBarTick.emit('tick')
+            MW.progressBarTick.emit('100')
+        if progress > self.barProgress:
+            self.barProgress = progress
+            MW.progressBarTick.emit('tick')
 
 
 class ProgressThread(QtCore.QThread):
@@ -885,9 +895,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if kind == 'error':
             QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
         elif kind == 'question':
-            dialogResponse = QtWidgets.QMessageBox.question(MW, 'KCC - Question', message,
-                                                            QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
-            MW.dialogAnswer.emit(dialogResponse)
+            GUI.versionCheck.setAnswer(QtWidgets.QMessageBox.question(MW, 'KCC - Question', message,
+                                                                          QtWidgets.QMessageBox.Yes,
+                                                                          QtWidgets.QMessageBox.No))
 
     def updateProgressbar(self, command):
         if command == 'tick':
@@ -1230,7 +1240,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW.showDialog.connect(self.showDialog)
         MW.hideProgressBar.connect(self.hideProgressBar)
         MW.forceShutdown.connect(self.forceShutdown)
-        MW.dialogAnswer.connect(self.versionCheck.getNewVersion)
         MW.closeEvent = self.saveSettings
         MW.addTrayMessage.connect(self.tray.addTrayMessage)
 
