@@ -1077,16 +1077,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW = KCCWindow
         GUI = self
         self.setupUi(MW)
-        # User settings will be reverted to default ones if were created in one of the following versions
-        # Empty string cover all versions before this system was implemented
-        purgeSettingsVersions = ['']
         self.icons = Icons()
         self.webContent = KCC_rc_web.WebContent()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
-        if self.settingsVersion in purgeSettingsVersions:
-            QtCore.QSettings.clear(self.settings)
-            self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
         self.currentMode = self.settings.value('currentMode', 1, type=int)
