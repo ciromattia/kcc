@@ -158,6 +158,10 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu!-KoAH2O.cbz)
 
 ## CHANGELOG
+####4.4.1:
+* Fixed problems with OSX GUI
+* Added one missing DLL to Windows installer
+
 ####4.4:
 * Improved speed and quality of conversion
 * Added RAR5 support
