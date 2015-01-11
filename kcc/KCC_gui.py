@@ -17,7 +17,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '4.4'
+__version__ = '4.4.1'
 __license__ = 'ISC'
 __copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
 __docformat__ = 'restructuredtext en'
@@ -37,6 +37,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.dom.minidom import parse
 from psutil import Popen, Process
 from copy import copy
+from distutils.version import StrictVersion
 from .shared import md5Checksum, HTMLStripper
 from . import comic2ebook
 from . import KCC_rc_web
@@ -103,7 +104,6 @@ class QMainWindowKCC(QtWidgets.QMainWindow):
     showDialog = QtCore.pyqtSignal(str, str)
     hideProgressBar = QtCore.pyqtSignal()
     forceShutdown = QtCore.pyqtSignal()
-    dialogAnswer = QtCore.pyqtSignal(int)
 
 
 class Icons:
@@ -233,6 +233,8 @@ class VersionThread(QtCore.QThread):
         QtCore.QThread.__init__(self)
         self.newVersion = ''
         self.md5 = ''
+        self.barProgress = 0
+        self.answer = None
 
     def __del__(self):
         self.wait()
@@ -244,22 +246,28 @@ class VersionThread(QtCore.QThread):
         except Exception:
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
-        if tuple(map(int, (latestVersion.split(".")))) > tuple(map(int, (__version__.split(".")))):
+        if StrictVersion(latestVersion) > StrictVersion(__version__):
             if sys.platform.startswith('win'):
                 self.newVersion = latestVersion
                 self.md5 = XML.childNodes[0].getElementsByTagName('WindowsMD5')[0].childNodes[0].toxml()
                 MW.showDialog.emit('<b>New version released!</b> <a href="https://github.com/ciromattia/kcc/releases/">'
-                                   'See changelog.</a><<br/><br/>Installed version: ' + __version__ +
+                                   'See changelog.</a><br/><br/>Installed version: ' + __version__ +
                                    '<br/>Current version: ' + latestVersion +
                                    '<br/><br/>Would you like to start automatic update?', 'question')
+                self.getNewVersion()
             else:
                 MW.addMessage.emit('<a href="http://kcc.iosphe.re/">'
                                    '<b>New version is available!</b></a> '
                                    '(<a href="https://github.com/ciromattia/kcc/releases/">'
                                    'Changelog</a>)', 'warning', False)
 
-    def getNewVersion(self, dialogAnswer):
-        if dialogAnswer == QtWidgets.QMessageBox.Yes:
+    def setAnswer(self, dialogAnswer):
+        self.answer = dialogAnswer
+
+    def getNewVersion(self):
+        while self.answer is None:
+            sleep(1)
+        if self.answer == QtWidgets.QMessageBox.Yes:
             try:
                 MW.modeConvert.emit(-1)
                 MW.progressBarTick.emit('Downloading update')
@@ -278,9 +286,12 @@ class VersionThread(QtCore.QThread):
                 MW.modeConvert.emit(1)
 
     def getNewVersionTick(self, size, blockSize, totalSize):
+        progress = int((size / (totalSize // blockSize)) * 100)
         if size == 0:
-            MW.progressBarTick.emit(str(int(totalSize / blockSize)))
-        MW.progressBarTick.emit('tick')
+            MW.progressBarTick.emit('100')
+        if progress > self.barProgress:
+            self.barProgress = progress
+            MW.progressBarTick.emit('tick')
 
 
 class ProgressThread(QtCore.QThread):
@@ -884,9 +895,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
         if kind == 'error':
             QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
         elif kind == 'question':
-            dialogResponse = QtWidgets.QMessageBox.question(MW, 'KCC - Question', message,
-                                                            QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
-            MW.dialogAnswer.emit(dialogResponse)
+            GUI.versionCheck.setAnswer(QtWidgets.QMessageBox.question(MW, 'KCC - Question', message,
+                                                                          QtWidgets.QMessageBox.Yes,
+                                                                          QtWidgets.QMessageBox.No))
 
     def updateProgressbar(self, command):
         if command == 'tick':
@@ -1045,11 +1056,9 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 line = line.decode("utf-8")
                 if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
-                    if tuple(map(int, (versionCheck.split(".")))) < tuple(map(int, ('2.9'.split(".")))):
+                    if StrictVersion(versionCheck) < StrictVersion('2.9'):
                         self.addMessage('Your <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                        '1000765211">KindleGen</a> is outdated! Creating MOBI might fail.'
-                                        ' Please update <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                        '1000765211">KindleGen</a> from Amazon\'s website.', 'warning')
+                                        '1000765211">KindleGen</a> is outdated! MOBI conversion might fail.', 'warning')
                     break
         else:
             self.KindleGen = False
@@ -1068,16 +1077,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW = KCCWindow
         GUI = self
         self.setupUi(MW)
-        # User settings will be reverted to default ones if were created in one of the following versions
-        # Empty string cover all versions before this system was implemented
-        purgeSettingsVersions = ['']
         self.icons = Icons()
         self.webContent = KCC_rc_web.WebContent()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
-        if self.settingsVersion in purgeSettingsVersions:
-            QtCore.QSettings.clear(self.settings)
-            self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
         self.currentMode = self.settings.value('currentMode', 1, type=int)
@@ -1231,7 +1234,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW.showDialog.connect(self.showDialog)
         MW.hideProgressBar.connect(self.hideProgressBar)
         MW.forceShutdown.connect(self.forceShutdown)
-        MW.dialogAnswer.connect(self.versionCheck.getNewVersion)
         MW.closeEvent = self.saveSettings
         MW.addTrayMessage.connect(self.tray.addTrayMessage)
 

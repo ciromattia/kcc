@@ -14,7 +14,7 @@ if version_info[0] != 3:
     exit(1)
 
 NAME = "KindleComicConverter"
-VERSION = "4.4"
+VERSION = "4.4.1"
 MAIN = "kcc.py"
 
 if platform == "darwin":
@@ -26,8 +26,7 @@ if platform == "darwin":
             py2app=dict(
                 argv_emulation=True,
                 iconfile='icons/comic2ebook.icns',
-                includes=['PIL', 'sip', 'PyQt5', 'PyQt5.QtCore', 'PyQt5.QtGui', 'PyQt5.QtNetwork', 'PyQt5.QtWidgets',
-                          'PyQt5.QtPrintSupport'],
+                includes=['sip', 'PyQt5.QtPrintSupport'],
                 resources=['LICENSE.txt', 'other/qt.conf', 'other/Additional-LICENSE.txt', 'other/unrar', 'other/7za'],
                 plist=dict(
                     CFBundleName=NAME,
@@ -35,8 +34,6 @@ if platform == "darwin":
                     CFBundleGetInfoString=NAME + " " + VERSION +
                     ", written 2012-2015 by Ciro Mattia Gonano and Pawel Jastrzebski",
                     CFBundleExecutable=NAME,
-                    CFBundleIdentifier='com.github.ciromattia.kcc',
-                    CFBundleSignature='dplt',
                     CFBundleDocumentTypes=[
                         dict(
                             CFBundleTypeExtensions=['cbz', 'cbr', 'cb7', 'zip', 'rar', '7z', 'pdf'],
@@ -69,6 +66,7 @@ elif platform == "win32":
                               'other\\7za.exe',
                               'other\\UnRAR.exe',
                               'other\\Additional-LICENSE.txt',
+                              'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libGLESv2.dll',
                               'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libEGL.dll'])]
     extra_options = dict(
         options={'py2exe': {"bundle_files": 1,

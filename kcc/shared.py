@@ -23,6 +23,7 @@ __docformat__ = 'restructuredtext en'
 import os
 from hashlib import md5
 from html.parser import HTMLParser
+from distutils.version import StrictVersion
 
 
 class HTMLStripper(HTMLParser):
@@ -81,25 +82,27 @@ def dependencyCheck(level):
     missing = []
     if level > 2:
         try:
-            from PyQt5 import QtCore, QtNetwork, QtWidgets
-            if tuple(map(int, ('5.2.0'.split(".")))) > tuple(map(int, (QtCore.qVersion().split(".")))):
-                missing.append('PyQt5 5.2.0+')
+            from PyQt5.QtCore import qVersion as qtVersion
+            if StrictVersion('5.2.0') > StrictVersion(qtVersion()):
+                missing.append('PyQt 5.2.0+')
         except ImportError:
-            missing.append('PyQt5 5.2.0+')
+            missing.append('PyQt 5.2.0+')
     if level > 1:
         try:
-            import psutil
-            if tuple(map(int, ('2.0.0'.split(".")))) > tuple(map(int, psutil.version_info)):
+            from psutil import __version__ as psutilVersion
+            if StrictVersion('2.0.0') > StrictVersion(psutilVersion):
                 missing.append('psutil 2.0.0+')
         except ImportError:
             missing.append('psutil 2.0.0+')
         try:
-            import slugify
+            from slugify import __version__ as slugifyVersion
+            if StrictVersion('0.1.0') > StrictVersion(slugifyVersion):
+                missing.append('python-slugify 0.1.0+')
         except ImportError:
-            missing.append('python-slugify')
+            missing.append('python-slugify 0.1.0+')
     try:
-        import PIL
-        if tuple(map(int, ('2.7.0'.split(".")))) > tuple(map(int, (PIL.PILLOW_VERSION.split(".")))):
+        from PIL import PILLOW_VERSION as pillowVersion
+        if StrictVersion('2.7.0') > StrictVersion(pillowVersion):
             missing.append('Pillow 2.7.0+')
     except ImportError:
         missing.append('Pillow 2.7.0+')
