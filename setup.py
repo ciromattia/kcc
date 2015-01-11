@@ -66,6 +66,7 @@ elif platform == "win32":
                               'other\\7za.exe',
                               'other\\UnRAR.exe',
                               'other\\Additional-LICENSE.txt',
+                              'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libGLESv2.dll',
                               'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libEGL.dll'])]
     extra_options = dict(
         options={'py2exe': {"bundle_files": 1,
