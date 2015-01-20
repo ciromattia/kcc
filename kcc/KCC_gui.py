@@ -17,11 +17,6 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '4.4.1'
-__license__ = 'ISC'
-__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
-__docformat__ = 'restructuredtext en'
-
 import os
 import sys
 from urllib.parse import unquote
@@ -41,6 +36,7 @@ from distutils.version import StrictVersion
 from .shared import md5Checksum, HTMLStripper
 from . import comic2ebook
 from . import KCC_rc_web
+from . import __version__
 if sys.platform.startswith('darwin'):
     from . import KCC_ui_osx as KCC_ui
 elif sys.platform.startswith('linux'):

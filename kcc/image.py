@@ -16,11 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = '4.4.1'
-__license__ = 'ISC'
-__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
-__docformat__ = 'restructuredtext en'
-
 import os
 from io import BytesIO
 from urllib.request import Request, urlopen
@@ -28,6 +23,7 @@ from urllib.parse import quote
 from functools import reduce
 from PIL import Image, ImageOps, ImageStat, ImageChops
 from .shared import md5Checksum
+from . import __version__
 
 
 class ProfileData:

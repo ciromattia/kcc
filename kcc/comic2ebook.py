@@ -18,11 +18,6 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-__version__ = '4.4.1'
-__license__ = 'ISC'
-__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
-__docformat__ = 'restructuredtext en'
-
 import os
 import sys
 from copy import copy
@@ -52,6 +47,7 @@ from . import image
 from . import cbxarchive
 from . import pdfjpgextract
 from . import dualmetafix
+from . import __version__
 
 
 def main(argv=None):

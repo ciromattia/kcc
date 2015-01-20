@@ -16,10 +16,6 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-__license__ = 'ISC'
-__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
-__docformat__ = 'restructuredtext en'
-
 import os
 from hashlib import md5
 from html.parser import HTMLParser
@@ -107,12 +103,5 @@ def dependencyCheck(level):
     except ImportError:
         missing.append('Pillow 2.7.0+')
     if len(missing) > 0:
-        try:
-            import tkinter
-            import tkinter.messagebox
-            importRoot = tkinter.Tk()
-            importRoot.withdraw()
-            tkinter.messagebox.showerror('KCC - Error', 'ERROR: ' + ', '.join(missing) + ' is not installed!')
-        except ImportError:
-            print('ERROR: ' + ', '.join(missing) + ' is not installed!')
+        print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         exit(1)
