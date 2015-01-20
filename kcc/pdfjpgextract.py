@@ -19,10 +19,6 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-__license__ = 'ISC'
-__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
-__docformat__ = 'restructuredtext en'
-
 import os
 from random import choice
 from string import ascii_uppercase, digits
