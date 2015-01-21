@@ -508,7 +508,7 @@ class Cover:
     def processExternal(self):
         self.image = self.image.convert('RGB')
         self.image.thumbnail(self.options.profileData[1], Image.LANCZOS)
-        self.save(True)
+        self.save()
 
     def trim(self):
         bg = Image.new(self.image.mode, self.image.size, self.image.getpixel((0, 0)))
@@ -520,15 +520,8 @@ class Cover:
         else:
             return self.image
 
-    def save(self, external=False):
-        if external:
-            source = self.options.remoteCovers[self.tomeNumber].split('/')[-1]
-        else:
-            source = self.source
+    def save(self):
         try:
-            if os.path.splitext(source)[1].lower() == '.png':
-                self.image.save(self.target, "PNG", optimize=1)
-            else:
-                self.image.save(self.target, "JPEG", optimize=1, quality=80)
+            self.image.save(self.target, "JPEG", optimize=1, quality=80)
         except IOError:
             raise RuntimeError('Failed to save cover')

@@ -24,7 +24,7 @@ from copy import copy
 from glob import glob
 from json import loads
 from urllib.request import Request, urlopen
-from re import split, sub
+from re import split, sub, compile
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp
@@ -675,23 +675,23 @@ def getComicInfo(path, originalPath):
             options.authors.sort()
         else:
             options.authors = ['KCC']
-        # Disabled due to closure of MCD
-        # if len(xml.getElementsByTagName('ScanInformation')) != 0:
-        #    coverId = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
-        #    coverId = compile('(MCD\\()(\\d+)(\\))').search(coverId)
-        #    if coverId:
-        #        options.remoteCovers = getCoversFromMCB(coverId.group(2))
+        if len(xml.getElementsByTagName('ScanInformation')) != 0:
+            coverId = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
+            coverId = compile('(MCD\\()(\\d+)(\\))').search(coverId)
+            if coverId:
+                options.remoteCovers = getCoversFromMCB(coverId.group(2))
         os.remove(xmlPath)
 
 
 def getCoversFromMCB(mangaID):
     covers = {}
     try:
-        jsonRaw = urlopen(Request('http://manga.joentjuh.nl/json/series/' + mangaID + '/',
+        jsonRaw = urlopen(Request('http://mcd.iosphe.re/api/v1/series/' + mangaID + '/',
                                   headers={'User-Agent': 'KindleComicConverter/' + __version__}))
         jsonData = loads(jsonRaw.readall().decode('utf-8'))
-        for volume in jsonData['volumes']:
-            covers[int(volume['volume'])] = volume['releases'][0]['files']['front']['url']
+        for volume in jsonData['Covers']['a']:
+            if volume['Side'] == 'front':
+                covers[int(volume['Volume'])] = volume['Raw']
     except Exception:
         return {}
     return covers
