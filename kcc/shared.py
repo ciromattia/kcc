@@ -20,6 +20,7 @@ import os
 from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
+from scandir import walk
 
 
 class HTMLStripper(HTMLParser):
@@ -49,7 +50,7 @@ def walkLevel(some_dir, level=1):
     some_dir = some_dir.rstrip(os.path.sep)
     assert os.path.isdir(some_dir)
     num_sep = some_dir.count(os.path.sep)
-    for root, dirs, files in os.walk(some_dir):
+    for root, dirs, files in walk(some_dir):
         yield root, dirs, files
         num_sep_this = root.count(os.path.sep)
         if num_sep + level <= num_sep_this:
@@ -102,6 +103,12 @@ def dependencyCheck(level):
             missing.append('Pillow 2.7.0+')
     except ImportError:
         missing.append('Pillow 2.7.0+')
+    try:
+        from scandir import __version__ as scandirVersion
+        if StrictVersion('0.9') > StrictVersion(scandirVersion):
+            missing.append('scandir 0.9+')
+    except ImportError:
+        missing.append('scandir 0.9+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         exit(1)

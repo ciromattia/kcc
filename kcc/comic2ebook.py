@@ -37,6 +37,7 @@ from slugify import slugify as slugifyExt
 from PIL import Image
 from subprocess import STDOUT, PIPE
 from psutil import Popen, virtual_memory
+from scandir import walk
 try:
     from PyQt5 import QtCore
 except ImportError:
@@ -412,7 +413,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "}",
                   ])
     f.close()
-    for (dirpath, dirnames, filenames) in os.walk(os.path.join(path, 'OEBPS', 'Images')):
+    for (dirpath, dirnames, filenames) in walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
         for afile in filenames:
             filename = getImageFileName(afile)
@@ -463,7 +464,7 @@ def imgDirectoryProcessing(path):
     options.imgPurgeIndex = []
     work = []
     pagenumber = 0
-    for (dirpath, dirnames, filenames) in os.walk(path):
+    for (dirpath, dirnames, filenames) in walk(path):
         for afile in filenames:
             pagenumber += 1
             work.append([afile, dirpath, options])
@@ -698,7 +699,7 @@ def getCoversFromMCB(mangaID):
 
 def getDirectorySize(start_path='.'):
     total_size = 0
-    for dirpath, dirnames, filenames in os.walk(start_path):
+    for dirpath, dirnames, filenames in walk(start_path):
         for f in filenames:
             fp = os.path.join(dirpath, f)
             total_size += os.path.getsize(fp)
@@ -707,7 +708,7 @@ def getDirectorySize(start_path='.'):
 
 def sanitizeTree(filetree):
     chapterNames = {}
-    for root, dirs, files in os.walk(filetree, False):
+    for root, dirs, files in walk(filetree, False):
         for name in files:
             splitname = os.path.splitext(name)
             slugified = slugify(splitname[0])
@@ -733,7 +734,7 @@ def sanitizeTree(filetree):
 
 def sanitizeTreeKobo(filetree):
     pageNumber = 0
-    for root, dirs, files in os.walk(filetree):
+    for root, dirs, files in walk(filetree):
         files.sort()
         dirs.sort()
         for name in files:
@@ -750,7 +751,7 @@ def sanitizeTreeKobo(filetree):
 
 
 def sanitizePermissions(filetree):
-    for root, dirs, files in os.walk(filetree, False):
+    for root, dirs, files in walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
@@ -882,7 +883,7 @@ def splitProcess(path, mode):
 
 
 def detectCorruption(tmpPath, orgPath):
-    for root, dirs, files in os.walk(tmpPath, False):
+    for root, dirs, files in walk(tmpPath, False):
         for name in files:
             if getImageFileName(name) is not None:
                 path = os.path.join(root, name)
@@ -949,7 +950,7 @@ def makeZIP(zipFilename, baseDir, isEPUB=False):
     zipOutput = ZipFile(zipFilename, 'w', ZIP_DEFLATED)
     if isEPUB:
         zipOutput.writestr('mimetype', 'application/epub+zip', ZIP_STORED)
-    for dirpath, dirnames, filenames in os.walk(baseDir):
+    for dirpath, dirnames, filenames in walk(baseDir):
         for name in filenames:
             path = os.path.normpath(os.path.join(dirpath, name))
             aPath = os.path.normpath(os.path.join(dirpath.replace(baseDir, ''), name))

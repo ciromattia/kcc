@@ -48,11 +48,12 @@ You can find the latest released binary at the following links:
 - [Pillow](http://pypi.python.org/pypi/Pillow/) 2.7.0+
 - [psutil](https://pypi.python.org/pypi/psutil) 2.0+
 - [python-slugify](http://pypi.python.org/pypi/python-slugify) 0.1.0+
+- [scandir](https://pypi.python.org/pypi/scandir) 0.9+
 
 On Debian based distributions these two commands should install all dependencies:
 ```
 sudo apt-get install python3 python3-dev python3-pip python3-pyqt5 libpng-dev libjpeg-dev p7zip-full unrar
-sudo pip3 install pillow python-slugify psutil
+sudo pip3 install pillow python-slugify psutil scandir
 ```
 
 ### For freezing code:
