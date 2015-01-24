@@ -42,7 +42,7 @@ try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
-from .shared import md5Checksum, getImageFileName, walkLevel
+from .shared import md5Checksum, getImageFileName, walkLevel, saferReplace
 from . import comic2panel
 from . import image
 from . import cbxarchive
@@ -718,7 +718,7 @@ def sanitizeTree(filetree):
             newKey = os.path.join(root, slugified + splitname[1])
             key = os.path.join(root, name)
             if key != newKey:
-                os.replace(key, newKey)
+                saferReplace(key, newKey)
         for name in dirs:
             tmpName = name
             slugified = slugify(name)
@@ -728,7 +728,7 @@ def sanitizeTree(filetree):
             newKey = os.path.join(root, slugified)
             key = os.path.join(root, name)
             if key != newKey:
-                os.replace(key, newKey)
+                saferReplace(key, newKey)
     return chapterNames
 
 
@@ -747,7 +747,7 @@ def sanitizeTreeKobo(filetree):
             newKey = os.path.join(root, slugified + splitname[1])
             key = os.path.join(root, name)
             if key != newKey:
-                os.replace(key, newKey)
+                saferReplace(key, newKey)
 
 
 def sanitizePermissions(filetree):

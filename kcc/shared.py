@@ -21,6 +21,7 @@ from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
 from scandir import walk
+from time import sleep
 
 
 class HTMLStripper(HTMLParser):
@@ -72,6 +73,18 @@ def check7ZFile(filePath):
     with open(filePath, 'rb') as fh:
         header = fh.read(6)
     return header == b"7z\xbc\xaf'\x1c"
+
+
+def saferReplace(old, new):
+    for x in range(5):
+        try:
+            os.replace(old, new)
+        except PermissionError:
+            sleep(5)
+        else:
+            break
+    else:
+        raise PermissionError
 
 
 # noinspection PyUnresolvedReferences
