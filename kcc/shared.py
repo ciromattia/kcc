@@ -22,6 +22,9 @@ from html.parser import HTMLParser
 from distutils.version import StrictVersion
 from scandir import walk
 from time import sleep
+from shutil import rmtree, move
+from tempfile import mkdtemp
+from zipfile import ZipFile, ZIP_DEFLATED
 
 
 class HTMLStripper(HTMLParser):
@@ -85,6 +88,20 @@ def saferReplace(old, new):
             break
     else:
         raise PermissionError
+
+
+def removeFromZIP(zipfname, *filenames):
+    tempdir = mkdtemp('', 'KCC-TMP-')
+    try:
+        tempname = os.path.join(tempdir, 'KCC-TMP.zip')
+        with ZipFile(zipfname, 'r') as zipread:
+            with ZipFile(tempname, 'w', compression=ZIP_DEFLATED) as zipwrite:
+                for item in zipread.infolist():
+                    if item.filename not in filenames:
+                        zipwrite.writestr(item, zipread.read(item.filename))
+        move(tempname, zipfname)
+    finally:
+        rmtree(tempdir)
 
 
 # noinspection PyUnresolvedReferences
