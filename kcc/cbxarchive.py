@@ -23,7 +23,7 @@ from subprocess import STDOUT, PIPE
 from psutil import Popen
 from shutil import move, copy
 from . import rarfile
-from .shared import check7ZFile as is_7zfile
+from .shared import check7ZFile as is_7zfile, saferReplace
 
 
 class CBxArchive:
@@ -101,7 +101,7 @@ class CBxArchive:
             for f in os.listdir(os.path.join(targetdir, adir[0])):
                 # If directory names contain UTF-8 chars shutil.move can't clean up the mess alone
                 if os.path.isdir(os.path.join(targetdir, f)):
-                    os.replace(os.path.join(targetdir, adir[0], f), os.path.join(targetdir, adir[0], f + '-A'))
+                    saferReplace(os.path.join(targetdir, adir[0], f), os.path.join(targetdir, adir[0], f + '-A'))
                     f += '-A'
                 move(os.path.join(targetdir, adir[0], f), targetdir)
             os.rmdir(os.path.join(targetdir, adir[0]))
