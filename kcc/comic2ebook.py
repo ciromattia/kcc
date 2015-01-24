@@ -24,14 +24,13 @@ from copy import copy
 from glob import glob
 from json import loads
 from urllib.request import Request, urlopen
-from re import split, sub, compile
+from re import split, sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp
 from shutil import move, copytree, rmtree
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
-from xml.dom.minidom import parse
 from uuid import uuid4
 from slugify import slugify as slugifyExt
 from PIL import Image
@@ -48,6 +47,7 @@ from . import image
 from . import cbxarchive
 from . import pdfjpgextract
 from . import dualmetafix
+from . import metadata
 from . import __version__
 
 
@@ -165,7 +165,7 @@ def buildHTML(path, imgfile, imgfilepath):
                           "'{\"targetId\":\"" + boxes[i] + "-Panel-Parent\", \"ordinal\":" + str(order[i]),
                           "}'></a></div>\n"])
         if options.quality == 2:
-            imgfilepv = str.split(imgfile, ".")
+            imgfilepv = imgfile.split(".")
             imgfilepv[0] += "-hq"
             imgfilepv = ".".join(imgfilepv)
         else:
@@ -641,45 +641,29 @@ def getComicInfo(path, originalPath):
         defaultTitle = False
     if os.path.exists(xmlPath):
         try:
-            xml = parse(xmlPath)
+            xml = metadata.MetadataParser(xmlPath)
         except Exception:
             os.remove(xmlPath)
             return
         options.authors = []
         if defaultTitle:
-            if len(xml.getElementsByTagName('Series')) != 0:
-                options.title = xml.getElementsByTagName('Series')[0].firstChild.nodeValue
-            if len(xml.getElementsByTagName('Volume')) != 0:
-                titleSuffix += ' V' + xml.getElementsByTagName('Volume')[0].firstChild.nodeValue
-            if len(xml.getElementsByTagName('Number')) != 0:
-                titleSuffix += ' #' + xml.getElementsByTagName('Number')[0].firstChild.nodeValue
+            if xml.data['Series']:
+                options.title = xml.data['Series']
+            if xml.data['Volume']:
+                titleSuffix += ' V' + xml.data['Volume']
+            if xml.data['Number']:
+                titleSuffix += ' #' + xml.data['Number']
             options.title += titleSuffix
-        if len(xml.getElementsByTagName('Writer')) != 0:
-            authorsTemp = str.split(xml.getElementsByTagName('Writer')[0].firstChild.nodeValue, ', ')
-            for author in authorsTemp:
-                options.authors.append(author)
-        if len(xml.getElementsByTagName('Penciller')) != 0:
-            authorsTemp = str.split(xml.getElementsByTagName('Penciller')[0].firstChild.nodeValue, ', ')
-            for author in authorsTemp:
-                options.authors.append(author)
-        if len(xml.getElementsByTagName('Inker')) != 0:
-            authorsTemp = str.split(xml.getElementsByTagName('Inker')[0].firstChild.nodeValue, ', ')
-            for author in authorsTemp:
-                options.authors.append(author)
-        if len(xml.getElementsByTagName('Colorist')) != 0:
-            authorsTemp = str.split(xml.getElementsByTagName('Colorist')[0].firstChild.nodeValue, ', ')
-            for author in authorsTemp:
-                options.authors.append(author)
+        for field in ['Writers', 'Pencillers', 'Inkers', 'Colorists']:
+            for person in xml.data[field]:
+                options.authors.append(person)
         if len(options.authors) > 0:
             options.authors = list(set(options.authors))
             options.authors.sort()
         else:
             options.authors = ['KCC']
-        if len(xml.getElementsByTagName('ScanInformation')) != 0:
-            coverId = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
-            coverId = compile('(MCD\\()(\\d+)(\\))').search(coverId)
-            if coverId:
-                options.remoteCovers = getCoversFromMCB(coverId.group(2))
+        if xml.data['MUid']:
+            options.remoteCovers = getCoversFromMCB(xml.data['MUid'])
         os.remove(xmlPath)
 
 
