@@ -72,7 +72,7 @@ def main(argv=None):
     return outputPath
 
 
-def buildHTML(path, imgfile, imgfilepath):
+def buildHTML(path, imgfile, imgfilepath, forcePV=False):
     imgfilepath = md5Checksum(imgfilepath)
     filename = getImageFileName(imgfile)
     if options.imgproc:
@@ -97,6 +97,10 @@ def buildHTML(path, imgfile, imgfilepath):
         noPV = False
         noHorizontalPV = False
         noVerticalPV = False
+    if forcePV and noPV:
+        noPV = False
+        noHorizontalPV = True
+        noVerticalPV = True
     htmlpath = ''
     postfix = ''
     backref = 1
@@ -126,7 +130,8 @@ def buildHTML(path, imgfile, imgfilepath):
                   "<div><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
                   imgfile, "\" class=\"singlePage\"/></div>\n"
                   ])
-    if options.panelview and not noPV:
+    if (options.panelview or forcePV) and not noPV:
+        options.panelviewused = True
         if not noHorizontalPV and not noVerticalPV:
             if rotatedPage:
                 if options.righttoleft:
@@ -301,6 +306,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
     filelist = []
     chapterlist = []
     cover = None
+    lastfile = None
     _, deviceres, _, _, panelviewsize = options.profileData
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w', encoding='UTF-8')
@@ -419,6 +425,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
             filename = getImageFileName(afile)
             if '-kcc-hq' not in filename[0]:
                 filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
+                lastfile = (dirpath, afile, os.path.join(dirpath, afile))
                 if not chapter:
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
                     chapter = True
@@ -426,6 +433,9 @@ def buildEPUB(path, chapterNames, tomeNumber):
                     cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
                                          'cover' + getImageFileName(filelist[-1][1])[1])
                     image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options, tomeNumber)
+    if lastfile and not options.panelviewused and 'Ko' not in options.profile \
+            and options.profile not in ['K1', 'K2', 'KDX', 'OTHER']:
+        filelist[-1] = buildHTML(lastfile[0], lastfile[1], lastfile[2], True)
     buildNCX(path, options.title, chapterlist, chapterNames)
     # Ensure we're sorting files alphabetically
     convert = lambda text: int(text) if text.isdigit() else text
@@ -1015,6 +1025,7 @@ def makeParser():
 def checkOptions():
     global options
     options.panelview = True
+    options.panelviewused = False
     options.bordersColor = None
     if options.format == 'Auto':
         if options.profile in ['K1', 'K2', 'K345', 'KPW', 'KV', 'KFHD', 'KFHDX', 'KFHDX8', 'KFA']:
