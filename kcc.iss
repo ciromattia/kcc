@@ -20,7 +20,6 @@ LicenseFile=LICENSE.txt
 OutputBaseFilename=KindleComicConverter_win_{#MyAppVersion}
 SetupIconFile=icons\comic2ebook.ico
 SolidCompression=yes
-ArchitecturesInstallIn64BitMode=x64
 ShowLanguageDialog=no
 LanguageDetectionMethod=none
 WizardImageFile=icons\Wizard.bmp
@@ -42,21 +41,14 @@ Name: "CBRassociation"; Description: "CBR"; GroupDescription: "File associations
 Name: "CB7association"; Description: "CB7"; GroupDescription: "File associations:"
 
 [Files]
-; x64 files
-Source: "dist_64\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "dist_64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "dist_64\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "other\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: Is64BitInstallMode
-; x86 files
-Source: "dist\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "dist\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "other\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: not Is64BitInstallMode
-; Common files
-Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
+Source: "dist\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion;
+Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "dist\*.dll"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "other\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "other\UnRAR.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "other\7za.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "other\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall;
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -65,8 +57,7 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: 
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall
-Filename: "{tmp}\vcredist_x64.exe"; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: "Installing Microsoft Visual C++ 2010 Redistributable Package..."; Check: Is64BitInstallMode
-Filename: "{tmp}\vcredist_x86.exe"; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: "Installing Microsoft Visual C++ 2010 Redistributable Package..."; Check: not Is64BitInstallMode
+Filename: "{tmp}\vcredist_x86.exe"; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: "Installing Microsoft Visual C++ 2010 Redistributable Package...";
 
 [Messages]
 WelcomeLabel1=Welcome to the KCC Setup Wizard
@@ -85,3 +76,49 @@ Root: HKCR; SubKey: ".cb7"; ValueType: string; ValueData: "KCCCB7"; Flags: unins
 Root: HKCR; SubKey: "KCCCB7"; ValueType: string; ValueData: "KCC 7z Archive"; Flags: uninsdeletekey; Tasks: CB7association
 Root: HKCR; SubKey: "KCCCB7\Shell\Open\Command"; ValueType: string; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: CB7association
 Root: HKCR; Subkey: "KCCCB7\DefaultIcon"; ValueType: string; ValueData: "{app}\{#MyAppExeName},0"; Flags: uninsdeletevalue; Tasks: CB7association
+
+[Code]
+function GetUninstallString(): String;
+var
+  sUnInstPath: String;
+  sUnInstallString: String;
+begin
+  sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\{#emit SetupSetting("AppId")}_is1');
+  sUnInstallString := '';
+  if not RegQueryStringValue(HKLM, sUnInstPath, 'UninstallString', sUnInstallString) then
+    RegQueryStringValue(HKCU, sUnInstPath, 'UninstallString', sUnInstallString);
+  Result := sUnInstallString;
+end;
+
+function IsUpgrade(): Boolean;
+begin
+  Result := (GetUninstallString() <> '');
+end;
+
+function UnInstallOldVersion(): Integer;
+var
+  sUnInstallString: String;
+  iResultCode: Integer;
+begin
+  Result := 0;
+  sUnInstallString := GetUninstallString();
+  if sUnInstallString <> '' then begin
+    sUnInstallString := RemoveQuotes(sUnInstallString);
+    if Exec(sUnInstallString, '/SILENT /NORESTART /SUPPRESSMSGBOXES','', SW_HIDE, ewWaitUntilTerminated, iResultCode) then
+      Result := 3
+    else
+      Result := 2;
+  end else
+    Result := 1;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if (CurStep=ssInstall) then
+  begin
+    if (IsUpgrade()) then
+    begin
+      UnInstallOldVersion();
+    end;
+  end;
+end;
