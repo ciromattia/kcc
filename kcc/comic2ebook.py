@@ -678,23 +678,39 @@ def getComicInfo(path, originalPath):
             options.authors.sort()
         else:
             options.authors = ['KCC']
-        # Disabled due to closure of MCD
-        # if len(xml.getElementsByTagName('ScanInformation')) != 0:
-        #    coverId = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
-        #    coverId = compile('(MCD\\()(\\d+)(\\))').search(coverId)
-        #    if coverId:
-        #        options.remoteCovers = getCoversFromMCB(coverId.group(2))
+
+         if len(xml.getElementsByTagName('ScanInformation')) != 0:
+            coverId = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
+            coverId = compile('(MCD\\()(\\d+)(\\))').search(coverId)
+            if coverId:
+                options.remoteCovers = getCoversFromMCB(coverId.group(2))
         os.remove(xmlPath)
 
 
 def getCoversFromMCB(mangaID):
+
+    API_URL = "http://mcd.iosphe.re/api/v1/series"
+    query = "{}/{}/".format(API_URL, mangaID)
+
     covers = {}
     try:
-        jsonRaw = urlopen(Request('http://manga.joentjuh.nl/json/series/' + mangaID + '/',
+        jsonRaw = urlopen(Request(query,
                                   headers={'User-Agent': 'KindleComicConverter/' + __version__}))
         jsonData = loads(jsonRaw.readall().decode('utf-8'))
-        for volume in jsonData['volumes']:
-            covers[int(volume['volume'])] = volume['releases'][0]['files']['front']['url']
+        for cover in jsonData['Covers']:
+          if cover['Side'] != 'front':
+            continue
+          cover_url = ''
+          if 'Raw' in cover:
+            cover_url = cover['Raw']
+          elif 'Normal' in cover:
+            cover_url = cover['Normal']
+          cover_volume = 0
+          if 'Volume' in cover:
+            cover_volume = cover['Volume']
+
+          cover[int(cover_volume)] = cover_url
+            #covers[int(volume['volume'])] = volume['releases'][0]['files']['front']['url']
     except Exception:
         return {}
     return covers
