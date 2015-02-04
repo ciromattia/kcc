@@ -491,6 +491,7 @@ class Cover:
             self.tomeNumber = 1
         else:
             self.tomeNumber = tomeNumber
+
         if self.tomeNumber in self.options.remoteCovers:
             try:
                 source = urlopen(Request(quote(self.options.remoteCovers[self.tomeNumber]).replace('%3A', ':', 1),
