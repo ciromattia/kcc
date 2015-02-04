@@ -491,13 +491,17 @@ class Cover:
             self.tomeNumber = 1
         else:
             self.tomeNumber = tomeNumber
+
+        print('looking for volume {} cover: {}'.format(self.tomeNumber, self.options.remoteCovers))
+
         if self.tomeNumber in self.options.remoteCovers:
             try:
                 source = urlopen(Request(quote(self.options.remoteCovers[self.tomeNumber]).replace('%3A', ':', 1),
                                          headers={'User-Agent': 'KindleComicConverter/' + __version__})).read()
                 self.image = Image.open(BytesIO(source))
                 self.processExternal()
-            except Exception:
+            except Exception as ex:
+                print('Remote cover exception', ex)
                 self.image = Image.open(source)
                 self.processInternal()
         else:
@@ -530,6 +534,9 @@ class Cover:
         else:
             source = self.source
         try:
+
+            print('image source', source)
+
             if os.path.splitext(source)[1].lower() == '.png':
                 self.image.save(self.target, "PNG", optimize=1)
             else:

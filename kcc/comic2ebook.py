@@ -24,10 +24,11 @@ __copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jas
 __docformat__ = 'restructuredtext en'
 
 import os
+import re
 import sys
+import json
 from copy import copy
 from glob import glob
-from json import loads
 from urllib.request import Request, urlopen
 from re import split, sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
@@ -679,39 +680,46 @@ def getComicInfo(path, originalPath):
         else:
             options.authors = ['KCC']
 
-         if len(xml.getElementsByTagName('ScanInformation')) != 0:
-            coverId = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
-            coverId = compile('(MCD\\()(\\d+)(\\))').search(coverId)
-            if coverId:
-                options.remoteCovers = getCoversFromMCB(coverId.group(2))
+        if len(xml.getElementsByTagName('ScanInformation')) != 0:
+          scanInfo = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
+          print("Found ComicRack scan informations: {}".format(scanInfo))
+          mangaId = re.compile('(MCD\\()(\\d+)(\\))').search(scanInfo)
+          if mangaId:
+              print("Found MCB manga ID: {}, ".format(mangaId, mangaId.group(2)))
+              options.remoteCovers = getCoversFromMCB(mangaId.group(2))
         os.remove(xmlPath)
 
 
 def getCoversFromMCB(mangaID):
+
+    print('extracting cover with mangaID: {}'.format(mangaID))
 
     API_URL = "http://mcd.iosphe.re/api/v1/series"
     query = "{}/{}/".format(API_URL, mangaID)
 
     covers = {}
     try:
-        jsonRaw = urlopen(Request(query,
-                                  headers={'User-Agent': 'KindleComicConverter/' + __version__}))
-        jsonData = loads(jsonRaw.readall().decode('utf-8'))
-        for cover in jsonData['Covers']:
-          if cover['Side'] != 'front':
-            continue
-          cover_url = ''
-          if 'Raw' in cover:
-            cover_url = cover['Raw']
-          elif 'Normal' in cover:
-            cover_url = cover['Normal']
-          cover_volume = 0
-          if 'Volume' in cover:
-            cover_volume = cover['Volume']
+      httpResp = urlopen(Request(query,
+                                headers={'User-Agent': 'KindleComicConverter/' + __version__}))
 
-          cover[int(cover_volume)] = cover_url
-            #covers[int(volume['volume'])] = volume['releases'][0]['files']['front']['url']
-    except Exception:
+      jsonRaw = httpResp.readall().decode('utf-8')
+      jsonData = json.loads(jsonRaw, encoding='utf-8')
+
+      for cover in jsonData['Covers']['a']:
+        if cover['Side'] != 'front':
+          continue
+        cover_url = ''
+        if 'Raw' in cover:
+          cover_url = cover['Raw']
+        elif 'Normal' in cover:
+          cover_url = cover['Normal']
+        cover_volume = 0
+        if 'Volume' in cover:
+          cover_volume = cover['Volume']
+
+        covers[int(cover_volume)] = cover_url
+        print("Found front cover for volume {}, url: {}".format(cover_volume, cover_url))
+    except Exception as ex:
         return {}
     return covers
 
