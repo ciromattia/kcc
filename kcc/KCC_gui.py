@@ -39,13 +39,18 @@ from . import __version__
 from . import comic2ebook
 from . import KCC_rc_web
 from . import metadata
-from . import KCC_MetaEditor_ui
 if sys.platform.startswith('darwin'):
     from . import KCC_ui_osx as KCC_ui
 elif sys.platform.startswith('linux'):
     from . import KCC_ui_linux as KCC_ui
 else:
     from . import KCC_ui
+if sys.platform.startswith('darwin'):
+    from . import KCC_MetaEditor_ui_osx as KCC_MetaEditor_ui
+elif sys.platform.startswith('linux'):
+    from . import KCC_MetaEditor_ui_linux as KCC_MetaEditor_ui
+else:
+    from . import KCC_MetaEditor_ui
 
 
 class QApplicationMessaging(QtWidgets.QApplication):
