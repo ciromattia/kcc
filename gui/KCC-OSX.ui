@@ -477,7 +477,7 @@
      <rect>
       <x>5</x>
       <y>10</y>
-      <width>210</width>
+      <width>156</width>
       <height>41</height>
      </rect>
     </property>
@@ -499,9 +499,9 @@
    <widget class="QPushButton" name="AdvModeButton">
     <property name="geometry">
      <rect>
-      <x>207</x>
+      <x>260</x>
       <y>10</y>
-      <width>210</width>
+      <width>156</width>
       <height>41</height>
      </rect>
     </property>
@@ -782,9 +782,34 @@
      </layout>
     </widget>
    </widget>
+   <widget class="QPushButton" name="EditorButton">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>10</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Lucida Grande</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Editor</string>
+    </property>
+    <property name="icon">
+     <iconset resource="KCC.qrc">
+      <normaloff>:/Other/icons/editor.png</normaloff>:/Other/icons/editor.png</iconset>
+    </property>
+   </widget>
    <zorder>BasicModeButton</zorder>
    <zorder>AdvModeButton</zorder>
-   <zorder>ProgressBar</zorder>
    <zorder>JobList</zorder>
    <zorder>OptionsAdvanced</zorder>
    <zorder>DeviceBox</zorder>
@@ -796,6 +821,8 @@
    <zorder>OptionsBasic</zorder>
    <zorder>OptionsAdvancedGamma</zorder>
    <zorder>OptionsExpert</zorder>
+   <zorder>EditorButton</zorder>
+   <zorder>ProgressBar</zorder>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="font">
