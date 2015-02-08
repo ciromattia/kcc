@@ -40,11 +40,13 @@ class MetadataParser:
                      'Colorists': [],
                      'MUid': ''}
         self.rawdata = None
+        self.compressor = None
         if self.source.endswith('.xml'):
             self.rawdata = parse(self.source)
             self.parseXML()
         else:
             if is_zipfile(self.source):
+                self.compressor = 'zip'
                 with ZipFile(self.source) as zip_file:
                     for member in zip_file.namelist():
                         if member != 'ComicInfo.xml':
@@ -52,6 +54,7 @@ class MetadataParser:
                         with zip_file.open(member) as xml_file:
                             self.rawdata = parse(xml_file)
             elif rarfile.is_rarfile(self.source):
+                self.compressor = 'rar'
                 with rarfile.RarFile(self.source) as rar_file:
                     for member in rar_file.namelist():
                         if member != 'ComicInfo.xml':
@@ -59,6 +62,7 @@ class MetadataParser:
                         with rar_file.open(member) as xml_file:
                             self.rawdata = parse(xml_file)
             elif is_7zfile(self.source):
+                self.compressor = '7z'
                 workdir = mkdtemp('', 'KCC-TMP-')
                 tmpXML = os.path.join(workdir, 'ComicInfo.xml')
                 output = Popen('7za e "' + self.source + '" ComicInfo.xml -o"' + workdir + '"',
@@ -134,13 +138,13 @@ class MetadataParser:
                     main.appendChild(text)
             self.rawdata = doc
         if self.source.endswith('.xml'):
-            with open(self.source, 'w') as f:
-                self.rawdata.writexml(f)
+            with open(self.source, 'w', encoding='utf-8') as f:
+                self.rawdata.writexml(f, encoding='utf-8')
         else:
             workdir = mkdtemp('', 'KCC-TMP-')
             tmpXML = os.path.join(workdir, 'ComicInfo.xml')
-            with open(tmpXML, 'w') as f:
-                self.rawdata.writexml(f)
+            with open(tmpXML, 'w', encoding='utf-8') as f:
+                self.rawdata.writexml(f, encoding='utf-8')
             if is_zipfile(self.source):
                 removeFromZIP(self.source, 'ComicInfo.xml')
                 with ZipFile(self.source, mode='a', compression=ZIP_DEFLATED) as zip_file:
