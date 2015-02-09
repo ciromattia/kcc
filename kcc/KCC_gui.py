@@ -1335,14 +1335,10 @@ class KCCGUI_MetaEditor(KCC_MetaEditor_ui.Ui_MetaEditorDialog):
             self.EditorFrame.setEnabled(True)
             self.OKButton.setEnabled(True)
             self.StatusLabel.setText('Separate authors with a comma.')
-        self.SeriesLine.setText(self.parser.data['Series'])
-        self.VolumeLine.setText(self.parser.data['Volume'])
-        self.NumberLine.setText(self.parser.data['Number'])
-        self.WriterLine.setText(', '.join(self.parser.data['Writers']))
-        self.PencillerLine.setText(', '.join(self.parser.data['Pencillers']))
-        self.InkerLine.setText(', '.join(self.parser.data['Inkers']))
-        self.ColoristLine.setText(', '.join(self.parser.data['Colorists']))
-        self.MUidLine.setText(self.parser.data['MUid'])
+        for field in (self.SeriesLine, self.VolumeLine, self.NumberLine, self.MUidLine):
+            field.setText(self.parser.data[field.objectName()[:-4]])
+        for field in (self.WriterLine, self.PencillerLine, self.InkerLine, self.ColoristLine):
+            field.setText(', '.join(self.parser.data[field.objectName()[:-4] + 's']))
 
     def saveData(self):
         for field in (self.VolumeLine, self.NumberLine, self.MUidLine):

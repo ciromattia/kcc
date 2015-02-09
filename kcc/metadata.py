@@ -69,7 +69,7 @@ class MetadataParser:
                                stdout=PIPE, stderr=STDOUT, shell=True)
                 extracted = False
                 for line in output.stdout:
-                    if b"Everything is Ok" in line:
+                    if b"Everything is Ok" in line or b"No files to process" in line:
                         extracted = True
                 if not extracted:
                     rmtree(workdir)

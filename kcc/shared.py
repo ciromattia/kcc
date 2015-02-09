@@ -20,11 +20,14 @@ import os
 from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
-from scandir import walk
 from time import sleep
 from shutil import rmtree, move
 from tempfile import mkdtemp
 from zipfile import ZipFile, ZIP_DEFLATED
+try:
+    from scandir import walk
+except ImportError:
+    walk = None
 
 
 class HTMLStripper(HTMLParser):

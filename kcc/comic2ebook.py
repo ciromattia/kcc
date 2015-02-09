@@ -75,6 +75,7 @@ def main(argv=None):
 def buildHTML(path, imgfile, imgfilepath, forcePV=False):
     imgfilepath = md5Checksum(imgfilepath)
     filename = getImageFileName(imgfile)
+    additionalStyle = ''
     if options.imgproc:
         if "Rotated" in options.imgIndex[imgfilepath]:
             rotatedPage = True
@@ -92,6 +93,8 @@ def buildHTML(path, imgfile, imgfilepath, forcePV=False):
             noVerticalPV = True
         else:
             noVerticalPV = False
+        if "BlackFill" in options.imgIndex[imgfilepath]:
+            additionalStyle = ' style="background-color:#000000" '
     else:
         rotatedPage = False
         noPV = False
@@ -125,7 +128,7 @@ def buildHTML(path, imgfile, imgfilepath, forcePV=False):
                   "<link href=\"", "../" * (backref - 1),
                   "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
                   "</head>\n",
-                  "<body>\n",
+                  "<body" + additionalStyle + ">\n",
                   "<div class=\"fs\">\n",
                   "<div><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
                   imgfile, "\" class=\"singlePage\"/></div>\n"
@@ -169,7 +172,7 @@ def buildHTML(path, imgfile, imgfilepath, forcePV=False):
             f.writelines(["<div id=\"" + boxes[i] + "\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
                           "'{\"targetId\":\"" + boxes[i] + "-Panel-Parent\", \"ordinal\":" + str(order[i]),
                           "}'></a></div>\n"])
-        if options.quality == 2:
+        if options.quality == 2 and not forcePV:
             imgfilepv = imgfile.split(".")
             imgfilepv[0] += "-hq"
             imgfilepv = ".".join(imgfilepv)
@@ -433,6 +436,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
                     cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
                                          'cover' + getImageFileName(filelist[-1][1])[1])
                     image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options, tomeNumber)
+    # Hack that force Panel View on at last one page
     if lastfile and not options.panelviewused and 'Ko' not in options.profile \
             and options.profile not in ['K1', 'K2', 'KDX', 'OTHER']:
         filelist[-1] = buildHTML(lastfile[0], lastfile[1], lastfile[2], True)
@@ -444,24 +448,17 @@ def buildEPUB(path, chapterNames, tomeNumber):
     buildOPF(path, options.title, filelist, cover)
 
 
-def imgOptimization(img, opt, hqImage=None):
+def imgOptimization(img, opt):
     if not img.fill:
         img.getImageFill()
     if not opt.webtoon:
         img.cropWhiteSpace()
     if opt.cutpagenumbers and not opt.webtoon:
         img.cutPageNumber()
-    img.optimizeImage()
-    if hqImage:
-        img.resizeImage(0)
-        img.calculateBorder(hqImage, True)
-    else:
-        img.resizeImage()
-        if opt.panelview:
-            if opt.quality == 0:
-                img.calculateBorder(img)
-            elif opt.quality == 1:
-                img.calculateBorder(img, True)
+    img.autocontrastImage()
+    img.resizeImage()
+    if not img.second and opt.panelview:
+        img.calculateBorder()
     if opt.forcepng and not opt.forcecolor:
         img.quantizeImage()
 
@@ -523,10 +520,6 @@ def imgFileProcessing(work):
         opt = work[2]
         output = []
         img = image.ComicPage(os.path.join(dirpath, afile), opt)
-        if opt.quality == 2:
-            wipe = False
-        else:
-            wipe = True
         if opt.nosplitrotate:
             splitter = None
         else:
@@ -534,36 +527,30 @@ def imgFileProcessing(work):
         if splitter is not None:
             img0 = image.ComicPage(splitter[0], opt)
             imgOptimization(img0, opt)
-            output.append(img0.saveToDir(dirpath))
+            if not img0.noHQ:
+                output.append(img0.saveToDir(dirpath))
             img1 = image.ComicPage(splitter[1], opt)
             imgOptimization(img1, opt)
-            output.append(img1.saveToDir(dirpath))
-            if wipe:
-                output.append(img0.origFileName)
-                output.append(img1.origFileName)
+            if not img1.noHQ:
+                output.append(img1.saveToDir(dirpath))
+            output.extend([img.origFileName, img0.origFileName, img1.origFileName])
             if opt.quality == 2:
-                img0b = image.ComicPage(splitter[0], opt, img0.fill)
-                imgOptimization(img0b, opt, img0)
+                output.extend([img0.origFileName, img1.origFileName])
+                img0b = image.ComicPage(splitter[0], opt, img0)
+                imgOptimization(img0b, opt)
                 output.append(img0b.saveToDir(dirpath))
-                img1b = image.ComicPage(splitter[1], opt, img1.fill)
-                imgOptimization(img1b, opt, img1)
+                img1b = image.ComicPage(splitter[1], opt, img1)
+                imgOptimization(img1b, opt)
                 output.append(img1b.saveToDir(dirpath))
-                output.append(img0.origFileName)
-                output.append(img1.origFileName)
-            output.append(img.origFileName)
         else:
+            output.append(img.origFileName)
             imgOptimization(img, opt)
-            output.append(img.saveToDir(dirpath))
-            if wipe:
-                output.append(img.origFileName)
+            if not img.noHQ:
+                output.append(img.saveToDir(dirpath))
             if opt.quality == 2:
-                img2 = image.ComicPage(os.path.join(dirpath, afile), opt, img.fill)
-                if img.rotated:
-                    img2.image = img2.image.rotate(90, Image.BICUBIC, True)
-                    img2.rotated = True
-                imgOptimization(img2, opt, img)
+                img2 = image.ComicPage(os.path.join(dirpath, afile), opt, img)
+                imgOptimization(img2, opt)
                 output.append(img2.saveToDir(dirpath))
-                output.append(img.origFileName)
         return output
     except Exception:
         return str(sys.exc_info()[1])
@@ -575,7 +562,7 @@ def getWorkFolder(afile):
     if os.path.isdir(afile):
         workdir = mkdtemp('', 'KCC-TMP-')
         try:
-            os.rmdir(workdir)   # needed for copytree() fails if dst already exists
+            os.rmdir(workdir)
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
             if len(fullPath) > 240:
                 raise UserWarning("Path is too long.")
@@ -906,20 +893,20 @@ def detectMargins(path):
                 yu = flag[2]
                 xr = flag[3]
                 yd = flag[4]
-                if xl != "0":
-                    xl = "-" + str(float(xl)/100) + "%"
+                if xl != "0.0":
+                    xl = "-" + xl + "%"
                 else:
                     xl = "0%"
-                if xr != "0":
-                    xr = "-" + str(float(xr)/100) + "%"
+                if xr != "0.0":
+                    xr = "-" + xr + "%"
                 else:
                     xr = "0%"
-                if yu != "0":
-                    yu = "-" + str(float(yu)/100) + "%"
+                if yu != "0.0":
+                    yu = "-" + yu + "%"
                 else:
                     yu = "0%"
-                if yd != "0":
-                    yd = "-" + str(float(yd)/100) + "%"
+                if yd != "0.0":
+                    yd = "-" + yd + "%"
                 else:
                     yd = "0%"
                 return xl, yu, xr, yd
@@ -1123,10 +1110,7 @@ def makeBook(source, qtGUI=None):
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
     detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
     if options.webtoon:
-        if options.customheight > 0:
-            comic2panel.main(['-y ' + str(options.customheight), '-i', '-m', path], qtGUI)
-        else:
-            comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', '-m', path], qtGUI)
+        comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', '-m', path], qtGUI)
     if options.imgproc:
         print("\nProcessing images...")
         if GUI:
