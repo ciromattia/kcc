@@ -55,17 +55,23 @@ if platform == "darwin":
 elif platform == "win32":
     # noinspection PyUnresolvedReferences
     import py2exe
+    import platform
     from distutils.core import setup
-    additional_files = [('platforms', ['C:\Python34\Lib\site-packages\PyQt5\plugins\platforms\qwindows.dll']),
+    if platform.architecture()[0] == '64bit':
+        suffix = '_64'
+    else:
+        suffix = ''
+    additional_files = [('platforms', ['C:\Python34' + suffix +
+                                       '\Lib\site-packages\PyQt5\plugins\platforms\qwindows.dll']),
                         ('', ['LICENSE.txt',
                               'other\\7za.exe',
                               'other\\UnRAR.exe',
                               'other\\Additional-LICENSE.txt',
-                              'C:\Python34\Lib\site-packages\PyQt5\libGLESv2.dll',
-                              'C:\Python34\Lib\site-packages\PyQt5\libEGL.dll'])]
+                              'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libGLESv2.dll',
+                              'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libEGL.dll'])]
     extra_options = dict(
         options={'py2exe': {"bundle_files": 1,
-                            "dist_dir": "dist",
+                            "dist_dir": "dist" + suffix,
                             "compressed": True,
                             "includes": ["sip"],
                             "excludes": ["tkinter"],
