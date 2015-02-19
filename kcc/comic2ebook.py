@@ -424,6 +424,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
     f.close()
     for (dirpath, dirnames, filenames) in walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
+        filenames.sort()
         for afile in filenames:
             filename = getImageFileName(afile)
             if '-kcc-hq' not in filename[0]:
