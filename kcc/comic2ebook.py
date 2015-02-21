@@ -675,8 +675,9 @@ def getComicInfo(path, originalPath):
             options.authors = ['KCC']
         if xml.data['MUid']:
             options.remoteCovers = getCoversFromMCB(xml.data['MUid'])
-        if xml.data['Bookmarks']:
-            options.chapters = xml.data['Bookmarks']
+        if not options.nobookmarks:
+            if xml.data['Bookmarks']:
+                options.chapters = xml.data['Bookmarks']
         os.remove(xmlPath)
 
 
@@ -1014,6 +1015,8 @@ def makeParser():
     customProfileOptions.add_option("--customheight", type="int", dest="customheight", default=0,
                                     help="Replace screen height provided by device profile")
 
+    otherOptions.add_option("--nobookmarks", action="store_true", dest="nobookmarks", default=False,
+                            help="Disable bookmark to chapter conversion (EPUB)")
     otherOptions.add_option("-h", "--help", action="help",
                             help="Show this help message and exit")
 
