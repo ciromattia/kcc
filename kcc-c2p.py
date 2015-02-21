@@ -27,10 +27,11 @@ from kcc.shared import dependencyCheck
 dependencyCheck(1)
 
 from multiprocessing import freeze_support
+from kcc import __version__
 from kcc.comic2panel import main
 
 if __name__ == "__main__":
     freeze_support()
-    print(('comic2panel v%(__version__)s. Written by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
+    print('comic2panel v' + __version__ + ' - Written by Ciro Mattia Gonano and Pawel Jastrzebski.')
     main(sys.argv[1:])
     sys.exit(0)
