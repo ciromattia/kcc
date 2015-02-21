@@ -25,7 +25,7 @@ from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
 from PIL import Image, ImageStat, ImageOps
 from scandir import walk
-from .shared import getImageFileName, walkLevel
+from .shared import getImageFileName, walkLevel, walkSort
 try:
     from PyQt5 import QtCore
 except ImportError:
@@ -248,6 +248,7 @@ def main(argv=None, qtGUI=None):
                 mergeWorkerPool = Pool()
                 mergeWork.append([options.targetDir])
                 for root, dirs, files in walk(options.targetDir, False):
+                    dirs, files = walkSort(dirs, files)
                     for directory in dirs:
                         directoryNumer += 1
                         mergeWork.append([os.path.join(root, directory)])

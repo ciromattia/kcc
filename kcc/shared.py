@@ -24,6 +24,7 @@ from time import sleep
 from shutil import rmtree, move
 from tempfile import mkdtemp
 from zipfile import ZipFile, ZIP_DEFLATED
+from re import split
 try:
     from scandir import walk
 except ImportError:
@@ -53,11 +54,20 @@ def getImageFileName(imgfile):
     return [name, ext]
 
 
+def walkSort(dirnames, filenames):
+    convert = lambda text: int(text) if text.isdigit() else text
+    alphanum_key = lambda key: [convert(c) for c in split('([0-9]+)', key)]
+    dirnames.sort(key=lambda name: alphanum_key(name.lower()))
+    filenames.sort(key=lambda name: alphanum_key(name.lower()))
+    return dirnames, filenames
+
+
 def walkLevel(some_dir, level=1):
     some_dir = some_dir.rstrip(os.path.sep)
     assert os.path.isdir(some_dir)
     num_sep = some_dir.count(os.path.sep)
     for root, dirs, files in walk(some_dir):
+        dirs, files = walkSort(dirs, files)
         yield root, dirs, files
         num_sep_this = root.count(os.path.sep)
         if num_sep + level <= num_sep_this:
