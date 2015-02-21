@@ -422,9 +422,14 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "}",
                   ])
     f.close()
+    # Ensure we're sorting dirs, files naturally
+    convert = lambda text: int(text) if text.isdigit() else text
+    alphanum_key = lambda key: [convert(c) for c in split('([0-9]+)', key)]
     for (dirpath, dirnames, filenames) in walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
-        filenames.sort()
+        # Traverse dirs in a sorted manner
+        dirnames.sort(key=lambda name: alphanum_key(name.lower()))
+        filenames.sort(key=lambda name: alphanum_key(name.lower()))
         for afile in filenames:
             filename = getImageFileName(afile)
             if '-kcc-hq' not in filename[0]:
@@ -442,10 +447,6 @@ def buildEPUB(path, chapterNames, tomeNumber):
             and options.profile not in ['K1', 'K2', 'KDX', 'OTHER']:
         filelist[-1] = buildHTML(lastfile[0], lastfile[1], lastfile[2], True)
     buildNCX(path, options.title, chapterlist, chapterNames)
-    # Ensure we're sorting files alphabetically
-    convert = lambda text: int(text) if text.isdigit() else text
-    alphanum_key = lambda key: [convert(c) for c in split('([0-9]+)', key)]
-    filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(path, options.title, filelist, cover)
 
 
