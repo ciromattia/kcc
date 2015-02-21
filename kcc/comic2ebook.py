@@ -24,7 +24,7 @@ from copy import copy
 from glob import glob
 from json import loads
 from urllib.request import Request, urlopen
-from re import split, sub
+from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp
@@ -41,7 +41,7 @@ try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
-from .shared import md5Checksum, getImageFileName, walkLevel, saferReplace
+from .shared import md5Checksum, getImageFileName,  walkSort, walkLevel, saferReplace
 from . import comic2panel
 from . import image
 from . import cbxarchive
@@ -422,14 +422,9 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "}",
                   ])
     f.close()
-    # Ensure we're sorting dirs, files naturally
-    convert = lambda text: int(text) if text.isdigit() else text
-    alphanum_key = lambda key: [convert(c) for c in split('([0-9]+)', key)]
     for (dirpath, dirnames, filenames) in walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
-        # Traverse dirs in a sorted manner
-        dirnames.sort(key=lambda name: alphanum_key(name.lower()))
-        filenames.sort(key=lambda name: alphanum_key(name.lower()))
+        dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
             filename = getImageFileName(afile)
             if '-kcc-hq' not in filename[0]:
@@ -718,8 +713,7 @@ def sanitizeTree(filetree):
 def sanitizeTreeKobo(filetree):
     pageNumber = 0
     for root, dirs, files in walk(filetree):
-        files.sort()
-        dirs.sort()
+        dirs, files = walkSort(dirs, files)
         for name in files:
             splitname = os.path.splitext(name)
             slugified = str(pageNumber).zfill(5)
