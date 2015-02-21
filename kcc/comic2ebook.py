@@ -220,10 +220,14 @@ def buildNCX(dstdir, title, chapters, chapterNames):
                   ])
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
-        if os.path.basename(folder) != "Text":
-            title = chapterNames[os.path.basename(folder)]
         filename = getImageFileName(os.path.join(folder, chapter[1]))
-        f.write("<navPoint id=\"" + folder.replace('/', '_').replace('\\', '_') + "\"><navLabel><text>"
+        navID = folder.replace('/', '_').replace('\\', '_')
+        if options.chapters:
+            title = chapterNames[chapter[1]]
+            navID = filename[0].replace('/', '_').replace('\\', '_')
+        elif os.path.basename(folder) != "Text":
+            title = chapterNames[os.path.basename(folder)]
+        f.write("<navPoint id=\"" + navID + "\"><navLabel><text>"
                 + title + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/")
                 + ".html\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
@@ -441,6 +445,13 @@ def buildEPUB(path, chapterNames, tomeNumber):
     if lastfile and not options.panelviewused and 'Ko' not in options.profile \
             and options.profile not in ['K1', 'K2', 'KDX', 'OTHER']:
         filelist[-1] = buildHTML(lastfile[0], lastfile[1], lastfile[2], True)
+    # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
+    if not chapterNames and options.chapters:
+        chapterlist = []
+        for aChapter in options.chapters:
+            filename = filelist[aChapter[0]][1]
+            chapterlist.append((filelist[aChapter[0]][0].replace('Images', 'Text'), filename))
+            chapterNames[filename] = aChapter[1]
     buildNCX(path, options.title, chapterlist, chapterNames)
     buildOPF(path, options.title, filelist, cover)
 
@@ -624,6 +635,7 @@ def getComicInfo(path, originalPath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.authors = ['KCC']
     options.remoteCovers = {}
+    options.chapters = []
     titleSuffix = ''
     if options.title == 'defaulttitle':
         defaultTitle = True
@@ -658,6 +670,8 @@ def getComicInfo(path, originalPath):
             options.authors = ['KCC']
         if xml.data['MUid']:
             options.remoteCovers = getCoversFromMCB(xml.data['MUid'])
+        if xml.data['Bookmarks']:
+            options.chapters = xml.data['Bookmarks']
         os.remove(xmlPath)
 
 
