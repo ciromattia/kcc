@@ -38,7 +38,8 @@ class MetadataParser:
                      'Pencillers': [],
                      'Inkers': [],
                      'Colorists': [],
-                     'MUid': ''}
+                     'MUid': '',
+                     'Bookmarks': []}
         self.rawdata = None
         self.compressor = None
         if self.source.endswith('.xml'):
@@ -100,6 +101,11 @@ class MetadataParser:
                 .search(self.rawdata.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue)
             if coverId:
                 self.data['MUid'] = coverId.group(2)
+        if len(self.rawdata.getElementsByTagName('Page')) != 0:
+            for page in self.rawdata.getElementsByTagName('Page'):
+                if 'Bookmark' in page.attributes and 'Image' in page.attributes:
+                    self.data['Bookmarks'].append((int(page.attributes['Image'].value),
+                                                   page.attributes['Bookmark'].value))
 
     def saveXML(self):
         if self.rawdata:
