@@ -451,9 +451,6 @@
     <property name="styleSheet">
      <string notr="true">QListWidget#JobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;}QScrollBar:vertical{border:1px solid #999;background:#FFF;width:5px;margin:0}QScrollBar::handle:vertical{background:DarkGray;min-height:0}QScrollBar::add-line:vertical{height:0;background:DarkGray;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:vertical{height:0;background:DarkGray;subcontrol-position:top;subcontrol-origin:margin}QScrollBar:horizontal{border:1px solid #999;background:#FFF;height:5px;margin:0}QScrollBar::handle:horizontal{background:DarkGray;min-width:0}QScrollBar::add-line:horizontal{width:0;background:DarkGray;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:horizontal{width:0;background:DarkGray;subcontrol-position:top;subcontrol-origin:margin}</string>
     </property>
-    <property name="verticalScrollBarPolicy">
-     <enum>Qt::ScrollBarAlwaysOn</enum>
-    </property>
     <property name="showDropIndicator" stdset="0">
      <bool>false</bool>
     </property>
@@ -465,12 +462,6 @@
       <width>18</width>
       <height>18</height>
      </size>
-    </property>
-    <property name="verticalScrollMode">
-     <enum>QAbstractItemView::ScrollPerPixel</enum>
-    </property>
-    <property name="horizontalScrollMode">
-     <enum>QAbstractItemView::ScrollPerPixel</enum>
     </property>
    </widget>
    <widget class="QPushButton" name="BasicModeButton">
