@@ -16,11 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = '4.4.1'
-__license__ = 'ISC'
-__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
-__docformat__ = 'restructuredtext en'
-
 import os
 from io import BytesIO
 from urllib.request import Request, urlopen
@@ -28,6 +23,7 @@ from urllib.parse import quote
 from functools import reduce
 from PIL import Image, ImageOps, ImageStat, ImageChops
 from .shared import md5Checksum
+from . import __version__
 
 
 class ProfileData:
@@ -102,7 +98,7 @@ class ProfileData:
 
 
 class ComicPage:
-    def __init__(self, source, options, fill=None):
+    def __init__(self, source, options, original=None):
         try:
             self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = options.profileData
         except KeyError:
@@ -111,58 +107,67 @@ class ComicPage:
         self.filename = os.path.basename(self.origFileName)
         self.image = Image.open(source)
         self.image = self.image.convert('RGB')
-        self.rotated = None
-        self.border = None
-        self.noHPV = None
-        self.noVPV = None
-        self.noPV = None
-        self.purge = False
-        self.hq = False
         self.opt = options
-        if fill:
-            self.fill = fill
+        if original:
+            self.second = True
+            self.rotated = original.rotated
+            self.border = original.border
+            self.noHPV = original.noHPV
+            self.noVPV = original.noVPV
+            self.noPV = original.noPV
+            self.noHQ = original.noHQ
+            self.fill = original.fill
+            self.color = original.color
+            if self.rotated:
+                self.image = self.image.rotate(90, Image.BICUBIC, True)
+            self.opt.quality = 0
         else:
+            self.second = False
+            self.rotated = None
+            self.border = None
+            self.noHPV = None
+            self.noVPV = None
+            self.noPV = None
             self.fill = None
-        if options.webtoon:
-            self.color = True
-        else:
-            self.color = self.isImageColor()
+            self.noHQ = False
+            if options.webtoon:
+                self.color = True
+            else:
+                self.color = self.isImageColor()
 
     def saveToDir(self, targetdir):
         try:
-            if not self.purge:
-                flags = []
-                filename = os.path.join(targetdir, os.path.splitext(self.filename)[0]) + '-KCC'
-                if not self.opt.forcecolor and not self.opt.forcepng:
-                    self.image = self.image.convert('L')
-                if self.rotated:
-                    flags.append('Rotated')
-                if self.hq:
-                    flags.append('HighQuality')
-                    filename += '-HQ'
-                if self.noPV:
-                    flags.append('NoPanelView')
-                else:
-                    if self.noHPV:
-                        flags.append('NoHorizontalPanelView')
-                    if self.noVPV:
-                        flags.append('NoVerticalPanelView')
-                    if self.border:
-                        flags.append('Margins-' + str(self.border[0]) + '-' + str(self.border[1]) + '-'
-                                     + str(self.border[2]) + '-' + str(self.border[3]))
-                if self.opt.forcepng:
-                    filename += '.png'
-                    self.image.save(filename, 'PNG', optimize=1)
-                else:
-                    filename += '.jpg'
-                    self.image.save(filename, 'JPEG', optimize=1, quality=80)
-                return [md5Checksum(filename), flags]
+            flags = []
+            filename = os.path.join(targetdir, os.path.splitext(self.filename)[0]) + '-KCC'
+            if not self.opt.forcecolor and not self.opt.forcepng:
+                self.image = self.image.convert('L')
+            if self.rotated:
+                flags.append('Rotated')
+            if self.noPV:
+                flags.append('NoPanelView')
             else:
-                return None
+                if self.noHPV:
+                    flags.append('NoHorizontalPanelView')
+                if self.noVPV:
+                    flags.append('NoVerticalPanelView')
+                if self.border:
+                    flags.append('Margins-' + str(self.border[0]) + '-' + str(self.border[1]) + '-'
+                                 + str(self.border[2]) + '-' + str(self.border[3]))
+            if self.fill != 'white':
+                flags.append('BlackFill')
+            if self.opt.quality == 2:
+                filename += '-HQ'
+            if self.opt.forcepng:
+                filename += '.png'
+                self.image.save(filename, 'PNG', optimize=1)
+            else:
+                filename += '.jpg'
+                self.image.save(filename, 'JPEG', optimize=1, quality=80)
+            return [md5Checksum(filename), flags]
         except IOError as e:
             raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
 
-    def optimizeImage(self):
+    def autocontrastImage(self):
         gamma = self.opt.gamma
         if gamma < 0.1:
             gamma = self.gamma
@@ -184,80 +189,65 @@ class ComicPage:
         # Quantize is deprecated but new function call it internally anyway...
         self.image = self.image.quantize(palette=palImg)
 
-    def calculateBorderPercent(self, x, img, isWidth):
-        if isWidth:
-            return int(round(float(x)/float(img.image.size[0]), 4) * 10000 * 1.5)
-        else:
-            return int(round(float(x)/float(img.image.size[1]), 4) * 10000 * 1.5)
-
-    def calculateBorder(self, sourceImage, isHQ=False):
-        if (isHQ and sourceImage.purge) or self.noPV:
-            self.border = [0, 0, 0, 0]
-            self.noPV = True
+    def calculateBorder(self):
+        if self.noPV:
+            self.border = [0.0, 0.0, 0.0, 0.0]
             return
         if self.fill == 'white':
-            # Only already saved files can have P mode. So we can break color quantization.
-            if sourceImage.image.mode == 'P':
-                sourceImage.image = sourceImage.image.convert('RGB')
-            border = ImageChops.invert(sourceImage.image).getbbox()
+            border = ImageChops.invert(self.image).getbbox()
         else:
-            border = sourceImage.image.getbbox()
+            border = self.image.getbbox()
+        if self.opt.quality == 2:
+            multiplier = 1.0
+        else:
+            multiplier = 1.5
         if border is not None:
-            if isHQ:
-                multiplier = 1.0
-            else:
-                multiplier = 1.5
-            self.border = [self.calculateBorderPercent(border[0], sourceImage, True),
-                           self.calculateBorderPercent(border[1], sourceImage, False),
-                           self.calculateBorderPercent((sourceImage.image.size[0] - border[2]), sourceImage, True),
-                           self.calculateBorderPercent((sourceImage.image.size[1] - border[3]), sourceImage, False)]
-            if int((border[2] - border[0]) * multiplier) < self.size[0]:
+            self.border = [round(float(border[0])/float(self.image.size[0])*150, 3),
+                           round(float(border[1])/float(self.image.size[1])*150, 3),
+                           round(float(self.image.size[0]-border[2])/float(self.image.size[0])*150, 3),
+                           round(float(self.image.size[1]-border[3])/float(self.image.size[1])*150, 3)]
+            if int((border[2] - border[0]) * multiplier) < self.size[0] + 10:
                 self.noHPV = True
-            if int((border[3] - border[1]) * multiplier) < self.size[1]:
+            if int((border[3] - border[1]) * multiplier) < self.size[1] + 10:
                 self.noVPV = True
         else:
-            self.border = [0, 0, 0, 0]
+            self.border = [0.0, 0.0, 0.0, 0.0]
             self.noHPV = True
             self.noVPV = True
 
-    def resizeImage(self, qualityMode=None):
-        upscale = self.opt.upscale
-        stretch = self.opt.stretch
-        bordersColor = self.opt.bordersColor
-        if qualityMode is None:
-            qualityMode = self.opt.quality
-        if bordersColor:
-            fill = bordersColor
+    def resizeImage(self):
+        if self.opt.bordersColor:
+            fill = self.opt.bordersColor
         else:
             fill = self.fill
         # Set target size
-        if qualityMode == 0:
+        if self.opt.quality == 0:
             size = (self.size[0], self.size[1])
-        elif qualityMode == 1 and not stretch and not upscale and self.image.size[0] <=\
+        elif self.opt.quality == 1 and not self.opt.stretch and not self.opt.upscale and self.image.size[0] <=\
                 self.size[0] and self.image.size[1] <= self.size[1]:
             size = (self.size[0], self.size[1])
-        elif qualityMode == 1:
+        elif self.opt.quality == 1:
             # Forcing upscale to make sure that margins will be not too big
-            if not stretch:
-                upscale = True
+            if not self.opt.stretch:
+                self.opt.upscale = True
             size = (self.panelviewsize[0], self.panelviewsize[1])
-        elif qualityMode == 2 and not stretch and not upscale and self.image.size[0] <=\
+        elif self.opt.quality == 2 and not self.opt.stretch and not self.opt.upscale and self.image.size[0] <=\
                 self.size[0] and self.image.size[1] <= self.size[1]:
-            self.purge = True
-            return self.image
+            # HQ version will not be needed
+            self.noHQ = True
+            return
         else:
-            self.hq = True
             size = (self.panelviewsize[0], self.panelviewsize[1])
         # If stretching is on - Resize without other considerations
-        if stretch:
+        if self.opt.stretch:
             if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
                 method = Image.BICUBIC
             else:
                 method = Image.LANCZOS
             self.image = self.image.resize(size, method)
-            return self.image
+            return
         # If image is smaller than target resolution and upscale is off - Just expand it by adding margins
-        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and not upscale:
+        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and not self.opt.upscale:
             borderw = int((size[0] - self.image.size[0]) / 2)
             borderh = int((size[1] - self.image.size[1]) / 2)
             # PV is disabled when source image is smaller than device screen and upscale is off
@@ -267,7 +257,7 @@ class ComicPage:
             # Border can't be float so sometimes image might be 1px too small/large
             if self.image.size[0] != size[0] or self.image.size[1] != size[1]:
                 self.image = ImageOps.fit(self.image, size, method=Image.BICUBIC, centering=(0.5, 0.5))
-            return self.image
+            return
         # Otherwise - Upscale/Downscale
         ratioDev = float(size[0]) / float(size[1])
         if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
@@ -281,7 +271,7 @@ class ComicPage:
         else:
             method = Image.LANCZOS
         self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
-        return self.image
+        return
 
     def splitPage(self, targetdir):
         width, height = self.image.size
@@ -374,7 +364,6 @@ class ComicPage:
             else:
                 diff = pageNumberCut1
             self.image = self.image.crop((0, 0, widthImg, heightImg - diff))
-        return self.image
 
     def cropWhiteSpace(self):
         if ImageChops.invert(self.image).getbbox() is not None:
@@ -410,7 +399,6 @@ class ComicPage:
                 diff += delta
             diff -= delta
             self.image = self.image.crop((0, 0, widthImg - diff, heightImg))
-        return self.image
 
     def getImageHistogram(self, image):
         histogram = image.histogram()
@@ -512,7 +500,7 @@ class Cover:
     def processExternal(self):
         self.image = self.image.convert('RGB')
         self.image.thumbnail(self.options.profileData[1], Image.LANCZOS)
-        self.save(True)
+        self.save()
 
     def trim(self):
         bg = Image.new(self.image.mode, self.image.size, self.image.getpixel((0, 0)))
@@ -524,15 +512,8 @@ class Cover:
         else:
             return self.image
 
-    def save(self, external=False):
-        if external:
-            source = self.options.remoteCovers[self.tomeNumber].split('/')[-1]
-        else:
-            source = self.source
+    def save(self):
         try:
-            if os.path.splitext(source)[1].lower() == '.png':
-                self.image.save(self.target, "PNG", optimize=1)
-            else:
-                self.image.save(self.target, "JPEG", optimize=1, quality=80)
+            self.image.save(self.target, "JPEG", optimize=1, quality=80)
         except IOError:
             raise RuntimeError('Failed to save cover')

@@ -456,20 +456,11 @@
     <property name="styleSheet">
      <string notr="true">QListWidget#JobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;}QScrollBar:vertical{border:1px solid #999;background:#FFF;width:5px;margin:0}QScrollBar::handle:vertical{background:DarkGray;min-height:0}QScrollBar::add-line:vertical{height:0;background:DarkGray;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:vertical{height:0;background:DarkGray;subcontrol-position:top;subcontrol-origin:margin}QScrollBar:horizontal{border:1px solid #999;background:#FFF;height:5px;margin:0}QScrollBar::handle:horizontal{background:DarkGray;min-width:0}QScrollBar::add-line:horizontal{width:0;background:DarkGray;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:horizontal{width:0;background:DarkGray;subcontrol-position:top;subcontrol-origin:margin}</string>
     </property>
-    <property name="verticalScrollBarPolicy">
-     <enum>Qt::ScrollBarAlwaysOn</enum>
-    </property>
     <property name="showDropIndicator" stdset="0">
      <bool>false</bool>
     </property>
     <property name="selectionMode">
      <enum>QAbstractItemView::NoSelection</enum>
-    </property>
-    <property name="verticalScrollMode">
-     <enum>QAbstractItemView::ScrollPerPixel</enum>
-    </property>
-    <property name="horizontalScrollMode">
-     <enum>QAbstractItemView::ScrollPerPixel</enum>
     </property>
    </widget>
    <widget class="QPushButton" name="BasicModeButton">
@@ -477,7 +468,7 @@
      <rect>
       <x>5</x>
       <y>10</y>
-      <width>210</width>
+      <width>156</width>
       <height>41</height>
      </rect>
     </property>
@@ -499,9 +490,9 @@
    <widget class="QPushButton" name="AdvModeButton">
     <property name="geometry">
      <rect>
-      <x>207</x>
+      <x>260</x>
       <y>10</y>
-      <width>210</width>
+      <width>156</width>
       <height>41</height>
      </rect>
     </property>
@@ -782,9 +773,34 @@
      </layout>
     </widget>
    </widget>
+   <widget class="QPushButton" name="EditorButton">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>10</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Lucida Grande</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Editor</string>
+    </property>
+    <property name="icon">
+     <iconset resource="KCC.qrc">
+      <normaloff>:/Other/icons/editor.png</normaloff>:/Other/icons/editor.png</iconset>
+    </property>
+   </widget>
    <zorder>BasicModeButton</zorder>
    <zorder>AdvModeButton</zorder>
-   <zorder>ProgressBar</zorder>
    <zorder>JobList</zorder>
    <zorder>OptionsAdvanced</zorder>
    <zorder>DeviceBox</zorder>
@@ -796,6 +812,8 @@
    <zorder>OptionsBasic</zorder>
    <zorder>OptionsAdvancedGamma</zorder>
    <zorder>OptionsExpert</zorder>
+   <zorder>EditorButton</zorder>
+   <zorder>ProgressBar</zorder>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="font">

@@ -18,11 +18,6 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '4.4.1'
-__license__ = 'ISC'
-__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
-__docformat__ = 'restructuredtext en'
-
 import sys
 if sys.version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
@@ -32,10 +27,11 @@ from kcc.shared import dependencyCheck
 dependencyCheck(1)
 
 from multiprocessing import freeze_support
+from kcc import __version__
 from kcc.comic2panel import main
 
 if __name__ == "__main__":
     freeze_support()
-    print(('comic2panel v%(__version__)s. Written by Ciro Mattia Gonano and Pawel Jastrzebski.' % globals()))
+    print('comic2panel v' + __version__ + ' - Written by Ciro Mattia Gonano and Pawel Jastrzebski.')
     main(sys.argv[1:])
     sys.exit(0)

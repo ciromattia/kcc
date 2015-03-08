@@ -17,11 +17,6 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-__version__ = '4.4.1'
-__license__ = 'ISC'
-__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
-__docformat__ = 'restructuredtext en'
-
 import os
 import sys
 from urllib.parse import unquote
@@ -38,15 +33,24 @@ from xml.dom.minidom import parse
 from psutil import Popen, Process
 from copy import copy
 from distutils.version import StrictVersion
+from xml.sax.saxutils import escape
 from .shared import md5Checksum, HTMLStripper
+from . import __version__
 from . import comic2ebook
 from . import KCC_rc_web
+from . import metadata
 if sys.platform.startswith('darwin'):
     from . import KCC_ui_osx as KCC_ui
 elif sys.platform.startswith('linux'):
     from . import KCC_ui_linux as KCC_ui
 else:
     from . import KCC_ui
+if sys.platform.startswith('darwin'):
+    from . import KCC_MetaEditor_ui_osx as KCC_MetaEditor_ui
+elif sys.platform.startswith('linux'):
+    from . import KCC_MetaEditor_ui_linux as KCC_MetaEditor_ui
+else:
+    from . import KCC_MetaEditor_ui
 
 
 class QApplicationMessaging(QtWidgets.QApplication):
@@ -608,6 +612,34 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 GUI.JobList.addItem(fname)
                 GUI.JobList.scrollToBottom()
 
+    def selectFileMetaEditor(self):
+        if self.UnRAR:
+            if self.sevenza:
+                fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
+                                                              'Comic (*.cbz *.cbr *.cb7)')
+            else:
+                fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
+                                                              'Comic (*.cbz *.cbr)')
+        else:
+            if self.sevenza:
+                fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
+                                                              'Comic (*.cbz *.cb7)')
+            else:
+                fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
+                                                              'Comic (*.cbz)')
+        if fname[0] != '':
+            if sys.platform.startswith('win'):
+                fname = fname[0].replace('/', '\\')
+            else:
+                fname = fname[0]
+            self.lastPath = os.path.abspath(os.path.join(fname, os.pardir))
+            try:
+                self.editor.loadData(fname)
+            except:
+                self.showDialog('Failed to parse metadata!', 'error')
+            else:
+                self.editor.ui.exec_()
+
     def clearJobs(self):
         GUI.JobList.clear()
 
@@ -622,6 +654,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             MW.setMinimumSize(QtCore.QSize(420, 287))
             MW.resize(420, 287)
         GUI.BasicModeButton.setEnabled(True)
+        GUI.EditorButton.setEnabled(True)
         GUI.AdvModeButton.setEnabled(True)
         GUI.BasicModeButton.setStyleSheet('font-weight:Bold;')
         GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
@@ -651,6 +684,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW.setMinimumSize(QtCore.QSize(420, 365))
         MW.resize(420, 365)
         GUI.BasicModeButton.setEnabled(True)
+        GUI.EditorButton.setEnabled(True)
         GUI.AdvModeButton.setEnabled(True)
         GUI.BasicModeButton.setStyleSheet('font-weight:Normal;')
         GUI.AdvModeButton.setStyleSheet('font-weight:Bold;')
@@ -680,6 +714,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW.setMinimumSize(QtCore.QSize(420, 397))
         MW.resize(420, 397)
         GUI.BasicModeButton.setEnabled(False)
+        GUI.EditorButton.setEnabled(True)
         GUI.AdvModeButton.setEnabled(False)
         GUI.BasicModeButton.setStyleSheet('font-weight:Normal;')
         GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
@@ -710,6 +745,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             status = True
         if self.currentMode != 3:
             GUI.BasicModeButton.setEnabled(status)
+            GUI.EditorButton.setEnabled(status)
             GUI.AdvModeButton.setEnabled(status)
         if self.currentMode != 1:
             GUI.FormatBox.setEnabled(status)
@@ -905,6 +941,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         elif command.isdigit():
             GUI.ProgressBar.setMaximum(int(command) - 1)
             GUI.BasicModeButton.hide()
+            GUI.EditorButton.hide()
             GUI.AdvModeButton.hide()
             GUI.ProgressBar.reset()
             GUI.ProgressBar.show()
@@ -960,6 +997,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
     def hideProgressBar(self):
         GUI.ProgressBar.hide()
         GUI.BasicModeButton.show()
+        GUI.EditorButton.show()
         GUI.AdvModeButton.show()
 
     def saveSettings(self, event):
@@ -1077,6 +1115,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW = KCCWindow
         GUI = self
         self.setupUi(MW)
+        self.editor = KCCGUI_MetaEditor()
         self.icons = Icons()
         self.webContent = KCC_rc_web.WebContent()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
@@ -1220,6 +1259,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.DirectoryButton.clicked.connect(self.selectDir)
         GUI.ClearButton.clicked.connect(self.clearJobs)
         GUI.FileButton.clicked.connect(self.selectFile)
+        GUI.EditorButton.clicked.connect(self.selectFileMetaEditor)
         GUI.ConvertButton.clicked.connect(self.convertStart)
         GUI.GammaSlider.valueChanged.connect(self.changeGamma)
         GUI.NoRotateBox.stateChanged.connect(self.toggleNoSplitRotate)
@@ -1282,3 +1322,53 @@ class KCCGUI(KCC_ui.Ui_KCC):
         MW.setWindowTitle("Kindle Comic Converter " + __version__)
         MW.show()
         MW.raise_()
+
+
+class KCCGUI_MetaEditor(KCC_MetaEditor_ui.Ui_MetaEditorDialog):
+    def loadData(self, file):
+        self.parser = metadata.MetadataParser(file)
+        if self.parser.compressor == 'rar':
+            self.EditorFrame.setEnabled(False)
+            self.OKButton.setEnabled(False)
+            self.StatusLabel.setText('CBR metadata are read-only.')
+        else:
+            self.EditorFrame.setEnabled(True)
+            self.OKButton.setEnabled(True)
+            self.StatusLabel.setText('Separate authors with a comma.')
+        for field in (self.SeriesLine, self.VolumeLine, self.NumberLine, self.MUidLine):
+            field.setText(self.parser.data[field.objectName()[:-4]])
+        for field in (self.WriterLine, self.PencillerLine, self.InkerLine, self.ColoristLine):
+            field.setText(', '.join(self.parser.data[field.objectName()[:-4] + 's']))
+
+    def saveData(self):
+        for field in (self.VolumeLine, self.NumberLine, self.MUidLine):
+            if field.text().isnumeric() or self.cleanData(field.text()) == '':
+                self.parser.data[field.objectName()[:-4]] = self.cleanData(field.text())
+            else:
+                self.StatusLabel.setText(field.objectName()[:-4] + ' field must be a number.')
+                break
+        else:
+            self.parser.data['Series'] = self.cleanData(self.SeriesLine.text())
+            for field in (self.WriterLine, self.PencillerLine, self.InkerLine, self.ColoristLine):
+                values = self.cleanData(field.text()).split(',')
+                tmpData = []
+                for value in values:
+                    if self.cleanData(value) != '':
+                        tmpData.append(self.cleanData(value))
+                self.parser.data[field.objectName()[:-4] + 's'] = tmpData
+            try:
+                self.parser.saveXML()
+            except:
+                GUI.showDialog('Failed to save metadata!', 'error')
+            self.ui.close()
+
+    def cleanData(self, s):
+        return escape(s.strip())
+
+    def __init__(self):
+        self.ui = QtWidgets.QDialog()
+        self.parser = None
+        self.setupUi(self.ui)
+        self.ui.setWindowFlags(self.ui.windowFlags() & ~QtCore.Qt.WindowContextHelpButtonHint)
+        self.OKButton.clicked.connect(self.saveData)
+        self.CancelButton.clicked.connect(self.ui.close)

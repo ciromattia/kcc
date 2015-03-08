@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'KCC.ui'
 #
-# Created: Sun Jan  4 09:58:25 2015
+# Created: Sun Feb  8 09:50:43 2015
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -139,21 +139,18 @@ class Ui_KCC(object):
         self.JobList.setGeometry(QtCore.QRect(10, 50, 401, 101))
         self.JobList.setFocusPolicy(QtCore.Qt.NoFocus)
         self.JobList.setStyleSheet("QListWidget#JobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;}QScrollBar:vertical{border:1px solid #999;background:#FFF;width:5px;margin:0}QScrollBar::handle:vertical{background:DarkGray;min-height:0}QScrollBar::add-line:vertical{height:0;background:DarkGray;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:vertical{height:0;background:DarkGray;subcontrol-position:top;subcontrol-origin:margin}QScrollBar:horizontal{border:1px solid #999;background:#FFF;height:5px;margin:0}QScrollBar::handle:horizontal{background:DarkGray;min-width:0}QScrollBar::add-line:horizontal{width:0;background:DarkGray;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:horizontal{width:0;background:DarkGray;subcontrol-position:top;subcontrol-origin:margin}")
-        self.JobList.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.JobList.setProperty("showDropIndicator", False)
         self.JobList.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
-        self.JobList.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
-        self.JobList.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.JobList.setObjectName("JobList")
         self.BasicModeButton = QtWidgets.QPushButton(self.Form)
-        self.BasicModeButton.setGeometry(QtCore.QRect(10, 10, 195, 32))
+        self.BasicModeButton.setGeometry(QtCore.QRect(10, 10, 141, 32))
         font = QtGui.QFont()
         font.setPointSize(9)
         self.BasicModeButton.setFont(font)
         self.BasicModeButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.BasicModeButton.setObjectName("BasicModeButton")
         self.AdvModeButton = QtWidgets.QPushButton(self.Form)
-        self.AdvModeButton.setGeometry(QtCore.QRect(217, 10, 195, 32))
+        self.AdvModeButton.setGeometry(QtCore.QRect(261, 10, 151, 32))
         font = QtGui.QFont()
         font.setPointSize(9)
         self.AdvModeButton.setFont(font)
@@ -232,6 +229,16 @@ class Ui_KCC(object):
         self.customHeight.setMaxLength(4)
         self.customHeight.setObjectName("customHeight")
         self.gridLayout_2.addWidget(self.customHeight, 0, 3, 1, 1)
+        self.EditorButton = QtWidgets.QPushButton(self.Form)
+        self.EditorButton.setGeometry(QtCore.QRect(160, 10, 91, 32))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.EditorButton.setFont(font)
+        self.EditorButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        icon5 = QtGui.QIcon()
+        icon5.addPixmap(QtGui.QPixmap(":/Other/icons/editor.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.EditorButton.setIcon(icon5)
+        self.EditorButton.setObjectName("EditorButton")
         KCC.setCentralWidget(self.Form)
         self.statusBar = QtWidgets.QStatusBar(KCC)
         font = QtGui.QFont()
@@ -301,6 +308,7 @@ class Ui_KCC(object):
         self.hLabel.setText(_translate("KCC", "Custom height: "))
         self.customHeight.setToolTip(_translate("KCC", "<html><head/><body><p style=\'white-space:pre\'>Resolution of target device.</p></body></html>"))
         self.customHeight.setInputMask(_translate("KCC", "0000"))
+        self.EditorButton.setText(_translate("KCC", "Editor"))
         self.ActionBasic.setText(_translate("KCC", "Basic"))
         self.ActionAdvanced.setText(_translate("KCC", "Advanced"))
 

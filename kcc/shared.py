@@ -16,14 +16,19 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-__license__ = 'ISC'
-__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
-__docformat__ = 'restructuredtext en'
-
 import os
 from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
+from time import sleep
+from shutil import rmtree, move
+from tempfile import mkdtemp
+from zipfile import ZipFile, ZIP_DEFLATED
+from re import split
+try:
+    from scandir import walk
+except ImportError:
+    walk = None
 
 
 class HTMLStripper(HTMLParser):
@@ -49,11 +54,20 @@ def getImageFileName(imgfile):
     return [name, ext]
 
 
+def walkSort(dirnames, filenames):
+    convert = lambda text: int(text) if text.isdigit() else text
+    alphanum_key = lambda key: [convert(c) for c in split('([0-9]+)', key)]
+    dirnames.sort(key=lambda name: alphanum_key(name.lower()))
+    filenames.sort(key=lambda name: alphanum_key(name.lower()))
+    return dirnames, filenames
+
+
 def walkLevel(some_dir, level=1):
     some_dir = some_dir.rstrip(os.path.sep)
     assert os.path.isdir(some_dir)
     num_sep = some_dir.count(os.path.sep)
-    for root, dirs, files in os.walk(some_dir):
+    for root, dirs, files in walk(some_dir):
+        dirs, files = walkSort(dirs, files)
         yield root, dirs, files
         num_sep_this = root.count(os.path.sep)
         if num_sep + level <= num_sep_this:
@@ -75,6 +89,32 @@ def check7ZFile(filePath):
     with open(filePath, 'rb') as fh:
         header = fh.read(6)
     return header == b"7z\xbc\xaf'\x1c"
+
+
+def saferReplace(old, new):
+    for x in range(5):
+        try:
+            os.replace(old, new)
+        except PermissionError:
+            sleep(5)
+        else:
+            break
+    else:
+        raise PermissionError
+
+
+def removeFromZIP(zipfname, *filenames):
+    tempdir = mkdtemp('', 'KCC-TMP-')
+    try:
+        tempname = os.path.join(tempdir, 'KCC-TMP.zip')
+        with ZipFile(zipfname, 'r') as zipread:
+            with ZipFile(tempname, 'w', compression=ZIP_DEFLATED) as zipwrite:
+                for item in zipread.infolist():
+                    if item.filename not in filenames:
+                        zipwrite.writestr(item, zipread.read(item.filename))
+        move(tempname, zipfname)
+    finally:
+        rmtree(tempdir)
 
 
 # noinspection PyUnresolvedReferences
@@ -106,13 +146,12 @@ def dependencyCheck(level):
             missing.append('Pillow 2.7.0+')
     except ImportError:
         missing.append('Pillow 2.7.0+')
+    try:
+        from scandir import __version__ as scandirVersion
+        if StrictVersion('0.9') > StrictVersion(scandirVersion):
+            missing.append('scandir 0.9+')
+    except ImportError:
+        missing.append('scandir 0.9+')
     if len(missing) > 0:
-        try:
-            import tkinter
-            import tkinter.messagebox
-            importRoot = tkinter.Tk()
-            importRoot.withdraw()
-            tkinter.messagebox.showerror('KCC - Error', 'ERROR: ' + ', '.join(missing) + ' is not installed!')
-        except ImportError:
-            print('ERROR: ' + ', '.join(missing) + ' is not installed!')
+        print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         exit(1)

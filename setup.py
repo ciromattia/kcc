@@ -9,12 +9,13 @@ Usage (Mac OS X):
     python setup.py py2app
 """
 from sys import platform, version_info
+from kcc import __version__
 if version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
     exit(1)
 
 NAME = "KindleComicConverter"
-VERSION = "4.4.1"
+VERSION = __version__
 MAIN = "kcc.py"
 
 if platform == "darwin":
@@ -54,9 +55,9 @@ if platform == "darwin":
 elif platform == "win32":
     # noinspection PyUnresolvedReferences
     import py2exe
-    import platform as arch
+    import platform
     from distutils.core import setup
-    if arch.architecture()[0] == '64bit':
+    if platform.architecture()[0] == '64bit':
         suffix = '_64'
     else:
         suffix = ''
@@ -70,7 +71,6 @@ elif platform == "win32":
                               'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libEGL.dll'])]
     extra_options = dict(
         options={'py2exe': {"bundle_files": 1,
-                            "dll_excludes": ["tcl85.dll", "tk85.dll"],
                             "dist_dir": "dist" + suffix,
                             "compressed": True,
                             "includes": ["sip"],

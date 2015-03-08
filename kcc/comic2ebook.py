@@ -18,40 +18,37 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-__version__ = '4.4.1'
-__license__ = 'ISC'
-__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
-__docformat__ = 'restructuredtext en'
-
 import os
 import sys
 from copy import copy
 from glob import glob
 from json import loads
 from urllib.request import Request, urlopen
-from re import split, sub
+from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp
 from shutil import move, copytree, rmtree
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
-from xml.dom.minidom import parse
 from uuid import uuid4
 from slugify import slugify as slugifyExt
 from PIL import Image
 from subprocess import STDOUT, PIPE
 from psutil import Popen, virtual_memory
+from scandir import walk
 try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
-from .shared import md5Checksum, getImageFileName, walkLevel
+from .shared import md5Checksum, getImageFileName,  walkSort, walkLevel, saferReplace
 from . import comic2panel
 from . import image
 from . import cbxarchive
 from . import pdfjpgextract
 from . import dualmetafix
+from . import metadata
+from . import __version__
 
 
 def main(argv=None):
@@ -75,9 +72,10 @@ def main(argv=None):
     return outputPath
 
 
-def buildHTML(path, imgfile, imgfilepath):
+def buildHTML(path, imgfile, imgfilepath, forcePV=False):
     imgfilepath = md5Checksum(imgfilepath)
     filename = getImageFileName(imgfile)
+    additionalStyle = ''
     if options.imgproc:
         if "Rotated" in options.imgIndex[imgfilepath]:
             rotatedPage = True
@@ -95,11 +93,17 @@ def buildHTML(path, imgfile, imgfilepath):
             noVerticalPV = True
         else:
             noVerticalPV = False
+        if "BlackFill" in options.imgIndex[imgfilepath]:
+            additionalStyle = ' style="background-color:#000000" '
     else:
         rotatedPage = False
         noPV = False
         noHorizontalPV = False
         noVerticalPV = False
+    if forcePV and noPV:
+        noPV = False
+        noHorizontalPV = True
+        noVerticalPV = True
     htmlpath = ''
     postfix = ''
     backref = 1
@@ -124,12 +128,13 @@ def buildHTML(path, imgfile, imgfilepath):
                   "<link href=\"", "../" * (backref - 1),
                   "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
                   "</head>\n",
-                  "<body>\n",
+                  "<body" + additionalStyle + ">\n",
                   "<div class=\"fs\">\n",
                   "<div><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
                   imgfile, "\" class=\"singlePage\"/></div>\n"
                   ])
-    if options.panelview and not noPV:
+    if (options.panelview or forcePV) and not noPV:
+        options.panelviewused = True
         if not noHorizontalPV and not noVerticalPV:
             if rotatedPage:
                 if options.righttoleft:
@@ -167,8 +172,8 @@ def buildHTML(path, imgfile, imgfilepath):
             f.writelines(["<div id=\"" + boxes[i] + "\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
                           "'{\"targetId\":\"" + boxes[i] + "-Panel-Parent\", \"ordinal\":" + str(order[i]),
                           "}'></a></div>\n"])
-        if options.quality == 2:
-            imgfilepv = str.split(imgfile, ".")
+        if options.quality == 2 and not forcePV:
+            imgfilepv = imgfile.split(".")
             imgfilepv[0] += "-hq"
             imgfilepv = ".".join(imgfilepv)
         else:
@@ -215,10 +220,14 @@ def buildNCX(dstdir, title, chapters, chapterNames):
                   ])
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
-        if os.path.basename(folder) != "Text":
-            title = chapterNames[os.path.basename(folder)]
         filename = getImageFileName(os.path.join(folder, chapter[1]))
-        f.write("<navPoint id=\"" + folder.replace('/', '_').replace('\\', '_') + "\"><navLabel><text>"
+        navID = folder.replace('/', '_').replace('\\', '_')
+        if options.chapters:
+            title = chapterNames[chapter[1]]
+            navID = filename[0].replace('/', '_').replace('\\', '_')
+        elif os.path.basename(folder) != "Text":
+            title = chapterNames[os.path.basename(folder)]
+        f.write("<navPoint id=\"" + navID + "\"><navLabel><text>"
                 + title + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/")
                 + ".html\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
@@ -304,6 +313,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
     filelist = []
     chapterlist = []
     cover = None
+    lastfile = None
     _, deviceres, _, _, panelviewsize = options.profileData
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w', encoding='UTF-8')
@@ -416,12 +426,14 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "}",
                   ])
     f.close()
-    for (dirpath, dirnames, filenames) in os.walk(os.path.join(path, 'OEBPS', 'Images')):
+    for (dirpath, dirnames, filenames) in walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
+        dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
             filename = getImageFileName(afile)
             if '-kcc-hq' not in filename[0]:
                 filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
+                lastfile = (dirpath, afile, os.path.join(dirpath, afile))
                 if not chapter:
                     chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
                     chapter = True
@@ -429,32 +441,40 @@ def buildEPUB(path, chapterNames, tomeNumber):
                     cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
                                          'cover' + getImageFileName(filelist[-1][1])[1])
                     image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options, tomeNumber)
+    # Hack that force Panel View on at last one page
+    if lastfile and not options.panelviewused and 'Ko' not in options.profile \
+            and options.profile not in ['K1', 'K2', 'KDX', 'OTHER']:
+        filelist[-1] = buildHTML(lastfile[0], lastfile[1], lastfile[2], True)
+    # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
+    if not chapterNames and options.chapters:
+        chapterlist = []
+        globaldiff = 0
+        for aChapter in options.chapters:
+            pageid = aChapter[0]
+            for x in range(0, pageid + globaldiff + 1):
+                if '-aaa-kcc' in filelist[x][1]:
+                    pageid += 1
+            if '-bbb-kcc' in filelist[pageid][1]:
+                pageid -= 1
+            filename = filelist[pageid][1]
+            chapterlist.append((filelist[pageid][0].replace('Images', 'Text'), filename))
+            chapterNames[filename] = aChapter[1]
+            globaldiff = pageid - (aChapter[0] + globaldiff)
     buildNCX(path, options.title, chapterlist, chapterNames)
-    # Ensure we're sorting files alphabetically
-    convert = lambda text: int(text) if text.isdigit() else text
-    alphanum_key = lambda key: [convert(c) for c in split('([0-9]+)', key)]
-    filelist.sort(key=lambda name: (alphanum_key(name[0].lower()), alphanum_key(name[1].lower())))
     buildOPF(path, options.title, filelist, cover)
 
 
-def imgOptimization(img, opt, hqImage=None):
+def imgOptimization(img, opt):
     if not img.fill:
         img.getImageFill()
     if not opt.webtoon:
         img.cropWhiteSpace()
     if opt.cutpagenumbers and not opt.webtoon:
         img.cutPageNumber()
-    img.optimizeImage()
-    if hqImage:
-        img.resizeImage(0)
-        img.calculateBorder(hqImage, True)
-    else:
-        img.resizeImage()
-        if opt.panelview:
-            if opt.quality == 0:
-                img.calculateBorder(img)
-            elif opt.quality == 1:
-                img.calculateBorder(img, True)
+    img.autocontrastImage()
+    img.resizeImage()
+    if not img.second and opt.panelview:
+        img.calculateBorder()
     if opt.forcepng and not opt.forcecolor:
         img.quantizeImage()
 
@@ -467,7 +487,7 @@ def imgDirectoryProcessing(path):
     options.imgPurgeIndex = []
     work = []
     pagenumber = 0
-    for (dirpath, dirnames, filenames) in os.walk(path):
+    for (dirpath, dirnames, filenames) in walk(path):
         for afile in filenames:
             pagenumber += 1
             work.append([afile, dirpath, options])
@@ -516,10 +536,6 @@ def imgFileProcessing(work):
         opt = work[2]
         output = []
         img = image.ComicPage(os.path.join(dirpath, afile), opt)
-        if opt.quality == 2:
-            wipe = False
-        else:
-            wipe = True
         if opt.nosplitrotate:
             splitter = None
         else:
@@ -527,36 +543,30 @@ def imgFileProcessing(work):
         if splitter is not None:
             img0 = image.ComicPage(splitter[0], opt)
             imgOptimization(img0, opt)
-            output.append(img0.saveToDir(dirpath))
+            if not img0.noHQ:
+                output.append(img0.saveToDir(dirpath))
             img1 = image.ComicPage(splitter[1], opt)
             imgOptimization(img1, opt)
-            output.append(img1.saveToDir(dirpath))
-            if wipe:
-                output.append(img0.origFileName)
-                output.append(img1.origFileName)
+            if not img1.noHQ:
+                output.append(img1.saveToDir(dirpath))
+            output.extend([img.origFileName, img0.origFileName, img1.origFileName])
             if opt.quality == 2:
-                img0b = image.ComicPage(splitter[0], opt, img0.fill)
-                imgOptimization(img0b, opt, img0)
+                output.extend([img0.origFileName, img1.origFileName])
+                img0b = image.ComicPage(splitter[0], opt, img0)
+                imgOptimization(img0b, opt)
                 output.append(img0b.saveToDir(dirpath))
-                img1b = image.ComicPage(splitter[1], opt, img1.fill)
-                imgOptimization(img1b, opt, img1)
+                img1b = image.ComicPage(splitter[1], opt, img1)
+                imgOptimization(img1b, opt)
                 output.append(img1b.saveToDir(dirpath))
-                output.append(img0.origFileName)
-                output.append(img1.origFileName)
-            output.append(img.origFileName)
         else:
+            output.append(img.origFileName)
             imgOptimization(img, opt)
-            output.append(img.saveToDir(dirpath))
-            if wipe:
-                output.append(img.origFileName)
+            if not img.noHQ:
+                output.append(img.saveToDir(dirpath))
             if opt.quality == 2:
-                img2 = image.ComicPage(os.path.join(dirpath, afile), opt, img.fill)
-                if img.rotated:
-                    img2.image = img2.image.rotate(90, Image.BICUBIC, True)
-                    img2.rotated = True
-                imgOptimization(img2, opt, img)
+                img2 = image.ComicPage(os.path.join(dirpath, afile), opt, img)
+                imgOptimization(img2, opt)
                 output.append(img2.saveToDir(dirpath))
-                output.append(img.origFileName)
         return output
     except Exception:
         return str(sys.exc_info()[1])
@@ -568,7 +578,7 @@ def getWorkFolder(afile):
     if os.path.isdir(afile):
         workdir = mkdtemp('', 'KCC-TMP-')
         try:
-            os.rmdir(workdir)   # needed for copytree() fails if dst already exists
+            os.rmdir(workdir)
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
             if len(fullPath) > 240:
                 raise UserWarning("Path is too long.")
@@ -633,6 +643,7 @@ def getComicInfo(path, originalPath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.authors = ['KCC']
     options.remoteCovers = {}
+    options.chapters = []
     titleSuffix = ''
     if options.title == 'defaulttitle':
         defaultTitle = True
@@ -644,57 +655,43 @@ def getComicInfo(path, originalPath):
         defaultTitle = False
     if os.path.exists(xmlPath):
         try:
-            xml = parse(xmlPath)
+            xml = metadata.MetadataParser(xmlPath)
         except Exception:
             os.remove(xmlPath)
             return
         options.authors = []
         if defaultTitle:
-            if len(xml.getElementsByTagName('Series')) != 0:
-                options.title = xml.getElementsByTagName('Series')[0].firstChild.nodeValue
-            if len(xml.getElementsByTagName('Volume')) != 0:
-                titleSuffix += ' V' + xml.getElementsByTagName('Volume')[0].firstChild.nodeValue
-            if len(xml.getElementsByTagName('Number')) != 0:
-                titleSuffix += ' #' + xml.getElementsByTagName('Number')[0].firstChild.nodeValue
+            if xml.data['Series']:
+                options.title = xml.data['Series']
+            if xml.data['Volume']:
+                titleSuffix += ' V' + xml.data['Volume']
+            if xml.data['Number']:
+                titleSuffix += ' #' + xml.data['Number']
             options.title += titleSuffix
-        if len(xml.getElementsByTagName('Writer')) != 0:
-            authorsTemp = str.split(xml.getElementsByTagName('Writer')[0].firstChild.nodeValue, ', ')
-            for author in authorsTemp:
-                options.authors.append(author)
-        if len(xml.getElementsByTagName('Penciller')) != 0:
-            authorsTemp = str.split(xml.getElementsByTagName('Penciller')[0].firstChild.nodeValue, ', ')
-            for author in authorsTemp:
-                options.authors.append(author)
-        if len(xml.getElementsByTagName('Inker')) != 0:
-            authorsTemp = str.split(xml.getElementsByTagName('Inker')[0].firstChild.nodeValue, ', ')
-            for author in authorsTemp:
-                options.authors.append(author)
-        if len(xml.getElementsByTagName('Colorist')) != 0:
-            authorsTemp = str.split(xml.getElementsByTagName('Colorist')[0].firstChild.nodeValue, ', ')
-            for author in authorsTemp:
-                options.authors.append(author)
+        for field in ['Writers', 'Pencillers', 'Inkers', 'Colorists']:
+            for person in xml.data[field]:
+                options.authors.append(person)
         if len(options.authors) > 0:
             options.authors = list(set(options.authors))
             options.authors.sort()
         else:
             options.authors = ['KCC']
-        # Disabled due to closure of MCD
-        # if len(xml.getElementsByTagName('ScanInformation')) != 0:
-        #    coverId = xml.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue
-        #    coverId = compile('(MCD\\()(\\d+)(\\))').search(coverId)
-        #    if coverId:
-        #        options.remoteCovers = getCoversFromMCB(coverId.group(2))
+        if xml.data['MUid']:
+            options.remoteCovers = getCoversFromMCB(xml.data['MUid'])
+        if xml.data['Bookmarks']:
+            options.chapters = xml.data['Bookmarks']
         os.remove(xmlPath)
 
 
 def getCoversFromMCB(mangaID):
     covers = {}
     try:
-        jsonRaw = urlopen(Request('http://manga.joentjuh.nl/json/series/' + mangaID + '/',
+        jsonRaw = urlopen(Request('http://mcd.iosphe.re/api/v1/series/' + mangaID + '/',
                                   headers={'User-Agent': 'KindleComicConverter/' + __version__}))
         jsonData = loads(jsonRaw.readall().decode('utf-8'))
-        for volume in jsonData['volumes']:
-            covers[int(volume['volume'])] = volume['releases'][0]['files']['front']['url']
+        for volume in jsonData['Covers']['a']:
+            if volume['Side'] == 'front':
+                covers[int(volume['Volume'])] = volume['Raw']
     except Exception:
         return {}
     return covers
@@ -702,7 +699,7 @@ def getCoversFromMCB(mangaID):
 
 def getDirectorySize(start_path='.'):
     total_size = 0
-    for dirpath, dirnames, filenames in os.walk(start_path):
+    for dirpath, dirnames, filenames in walk(start_path):
         for f in filenames:
             fp = os.path.join(dirpath, f)
             total_size += os.path.getsize(fp)
@@ -711,7 +708,7 @@ def getDirectorySize(start_path='.'):
 
 def sanitizeTree(filetree):
     chapterNames = {}
-    for root, dirs, files in os.walk(filetree, False):
+    for root, dirs, files in walk(filetree, False):
         for name in files:
             splitname = os.path.splitext(name)
             slugified = slugify(splitname[0])
@@ -721,7 +718,7 @@ def sanitizeTree(filetree):
             newKey = os.path.join(root, slugified + splitname[1])
             key = os.path.join(root, name)
             if key != newKey:
-                os.replace(key, newKey)
+                saferReplace(key, newKey)
         for name in dirs:
             tmpName = name
             slugified = slugify(name)
@@ -731,15 +728,14 @@ def sanitizeTree(filetree):
             newKey = os.path.join(root, slugified)
             key = os.path.join(root, name)
             if key != newKey:
-                os.replace(key, newKey)
+                saferReplace(key, newKey)
     return chapterNames
 
 
 def sanitizeTreeKobo(filetree):
     pageNumber = 0
-    for root, dirs, files in os.walk(filetree):
-        files.sort()
-        dirs.sort()
+    for root, dirs, files in walk(filetree):
+        dirs, files = walkSort(dirs, files)
         for name in files:
             splitname = os.path.splitext(name)
             slugified = str(pageNumber).zfill(5)
@@ -750,11 +746,11 @@ def sanitizeTreeKobo(filetree):
             newKey = os.path.join(root, slugified + splitname[1])
             key = os.path.join(root, name)
             if key != newKey:
-                os.replace(key, newKey)
+                saferReplace(key, newKey)
 
 
 def sanitizePermissions(filetree):
-    for root, dirs, files in os.walk(filetree, False):
+    for root, dirs, files in walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
@@ -886,7 +882,7 @@ def splitProcess(path, mode):
 
 
 def detectCorruption(tmpPath, orgPath):
-    for root, dirs, files in os.walk(tmpPath, False):
+    for root, dirs, files in walk(tmpPath, False):
         for name in files:
             if getImageFileName(name) is not None:
                 path = os.path.join(root, name)
@@ -915,20 +911,20 @@ def detectMargins(path):
                 yu = flag[2]
                 xr = flag[3]
                 yd = flag[4]
-                if xl != "0":
-                    xl = "-" + str(float(xl)/100) + "%"
+                if xl != "0.0":
+                    xl = "-" + xl + "%"
                 else:
                     xl = "0%"
-                if xr != "0":
-                    xr = "-" + str(float(xr)/100) + "%"
+                if xr != "0.0":
+                    xr = "-" + xr + "%"
                 else:
                     xr = "0%"
-                if yu != "0":
-                    yu = "-" + str(float(yu)/100) + "%"
+                if yu != "0.0":
+                    yu = "-" + yu + "%"
                 else:
                     yu = "0%"
-                if yd != "0":
-                    yd = "-" + str(float(yd)/100) + "%"
+                if yd != "0.0":
+                    yd = "-" + yd + "%"
                 else:
                     yd = "0%"
                 return xl, yu, xr, yd
@@ -953,7 +949,7 @@ def makeZIP(zipFilename, baseDir, isEPUB=False):
     zipOutput = ZipFile(zipFilename, 'w', ZIP_DEFLATED)
     if isEPUB:
         zipOutput.writestr('mimetype', 'application/epub+zip', ZIP_STORED)
-    for dirpath, dirnames, filenames in os.walk(baseDir):
+    for dirpath, dirnames, filenames in walk(baseDir):
         for name in filenames:
             path = os.path.normpath(os.path.join(dirpath, name))
             aPath = os.path.normpath(os.path.join(dirpath.replace(baseDir, ''), name))
@@ -1034,6 +1030,7 @@ def makeParser():
 def checkOptions():
     global options
     options.panelview = True
+    options.panelviewused = False
     options.bordersColor = None
     if options.format == 'Auto':
         if options.profile in ['K1', 'K2', 'K345', 'KPW', 'KV', 'KFHD', 'KFHDX', 'KFHDX8', 'KFA']:
@@ -1131,10 +1128,7 @@ def makeBook(source, qtGUI=None):
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
     detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
     if options.webtoon:
-        if options.customheight > 0:
-            comic2panel.main(['-y ' + str(options.customheight), '-i', '-m', path], qtGUI)
-        else:
-            comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', '-m', path], qtGUI)
+        comic2panel.main(['-y ' + str(image.ProfileData.Profiles[options.profile][1][1]), '-i', '-m', path], qtGUI)
     if options.imgproc:
         print("\nProcessing images...")
         if GUI:

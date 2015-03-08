@@ -18,18 +18,14 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-__version__ = '4.4.1'
-__license__ = 'ISC'
-__copyright__ = '2012-2015, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
-__docformat__ = 'restructuredtext en'
-
 import os
 import sys
 from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
 from PIL import Image, ImageStat, ImageOps
-from .shared import getImageFileName, walkLevel
+from scandir import walk
+from .shared import getImageFileName, walkLevel, walkSort
 try:
     from PyQt5 import QtCore
 except ImportError:
@@ -251,7 +247,8 @@ def main(argv=None, qtGUI=None):
                 mergeWorkerOutput = []
                 mergeWorkerPool = Pool()
                 mergeWork.append([options.targetDir])
-                for root, dirs, files in os.walk(options.targetDir, False):
+                for root, dirs, files in walk(options.targetDir, False):
+                    dirs, files = walkSort(dirs, files)
                     for directory in dirs:
                         directoryNumer += 1
                         mergeWork.append([os.path.join(root, directory)])
@@ -269,7 +266,7 @@ def main(argv=None, qtGUI=None):
                     rmtree(options.targetDir, True)
                     raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0])
             print("\nSplitting images...")
-            for root, dirs, files in os.walk(options.targetDir, False):
+            for root, dirs, files in walk(options.targetDir, False):
                 for name in files:
                     if getImageFileName(name) is not None:
                         pagenumber += 1
