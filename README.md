@@ -159,6 +159,15 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu!-KoAH2O.cbz)
 
 ## CHANGELOG
+####4.5:
+* Added simple ComicRack medadata editor
+* Re-enabled Manga Cover Database support
+* ComicRack bookmarks are now parsed
+* Fixed glitches in Kindle Voyage profile
+* Fixed problems with directory locks on Windows
+* Fixed sorting anomalies
+* Improved conversion speed
+
 ####4.4.1:
 * Fixed problems with OSX GUI
 * Added one missing DLL to Windows installer
