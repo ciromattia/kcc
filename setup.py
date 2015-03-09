@@ -1,25 +1,32 @@
 #!/usr/bin/env python3
 """
-py2exe/py2app build script for KCC.
+pip/py2exe/py2app build script for KCC.
 
 Usage (Windows):
-    python setup.py py2exe
+    py -3.4 setup.py py2exe
+
+Usage (Linux):
+    python3 setup.py make_pyz or python3 setup.py install
 
 Usage (Mac OS X):
-    python setup.py py2app
+    python3 setup.py py2app
 """
-from sys import platform, version_info
+from sys import platform, version_info, argv
 from kcc import __version__
 if version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
     exit(1)
 
-NAME = "KindleComicConverter"
+NAME = 'KindleComicConverter'
 VERSION = __version__
-MAIN = "kcc.py"
+MAIN = 'kcc.py'
+extra_options = {}
 
-if platform == "darwin":
+# noinspection PyUnresolvedReferences
+if platform == 'darwin':
     from setuptools import setup
+    from os import chmod, makedirs
+    from shutil import copyfile
     extra_options = dict(
         setup_requires=['py2app'],
         app=[MAIN],
@@ -32,8 +39,8 @@ if platform == "darwin":
                 plist=dict(
                     CFBundleName=NAME,
                     CFBundleShortVersionString=VERSION,
-                    CFBundleGetInfoString=NAME + " " + VERSION +
-                    ", written 2012-2015 by Ciro Mattia Gonano and Pawel Jastrzebski",
+                    CFBundleGetInfoString=NAME + ' ' + VERSION +
+                    ', written 2012-2015 by Ciro Mattia Gonano and Pawel Jastrzebski',
                     CFBundleExecutable=NAME,
                     CFBundleDocumentTypes=[
                         dict(
@@ -52,12 +59,12 @@ if platform == "darwin":
             )
         )
     )
-elif platform == "win32":
+elif platform == 'win32':
     # noinspection PyUnresolvedReferences
     import py2exe
-    import platform
+    from platform import architecture
     from distutils.core import setup
-    if platform.architecture()[0] == '64bit':
+    if architecture()[0] == '64bit':
         suffix = '_64'
     else:
         suffix = ''
@@ -70,44 +77,86 @@ elif platform == "win32":
                               'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libGLESv2.dll',
                               'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libEGL.dll'])]
     extra_options = dict(
-        options={'py2exe': {"bundle_files": 1,
-                            "dist_dir": "dist" + suffix,
-                            "compressed": True,
-                            "includes": ["sip"],
-                            "excludes": ["tkinter"],
-                            "optimize": 2}},
-        windows=[{"script": MAIN,
-                  "dest_base": "KCC",
-                  "version": VERSION,
-                  "copyright": "Ciro Mattia Gonano, Pawel Jastrzebski © 2012-2015",
-                  "legal_copyright": "ISC License (ISCL)",
-                  "product_version": VERSION,
-                  "product_name": "Kindle Comic Converter",
-                  "file_description": "Kindle Comic Converter",
-                  "icon_resources": [(1, "icons\comic2ebook.ico")]}],
+        options={'py2exe': {'bundle_files': 1,
+                            'dist_dir': 'dist' + suffix,
+                            'compressed': True,
+                            'includes': ['sip'],
+                            'excludes': ['tkinter'],
+                            'optimize': 2}},
+        windows=[{'script': MAIN,
+                  'dest_base': 'KCC',
+                  'version': VERSION,
+                  'copyright': 'Ciro Mattia Gonano, Pawel Jastrzebski © 2012-2015',
+                  'legal_copyright': 'ISC License (ISCL)',
+                  'product_version': VERSION,
+                  'product_name': 'Kindle Comic Converter',
+                  'file_description': 'Kindle Comic Converter',
+                  'icon_resources': [(1, 'icons\comic2ebook.ico')]}],
         zipfile=None,
         data_files=additional_files)
 else:
-    print('Please use setup.sh to build Linux package.')
-    exit()
+    if argv[1] == 'make_pyz':
+        from os import system
+        script = '''
+        cp kcc.py __main__.py
+        zip kcc.zip __main__.py kcc/*.py
+        echo "#!/usr/bin/env python3" > kcc-bin
+        cat kcc.zip >> kcc-bin
+        chmod +x kcc-bin
 
-# noinspection PyUnboundLocalVariable
+        cp kcc-c2e.py __main__.py
+        zip kcc-c2e.zip __main__.py kcc/*.py
+        echo "#!/usr/bin/env python3" > kcc-c2e-bin
+        cat kcc-c2e.zip >> kcc-c2e-bin
+        chmod +x kcc-c2e-bin
+
+        cp kcc-c2p.py __main__.py
+        zip kcc-c2p.zip __main__.py kcc/*.py
+        echo "#!/usr/bin/env python3" > kcc-c2p-bin
+        cat kcc-c2p.zip >> kcc-c2p-bin
+        chmod +x kcc-c2p-bin
+
+        tar --xform s:^.*/:: --xform s/LICENSE.txt/LICENSE/ --xform s/kcc-bin/kcc/ --xform s/kcc-c2p-bin/kcc-c2p/ \
+        --xform s/kcc-c2e-bin/kcc-c2e/ --xform s/comic2ebook/kcc/ -czf KindleComicConverter_linux_'''\
+        + VERSION + '''.tar.gz kcc-bin kcc-c2e-bin kcc-c2p-bin LICENSE.txt README.md icons/comic2ebook.png
+        rm __main__.py kcc.zip kcc-c2e.zip kcc-c2p.zip kcc-bin kcc-c2e-bin kcc-c2p-bin
+        '''
+        system("bash -c '%s'" % script)
+        exit(0)
+    else:
+        from setuptools import setup
+        from os import makedirs
+        from shutil import copyfile
+        makedirs('build/_scripts/', exist_ok=True)
+        copyfile('kcc.py', 'build/_scripts/kcc')
+        copyfile('kcc-c2e.py', 'build/_scripts/kcc-c2e')
+        copyfile('kcc-c2p.py', 'build/_scripts/kcc-c2p')
+        extra_options = dict(
+            scripts=['build/_scripts/kcc', 'build/_scripts/kcc-c2e', 'build/_scripts/kcc-c2p'],
+            packages=['kcc'],
+            install_requires=[
+                'Pillow>=2.7.0',
+                'psutil>=2.0',
+                'python-slugify>=0.1.0',
+                'scandir>=0.9',
+            ],
+            zip_safe=False,
+        )
+
 setup(
     name=NAME,
     version=VERSION,
-    author="Ciro Mattia Gonano, Pawel Jastrzebski",
-    author_email="ciromattia@gmail.com, pawelj@iosphe.re",
-    description="Kindle Comic Converter",
-    license="ISC License (ISCL)",
-    keywords="kindle comic mobipocket mobi cbz cbr manga",
-    url="http://github.com/ciromattia/kcc",
+    author='Ciro Mattia Gonano, Pawel Jastrzebski',
+    author_email='ciromattia@gmail.com, pawelj@iosphe.re',
+    description='Comic and manga converter for E-Book readers.',
+    license='ISC License (ISCL)',
+    keywords='kindle comic mobipocket mobi cbz cbr manga',
+    url='http://github.com/ciromattia/kcc',
     **extra_options
 )
 
-if platform == "darwin":
-    from os import chmod, makedirs
-    from shutil import copyfile
-    makedirs('dist/' + NAME + '.app/Contents/PlugIns/platforms')
+if platform == 'darwin':
+    makedirs('dist/' + NAME + '.app/Contents/PlugIns/platforms', exist_ok=True)
     copyfile('other/libqcocoa.dylib', 'dist/' + NAME + '.app/Contents/PlugIns/platforms/libqcocoa.dylib')
     chmod('dist/' + NAME + '.app/Contents/Resources/unrar', 0o777)
     chmod('dist/' + NAME + '.app/Contents/Resources/7za', 0o777)

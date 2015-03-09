@@ -29,20 +29,8 @@ You can find the latest released binary at the following links:
 - **Linux:** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
 - **OS X (10.8+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
 
-## INPUT FORMATS
-**KCC** can understand and convert, at the moment, the following input types:
-- Folders containing: PNG, JPG or GIF files
-- CBZ, ZIP
-- CBR, RAR *(With `unrar` executable)*
-- CB7, 7Z *(With `7za` executable)*
-- PDF *(Only extracting JPG images)*
-
-## OPTIONAL REQUIREMENTS
-- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation)*
-- [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
-- [7za](http://www.7-zip.org/download.html) *(For 7z/CB7 support)*
-
-### For running from source:
+## DEPENDENCIES
+Following software is required to run Linux version of **KCC** and/or bare sources:
 - Python 3.3+
 - [PyQt](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.2.0+
 - [Pillow](http://pypi.python.org/pypi/Pillow/) 2.7.0+
@@ -50,15 +38,24 @@ You can find the latest released binary at the following links:
 - [python-slugify](http://pypi.python.org/pypi/python-slugify) 0.1.0+
 - [scandir](https://pypi.python.org/pypi/scandir) 0.9+
 
-On Debian based distributions these two commands should install all dependencies:
+On Debian based distributions these two commands should install all needed dependencies:
 ```
 sudo apt-get install python3 python3-dev python3-pip python3-pyqt5 libpng-dev libjpeg-dev p7zip-full unrar
 sudo pip3 install pillow python-slugify psutil scandir
 ```
 
-### For freezing code:
-- Windows - [py2exe](https://pypi.python.org/pypi/py2exe) 0.9.2.2+
-- OS X - [py2app](https://bitbucket.org/ronaldoussoren/py2app) 0.9.0+
+### Optional dependencies
+- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation)*
+- [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
+- [7za](http://www.7-zip.org/download.html) *(For 7z/CB7 support)*
+
+## INPUT FORMATS
+**KCC** can understand and convert, at the moment, the following input types:
+- Folders containing: PNG, JPG or GIF files
+- CBZ, ZIP
+- CBR, RAR *(With `unrar` executable)*
+- CB7, 7Z *(With `7za` executable)*
+- PDF *(Only extracting JPG images)*
 
 ## USAGE
 
@@ -160,7 +157,7 @@ The app relies and includes the following scripts:
 
 ## CHANGELOG
 ####4.5:
-* Added simple ComicRack medadata editor
+* Added simple ComicRack metadata editor
 * Re-enabled Manga Cover Database support
 * ComicRack bookmarks are now parsed
 * Fixed glitches in Kindle Voyage profile
