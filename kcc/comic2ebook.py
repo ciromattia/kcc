@@ -293,7 +293,10 @@ def buildOPF(dstdir, title, filelist, cover=None):
         f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\""
                 + mt + "\"/>\n")
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
-    f.write("</manifest>\n<spine toc=\"ncx\">\n")
+    if options.righttoleft:
+        f.write("</manifest>\n<spine page-progression-direction=\"rtl\" toc=\"ncx\">\n")
+    else:
+        f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
     for entry in reflist:
         f.write("<itemref idref=\"page_" + entry + "\"/>\n")
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
