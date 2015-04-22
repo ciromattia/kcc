@@ -974,7 +974,7 @@ def makeParser():
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
                            help="Device profile (Available options: K1, K2, K345, KDX, KPW, KV, KFHD, KFHDX, KFHDX8,"
-                                " KFA, KoMT, KoG, KoA, KoAHD, KoAH2O) [Default=KV]")
+                                " KFA, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O) [Default=KV]")
     mainOptions.add_option("-q", "--quality", type="int", dest="quality", default="0",
                            help="Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
@@ -1040,7 +1040,7 @@ def checkOptions():
             options.format = 'MOBI'
         elif options.profile in ['Other']:
             options.format = 'EPUB'
-        elif options.profile in ['KDX', 'KoMT', 'KoG', 'KoA', 'KoAHD', 'KoAH2O']:
+        elif options.profile in ['KDX', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O']:
             options.format = 'CBZ'
     if options.white_borders:
         options.bordersColor = 'white'

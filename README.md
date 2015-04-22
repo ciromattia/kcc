@@ -75,7 +75,7 @@ Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
                         Device profile (Available options: K1, K2, K345, KDX,
-                        KPW, KV, KFHD, KFHDX, KFHDX8, KFA, KoMT, KoG, KoA,
+                        KPW, KV, KFHD, KFHDX, KFHDX8, KFA, KoMT, KoG, KoGHD, KoA,
                         KoAHD, KoAH2O) [Default=KV]
     -q QUALITY, --quality=QUALITY
                         Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
