@@ -150,7 +150,7 @@ The app relies and includes the following scripts:
 * [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K345.mobi)
 * [Kindle DX/DXG](http://kcc.iosphe.re/Samples/Ubunchu!-KDX.cbz)
 * [Kobo Mini/Touch](http://kcc.iosphe.re/Samples/Ubunchu!-KoMT.cbz)
-* [Kobo Glow](http://kcc.iosphe.re/Samples/Ubunchu!-KoG.cbz)
+* [Kobo Glo](http://kcc.iosphe.re/Samples/Ubunchu!-KoG.cbz)
 * [Kobo Aura](http://kcc.iosphe.re/Samples/Ubunchu!-KoA.cbz)
 * [Kobo Aura HD](http://kcc.iosphe.re/Samples/Ubunchu!-KoAHD.cbz)
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu!-KoAH2O.cbz)
