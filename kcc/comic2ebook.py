@@ -579,7 +579,7 @@ def getWorkFolder(afile):
     if len(afile) > 240:
         raise UserWarning("Path is too long.")
     if os.path.isdir(afile):
-        workdir = mkdtemp('', 'KCC-TMP-')
+        workdir = mkdtemp('', 'KCC-')
         try:
             os.rmdir(workdir)
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
@@ -598,7 +598,7 @@ def getWorkFolder(afile):
             rmtree(path, True)
             raise UserWarning("Failed to extract images.")
     else:
-        workdir = mkdtemp('', 'KCC-TMP-')
+        workdir = mkdtemp('', 'KCC-')
         cbx = cbxarchive.CBxArchive(afile)
         if cbx.isCbxFile():
             try:
@@ -935,7 +935,7 @@ def detectMargins(path):
 
 
 def createNewTome():
-    tomePathRoot = mkdtemp('', 'KCC-TMP-')
+    tomePathRoot = mkdtemp('', 'KCC-')
     tomePath = os.path.join(tomePathRoot, 'OEBPS', 'Images')
     os.makedirs(tomePath)
     return tomePath, tomePathRoot
