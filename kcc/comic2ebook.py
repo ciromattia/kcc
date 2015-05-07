@@ -898,9 +898,12 @@ def detectCorruption(tmpPath, orgPath):
                     img.verify()
                     img = Image.open(path)
                     img.load()
-                except Exception:
+                except Exception as err:
                     rmtree(os.path.join(tmpPath, '..', '..'), True)
-                    raise RuntimeError('Image file %s is corrupted.' % pathOrg)
+                    if 'decoder' in err and 'not available' in err:
+                        raise RuntimeError('Pillow was compiled without JPG and/or PNG decoder.')
+                    else:
+                        raise RuntimeError('Image file %s is corrupted.' % pathOrg)
             else:
                 os.remove(os.path.join(root, name))
 
