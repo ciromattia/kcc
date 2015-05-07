@@ -1342,6 +1342,8 @@ class KCCGUI_MetaEditor(KCC_MetaEditor_ui.Ui_MetaEditorDialog):
             field.setText(self.parser.data[field.objectName()[:-4]])
         for field in (self.WriterLine, self.PencillerLine, self.InkerLine, self.ColoristLine):
             field.setText(', '.join(self.parser.data[field.objectName()[:-4] + 's']))
+        if self.SeriesLine.text() == '':
+            self.SeriesLine.setText(file.split('\\')[-1].split('.')[0])
 
     def saveData(self):
         for field in (self.VolumeLine, self.NumberLine, self.MUidLine):
