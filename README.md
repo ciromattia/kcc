@@ -1,7 +1,7 @@
 ﻿# KCC
 
 **Kindle Comic Converter** is a Python app to convert comic/manga files or folders to EPUB, Panel View MOBI or E-Ink optimized CBZ.
-It was initially developed for Kindle but since version 2.2 it outputs valid EPUB 2.0 so _**despite its name, KCC is
+It was initially developed for Kindle but since version 4.0 it outputs valid EPUB 3.0 so _**despite its name, KCC is
 actually a comic/manga to EPUB converter that every e-reader owner can happily use**_.
 It can also optionally optimize images by applying a number of transformations.
 
@@ -151,11 +151,17 @@ The app relies and includes the following scripts:
 * [Kindle DX/DXG](http://kcc.iosphe.re/Samples/Ubunchu!-KDX.cbz)
 * [Kobo Mini/Touch](http://kcc.iosphe.re/Samples/Ubunchu!-KoMT.cbz)
 * [Kobo Glo](http://kcc.iosphe.re/Samples/Ubunchu!-KoG.cbz)
+* [Kobo Glo HD](http://kcc.iosphe.re/Samples/Ubunchu!-KoGHD.cbz)
 * [Kobo Aura](http://kcc.iosphe.re/Samples/Ubunchu!-KoA.cbz)
 * [Kobo Aura HD](http://kcc.iosphe.re/Samples/Ubunchu!-KoAHD.cbz)
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu!-KoAH2O.cbz)
 
 ## CHANGELOG
+####4.5.1:
+* Added Kobo Glo HD profile
+* Fixed RAR/CBR parsing anomalies
+* Minor bug fixes and tweaks
+
 ####4.5:
 * Added simple ComicRack metadata editor
 * Re-enabled Manga Cover Database support
