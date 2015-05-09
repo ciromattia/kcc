@@ -29,7 +29,7 @@ class PdfJpgExtract:
         self.origFileName = origFileName
         self.filename = os.path.splitext(origFileName)
         # noinspection PyUnusedLocal
-        self.path = self.filename[0] + "-KCC-TMP-" + ''.join(choice(ascii_uppercase + digits) for x in range(3))
+        self.path = self.filename[0] + "-KCC-" + ''.join(choice(ascii_uppercase + digits) for x in range(3))
 
     def getPath(self):
         return self.path

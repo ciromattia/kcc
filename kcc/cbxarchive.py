@@ -22,6 +22,7 @@ from zipfile import is_zipfile, ZipFile
 from subprocess import STDOUT, PIPE
 from psutil import Popen
 from shutil import move, copy
+from scandir import walk
 from . import rarfile
 from .shared import check7ZFile as is_7zfile, saferReplace
 
@@ -45,7 +46,7 @@ class CBxArchive:
         cbzFile = ZipFile(self.origFileName)
         filelist = []
         for f in cbzFile.namelist():
-            if f.startswith('__MACOSX') or f.endswith('.DS_Store') or f.endswith('thumbs.db'):
+            if f.startswith('__MACOSX') or f.endswith('.DS_Store') or f.endswith('humbs.db'):
                 pass    # skip MacOS special files
             elif f.endswith('/'):
                 try:
@@ -58,25 +59,18 @@ class CBxArchive:
 
     def extractCBR(self, targetdir):
         cbrFile = rarfile.RarFile(self.origFileName)
-        filelist = []
-        for f in cbrFile.namelist():
-            if f.startswith('__MACOSX') or f.endswith('.DS_Store') or f.endswith('thumbs.db'):
-                pass  # skip MacOS special files
-            elif f.endswith('/'):
-                try:
-                    os.makedirs(os.path.join(targetdir, f))
-                except Exception:
-                    pass  # the dir exists so we are going to extract the images only.
-            else:
-                filelist.append(f)
-        cbrFile.extractall(targetdir, filelist)
+        cbrFile.extractall(targetdir)
+        for root, dirnames, filenames in walk(targetdir):
+            for filename in filenames:
+                if filename.startswith('__MACOSX') or filename.endswith('.DS_Store') or filename.endswith('humbs.db'):
+                    os.remove(os.path.join(root, filename))
 
     def extractCB7(self, targetdir):
         # Workaround for some wide UTF-8 + Popen abnormalities
         if sys.platform.startswith('darwin'):
             copy(self.origFileName, os.path.join(os.path.dirname(self.origFileName), 'TMP_KCC_TMP'))
             self.origFileName = os.path.join(os.path.dirname(self.origFileName), 'TMP_KCC_TMP')
-        output = Popen('7za x "' + self.origFileName + '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -o"'
+        output = Popen('7za x "' + self.origFileName + '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -xr!Thumbs.db -o"'
                        + targetdir + '"', stdout=PIPE, stderr=STDOUT, shell=True)
         extracted = False
         for line in output.stdout:
