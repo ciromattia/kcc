@@ -104,9 +104,9 @@ def saferReplace(old, new):
 
 
 def removeFromZIP(zipfname, *filenames):
-    tempdir = mkdtemp('', 'KCC-TMP-')
+    tempdir = mkdtemp('', 'KCC-')
     try:
-        tempname = os.path.join(tempdir, 'KCC-TMP.zip')
+        tempname = os.path.join(tempdir, 'KCC.zip')
         with ZipFile(zipfname, 'r') as zipread:
             with ZipFile(tempname, 'w', compression=ZIP_DEFLATED) as zipwrite:
                 for item in zipread.infolist():

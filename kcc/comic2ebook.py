@@ -293,7 +293,10 @@ def buildOPF(dstdir, title, filelist, cover=None):
         f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\""
                 + mt + "\"/>\n")
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
-    f.write("</manifest>\n<spine toc=\"ncx\">\n")
+    if options.righttoleft:
+        f.write("</manifest>\n<spine page-progression-direction=\"rtl\" toc=\"ncx\">\n")
+    else:
+        f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
     for entry in reflist:
         f.write("<itemref idref=\"page_" + entry + "\"/>\n")
     f.write("</spine>\n<guide>\n</guide>\n</package>\n")
@@ -576,7 +579,7 @@ def getWorkFolder(afile):
     if len(afile) > 240:
         raise UserWarning("Path is too long.")
     if os.path.isdir(afile):
-        workdir = mkdtemp('', 'KCC-TMP-')
+        workdir = mkdtemp('', 'KCC-')
         try:
             os.rmdir(workdir)
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
@@ -595,7 +598,7 @@ def getWorkFolder(afile):
             rmtree(path, True)
             raise UserWarning("Failed to extract images.")
     else:
-        workdir = mkdtemp('', 'KCC-TMP-')
+        workdir = mkdtemp('', 'KCC-')
         cbx = cbxarchive.CBxArchive(afile)
         if cbx.isCbxFile():
             try:
@@ -895,9 +898,12 @@ def detectCorruption(tmpPath, orgPath):
                     img.verify()
                     img = Image.open(path)
                     img.load()
-                except Exception:
+                except Exception as err:
                     rmtree(os.path.join(tmpPath, '..', '..'), True)
-                    raise RuntimeError('Image file %s is corrupted.' % pathOrg)
+                    if 'decoder' in err and 'not available' in err:
+                        raise RuntimeError('Pillow was compiled without JPG and/or PNG decoder.')
+                    else:
+                        raise RuntimeError('Image file %s is corrupted.' % pathOrg)
             else:
                 os.remove(os.path.join(root, name))
 
@@ -932,7 +938,7 @@ def detectMargins(path):
 
 
 def createNewTome():
-    tomePathRoot = mkdtemp('', 'KCC-TMP-')
+    tomePathRoot = mkdtemp('', 'KCC-')
     tomePath = os.path.join(tomePathRoot, 'OEBPS', 'Images')
     os.makedirs(tomePath)
     return tomePath, tomePathRoot
@@ -971,7 +977,7 @@ def makeParser():
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
                            help="Device profile (Available options: K1, K2, K345, KDX, KPW, KV, KFHD, KFHDX, KFHDX8,"
-                                " KFA, KoMT, KoG, KoA, KoAHD, KoAH2O) [Default=KV]")
+                                " KFA, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O) [Default=KV]")
     mainOptions.add_option("-q", "--quality", type="int", dest="quality", default="0",
                            help="Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
@@ -1037,7 +1043,7 @@ def checkOptions():
             options.format = 'MOBI'
         elif options.profile in ['Other']:
             options.format = 'EPUB'
-        elif options.profile in ['KDX', 'KoMT', 'KoG', 'KoA', 'KoAHD', 'KoAH2O']:
+        elif options.profile in ['KDX', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O']:
             options.format = 'CBZ'
     if options.white_borders:
         options.bordersColor = 'white'

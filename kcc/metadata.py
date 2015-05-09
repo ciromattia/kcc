@@ -64,7 +64,7 @@ class MetadataParser:
                             self.rawdata = parse(xml_file)
             elif is_7zfile(self.source):
                 self.compressor = '7z'
-                workdir = mkdtemp('', 'KCC-TMP-')
+                workdir = mkdtemp('', 'KCC-')
                 tmpXML = os.path.join(workdir, 'ComicInfo.xml')
                 output = Popen('7za e "' + self.source + '" ComicInfo.xml -o"' + workdir + '"',
                                stdout=PIPE, stderr=STDOUT, shell=True)
@@ -147,7 +147,7 @@ class MetadataParser:
             with open(self.source, 'w', encoding='utf-8') as f:
                 self.rawdata.writexml(f, encoding='utf-8')
         else:
-            workdir = mkdtemp('', 'KCC-TMP-')
+            workdir = mkdtemp('', 'KCC-')
             tmpXML = os.path.join(workdir, 'ComicInfo.xml')
             with open(tmpXML, 'w', encoding='utf-8') as f:
                 self.rawdata.writexml(f, encoding='utf-8')

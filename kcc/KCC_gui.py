@@ -1177,8 +1177,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
                                 'DefaultUpscale': True, 'Label': 'KFHDX8'},
             "Kobo Mini/Touch": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                                 'DefaultUpscale': False, 'Label': 'KoMT'},
-            "Kobo Glow": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
-                          'DefaultUpscale': False, 'Label': 'KoG'},
+            "Kobo Glo": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+                         'DefaultUpscale': False, 'Label': 'KoG'},
+            "Kobo Glo HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+                            'DefaultUpscale': False, 'Label': 'KoGHD'},
             "Kobo Aura": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
                           'DefaultUpscale': False, 'Label': 'KoA'},
             "Kobo Aura HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
@@ -1204,7 +1206,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
             "K. Fire HDX 8.9",
             "Separator",
             "Kobo Mini/Touch",
-            "Kobo Glow",
+            "Kobo Glo",
+            "Kobo Glo HD",
             "Kobo Aura",
             "Kobo Aura HD",
             "Kobo Aura H2O",
@@ -1339,6 +1342,8 @@ class KCCGUI_MetaEditor(KCC_MetaEditor_ui.Ui_MetaEditorDialog):
             field.setText(self.parser.data[field.objectName()[:-4]])
         for field in (self.WriterLine, self.PencillerLine, self.InkerLine, self.ColoristLine):
             field.setText(', '.join(self.parser.data[field.objectName()[:-4] + 's']))
+        if self.SeriesLine.text() == '':
+            self.SeriesLine.setText(file.split('\\')[-1].split('.')[0])
 
     def saveData(self):
         for field in (self.VolumeLine, self.NumberLine, self.MUidLine):
