@@ -557,6 +557,7 @@ class WorkerThread(QtCore.QThread):
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def __init__(self):
+        super().__init__()
         if self.isSystemTrayAvailable():
             QtWidgets.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
             # noinspection PyUnresolvedReferences
