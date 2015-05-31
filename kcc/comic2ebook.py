@@ -608,7 +608,7 @@ def getWorkFolder(afile):
                 raise UserWarning("Failed to extract file.")
         else:
             rmtree(workdir, True)
-            raise TypeError
+            raise TypeError("Failed to detect archive format.")
     if len(os.path.join(path, 'OEBPS', 'Images')) > 240:
         raise UserWarning("Path is too long.")
     move(path, path + "_temp")
