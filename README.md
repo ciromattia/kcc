@@ -33,10 +33,10 @@ You can find the latest released binary at the following links:
 Following software is required to run Linux version of **KCC** and/or bare sources:
 - Python 3.3+
 - [PyQt](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.2.0+
-- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.7.0+
-- [psutil](https://pypi.python.org/pypi/psutil) 2.0+
-- [python-slugify](http://pypi.python.org/pypi/python-slugify) 0.1.0+
-- [scandir](https://pypi.python.org/pypi/scandir) 0.9+
+- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.8.2+
+- [psutil](https://pypi.python.org/pypi/psutil) 3.0.0+
+- [python-slugify](http://pypi.python.org/pypi/python-slugify) 1.1.2+
+- [scandir](https://pypi.python.org/pypi/scandir) 1.1.0+
 
 On Debian based distributions these two commands should install all needed dependencies:
 ```
