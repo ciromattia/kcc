@@ -20,6 +20,7 @@
 
 import os
 import sys
+from time import strftime, gmtime
 from copy import copy
 from glob import glob
 from json import loads
@@ -119,83 +120,98 @@ def buildHTML(path, imgfile, imgfilepath, forcePV=False):
         os.makedirs(htmlpath)
     htmlfile = os.path.join(htmlpath, filename[0] + '.html')
     f = open(htmlfile, "w", encoding='UTF-8')
-    f.writelines(["<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" ",
-                  "\"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n",
-                  "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n",
-                  "<head>\n",
-                  "<title>", filename[0], "</title>\n",
-                  "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n",
-                  "<link href=\"", "../" * (backref - 1),
-                  "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
-                  "</head>\n",
-                  "<body" + additionalStyle + ">\n",
-                  "<div class=\"fs\">\n",
-                  "<div><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
-                  imgfile, "\" class=\"singlePage\"/></div>\n"
-                  ])
-    if (options.panelview or forcePV) and not noPV:
-        options.panelviewused = True
-        if not noHorizontalPV and not noVerticalPV:
-            if rotatedPage:
-                if options.righttoleft:
-                    order = [1, 3, 2, 4]
+    if options.iskindle:
+        f.writelines(["<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+                      "<!DOCTYPE html>\n",
+                      "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n",
+                      "<head>\n",
+                      "<title>", filename[0], "</title>\n",
+                      "<link href=\"", "../" * (backref - 1), "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
+                      "<meta charset=\"utf-8\"/>\n",
+                      "</head>\n",
+                      "<body" + additionalStyle + ">\n",
+                      "<div class=\"fs\">\n",
+                      "<div><img src=\"", "../" * backref, "Images/", postfix, imgfile, "\" alt=\"",
+                      imgfile, "\" class=\"singlePage\"/></div>\n"
+                      ])
+        if (options.panelview or forcePV) and not noPV:
+            options.panelviewused = True
+            if not noHorizontalPV and not noVerticalPV:
+                if rotatedPage:
+                    if options.righttoleft:
+                        order = [1, 3, 2, 4]
+                    else:
+                        order = [2, 4, 1, 3]
                 else:
-                    order = [2, 4, 1, 3]
-            else:
-                if options.righttoleft:
-                    order = [2, 1, 4, 3]
-                else:
-                    order = [1, 2, 3, 4]
-            boxes = ["BoxTL", "BoxTR", "BoxBL", "BoxBR"]
-        elif noHorizontalPV and not noVerticalPV:
-            if rotatedPage:
-                if options.righttoleft:
-                    order = [1, 2]
-                else:
-                    order = [2, 1]
-            else:
-                order = [1, 2]
-            boxes = ["BoxT", "BoxB"]
-        elif not noHorizontalPV and noVerticalPV:
-            if rotatedPage:
-                order = [1, 2]
-            else:
-                if options.righttoleft:
-                    order = [2, 1]
+                    if options.righttoleft:
+                        order = [2, 1, 4, 3]
+                    else:
+                        order = [1, 2, 3, 4]
+                boxes = ["BoxTL", "BoxTR", "BoxBL", "BoxBR"]
+            elif noHorizontalPV and not noVerticalPV:
+                if rotatedPage:
+                    if options.righttoleft:
+                        order = [1, 2]
+                    else:
+                        order = [2, 1]
                 else:
                     order = [1, 2]
-            boxes = ["BoxL", "BoxR"]
-        else:
-            order = [1]
-            boxes = ["BoxC"]
-        for i in range(0, len(boxes)):
-            f.writelines(["<div id=\"" + boxes[i] + "\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
-                          "'{\"targetId\":\"" + boxes[i] + "-Panel-Parent\", \"ordinal\":" + str(order[i]),
-                          "}'></a></div>\n"])
-        if options.quality == 2 and not forcePV:
-            imgfilepv = imgfile.split(".")
-            imgfilepv[0] += "-hq"
-            imgfilepv = ".".join(imgfilepv)
-        else:
-            imgfilepv = imgfile
-        xl, yu, xr, yd = detectMargins(imgfilepath)
-        boxStyles = {"BoxTL": "left:" + xl + ";top:" + yu + ";",
-                     "BoxTR": "right:" + xr + ";top:" + yu + ";",
-                     "BoxBL": "left:" + xl + ";bottom:" + yd + ";",
-                     "BoxBR": "right:" + xr + ";bottom:" + yd + ";",
-                     "BoxT": "left:-25%;top:" + yu + ";",
-                     "BoxB": "left:-25%;bottom:" + yd + ";",
-                     "BoxL": "left:" + xl + ";top:-25%;",
-                     "BoxR": "right:" + xr + ";top:-25%;",
-                     "BoxC": "left:-25%;top:-25%;"
-                     }
-        for box in boxes:
-            f.writelines(["<div id=\"" + box + "-Panel-Parent\" class=\"target-mag-parent\"><div id=\"",
-                          "Generic-Panel\" class=\"target-mag\"><img style=\"" + boxStyles[box] + "\" src=\"",
-                          "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
-                          "\"/></div></div>\n",
-                          ])
-    f.writelines(["</div>\n</body>\n</html>"])
+                boxes = ["BoxT", "BoxB"]
+            elif not noHorizontalPV and noVerticalPV:
+                if rotatedPage:
+                    order = [1, 2]
+                else:
+                    if options.righttoleft:
+                        order = [2, 1]
+                    else:
+                        order = [1, 2]
+                boxes = ["BoxL", "BoxR"]
+            else:
+                order = [1]
+                boxes = ["BoxC"]
+            for i in range(0, len(boxes)):
+                f.writelines(["<div id=\"" + boxes[i] + "\"><a class=\"app-amzn-magnify\" data-app-amzn-magnify=",
+                              "'{\"targetId\":\"" + boxes[i] + "-Panel-Parent\", \"ordinal\":" + str(order[i]),
+                              "}'></a></div>\n"])
+            if options.quality == 2 and not forcePV:
+                imgfilepv = imgfile.split(".")
+                imgfilepv[0] += "-hq"
+                imgfilepv = ".".join(imgfilepv)
+            else:
+                imgfilepv = imgfile
+            xl, yu, xr, yd = detectMargins(imgfilepath)
+            boxStyles = {"BoxTL": "left:" + xl + ";top:" + yu + ";",
+                         "BoxTR": "right:" + xr + ";top:" + yu + ";",
+                         "BoxBL": "left:" + xl + ";bottom:" + yd + ";",
+                         "BoxBR": "right:" + xr + ";bottom:" + yd + ";",
+                         "BoxT": "left:-25%;top:" + yu + ";",
+                         "BoxB": "left:-25%;bottom:" + yd + ";",
+                         "BoxL": "left:" + xl + ";top:-25%;",
+                         "BoxR": "right:" + xr + ";top:-25%;",
+                         "BoxC": "left:-25%;top:-25%;"
+                         }
+            for box in boxes:
+                f.writelines(["<div id=\"" + box + "-Panel-Parent\" class=\"target-mag-parent\"><div id=\"",
+                              "Generic-Panel\" class=\"target-mag\"><img style=\"" + boxStyles[box] + "\" src=\"",
+                              "../" * backref, "Images/", postfix, imgfilepv, "\" alt=\"" + imgfilepv,
+                              "\"/></div></div>\n",
+                              ])
+        f.writelines(["</div>\n</body>\n</html>"])
+    else:
+        f.writelines(["<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+                      "<!DOCTYPE html>\n",
+                      "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n",
+                      "<head>\n",
+                      "<title>", filename[0], "</title>\n",
+                      "<link href=\"", "../" * (backref - 1), "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
+                      "<meta charset=\"utf-8\"/>\n",
+                      "</head>\n",
+                      "<body" + additionalStyle + ">\n",
+                      "<div class=\"epub:type=bodymatter\">\n",
+                      "<img src=\"", "../" * backref, "Images/", postfix, imgfile, "\"/>\n",
+                      "</div>\n",
+                      "</body>\n</html>"
+                      ])
     f.close()
     return path, imgfile
 
@@ -205,11 +221,9 @@ def buildNCX(dstdir, title, chapters, chapterNames):
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
     f = open(ncxfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
-                  "<!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\" ",
-                  "\"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\">\n",
                   "<ncx version=\"2005-1\" xml:lang=\"en-US\" xmlns=\"http://www.daisy.org/z3986/2005/ncx/\">\n",
                   "<head>\n",
-                  "<meta name=\"dtb:uid\" content=\"", options.uuid, "\"/>\n",
+                  "<meta name=\"dtb:uid\" content=\"urn:uuid:", options.uuid, "\"/>\n",
                   "<meta name=\"dtb:depth\" content=\"1\"/>\n",
                   "<meta name=\"dtb:totalPageCount\" content=\"0\"/>\n",
                   "<meta name=\"dtb:maxPageNumber\" content=\"0\"/>\n",
@@ -234,6 +248,35 @@ def buildNCX(dstdir, title, chapters, chapterNames):
     f.close()
 
 
+def buildNAV(dstdir, title, chapters, chapterNames):
+    navfile = os.path.join(dstdir, 'OEBPS', 'nav.xhtml')
+    f = open(navfile, "w", encoding='UTF-8')
+    f.writelines(["<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+                  "<!DOCTYPE html>\n",
+                  "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n",
+                  "<head>\n",
+                  "<title>" + title + "</title>\n",
+                  "<meta charset=\"utf-8\"/>\n",
+                  "</head>\n",
+                  "<body>\n",
+                  "<nav xmlns:epub=\"http://www.idpf.org/2007/ops\" epub:type=\"toc\" id=\"toc\">\n",
+                  "<ol></ol>\n",
+                  "</nav>\n",
+                  "<nav epub:type=\"page-list\">\n",
+                  "<ol>\n"
+                  ])
+    for chapter in chapters:
+        folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
+        filename = getImageFileName(os.path.join(folder, chapter[1]))
+        if options.chapters:
+            title = chapterNames[chapter[1]]
+        elif os.path.basename(folder) != "Text":
+            title = chapterNames[os.path.basename(folder)]
+        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".html\">" + title + "</a></li>\n")
+    f.write("</ol>\n</nav>\n</body>\n</html>")
+    f.close()
+
+
 def buildOPF(dstdir, title, filelist, cover=None):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
     profilelabel, deviceres, palette, gamma, panelviewsize = options.profileData
@@ -243,40 +286,47 @@ def buildOPF(dstdir, title, filelist, cover=None):
         writingmode = "horizontal-lr"
     f = open(opffile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
-                  "<package version=\"2.0\" unique-identifier=\"BookID\" ",
+                  "<package version=\"3.0\" unique-identifier=\"BookID\" ",
+                  "prefix=\"rendition: http://www.idpf.org/vocab/rendition/#\" ",
                   "xmlns=\"http://www.idpf.org/2007/opf\">\n",
                   "<metadata xmlns:opf=\"http://www.idpf.org/2007/opf\" ",
                   "xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n",
                   "<dc:title>", title, "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
-                  "<dc:identifier id=\"BookID\" opf:scheme=\"UUID\">", options.uuid, "</dc:identifier>\n"])
+                  "<dc:identifier id=\"BookID\">urn:uuid:", options.uuid, "</dc:identifier>\n",
+                  "<dc:contributor id=\"contributor\">KindleComicConverter-" + __version__ + "</dc:contributor>\n"])
     for author in options.authors:
         f.writelines(["<dc:creator>", author, "</dc:creator>\n"])
-    f.writelines(["<meta name=\"generator\" content=\"KindleComicConverter-" + __version__ + "\"/>\n",
-                  "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
-                  "<meta name=\"region-mag\" content=\"true\"/>\n",
+    f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
                   "<meta name=\"cover\" content=\"cover\"/>\n",
-                  "<meta name=\"book-type\" content=\"comic\"/>\n",
-                  "<meta name=\"rendition:layout\" content=\"pre-paginated\"/>\n",
-                  "<meta name=\"zero-gutter\" content=\"true\"/>\n",
-                  "<meta name=\"zero-margin\" content=\"true\"/>\n",
-                  "<meta name=\"fixed-layout\" content=\"true\"/>\n"
-                  "<meta name=\"rendition:orientation\" content=\"portrait\"/>\n",
-                  "<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
-                  "<meta name=\"original-resolution\" content=\"",
-                  str(deviceres[0]) + "x" + str(deviceres[1]), "\"/>\n",
-                  "<meta name=\"primary-writing-mode\" content=\"", writingmode, "\"/>\n",
-                  "<meta name=\"ke-border-color\" content=\"#ffffff\"/>\n",
-                  "<meta name=\"ke-border-width\" content=\"0\"/>\n",
-                  "</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
-                  "media-type=\"application/x-dtbncx+xml\"/>\n"])
+                  "<meta property=\"rendition:orientation\">portrait</meta>\n",
+                  "<meta property=\"rendition:spread\">portrait</meta>\n",
+                  "<meta property=\"rendition:layout\">pre-paginated</meta>\n"])
+    if options.iskindle and options.profile != 'OTHER':
+        f.writelines(["<meta property=\"RegionMagnification\">true</meta>\n",
+                      "<meta property=\"region-mag\">true</meta>\n",
+                      "<meta property=\"book-type\">comic</meta>\n",
+                      "<meta property=\"zero-gutter\">true</meta>\n",
+                      "<meta property=\"zero-margin\">true</meta>\n",
+                      "<meta property=\"fixed-layout\">true</meta>\n",
+                      "<meta property=\"orientation-lock\">portrait</meta>\n",
+                      "<meta property=\"original-resolution\">",
+                      str(deviceres[0]) + "x" + str(deviceres[1]) + "</meta>\n",
+                      "<meta property=\"primary-writing-mode\">" + writingmode + "</meta>\n",
+                      "<meta property=\"ke-border-color\">#ffffff</meta>\n",
+                      "<meta property=\"ke-border-width\">0</meta>\n"])
+    f.writelines(["</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
+                  "media-type=\"application/x-dtbncx+xml\"/>\n",
+                  "<item id=\"nav\" href=\"nav.xhtml\" ",
+                  "properties=\"nav\" media-type=\"application/xhtml+xml\"/>\n"])
     if cover is not None:
         filename = getImageFileName(cover.replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\'))
         if '.png' == filename[1]:
             mt = 'image/png'
         else:
             mt = 'image/jpeg'
-        f.write("<item id=\"cover\" href=\"Images/cover" + filename[1] + "\" media-type=\"" + mt + "\"/>\n")
+        f.write("<item id=\"cover\" href=\"Images/cover" + filename[1] + "\" media-type=\"" + mt +
+                "\" properties=\"cover-image\"/>\n")
     reflist = []
     for path in filelist:
         folder = path[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\').replace("\\", "/")
@@ -299,7 +349,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
         f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
     for entry in reflist:
         f.write("<itemref idref=\"page_" + entry + "\"/>\n")
-    f.write("</spine>\n<guide>\n</guide>\n</package>\n")
+    f.write("</spine>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
     f = open(os.path.join(dstdir, 'META-INF', 'container.xml'), 'w', encoding='UTF-8')
@@ -320,114 +370,126 @@ def buildEPUB(path, chapterNames, tomeNumber):
     _, deviceres, _, _, panelviewsize = options.profileData
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w', encoding='UTF-8')
-    # DON'T COMPRESS CSS. KINDLE WILL FAIL TO PARSE IT.
-    # Generic Panel View support + Margins fix for Non-Kindle devices.
-    f.writelines(["@page {\n",
-                  "margin-bottom: 0;\n",
-                  "margin-top: 0\n",
-                  "}\n",
-                  "body {\n",
-                  "display: block;\n",
-                  "margin-bottom: 0;\n",
-                  "margin-left: 0;\n",
-                  "margin-right: 0;\n",
-                  "margin-top: 0;\n",
-                  "padding-bottom: 0;\n",
-                  "padding-left: 0;\n",
-                  "padding-right: 0;\n",
-                  "padding-top: 0;\n",
-                  "text-align: left\n",
-                  "}\n",
-                  "div.fs {\n",
-                  "height: ", str(deviceres[1]), "px;\n",
-                  "width: ", str(deviceres[0]), "px;\n",
-                  "position: relative;\n",
-                  "display: block;\n",
-                  "text-align: center\n",
-                  "}\n",
-                  "div.fs a {\n",
-                  "display: block;\n",
-                  "width : 100%;\n",
-                  "height: 100%;\n",
-                  "}\n",
-                  "div.fs div {\n",
-                  "position: absolute;\n",
-                  "}\n",
-                  "img.singlePage {\n",
-                  "position: absolute;\n",
-                  "height: ", str(deviceres[1]), "px;\n",
-                  "width: ", str(deviceres[0]), "px;\n",
-                  "}\n",
-                  "div.target-mag-parent {\n",
-                  "width:100%;\n",
-                  "height:100%;\n",
-                  "display:none;\n",
-                  "}\n",
-                  "div.target-mag {\n",
-                  "position: absolute;\n",
-                  "display: block;\n",
-                  "overflow: hidden;\n",
-                  "}\n",
-                  "div.target-mag img {\n",
-                  "position: absolute;\n",
-                  "height: ", str(panelviewsize[1]), "px;\n",
-                  "width: ", str(panelviewsize[0]), "px;\n",
-                  "}\n",
-                  "#Generic-Panel {\n",
-                  "top: 0;\n",
-                  "height: 100%;\n",
-                  "width: 100%;\n",
-                  "}\n",
-                  "#BoxC {\n",
-                  "top: 0;\n",
-                  "height: 100%;\n",
-                  "width: 100%;\n",
-                  "}\n",
-                  "#BoxT {\n",
-                  "top: 0;\n",
-                  "height: 50%;\n",
-                  "width: 100%;\n",
-                  "}\n",
-                  "#BoxB {\n",
-                  "bottom: 0;\n",
-                  "height: 50%;\n",
-                  "width: 100%;\n",
-                  "}\n",
-                  "#BoxL {\n",
-                  "left: 0;\n",
-                  "height: 100%;\n",
-                  "width: 50%;\n",
-                  "}\n",
-                  "#BoxR {\n",
-                  "right: 0;\n",
-                  "height: 100%;\n",
-                  "width: 50%;\n",
-                  "}\n",
-                  "#BoxTL {\n",
-                  "top: 0;\n",
-                  "left: 0;\n",
-                  "height: 50%;\n",
-                  "width: 50%;\n",
-                  "}\n",
-                  "#BoxTR {\n",
-                  "top: 0;\n",
-                  "right: 0;\n",
-                  "height: 50%;\n",
-                  "width: 50%;\n",
-                  "}\n",
-                  "#BoxBL {\n",
-                  "bottom: 0;\n",
-                  "left: 0;\n",
-                  "height: 50%;\n",
-                  "width: 50%;\n",
-                  "}\n",
-                  "#BoxBR {\n",
-                  "bottom: 0;\n",
-                  "right: 0;\n",
-                  "height: 50%;\n",
-                  "width: 50%;\n",
-                  "}",
-                  ])
+    if options.iskindle:
+        f.writelines(["@page {\n",
+                      "margin-bottom: 0;\n",
+                      "margin-top: 0\n",
+                      "}\n",
+                      "body {\n",
+                      "display: block;\n",
+                      "margin-bottom: 0;\n",
+                      "margin-left: 0;\n",
+                      "margin-right: 0;\n",
+                      "margin-top: 0;\n",
+                      "padding-bottom: 0;\n",
+                      "padding-left: 0;\n",
+                      "padding-right: 0;\n",
+                      "padding-top: 0;\n",
+                      "text-align: left\n",
+                      "}\n",
+                      "div.fs {\n",
+                      "height: ", str(deviceres[1]), "px;\n",
+                      "width: ", str(deviceres[0]), "px;\n",
+                      "position: relative;\n",
+                      "display: block;\n",
+                      "text-align: center\n",
+                      "}\n",
+                      "div.fs a {\n",
+                      "display: block;\n",
+                      "width : 100%;\n",
+                      "height: 100%;\n",
+                      "}\n",
+                      "div.fs div {\n",
+                      "position: absolute;\n",
+                      "}\n",
+                      "img.singlePage {\n",
+                      "position: absolute;\n",
+                      "height: ", str(deviceres[1]), "px;\n",
+                      "width: ", str(deviceres[0]), "px;\n",
+                      "}\n",
+                      "div.target-mag-parent {\n",
+                      "width:100%;\n",
+                      "height:100%;\n",
+                      "display:none;\n",
+                      "}\n",
+                      "div.target-mag {\n",
+                      "position: absolute;\n",
+                      "display: block;\n",
+                      "overflow: hidden;\n",
+                      "}\n",
+                      "div.target-mag img {\n",
+                      "position: absolute;\n",
+                      "height: ", str(panelviewsize[1]), "px;\n",
+                      "width: ", str(panelviewsize[0]), "px;\n",
+                      "}\n",
+                      "#Generic-Panel {\n",
+                      "top: 0;\n",
+                      "height: 100%;\n",
+                      "width: 100%;\n",
+                      "}\n",
+                      "#BoxC {\n",
+                      "top: 0;\n",
+                      "height: 100%;\n",
+                      "width: 100%;\n",
+                      "}\n",
+                      "#BoxT {\n",
+                      "top: 0;\n",
+                      "height: 50%;\n",
+                      "width: 100%;\n",
+                      "}\n",
+                      "#BoxB {\n",
+                      "bottom: 0;\n",
+                      "height: 50%;\n",
+                      "width: 100%;\n",
+                      "}\n",
+                      "#BoxL {\n",
+                      "left: 0;\n",
+                      "height: 100%;\n",
+                      "width: 50%;\n",
+                      "}\n",
+                      "#BoxR {\n",
+                      "right: 0;\n",
+                      "height: 100%;\n",
+                      "width: 50%;\n",
+                      "}\n",
+                      "#BoxTL {\n",
+                      "top: 0;\n",
+                      "left: 0;\n",
+                      "height: 50%;\n",
+                      "width: 50%;\n",
+                      "}\n",
+                      "#BoxTR {\n",
+                      "top: 0;\n",
+                      "right: 0;\n",
+                      "height: 50%;\n",
+                      "width: 50%;\n",
+                      "}\n",
+                      "#BoxBL {\n",
+                      "bottom: 0;\n",
+                      "left: 0;\n",
+                      "height: 50%;\n",
+                      "width: 50%;\n",
+                      "}\n",
+                      "#BoxBR {\n",
+                      "bottom: 0;\n",
+                      "right: 0;\n",
+                      "height: 50%;\n",
+                      "width: 50%;\n",
+                      "}",
+                      ])
+    else:
+        f.writelines([
+            "@namespace epub \"http://www.idpf.org/2007/ops\";\n",
+            "@charset \"UTF-8\";\n",
+            "body {\n",
+            "margin: 0;\n",
+            "}\n",
+            "img {\n",
+            "position: absolute;\n",
+            "margin: 0;\n",
+            "z-index: 0;\n",
+            "height: 100%;\n",
+            "}"])
     f.close()
     for (dirpath, dirnames, filenames) in walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
@@ -464,6 +526,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
             chapterNames[filename] = aChapter[1]
             globaldiff = pageid - (aChapter[0] + globaldiff)
     buildNCX(path, options.title, chapterlist, chapterNames)
+    buildNAV(path, options.title, chapterlist, chapterNames)
     buildOPF(path, options.title, filelist, cover)
 
 
@@ -1045,6 +1108,10 @@ def checkOptions():
             options.format = 'EPUB'
         elif options.profile in ['KDX', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O']:
             options.format = 'CBZ'
+    if options.profile in ['K1', 'K2', 'K345', 'KPW', 'KV', 'KFHD', 'KFHDX', 'KFHDX8', 'KFA', 'OTHER']:
+        options.iskindle = True
+    else:
+        options.iskindle = False
     if options.white_borders:
         options.bordersColor = 'white'
     if options.black_borders:
@@ -1211,7 +1278,7 @@ def makeMOBIFix(item):
     mobiPath = item.replace('.epub', '.mobi')
     move(mobiPath, mobiPath + '_toclean')
     try:
-        dualmetafix.DualMobiMetaFix(mobiPath + '_toclean', mobiPath, bytes(str(uuid4()), 'UTF-8'))
+        dualmetafix.DualMobiMetaFix(mobiPath + '_toclean', mobiPath, bytes(options.uuid, 'UTF-8'))
         return [True]
     except Exception as err:
         return [False, format(err)]
