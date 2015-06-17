@@ -302,7 +302,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "<meta property=\"rendition:orientation\">portrait</meta>\n",
                   "<meta property=\"rendition:spread\">portrait</meta>\n",
                   "<meta property=\"rendition:layout\">pre-paginated</meta>\n"])
-    if options.iskindle and options.profile != 'OTHER':
+    if options.iskindle and options.profile != 'Custom':
         f.writelines(["<meta property=\"RegionMagnification\">true</meta>\n",
                       "<meta property=\"region-mag\">true</meta>\n",
                       "<meta property=\"book-type\">comic</meta>\n",
@@ -508,7 +508,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
                     image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options, tomeNumber)
     # Hack that force Panel View on at last one page
     if lastfile and not options.panelviewused and 'Ko' not in options.profile \
-            and options.profile not in ['K1', 'K2', 'KDX', 'OTHER']:
+            and options.profile not in ['K1', 'K2', 'KDX', 'Custom']:
         filelist[-1] = buildHTML(lastfile[0], lastfile[1], lastfile[2], True)
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapterNames and options.chapters:
@@ -1100,18 +1100,17 @@ def checkOptions():
     global options
     options.panelview = True
     options.panelviewused = False
+    options.iskindle = False
     options.bordersColor = None
     if options.format == 'Auto':
         if options.profile in ['K1', 'K2', 'K345', 'KPW', 'KV', 'KFHD', 'KFHDX', 'KFHDX8', 'KFA']:
             options.format = 'MOBI'
-        elif options.profile in ['Other']:
+        elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O']:
             options.format = 'EPUB'
-        elif options.profile in ['KDX', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O']:
+        elif options.profile in ['KDX']:
             options.format = 'CBZ'
     if options.profile in ['K1', 'K2', 'K345', 'KPW', 'KV', 'KFHD', 'KFHDX', 'KFHDX8', 'KFA', 'OTHER']:
         options.iskindle = True
-    else:
-        options.iskindle = False
     if options.white_borders:
         options.bordersColor = 'white'
     if options.black_borders:
@@ -1249,6 +1248,11 @@ def makeBook(source, qtGUI=None):
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
             makeZIP(tome + '_comic', tome, True)
         move(tome + '_comic.zip', filepath[-1])
+        if 'Ko' in options.profile:
+            filename = filepath[-1].split(os.path.sep)
+            filename[-1] = ''.join(e for e in filename[-1].split('.')[0] if e.isalnum()) + '.kepub.epub'
+            filename = os.path.sep.join(filename)
+            move(filepath[-1], filename)
         rmtree(tome, True)
         if GUI:
             GUI.progressBarTick.emit('tick')
