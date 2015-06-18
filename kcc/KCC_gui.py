@@ -1162,10 +1162,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.p.ionice(1)
 
         self.profiles = {
-            "Kindle Voyage": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                              'DefaultUpscale': False, 'Label': 'KV'},
-            "Kindle Paperwhite": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                                  'DefaultUpscale': False, 'Label': 'KPW'},
+            "K. PW 3/Voyage": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                               'DefaultUpscale': False, 'Label': 'KV'},
+            "Kindle PW 1/2": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                              'DefaultUpscale': False, 'Label': 'KPW'},
             "Kindle": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K345'},
             "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
@@ -1198,8 +1198,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
                          'DefaultUpscale': False, 'Label': 'K2'}
         }
         profilesGUI = [
-            "Kindle Voyage",
-            "Kindle Paperwhite",
+            "K. PW 3/Voyage",
+            "Kindle PW 1/2",
             "Kindle",
             "Separator",
             "K. Fire HD",
