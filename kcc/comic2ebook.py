@@ -1039,8 +1039,8 @@ def makeParser():
     otherOptions = OptionGroup(psr, "OTHER")
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
-                           help="Device profile (Available options: K1, K2, K345, KDX, KPW, KV, KFHD, KFHDX, KFHDX8,"
-                                " KFA, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O) [Default=KV]")
+                           help="Device profile (Available options: K1, K2, K345, KDX, KPW, KV, KoMT, KoG, KoGHD,"
+                                " KoA, KoAHD, KoAH2O) [Default=KV]")
     mainOptions.add_option("-q", "--quality", type="int", dest="quality", default="0",
                            help="Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
@@ -1103,13 +1103,13 @@ def checkOptions():
     options.iskindle = False
     options.bordersColor = None
     if options.format == 'Auto':
-        if options.profile in ['K1', 'K2', 'K345', 'KPW', 'KV', 'KFHD', 'KFHDX', 'KFHDX8', 'KFA']:
+        if options.profile in ['K1', 'K2', 'K345', 'KPW', 'KV']:
             options.format = 'MOBI'
         elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O']:
             options.format = 'EPUB'
         elif options.profile in ['KDX']:
             options.format = 'CBZ'
-    if options.profile in ['K1', 'K2', 'K345', 'KPW', 'KV', 'KFHD', 'KFHDX', 'KFHDX8', 'KFA', 'OTHER']:
+    if options.profile in ['K1', 'K2', 'K345', 'KPW', 'KV', 'OTHER']:
         options.iskindle = True
     if options.white_borders:
         options.bordersColor = 'white'
@@ -1118,11 +1118,6 @@ def checkOptions():
     # Splitting MOBI is not optional
     if options.format == 'MOBI':
         options.batchsplit = True
-    # Disabling grayscale conversion for Kindle Fire family.
-    if 'KFH' in options.profile or options.forcecolor:
-        options.forcecolor = True
-    else:
-        options.forcecolor = False
     # Older Kindle don't need higher resolution files due lack of Panel View.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX':
         options.quality = 0
@@ -1141,10 +1136,6 @@ def checkOptions():
         # Kobo models can't use ultra quality mode
         if options.quality == 2:
             options.quality = 1
-    # Kindle for Android profile require target resolution.
-    if options.profile == 'KFA' and (options.customwidth == 0 or options.customheight == 0):
-        print("ERROR: Kindle for Android profile require --customwidth and --customheight options!")
-        sys.exit(1)
     # CBZ files on Kindle DX/DXG support higher resolution
     if options.profile == 'KDX' and options.format == 'CBZ':
         options.customheight = 1200

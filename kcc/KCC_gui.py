@@ -375,9 +375,6 @@ class WorkerThread(QtCore.QThread):
         elif GUI.QualityBox.checkState() == 2:
             options.quality = 2
         options.format = str(GUI.FormatBox.currentText())
-        if GUI.currentMode == 1:
-            if 'KFH' in profile:
-                options.upscale = True
 
         # Advanced mode settings
         if GUI.currentMode > 1:
@@ -1170,12 +1167,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
                        'DefaultUpscale': False, 'Label': 'K345'},
             "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'Label': 'KDX'},
-            "K. Fire HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                           'DefaultUpscale': True, 'Label': 'KFHD'},
-            "K. Fire HDX": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                            'DefaultUpscale': True, 'Label': 'KFHDX'},
-            "K. Fire HDX 8.9": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                                'DefaultUpscale': True, 'Label': 'KFHDX8'},
             "Kobo Mini/Touch": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
                                 'DefaultUpscale': False, 'Label': 'KoMT'},
             "Kobo Glo": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
@@ -1190,8 +1181,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
                               'DefaultUpscale': False, 'Label': 'KoAH2O'},
             "Other": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 1,
                       'DefaultUpscale': False, 'Label': 'OTHER'},
-            "Kindle for Android": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 0,
-                                   'DefaultUpscale': False, 'Label': 'KFA'},
             "Kindle 1": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K1'},
             "Kindle 2": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -1202,10 +1191,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             "Kindle PW 1/2",
             "Kindle",
             "Separator",
-            "K. Fire HD",
-            "K. Fire HDX",
-            "K. Fire HDX 8.9",
-            "Separator",
             "Kobo Mini/Touch",
             "Kobo Glo",
             "Kobo Glo HD",
@@ -1215,7 +1200,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             "Separator",
             "Other",
             "Separator",
-            "Kindle for Android",
             "Kindle 1",
             "Kindle 2",
             "Kindle DX/DXG",
