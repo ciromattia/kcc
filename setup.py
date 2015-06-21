@@ -135,10 +135,10 @@ else:
             scripts=['build/_scripts/kcc', 'build/_scripts/kcc-c2e', 'build/_scripts/kcc-c2p'],
             packages=['kcc'],
             install_requires=[
-                'Pillow>=2.7.0',
-                'psutil>=2.0',
-                'python-slugify>=0.1.0',
-                'scandir>=0.9',
+                'Pillow>=2.8.2',
+                'psutil>=3.0.0',
+                'python-slugify>=1.1.2',
+                'scandir>=1.1.0',
             ],
             zip_safe=False,
         )

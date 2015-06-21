@@ -130,28 +130,28 @@ def dependencyCheck(level):
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion
-            if StrictVersion('2.0.0') > StrictVersion(psutilVersion):
-                missing.append('psutil 2.0.0+')
+            if StrictVersion('3.0.0') > StrictVersion(psutilVersion):
+                missing.append('psutil 3.0.0+')
         except ImportError:
-            missing.append('psutil 2.0.0+')
+            missing.append('psutil 3.0.0+')
         try:
             from slugify import __version__ as slugifyVersion
-            if StrictVersion('0.1.0') > StrictVersion(slugifyVersion):
-                missing.append('python-slugify 0.1.0+')
+            if StrictVersion('1.1.2') > StrictVersion(slugifyVersion):
+                missing.append('python-slugify 1.1.2+')
         except ImportError:
-            missing.append('python-slugify 0.1.0+')
+            missing.append('python-slugify 1.1.2+')
     try:
         from PIL import PILLOW_VERSION as pillowVersion
-        if StrictVersion('2.7.0') > StrictVersion(pillowVersion):
-            missing.append('Pillow 2.7.0+')
+        if StrictVersion('2.8.2') > StrictVersion(pillowVersion):
+            missing.append('Pillow 2.8.2+')
     except ImportError:
-        missing.append('Pillow 2.7.0+')
+        missing.append('Pillow 2.8.2+')
     try:
         from scandir import __version__ as scandirVersion
-        if StrictVersion('0.9') > StrictVersion(scandirVersion):
-            missing.append('scandir 0.9+')
+        if StrictVersion('1.1') > StrictVersion(scandirVersion):
+            missing.append('scandir 1.1+')
     except ImportError:
-        missing.append('scandir 0.9+')
+        missing.append('scandir 1.1+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         exit(1)
