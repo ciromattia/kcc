@@ -375,9 +375,6 @@ class WorkerThread(QtCore.QThread):
         elif GUI.QualityBox.checkState() == 2:
             options.quality = 2
         options.format = str(GUI.FormatBox.currentText())
-        if GUI.currentMode == 1:
-            if 'KFH' in profile:
-                options.upscale = True
 
         # Advanced mode settings
         if GUI.currentMode > 1:
@@ -557,6 +554,7 @@ class WorkerThread(QtCore.QThread):
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def __init__(self):
+        super().__init__()
         if self.isSystemTrayAvailable():
             QtWidgets.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
             # noinspection PyUnresolvedReferences
@@ -1161,49 +1159,37 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.p.ionice(1)
 
         self.profiles = {
-            "Kindle Voyage": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                              'DefaultUpscale': False, 'Label': 'KV'},
-            "Kindle Paperwhite": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                                  'DefaultUpscale': False, 'Label': 'KPW'},
+            "K. PW 3/Voyage": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                               'DefaultUpscale': False, 'Label': 'KV'},
+            "Kindle PW 1/2": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                              'DefaultUpscale': False, 'Label': 'KPW'},
             "Kindle": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K345'},
             "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'Label': 'KDX'},
-            "K. Fire HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                           'DefaultUpscale': True, 'Label': 'KFHD'},
-            "K. Fire HDX": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                            'DefaultUpscale': True, 'Label': 'KFHDX'},
-            "K. Fire HDX 8.9": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                                'DefaultUpscale': True, 'Label': 'KFHDX8'},
-            "Kobo Mini/Touch": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Mini/Touch": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
                                 'DefaultUpscale': False, 'Label': 'KoMT'},
-            "Kobo Glo": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Glo": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
                          'DefaultUpscale': False, 'Label': 'KoG'},
-            "Kobo Glo HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Glo HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
                             'DefaultUpscale': False, 'Label': 'KoGHD'},
-            "Kobo Aura": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Aura": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
                           'DefaultUpscale': False, 'Label': 'KoA'},
-            "Kobo Aura HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Aura HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
                              'DefaultUpscale': False, 'Label': 'KoAHD'},
-            "Kobo Aura H2O": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kobo Aura H2O": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
                               'DefaultUpscale': False, 'Label': 'KoAH2O'},
             "Other": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 1,
                       'DefaultUpscale': False, 'Label': 'OTHER'},
-            "Kindle for Android": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 0,
-                                   'DefaultUpscale': False, 'Label': 'KFA'},
             "Kindle 1": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K1'},
             "Kindle 2": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K2'}
         }
         profilesGUI = [
-            "Kindle Voyage",
-            "Kindle Paperwhite",
+            "K. PW 3/Voyage",
+            "Kindle PW 1/2",
             "Kindle",
-            "Separator",
-            "K. Fire HD",
-            "K. Fire HDX",
-            "K. Fire HDX 8.9",
             "Separator",
             "Kobo Mini/Touch",
             "Kobo Glo",
@@ -1214,7 +1200,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
             "Separator",
             "Other",
             "Separator",
-            "Kindle for Android",
             "Kindle 1",
             "Kindle 2",
             "Kindle DX/DXG",
