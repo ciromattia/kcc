@@ -691,8 +691,8 @@ def getWorkFolder(afile):
 def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
     if srcpath[-1] == os.path.sep:
         srcpath = srcpath[:-1]
-    if not ext.startswith('.'):
-        ext = '.' + ext
+    if 'Ko' in options.profile and options.format == 'EPUB':
+        ext = '.kepub.epub'
     if wantedname is not None:
         if wantedname.endswith(ext):
             filename = os.path.abspath(wantedname)
@@ -704,7 +704,14 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
     elif os.path.isdir(srcpath):
         filename = srcpath + tomeNumber + ext
     else:
-        filename = os.path.splitext(srcpath)[0] + tomeNumber + ext
+        if 'Ko' in options.profile and options.format == 'EPUB':
+            path = srcpath.split(os.path.sep)
+            path[-1] = ''.join(e for e in path[-1].split('.')[0] if e.isalnum()) + tomeNumber + ext
+            if not path[-1].split('.')[0]:
+                path[-1] = 'KCCPlaceholder' + tomeNumber + ext
+            filename = os.path.sep.join(path)
+        else:
+            filename = os.path.splitext(srcpath)[0] + tomeNumber + ext
     if os.path.isfile(filename):
         counter = 0
         basename = os.path.splitext(filename)[0]
@@ -1248,11 +1255,6 @@ def makeBook(source, qtGUI=None):
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
             makeZIP(tome + '_comic', tome, True)
         move(tome + '_comic.zip', filepath[-1])
-        if 'Ko' in options.profile:
-            filename = filepath[-1].split(os.path.sep)
-            filename[-1] = ''.join(e for e in filename[-1].split('.')[0] if e.isalnum()) + '.kepub.epub'
-            filename = os.path.sep.join(filename)
-            move(filepath[-1], filename)
         rmtree(tome, True)
         if GUI:
             GUI.progressBarTick.emit('tick')
