@@ -260,7 +260,16 @@ def buildNAV(dstdir, title, chapters, chapterNames):
                   "</head>\n",
                   "<body>\n",
                   "<nav xmlns:epub=\"http://www.idpf.org/2007/ops\" epub:type=\"toc\" id=\"toc\">\n",
-                  "<ol></ol>\n",
+                  "<ol>\n"])
+    for chapter in chapters:
+        folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
+        filename = getImageFileName(os.path.join(folder, chapter[1]))
+        if options.chapters:
+            title = chapterNames[chapter[1]]
+        elif os.path.basename(folder) != "Text":
+            title = chapterNames[os.path.basename(folder)]
+        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".html\">" + title + "</a></li>\n")
+    f.writelines(["</ol>\n",
                   "</nav>\n",
                   "<nav epub:type=\"page-list\">\n",
                   "<ol>\n"
