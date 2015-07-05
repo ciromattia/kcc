@@ -156,6 +156,12 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 
 ## CHANGELOG
+####4.6.1:
+* Fixed KEPUB TOC generator
+* Added warning about too small input files
+* ComicRack Summary metadata field is now parsed
+* Small tweaks of KEPUB output
+
 ####4.6:
 * KEPUB is now default output for all Kobo profiles
 * EPUB output now produce fully valid EPUB 3.0.1
