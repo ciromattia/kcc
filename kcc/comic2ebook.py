@@ -260,7 +260,16 @@ def buildNAV(dstdir, title, chapters, chapterNames):
                   "</head>\n",
                   "<body>\n",
                   "<nav xmlns:epub=\"http://www.idpf.org/2007/ops\" epub:type=\"toc\" id=\"toc\">\n",
-                  "<ol></ol>\n",
+                  "<ol>\n"])
+    for chapter in chapters:
+        folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
+        filename = getImageFileName(os.path.join(folder, chapter[1]))
+        if options.chapters:
+            title = chapterNames[chapter[1]]
+        elif os.path.basename(folder) != "Text":
+            title = chapterNames[os.path.basename(folder)]
+        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".html\">" + title + "</a></li>\n")
+    f.writelines(["</ol>\n",
                   "</nav>\n",
                   "<nav epub:type=\"page-list\">\n",
                   "<ol>\n"
@@ -294,7 +303,8 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "<dc:title>", title, "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
                   "<dc:identifier id=\"BookID\">urn:uuid:", options.uuid, "</dc:identifier>\n",
-                  "<dc:contributor id=\"contributor\">KindleComicConverter-" + __version__ + "</dc:contributor>\n"])
+                  "<dc:contributor id=\"contributor\">KindleComicConverter-" + __version__ + "</dc:contributor>\n",
+                  "<dc:description>", options.summary, "</dc:description>\n"])
     for author in options.authors:
         f.writelines(["<dc:creator>", author, "</dc:creator>\n"])
     f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
@@ -682,8 +692,8 @@ def getWorkFolder(afile):
 def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
     if srcpath[-1] == os.path.sep:
         srcpath = srcpath[:-1]
-    if not ext.startswith('.'):
-        ext = '.' + ext
+    if 'Ko' in options.profile and options.format == 'EPUB':
+        ext = '.kepub.epub'
     if wantedname is not None:
         if wantedname.endswith(ext):
             filename = os.path.abspath(wantedname)
@@ -695,7 +705,14 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
     elif os.path.isdir(srcpath):
         filename = srcpath + tomeNumber + ext
     else:
-        filename = os.path.splitext(srcpath)[0] + tomeNumber + ext
+        if 'Ko' in options.profile and options.format == 'EPUB':
+            path = srcpath.split(os.path.sep)
+            path[-1] = ''.join(e for e in path[-1].split('.')[0] if e.isalnum()) + tomeNumber + ext
+            if not path[-1].split('.')[0]:
+                path[-1] = 'KCCPlaceholder' + tomeNumber + ext
+            filename = os.path.sep.join(path)
+        else:
+            filename = os.path.splitext(srcpath)[0] + tomeNumber + ext
     if os.path.isfile(filename):
         counter = 0
         basename = os.path.splitext(filename)[0]
@@ -710,6 +727,7 @@ def getComicInfo(path, originalPath):
     options.authors = ['KCC']
     options.remoteCovers = {}
     options.chapters = []
+    options.summary = ''
     titleSuffix = ''
     if options.title == 'defaulttitle':
         defaultTitle = True
@@ -746,6 +764,8 @@ def getComicInfo(path, originalPath):
             options.remoteCovers = getCoversFromMCB(xml.data['MUid'])
         if xml.data['Bookmarks']:
             options.chapters = xml.data['Bookmarks']
+        if xml.data['Summary']:
+            options.summary = xml.data['Summary']
         os.remove(xmlPath)
 
 
@@ -948,6 +968,8 @@ def splitProcess(path, mode):
 
 
 def detectCorruption(tmpPath, orgPath):
+    imageNumber = 0
+    imageSmaller = 0
     for root, dirs, files in walk(tmpPath, False):
         for name in files:
             if getImageFileName(name) is not None:
@@ -961,6 +983,9 @@ def detectCorruption(tmpPath, orgPath):
                     img.verify()
                     img = Image.open(path)
                     img.load()
+                    imageNumber += 1
+                    if options.profileData[1][0] > img.size[0] and options.profileData[1][1] > img.size[1]:
+                        imageSmaller += 1
                 except Exception as err:
                     rmtree(os.path.join(tmpPath, '..', '..'), True)
                     if 'decoder' in err and 'not available' in err:
@@ -969,6 +994,13 @@ def detectCorruption(tmpPath, orgPath):
                         raise RuntimeError('Image file %s is corrupted.' % pathOrg)
             else:
                 os.remove(os.path.join(root, name))
+    if imageSmaller > imageNumber * 0.5 and not options.upscale and not options.stretch:
+        print("\nMore than half of images are smaller than target device resolution. "
+              "Consider enabling stretching or upscaling to improve readability.")
+        if GUI:
+            GUI.addMessage.emit('More than half of images are smaller than target device resolution.', 'warning', False)
+            GUI.addMessage.emit('Consider enabling stretching or upscaling to improve readability.', 'warning', False)
+            GUI.addMessage.emit('', '', False)
 
 
 def detectMargins(path):
@@ -1239,11 +1271,6 @@ def makeBook(source, qtGUI=None):
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
             makeZIP(tome + '_comic', tome, True)
         move(tome + '_comic.zip', filepath[-1])
-        if 'Ko' in options.profile:
-            filename = filepath[-1].split(os.path.sep)
-            filename[-1] = ''.join(e for e in filename[-1].split('.')[0] if e.isalnum()) + '.kepub.epub'
-            filename = os.path.sep.join(filename)
-            move(filepath[-1], filename)
         rmtree(tome, True)
         if GUI:
             GUI.progressBarTick.emit('tick')
