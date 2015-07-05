@@ -303,7 +303,8 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "<dc:title>", title, "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
                   "<dc:identifier id=\"BookID\">urn:uuid:", options.uuid, "</dc:identifier>\n",
-                  "<dc:contributor id=\"contributor\">KindleComicConverter-" + __version__ + "</dc:contributor>\n"])
+                  "<dc:contributor id=\"contributor\">KindleComicConverter-" + __version__ + "</dc:contributor>\n",
+                  "<dc:description>", options.summary, "</dc:description>\n"])
     for author in options.authors:
         f.writelines(["<dc:creator>", author, "</dc:creator>\n"])
     f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
@@ -726,6 +727,7 @@ def getComicInfo(path, originalPath):
     options.authors = ['KCC']
     options.remoteCovers = {}
     options.chapters = []
+    options.summary = ''
     titleSuffix = ''
     if options.title == 'defaulttitle':
         defaultTitle = True
@@ -762,6 +764,8 @@ def getComicInfo(path, originalPath):
             options.remoteCovers = getCoversFromMCB(xml.data['MUid'])
         if xml.data['Bookmarks']:
             options.chapters = xml.data['Bookmarks']
+        if xml.data['Summary']:
+            options.summary = xml.data['Summary']
         os.remove(xmlPath)
 
 
