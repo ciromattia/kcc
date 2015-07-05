@@ -964,6 +964,8 @@ def splitProcess(path, mode):
 
 
 def detectCorruption(tmpPath, orgPath):
+    imageNumber = 0
+    imageSmaller = 0
     for root, dirs, files in walk(tmpPath, False):
         for name in files:
             if getImageFileName(name) is not None:
@@ -977,6 +979,9 @@ def detectCorruption(tmpPath, orgPath):
                     img.verify()
                     img = Image.open(path)
                     img.load()
+                    imageNumber += 1
+                    if options.profileData[1][0] > img.size[0] and options.profileData[1][1] > img.size[1]:
+                        imageSmaller += 1
                 except Exception as err:
                     rmtree(os.path.join(tmpPath, '..', '..'), True)
                     if 'decoder' in err and 'not available' in err:
@@ -985,6 +990,13 @@ def detectCorruption(tmpPath, orgPath):
                         raise RuntimeError('Image file %s is corrupted.' % pathOrg)
             else:
                 os.remove(os.path.join(root, name))
+    if imageSmaller > imageNumber * 0.5 and not options.upscale and not options.stretch:
+        print("\nMore than half of images are smaller than target device resolution. "
+              "Consider enabling stretching or upscaling to improve readability.")
+        if GUI:
+            GUI.addMessage.emit('More than half of images are smaller than target device resolution.', 'warning', False)
+            GUI.addMessage.emit('Consider enabling stretching or upscaling to improve readability.', 'warning', False)
+            GUI.addMessage.emit('', '', False)
 
 
 def detectMargins(path):
