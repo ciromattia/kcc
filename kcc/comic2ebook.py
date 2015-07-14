@@ -313,18 +313,15 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "<meta property=\"rendition:spread\">portrait</meta>\n",
                   "<meta property=\"rendition:layout\">pre-paginated</meta>\n"])
     if options.iskindle and options.profile != 'Custom':
-        f.writelines(["<meta property=\"RegionMagnification\">true</meta>\n",
-                      "<meta property=\"region-mag\">true</meta>\n",
-                      "<meta property=\"book-type\">comic</meta>\n",
-                      "<meta property=\"zero-gutter\">true</meta>\n",
-                      "<meta property=\"zero-margin\">true</meta>\n",
-                      "<meta property=\"fixed-layout\">true</meta>\n",
-                      "<meta property=\"orientation-lock\">portrait</meta>\n",
-                      "<meta property=\"original-resolution\">",
-                      str(deviceres[0]) + "x" + str(deviceres[1]) + "</meta>\n",
-                      "<meta property=\"primary-writing-mode\">" + writingmode + "</meta>\n",
-                      "<meta property=\"ke-border-color\">#ffffff</meta>\n",
-                      "<meta property=\"ke-border-width\">0</meta>\n"])
+        f.writelines(["<meta name=\"original-resolution\" content=\"",
+                      str(deviceres[0]) + "x" + str(deviceres[1]) + "\"/>\n",
+                      "<meta name=\"book-type\" content=\"comic\"/>\n",
+                      "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
+                      "<meta name=\"primary-writing-mode\" content=\"" + writingmode + "\"/>\n",
+                      "<meta name=\"zero-gutter\" content=\"true\"/>\n",
+                      "<meta name=\"zero-margin\" content=\"true\"/>\n",
+                      "<meta name=\"ke-border-color\" content=\"#ffffff\"/>\n",
+                      "<meta name=\"ke-border-width\" content=\"0\"/>\n"])
     f.writelines(["</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
                   "media-type=\"application/x-dtbncx+xml\"/>\n",
                   "<item id=\"nav\" href=\"nav.xhtml\" ",
