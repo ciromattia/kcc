@@ -38,6 +38,7 @@ from PIL import Image
 from subprocess import STDOUT, PIPE
 from psutil import Popen, virtual_memory
 from scandir import walk
+from html import escape
 try:
     from PyQt5 import QtCore
 except ImportError:
@@ -743,7 +744,7 @@ def getComicInfo(path, originalPath):
         options.authors = []
         if defaultTitle:
             if xml.data['Series']:
-                options.title = xml.data['Series']
+                options.title = escape(xml.data['Series'])
             if xml.data['Volume']:
                 titleSuffix += ' V' + xml.data['Volume']
             if xml.data['Number']:
@@ -751,7 +752,7 @@ def getComicInfo(path, originalPath):
             options.title += titleSuffix
         for field in ['Writers', 'Pencillers', 'Inkers', 'Colorists']:
             for person in xml.data[field]:
-                options.authors.append(person)
+                options.authors.append(escape(person))
         if len(options.authors) > 0:
             options.authors = list(set(options.authors))
             options.authors.sort()
@@ -762,7 +763,7 @@ def getComicInfo(path, originalPath):
         if xml.data['Bookmarks']:
             options.chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
-            options.summary = xml.data['Summary']
+            options.summary = escape(xml.data['Summary'])
         os.remove(xmlPath)
 
 
