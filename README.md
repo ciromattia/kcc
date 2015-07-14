@@ -156,6 +156,10 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 
 ## CHANGELOG
+####4.6.2:
+* Fixed critical MOBI header bug
+* Fixed metadata encoding error
+
 ####4.6.1:
 * Fixed KEPUB TOC generator
 * Added warning about too small input files
