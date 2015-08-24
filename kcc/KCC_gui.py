@@ -246,8 +246,8 @@ class VersionThread(QtCore.QThread):
 
     def run(self):
         try:
-            XML = urlopen('https://kcc.iosphe.re/Version/')
-            XML = parse(XML)
+            XML = parse(urlopen(Request('https://kcc.iosphe.re/Version/',
+                                        headers={'User-Agent': 'KindleComicConverter/' + __version__})))
         except Exception:
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('LatestVersion')[0].childNodes[0].toxml()
@@ -950,7 +950,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 text = doc.createTextNode(message)
                 main.appendChild(text)
                 urlopen(Request(url='https://kcc.iosphe.re/ErrorHandle/', data=doc.toxml(encoding='utf-8'),
-                                headers={'Content-Type': 'application/xml'}))
+                                headers={'Content-Type': 'application/xml',
+                                         'User-Agent': 'KindleComicConverter/' + __version__}))
             except:
                 pass
         elif kind == 'question':
