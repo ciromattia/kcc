@@ -20,16 +20,17 @@
 import os
 import sys
 from urllib.parse import unquote
-from urllib.request import urlopen, urlretrieve
+from urllib.request import urlopen, urlretrieve, Request
 from socket import gethostbyname_ex, gethostname
 from traceback import format_tb
-from time import sleep
+from time import sleep, time
+from datetime import datetime
 from shutil import move
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 from subprocess import STDOUT, PIPE
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
-from xml.dom.minidom import parse
+from xml.dom.minidom import parse, Document
 from psutil import Popen, Process
 from copy import copy
 from distutils.version import StrictVersion
@@ -350,7 +351,7 @@ class WorkerThread(QtCore.QThread):
 
     def sanitizeTrace(self, traceback):
         return ''.join(format_tb(traceback))\
-            .replace('C:\\Users\\AcidWeb\\Documents\\Projekty\\KCC\\', '')\
+            .replace('C:\\Users\\pawel\\Documents\\Projekty\\KCC\\', '')\
             .replace('C:\\Python34\\', '')\
             .replace('C:\\Python34_64\\', '')
 
@@ -928,6 +929,30 @@ class KCCGUI(KCC_ui.Ui_KCC):
     def showDialog(self, message, kind):
         if kind == 'error':
             QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
+            try:
+                doc = Document()
+                root = doc.createElement('KCCErrorReport')
+                doc.appendChild(root)
+                main = doc.createElement('Timestamp')
+                root.appendChild(main)
+                text = doc.createTextNode(datetime.fromtimestamp(time()).strftime('%Y-%m-%d %H:%M:%S'))
+                main.appendChild(text)
+                main = doc.createElement('OS')
+                root.appendChild(main)
+                text = doc.createTextNode(sys.platform)
+                main.appendChild(text)
+                main = doc.createElement('Version')
+                root.appendChild(main)
+                text = doc.createTextNode(__version__)
+                main.appendChild(text)
+                main = doc.createElement('Error')
+                root.appendChild(main)
+                text = doc.createTextNode(message)
+                main.appendChild(text)
+                urlopen(Request(url='https://kcc.iosphe.re/ErrorHandle/', data=doc.toxml(encoding='utf-8'),
+                                headers={'Content-Type': 'application/xml'}))
+            except:
+                pass
         elif kind == 'question':
             GUI.versionCheck.setAnswer(QtWidgets.QMessageBox.question(MW, 'KCC - Question', message,
                                                                           QtWidgets.QMessageBox.Yes,
