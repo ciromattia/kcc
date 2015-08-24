@@ -245,22 +245,22 @@ class VersionThread(QtCore.QThread):
 
     def run(self):
         try:
-            XML = urlopen('http://kcc.iosphe.re/Version.php')
+            XML = urlopen('https://kcc.iosphe.re/Version/')
             XML = parse(XML)
         except Exception:
             return
-        latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
+        latestVersion = XML.childNodes[0].getElementsByTagName('LatestVersion')[0].childNodes[0].toxml()
         if StrictVersion(latestVersion) > StrictVersion(__version__):
             if sys.platform.startswith('win'):
                 self.newVersion = latestVersion
-                self.md5 = XML.childNodes[0].getElementsByTagName('WindowsMD5')[0].childNodes[0].toxml()
+                self.md5 = XML.childNodes[0].getElementsByTagName('MD5')[0].childNodes[0].toxml()
                 MW.showDialog.emit('<b>New version released!</b> <a href="https://github.com/ciromattia/kcc/releases/">'
                                    'See changelog.</a><br/><br/>Installed version: ' + __version__ +
                                    '<br/>Current version: ' + latestVersion +
                                    '<br/><br/>Would you like to start automatic update?', 'question')
                 self.getNewVersion()
             else:
-                MW.addMessage.emit('<a href="http://kcc.iosphe.re/">'
+                MW.addMessage.emit('<a href="https://kcc.iosphe.re/">'
                                    '<b>New version is available!</b></a> '
                                    '(<a href="https://github.com/ciromattia/kcc/releases/">'
                                    'Changelog</a>)', 'warning', False)
@@ -275,7 +275,7 @@ class VersionThread(QtCore.QThread):
             try:
                 MW.modeConvert.emit(-1)
                 MW.progressBarTick.emit('Downloading update')
-                path = urlretrieve('http://kcc.iosphe.re/Windows/KindleComicConverter_win_'
+                path = urlretrieve('https://kcc.iosphe.re/Windows/KindleComicConverter_win_'
                                    + self.newVersion + '.exe', reporthook=self.getNewVersionTick)
                 if self.md5 != md5Checksum(path[0]):
                     raise Exception
@@ -1205,7 +1205,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             "Kindle DX/DXG",
         ]
 
-        statusBarLabel = QtWidgets.QLabel('<b><a href="http://kcc.iosphe.re/">HOMEPAGE</a> - <a href="https://github.'
+        statusBarLabel = QtWidgets.QLabel('<b><a href="https://kcc.iosphe.re/">HOMEPAGE</a> - <a href="https://github.'
                                           'com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DO'
                                           'NATE</a> - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a> - <a hr'
                                           'ef="http://www.mobileread.com/forums/showthread.php?t=207461">FORUM</a></b>')
