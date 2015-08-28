@@ -35,6 +35,7 @@ from psutil import Popen, Process
 from copy import copy
 from distutils.version import StrictVersion
 from xml.sax.saxutils import escape
+from platform import platform
 from .shared import md5Checksum, HTMLStripper
 from . import __version__
 from . import comic2ebook
@@ -939,7 +940,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 main.appendChild(text)
                 main = doc.createElement('OS')
                 root.appendChild(main)
-                text = doc.createTextNode(sys.platform)
+                text = doc.createTextNode(platform())
                 main.appendChild(text)
                 main = doc.createElement('Version')
                 root.appendChild(main)
