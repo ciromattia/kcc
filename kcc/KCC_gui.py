@@ -1333,6 +1333,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.versionCheck.start()
         self.contentServer.start()
         self.tray.show()
+
+        # Linux hack as PyQt 5.5 not hit mainstream distributions yet
+        if sys.platform.startswith('linux') and StrictVersion(QtCore.qVersion()) > StrictVersion('5.4.9'):
+            self.JobList.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+            self.JobList.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+
         MW.setWindowTitle("Kindle Comic Converter " + __version__)
         MW.show()
         MW.raise_()
