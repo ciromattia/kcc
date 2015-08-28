@@ -76,6 +76,7 @@ class Ui_MetaEditorDialog(object):
         self.formLayoutWidget.setObjectName("formLayoutWidget")
         self.formLayout = QtWidgets.QFormLayout(self.formLayoutWidget)
         self.formLayout.setContentsMargins(0, 0, 0, 0)
+        self.formLayout.setFieldGrowthPolicy(QtWidgets.QFormLayout.ExpandingFieldsGrow)
         self.formLayout.setObjectName("formLayout")
         self.label = QtWidgets.QLabel(self.formLayoutWidget)
         self.label.setObjectName("label")
