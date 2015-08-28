@@ -95,7 +95,7 @@ elif platform == 'win32':
         zipfile=None,
         data_files=additional_files)
 else:
-    if argv[1] == 'make_pyz':
+    if len(argv) > 1 and argv[1] == 'make_pyz':
         from os import system
         script = '''
         cp kcc.py __main__.py

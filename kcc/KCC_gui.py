@@ -20,20 +20,22 @@
 import os
 import sys
 from urllib.parse import unquote
-from urllib.request import urlopen, urlretrieve
+from urllib.request import urlopen, urlretrieve, Request
 from socket import gethostbyname_ex, gethostname
 from traceback import format_tb
-from time import sleep
+from time import sleep, time
+from datetime import datetime
 from shutil import move
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 from subprocess import STDOUT, PIPE
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
-from xml.dom.minidom import parse
+from xml.dom.minidom import parse, Document
 from psutil import Popen, Process
 from copy import copy
 from distutils.version import StrictVersion
 from xml.sax.saxutils import escape
+from platform import platform
 from .shared import md5Checksum, HTMLStripper
 from . import __version__
 from . import comic2ebook
@@ -245,22 +247,22 @@ class VersionThread(QtCore.QThread):
 
     def run(self):
         try:
-            XML = urlopen('http://kcc.iosphe.re/Version.php')
-            XML = parse(XML)
+            XML = parse(urlopen(Request('https://kcc.iosphe.re/Version/',
+                                        headers={'User-Agent': 'KindleComicConverter/' + __version__})))
         except Exception:
             return
-        latestVersion = XML.childNodes[0].getElementsByTagName('latest')[0].childNodes[0].toxml()
+        latestVersion = XML.childNodes[0].getElementsByTagName('LatestVersion')[0].childNodes[0].toxml()
         if StrictVersion(latestVersion) > StrictVersion(__version__):
             if sys.platform.startswith('win'):
                 self.newVersion = latestVersion
-                self.md5 = XML.childNodes[0].getElementsByTagName('WindowsMD5')[0].childNodes[0].toxml()
+                self.md5 = XML.childNodes[0].getElementsByTagName('MD5')[0].childNodes[0].toxml()
                 MW.showDialog.emit('<b>New version released!</b> <a href="https://github.com/ciromattia/kcc/releases/">'
                                    'See changelog.</a><br/><br/>Installed version: ' + __version__ +
                                    '<br/>Current version: ' + latestVersion +
                                    '<br/><br/>Would you like to start automatic update?', 'question')
                 self.getNewVersion()
             else:
-                MW.addMessage.emit('<a href="http://kcc.iosphe.re/">'
+                MW.addMessage.emit('<a href="https://kcc.iosphe.re/">'
                                    '<b>New version is available!</b></a> '
                                    '(<a href="https://github.com/ciromattia/kcc/releases/">'
                                    'Changelog</a>)', 'warning', False)
@@ -275,7 +277,7 @@ class VersionThread(QtCore.QThread):
             try:
                 MW.modeConvert.emit(-1)
                 MW.progressBarTick.emit('Downloading update')
-                path = urlretrieve('http://kcc.iosphe.re/Windows/KindleComicConverter_win_'
+                path = urlretrieve('https://kcc.iosphe.re/Windows/KindleComicConverter_win_'
                                    + self.newVersion + '.exe', reporthook=self.getNewVersionTick)
                 if self.md5 != md5Checksum(path[0]):
                     raise Exception
@@ -350,7 +352,7 @@ class WorkerThread(QtCore.QThread):
 
     def sanitizeTrace(self, traceback):
         return ''.join(format_tb(traceback))\
-            .replace('C:\\Users\\AcidWeb\\Documents\\Projekty\\KCC\\', '')\
+            .replace('C:\\Users\\pawel\\Documents\\Projekty\\KCC\\', '')\
             .replace('C:\\Python34\\', '')\
             .replace('C:\\Python34_64\\', '')
 
@@ -928,6 +930,31 @@ class KCCGUI(KCC_ui.Ui_KCC):
     def showDialog(self, message, kind):
         if kind == 'error':
             QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
+            try:
+                doc = Document()
+                root = doc.createElement('KCCErrorReport')
+                doc.appendChild(root)
+                main = doc.createElement('Timestamp')
+                root.appendChild(main)
+                text = doc.createTextNode(datetime.fromtimestamp(time()).strftime('%Y-%m-%d %H:%M:%S'))
+                main.appendChild(text)
+                main = doc.createElement('OS')
+                root.appendChild(main)
+                text = doc.createTextNode(platform())
+                main.appendChild(text)
+                main = doc.createElement('Version')
+                root.appendChild(main)
+                text = doc.createTextNode(__version__)
+                main.appendChild(text)
+                main = doc.createElement('Error')
+                root.appendChild(main)
+                text = doc.createTextNode(message)
+                main.appendChild(text)
+                urlopen(Request(url='https://kcc.iosphe.re/ErrorHandle/', data=doc.toxml(encoding='utf-8'),
+                                headers={'Content-Type': 'application/xml',
+                                         'User-Agent': 'KindleComicConverter/' + __version__}))
+            except:
+                pass
         elif kind == 'question':
             GUI.versionCheck.setAnswer(QtWidgets.QMessageBox.question(MW, 'KCC - Question', message,
                                                                           QtWidgets.QMessageBox.Yes,
@@ -1205,7 +1232,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             "Kindle DX/DXG",
         ]
 
-        statusBarLabel = QtWidgets.QLabel('<b><a href="http://kcc.iosphe.re/">HOMEPAGE</a> - <a href="https://github.'
+        statusBarLabel = QtWidgets.QLabel('<b><a href="https://kcc.iosphe.re/">HOMEPAGE</a> - <a href="https://github.'
                                           'com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DO'
                                           'NATE</a> - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a> - <a hr'
                                           'ef="http://www.mobileread.com/forums/showthread.php?t=207461">FORUM</a></b>')
@@ -1307,6 +1334,12 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.versionCheck.start()
         self.contentServer.start()
         self.tray.show()
+
+        # Linux hack as PyQt 5.5 not hit mainstream distributions yet
+        if sys.platform.startswith('linux') and StrictVersion(QtCore.qVersion()) > StrictVersion('5.4.9'):
+            self.JobList.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+            self.JobList.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+
         MW.setWindowTitle("Kindle Comic Converter " + __version__)
         MW.show()
         MW.raise_()
