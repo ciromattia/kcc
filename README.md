@@ -156,6 +156,10 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 
 ## CHANGELOG
+####4.6.3:
+* Implemented remote bug reporting
+* Minor bug fixes and GUI tweaks
+
 ####4.6.2:
 * Fixed critical MOBI header bug
 * Fixed metadata encoding error
@@ -422,6 +426,14 @@ The app relies and includes the following scripts:
 
 ####1.0
 * Initial version
+
+## PRIVACY
+**KCC** is initiating internet connections in three cases:
+* During startup - Version check
+* When MCD metadata are used - Cover download
+* When error occurs - Automatic reporting
+
+Error report include **KCC** version, OS version and content of error message. 
 
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
