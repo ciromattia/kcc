@@ -22,7 +22,6 @@ import sys
 from urllib.parse import unquote
 from urllib.request import urlopen, urlretrieve, Request
 from socket import gethostbyname_ex, gethostname
-from traceback import format_tb
 from time import sleep, time
 from datetime import datetime
 from shutil import move
@@ -36,7 +35,7 @@ from copy import copy
 from distutils.version import StrictVersion
 from xml.sax.saxutils import escape
 from platform import platform
-from .shared import md5Checksum, HTMLStripper
+from .shared import md5Checksum, HTMLStripper, sanitizeTrace
 from . import __version__
 from . import comic2ebook
 from . import KCC_rc_web
@@ -350,12 +349,6 @@ class WorkerThread(QtCore.QThread):
         MW.addTrayMessage.emit('Conversion interrupted.', 'Critical')
         MW.modeConvert.emit(1)
 
-    def sanitizeTrace(self, traceback):
-        return ''.join(format_tb(traceback))\
-            .replace('C:\\Users\\pawel\\Documents\\Projekty\\KCC\\', '')\
-            .replace('C:\\Python34\\', '')\
-            .replace('C:\\Python34_64\\', '')
-
     def run(self):
         MW.modeConvert.emit(0)
 
@@ -446,7 +439,7 @@ class WorkerThread(QtCore.QThread):
                 self.errors = True
                 _, _, traceback = sys.exc_info()
                 MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
-                                   % (jobargv[-1], str(err), self.sanitizeTrace(traceback)), 'error')
+                                   % (jobargv[-1], str(err), sanitizeTrace(traceback)), 'error')
                 MW.addMessage.emit('Failed to create EPUB!', 'error', False)
                 MW.addTrayMessage.emit('Failed to create EPUB!', 'Critical')
             if not self.conversionAlive:
@@ -635,8 +628,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.lastPath = os.path.abspath(os.path.join(fname, os.pardir))
             try:
                 self.editor.loadData(fname)
-            except:
-                self.showDialog('Failed to parse metadata!', 'error')
+            except Exception as err:
+                _, _, traceback = sys.exc_info()
+                self.showDialog("Failed to parse metadata!\n\n%s\n\nTraceback:\n%s"
+                                % (str(err), sanitizeTrace(traceback)), 'error')
             else:
                 self.editor.ui.exec_()
 
@@ -1381,8 +1376,10 @@ class KCCGUI_MetaEditor(KCC_MetaEditor_ui.Ui_MetaEditorDialog):
                 self.parser.data[field.objectName()[:-4] + 's'] = tmpData
             try:
                 self.parser.saveXML()
-            except:
-                GUI.showDialog('Failed to save metadata!', 'error')
+            except Exception as err:
+                _, _, traceback = sys.exc_info()
+                GUI.showDialog("Failed to save metadata!\n\n%s\n\nTraceback:\n%s"
+                               % (str(err), sanitizeTrace(traceback)), 'error')
             self.ui.close()
 
     def cleanData(self, s):
