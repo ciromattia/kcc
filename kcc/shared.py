@@ -25,6 +25,7 @@ from shutil import rmtree, move
 from tempfile import mkdtemp
 from zipfile import ZipFile, ZIP_DEFLATED
 from re import split
+from traceback import format_tb
 try:
     from scandir import walk
 except ImportError:
@@ -115,6 +116,13 @@ def removeFromZIP(zipfname, *filenames):
         move(tempname, zipfname)
     finally:
         rmtree(tempdir)
+
+
+def sanitizeTrace(traceback):
+    return ''.join(format_tb(traceback))\
+        .replace('C:\\Users\\pawel\\Documents\\Projekty\\KCC\\', '')\
+        .replace('C:\\Python34\\', '')\
+        .replace('C:\\Python34_64\\', '')
 
 
 # noinspection PyUnresolvedReferences
