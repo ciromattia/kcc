@@ -28,7 +28,7 @@ from urllib.request import Request, urlopen
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
-from tempfile import mkdtemp
+from tempfile import mkdtemp, gettempdir
 from shutil import move, copytree, rmtree
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
@@ -841,6 +841,13 @@ def sanitizePermissions(filetree):
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
 
 
+def sanitizeTemp():
+    for root, dirs, _ in walkLevel(gettempdir(), 0):
+        for tempdir in dirs:
+            if tempdir.startswith('KCC-'):
+                rmtree(os.path.join(root, tempdir), True)
+
+
 # noinspection PyUnboundLocalVariable
 def splitDirectory(path):
     # Detect directory stucture
@@ -1216,6 +1223,7 @@ def makeBook(source, qtGUI=None):
         GUI.progressBarTick.emit('1')
     else:
         checkTools(source)
+    sanitizeTemp()
     path = getWorkFolder(source)
     print("\nChecking images...")
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
