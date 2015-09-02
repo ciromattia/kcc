@@ -66,7 +66,6 @@ class QApplicationMessaging(QtWidgets.QApplication):
         socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
         if not socket.waitForConnected(self._timeout):
             self._server = QtNetwork.QLocalServer(self)
-            # noinspection PyUnresolvedReferences
             self._server.newConnection.connect(self.handleMessage)
             self._server.listen(self._key)
         else:
@@ -139,7 +138,7 @@ class Icons:
 
 
 class WebServerHandler(BaseHTTPRequestHandler):
-    # noinspection PyAttributeOutsideInit, PyArgumentList
+    # noinspection PyAttributeOutsideInit
     def do_GET(self):
         if self.path == '/':
             self.path = '/index.html'
@@ -276,8 +275,8 @@ class VersionThread(QtCore.QThread):
             try:
                 MW.modeConvert.emit(-1)
                 MW.progressBarTick.emit('Downloading update')
-                path = urlretrieve('https://kcc.iosphe.re/Windows/KindleComicConverter_win_'
-                                   + self.newVersion + '.exe', reporthook=self.getNewVersionTick)
+                path = urlretrieve('https://kcc.iosphe.re/Windows/KindleComicConverter_win_' +
+                                   self.newVersion + '.exe', reporthook=self.getNewVersionTick)
                 if self.md5 != md5Checksum(path[0]):
                     raise Exception
                 move(path[0], path[0] + '.exe')
@@ -324,7 +323,6 @@ class ProgressThread(QtCore.QThread):
 
 
 class WorkerThread(QtCore.QThread):
-    # noinspection PyArgumentList
     def __init__(self):
         QtCore.QThread.__init__(self)
         self.conversionAlive = False
@@ -456,7 +454,7 @@ class WorkerThread(QtCore.QThread):
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
                     MW.progressBarTick.emit('Creating MOBI files')
-                    MW.progressBarTick.emit(str(len(outputPath)*2+1))
+                    MW.progressBarTick.emit(str(len(outputPath) * 2 + 1))
                     MW.progressBarTick.emit('tick')
                     MW.addMessage.emit('Creating MOBI files', 'info', False)
                     GUI.progress.content = 'Creating MOBI files'
@@ -515,7 +513,7 @@ class WorkerThread(QtCore.QThread):
                             MW.addTrayMessage.emit('Failed to process MOBI file!', 'Critical')
                     else:
                         GUI.progress.content = ''
-                        epubSize = (os.path.getsize(self.kindlegenErrorCode[2]))//1024//1024
+                        epubSize = (os.path.getsize(self.kindlegenErrorCode[2])) // 1024 // 1024
                         for item in outputPath:
                             if os.path.exists(item):
                                 os.remove(item)
@@ -552,7 +550,6 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         super().__init__()
         if self.isSystemTrayAvailable():
             QtWidgets.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
-            # noinspection PyUnresolvedReferences
             self.activated.connect(self.catchClicks)
 
     def catchClicks(self):
@@ -840,7 +837,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
     def changeGamma(self, value):
         value = float(value)
-        value = '%.2f' % (value/100)
+        value = '%.2f' % (value / 100)
         if float(value) <= 0.09:
             GUI.GammaLabel.setText('Gamma: Auto')
         else:
@@ -908,7 +905,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         else:
             item = QtWidgets.QListWidgetItem('    ' + self.stripTags(message))
         if replace:
-            GUI.JobList.takeItem(GUI.JobList.count()-1)
+            GUI.JobList.takeItem(GUI.JobList.count() - 1)
         # Due to lack of HTML support in QListWidgetItem we overlay text field with QLabel
         # We still fill original text field with transparent content to trigger creation of horizontal scrollbar
         item.setForeground(QtGui.QColor('transparent'))
@@ -1048,7 +1045,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                                            'ColorBox': GUI.ColorBox.checkState(),
                                            'customWidth': GUI.customWidth.text(),
                                            'customHeight': GUI.customHeight.text(),
-                                           'GammaSlider': float(self.GammaValue)*100})
+                                           'GammaSlider': float(self.GammaValue) * 100})
         self.settings.sync()
         self.tray.hide()
 
@@ -1295,7 +1292,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             if profile == "Other":
                 GUI.DeviceBox.addItem(self.icons.deviceOther, profile)
             elif profile == "Separator":
-                GUI.DeviceBox.insertSeparator(GUI.DeviceBox.count()+1)
+                GUI.DeviceBox.insertSeparator(GUI.DeviceBox.count() + 1)
             elif 'Ko' in profile:
                 GUI.DeviceBox.addItem(self.icons.deviceKobo, profile)
             else:

@@ -148,8 +148,8 @@ class ComicPage:
                 if self.noVPV:
                     flags.append('NoVerticalPanelView')
                 if self.border:
-                    flags.append('Margins-' + str(self.border[0]) + '-' + str(self.border[1]) + '-'
-                                 + str(self.border[2]) + '-' + str(self.border[3]))
+                    flags.append('Margins-' + str(self.border[0]) + '-' + str(self.border[1]) + '-' +
+                                 str(self.border[2]) + '-' + str(self.border[3]))
             if self.fill != 'white':
                 flags.append('BlackFill')
             if self.opt.quality == 2:
@@ -199,10 +199,10 @@ class ComicPage:
         else:
             multiplier = 1.5
         if border is not None:
-            self.border = [round(float(border[0])/float(self.image.size[0])*150, 3),
-                           round(float(border[1])/float(self.image.size[1])*150, 3),
-                           round(float(self.image.size[0]-border[2])/float(self.image.size[0])*150, 3),
-                           round(float(self.image.size[1]-border[3])/float(self.image.size[1])*150, 3)]
+            self.border = [round(float(border[0]) / float(self.image.size[0]) * 150, 3),
+                           round(float(border[1]) / float(self.image.size[1]) * 150, 3),
+                           round(float(self.image.size[0] - border[2]) / float(self.image.size[0]) * 150, 3),
+                           round(float(self.image.size[1] - border[3]) / float(self.image.size[1]) * 150, 3)]
             if int((border[2] - border[0]) * multiplier) < self.size[0] + 10:
                 self.noHPV = True
             if int((border[3] - border[1]) * multiplier) < self.size[1] + 10:
@@ -428,13 +428,13 @@ class ComicPage:
             while startY < bw.size[1]:
                 if startY + 5 > bw.size[1]:
                     startY = bw.size[1] - 5
-                fill += self.getImageHistogram(bw.crop((0, startY, bw.size[0], startY+5)))
+                fill += self.getImageHistogram(bw.crop((0, startY, bw.size[0], startY + 5)))
                 startY += 5
             startX = 0
             while startX < bw.size[0]:
                 if startX + 5 > bw.size[0]:
                     startX = bw.size[0] - 5
-                fill += self.getImageHistogram(bw.crop((startX, 0, startX+5, bw.size[1])))
+                fill += self.getImageHistogram(bw.crop((startX, 0, startX + 5, bw.size[1])))
                 startX += 5
             if fill > 0:
                 self.fill = 'black'

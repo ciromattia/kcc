@@ -70,8 +70,8 @@ class CBxArchive:
         if sys.platform.startswith('darwin'):
             copy(self.origFileName, os.path.join(os.path.dirname(self.origFileName), 'TMP_KCC_TMP'))
             self.origFileName = os.path.join(os.path.dirname(self.origFileName), 'TMP_KCC_TMP')
-        output = Popen('7za x "' + self.origFileName + '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -xr!Thumbs.db -o"'
-                       + targetdir + '"', stdout=PIPE, stderr=STDOUT, shell=True)
+        output = Popen('7za x "' + self.origFileName + '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -xr!Thumbs.db -o"' +
+                       targetdir + '"', stdout=PIPE, stderr=STDOUT, shell=True)
         extracted = False
         for line in output.stdout:
             if b"Everything is Ok" in line:

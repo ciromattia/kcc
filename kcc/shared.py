@@ -46,6 +46,9 @@ class HTMLStripper(HTMLParser):
     def get_data(self):
         return ''.join(self.fed)
 
+    def error(self, message):
+        pass
+
 
 def getImageFileName(imgfile):
     name, ext = os.path.splitext(imgfile)
@@ -125,7 +128,6 @@ def sanitizeTrace(traceback):
         .replace('C:\\Python34_64\\', '')
 
 
-# noinspection PyUnresolvedReferences
 def dependencyCheck(level):
     missing = []
     if level > 2:

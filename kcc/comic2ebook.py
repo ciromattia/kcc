@@ -43,7 +43,7 @@ try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
-from .shared import md5Checksum, getImageFileName,  walkSort, walkLevel, saferReplace
+from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, saferReplace
 from . import comic2panel
 from . import image
 from . import cbxarchive
@@ -242,9 +242,9 @@ def buildNCX(dstdir, title, chapters, chapterNames):
             navID = filename[0].replace('/', '_').replace('\\', '_')
         elif os.path.basename(folder) != "Text":
             title = chapterNames[os.path.basename(folder)]
-        f.write("<navPoint id=\"" + navID + "\"><navLabel><text>"
-                + title + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/")
-                + ".html\"/></navPoint>\n")
+        f.write("<navPoint id=\"" + navID + "\"><navLabel><text>" +
+                title + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") +
+                ".html\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
 
@@ -341,15 +341,15 @@ def buildOPF(dstdir, title, filelist, cover=None):
         filename = getImageFileName(path[1])
         uniqueid = os.path.join(folder, filename[0]).replace('/', '_').replace('\\', '_')
         reflist.append(uniqueid)
-        f.write("<item id=\"page_" + str(uniqueid) + "\" href=\""
-                + folder.replace('Images', 'Text') + "/" + filename[0]
-                + ".html\" media-type=\"application/xhtml+xml\"/>\n")
+        f.write("<item id=\"page_" + str(uniqueid) + "\" href=\"" +
+                folder.replace('Images', 'Text') + "/" + filename[0] +
+                ".html\" media-type=\"application/xhtml+xml\"/>\n")
         if '.png' == filename[1]:
             mt = 'image/png'
         else:
             mt = 'image/jpeg'
-        f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\""
-                + mt + "\"/>\n")
+        f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
+                mt + "\"/>\n")
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
     if options.righttoleft:
         f.write("</manifest>\n<spine page-progression-direction=\"rtl\" toc=\"ncx\">\n")
@@ -1188,7 +1188,7 @@ def checkOptions():
         if options.customheight != 0:
             Y = options.customheight
         newProfile = ("Custom", (int(X), int(Y)), image.ProfileData.Palette16,
-                      image.ProfileData.Profiles[options.profile][3], (int(int(X)*1.5), int(int(Y)*1.5)))
+                      image.ProfileData.Profiles[options.profile][3], (int(int(X) * 1.5), int(int(Y) * 1.5)))
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
@@ -1356,7 +1356,7 @@ def makeMOBI(work, qtGUI=None):
     global GUI, makeMOBIWorkerPool, makeMOBIWorkerOutput
     GUI = qtGUI
     makeMOBIWorkerOutput = []
-    availableMemory = virtual_memory().total/1000000000
+    availableMemory = virtual_memory().total / 1000000000
     if availableMemory <= 2:
         threadNumber = 1
     elif 2 < availableMemory <= 4:
