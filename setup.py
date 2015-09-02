@@ -22,7 +22,6 @@ VERSION = __version__
 MAIN = 'kcc.py'
 extra_options = {}
 
-# noinspection PyUnresolvedReferences
 if platform == 'darwin':
     from setuptools import setup
     from os import chmod, makedirs
@@ -60,7 +59,6 @@ if platform == 'darwin':
         )
     )
 elif platform == 'win32':
-    # noinspection PyUnresolvedReferences
     import py2exe
     from platform import architecture
     from distutils.core import setup
