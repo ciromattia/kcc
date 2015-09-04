@@ -430,16 +430,20 @@ class WorkerThread(QtCore.QThread):
                     GUI.progress.content = ''
                     self.errors = True
                     MW.addMessage.emit(str(warn), 'warning', False)
-                    MW.addMessage.emit('Failed to create output file!', 'error', False)
-                    MW.addTrayMessage.emit('Failed to create output file!', 'Critical')
+                    MW.addMessage.emit('Error during conversion! Please consult '
+                                       '<a href="https://github.com/ciromattia/kcc/wiki/Error-messages">wiki</a> '
+                                       'for more details.', 'error', False)
+                    MW.addTrayMessage.emit('Error during conversion!', 'Critical')
             except Exception as err:
                 GUI.progress.content = ''
                 self.errors = True
                 _, _, traceback = sys.exc_info()
                 MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
                                    % (jobargv[-1], str(err), sanitizeTrace(traceback)), 'error')
-                MW.addMessage.emit('Failed to create EPUB!', 'error', False)
-                MW.addTrayMessage.emit('Failed to create EPUB!', 'Critical')
+                MW.addMessage.emit('Error during conversion! Please consult '
+                                   '<a href="https://github.com/ciromattia/kcc/wiki/Error-messages">wiki</a> '
+                                   'for more details.', 'error', False)
+                MW.addTrayMessage.emit('Error during conversion!', 'Critical')
             if not self.conversionAlive:
                 for item in outputPath:
                     if os.path.exists(item):
@@ -493,7 +497,7 @@ class WorkerThread(QtCore.QThread):
                                 GUI.progress.content = ''
                                 mobiPath = item.replace('.epub', '.mobi')
                                 os.remove(mobiPath + '_toclean')
-                                if GUI.targetDirectory and GUI.targetDirectory != os.path.split(mobiPath)[0]:
+                                if GUI.targetDirectory and GUI.targetDirectory != os.path.dirname(mobiPath):
                                     try:
                                         move(mobiPath, GUI.targetDirectory)
                                         mobiPath = os.path.join(GUI.targetDirectory, os.path.basename(mobiPath))
@@ -529,7 +533,7 @@ class WorkerThread(QtCore.QThread):
                                                False)
                 else:
                     for item in outputPath:
-                        if GUI.targetDirectory and GUI.targetDirectory != os.path.split(item)[0]:
+                        if GUI.targetDirectory and GUI.targetDirectory != os.path.dirname(item):
                             try:
                                 move(item, GUI.targetDirectory)
                                 item = os.path.join(GUI.targetDirectory, os.path.basename(item))
@@ -540,8 +544,9 @@ class WorkerThread(QtCore.QThread):
         GUI.progress.stop()
         MW.hideProgressBar.emit()
         GUI.needClean = True
-        MW.addMessage.emit('<b>All jobs completed.</b>', 'info', False)
-        MW.addTrayMessage.emit('All jobs completed.', 'Information')
+        if not self.errors:
+            MW.addMessage.emit('<b>All jobs completed.</b>', 'info', False)
+            MW.addTrayMessage.emit('All jobs completed.', 'Information')
         MW.modeConvert.emit(1)
 
 

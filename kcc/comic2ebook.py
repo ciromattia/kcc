@@ -647,44 +647,38 @@ def imgFileProcessing(work):
 
 
 def getWorkFolder(afile):
-    if len(afile) > 240:
-        raise UserWarning("Path is too long.")
     if os.path.isdir(afile):
         workdir = mkdtemp('', 'KCC-')
         try:
             os.rmdir(workdir)
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
-            if len(fullPath) > 240:
-                raise UserWarning("Path is too long.")
             copytree(afile, fullPath)
             sanitizePermissions(fullPath)
             return workdir
-        except OSError:
+        except:
             rmtree(workdir, True)
-            raise
+            raise UserWarning("Failed to prepare a workspace.")
     elif afile.lower().endswith('.pdf'):
         pdf = pdfjpgextract.PdfJpgExtract(afile)
         path, njpg = pdf.extract()
         if njpg == 0:
             rmtree(path, True)
-            raise UserWarning("Failed to extract images.")
+            raise UserWarning("Failed to extract images from PDF file.")
     else:
         workdir = mkdtemp('', 'KCC-')
         cbx = cbxarchive.CBxArchive(afile)
         if cbx.isCbxFile():
             try:
                 path = cbx.extract(workdir)
-            except OSError:
+            except:
                 rmtree(workdir, True)
-                raise UserWarning("Failed to extract file.")
+                raise UserWarning("Failed to extract archive.")
         else:
             rmtree(workdir, True)
-            raise TypeError("Failed to detect archive format.")
-    if len(os.path.join(path, 'OEBPS', 'Images')) > 240:
-        raise UserWarning("Path is too long.")
-    move(path, path + "_temp")
-    move(path + "_temp", os.path.join(path, 'OEBPS', 'Images'))
-    return path
+            raise UserWarning("Failed to detect archive format.")
+    newpath = mkdtemp('', 'KCC-')
+    move(path, os.path.join(newpath, 'OEBPS', 'Images'))
+    return newpath
 
 
 def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
@@ -839,13 +833,6 @@ def sanitizePermissions(filetree):
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
-
-
-def sanitizeTemp():
-    for root, dirs, _ in walkLevel(gettempdir(), 0):
-        for tempdir in dirs:
-            if tempdir.startswith('KCC-'):
-                rmtree(os.path.join(root, tempdir), True)
 
 
 # noinspection PyUnboundLocalVariable
@@ -1046,7 +1033,7 @@ def createNewTome():
 
 def slugify(value):
     value = slugifyExt(value)
-    value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value))
+    value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
 
 
@@ -1215,6 +1202,21 @@ def checkTools(source):
             exit(1)
 
 
+def checkPre(source):
+    # Make sure that all temporary files are gone
+    for root, dirs, _ in walkLevel(gettempdir(), 0):
+        for tempdir in dirs:
+            if tempdir.startswith('KCC-'):
+                rmtree(os.path.join(root, tempdir), True)
+    # Make sure that target directory is writable
+    if os.path.isdir(source):
+        writable = os.access(os.path.abspath(os.path.join(source, '..')), os.W_OK)
+    else:
+        writable = os.access(os.path.dirname(source), os.W_OK)
+    if not writable:
+        raise UserWarning("Target directory is not writable.")
+
+
 def makeBook(source, qtGUI=None):
     """Generates MOBI/EPUB/CBZ comic ebook from a bunch of images."""
     global GUI
@@ -1223,7 +1225,7 @@ def makeBook(source, qtGUI=None):
         GUI.progressBarTick.emit('1')
     else:
         checkTools(source)
-    sanitizeTemp()
+    checkPre(source)
     path = getWorkFolder(source)
     print("\nChecking images...")
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
