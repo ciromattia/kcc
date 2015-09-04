@@ -509,4 +509,4 @@ class Cover:
         try:
             self.image.save(self.target, "JPEG", optimize=1, quality=80)
         except IOError:
-            raise RuntimeError('Failed to save cover')
+            raise RuntimeError('Failed to process downloaded cover.')
