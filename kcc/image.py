@@ -442,29 +442,25 @@ class ComicPage:
                 self.fill = 'white'
 
     def isImageColor(self):
-        v = ImageStat.Stat(self.image).var
-        isMonochromatic = reduce(lambda x, y: x and y < 0.005, v, True)
-        if isMonochromatic:
-            # Monochromatic
-            return False
-        else:
-            if len(v) == 3:
-                maxmin = abs(max(v) - min(v))
-                if maxmin > 1000:
-                    # Color
-                    return True
-                elif maxmin > 100:
-                    # Probably color
-                    return True
-                else:
-                    # Grayscale
-                    return False
-            elif len(v) == 1:
-                # Black and white
+        img = self.image.copy()
+        bands = img.getbands()
+        if bands == ('R', 'G', 'B') or bands == ('R', 'G', 'B', 'A'):
+            thumb = img.resize((40, 40))
+            SSE, bias = 0, [0, 0, 0]
+            bias = ImageStat.Stat(thumb).mean[:3]
+            bias = [b - sum(bias) / 3 for b in bias]
+            for pixel in thumb.getdata():
+                mu = sum(pixel) / 3
+                SSE += sum((pixel[i] - mu - bias[i]) * (pixel[i] - mu - bias[i]) for i in [0, 1, 2])
+            MSE = float(SSE) / (40 * 40)
+            if MSE <= 22:
                 return False
             else:
-                # Detection failed
-                return False
+                return True
+        elif len(bands) == 1:
+            return False
+        else:
+            return False
 
 
 class Cover:
