@@ -24,7 +24,7 @@ extra_options = {}
 
 if platform == 'darwin':
     from setuptools import setup
-    from os import chmod, makedirs
+    from os import chmod, makedirs, system
     from shutil import copyfile
     extra_options = dict(
         setup_requires=['py2app'],
@@ -36,7 +36,7 @@ if platform == 'darwin':
                 includes=['sip', 'PyQt5.QtPrintSupport'],
                 resources=['LICENSE.txt', 'other/qt.conf', 'other/Additional-LICENSE.txt', 'other/unrar', 'other/7za'],
                 plist=dict(
-                    CFBundleName=NAME,
+                    CFBundleName='Kindle Comic Converter',
                     CFBundleShortVersionString=VERSION,
                     CFBundleGetInfoString=NAME + ' ' + VERSION +
                     ', written 2012-2015 by Ciro Mattia Gonano and Pawel Jastrzebski',
@@ -49,7 +49,7 @@ if platform == 'darwin':
                             CFBundleTypeRole='Editor',
                         )
                     ],
-                    LSMinimumSystemVersion='10.8.0',
+                    LSMinimumSystemVersion='10.10.0',
                     LSEnvironment=dict(
                         PATH='./../Resources:/usr/local/bin:/usr/bin:/bin'
                     ),
@@ -154,7 +154,8 @@ setup(
 )
 
 if platform == 'darwin':
-    makedirs('dist/' + NAME + '.app/Contents/PlugIns/platforms', exist_ok=True)
-    copyfile('other/libqcocoa.dylib', 'dist/' + NAME + '.app/Contents/PlugIns/platforms/libqcocoa.dylib')
-    chmod('dist/' + NAME + '.app/Contents/Resources/unrar', 0o777)
-    chmod('dist/' + NAME + '.app/Contents/Resources/7za', 0o777)
+    makedirs('dist/Kindle Comic Converter.app/Contents/PlugIns/platforms', exist_ok=True)
+    copyfile('other/libqcocoa.dylib', 'dist/Kindle Comic Converter.app/Contents/PlugIns/platforms/libqcocoa.dylib')
+    chmod('dist/Kindle Comic Converter.app/Contents/Resources/unrar', 0o777)
+    chmod('dist/Kindle Comic Converter.app/Contents/Resources/7za', 0o777)
+    system('appdmg setup.json KindleComicConverter_osx_' + VERSION + '.dmg')
