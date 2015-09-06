@@ -33,7 +33,7 @@ if platform == 'darwin':
             py2app=dict(
                 argv_emulation=True,
                 iconfile='icons/comic2ebook.icns',
-                includes=['sip', 'PyQt5.QtPrintSupport'],
+                includes=['sip'],
                 resources=['LICENSE.txt', 'other/qt.conf', 'other/Additional-LICENSE.txt', 'other/unrar', 'other/7za'],
                 plist=dict(
                     CFBundleName='Kindle Comic Converter',
@@ -49,7 +49,7 @@ if platform == 'darwin':
                             CFBundleTypeRole='Editor',
                         )
                     ],
-                    LSMinimumSystemVersion='10.10.0',
+                    LSMinimumSystemVersion='10.8.0',
                     LSEnvironment=dict(
                         PATH='./../Resources:/usr/local/bin:/usr/bin:/bin'
                     ),
@@ -135,7 +135,7 @@ else:
             install_requires=[
                 'Pillow>=2.8.2',
                 'psutil>=3.0.0',
-                'python-slugify>=1.1.2',
+                'python-slugify>=1.1.3',
                 'scandir>=1.1.0',
             ],
             zip_safe=False,
@@ -158,4 +158,4 @@ if platform == 'darwin':
     copyfile('other/libqcocoa.dylib', 'dist/Kindle Comic Converter.app/Contents/PlugIns/platforms/libqcocoa.dylib')
     chmod('dist/Kindle Comic Converter.app/Contents/Resources/unrar', 0o777)
     chmod('dist/Kindle Comic Converter.app/Contents/Resources/7za', 0o777)
-    system('appdmg setup.json KindleComicConverter_osx_' + VERSION + '.dmg')
+    system('appdmg setup.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')

@@ -133,10 +133,10 @@ def dependencyCheck(level):
     if level > 2:
         try:
             from PyQt5.QtCore import qVersion as qtVersion
-            if StrictVersion('5.2.0') > StrictVersion(qtVersion()):
-                missing.append('PyQt 5.2.0+')
+            if StrictVersion('5.4.0') > StrictVersion(qtVersion()):
+                missing.append('PyQt 5.4.0+')
         except ImportError:
-            missing.append('PyQt 5.2.0+')
+            missing.append('PyQt 5.4.0+')
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion
@@ -146,10 +146,10 @@ def dependencyCheck(level):
             missing.append('psutil 3.0.0+')
         try:
             from slugify import __version__ as slugifyVersion
-            if StrictVersion('1.1.2') > StrictVersion(slugifyVersion):
-                missing.append('python-slugify 1.1.2+')
+            if StrictVersion('1.1.3') > StrictVersion(slugifyVersion):
+                missing.append('python-slugify 1.1.3+')
         except ImportError:
-            missing.append('python-slugify 1.1.2+')
+            missing.append('python-slugify 1.1.3+')
     try:
         from PIL import PILLOW_VERSION as pillowVersion
         if StrictVersion('2.8.2') > StrictVersion(pillowVersion):
