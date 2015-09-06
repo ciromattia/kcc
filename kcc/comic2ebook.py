@@ -66,6 +66,7 @@ def main(argv=None):
         print('No matching files found.')
         return
     for source in sources:
+        source = source.rstrip('\\').rstrip('/')
         options = copy(optionstemplate)
         checkOptions()
         if len(sources) > 1:
