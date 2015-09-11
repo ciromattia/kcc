@@ -22,7 +22,6 @@ import sys
 from urllib.parse import unquote
 from urllib.request import urlopen, urlretrieve, Request
 from socket import gethostbyname_ex, gethostname
-from traceback import format_tb
 from time import sleep, time
 from datetime import datetime
 from shutil import move
@@ -36,7 +35,7 @@ from copy import copy
 from distutils.version import StrictVersion
 from xml.sax.saxutils import escape
 from platform import platform
-from .shared import md5Checksum, HTMLStripper
+from .shared import md5Checksum, HTMLStripper, sanitizeTrace
 from . import __version__
 from . import comic2ebook
 from . import KCC_rc_web
@@ -67,7 +66,6 @@ class QApplicationMessaging(QtWidgets.QApplication):
         socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
         if not socket.waitForConnected(self._timeout):
             self._server = QtNetwork.QLocalServer(self)
-            # noinspection PyUnresolvedReferences
             self._server.newConnection.connect(self.handleMessage)
             self._server.listen(self._key)
         else:
@@ -140,7 +138,7 @@ class Icons:
 
 
 class WebServerHandler(BaseHTTPRequestHandler):
-    # noinspection PyAttributeOutsideInit, PyArgumentList
+    # noinspection PyAttributeOutsideInit
     def do_GET(self):
         if self.path == '/':
             self.path = '/index.html'
@@ -277,8 +275,8 @@ class VersionThread(QtCore.QThread):
             try:
                 MW.modeConvert.emit(-1)
                 MW.progressBarTick.emit('Downloading update')
-                path = urlretrieve('https://kcc.iosphe.re/Windows/KindleComicConverter_win_'
-                                   + self.newVersion + '.exe', reporthook=self.getNewVersionTick)
+                path = urlretrieve('https://kcc.iosphe.re/Windows/KindleComicConverter_win_' +
+                                   self.newVersion + '.exe', reporthook=self.getNewVersionTick)
                 if self.md5 != md5Checksum(path[0]):
                     raise Exception
                 move(path[0], path[0] + '.exe')
@@ -325,7 +323,6 @@ class ProgressThread(QtCore.QThread):
 
 
 class WorkerThread(QtCore.QThread):
-    # noinspection PyArgumentList
     def __init__(self):
         QtCore.QThread.__init__(self)
         self.conversionAlive = False
@@ -349,12 +346,6 @@ class WorkerThread(QtCore.QThread):
         MW.addMessage.emit('<b>Conversion interrupted.</b>', 'error', False)
         MW.addTrayMessage.emit('Conversion interrupted.', 'Critical')
         MW.modeConvert.emit(1)
-
-    def sanitizeTrace(self, traceback):
-        return ''.join(format_tb(traceback))\
-            .replace('C:\\Users\\pawel\\Documents\\Projekty\\KCC\\', '')\
-            .replace('C:\\Python34\\', '')\
-            .replace('C:\\Python34_64\\', '')
 
     def run(self):
         MW.modeConvert.emit(0)
@@ -439,16 +430,20 @@ class WorkerThread(QtCore.QThread):
                     GUI.progress.content = ''
                     self.errors = True
                     MW.addMessage.emit(str(warn), 'warning', False)
-                    MW.addMessage.emit('Failed to create output file!', 'error', False)
-                    MW.addTrayMessage.emit('Failed to create output file!', 'Critical')
+                    MW.addMessage.emit('Error during conversion! Please consult '
+                                       '<a href="https://github.com/ciromattia/kcc/wiki/Error-messages">wiki</a> '
+                                       'for more details.', 'error', False)
+                    MW.addTrayMessage.emit('Error during conversion!', 'Critical')
             except Exception as err:
                 GUI.progress.content = ''
                 self.errors = True
                 _, _, traceback = sys.exc_info()
                 MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
-                                   % (jobargv[-1], str(err), self.sanitizeTrace(traceback)), 'error')
-                MW.addMessage.emit('Failed to create EPUB!', 'error', False)
-                MW.addTrayMessage.emit('Failed to create EPUB!', 'Critical')
+                                   % (jobargv[-1], str(err), sanitizeTrace(traceback)), 'error')
+                MW.addMessage.emit('Error during conversion! Please consult '
+                                   '<a href="https://github.com/ciromattia/kcc/wiki/Error-messages">wiki</a> '
+                                   'for more details.', 'error', False)
+                MW.addTrayMessage.emit('Error during conversion!', 'Critical')
             if not self.conversionAlive:
                 for item in outputPath:
                     if os.path.exists(item):
@@ -463,7 +458,7 @@ class WorkerThread(QtCore.QThread):
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
                 if str(GUI.FormatBox.currentText()) == 'MOBI':
                     MW.progressBarTick.emit('Creating MOBI files')
-                    MW.progressBarTick.emit(str(len(outputPath)*2+1))
+                    MW.progressBarTick.emit(str(len(outputPath) * 2 + 1))
                     MW.progressBarTick.emit('tick')
                     MW.addMessage.emit('Creating MOBI files', 'info', False)
                     GUI.progress.content = 'Creating MOBI files'
@@ -502,7 +497,7 @@ class WorkerThread(QtCore.QThread):
                                 GUI.progress.content = ''
                                 mobiPath = item.replace('.epub', '.mobi')
                                 os.remove(mobiPath + '_toclean')
-                                if GUI.targetDirectory and GUI.targetDirectory != os.path.split(mobiPath)[0]:
+                                if GUI.targetDirectory and GUI.targetDirectory != os.path.dirname(mobiPath):
                                     try:
                                         move(mobiPath, GUI.targetDirectory)
                                         mobiPath = os.path.join(GUI.targetDirectory, os.path.basename(mobiPath))
@@ -522,7 +517,7 @@ class WorkerThread(QtCore.QThread):
                             MW.addTrayMessage.emit('Failed to process MOBI file!', 'Critical')
                     else:
                         GUI.progress.content = ''
-                        epubSize = (os.path.getsize(self.kindlegenErrorCode[2]))//1024//1024
+                        epubSize = (os.path.getsize(self.kindlegenErrorCode[2])) // 1024 // 1024
                         for item in outputPath:
                             if os.path.exists(item):
                                 os.remove(item)
@@ -538,7 +533,7 @@ class WorkerThread(QtCore.QThread):
                                                False)
                 else:
                     for item in outputPath:
-                        if GUI.targetDirectory and GUI.targetDirectory != os.path.split(item)[0]:
+                        if GUI.targetDirectory and GUI.targetDirectory != os.path.dirname(item):
                             try:
                                 move(item, GUI.targetDirectory)
                                 item = os.path.join(GUI.targetDirectory, os.path.basename(item))
@@ -549,8 +544,9 @@ class WorkerThread(QtCore.QThread):
         GUI.progress.stop()
         MW.hideProgressBar.emit()
         GUI.needClean = True
-        MW.addMessage.emit('<b>All jobs completed.</b>', 'info', False)
-        MW.addTrayMessage.emit('All jobs completed.', 'Information')
+        if not self.errors:
+            MW.addMessage.emit('<b>All jobs completed.</b>', 'info', False)
+            MW.addTrayMessage.emit('All jobs completed.', 'Information')
         MW.modeConvert.emit(1)
 
 
@@ -559,7 +555,6 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         super().__init__()
         if self.isSystemTrayAvailable():
             QtWidgets.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
-            # noinspection PyUnresolvedReferences
             self.activated.connect(self.catchClicks)
 
     def catchClicks(self):
@@ -635,8 +630,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.lastPath = os.path.abspath(os.path.join(fname, os.pardir))
             try:
                 self.editor.loadData(fname)
-            except:
-                self.showDialog('Failed to parse metadata!', 'error')
+            except Exception as err:
+                _, _, traceback = sys.exc_info()
+                self.showDialog("Failed to parse metadata!\n\n%s\n\nTraceback:\n%s"
+                                % (str(err), sanitizeTrace(traceback)), 'error')
             else:
                 self.editor.ui.exec_()
 
@@ -845,7 +842,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
     def changeGamma(self, value):
         value = float(value)
-        value = '%.2f' % (value/100)
+        value = '%.2f' % (value / 100)
         if float(value) <= 0.09:
             GUI.GammaLabel.setText('Gamma: Auto')
         else:
@@ -913,7 +910,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         else:
             item = QtWidgets.QListWidgetItem('    ' + self.stripTags(message))
         if replace:
-            GUI.JobList.takeItem(GUI.JobList.count()-1)
+            GUI.JobList.takeItem(GUI.JobList.count() - 1)
         # Due to lack of HTML support in QListWidgetItem we overlay text field with QLabel
         # We still fill original text field with transparent content to trigger creation of horizontal scrollbar
         item.setForeground(QtGui.QColor('transparent'))
@@ -1053,7 +1050,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                                            'ColorBox': GUI.ColorBox.checkState(),
                                            'customWidth': GUI.customWidth.text(),
                                            'customHeight': GUI.customHeight.text(),
-                                           'GammaSlider': float(self.GammaValue)*100})
+                                           'GammaSlider': float(self.GammaValue) * 100})
         self.settings.sync()
         self.tray.hide()
 
@@ -1300,7 +1297,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             if profile == "Other":
                 GUI.DeviceBox.addItem(self.icons.deviceOther, profile)
             elif profile == "Separator":
-                GUI.DeviceBox.insertSeparator(GUI.DeviceBox.count()+1)
+                GUI.DeviceBox.insertSeparator(GUI.DeviceBox.count() + 1)
             elif 'Ko' in profile:
                 GUI.DeviceBox.addItem(self.icons.deviceKobo, profile)
             else:
@@ -1381,8 +1378,10 @@ class KCCGUI_MetaEditor(KCC_MetaEditor_ui.Ui_MetaEditorDialog):
                 self.parser.data[field.objectName()[:-4] + 's'] = tmpData
             try:
                 self.parser.saveXML()
-            except:
-                GUI.showDialog('Failed to save metadata!', 'error')
+            except Exception as err:
+                _, _, traceback = sys.exc_info()
+                GUI.showDialog("Failed to save metadata!\n\n%s\n\nTraceback:\n%s"
+                               % (str(err), sanitizeTrace(traceback)), 'error')
             self.ui.close()
 
     def cleanData(self, s):

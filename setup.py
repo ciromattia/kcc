@@ -22,10 +22,9 @@ VERSION = __version__
 MAIN = 'kcc.py'
 extra_options = {}
 
-# noinspection PyUnresolvedReferences
 if platform == 'darwin':
     from setuptools import setup
-    from os import chmod, makedirs
+    from os import chmod, makedirs, system
     from shutil import copyfile
     extra_options = dict(
         setup_requires=['py2app'],
@@ -34,10 +33,10 @@ if platform == 'darwin':
             py2app=dict(
                 argv_emulation=True,
                 iconfile='icons/comic2ebook.icns',
-                includes=['sip', 'PyQt5.QtPrintSupport'],
+                includes=['sip'],
                 resources=['LICENSE.txt', 'other/qt.conf', 'other/Additional-LICENSE.txt', 'other/unrar', 'other/7za'],
                 plist=dict(
-                    CFBundleName=NAME,
+                    CFBundleName='Kindle Comic Converter',
                     CFBundleShortVersionString=VERSION,
                     CFBundleGetInfoString=NAME + ' ' + VERSION +
                     ', written 2012-2015 by Ciro Mattia Gonano and Pawel Jastrzebski',
@@ -60,7 +59,6 @@ if platform == 'darwin':
         )
     )
 elif platform == 'win32':
-    # noinspection PyUnresolvedReferences
     import py2exe
     from platform import architecture
     from distutils.core import setup
@@ -137,7 +135,7 @@ else:
             install_requires=[
                 'Pillow>=2.8.2',
                 'psutil>=3.0.0',
-                'python-slugify>=1.1.2',
+                'python-slugify>=1.1.3',
                 'scandir>=1.1.0',
             ],
             zip_safe=False,
@@ -156,7 +154,8 @@ setup(
 )
 
 if platform == 'darwin':
-    makedirs('dist/' + NAME + '.app/Contents/PlugIns/platforms', exist_ok=True)
-    copyfile('other/libqcocoa.dylib', 'dist/' + NAME + '.app/Contents/PlugIns/platforms/libqcocoa.dylib')
-    chmod('dist/' + NAME + '.app/Contents/Resources/unrar', 0o777)
-    chmod('dist/' + NAME + '.app/Contents/Resources/7za', 0o777)
+    makedirs('dist/Kindle Comic Converter.app/Contents/PlugIns/platforms', exist_ok=True)
+    copyfile('other/libqcocoa.dylib', 'dist/Kindle Comic Converter.app/Contents/PlugIns/platforms/libqcocoa.dylib')
+    chmod('dist/Kindle Comic Converter.app/Contents/Resources/unrar', 0o777)
+    chmod('dist/Kindle Comic Converter.app/Contents/Resources/7za', 0o777)
+    system('appdmg setup.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')

@@ -188,6 +188,8 @@ class Ui_KCC(object):
         self.JobList.setStyleSheet("QListWidget#JobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;}QScrollBar:vertical{border:1px solid #999;background:#FFF;width:5px;margin:0}QScrollBar::handle:vertical{background:DarkGray;min-height:0}QScrollBar::add-line:vertical{height:0;background:DarkGray;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:vertical{height:0;background:DarkGray;subcontrol-position:top;subcontrol-origin:margin}QScrollBar:horizontal{border:1px solid #999;background:#FFF;height:5px;margin:0}QScrollBar::handle:horizontal{background:DarkGray;min-width:0}QScrollBar::add-line:horizontal{width:0;background:DarkGray;subcontrol-position:bottom;subcontrol-origin:margin}QScrollBar::sub-line:horizontal{width:0;background:DarkGray;subcontrol-position:top;subcontrol-origin:margin}")
         self.JobList.setProperty("showDropIndicator", False)
         self.JobList.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        self.JobList.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.JobList.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.JobList.setObjectName("JobList")
         self.BasicModeButton = QtWidgets.QPushButton(self.Form)
         self.BasicModeButton.setGeometry(QtCore.QRect(5, 10, 156, 41))

@@ -360,9 +360,8 @@ class RarCannotExec(RarExecError):
 
 def is_rarfile(xfile):
     '''Check quickly whether file is rar archive.'''
-    fd = XFile(xfile)
-    buf = fd.read(len(RAR_ID))
-    fd.close()
+    with open(xfile, 'rb') as fh:
+        buf = fh.read(len(RAR_ID))
     if buf == RAR_ID or buf == RAR5_ID:
         return True
     else:
