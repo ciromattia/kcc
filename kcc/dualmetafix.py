@@ -36,15 +36,15 @@ title_offset = 84
 
 
 def getint(data, ofs, sz='L'):
-    i, = struct.unpack_from('>'+sz, data, ofs)
+    i, = struct.unpack_from('>' + sz, data, ofs)
     return i
 
 
 def writeint(data, ofs, n, slen='L'):
     if slen == 'L':
-        return data[:ofs]+struct.pack('>L', n)+data[ofs+4:]
+        return data[:ofs] + struct.pack('>L', n) + data[ofs + 4:]
     else:
-        return data[:ofs]+struct.pack('>H', n)+data[ofs+2:]
+        return data[:ofs] + struct.pack('>H', n) + data[ofs + 2:]
 
 
 def getsecaddr(datain, secno):
@@ -52,11 +52,11 @@ def getsecaddr(datain, secno):
     if (secno < 0) | (secno >= nsec):
         emsg = 'requested section number %d out of range (nsec=%d)' % (secno, nsec)
         raise DualMetaFixException(emsg)
-    secstart = getint(datain, first_pdb_record+secno*8)
-    if secno == nsec-1:
+    secstart = getint(datain, first_pdb_record + secno * 8)
+    if secno == nsec - 1:
         secend = len(datain)
     else:
-        secend = getint(datain, first_pdb_record+(secno+1)*8)
+        secend = getint(datain, first_pdb_record + (secno + 1) * 8)
     return secstart, secend
 
 
@@ -71,28 +71,28 @@ def replacesection(datain, secno, secdata):
     seclen = secend - secstart
     if len(secdata) != seclen:
         raise DualMetaFixException('section length change in replacesection')
-    datain[secstart:secstart+seclen] = secdata
+    datain[secstart:secstart + seclen] = secdata
 
 
 def get_exth_params(rec0):
     ebase = mobi_header_base + getint(rec0, mobi_header_length)
-    if rec0[ebase:ebase+4] != b'EXTH':
+    if rec0[ebase:ebase + 4] != b'EXTH':
         raise DualMetaFixException('EXTH tag not found where expected')
-    elen = getint(rec0, ebase+4)
-    enum = getint(rec0, ebase+8)
+    elen = getint(rec0, ebase + 4)
+    enum = getint(rec0, ebase + 8)
     rlen = len(rec0)
     return ebase, elen, enum, rlen
 
 
 def add_exth(rec0, exth_num, exth_bytes):
     ebase, elen, enum, rlen = get_exth_params(rec0)
-    newrecsize = 8+len(exth_bytes)
-    newrec0 = rec0[0:ebase+4]+struct.pack('>L', elen+newrecsize)+struct.pack('>L', enum+1)+struct.pack('>L', exth_num)\
-        + struct.pack('>L', newrecsize)+exth_bytes+rec0[ebase+12:]
-    newrec0 = writeint(newrec0, title_offset, getint(newrec0, title_offset)+newrecsize)
+    newrecsize = 8 + len(exth_bytes)
+    newrec0 = rec0[0:ebase + 4] + struct.pack('>L', elen + newrecsize) + struct.pack('>L', enum + 1) + \
+        struct.pack('>L', exth_num) + struct.pack('>L', newrecsize) + exth_bytes + rec0[ebase + 12:]
+    newrec0 = writeint(newrec0, title_offset, getint(newrec0, title_offset) + newrecsize)
     # keep constant record length by removing newrecsize null bytes from end
     sectail = newrec0[-newrecsize:]
-    if sectail != b'\0'*newrecsize:
+    if sectail != b'\0' * newrecsize:
         raise DualMetaFixException('add_exth: trimmed non-null bytes at end of section')
     newrec0 = newrec0[0:rlen]
     return newrec0
@@ -106,30 +106,31 @@ def read_exth(rec0, exth_num):
         exth_id = getint(rec0, ebase)
         if exth_id == exth_num:
             # We might have multiple exths, so build a list.
-            exth_values.append(rec0[ebase+8:ebase+getint(rec0, ebase+4)])
+            exth_values.append(rec0[ebase + 8:ebase + getint(rec0, ebase + 4)])
         enum -= 1
-        ebase = ebase+getint(rec0, ebase+4)
+        ebase = ebase + getint(rec0, ebase + 4)
     return exth_values
 
 
 def del_exth(rec0, exth_num):
     ebase, elen, enum, rlen = get_exth_params(rec0)
-    ebase_idx = ebase+12
+    ebase_idx = ebase + 12
     enum_idx = 0
     while enum_idx < enum:
         exth_id = getint(rec0, ebase_idx)
-        exth_size = getint(rec0, ebase_idx+4)
+        exth_size = getint(rec0, ebase_idx + 4)
         if exth_id == exth_num:
             newrec0 = rec0
-            newrec0 = writeint(newrec0, title_offset, getint(newrec0, title_offset)-exth_size)
-            newrec0 = newrec0[:ebase_idx]+newrec0[ebase_idx+exth_size:]
-            newrec0 = newrec0[0:ebase+4]+struct.pack('>L', elen-exth_size)+struct.pack('>L', enum-1)+newrec0[ebase+12:]
-            newrec0 += b'\0'*exth_size
+            newrec0 = writeint(newrec0, title_offset, getint(newrec0, title_offset) - exth_size)
+            newrec0 = newrec0[:ebase_idx] + newrec0[ebase_idx + exth_size:]
+            newrec0 = newrec0[0:ebase + 4] + struct.pack('>L', elen - exth_size) + \
+                struct.pack('>L', enum - 1) + newrec0[ebase + 12:]
+            newrec0 += b'\0' * exth_size
             if rlen != len(newrec0):
                 raise DualMetaFixException('del_exth: incorrect section size change')
             return newrec0
         enum_idx += 1
-        ebase_idx = ebase_idx+exth_size
+        ebase_idx = ebase_idx + exth_size
     return rec0
 
 

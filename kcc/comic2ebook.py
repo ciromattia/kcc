@@ -28,7 +28,7 @@ from urllib.request import Request, urlopen
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
-from tempfile import mkdtemp
+from tempfile import mkdtemp, gettempdir
 from shutil import move, copytree, rmtree
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
@@ -43,7 +43,7 @@ try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
-from .shared import md5Checksum, getImageFileName,  walkSort, walkLevel, saferReplace
+from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, saferReplace
 from . import comic2panel
 from . import image
 from . import cbxarchive
@@ -66,6 +66,7 @@ def main(argv=None):
         print('No matching files found.')
         return
     for source in sources:
+        source = source.rstrip('\\').rstrip('/')
         options = copy(optionstemplate)
         checkOptions()
         if len(sources) > 1:
@@ -242,9 +243,9 @@ def buildNCX(dstdir, title, chapters, chapterNames):
             navID = filename[0].replace('/', '_').replace('\\', '_')
         elif os.path.basename(folder) != "Text":
             title = chapterNames[os.path.basename(folder)]
-        f.write("<navPoint id=\"" + navID + "\"><navLabel><text>"
-                + title + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/")
-                + ".html\"/></navPoint>\n")
+        f.write("<navPoint id=\"" + navID + "\"><navLabel><text>" +
+                title + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") +
+                ".html\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
 
@@ -341,15 +342,15 @@ def buildOPF(dstdir, title, filelist, cover=None):
         filename = getImageFileName(path[1])
         uniqueid = os.path.join(folder, filename[0]).replace('/', '_').replace('\\', '_')
         reflist.append(uniqueid)
-        f.write("<item id=\"page_" + str(uniqueid) + "\" href=\""
-                + folder.replace('Images', 'Text') + "/" + filename[0]
-                + ".html\" media-type=\"application/xhtml+xml\"/>\n")
+        f.write("<item id=\"page_" + str(uniqueid) + "\" href=\"" +
+                folder.replace('Images', 'Text') + "/" + filename[0] +
+                ".html\" media-type=\"application/xhtml+xml\"/>\n")
         if '.png' == filename[1]:
             mt = 'image/png'
         else:
             mt = 'image/jpeg'
-        f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\""
-                + mt + "\"/>\n")
+        f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
+                mt + "\"/>\n")
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
     if options.righttoleft:
         f.write("</manifest>\n<spine page-progression-direction=\"rtl\" toc=\"ncx\">\n")
@@ -647,44 +648,38 @@ def imgFileProcessing(work):
 
 
 def getWorkFolder(afile):
-    if len(afile) > 240:
-        raise UserWarning("Path is too long.")
     if os.path.isdir(afile):
         workdir = mkdtemp('', 'KCC-')
         try:
             os.rmdir(workdir)
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
-            if len(fullPath) > 240:
-                raise UserWarning("Path is too long.")
             copytree(afile, fullPath)
             sanitizePermissions(fullPath)
             return workdir
-        except OSError:
+        except:
             rmtree(workdir, True)
-            raise
+            raise UserWarning("Failed to prepare a workspace.")
     elif afile.lower().endswith('.pdf'):
         pdf = pdfjpgextract.PdfJpgExtract(afile)
         path, njpg = pdf.extract()
         if njpg == 0:
             rmtree(path, True)
-            raise UserWarning("Failed to extract images.")
+            raise UserWarning("Failed to extract images from PDF file.")
     else:
         workdir = mkdtemp('', 'KCC-')
         cbx = cbxarchive.CBxArchive(afile)
         if cbx.isCbxFile():
             try:
                 path = cbx.extract(workdir)
-            except OSError:
+            except:
                 rmtree(workdir, True)
-                raise UserWarning("Failed to extract file.")
+                raise UserWarning("Failed to extract archive.")
         else:
             rmtree(workdir, True)
-            raise TypeError("Failed to detect archive format.")
-    if len(os.path.join(path, 'OEBPS', 'Images')) > 240:
-        raise UserWarning("Path is too long.")
-    move(path, path + "_temp")
-    move(path + "_temp", os.path.join(path, 'OEBPS', 'Images'))
-    return path
+            raise UserWarning("Failed to detect archive format.")
+    newpath = mkdtemp('', 'KCC-')
+    move(path, os.path.join(newpath, 'OEBPS', 'Images'))
+    return newpath
 
 
 def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
@@ -1039,7 +1034,7 @@ def createNewTome():
 
 def slugify(value):
     value = slugifyExt(value)
-    value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value))
+    value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
 
 
@@ -1181,7 +1176,7 @@ def checkOptions():
         if options.customheight != 0:
             Y = options.customheight
         newProfile = ("Custom", (int(X), int(Y)), image.ProfileData.Palette16,
-                      image.ProfileData.Profiles[options.profile][3], (int(int(X)*1.5), int(int(Y)*1.5)))
+                      image.ProfileData.Profiles[options.profile][3], (int(int(X) * 1.5), int(int(Y) * 1.5)))
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
@@ -1208,6 +1203,21 @@ def checkTools(source):
             exit(1)
 
 
+def checkPre(source):
+    # Make sure that all temporary files are gone
+    for root, dirs, _ in walkLevel(gettempdir(), 0):
+        for tempdir in dirs:
+            if tempdir.startswith('KCC-'):
+                rmtree(os.path.join(root, tempdir), True)
+    # Make sure that target directory is writable
+    if os.path.isdir(source):
+        writable = os.access(os.path.abspath(os.path.join(source, '..')), os.W_OK)
+    else:
+        writable = os.access(os.path.dirname(source), os.W_OK)
+    if not writable:
+        raise UserWarning("Target directory is not writable.")
+
+
 def makeBook(source, qtGUI=None):
     """Generates MOBI/EPUB/CBZ comic ebook from a bunch of images."""
     global GUI
@@ -1216,6 +1226,7 @@ def makeBook(source, qtGUI=None):
         GUI.progressBarTick.emit('1')
     else:
         checkTools(source)
+    checkPre(source)
     path = getWorkFolder(source)
     print("\nChecking images...")
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
@@ -1348,7 +1359,7 @@ def makeMOBI(work, qtGUI=None):
     global GUI, makeMOBIWorkerPool, makeMOBIWorkerOutput
     GUI = qtGUI
     makeMOBIWorkerOutput = []
-    availableMemory = virtual_memory().total/1000000000
+    availableMemory = virtual_memory().total / 1000000000
     if availableMemory <= 2:
         threadNumber = 1
     elif 2 < availableMemory <= 4:

@@ -25,6 +25,7 @@ from shutil import rmtree, move
 from tempfile import mkdtemp
 from zipfile import ZipFile, ZIP_DEFLATED
 from re import split
+from traceback import format_tb
 try:
     from scandir import walk
 except ImportError:
@@ -44,6 +45,9 @@ class HTMLStripper(HTMLParser):
 
     def get_data(self):
         return ''.join(self.fed)
+
+    def error(self, message):
+        pass
 
 
 def getImageFileName(imgfile):
@@ -117,16 +121,22 @@ def removeFromZIP(zipfname, *filenames):
         rmtree(tempdir)
 
 
-# noinspection PyUnresolvedReferences
+def sanitizeTrace(traceback):
+    return ''.join(format_tb(traceback))\
+        .replace('C:\\Users\\pawel\\Documents\\Projekty\\KCC\\', '')\
+        .replace('C:\\Python34\\', '')\
+        .replace('C:\\Python34_64\\', '')
+
+
 def dependencyCheck(level):
     missing = []
     if level > 2:
         try:
             from PyQt5.QtCore import qVersion as qtVersion
-            if StrictVersion('5.2.0') > StrictVersion(qtVersion()):
-                missing.append('PyQt 5.2.0+')
+            if StrictVersion('5.4.0') > StrictVersion(qtVersion()):
+                missing.append('PyQt 5.4.0+')
         except ImportError:
-            missing.append('PyQt 5.2.0+')
+            missing.append('PyQt 5.4.0+')
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion
@@ -136,10 +146,10 @@ def dependencyCheck(level):
             missing.append('psutil 3.0.0+')
         try:
             from slugify import __version__ as slugifyVersion
-            if StrictVersion('1.1.2') > StrictVersion(slugifyVersion):
-                missing.append('python-slugify 1.1.2+')
+            if StrictVersion('1.1.3') > StrictVersion(slugifyVersion):
+                missing.append('python-slugify 1.1.3+')
         except ImportError:
-            missing.append('python-slugify 1.1.2+')
+            missing.append('python-slugify 1.1.3+')
     try:
         from PIL import PILLOW_VERSION as pillowVersion
         if StrictVersion('2.8.2') > StrictVersion(pillowVersion):

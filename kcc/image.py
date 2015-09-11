@@ -148,8 +148,8 @@ class ComicPage:
                 if self.noVPV:
                     flags.append('NoVerticalPanelView')
                 if self.border:
-                    flags.append('Margins-' + str(self.border[0]) + '-' + str(self.border[1]) + '-'
-                                 + str(self.border[2]) + '-' + str(self.border[3]))
+                    flags.append('Margins-' + str(self.border[0]) + '-' + str(self.border[1]) + '-' +
+                                 str(self.border[2]) + '-' + str(self.border[3]))
             if self.fill != 'white':
                 flags.append('BlackFill')
             if self.opt.quality == 2:
@@ -199,10 +199,10 @@ class ComicPage:
         else:
             multiplier = 1.5
         if border is not None:
-            self.border = [round(float(border[0])/float(self.image.size[0])*150, 3),
-                           round(float(border[1])/float(self.image.size[1])*150, 3),
-                           round(float(self.image.size[0]-border[2])/float(self.image.size[0])*150, 3),
-                           round(float(self.image.size[1]-border[3])/float(self.image.size[1])*150, 3)]
+            self.border = [round(float(border[0]) / float(self.image.size[0]) * 150, 3),
+                           round(float(border[1]) / float(self.image.size[1]) * 150, 3),
+                           round(float(self.image.size[0] - border[2]) / float(self.image.size[0]) * 150, 3),
+                           round(float(self.image.size[1] - border[3]) / float(self.image.size[1]) * 150, 3)]
             if int((border[2] - border[0]) * multiplier) < self.size[0] + 10:
                 self.noHPV = True
             if int((border[3] - border[1]) * multiplier) < self.size[1] + 10:
@@ -428,13 +428,13 @@ class ComicPage:
             while startY < bw.size[1]:
                 if startY + 5 > bw.size[1]:
                     startY = bw.size[1] - 5
-                fill += self.getImageHistogram(bw.crop((0, startY, bw.size[0], startY+5)))
+                fill += self.getImageHistogram(bw.crop((0, startY, bw.size[0], startY + 5)))
                 startY += 5
             startX = 0
             while startX < bw.size[0]:
                 if startX + 5 > bw.size[0]:
                     startX = bw.size[0] - 5
-                fill += self.getImageHistogram(bw.crop((startX, 0, startX+5, bw.size[1])))
+                fill += self.getImageHistogram(bw.crop((startX, 0, startX + 5, bw.size[1])))
                 startX += 5
             if fill > 0:
                 self.fill = 'black'
@@ -442,29 +442,25 @@ class ComicPage:
                 self.fill = 'white'
 
     def isImageColor(self):
-        v = ImageStat.Stat(self.image).var
-        isMonochromatic = reduce(lambda x, y: x and y < 0.005, v, True)
-        if isMonochromatic:
-            # Monochromatic
-            return False
-        else:
-            if len(v) == 3:
-                maxmin = abs(max(v) - min(v))
-                if maxmin > 1000:
-                    # Color
-                    return True
-                elif maxmin > 100:
-                    # Probably color
-                    return True
-                else:
-                    # Grayscale
-                    return False
-            elif len(v) == 1:
-                # Black and white
+        img = self.image.copy()
+        bands = img.getbands()
+        if bands == ('R', 'G', 'B') or bands == ('R', 'G', 'B', 'A'):
+            thumb = img.resize((40, 40))
+            SSE, bias = 0, [0, 0, 0]
+            bias = ImageStat.Stat(thumb).mean[:3]
+            bias = [b - sum(bias) / 3 for b in bias]
+            for pixel in thumb.getdata():
+                mu = sum(pixel) / 3
+                SSE += sum((pixel[i] - mu - bias[i]) * (pixel[i] - mu - bias[i]) for i in [0, 1, 2])
+            MSE = float(SSE) / (40 * 40)
+            if MSE <= 22:
                 return False
             else:
-                # Detection failed
-                return False
+                return True
+        elif len(bands) == 1:
+            return False
+        else:
+            return False
 
 
 class Cover:
@@ -513,4 +509,4 @@ class Cover:
         try:
             self.image.save(self.target, "JPEG", optimize=1, quality=80)
         except IOError:
-            raise RuntimeError('Failed to save cover')
+            raise RuntimeError('Failed to process downloaded cover.')
