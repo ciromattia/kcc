@@ -678,7 +678,8 @@ def getWorkFolder(afile):
             rmtree(workdir, True)
             raise UserWarning("Failed to detect archive format.")
     newpath = mkdtemp('', 'KCC-')
-    move(path, os.path.join(newpath, 'OEBPS', 'Images'))
+    copytree(path, os.path.join(newpath, 'OEBPS', 'Images'))
+    rmtree(src, True)
     return newpath
 
 
