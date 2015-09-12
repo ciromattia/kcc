@@ -75,12 +75,12 @@ class MetadataParser:
                         extracted = True
                 if not extracted:
                     rmtree(workdir)
-                    raise OSError
+                    raise OSError('Failed to extract 7ZIP file.')
                 if os.path.isfile(tmpXML):
                     self.rawdata = parse(tmpXML)
                 rmtree(workdir)
             else:
-                raise OSError
+                raise OSError('Failed to detect archive format.')
             if self.rawdata:
                 self.parseXML()
 
@@ -168,5 +168,5 @@ class MetadataParser:
                         extracted = True
                 if not extracted:
                     rmtree(workdir)
-                    raise OSError
+                    raise OSError('Failed to modify 7ZIP file.')
             rmtree(workdir)
