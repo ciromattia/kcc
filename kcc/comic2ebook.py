@@ -28,7 +28,7 @@ from urllib.request import Request, urlopen
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
-from tempfile import mkdtemp, gettempdir
+from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
@@ -1215,10 +1215,13 @@ def checkPre(source):
                 rmtree(os.path.join(root, tempdir), True)
     # Make sure that target directory is writable
     if os.path.isdir(source):
-        writable = os.access(os.path.abspath(os.path.join(source, '..')), os.W_OK)
+        src = os.path.abspath(os.path.join(source, '..'))
     else:
-        writable = os.access(os.path.dirname(source), os.W_OK)
-    if not writable:
+        src = os.path.dirname(source)
+    try:
+        with TemporaryFile(prefix='KCC-', dir=src):
+            pass
+    except:
         raise UserWarning("Target directory is not writable.")
 
 
