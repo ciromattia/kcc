@@ -17,6 +17,7 @@
 #
 
 import os
+from sys import version_info
 from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
@@ -29,7 +30,7 @@ from traceback import format_tb
 try:
     from scandir import walk
 except ImportError:
-    walk = None
+    walk = os.walk
 
 
 class HTMLStripper(HTMLParser):
@@ -156,12 +157,13 @@ def dependencyCheck(level):
             missing.append('Pillow 2.8.2+')
     except ImportError:
         missing.append('Pillow 2.8.2+')
-    try:
-        from scandir import __version__ as scandirVersion
-        if StrictVersion('1.1') > StrictVersion(scandirVersion):
+    if version_info[1] < 5:
+        try:
+            from scandir import __version__ as scandirVersion
+            if StrictVersion('1.1') > StrictVersion(scandirVersion):
+                missing.append('scandir 1.1+')
+        except ImportError:
             missing.append('scandir 1.1+')
-    except ImportError:
-        missing.append('scandir 1.1+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         exit(1)

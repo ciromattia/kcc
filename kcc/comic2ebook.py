@@ -37,12 +37,15 @@ from slugify import slugify as slugifyExt
 from PIL import Image
 from subprocess import STDOUT, PIPE
 from psutil import Popen, virtual_memory
-from scandir import walk
 from html import escape
 try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
+try:
+    from scandir import walk
+except ImportError:
+    walk = os.walk
 from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, saferReplace
 from . import comic2panel
 from . import image
