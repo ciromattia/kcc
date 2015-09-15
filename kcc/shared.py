@@ -22,7 +22,7 @@ from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
 from time import sleep
-from shutil import rmtree, move
+from shutil import rmtree, move, copy
 from tempfile import mkdtemp
 from zipfile import ZipFile, ZIP_DEFLATED
 from re import split
@@ -117,9 +117,9 @@ def removeFromZIP(zipfname, *filenames):
                 for item in zipread.infolist():
                     if item.filename not in filenames:
                         zipwrite.writestr(item, zipread.read(item.filename))
-        move(tempname, zipfname)
+        copy(tempname, zipfname)
     finally:
-        rmtree(tempdir)
+        rmtree(tempdir, True)
 
 
 def sanitizeTrace(traceback):
