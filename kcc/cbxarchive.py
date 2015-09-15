@@ -22,7 +22,10 @@ from zipfile import is_zipfile, ZipFile
 from subprocess import STDOUT, PIPE
 from psutil import Popen
 from shutil import move, copy
-from scandir import walk
+try:
+    from scandir import walk
+except ImportError:
+    walk = os.walk
 from . import rarfile
 from .shared import check7ZFile as is_7zfile, saferReplace
 
