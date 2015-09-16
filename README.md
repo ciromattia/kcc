@@ -156,6 +156,10 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 
 ## CHANGELOG
+####4.6.5:
+* Fixed multiple Windows and OS X issues
+* Allowed Linux release to use older PyQT5 version
+
 ####4.6.4:
 * Fixed multiple Windows specific problems
 * Improved error handling
