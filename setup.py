@@ -33,7 +33,7 @@ if platform == 'darwin':
             py2app=dict(
                 argv_emulation=True,
                 iconfile='icons/comic2ebook.icns',
-                includes=['sip'],
+                includes=['sip', 'PyQt5.QtPrintSupport'],
                 resources=['LICENSE.txt', 'other/qt.conf', 'other/Additional-LICENSE.txt', 'other/unrar', 'other/7za'],
                 plist=dict(
                     CFBundleName='Kindle Comic Converter',
@@ -49,6 +49,7 @@ if platform == 'darwin':
                             CFBundleTypeRole='Editor',
                         )
                     ],
+                    CFBundleIdentifier='re.iosphe.kcc',
                     LSMinimumSystemVersion='10.8.0',
                     LSEnvironment=dict(
                         PATH='./../Resources:/usr/local/bin:/usr/bin:/bin'
