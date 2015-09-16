@@ -134,10 +134,10 @@ def dependencyCheck(level):
     if level > 2:
         try:
             from PyQt5.QtCore import qVersion as qtVersion
-            if StrictVersion('5.4.0') > StrictVersion(qtVersion()):
-                missing.append('PyQt 5.4.0+')
+            if StrictVersion('5.2.1') > StrictVersion(qtVersion()):
+                missing.append('PyQt 5.2.1+')
         except ImportError:
-            missing.append('PyQt 5.4.0+')
+            missing.append('PyQt 5.2.1+')
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion
