@@ -32,7 +32,7 @@ You can find the latest released binary at the following links:
 ## DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
 - Python 3.3+
-- [PyQt](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.4.0+
+- [PyQt](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.2.1+
 - [Pillow](http://pypi.python.org/pypi/Pillow/) 2.8.2+
 - [psutil](https://pypi.python.org/pypi/psutil) 3.0.0+
 - [python-slugify](http://pypi.python.org/pypi/python-slugify) 1.1.3+
@@ -156,6 +156,10 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 
 ## CHANGELOG
+####4.6.5:
+* Fixed multiple Windows and OS X issues
+* Allowed Linux release to use older PyQT5 version
+
 ####4.6.4:
 * Fixed multiple Windows specific problems
 * Improved error handling

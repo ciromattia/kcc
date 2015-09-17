@@ -1127,6 +1127,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
                                 '<b>KindleGen</b></a>! MOBI conversion will be unavailable!', 'error')
                 if sys.platform.startswith('win'):
                     self.addMessage('Download it and place EXE in KCC directory.', 'error')
+                elif sys.platform.startswith('darwin'):
+                    self.addMessage('Install it using <a href="http://brew.sh/">Brew</a>.', 'error')
                 else:
                     self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
 
