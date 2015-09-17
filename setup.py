@@ -49,7 +49,7 @@ if platform == 'darwin':
                             CFBundleTypeRole='Editor',
                         )
                     ],
-                    CFBundleIdentifier='re.iosphe.kcc',
+                    CFBundleIdentifier='com.kindlecomicconverter.KindleComicConverter',
                     LSMinimumSystemVersion='10.8.0',
                     LSEnvironment=dict(
                         PATH='./../Resources:/usr/local/bin:/usr/bin:/bin'
