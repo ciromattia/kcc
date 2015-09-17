@@ -30,6 +30,7 @@ if sys.platform.startswith('darwin'):
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/:' + os.environ['PATH']
     else:
         os.environ['PATH'] = './../Resources:/usr/local/bin:/usr/bin:/bin'
+        os.system('defaults write com.kindlecomicconverter.KindleComicConverter ApplePersistenceIgnoreState YES')
 elif sys.platform.startswith('win'):
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
