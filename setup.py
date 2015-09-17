@@ -11,16 +11,16 @@ Usage (Linux):
 Usage (Mac OS X):
     python3 setup.py py2app
 """
+
 from sys import platform, version_info, argv
 from kcc import __version__
-if version_info[0] != 3:
-    print('ERROR: This is Python 3 script!')
-    exit(1)
+
 
 NAME = 'KindleComicConverter'
 VERSION = __version__
 MAIN = 'kcc.py'
 extra_options = {}
+
 
 if platform == 'darwin':
     from setuptools import setup
@@ -33,7 +33,7 @@ if platform == 'darwin':
             py2app=dict(
                 argv_emulation=True,
                 iconfile='icons/comic2ebook.icns',
-                includes=['sip'],
+                includes=['sip', 'PyQt5.QtPrintSupport'],
                 resources=['LICENSE.txt', 'other/qt.conf', 'other/Additional-LICENSE.txt', 'other/unrar', 'other/7za'],
                 plist=dict(
                     CFBundleName='Kindle Comic Converter',
@@ -49,6 +49,7 @@ if platform == 'darwin':
                             CFBundleTypeRole='Editor',
                         )
                     ],
+                    CFBundleIdentifier='com.kindlecomicconverter.KindleComicConverter',
                     LSMinimumSystemVersion='10.8.0',
                     LSEnvironment=dict(
                         PATH='./../Resources:/usr/local/bin:/usr/bin:/bin'
@@ -136,10 +137,12 @@ else:
                 'Pillow>=2.8.2',
                 'psutil>=3.0.0',
                 'python-slugify>=1.1.3',
-                'scandir>=1.1.0',
             ],
             zip_safe=False,
         )
+        if version_info[1] < 5:
+            extra_options['install_requires'].append('scandir>=1.1.0')
+
 
 setup(
     name=NAME,

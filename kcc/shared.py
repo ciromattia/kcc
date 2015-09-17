@@ -17,11 +17,12 @@
 #
 
 import os
+from sys import version_info
 from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
 from time import sleep
-from shutil import rmtree, move
+from shutil import rmtree, move, copy
 from tempfile import mkdtemp
 from zipfile import ZipFile, ZIP_DEFLATED
 from re import split
@@ -29,7 +30,7 @@ from traceback import format_tb
 try:
     from scandir import walk
 except ImportError:
-    walk = None
+    walk = os.walk
 
 
 class HTMLStripper(HTMLParser):
@@ -116,9 +117,9 @@ def removeFromZIP(zipfname, *filenames):
                 for item in zipread.infolist():
                     if item.filename not in filenames:
                         zipwrite.writestr(item, zipread.read(item.filename))
-        move(tempname, zipfname)
+        copy(tempname, zipfname)
     finally:
-        rmtree(tempdir)
+        rmtree(tempdir, True)
 
 
 def sanitizeTrace(traceback):
@@ -133,10 +134,10 @@ def dependencyCheck(level):
     if level > 2:
         try:
             from PyQt5.QtCore import qVersion as qtVersion
-            if StrictVersion('5.4.0') > StrictVersion(qtVersion()):
-                missing.append('PyQt 5.4.0+')
+            if StrictVersion('5.2.1') > StrictVersion(qtVersion()):
+                missing.append('PyQt 5.2.1+')
         except ImportError:
-            missing.append('PyQt 5.4.0+')
+            missing.append('PyQt 5.2.1+')
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion
@@ -156,12 +157,13 @@ def dependencyCheck(level):
             missing.append('Pillow 2.8.2+')
     except ImportError:
         missing.append('Pillow 2.8.2+')
-    try:
-        from scandir import __version__ as scandirVersion
-        if StrictVersion('1.1') > StrictVersion(scandirVersion):
+    if version_info[1] < 5:
+        try:
+            from scandir import __version__ as scandirVersion
+            if StrictVersion('1.1') > StrictVersion(scandirVersion):
+                missing.append('scandir 1.1+')
+        except ImportError:
             missing.append('scandir 1.1+')
-    except ImportError:
-        missing.append('scandir 1.1+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         exit(1)

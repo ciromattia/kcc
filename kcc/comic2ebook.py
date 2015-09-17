@@ -28,7 +28,7 @@ from urllib.request import Request, urlopen
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
-from tempfile import mkdtemp, gettempdir
+from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
@@ -37,12 +37,15 @@ from slugify import slugify as slugifyExt
 from PIL import Image
 from subprocess import STDOUT, PIPE
 from psutil import Popen, virtual_memory
-from scandir import walk
 from html import escape
 try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
+try:
+    from scandir import walk
+except ImportError:
+    walk = os.walk
 from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, saferReplace
 from . import comic2panel
 from . import image
@@ -678,7 +681,8 @@ def getWorkFolder(afile):
             rmtree(workdir, True)
             raise UserWarning("Failed to detect archive format.")
     newpath = mkdtemp('', 'KCC-')
-    move(path, os.path.join(newpath, 'OEBPS', 'Images'))
+    copytree(path, os.path.join(newpath, 'OEBPS', 'Images'))
+    rmtree(path, True)
     return newpath
 
 
@@ -1211,10 +1215,13 @@ def checkPre(source):
                 rmtree(os.path.join(root, tempdir), True)
     # Make sure that target directory is writable
     if os.path.isdir(source):
-        writable = os.access(os.path.abspath(os.path.join(source, '..')), os.W_OK)
+        src = os.path.abspath(os.path.join(source, '..'))
     else:
-        writable = os.access(os.path.dirname(source), os.W_OK)
-    if not writable:
+        src = os.path.dirname(source)
+    try:
+        with TemporaryFile(prefix='KCC-', dir=src):
+            pass
+    except:
         raise UserWarning("Target directory is not writable.")
 
 
