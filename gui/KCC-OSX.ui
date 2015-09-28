@@ -183,9 +183,9 @@
     <property name="geometry">
      <rect>
       <x>8</x>
-      <y>201</y>
+      <y>206</y>
       <width>151</width>
-      <height>34</height>
+      <height>26</height>
      </rect>
     </property>
     <property name="font">
@@ -200,14 +200,20 @@
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Target device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
+    <property name="iconSize">
+     <size>
+      <width>15</width>
+      <height>15</height>
+     </size>
+    </property>
    </widget>
    <widget class="QComboBox" name="FormatBox">
     <property name="geometry">
      <rect>
-      <x>262</x>
-      <y>201</y>
-      <width>152</width>
-      <height>34</height>
+      <x>263</x>
+      <y>206</y>
+      <width>151</width>
+      <height>26</height>
      </rect>
     </property>
     <property name="font">
@@ -221,6 +227,12 @@
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Output format.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>15</width>
+      <height>15</height>
+     </size>
     </property>
    </widget>
    <widget class="QPushButton" name="ConvertButton">
