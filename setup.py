@@ -34,7 +34,11 @@ if platform == 'darwin':
                 argv_emulation=True,
                 iconfile='icons/comic2ebook.icns',
                 includes=['sip', 'PyQt5.QtPrintSupport'],
-                resources=['LICENSE.txt', 'other/qt.conf', 'other/Additional-LICENSE.txt', 'other/unrar', 'other/7za'],
+                resources=['LICENSE.txt',
+                           'other/osx/qt.conf',
+                           'other/osx/Additional-LICENSE.txt',
+                           'other/osx/unrar',
+                           'other/osx/7za'],
                 plist=dict(
                     CFBundleName='Kindle Comic Converter',
                     CFBundleShortVersionString=VERSION,
@@ -70,9 +74,9 @@ elif platform == 'win32':
     additional_files = [('platforms', ['C:\Python34' + suffix +
                                        '\Lib\site-packages\PyQt5\plugins\platforms\qwindows.dll']),
                         ('', ['LICENSE.txt',
-                              'other\\7za.exe',
-                              'other\\UnRAR.exe',
-                              'other\\Additional-LICENSE.txt',
+                              'other\\windows\\7za.exe',
+                              'other\\windows\\UnRAR.exe',
+                              'other\\windows\\Additional-LICENSE.txt',
                               'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libGLESv2.dll',
                               'C:\Python34' + suffix + '\Lib\site-packages\PyQt5\libEGL.dll'])]
     extra_options = dict(
@@ -158,7 +162,7 @@ setup(
 
 if platform == 'darwin':
     makedirs('dist/Kindle Comic Converter.app/Contents/PlugIns/platforms', exist_ok=True)
-    copyfile('other/libqcocoa.dylib', 'dist/Kindle Comic Converter.app/Contents/PlugIns/platforms/libqcocoa.dylib')
+    copyfile('other/osx/libqcocoa.dylib', 'dist/Kindle Comic Converter.app/Contents/PlugIns/platforms/libqcocoa.dylib')
     chmod('dist/Kindle Comic Converter.app/Contents/Resources/unrar', 0o777)
     chmod('dist/Kindle Comic Converter.app/Contents/Resources/7za', 0o777)
     system('appdmg setup.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')

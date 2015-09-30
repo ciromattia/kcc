@@ -28,7 +28,7 @@ WizardSmallImageFile=icons\Wizard-Small.bmp
 UninstallDisplayName={#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
 ChangesAssociations=True
-InfoAfterFile=other\InstallWarning.rtf
+InfoAfterFile=other\windows\InstallWarning.rtf
 SignTool=SignTool /d $q{#MyAppName}$q /du $q{#MyAppURL}$q $f
 MinVersion=0,6.0
 
@@ -46,17 +46,17 @@ Name: "CB7association"; Description: "CB7"; GroupDescription: "File associations
 Source: "dist_64\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: "dist_64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
 Source: "dist_64\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "other\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: Is64BitInstallMode
+Source: "other\windows\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: Is64BitInstallMode
 ; x86 files
 Source: "dist\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 Source: "dist\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "other\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: not Is64BitInstallMode
+Source: "other\windows\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: not Is64BitInstallMode
 ; Common files
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
-Source: "other\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "other\UnRAR.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "other\7za.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "other\windows\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "other\windows\UnRAR.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "other\windows\7za.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
