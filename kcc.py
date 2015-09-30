@@ -27,7 +27,7 @@ if sys.version_info[0] != 3:
 import os
 if sys.platform.startswith('darwin'):
     if 'RESOURCEPATH' not in os.environ:
-        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/:' + os.environ['PATH']
+        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/osx/:' + os.environ['PATH']
     else:
         os.environ['PATH'] = './../Resources:/usr/local/bin:/usr/bin:/bin'
         os.system('defaults write com.kindlecomicconverter.KindleComicConverter ApplePersistenceIgnoreState YES')
@@ -45,7 +45,7 @@ elif sys.platform.startswith('win'):
         sys.stdout = FakeSTD()
         sys.stderr = FakeSTD()
     else:
-        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/;' + os.environ['PATH']
+        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/windows/;' + os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from kcc.shared import dependencyCheck
