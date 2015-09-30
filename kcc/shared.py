@@ -22,7 +22,7 @@ from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
 from time import sleep
-from shutil import rmtree, move, copy
+from shutil import rmtree, copy
 from tempfile import mkdtemp
 from zipfile import ZipFile, ZIP_DEFLATED
 from re import split
@@ -100,6 +100,18 @@ def saferReplace(old, new):
     for x in range(5):
         try:
             os.replace(old, new)
+        except PermissionError:
+            sleep(5)
+        else:
+            break
+    else:
+        raise PermissionError
+
+
+def saferRemove(target):
+    for x in range(5):
+        try:
+            os.remove(target)
         except PermissionError:
             sleep(5)
         else:

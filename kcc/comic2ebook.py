@@ -46,7 +46,7 @@ try:
     from scandir import walk
 except ImportError:
     walk = os.walk
-from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, saferReplace
+from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, saferReplace, saferRemove
 from . import comic2panel
 from . import image
 from . import cbxarchive
@@ -584,7 +584,7 @@ def imgDirectoryProcessing(path):
             raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0])
         for file in options.imgPurgeIndex:
             if os.path.isfile(file):
-                os.remove(file)
+                saferRemove(file)
     else:
         rmtree(os.path.join(path, '..', '..'), True)
         raise UserWarning("Source directory is empty.")
@@ -990,7 +990,7 @@ def detectCorruption(tmpPath, orgPath):
                     else:
                         raise RuntimeError('Image file %s is corrupted.' % pathOrg)
             else:
-                os.remove(os.path.join(root, name))
+                saferRemove(os.path.join(root, name))
     if imageSmaller > imageNumber * 0.5 and not options.upscale and not options.stretch:
         print("\nMore than half of images are smaller than target device resolution. "
               "Consider enabling stretching or upscaling to improve readability.")
