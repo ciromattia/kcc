@@ -26,24 +26,16 @@ if sys.version_info[0] != 3:
 # OS specific PATH variable workarounds
 import os
 if sys.platform.startswith('darwin'):
-    if 'RESOURCEPATH' not in os.environ:
-        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/osx/:' + os.environ['PATH']
-    else:
-        os.environ['PATH'] = './../Resources:/usr/local/bin:/usr/bin:/bin'
+    if getattr(sys, 'frozen', False):
+        os.environ['PATH'] = os.path.dirname(os.path.abspath(sys.executable)) + \
+            '/../Resources:/usr/local/bin:/usr/bin:/bin'
         os.system('defaults write com.kindlecomicconverter.KindleComicConverter ApplePersistenceIgnoreState YES')
+        os.system('defaults write com.kindlecomicconverter.KindleComicConverter NSInitialToolTipDelay -int 1000')
+    else:
+        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/osx/:' + os.environ['PATH']
 elif sys.platform.startswith('win'):
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
-
-        # Implementing dummy stdout and stderr for frozen Windows release
-        class FakeSTD(object):
-            def write(self, string):
-                pass
-
-            def flush(self):
-                pass
-        sys.stdout = FakeSTD()
-        sys.stderr = FakeSTD()
     else:
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/windows/;' + os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
