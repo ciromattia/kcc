@@ -153,22 +153,22 @@ def dependencyCheck(level):
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion
-            if StrictVersion('3.0.0') > StrictVersion(psutilVersion):
-                missing.append('psutil 3.0.0+')
+            if StrictVersion('3.2.1') > StrictVersion(psutilVersion):
+                missing.append('psutil 3.2.1+')
         except ImportError:
-            missing.append('psutil 3.0.0+')
+            missing.append('psutil 3.2.1+')
         try:
             from slugify import __version__ as slugifyVersion
-            if StrictVersion('1.1.3') > StrictVersion(slugifyVersion):
-                missing.append('python-slugify 1.1.3+')
+            if StrictVersion('1.1.4') > StrictVersion(slugifyVersion):
+                missing.append('python-slugify 1.1.4+')
         except ImportError:
-            missing.append('python-slugify 1.1.3+')
+            missing.append('python-slugify 1.1.4+')
     try:
         from PIL import PILLOW_VERSION as pillowVersion
-        if StrictVersion('2.8.2') > StrictVersion(pillowVersion):
-            missing.append('Pillow 2.8.2+')
+        if StrictVersion('3.0.0') > StrictVersion(pillowVersion):
+            missing.append('Pillow 3.0.0+')
     except ImportError:
-        missing.append('Pillow 2.8.2+')
+        missing.append('Pillow 3.0.0+')
     if version_info[1] < 5:
         try:
             from scandir import __version__ as scandirVersion

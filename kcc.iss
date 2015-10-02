@@ -13,6 +13,7 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 AppCopyright=Copyright (C) 2012-2015 Ciro Mattia Gonano and Paweł Jastrzębski
+ArchitecturesAllowed=x64 
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
@@ -20,7 +21,6 @@ LicenseFile=LICENSE.txt
 OutputBaseFilename=KindleComicConverter_win_{#MyAppVersion}
 SetupIconFile=icons\comic2ebook.ico
 SolidCompression=yes
-ArchitecturesInstallIn64BitMode=x64
 ShowLanguageDialog=no
 LanguageDetectionMethod=none
 WizardImageFile=icons\Wizard.bmp
@@ -31,6 +31,7 @@ ChangesAssociations=True
 InfoAfterFile=other\windows\InstallWarning.rtf
 SignTool=SignTool /d $q{#MyAppName}$q /du $q{#MyAppURL}$q $f
 MinVersion=0,6.0
+OutputDir=dist
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -42,21 +43,12 @@ Name: "CBRassociation"; Description: "CBR"; GroupDescription: "File associations
 Name: "CB7association"; Description: "CB7"; GroupDescription: "File associations:"
 
 [Files]
-; x64 files
-Source: "dist_64\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "dist_64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "dist_64\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "other\windows\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: Is64BitInstallMode
-; x86 files
-Source: "dist\platforms\*"; DestDir: "{app}\platforms\"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "dist\*.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "other\windows\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall; Check: not Is64BitInstallMode
-; Common files
+Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
 Source: "other\windows\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "other\windows\UnRAR.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "other\windows\7za.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "other\windows\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -64,9 +56,8 @@ Name: "{group}\Readme"; Filename: "https://github.com/ciromattia/kcc#kcc"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
+Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/quiet"; StatusMsg: "Installing Microsoft Visual C++ 2015 Redistributable Package..."
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall
-Filename: "{tmp}\vcredist_x64.exe"; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: "Installing Microsoft Visual C++ 2010 Redistributable Package..."; Check: Is64BitInstallMode
-Filename: "{tmp}\vcredist_x86.exe"; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"" "; StatusMsg: "Installing Microsoft Visual C++ 2010 Redistributable Package..."; Check: not Is64BitInstallMode
 
 [Messages]
 WelcomeLabel1=Welcome to the KCC Setup Wizard
