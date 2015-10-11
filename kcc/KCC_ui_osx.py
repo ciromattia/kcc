@@ -94,7 +94,7 @@ class Ui_KCC(object):
         self.DeviceBox.setObjectName("DeviceBox")
         self.DeviceBox.setIconSize(QtCore.QSize(15, 15))
         self.FormatBox = QtWidgets.QComboBox(self.Form)
-        self.FormatBox.setGeometry(QtCore.QRect(263, 206, 151, 26))
+        self.FormatBox.setGeometry(QtCore.QRect(263, 206, 152, 26))
         font = QtGui.QFont()
         font.setFamily("Lucida Grande")
         font.setPointSize(11)
