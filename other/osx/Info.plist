@@ -6,27 +6,6 @@
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
 	<string>Kindle Comic Converter</string>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>cbz</string>
-				<string>cbr</string>
-				<string>cb7</string>
-				<string>zip</string>
-				<string>rar</string>
-				<string>7z</string>
-				<string>pdf</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>comic2ebook.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>Comics</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-		</dict>
-	</array>
 	<key>CFBundleExecutable</key>
 	<string>MacOS/Kindle Comic Converter</string>
 	<key>CFBundleGetInfoString</key>
@@ -55,7 +34,7 @@
 	<key>LSHasLocalizedDisplayName</key>
 	<false/>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.8.0</string>
+	<string>10.9.0</string>
 	<key>NSAppleScriptEnabled</key>
 	<false/>
 	<key>NSHumanReadableCopyright</key>
