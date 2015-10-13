@@ -153,10 +153,10 @@ def dependencyCheck(level):
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion
-            if StrictVersion('3.2.1') > StrictVersion(psutilVersion):
-                missing.append('psutil 3.2.1+')
+            if StrictVersion('3.2.2') > StrictVersion(psutilVersion):
+                missing.append('psutil 3.2.2+')
         except ImportError:
-            missing.append('psutil 3.2.1+')
+            missing.append('psutil 3.2.2+')
         try:
             from slugify import __version__ as slugifyVersion
             if StrictVersion('1.1.4') > StrictVersion(slugifyVersion):

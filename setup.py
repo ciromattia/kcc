@@ -47,7 +47,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
             os.chmod('dist/Kindle Comic Converter.app/Contents/Resources/unrar', 0o777)
             os.chmod('dist/Kindle Comic Converter.app/Contents/Resources/7za', 0o777)
             if os.path.isfile('setup.sh'):
-                os.system('setup.sh')
+                os.system('./setup.sh')
             os.system('appdmg kcc.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')
             exit(0)
         elif sys.platform == 'win32':
@@ -109,7 +109,7 @@ class BuildCommand(build):
             packages=['kcc'],
             install_requires=[
                 'Pillow>=3.0.0',
-                'psutil>=3.2.1',
+                'psutil>=3.2.2',
                 'python-slugify>=1.1.4',
             ],
             zip_safe=False,
