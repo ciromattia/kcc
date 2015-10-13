@@ -97,11 +97,11 @@ def check7ZFile(filePath):
 
 
 def saferReplace(old, new):
-    for x in range(5):
+    for x in range(50):
         try:
             os.replace(old, new)
         except PermissionError:
-            sleep(5)
+            sleep(0.1)
         else:
             break
     else:
@@ -109,11 +109,11 @@ def saferReplace(old, new):
 
 
 def saferRemove(target):
-    for x in range(5):
+    for x in range(50):
         try:
             os.remove(target)
         except PermissionError:
-            sleep(5)
+            sleep(0.1)
         else:
             break
     else:
@@ -129,7 +129,15 @@ def removeFromZIP(zipfname, *filenames):
                 for item in zipread.infolist():
                     if item.filename not in filenames:
                         zipwrite.writestr(item, zipread.read(item.filename))
-        copy(tempname, zipfname)
+        for x in range(50):
+            try:
+                copy(tempname, zipfname)
+            except PermissionError:
+                sleep(0.1)
+            else:
+                break
+        else:
+            raise PermissionError
     finally:
         rmtree(tempdir, True)
 

@@ -991,11 +991,11 @@ def detectCorruption(tmpPath, orgPath):
                         raise RuntimeError('Image file %s is corrupted.' % pathOrg)
             else:
                 saferRemove(os.path.join(root, name))
-    if imageSmaller > imageNumber * 0.5 and not options.upscale and not options.stretch:
-        print("\nMore than half of images are smaller than target device resolution. "
+    if imageSmaller > imageNumber * 0.25 and not options.upscale and not options.stretch:
+        print("\nMore than 25% of images are smaller than target device resolution. "
               "Consider enabling stretching or upscaling to improve readability.")
         if GUI:
-            GUI.addMessage.emit('More than half of images are smaller than target device resolution.', 'warning', False)
+            GUI.addMessage.emit('More than 25% of images are smaller than target device resolution.', 'warning', False)
             GUI.addMessage.emit('Consider enabling stretching or upscaling to improve readability.', 'warning', False)
             GUI.addMessage.emit('', '', False)
 
