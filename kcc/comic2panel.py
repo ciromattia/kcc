@@ -232,7 +232,7 @@ def main(argv=None, qtGUI=None):
         GUI = None
     if len(args) != 1:
         parser.print_help()
-        return
+        return 1
     if options.height > 0:
         options.sourceDir = args[0]
         options.targetDir = args[0] + "-Splitted"
@@ -244,7 +244,7 @@ def main(argv=None, qtGUI=None):
             splitWorkerOutput = []
             splitWorkerPool = Pool()
             if options.merge:
-                print("\nMerging images...")
+                print("Merging images...")
                 directoryNumer = 1
                 mergeWork = []
                 mergeWorkerOutput = []
@@ -268,7 +268,7 @@ def main(argv=None, qtGUI=None):
                 if len(mergeWorkerOutput) > 0:
                     rmtree(options.targetDir, True)
                     raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0])
-            print("\nSplitting images...")
+            print("Splitting images...")
             for root, dirs, files in walk(options.targetDir, False):
                 for name in files:
                     if getImageFileName(name) is not None:

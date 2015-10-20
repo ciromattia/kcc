@@ -33,5 +33,4 @@ from kcc.comic2ebook import main
 if __name__ == "__main__":
     freeze_support()
     print('comic2ebook v' + __version__ + ' - Written by Ciro Mattia Gonano and Pawel Jastrzebski.')
-    main(sys.argv[1:])
-    sys.exit(0)
+    sys.exit(main(sys.argv[1:]))
