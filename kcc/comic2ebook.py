@@ -110,7 +110,7 @@ def buildHTML(path, imgfile, imgfilepath):
                   "<!DOCTYPE html>\n",
                   "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n",
                   "<head>\n",
-                  "<title>", filename[0], "</title>\n",
+                  "<title>", escape(filename[0]), "</title>\n",
                   "<link href=\"", "../" * (backref - 1), "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
                   "<meta name=\"viewport\" "
                   "content=\"width=" + str(deviceres[0]) + ", height=" + str(deviceres[1]) + "\"/>\n"
@@ -209,7 +209,7 @@ def buildNCX(dstdir, title, chapters, chapterNames):
                   "<meta name=\"dtb:maxPageNumber\" content=\"0\"/>\n",
                   "<meta name=\"generated\" content=\"true\"/>\n",
                   "</head>\n",
-                  "<docTitle><text>", title, "</text></docTitle>\n",
+                  "<docTitle><text>", escape(title), "</text></docTitle>\n",
                   "<navMap>"
                   ])
     for chapter in chapters:
@@ -222,7 +222,7 @@ def buildNCX(dstdir, title, chapters, chapterNames):
         elif os.path.basename(folder) != "Text":
             title = chapterNames[os.path.basename(folder)]
         f.write("<navPoint id=\"" + navID + "\"><navLabel><text>" +
-                title + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") +
+                escape(title) + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") +
                 ".xhtml\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
@@ -235,7 +235,7 @@ def buildNAV(dstdir, title, chapters, chapterNames):
                   "<!DOCTYPE html>\n",
                   "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n",
                   "<head>\n",
-                  "<title>" + title + "</title>\n",
+                  "<title>" + escape(title) + "</title>\n",
                   "<meta charset=\"utf-8\"/>\n",
                   "</head>\n",
                   "<body>\n",
@@ -248,7 +248,7 @@ def buildNAV(dstdir, title, chapters, chapterNames):
             title = chapterNames[chapter[1]]
         elif os.path.basename(folder) != "Text":
             title = chapterNames[os.path.basename(folder)]
-        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + title + "</a></li>\n")
+        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + escape(title) + "</a></li>\n")
     f.writelines(["</ol>\n",
                   "</nav>\n",
                   "<nav epub:type=\"page-list\">\n",
@@ -261,7 +261,7 @@ def buildNAV(dstdir, title, chapters, chapterNames):
             title = chapterNames[chapter[1]]
         elif os.path.basename(folder) != "Text":
             title = chapterNames[os.path.basename(folder)]
-        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + title + "</a></li>\n")
+        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + escape(title) + "</a></li>\n")
     f.write("</ol>\n</nav>\n</body>\n</html>")
     f.close()
 
