@@ -453,3 +453,11 @@ class Cover:
             self.image.save(self.target, "JPEG", optimize=1, quality=80)
         except IOError:
             raise RuntimeError('Failed to process downloaded cover.')
+
+    def saveToKindle(self, kindle, asin):
+        self.image = self.image.resize((300, 470), Image.ANTIALIAS).convert('L')
+        try:
+            self.image.save(os.path.join(kindle.path.split('documents')[0], 'system', 'thumbnails',
+                                         'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG')
+        except IOError:
+            raise RuntimeError('Failed to upload cover.')

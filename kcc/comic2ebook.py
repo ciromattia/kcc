@@ -53,6 +53,7 @@ from . import cbxarchive
 from . import pdfjpgextract
 from . import dualmetafix
 from . import metadata
+from . import kindle
 from . import __version__
 
 
@@ -197,7 +198,6 @@ def buildHTML(path, imgfile, imgfilepath):
 
 
 def buildNCX(dstdir, title, chapters, chapterNames):
-    options.uuid = str(uuid4())
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
     f = open(ncxfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
@@ -465,7 +465,8 @@ def buildEPUB(path, chapterNames, tomeNumber):
                 if cover is None:
                     cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
                                          'cover' + getImageFileName(filelist[-1][1])[1])
-                    image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options, tomeNumber)
+                    options.covers.append((image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options,
+                                                       tomeNumber), options.uuid))
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapterNames and options.chapters:
         chapterlist = []
@@ -678,7 +679,7 @@ def getCoversFromMCB(mangaID):
     try:
         jsonRaw = urlopen(Request('http://mcd.iosphe.re/api/v1/series/' + mangaID + '/',
                                   headers={'User-Agent': 'KindleComicConverter/' + __version__}))
-        jsonData = loads(jsonRaw.readall().decode('utf-8'))
+        jsonData = loads(jsonRaw.read().decode('utf-8'))
         for volume in jsonData['Covers']['a']:
             if volume['Side'] == 'front':
                 covers[int(volume['Volume'])] = volume['Raw']
@@ -1141,7 +1142,9 @@ def makeBook(source, qtGUI=None):
         GUI.progressBarTick.emit(str(len(tomes) + 1))
         GUI.progressBarTick.emit('tick')
     options.baseTitle = options.title
+    options.covers = []
     for tome in tomes:
+        options.uuid = str(uuid4())
         if len(tomes) > 9:
             tomeNumber += 1
             options.title = options.baseTitle + ' [' + str(tomeNumber).zfill(2) + '/' + str(len(tomes)).zfill(2) + ']'
@@ -1168,8 +1171,9 @@ def makeBook(source, qtGUI=None):
         if GUI:
             GUI.progressBarTick.emit('tick')
     if not GUI and options.format == 'MOBI':
-        print("Creating MOBI file...")
+        print("Creating MOBI files...")
         work = []
+        k = kindle.Kindle()
         for i in filepath:
             work.append([i])
         output = makeMOBI(work, GUI)
@@ -1178,22 +1182,26 @@ def makeBook(source, qtGUI=None):
                 print('Error: KindleGen failed to create MOBI!')
                 print(errors)
                 return filepath
+        if k.path and k.coverSupport:
+            print("Kindle detected. Uploading covers...")
         for i in filepath:
-            output = makeMOBIFix(i)
+            output = makeMOBIFix(i, options.covers[filepath.index(i)][1])
             if not output[0]:
                 print('Error: Failed to tweak KindleGen output!')
                 return filepath
             else:
                 os.remove(i.replace('.epub', '.mobi') + '_toclean')
+            if k.path and k.coverSupport:
+                options.covers[filepath.index(i)][0].saveToKindle(k, options.covers[filepath.index(i)][1])
     return filepath
 
 
-def makeMOBIFix(item):
+def makeMOBIFix(item, uuid):
     os.remove(item)
     mobiPath = item.replace('.epub', '.mobi')
     move(mobiPath, mobiPath + '_toclean')
     try:
-        dualmetafix.DualMobiMetaFix(mobiPath + '_toclean', mobiPath, bytes(options.uuid, 'UTF-8'))
+        dualmetafix.DualMobiMetaFix(mobiPath + '_toclean', mobiPath, bytes(uuid, 'UTF-8'))
         return [True]
     except Exception as err:
         return [False, format(err)]
