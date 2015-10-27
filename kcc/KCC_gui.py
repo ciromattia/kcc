@@ -38,8 +38,8 @@ from platform import platform
 from .shared import md5Checksum, HTMLStripper, sanitizeTrace
 from . import __version__
 from . import comic2ebook
-from . import KCC_rc_web
 from . import metadata
+from . import kindle
 if sys.platform.startswith('darwin'):
     from . import KCC_ui_osx as KCC_ui
 elif sys.platform.startswith('linux'):
@@ -135,101 +135,6 @@ class Icons:
 
         self.programIcon = QtGui.QIcon()
         self.programIcon.addPixmap(QtGui.QPixmap(":/Icon/icons/comic2ebook.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-
-
-class WebServerHandler(BaseHTTPRequestHandler):
-    # noinspection PyAttributeOutsideInit
-    def do_GET(self):
-        if self.path == '/':
-            self.path = '/index.html'
-        try:
-            sendReply = False
-            mimetype = None
-            if self.path.endswith('.mobi'):
-                mimetype = 'application/x-mobipocket-ebook'
-                sendReply = True
-            if self.path.endswith('.epub'):
-                mimetype = 'application/epub+zip'
-                sendReply = True
-            if self.path.endswith('.cbz'):
-                mimetype = 'application/x-cbz'
-                sendReply = True
-            if self.path == '/index.html':
-                self.send_response(200)
-                self.send_header('Content-type', 'text/html')
-                self.end_headers()
-                self.wfile.write(bytes('<!DOCTYPE html>\n'
-                                       '<html lang="en">\n'
-                                       '<head><meta charset="utf-8">\n'
-                                       '<link href="' + GUI.webContent.favicon + '" rel="icon" type="image/x-icon" />\n'
-                                       '<title>Kindle Comic Converter</title>\n'
-                                       '</head>\n'
-                                       '<body>\n'
-                                       '<div style="text-align: center; font-size:25px">\n'
-                                       '<p style="font-size:50px">- <img style="vertical-align: middle" '
-                                       'alt="KCC Logo" src="' + GUI.webContent.logo + '" /> -</p>\n', 'UTF-8'))
-                if len(GUI.completedWork) > 0 and not GUI.conversionAlive:
-                    for key in sorted(GUI.completedWork.keys()):
-                        self.wfile.write(bytes('<p><a href="' + key + '">' + key.split('.')[0] + '</a></p>\n', 'UTF-8'))
-                else:
-                    self.wfile.write(bytes('<p style="font-weight: bold">No downloads are available.<br/>'
-                                     'Convert some files and refresh this page.</p>\n', 'UTF-8'))
-                self.wfile.write(bytes('</div>\n'
-                                       '</body>\n'
-                                       '</html>\n', 'UTF-8'))
-            elif sendReply:
-                outputFile = GUI.completedWork[unquote(self.path[1:])]
-                fp = open(outputFile, 'rb')
-                self.send_response(200)
-                self.send_header('Content-type', mimetype)
-                self.send_header('Content-Length', os.path.getsize(outputFile))
-                self.end_headers()
-                while True:
-                    chunk = fp.read(8192)
-                    if not chunk:
-                        fp.close()
-                        break
-                    self.wfile.write(chunk)
-            return
-        except (IOError, LookupError):
-            self.send_error(404, 'File Not Found: %s' % self.path)
-
-
-class WebServerThreaded(ThreadingMixIn, HTTPServer):
-    """Handle requests in a separate thread."""
-
-
-class WebServerThread(QtCore.QThread):
-    def __init__(self):
-        QtCore.QThread.__init__(self)
-        self.server = None
-        self.running = False
-
-    def __del__(self):
-        self.wait()
-
-    def run(self):
-        try:
-            # Sweet cross-platform one-liner to get LAN ip address
-            lIP = [ip for ip in gethostbyname_ex(gethostname())[2] if not ip.startswith("127.")][:1][0]
-        except Exception:
-            # Sadly it can fail on some Linux configurations
-            lIP = None
-        try:
-            self.server = WebServerThreaded(('', 4242), WebServerHandler)
-            self.running = True
-            if lIP:
-                MW.addMessage.emit('<b><a href="http://' + str(lIP) + ':4242/">Content server</a></b> started.', 'info',
-                                   False)
-            else:
-                MW.addMessage.emit('<b>Content server</b> started on port 4242.', 'info', False)
-            while self.running:
-                self.server.handle_request()
-        except Exception:
-            MW.addMessage.emit('<b>Content server</b> failed to start!', 'error', False)
-
-    def stop(self):
-        self.running = False
 
 
 class VersionThread(QtCore.QThread):
@@ -352,50 +257,38 @@ class WorkerThread(QtCore.QThread):
 
         parser = comic2ebook.makeParser()
         options, _ = parser.parse_args()
-
-        profile = GUI.profiles[str(GUI.DeviceBox.currentText())]['Label']
-        options.profile = profile
         argv = ''
         currentJobs = []
 
-        # Basic mode settings
+        options.profile = GUI.profiles[str(GUI.DeviceBox.currentText())]['Label']
+        options.format = str(GUI.FormatBox.currentText()).replace('/AZW3', '')
         if GUI.MangaBox.isChecked():
             options.righttoleft = True
-        if GUI.RotateBox.isChecked():
-            options.rotate = True
-        if GUI.QualityBox.checkState() == 1:
-            options.quality = 1
-        elif GUI.QualityBox.checkState() == 2:
-            options.quality = 2
-        options.format = str(GUI.FormatBox.currentText())
-
-        # Advanced mode settings
-        if GUI.currentMode > 1:
-            if GUI.ProcessingBox.isChecked():
-                options.imgproc = False
-            if GUI.NoRotateBox.isChecked():
-                options.nosplitrotate = True
-            if GUI.UpscaleBox.checkState() == 1:
-                options.stretch = True
-            elif GUI.UpscaleBox.checkState() == 2:
-                options.upscale = True
-            if GUI.BorderBox.checkState() == 1:
-                options.white_borders = True
-            elif GUI.BorderBox.checkState() == 2:
-                options.black_borders = True
-            if GUI.NoDitheringBox.isChecked():
-                options.forcepng = True
-            if GUI.WebtoonBox.isChecked():
-                options.webtoon = True
-            if float(GUI.GammaValue) > 0.09:
-                options.gamma = float(GUI.GammaValue)
-
-        # Other/custom settings.
+        if GUI.RotateBox.checkState() == 1:
+            options.splitter = 2
+        elif GUI.RotateBox.checkState() == 2:
+            options.splitter = 1
+        if GUI.QualityBox.isChecked():
+            options.hqmode = True
+        if GUI.WebtoonBox.isChecked():
+            options.webtoon = True
+        if GUI.UpscaleBox.checkState() == 1:
+            options.stretch = True
+        elif GUI.UpscaleBox.checkState() == 2:
+            options.upscale = True
+        if GUI.GammaBox.isChecked() and float(GUI.GammaValue) > 0.09:
+            options.gamma = float(GUI.GammaValue)
+        if GUI.BorderBox.checkState() == 1:
+            options.white_borders = True
+        elif GUI.BorderBox.checkState() == 2:
+            options.black_borders = True
+        if GUI.NoDitheringBox.isChecked():
+            options.forcepng = True
+        if GUI.ColorBox.isChecked():
+            options.forcecolor = True
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.customWidth.text())
             options.customheight = str(GUI.customHeight.text())
-            if GUI.ColorBox.isChecked():
-                options.forcecolor = True
 
         for i in range(GUI.JobList.count()):
             # Make sure that we don't consider any system message as job to do
@@ -456,7 +349,7 @@ class WorkerThread(QtCore.QThread):
                     MW.addMessage.emit('Creating CBZ files... <b>Done!</b>', 'info', True)
                 else:
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
-                if str(GUI.FormatBox.currentText()) == 'MOBI':
+                if str(GUI.FormatBox.currentText()) == 'MOBI/AZW3':
                     MW.progressBarTick.emit('Creating MOBI files')
                     MW.progressBarTick.emit(str(len(outputPath) * 2 + 1))
                     MW.progressBarTick.emit('tick')
@@ -486,7 +379,8 @@ class WorkerThread(QtCore.QThread):
                         GUI.progress.content = 'Processing MOBI files'
                         self.workerOutput = []
                         for item in outputPath:
-                            self.workerOutput.append(comic2ebook.makeMOBIFix(item))
+                            self.workerOutput.append(comic2ebook.makeMOBIFix(
+                                item, comic2ebook.options.covers[outputPath.index(item)][1]))
                             MW.progressBarTick.emit('tick')
                         for success in self.workerOutput:
                             if not success[0]:
@@ -500,11 +394,15 @@ class WorkerThread(QtCore.QThread):
                                 if GUI.targetDirectory and GUI.targetDirectory != os.path.dirname(mobiPath):
                                     try:
                                         move(mobiPath, GUI.targetDirectory)
-                                        mobiPath = os.path.join(GUI.targetDirectory, os.path.basename(mobiPath))
                                     except Exception:
                                         pass
-                                GUI.completedWork[os.path.basename(mobiPath)] = mobiPath
                             MW.addMessage.emit('Processing MOBI files... <b>Done!</b>', 'info', True)
+                            k = kindle.Kindle()
+                            if k.path and k.coverSupport:
+                                MW.addMessage.emit('Kindle detected. Uploading covers...', 'info', False)
+                                for item in outputPath:
+                                    comic2ebook.options.covers[outputPath.index(item)][0].saveToKindle(
+                                        k, comic2ebook.options.covers[outputPath.index(item)][1])
                         else:
                             GUI.progress.content = ''
                             for item in outputPath:
@@ -536,10 +434,8 @@ class WorkerThread(QtCore.QThread):
                         if GUI.targetDirectory and GUI.targetDirectory != os.path.dirname(item):
                             try:
                                 move(item, GUI.targetDirectory)
-                                item = os.path.join(GUI.targetDirectory, os.path.basename(item))
                             except Exception:
                                 pass
-                        GUI.completedWork[os.path.basename(item)] = item
         GUI.progress.content = ''
         GUI.progress.stop()
         MW.hideProgressBar.emit()
@@ -640,120 +536,42 @@ class KCCGUI(KCC_ui.Ui_KCC):
     def clearJobs(self):
         GUI.JobList.clear()
 
-    def modeBasic(self):
-        self.currentMode = 1
-        if sys.platform.startswith('darwin'):
-            MW.setMaximumSize(QtCore.QSize(420, 291))
-            MW.setMinimumSize(QtCore.QSize(420, 291))
-            MW.resize(420, 291)
-        else:
-            MW.setMaximumSize(QtCore.QSize(420, 287))
-            MW.setMinimumSize(QtCore.QSize(420, 287))
-            MW.resize(420, 287)
-        GUI.BasicModeButton.setEnabled(True)
-        GUI.EditorButton.setEnabled(True)
-        GUI.AdvModeButton.setEnabled(True)
-        GUI.BasicModeButton.setStyleSheet('font-weight:Bold;')
-        GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
-        GUI.FormatBox.setEnabled(False)
-        GUI.OptionsBasic.setEnabled(True)
-        GUI.OptionsBasic.setVisible(True)
-        GUI.MangaBox.setChecked(False)
-        GUI.RotateBox.setChecked(False)
-        GUI.QualityBox.setChecked(False)
-        GUI.OptionsAdvanced.setEnabled(False)
-        GUI.OptionsAdvanced.setVisible(False)
-        GUI.ProcessingBox.setChecked(False)
-        GUI.UpscaleBox.setChecked(False)
-        GUI.NoRotateBox.setChecked(False)
-        GUI.BorderBox.setChecked(False)
-        GUI.WebtoonBox.setChecked(False)
-        GUI.NoDitheringBox.setChecked(False)
-        GUI.OptionsAdvancedGamma.setEnabled(False)
-        GUI.OptionsAdvancedGamma.setVisible(False)
-        GUI.OptionsExpert.setEnabled(False)
-        GUI.OptionsExpert.setVisible(False)
-        GUI.ColorBox.setChecked(False)
+    # noinspection PyCallByClass,PyTypeChecker,PyArgumentList
+    def openWiki(self):
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://github.com/ciromattia/kcc/wiki'))
 
-    def modeAdvanced(self):
-        self.currentMode = 2
-        MW.setMaximumSize(QtCore.QSize(420, 365))
-        MW.setMinimumSize(QtCore.QSize(420, 365))
-        MW.resize(420, 365)
-        GUI.BasicModeButton.setEnabled(True)
-        GUI.EditorButton.setEnabled(True)
-        GUI.AdvModeButton.setEnabled(True)
-        GUI.BasicModeButton.setStyleSheet('font-weight:Normal;')
-        GUI.AdvModeButton.setStyleSheet('font-weight:Bold;')
-        GUI.FormatBox.setEnabled(True)
-        GUI.OptionsBasic.setEnabled(True)
-        GUI.OptionsBasic.setVisible(True)
-        GUI.MangaBox.setChecked(False)
-        GUI.RotateBox.setChecked(False)
-        GUI.QualityBox.setChecked(False)
-        GUI.OptionsAdvanced.setEnabled(True)
-        GUI.OptionsAdvanced.setVisible(True)
-        GUI.ProcessingBox.setChecked(False)
-        GUI.UpscaleBox.setChecked(False)
-        GUI.NoRotateBox.setChecked(False)
-        GUI.BorderBox.setChecked(False)
-        GUI.WebtoonBox.setChecked(False)
-        GUI.NoDitheringBox.setChecked(False)
-        GUI.OptionsAdvancedGamma.setEnabled(True)
-        GUI.OptionsAdvancedGamma.setVisible(True)
-        GUI.OptionsExpert.setEnabled(True)
-        GUI.OptionsExpert.setVisible(True)
-        GUI.ColorBox.setChecked(False)
-
-    def modeExpert(self):
-        self.currentMode = 3
-        MW.setMaximumSize(QtCore.QSize(420, 397))
-        MW.setMinimumSize(QtCore.QSize(420, 397))
-        MW.resize(420, 397)
-        GUI.BasicModeButton.setEnabled(False)
-        GUI.EditorButton.setEnabled(True)
-        GUI.AdvModeButton.setEnabled(False)
-        GUI.BasicModeButton.setStyleSheet('font-weight:Normal;')
-        GUI.AdvModeButton.setStyleSheet('font-weight:Normal;')
-        GUI.FormatBox.setEnabled(True)
-        GUI.OptionsBasic.setEnabled(True)
-        GUI.OptionsBasic.setVisible(True)
-        GUI.MangaBox.setChecked(False)
-        GUI.RotateBox.setChecked(False)
-        GUI.QualityBox.setChecked(False)
-        GUI.OptionsAdvanced.setEnabled(True)
-        GUI.OptionsAdvanced.setVisible(True)
-        GUI.ProcessingBox.setChecked(False)
-        GUI.UpscaleBox.setChecked(False)
-        GUI.NoRotateBox.setChecked(False)
-        GUI.BorderBox.setChecked(False)
-        GUI.WebtoonBox.setChecked(False)
-        GUI.NoDitheringBox.setChecked(False)
-        GUI.OptionsAdvancedGamma.setEnabled(True)
-        GUI.OptionsAdvancedGamma.setVisible(True)
-        GUI.OptionsExpert.setEnabled(True)
-        GUI.OptionsExpert.setVisible(True)
-        GUI.ColorBox.setChecked(False)
+    def modeChange(self, mode):
+        if mode == 1:
+            self.currentMode = 1
+            MW.setMaximumSize(QtCore.QSize(420, 335))
+            MW.setMinimumSize(QtCore.QSize(420, 335))
+            MW.resize(420, 335)
+        elif mode == 2:
+            self.currentMode = 2
+            MW.setMaximumSize(QtCore.QSize(420, 365))
+            MW.setMinimumSize(QtCore.QSize(420, 365))
+            MW.resize(420, 365)
+        elif mode == 3:
+            self.currentMode = 3
+            MW.setMaximumSize(QtCore.QSize(420, 390))
+            MW.setMinimumSize(QtCore.QSize(420, 390))
+            MW.resize(420, 390)
 
     def modeConvert(self, enable):
         if enable < 1:
             status = False
         else:
             status = True
-        if self.currentMode != 3:
-            GUI.BasicModeButton.setEnabled(status)
-            GUI.EditorButton.setEnabled(status)
-            GUI.AdvModeButton.setEnabled(status)
-        if self.currentMode != 1:
-            GUI.FormatBox.setEnabled(status)
+        GUI.EditorButton.setEnabled(status)
+        GUI.WikiButton.setEnabled(status)
+        GUI.FormatBox.setEnabled(status)
         GUI.DirectoryButton.setEnabled(status)
         GUI.ClearButton.setEnabled(status)
         GUI.FileButton.setEnabled(status)
         GUI.DeviceBox.setEnabled(status)
-        GUI.OptionsBasic.setEnabled(status)
-        GUI.OptionsAdvanced.setEnabled(status)
-        GUI.OptionsAdvancedGamma.setEnabled(status)
-        GUI.OptionsExpert.setEnabled(status)
+        GUI.Options.setEnabled(status)
+        GUI.OptionsGamma.setEnabled(status)
+        GUI.OptionsCustom.setEnabled(status)
         GUI.ConvertButton.setEnabled(True)
         if enable == 1:
             self.conversionAlive = False
@@ -777,68 +595,29 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.ConvertButton.setEnabled(False)
             GUI.Form.setAcceptDrops(False)
 
+    def toggleGammaBox(self, value):
+        if value:
+            if self.currentMode != 3:
+                self.modeChange(2)
+        else:
+            if self.currentMode != 3:
+                self.modeChange(1)
+
     def toggleWebtoonBox(self, value):
         if value:
-            GUI.NoRotateBox.setEnabled(False)
-            GUI.NoRotateBox.setChecked(True)
             GUI.QualityBox.setEnabled(False)
             GUI.QualityBox.setChecked(False)
             GUI.MangaBox.setEnabled(False)
             GUI.MangaBox.setChecked(False)
-        else:
-            if not GUI.ProcessingBox.isChecked():
-                GUI.NoRotateBox.setEnabled(True)
-                GUI.QualityBox.setEnabled(True)
-            GUI.MangaBox.setEnabled(True)
-
-    def toggleNoSplitRotate(self, value):
-        if value:
             GUI.RotateBox.setEnabled(False)
             GUI.RotateBox.setChecked(False)
-        else:
-            if not GUI.ProcessingBox.isChecked():
-                GUI.RotateBox.setEnabled(True)
-
-    def toggleProcessingBox(self, value):
-        if value:
-            GUI.RotateBox.setEnabled(False)
-            GUI.RotateBox.setChecked(False)
-            GUI.QualityBox.setEnabled(False)
-            GUI.QualityBox.setChecked(False)
             GUI.UpscaleBox.setEnabled(False)
-            GUI.UpscaleBox.setChecked(False)
-            GUI.NoRotateBox.setEnabled(False)
-            GUI.NoRotateBox.setChecked(False)
-            GUI.BorderBox.setEnabled(False)
-            GUI.BorderBox.setChecked(False)
-            GUI.WebtoonBox.setEnabled(False)
-            GUI.WebtoonBox.setChecked(False)
-            GUI.NoDitheringBox.setEnabled(False)
-            GUI.NoDitheringBox.setChecked(False)
-            GUI.ColorBox.setEnabled(False)
-            GUI.ColorBox.setChecked(False)
-            GUI.GammaSlider.setEnabled(False)
-            GUI.GammaLabel.setEnabled(False)
+            GUI.UpscaleBox.setChecked(True)
         else:
+            GUI.QualityBox.setEnabled(True)
+            GUI.MangaBox.setEnabled(True)
             GUI.RotateBox.setEnabled(True)
             GUI.UpscaleBox.setEnabled(True)
-            GUI.NoRotateBox.setEnabled(True)
-            GUI.BorderBox.setEnabled(True)
-            GUI.WebtoonBox.setEnabled(True)
-            GUI.NoDitheringBox.setEnabled(True)
-            GUI.ColorBox.setEnabled(True)
-            GUI.GammaSlider.setEnabled(True)
-            GUI.GammaLabel.setEnabled(True)
-            if GUI.profiles[str(GUI.DeviceBox.currentText())]['Quality']:
-                GUI.QualityBox.setEnabled(True)
-
-    def toggleQualityBox(self, value):
-        if value == 2 and 'Kobo' in str(GUI.DeviceBox.currentText()):
-            self.addMessage('Kobo devices can\'t use ultra quality mode!', 'warning')
-            GUI.QualityBox.setCheckState(0)
-        elif value == 2 and 'CBZ' in str(GUI.FormatBox.currentText()):
-            self.addMessage('CBZ format don\'t support ultra quality mode!', 'warning')
-            GUI.QualityBox.setCheckState(0)
 
     def changeGamma(self, value):
         value = float(value)
@@ -850,53 +629,32 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.GammaValue = value
 
     def changeDevice(self):
-        if self.currentMode == 1:
-            self.modeBasic()
-        elif self.currentMode == 2:
-            self.modeAdvanced()
-        elif self.currentMode == 3:
-            self.modeExpert()
         profile = GUI.profiles[str(GUI.DeviceBox.currentText())]
         if profile['ForceExpert']:
-            self.modeExpert()
-            GUI.BasicModeButton.setEnabled(False)
-            GUI.AdvModeButton.setEnabled(False)
+            self.modeChange(3)
+        elif GUI.GammaBox.isChecked():
+            self.modeChange(2)
         else:
-            GUI.BasicModeButton.setEnabled(True)
-            GUI.AdvModeButton.setEnabled(True)
-            if self.currentMode == 3:
-                self.modeBasic()
-        self.changeFormat(event=False)
+            self.modeChange(1)
+        self.changeFormat()
         GUI.GammaSlider.setValue(0)
         self.changeGamma(0)
+        GUI.QualityBox.setEnabled(profile['Quality'])
+        if not profile['Quality']:
+            GUI.QualityBox.setChecked(False)
         if profile['DefaultUpscale']:
             GUI.UpscaleBox.setChecked(True)
         if str(GUI.DeviceBox.currentText()) == 'Other':
             self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
                             'List of supported Non-Kindle devices.</a>', 'info')
 
-    def changeFormat(self, outputFormat=None, event=True):
+    def changeFormat(self, outputFormat=None):
         profile = GUI.profiles[str(GUI.DeviceBox.currentText())]
         if outputFormat is not None:
             GUI.FormatBox.setCurrentIndex(outputFormat)
         else:
             GUI.FormatBox.setCurrentIndex(profile['DefaultFormat'])
-        if GUI.WebtoonBox.isChecked():
-            GUI.MangaBox.setEnabled(False)
-            GUI.QualityBox.setEnabled(False)
-            GUI.MangaBox.setChecked(False)
-            GUI.QualityBox.setChecked(False)
-        else:
-            GUI.QualityBox.setEnabled(profile['Quality'])
-            if not profile['Quality']:
-                GUI.QualityBox.setChecked(False)
-        if GUI.ProcessingBox.isChecked():
-            GUI.QualityBox.setEnabled(False)
-            GUI.QualityBox.setChecked(False)
-        if event and GUI.QualityBox.isEnabled() and 'CBZ' in str(GUI.FormatBox.currentText()) and\
-                GUI.QualityBox.checkState() == 2:
-            self.addMessage('CBZ format don\'t support ultra quality mode!', 'warning')
-            GUI.QualityBox.setCheckState(0)
+        GUI.QualityBox.setEnabled(profile['Quality'])
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -962,9 +720,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
             GUI.ProgressBar.setValue(GUI.ProgressBar.value() + 1)
         elif command.isdigit():
             GUI.ProgressBar.setMaximum(int(command) - 1)
-            GUI.BasicModeButton.hide()
             GUI.EditorButton.hide()
-            GUI.AdvModeButton.hide()
+            GUI.WikiButton.hide()
             GUI.ProgressBar.reset()
             GUI.ProgressBar.show()
         else:
@@ -1001,15 +758,16 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 self.addMessage('Target resolution is not set!', 'error')
                 self.needClean = True
                 return
-            if str(GUI.FormatBox.currentText()) == 'MOBI' and not self.KindleGen:
+            if str(GUI.FormatBox.currentText()) == 'MOBI/AZW3' and not self.kindleGen:
                 self.detectKindleGen()
-                if not self.KindleGen:
+                if not self.kindleGen:
                     GUI.JobList.clear()
-                    self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html'
-                                    '?ie=UTF8&docId=1000765211"><b>KindleGen</b></a>!'
-                                    ' MOBI conversion is unavailable!', 'error')
+                    self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
+                                    '1000765211"><b>KindleGen</b></a>! MOBI conversion is unavailable!', 'error')
                     if sys.platform.startswith('win'):
                         self.addMessage('Download it and place EXE in KCC directory.', 'error')
+                    elif sys.platform.startswith('darwin'):
+                        self.addMessage('Install it using <a href="http://brew.sh/">Brew</a>.', 'error')
                     else:
                         self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
                     self.needClean = True
@@ -1018,9 +776,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
     def hideProgressBar(self):
         GUI.ProgressBar.hide()
-        GUI.BasicModeButton.show()
         GUI.EditorButton.show()
-        GUI.AdvModeButton.show()
+        GUI.WikiButton.show()
 
     def saveSettings(self, event):
         if self.conversionAlive:
@@ -1031,19 +788,16 @@ class KCCGUI(KCC_ui.Ui_KCC):
             event.ignore()
         if not GUI.ConvertButton.isEnabled():
             event.ignore()
-        self.contentServer.stop()
         self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
         self.settings.setValue('lastDevice', GUI.DeviceBox.currentIndex())
         self.settings.setValue('currentFormat', GUI.FormatBox.currentIndex())
-        self.settings.setValue('currentMode', self.currentMode)
         self.settings.setValue('startNumber', self.startNumber + 1)
         self.settings.setValue('options', {'MangaBox': GUI.MangaBox.checkState(),
                                            'RotateBox': GUI.RotateBox.checkState(),
                                            'QualityBox': GUI.QualityBox.checkState(),
-                                           'ProcessingBox': GUI.ProcessingBox.checkState(),
+                                           'GammaBox': GUI.GammaBox.checkState(),
                                            'UpscaleBox': GUI.UpscaleBox.checkState(),
-                                           'NoRotateBox': GUI.NoRotateBox.checkState(),
                                            'BorderBox': GUI.BorderBox.checkState(),
                                            'WebtoonBox': GUI.WebtoonBox.checkState(),
                                            'NoDitheringBox': GUI.NoDitheringBox.checkState(),
@@ -1110,7 +864,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 pass
         kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
         if kindleGenExitCode.wait() == 0:
-            self.KindleGen = True
+            self.kindleGen = True
             versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
             for line in versionCheck.stdout:
                 line = line.decode("utf-8")
@@ -1121,7 +875,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                                         '1000765211">KindleGen</a> is outdated! MOBI conversion might fail.', 'warning')
                     break
         else:
-            self.KindleGen = False
+            self.kindleGen = False
             if startup:
                 self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
                                 '<b>KindleGen</b></a>! MOBI conversion will be unavailable!', 'error')
@@ -1141,25 +895,22 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.setupUi(MW)
         self.editor = KCCGUI_MetaEditor()
         self.icons = Icons()
-        self.webContent = KCC_rc_web.WebContent()
         self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
-        self.currentMode = self.settings.value('currentMode', 1, type=int)
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
         self.options = self.settings.value('options', {'GammaSlider': 0})
         self.worker = WorkerThread()
         self.versionCheck = VersionThread()
-        self.contentServer = WebServerThread()
         self.progress = ProgressThread()
         self.tray = SystemTrayIcon()
         self.conversionAlive = False
         self.needClean = True
-        self.KindleGen = False
+        self.kindleGen = False
         self.GammaValue = 1.0
-        self.completedWork = {}
+        self.currentMode = 1
         self.targetDirectory = ''
         if sys.platform.startswith('darwin'):
             self.listFontSize = 11
@@ -1186,25 +937,25 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
         self.profiles = {
             "K. PW 3/Voyage": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                               'DefaultUpscale': False, 'Label': 'KV'},
+                               'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle PW 1/2": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'Label': 'KPW'},
             "Kindle": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K345'},
             "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'Label': 'KDX'},
-            "Kobo Mini/Touch": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
+            "Kobo Mini/Touch": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
                                 'DefaultUpscale': False, 'Label': 'KoMT'},
-            "Kobo Glo": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
+            "Kobo Glo": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
                          'DefaultUpscale': False, 'Label': 'KoG'},
-            "Kobo Glo HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
+            "Kobo Glo HD": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
                             'DefaultUpscale': False, 'Label': 'KoGHD'},
-            "Kobo Aura": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
+            "Kobo Aura": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
                           'DefaultUpscale': False, 'Label': 'KoA'},
-            "Kobo Aura HD": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
-                             'DefaultUpscale': False, 'Label': 'KoAHD'},
-            "Kobo Aura H2O": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 1,
-                              'DefaultUpscale': False, 'Label': 'KoAH2O'},
+            "Kobo Aura HD": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
+                             'DefaultUpscale': True, 'Label': 'KoAHD'},
+            "Kobo Aura H2O": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
+                              'DefaultUpscale': True, 'Label': 'KoAH2O'},
             "Other": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 1,
                       'DefaultUpscale': False, 'Label': 'OTHER'},
             "Kindle 1": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -1233,8 +984,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
 
         statusBarLabel = QtWidgets.QLabel('<b><a href="https://kcc.iosphe.re/">HOMEPAGE</a> - <a href="https://github.'
                                           'com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DO'
-                                          'NATE</a> - <a href="https://github.com/ciromattia/kcc/wiki">WIKI</a> - <a hr'
-                                          'ef="http://www.mobileread.com/forums/showthread.php?t=207461">FORUM</a></b>')
+                                          'NATE</a> - <a href="http://www.mobileread.com/forums/showthread.php?t=207461'
+                                          '">FORUM</a></b>')
         statusBarLabel.setAlignment(QtCore.Qt.AlignCenter)
         statusBarLabel.setStyleSheet(self.statusBarStyle)
         statusBarLabel.setOpenExternalLinks(True)
@@ -1268,18 +1019,15 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
-        GUI.BasicModeButton.clicked.connect(self.modeBasic)
-        GUI.AdvModeButton.clicked.connect(self.modeAdvanced)
         GUI.DirectoryButton.clicked.connect(self.selectDir)
         GUI.ClearButton.clicked.connect(self.clearJobs)
         GUI.FileButton.clicked.connect(self.selectFile)
         GUI.EditorButton.clicked.connect(self.selectFileMetaEditor)
+        GUI.WikiButton.clicked.connect(self.openWiki)
         GUI.ConvertButton.clicked.connect(self.convertStart)
         GUI.GammaSlider.valueChanged.connect(self.changeGamma)
-        GUI.NoRotateBox.stateChanged.connect(self.toggleNoSplitRotate)
+        GUI.GammaBox.stateChanged.connect(self.toggleGammaBox)
         GUI.WebtoonBox.stateChanged.connect(self.toggleWebtoonBox)
-        GUI.ProcessingBox.stateChanged.connect(self.toggleProcessingBox)
-        GUI.QualityBox.stateChanged.connect(self.toggleQualityBox)
         GUI.DeviceBox.activated.connect(self.changeDevice)
         GUI.FormatBox.activated.connect(self.changeFormat)
         MW.progressBarTick.connect(self.updateProgressbar)
@@ -1295,6 +1043,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.Form.dragEnterEvent = self.dragAndDrop
         GUI.Form.dropEvent = self.dragAndDropAccepted
 
+        self.modeChange(1)
         for profile in profilesGUI:
             if profile == "Other":
                 GUI.DeviceBox.addItem(self.icons.deviceOther, profile)
@@ -1304,8 +1053,8 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 GUI.DeviceBox.addItem(self.icons.deviceKobo, profile)
             else:
                 GUI.DeviceBox.addItem(self.icons.deviceKindle, profile)
-        for f in ['MOBI', 'EPUB', 'CBZ']:
-            GUI.FormatBox.addItem(eval('self.icons.' + f + 'Format'), f)
+        for f in ['MOBI/AZW3', 'EPUB', 'CBZ']:
+            GUI.FormatBox.addItem(eval('self.icons.' + f.replace('/AZW3', '') + 'Format'), f)
         if self.lastDevice > GUI.DeviceBox.count():
             self.lastDevice = 0
         if profilesGUI[self.lastDevice] == "Separator":
@@ -1315,7 +1064,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         GUI.DeviceBox.setCurrentIndex(self.lastDevice)
         self.changeDevice()
         if self.currentFormat != self.profiles[str(GUI.DeviceBox.currentText())]['DefaultFormat']:
-            self.changeFormat(self.currentFormat, False)
+            self.changeFormat(self.currentFormat)
         for option in self.options:
             if str(option) == "customWidth":
                 GUI.customWidth.setText(str(self.options[option]))
@@ -1326,12 +1075,14 @@ class KCCGUI(KCC_ui.Ui_KCC):
                     GUI.GammaSlider.setValue(int(self.options[option]))
                     self.changeGamma(int(self.options[option]))
             else:
-                if eval('GUI.' + str(option)).isEnabled():
-                    eval('GUI.' + str(option)).setCheckState(self.options[option])
+                try:
+                    if eval('GUI.' + str(option)).isEnabled():
+                        eval('GUI.' + str(option)).setCheckState(self.options[option])
+                except AttributeError:
+                    pass
         self.hideProgressBar()
         self.worker.sync()
         self.versionCheck.start()
-        self.contentServer.start()
         self.tray.show()
 
         # Linux hack as PyQt 5.5 not hit mainstream distributions yet
