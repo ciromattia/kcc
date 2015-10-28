@@ -21,12 +21,9 @@ import os
 import sys
 from urllib.parse import unquote
 from urllib.request import urlopen, urlretrieve, Request
-from socket import gethostbyname_ex, gethostname
 from time import sleep, time
 from datetime import datetime
 from shutil import move
-from http.server import BaseHTTPRequestHandler, HTTPServer
-from socketserver import ThreadingMixIn
 from subprocess import STDOUT, PIPE
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.dom.minidom import parse, Document
@@ -399,10 +396,10 @@ class WorkerThread(QtCore.QThread):
                             MW.addMessage.emit('Processing MOBI files... <b>Done!</b>', 'info', True)
                             k = kindle.Kindle()
                             if k.path and k.coverSupport:
-                                MW.addMessage.emit('Kindle detected. Uploading covers...', 'info', False)
                                 for item in outputPath:
                                     comic2ebook.options.covers[outputPath.index(item)][0].saveToKindle(
                                         k, comic2ebook.options.covers[outputPath.index(item)][1])
+                                MW.addMessage.emit('Kindle detected. Uploading covers...', 'info', False)
                         else:
                             GUI.progress.content = ''
                             for item in outputPath:
@@ -546,16 +543,22 @@ class KCCGUI(KCC_ui.Ui_KCC):
             MW.setMaximumSize(QtCore.QSize(420, 335))
             MW.setMinimumSize(QtCore.QSize(420, 335))
             MW.resize(420, 335)
+            GUI.OptionsGamma.setVisible(False)
+            GUI.OptionsCustom.setVisible(False)
         elif mode == 2:
             self.currentMode = 2
             MW.setMaximumSize(QtCore.QSize(420, 365))
             MW.setMinimumSize(QtCore.QSize(420, 365))
             MW.resize(420, 365)
+            GUI.OptionsGamma.setVisible(True)
+            GUI.OptionsCustom.setVisible(False)
         elif mode == 3:
             self.currentMode = 3
             MW.setMaximumSize(QtCore.QSize(420, 390))
             MW.setMinimumSize(QtCore.QSize(420, 390))
             MW.resize(420, 390)
+            GUI.OptionsGamma.setVisible(True)
+            GUI.OptionsCustom.setVisible(True)
 
     def modeConvert(self, enable):
         if enable < 1:
@@ -1111,7 +1114,7 @@ class KCCGUI_MetaEditor(KCC_MetaEditor_ui.Ui_MetaEditorDialog):
         for field in (self.WriterLine, self.PencillerLine, self.InkerLine, self.ColoristLine):
             field.setText(', '.join(self.parser.data[field.objectName()[:-4] + 's']))
         if self.SeriesLine.text() == '':
-            self.SeriesLine.setText(file.split('\\')[-1].split('.')[0])
+            self.SeriesLine.setText(file.split('\\')[-1].split('/')[-1].split('.')[0])
 
     def saveData(self):
         for field in (self.VolumeLine, self.NumberLine, self.MUidLine):

@@ -23,7 +23,7 @@ if sys.version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
     exit(1)
 
-# OS specific PATH variable workarounds
+# OS specific workarounds
 import os
 if sys.platform.startswith('darwin'):
     if getattr(sys, 'frozen', False):
@@ -34,6 +34,23 @@ if sys.platform.startswith('darwin'):
     else:
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/osx/:' + os.environ['PATH']
 elif sys.platform.startswith('win'):
+    import multiprocessing.popen_spawn_win32 as forking
+
+    class _Popen(forking.Popen):
+        def __init__(self, *args, **kw):
+            if hasattr(sys, 'frozen'):
+                # noinspection PyProtectedMember
+                os.putenv('_MEIPASS2', sys._MEIPASS)
+            try:
+                super(_Popen, self).__init__(*args, **kw)
+            finally:
+                if hasattr(sys, 'frozen'):
+                    if hasattr(os, 'unsetenv'):
+                        os.unsetenv('_MEIPASS2')
+                    else:
+                        os.putenv('_MEIPASS2', '')
+    forking.Popen = _Popen
+
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
     else:
