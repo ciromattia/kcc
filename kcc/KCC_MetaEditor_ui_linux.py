@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'gui/MetaEditor.ui'
+# Form implementation generated from reading ui file 'gui/MetaEditor-Linux.ui'
 #
-# Created: Sun Feb  8 03:24:23 2015
+# Created: Wed Oct 28 08:59:02 2015
 #      by: PyQt5 UI code generator 5.2.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,14 +12,14 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MetaEditorDialog(object):
     def setupUi(self, MetaEditorDialog):
         MetaEditorDialog.setObjectName("MetaEditorDialog")
-        MetaEditorDialog.resize(400, 320)
-        MetaEditorDialog.setMinimumSize(QtCore.QSize(400, 320))
-        MetaEditorDialog.setMaximumSize(QtCore.QSize(400, 320))
+        MetaEditorDialog.resize(400, 290)
+        MetaEditorDialog.setMinimumSize(QtCore.QSize(400, 290))
+        MetaEditorDialog.setMaximumSize(QtCore.QSize(400, 290))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Icon/icons/comic2ebook.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MetaEditorDialog.setWindowIcon(icon)
         self.horizontalLayoutWidget = QtWidgets.QWidget(MetaEditorDialog)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(10, 280, 381, 31))
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(10, 250, 381, 31))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
@@ -31,7 +31,7 @@ class Ui_MetaEditorDialog(object):
         sizePolicy.setHeightForWidth(self.StatusLabel.sizePolicy().hasHeightForWidth())
         self.StatusLabel.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(9)
         font.setBold(True)
         font.setWeight(75)
         self.StatusLabel.setFont(font)
@@ -69,7 +69,7 @@ class Ui_MetaEditorDialog(object):
         self.CancelButton.setObjectName("CancelButton")
         self.horizontalLayout.addWidget(self.CancelButton)
         self.EditorFrame = QtWidgets.QFrame(MetaEditorDialog)
-        self.EditorFrame.setGeometry(QtCore.QRect(10, 10, 381, 271))
+        self.EditorFrame.setGeometry(QtCore.QRect(10, 10, 381, 241))
         self.EditorFrame.setObjectName("EditorFrame")
         self.formLayoutWidget = QtWidgets.QWidget(self.EditorFrame)
         self.formLayoutWidget.setGeometry(QtCore.QRect(0, 0, 381, 266))
