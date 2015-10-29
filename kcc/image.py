@@ -254,8 +254,8 @@ class ComicPage:
                 self.targetPath += '.jpg'
                 self.image.save(self.targetPath, 'JPEG', optimize=1, quality=80)
             return [md5Checksum(self.targetPath), flags, self.orgPath]
-        except IOError as e:
-            raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
+        except IOError:
+            raise RuntimeError('Cannot save image.')
 
     def autocontrastImage(self):
         gamma = self.opt.gamma
