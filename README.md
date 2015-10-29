@@ -69,48 +69,48 @@ CLI version of **KCC** is intended for power users. It is not idiot-proof like G
 ### Standalone `kcc-c2e.py` usage:
 
 ```
-Usage: kcc-c2e [options] comic_file|comic_folder                             
-                                                                             
-Options:                                                                     
-  MAIN:                                                                      
-    -p PROFILE, --profile=PROFILE                                            
+Usage: kcc-c2e [options] comic_file|comic_folder
+
+Options:
+  MAIN:
+    -p PROFILE, --profile=PROFILE
                         Device profile (Available options: K1, K2, K345, KDX,
-                        KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O) [Default=KV]                                         
-    -m, --manga-style   Manga style (right-to-left reading and splitting)    
-    -w, --webtoon       Webtoon processing mode                              
-                                                                             
-  OUTPUT SETTINGS:                                                           
-    -o OUTPUT, --output=OUTPUT                                               
-                        Output generated file to specified directory or file 
-    -t TITLE, --title=TITLE                                                  
-                        Comic title [Default=filename or directory name]     
-    -f FORMAT, --format=FORMAT                                               
-                        Output format (Available options: Auto, MOBI, EPUB,  
-                        CBZ) [Default=Auto]                                  
-    -b, --batchsplit    Split output into multiple files                     
-                                                                             
-  PROCESSING:                                                                
-    -u, --upscale       Resize images smaller than device's resolution       
-    -s, --stretch       Stretch images to device's resolution                
-    -r SPLITTER, --splitter=SPLITTER                                         
-                        Double page parsing mode. 0: Split 1: Rotate 2: Both [Default=0]                                          
-    -g GAMMA, --gamma=GAMMA                                                  
-                        Apply gamma correction to linearize the image [Default=Auto]                                       
-    --hq                Enable high quality Panel View                       
-    --blackborders      Disable autodetection and force black borders        
-    --whiteborders      Disable autodetection and force white borders        
-    --forcecolor        Don't convert images to grayscale                    
-    --forcepng          Create PNG files instead JPEG                        
-    --nocutpagenumbers  Don't try to cut page numbers from images            
-                                                                             
-  CUSTOM PROFILE:                                                            
-    --customwidth=CUSTOMWIDTH                                                
-                        Replace screen width provided by device profile      
-    --customheight=CUSTOMHEIGHT                                              
-                        Replace screen height provided by device profile     
-                                                                             
-  OTHER:                                                                     
-    -h, --help          Show this help message and exit                      
+                        KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O) [Default=KV]
+    -m, --manga-style   Manga style (right-to-left reading and splitting)
+    -w, --webtoon       Webtoon processing mode
+
+  OUTPUT SETTINGS:
+    -o OUTPUT, --output=OUTPUT
+                        Output generated file to specified directory or file
+    -t TITLE, --title=TITLE
+                        Comic title [Default=filename or directory name]
+    -f FORMAT, --format=FORMAT
+                        Output format (Available options: Auto, MOBI, EPUB, CBZ)
+                        [Default=Auto]
+    -b, --batchsplit    Split output into multiple files
+
+  PROCESSING:
+    -u, --upscale       Resize images smaller than device's resolution
+    -s, --stretch       Stretch images to device's resolution
+    -r SPLITTER, --splitter=SPLITTER
+                        Double page parsing mode. 0: Split 1: Rotate 2: Both [Default=0]
+    -g GAMMA, --gamma=GAMMA
+                        Apply gamma correction to linearize the image [Default=Auto]
+    --hq                Enable high quality Panel View
+    --blackborders      Disable autodetection and force black borders
+    --whiteborders      Disable autodetection and force white borders
+    --forcecolor        Don't convert images to grayscale
+    --forcepng          Create PNG files instead JPEG
+    --nocutpagenumbers  Don't try to cut page numbers from images
+
+  CUSTOM PROFILE:
+    --customwidth=CUSTOMWIDTH
+                        Replace screen width provided by device profile
+    --customheight=CUSTOMHEIGHT
+                        Replace screen height provided by device profile
+
+  OTHER:
+    -h, --help          Show this help message and exit
 ```
 
 ### Standalone `kcc-c2p.py` usage:

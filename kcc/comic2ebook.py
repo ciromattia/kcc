@@ -570,13 +570,13 @@ def getWorkFolder(afile):
         except:
             rmtree(workdir, True)
             raise UserWarning("Failed to prepare a workspace.")
-    elif afile.lower().endswith('.pdf'):
+    elif os.path.isfile(afile) and afile.lower().endswith('.pdf'):
         pdf = pdfjpgextract.PdfJpgExtract(afile)
         path, njpg = pdf.extract()
         if njpg == 0:
             rmtree(path, True)
             raise UserWarning("Failed to extract images from PDF file.")
-    else:
+    elif os.path.isfile(afile):
         workdir = mkdtemp('', 'KCC-')
         cbx = cbxarchive.CBxArchive(afile)
         if cbx.isCbxFile():
@@ -588,6 +588,8 @@ def getWorkFolder(afile):
         else:
             rmtree(workdir, True)
             raise UserWarning("Failed to detect archive format.")
+    else:
+        raise UserWarning("Failed to open source file/directory.")
     newpath = mkdtemp('', 'KCC-')
     copytree(path, os.path.join(newpath, 'OEBPS', 'Images'))
     rmtree(path, True)
@@ -1064,19 +1066,19 @@ def checkOptions():
 def checkTools(source):
     source = source.upper()
     if source.endswith('.CBR') or source.endswith('.RAR'):
-        rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
+        rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         rarExitCode = rarExitCode.wait()
         if rarExitCode != 0 and rarExitCode != 7:
             print('ERROR: UnRAR is missing!')
             exit(1)
     elif source.endswith('.CB7') or source.endswith('.7Z'):
-        sevenzaExitCode = Popen('7za', stdout=PIPE, stderr=STDOUT, shell=True)
+        sevenzaExitCode = Popen('7za', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         sevenzaExitCode = sevenzaExitCode.wait()
         if sevenzaExitCode != 0 and sevenzaExitCode != 7:
             print('ERROR: 7za is missing!')
             exit(1)
     if options.format == 'MOBI':
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         if kindleGenExitCode.wait() != 0:
             print('ERROR: KindleGen is missing!')
             exit(1)
@@ -1224,7 +1226,7 @@ def makeMOBIWorker(item):
     try:
         if os.path.getsize(item) < 629145600:
             output = Popen('kindlegen -dont_append_source -locale en "' + item + '"',
-                           stdout=PIPE, stderr=STDOUT, shell=True)
+                           stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
             for line in output.stdout:
                 line = line.decode('utf-8')
                 # ERROR: Generic error

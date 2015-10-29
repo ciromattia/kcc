@@ -184,7 +184,7 @@ class VersionThread(QtCore.QThread):
                 move(path[0], path[0] + '.exe')
                 MW.hideProgressBar.emit()
                 MW.modeConvert.emit(1)
-                Popen(path[0] + '.exe  /SP- /silent /noicons')
+                Popen(path[0] + '.exe  /SP- /silent /noicons', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
                 MW.forceShutdown.emit()
             except Exception:
                 MW.addMessage.emit('Failed to download update!', 'warning', False)
@@ -865,10 +865,10 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 os.chmod('/usr/local/bin/kindlegen', 0o755)
             except Exception:
                 pass
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         if kindleGenExitCode.wait() == 0:
             self.kindleGen = True
-            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
             for line in versionCheck.stdout:
                 line = line.decode("utf-8")
                 if 'Amazon kindlegen' in line:
@@ -1003,7 +1003,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.addMessage('Since you are new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, shell=True)
+        rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         rarExitCode = rarExitCode.wait()
         if rarExitCode == 0 or rarExitCode == 7:
             self.UnRAR = True
@@ -1011,7 +1011,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
             self.UnRAR = False
             self.addMessage('Cannot find <a href="http://www.rarlab.com/rar_add.htm">UnRAR</a>!'
                             ' Processing of CBR/RAR files will be disabled.', 'warning')
-        sevenzaExitCode = Popen('7za', stdout=PIPE, stderr=STDOUT, shell=True)
+        sevenzaExitCode = Popen('7za', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         sevenzaExitCode = sevenzaExitCode.wait()
         if sevenzaExitCode == 0 or sevenzaExitCode == 7:
             self.sevenza = True
