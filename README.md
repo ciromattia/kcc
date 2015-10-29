@@ -25,9 +25,9 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
-- **Windows (Vista or newer):** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
-- **Linux:** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
-- **OS X (10.8+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
+- **Windows (64-bit only):** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
+- **Linux (Glibc 2.19+):** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
+- **OS X (10.9+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
 
 ## DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
@@ -69,49 +69,48 @@ CLI version of **KCC** is intended for power users. It is not idiot-proof like G
 ### Standalone `kcc-c2e.py` usage:
 
 ```
-Usage: kcc-c2e [options] comic_file|comic_folder
-
-Options:
-  MAIN:
-    -p PROFILE, --profile=PROFILE
+Usage: kcc-c2e [options] comic_file|comic_folder                             
+                                                                             
+Options:                                                                     
+  MAIN:                                                                      
+    -p PROFILE, --profile=PROFILE                                            
                         Device profile (Available options: K1, K2, K345, KDX,
-                        KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O) [Default=KV]
-    -q QUALITY, --quality=QUALITY
-                        Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
-    -m, --manga-style   Manga style (Right-to-left reading and splitting)
-    -w, --webtoon       Webtoon processing mode
-
-  OUTPUT SETTINGS:
-    -o OUTPUT, --output=OUTPUT
-                        Output generated file to specified directory or file
-    -t TITLE, --title=TITLE
-                        Comic title [Default=filename or directory name]
-    -f FORMAT, --format=FORMAT
-                        Output format (Available options: Auto, MOBI,
-						EPUB, CBZ) [Default=Auto]
-    --batchsplit        Split output into multiple files
-
-  PROCESSING:
-    --blackborders      Disable autodetection and force black borders
-    --whiteborders      Disable autodetection and force white borders
-    --forcecolor        Don't convert images to grayscale
-    --forcepng          Create PNG files instead JPEG
-    --gamma=GAMMA       Apply gamma correction to linearize the image [Default=Auto]
-    --nocutpagenumbers  Don't try to cut page numbering on images
-    --noprocessing      Don't apply image preprocessing
-    --nosplitrotate     Disable splitting and rotation
-    --rotate            Rotate landscape pages instead of splitting them
-    --stretch           Stretch images to device's resolution
-    --upscale           Resize images smaller than device's resolution
-
-  CUSTOM PROFILE:
-    --customwidth=CUSTOMWIDTH
-                        Replace screen width provided by device profile
-    --customheight=CUSTOMHEIGHT
-                        Replace screen height provided by device profile
-
-  OTHER:
-    -h, --help          Show this help message and exit
+                        KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O) [Default=KV]                                         
+    -m, --manga-style   Manga style (right-to-left reading and splitting)    
+    -w, --webtoon       Webtoon processing mode                              
+                                                                             
+  OUTPUT SETTINGS:                                                           
+    -o OUTPUT, --output=OUTPUT                                               
+                        Output generated file to specified directory or file 
+    -t TITLE, --title=TITLE                                                  
+                        Comic title [Default=filename or directory name]     
+    -f FORMAT, --format=FORMAT                                               
+                        Output format (Available options: Auto, MOBI, EPUB,  
+                        CBZ) [Default=Auto]                                  
+    -b, --batchsplit    Split output into multiple files                     
+                                                                             
+  PROCESSING:                                                                
+    -u, --upscale       Resize images smaller than device's resolution       
+    -s, --stretch       Stretch images to device's resolution                
+    -r SPLITTER, --splitter=SPLITTER                                         
+                        Double page parsing mode. 0: Split 1: Rotate 2: Both [Default=0]                                          
+    -g GAMMA, --gamma=GAMMA                                                  
+                        Apply gamma correction to linearize the image [Default=Auto]                                       
+    --hq                Enable high quality Panel View                       
+    --blackborders      Disable autodetection and force black borders        
+    --whiteborders      Disable autodetection and force white borders        
+    --forcecolor        Don't convert images to grayscale                    
+    --forcepng          Create PNG files instead JPEG                        
+    --nocutpagenumbers  Don't try to cut page numbers from images            
+                                                                             
+  CUSTOM PROFILE:                                                            
+    --customwidth=CUSTOMWIDTH                                                
+                        Replace screen width provided by device profile      
+    --customheight=CUSTOMHEIGHT                                              
+                        Replace screen height provided by device profile     
+                                                                             
+  OTHER:                                                                     
+    -h, --help          Show this help message and exit                      
 ```
 
 ### Standalone `kcc-c2p.py` usage:
@@ -156,6 +155,13 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 
 ## CHANGELOG
+####5.0:
+* Major overhaul of internal mechanisms and GUI
+* Added cover upload feature
+* Tweaked Webtoon parsing mode
+* Fixed multiple smaller issues
+* Migrated build enviroment to PyInstaller
+
 ####4.6.5:
 * Fixed multiple Windows and OS X issues
 * Allowed Linux release to use older PyQT5 version
