@@ -32,6 +32,7 @@ InfoAfterFile=other\windows\InstallWarning.rtf
 SignTool=SignTool /d $q{#MyAppName}$q /du $q{#MyAppURL}$q $f
 MinVersion=0,6.0
 OutputDir=dist
+ArchitecturesInstallIn64BitMode=x64
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
