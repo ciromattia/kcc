@@ -68,7 +68,7 @@ class MetadataParser:
                 workdir = mkdtemp('', 'KCC-')
                 tmpXML = os.path.join(workdir, 'ComicInfo.xml')
                 output = Popen('7za e "' + self.source + '" ComicInfo.xml -o"' + workdir + '"',
-                               stdout=PIPE, stderr=STDOUT, shell=True)
+                               stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
                 extracted = False
                 for line in output.stdout:
                     if b"Everything is Ok" in line or b"No files to process" in line:
@@ -161,7 +161,8 @@ class MetadataParser:
             elif rarfile.is_rarfile(self.source):
                 raise NotImplementedError
             elif is_7zfile(self.source):
-                output = Popen('7za a "' + self.source + '" "' + tmpXML + '"', stdout=PIPE, stderr=STDOUT, shell=True)
+                output = Popen('7za a "' + self.source + '" "' + tmpXML + '"',
+                               stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
                 extracted = False
                 for line in output.stdout:
                     if b"Everything is Ok" in line:

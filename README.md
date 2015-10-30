@@ -25,23 +25,23 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
-- **Windows (Vista or newer):** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
-- **Linux:** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
-- **OS X (10.8+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
+- **Windows (64-bit only):** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
+- **Linux (Glibc 2.19+):** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
+- **OS X (10.9+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
 
 ## DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
 - Python 3.3+
-- [PyQt](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.2.1+
-- [Pillow](http://pypi.python.org/pypi/Pillow/) 2.8.2+
-- [psutil](https://pypi.python.org/pypi/psutil) 3.0.0+
-- [python-slugify](http://pypi.python.org/pypi/python-slugify) 1.1.3+
-- [scandir](https://pypi.python.org/pypi/scandir) 1.1.0+
+- [PyQt](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.2.1+ _(5.5+ is recommended)_
+- [Pillow](http://pypi.python.org/pypi/Pillow/) 3.0.0+
+- [psutil](https://pypi.python.org/pypi/psutil) 3.2.1+
+- [python-slugify](http://pypi.python.org/pypi/python-slugify) 1.1.4+
+- [scandir](https://pypi.python.org/pypi/scandir) 1.1.0+ _(needed only when using Python 3.3 or 3.4)_
 
 On Debian based distributions these two commands should install all needed dependencies:
 ```
 sudo apt-get install python3 python3-dev python3-pip python3-pyqt5 libpng-dev libjpeg-dev p7zip-full unrar
-sudo pip3 install pillow python-slugify psutil scandir
+sudo pip3 install --upgrade pillow python-slugify psutil scandir
 ```
 
 ### Optional dependencies
@@ -76,9 +76,7 @@ Options:
     -p PROFILE, --profile=PROFILE
                         Device profile (Available options: K1, K2, K345, KDX,
                         KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O) [Default=KV]
-    -q QUALITY, --quality=QUALITY
-                        Quality of Panel View. 0 - Normal 1 - High 2 - Ultra [Default=0]
-    -m, --manga-style   Manga style (Right-to-left reading and splitting)
+    -m, --manga-style   Manga style (right-to-left reading and splitting)
     -w, --webtoon       Webtoon processing mode
 
   OUTPUT SETTINGS:
@@ -87,22 +85,23 @@ Options:
     -t TITLE, --title=TITLE
                         Comic title [Default=filename or directory name]
     -f FORMAT, --format=FORMAT
-                        Output format (Available options: Auto, MOBI,
-						EPUB, CBZ) [Default=Auto]
-    --batchsplit        Split output into multiple files
+                        Output format (Available options: Auto, MOBI, EPUB, CBZ)
+                        [Default=Auto]
+    -b, --batchsplit    Split output into multiple files
 
   PROCESSING:
+    -u, --upscale       Resize images smaller than device's resolution
+    -s, --stretch       Stretch images to device's resolution
+    -r SPLITTER, --splitter=SPLITTER
+                        Double page parsing mode. 0: Split 1: Rotate 2: Both [Default=0]
+    -g GAMMA, --gamma=GAMMA
+                        Apply gamma correction to linearize the image [Default=Auto]
+    --hq                Enable high quality Panel View
     --blackborders      Disable autodetection and force black borders
     --whiteborders      Disable autodetection and force white borders
     --forcecolor        Don't convert images to grayscale
     --forcepng          Create PNG files instead JPEG
-    --gamma=GAMMA       Apply gamma correction to linearize the image [Default=Auto]
-    --nocutpagenumbers  Don't try to cut page numbering on images
-    --noprocessing      Don't apply image preprocessing
-    --nosplitrotate     Disable splitting and rotation
-    --rotate            Rotate landscape pages instead of splitting them
-    --stretch           Stretch images to device's resolution
-    --upscale           Resize images smaller than device's resolution
+    --nocutpagenumbers  Don't try to cut page numbers from images
 
   CUSTOM PROFILE:
     --customwidth=CUSTOMWIDTH
@@ -156,6 +155,13 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 
 ## CHANGELOG
+####5.0:
+* Major overhaul of internal mechanisms and GUI
+* Added cover upload feature
+* Tweaked Webtoon parsing mode
+* Fixed multiple smaller issues
+* Migrated build enviroment to PyInstaller
+
 ####4.6.5:
 * Fixed multiple Windows and OS X issues
 * Allowed Linux release to use older PyQT5 version

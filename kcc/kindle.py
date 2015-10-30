@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
 # Copyright (c) 2013-2015 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
@@ -18,19 +16,27 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
-import sys
-if sys.version_info[0] != 3:
-    print('ERROR: This is Python 3 script!')
-    exit(1)
+import os.path
+import psutil
 
-from kcc.shared import dependencyCheck
-dependencyCheck(2)
 
-from multiprocessing import freeze_support
-from kcc import __version__
-from kcc.comic2ebook import main
+class Kindle:
+    def __init__(self):
+        self.path = self.findDevice()
+        if self.path:
+            self.coverSupport = self.checkThumbnails()
+        else:
+            self.coverSupport = False
 
-if __name__ == "__main__":
-    freeze_support()
-    print('comic2ebook v' + __version__ + ' - Written by Ciro Mattia Gonano and Pawel Jastrzebski.')
-    sys.exit(main(sys.argv[1:]))
+    def findDevice(self):
+        for drive in psutil.disk_partitions(False):
+            if 'removable' in drive[3] or 'vfat' in drive[2] or 'msdos' in drive[2]:
+                if os.path.isdir(os.path.join(drive[1], 'system')) and \
+                        os.path.isdir(os.path.join(drive[1], 'documents')):
+                    return drive[1]
+        return False
+
+    def checkThumbnails(self):
+        if os.path.isdir(os.path.join(self.path, 'system', 'thumbnails')):
+            return True
+        return False

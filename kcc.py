@@ -23,29 +23,38 @@ if sys.version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
     exit(1)
 
-# OS specific PATH variable workarounds
+# OS specific workarounds
 import os
 if sys.platform.startswith('darwin'):
-    if 'RESOURCEPATH' not in os.environ:
-        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/:' + os.environ['PATH']
-    else:
-        os.environ['PATH'] = './../Resources:/usr/local/bin:/usr/bin:/bin'
+    if getattr(sys, 'frozen', False):
+        os.environ['PATH'] = os.path.dirname(os.path.abspath(sys.executable)) + \
+            '/../Resources:/usr/local/bin:/usr/bin:/bin'
         os.system('defaults write com.kindlecomicconverter.KindleComicConverter ApplePersistenceIgnoreState YES')
+        os.system('defaults write com.kindlecomicconverter.KindleComicConverter NSInitialToolTipDelay -int 1000')
+    else:
+        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/osx/:' + os.environ['PATH']
 elif sys.platform.startswith('win'):
+    import multiprocessing.popen_spawn_win32 as forking
+
+    class _Popen(forking.Popen):
+        def __init__(self, *args, **kw):
+            if hasattr(sys, 'frozen'):
+                # noinspection PyProtectedMember
+                os.putenv('_MEIPASS2', sys._MEIPASS)
+            try:
+                super(_Popen, self).__init__(*args, **kw)
+            finally:
+                if hasattr(sys, 'frozen'):
+                    if hasattr(os, 'unsetenv'):
+                        os.unsetenv('_MEIPASS2')
+                    else:
+                        os.putenv('_MEIPASS2', '')
+    forking.Popen = _Popen
+
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
-
-        # Implementing dummy stdout and stderr for frozen Windows release
-        class FakeSTD(object):
-            def write(self, string):
-                pass
-
-            def flush(self):
-                pass
-        sys.stdout = FakeSTD()
-        sys.stderr = FakeSTD()
     else:
-        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/;' + os.environ['PATH']
+        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/windows/;' + os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from kcc.shared import dependencyCheck

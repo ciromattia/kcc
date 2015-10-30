@@ -20,7 +20,6 @@ import os
 from io import BytesIO
 from urllib.request import Request, urlopen
 from urllib.parse import quote
-from functools import reduce
 from PIL import Image, ImageOps, ImageStat, ImageChops
 from .shared import md5Checksum
 from . import __version__
@@ -94,75 +93,169 @@ class ProfileData:
     }
 
 
-class ComicPage:
-    def __init__(self, source, options, original=None):
-        try:
-            self.profile_label, self.size, self.palette, self.gamma, self.panelviewsize = options.profileData
-        except KeyError:
-            raise RuntimeError('Unexpected output device %s' % options.profileData)
-        self.origFileName = source
-        self.filename = os.path.basename(self.origFileName)
-        self.image = Image.open(source)
-        self.image = self.image.convert('RGB')
+class ComicPageParser:
+    def __init__(self, source, options):
         self.opt = options
-        if original:
-            self.second = True
-            self.rotated = original.rotated
-            self.border = original.border
-            self.noHPV = original.noHPV
-            self.noVPV = original.noVPV
-            self.noPV = original.noPV
-            self.noHQ = original.noHQ
-            self.fill = original.fill
-            self.color = original.color
-            if self.rotated:
-                self.image = self.image.rotate(90, Image.BICUBIC, True)
-            self.opt.quality = 0
-        else:
-            self.second = False
-            self.rotated = None
-            self.border = None
-            self.noHPV = None
-            self.noVPV = None
-            self.noPV = None
-            self.fill = None
-            self.noHQ = False
-            if options.webtoon:
-                self.color = True
-            else:
-                self.color = self.isImageColor()
+        self.source = source
+        self.size = self.opt.profileData[1]
+        self.payload = []
+        self.image = Image.open(os.path.join(source[0], source[1])).convert('RGB')
+        self.color = self.colorCheck()
+        self.fill = self.fillCheck()
+        self.splitCheck()
+        if self.opt.hqmode:
+            self.sizeCheck()
 
-    def saveToDir(self, targetdir):
+    def getImageHistogram(self, image):
+        histogram = image.histogram()
+        if histogram[0] == 0:
+            return -1
+        elif histogram[255] == 0:
+            return 1
+        else:
+            return 0
+
+    def splitCheck(self):
+        width, height = self.image.size
+        dstwidth, dstheight = self.size
+        # Only split if origin is not oriented the same as target
+        if (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:
+            if self.opt.splitter != 1:
+                if width > height:
+                    # Source is landscape, so split by the width
+                    leftbox = (0, 0, int(width / 2), height)
+                    rightbox = (int(width / 2), 0, width, height)
+                else:
+                    # Source is portrait and target is landscape, so split by the height
+                    leftbox = (0, 0, width, int(height / 2))
+                    rightbox = (0, int(height / 2), width, height)
+                if self.opt.righttoleft:
+                    pageone = self.image.crop(rightbox)
+                    pagetwo = self.image.crop(leftbox)
+                else:
+                    pageone = self.image.crop(leftbox)
+                    pagetwo = self.image.crop(rightbox)
+                self.payload.append(['S1', self.source, pageone, self.color, self.fill])
+                self.payload.append(['S2', self.source, pagetwo, self.color, self.fill])
+            if self.opt.splitter > 0:
+                self.payload.append(['R', self.source, self.image.rotate(90, Image.BICUBIC, True),
+                                    self.color, self.fill])
+        else:
+            self.payload.append(['N', self.source, self.image, self.color, self.fill])
+
+    def colorCheck(self):
+        if self.opt.webtoon:
+            return True
+        else:
+            img = self.image.copy()
+            bands = img.getbands()
+            if bands == ('R', 'G', 'B') or bands == ('R', 'G', 'B', 'A'):
+                thumb = img.resize((40, 40))
+                SSE, bias = 0, [0, 0, 0]
+                bias = ImageStat.Stat(thumb).mean[:3]
+                bias = [b - sum(bias) / 3 for b in bias]
+                for pixel in thumb.getdata():
+                    mu = sum(pixel) / 3
+                    SSE += sum((pixel[i] - mu - bias[i]) * (pixel[i] - mu - bias[i]) for i in [0, 1, 2])
+                MSE = float(SSE) / (40 * 40)
+                if MSE > 22:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+
+    def fillCheck(self):
+        if self.opt.bordersColor:
+            return self.opt.bordersColor
+        else:
+            bw = self.image.convert('L').point(lambda x: 0 if x < 128 else 255, '1')
+            imageBoxA = bw.getbbox()
+            imageBoxB = ImageChops.invert(bw).getbbox()
+            if imageBoxA is None or imageBoxB is None:
+                surfaceB, surfaceW = 0, 0
+                diff = 0
+            else:
+                surfaceB = (imageBoxA[2] - imageBoxA[0]) * (imageBoxA[3] - imageBoxA[1])
+                surfaceW = (imageBoxB[2] - imageBoxB[0]) * (imageBoxB[3] - imageBoxB[1])
+                diff = ((max(surfaceB, surfaceW) - min(surfaceB, surfaceW)) / min(surfaceB, surfaceW)) * 100
+            if diff > 0.5:
+                if surfaceW < surfaceB:
+                    return 'white'
+                elif surfaceW > surfaceB:
+                    return 'black'
+            else:
+                fill = 0
+                startY = 0
+                while startY < bw.size[1]:
+                    if startY + 5 > bw.size[1]:
+                        startY = bw.size[1] - 5
+                    fill += self.getImageHistogram(bw.crop((0, startY, bw.size[0], startY + 5)))
+                    startY += 5
+                startX = 0
+                while startX < bw.size[0]:
+                    if startX + 5 > bw.size[0]:
+                        startX = bw.size[0] - 5
+                    fill += self.getImageHistogram(bw.crop((startX, 0, startX + 5, bw.size[1])))
+                    startX += 5
+                if fill > 0:
+                    return 'black'
+                else:
+                    return 'white'
+
+    def sizeCheck(self):
+        additionalPayload = []
+        width, height = self.image.size
+        dstwidth, dstheight = self.size
+        for work in self.payload:
+            if width > dstwidth and height > dstheight:
+                additionalPayload.append([work[0] + '+', work[1], work[2].copy(), work[3], work[4]])
+        self.payload = self.payload + additionalPayload
+
+
+class ComicPage:
+    def __init__(self, mode, path, image, color, fill, options):
+        self.opt = options
+        _, self.size, self.palette, self.gamma, self.panelviewsize = self.opt.profileData
+        self.image = image
+        self.color = color
+        self.fill = fill
+        self.rotated = False
+        self.orgPath = os.path.join(path[0], path[1])
+        if '+' in mode:
+            self.hqMode = True
+        else:
+            self.hqMode = False
+        if 'N' in mode:
+            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-KCC'
+        elif 'R' in mode:
+            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-KCC-A'
+            self.rotated = True
+        elif 'S1' in mode:
+            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-KCC-B'
+        elif 'S2' in mode:
+            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-KCC-C'
+
+    def saveToDir(self):
         try:
             flags = []
-            filename = os.path.join(targetdir, os.path.splitext(self.filename)[0]) + '-KCC'
             if not self.opt.forcecolor and not self.opt.forcepng:
                 self.image = self.image.convert('L')
             if self.rotated:
                 flags.append('Rotated')
-            if self.noPV:
-                flags.append('NoPanelView')
-            else:
-                if self.noHPV:
-                    flags.append('NoHorizontalPanelView')
-                if self.noVPV:
-                    flags.append('NoVerticalPanelView')
-                if self.border:
-                    flags.append('Margins-' + str(self.border[0]) + '-' + str(self.border[1]) + '-' +
-                                 str(self.border[2]) + '-' + str(self.border[3]))
             if self.fill != 'white':
                 flags.append('BlackFill')
-            if self.opt.quality == 2:
-                filename += '-HQ'
+            if self.hqMode:
+                self.targetPath += '-HQ'
             if self.opt.forcepng:
-                filename += '.png'
-                self.image.save(filename, 'PNG', optimize=1)
+                self.targetPath += '.png'
+                self.image.save(self.targetPath, 'PNG', optimize=1)
             else:
-                filename += '.jpg'
-                self.image.save(filename, 'JPEG', optimize=1, quality=80)
-            return [md5Checksum(filename), flags]
-        except IOError as e:
-            raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
+                self.targetPath += '.jpg'
+                self.image.save(self.targetPath, 'JPEG', optimize=1, quality=80)
+            return [md5Checksum(self.targetPath), flags, self.orgPath]
+        except IOError:
+            raise RuntimeError('Cannot save image.')
 
     def autocontrastImage(self):
         gamma = self.opt.gamma
@@ -186,127 +279,42 @@ class ComicPage:
         # Quantize is deprecated but new function call it internally anyway...
         self.image = self.image.quantize(palette=palImg)
 
-    def calculateBorder(self):
-        if self.noPV:
-            self.border = [0.0, 0.0, 0.0, 0.0]
-            return
-        if self.fill == 'white':
-            border = ImageChops.invert(self.image).getbbox()
-        else:
-            border = self.image.getbbox()
-        if self.opt.quality == 2:
-            multiplier = 1.0
-        else:
-            multiplier = 1.5
-        if border is not None:
-            self.border = [round(float(border[0]) / float(self.image.size[0]) * 150, 3),
-                           round(float(border[1]) / float(self.image.size[1]) * 150, 3),
-                           round(float(self.image.size[0] - border[2]) / float(self.image.size[0]) * 150, 3),
-                           round(float(self.image.size[1] - border[3]) / float(self.image.size[1]) * 150, 3)]
-            if int((border[2] - border[0]) * multiplier) < self.size[0] + 10:
-                self.noHPV = True
-            if int((border[3] - border[1]) * multiplier) < self.size[1] + 10:
-                self.noVPV = True
-        else:
-            self.border = [0.0, 0.0, 0.0, 0.0]
-            self.noHPV = True
-            self.noVPV = True
-
     def resizeImage(self):
-        if self.opt.bordersColor:
-            fill = self.opt.bordersColor
-        else:
-            fill = self.fill
-        # Set target size
-        if self.opt.quality == 0:
-            size = (self.size[0], self.size[1])
-        elif self.opt.quality == 1 and not self.opt.stretch and not self.opt.upscale and self.image.size[0] <=\
-                self.size[0] and self.image.size[1] <= self.size[1]:
-            size = (self.size[0], self.size[1])
-        elif self.opt.quality == 1:
-            # Forcing upscale to make sure that margins will be not too big
-            if not self.opt.stretch:
-                self.opt.upscale = True
+        if self.hqMode:
             size = (self.panelviewsize[0], self.panelviewsize[1])
-        elif self.opt.quality == 2 and not self.opt.stretch and not self.opt.upscale and self.image.size[0] <=\
-                self.size[0] and self.image.size[1] <= self.size[1]:
-            # HQ version will not be needed
-            self.noHQ = True
-            return
+            if self.image.size[0] > size[0] or self.image.size[1] > size[1]:
+                self.image.thumbnail(size, Image.LANCZOS)
         else:
-            size = (self.panelviewsize[0], self.panelviewsize[1])
-        # If stretching is on - Resize without other considerations
-        if self.opt.stretch:
+            size = (self.size[0], self.size[1])
             if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
                 method = Image.BICUBIC
             else:
                 method = Image.LANCZOS
-            self.image = self.image.resize(size, method)
-            return
-        # If image is smaller than target resolution and upscale is off - Just expand it by adding margins
-        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and not self.opt.upscale:
-            borderw = int((size[0] - self.image.size[0]) / 2)
-            borderh = int((size[1] - self.image.size[1]) / 2)
-            # PV is disabled when source image is smaller than device screen and upscale is off
-            if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
-                self.noPV = True
-            self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=fill)
-            # Border can't be float so sometimes image might be 1px too small/large
-            if self.image.size[0] != size[0] or self.image.size[1] != size[1]:
-                self.image = ImageOps.fit(self.image, size, method=Image.BICUBIC, centering=(0.5, 0.5))
-            return
-        # Otherwise - Upscale/Downscale
-        ratioDev = float(size[0]) / float(size[1])
-        if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
-            diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-            self.image = ImageOps.expand(self.image, border=(int(diff / 2), 0), fill=fill)
-        elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
-            diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
-            self.image = ImageOps.expand(self.image, border=(0, int(diff / 2)), fill=fill)
-        if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
-            method = Image.BICUBIC
-        else:
-            method = Image.LANCZOS
-        self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
-        return
-
-    def splitPage(self, targetdir):
-        width, height = self.image.size
-        dstwidth, dstheight = self.size
-        # Only split if origin is not oriented the same as target
-        if (width > height) != (dstwidth > dstheight):
-            if self.opt.rotate:
-                self.image = self.image.rotate(90, Image.BICUBIC, True)
-                self.rotated = True
-                return None
+            if self.opt.stretch:
+                self.image = self.image.resize(size, method)
+            elif self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and not self.opt.upscale:
+                if self.opt.format == 'CBZ':
+                    borderw = int((size[0] - self.image.size[0]) / 2)
+                    borderh = int((size[1] - self.image.size[1]) / 2)
+                    self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=self.fill)
+                    if self.image.size[0] != size[0] or self.image.size[1] != size[1]:
+                        self.image = ImageOps.fit(self.image, size, method=Image.BICUBIC, centering=(0.5, 0.5))
             else:
-                self.rotated = False
-                if width > height:
-                    # Source is landscape, so split by the width
-                    leftbox = (0, 0, int(width / 2), height)
-                    rightbox = (int(width / 2), 0, width, height)
+                if self.opt.format == 'CBZ':
+                    ratioDev = float(size[0]) / float(size[1])
+                    if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
+                        diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
+                        self.image = ImageOps.expand(self.image, border=(int(diff / 2), 0), fill=self.fill)
+                    elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
+                        diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
+                        self.image = ImageOps.expand(self.image, border=(0, int(diff / 2)), fill=self.fill)
+                    self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
                 else:
-                    # Source is portrait and target is landscape, so split by the height
-                    leftbox = (0, 0, width, int(height / 2))
-                    rightbox = (0, int(height / 2), width, height)
-                filename = os.path.splitext(self.filename)[0]
-                fileone = targetdir + '/' + filename + '-AAA.png'
-                filetwo = targetdir + '/' + filename + '-BBB.png'
-                try:
-                    if self.opt.righttoleft:
-                        pageone = self.image.crop(rightbox)
-                        pagetwo = self.image.crop(leftbox)
-                    else:
-                        pageone = self.image.crop(leftbox)
-                        pagetwo = self.image.crop(rightbox)
-                    pageone.save(fileone, 'PNG', optimize=1)
-                    pagetwo.save(filetwo, 'PNG', optimize=1)
-                except IOError as e:
-                    raise RuntimeError('Cannot write image in directory %s: %s' % (targetdir, e))
-                return fileone, filetwo
-        else:
-            self.rotated = False
-            return None
+                    hpercent = size[1] / float(self.image.size[1])
+                    wsize = int((float(self.image.size[0]) * float(hpercent)))
+                    self.image = self.image.resize((wsize, size[1]), method)
+                    if self.image.size[0] > size[0] or self.image.size[1] > size[1]:
+                        self.image.thumbnail(size, Image.LANCZOS)
 
     def cutPageNumber(self):
         if ImageChops.invert(self.image).getbbox() is not None:
@@ -397,71 +405,6 @@ class ComicPage:
             diff -= delta
             self.image = self.image.crop((0, 0, widthImg - diff, heightImg))
 
-    def getImageHistogram(self, image):
-        histogram = image.histogram()
-        if histogram[0] == 0:
-            return -1
-        elif histogram[255] == 0:
-            return 1
-        else:
-            return 0
-
-    def getImageFill(self):
-        bw = self.image.convert('L').point(lambda x: 0 if x < 128 else 255, '1')
-        imageBoxA = bw.getbbox()
-        imageBoxB = ImageChops.invert(bw).getbbox()
-        if imageBoxA is None or imageBoxB is None:
-            surfaceB, surfaceW = 0, 0
-            diff = 0
-        else:
-            surfaceB = (imageBoxA[2] - imageBoxA[0]) * (imageBoxA[3] - imageBoxA[1])
-            surfaceW = (imageBoxB[2] - imageBoxB[0]) * (imageBoxB[3] - imageBoxB[1])
-            diff = ((max(surfaceB, surfaceW) - min(surfaceB, surfaceW)) / min(surfaceB, surfaceW)) * 100
-        if diff > 0.5:
-            if surfaceW < surfaceB:
-                self.fill = 'white'
-            elif surfaceW > surfaceB:
-                self.fill = 'black'
-        else:
-            fill = 0
-            startY = 0
-            while startY < bw.size[1]:
-                if startY + 5 > bw.size[1]:
-                    startY = bw.size[1] - 5
-                fill += self.getImageHistogram(bw.crop((0, startY, bw.size[0], startY + 5)))
-                startY += 5
-            startX = 0
-            while startX < bw.size[0]:
-                if startX + 5 > bw.size[0]:
-                    startX = bw.size[0] - 5
-                fill += self.getImageHistogram(bw.crop((startX, 0, startX + 5, bw.size[1])))
-                startX += 5
-            if fill > 0:
-                self.fill = 'black'
-            else:
-                self.fill = 'white'
-
-    def isImageColor(self):
-        img = self.image.copy()
-        bands = img.getbands()
-        if bands == ('R', 'G', 'B') or bands == ('R', 'G', 'B', 'A'):
-            thumb = img.resize((40, 40))
-            SSE, bias = 0, [0, 0, 0]
-            bias = ImageStat.Stat(thumb).mean[:3]
-            bias = [b - sum(bias) / 3 for b in bias]
-            for pixel in thumb.getdata():
-                mu = sum(pixel) / 3
-                SSE += sum((pixel[i] - mu - bias[i]) * (pixel[i] - mu - bias[i]) for i in [0, 1, 2])
-            MSE = float(SSE) / (40 * 40)
-            if MSE <= 22:
-                return False
-            else:
-                return True
-        elif len(bands) == 1:
-            return False
-        else:
-            return False
-
 
 class Cover:
     def __init__(self, source, target, opt, tomeNumber):
@@ -510,3 +453,11 @@ class Cover:
             self.image.save(self.target, "JPEG", optimize=1, quality=80)
         except IOError:
             raise RuntimeError('Failed to process downloaded cover.')
+
+    def saveToKindle(self, kindle, asin):
+        self.image = self.image.resize((300, 470), Image.ANTIALIAS).convert('L')
+        try:
+            self.image.save(os.path.join(kindle.path.split('documents')[0], 'system', 'thumbnails',
+                                         'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG')
+        except IOError:
+            raise RuntimeError('Failed to upload cover.')

@@ -22,7 +22,7 @@ from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
 from time import sleep
-from shutil import rmtree, move, copy
+from shutil import rmtree, copy
 from tempfile import mkdtemp
 from zipfile import ZipFile, ZIP_DEFLATED
 from re import split
@@ -97,11 +97,23 @@ def check7ZFile(filePath):
 
 
 def saferReplace(old, new):
-    for x in range(5):
+    for x in range(50):
         try:
             os.replace(old, new)
         except PermissionError:
-            sleep(5)
+            sleep(0.1)
+        else:
+            break
+    else:
+        raise PermissionError
+
+
+def saferRemove(target):
+    for x in range(50):
+        try:
+            os.remove(target)
+        except PermissionError:
+            sleep(0.1)
         else:
             break
     else:
@@ -117,7 +129,15 @@ def removeFromZIP(zipfname, *filenames):
                 for item in zipread.infolist():
                     if item.filename not in filenames:
                         zipwrite.writestr(item, zipread.read(item.filename))
-        copy(tempname, zipfname)
+        for x in range(50):
+            try:
+                copy(tempname, zipfname)
+            except PermissionError:
+                sleep(0.1)
+            else:
+                break
+        else:
+            raise PermissionError
     finally:
         rmtree(tempdir, True)
 
@@ -141,22 +161,22 @@ def dependencyCheck(level):
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion
-            if StrictVersion('3.0.0') > StrictVersion(psutilVersion):
-                missing.append('psutil 3.0.0+')
+            if StrictVersion('3.2.2') > StrictVersion(psutilVersion):
+                missing.append('psutil 3.2.2+')
         except ImportError:
-            missing.append('psutil 3.0.0+')
+            missing.append('psutil 3.2.2+')
         try:
             from slugify import __version__ as slugifyVersion
-            if StrictVersion('1.1.3') > StrictVersion(slugifyVersion):
-                missing.append('python-slugify 1.1.3+')
+            if StrictVersion('1.1.4') > StrictVersion(slugifyVersion):
+                missing.append('python-slugify 1.1.4+')
         except ImportError:
-            missing.append('python-slugify 1.1.3+')
+            missing.append('python-slugify 1.1.4+')
     try:
         from PIL import PILLOW_VERSION as pillowVersion
-        if StrictVersion('2.8.2') > StrictVersion(pillowVersion):
-            missing.append('Pillow 2.8.2+')
+        if StrictVersion('3.0.0') > StrictVersion(pillowVersion):
+            missing.append('Pillow 3.0.0+')
     except ImportError:
-        missing.append('Pillow 2.8.2+')
+        missing.append('Pillow 3.0.0+')
     if version_info[1] < 5:
         try:
             from scandir import __version__ as scandirVersion

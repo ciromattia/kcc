@@ -10,3 +10,6 @@ Output
 test
 solaio
 kindlegen*
+*.spec
+setup.bat
+setup.sh
