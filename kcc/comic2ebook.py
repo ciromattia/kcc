@@ -182,15 +182,16 @@ def buildHTML(path, imgfile, imgfilepath):
             boxes = []
         for i in range(0, len(boxes)):
             f.writelines(["<div id=\"" + boxes[i] + "\">\n",
-                          "<a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"" + boxes[i] +
+                          "<a style=\"display:inline-block;width:100%;height:100%;\" class=\"app-amzn-magnify\" "
+                          "data-app-amzn-magnify='{\"targetId\":\"" + boxes[i] +
                           "-P\", \"ordinal\":" + str(order[i]) + "}'></a>\n",
                           "</div>\n"])
+        f.write("</div>\n")
         for box in boxes:
             f.writelines(["<div class=\"PV-P\" id=\"" + box + "-P\" style=\"" + additionalStyle + "\">\n",
                           "<img style=\"" + boxStyles[box] + "\" src=\"", "../" * backref, "Images/", postfix,
                           imgfilepv, "\" width=\"" + str(size[0]) + "\" height=\"" + str(size[1]) + "\"/>\n",
                           "</div>\n"])
-        f.write("</div>\n")
     f.writelines(["</body>\n",
                   "</html>\n"])
     f.close()
@@ -393,6 +394,8 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "position: absolute;\n",
                   "width: 100%;\n",
                   "height: 100%;\n",
+                  "top: 0;\n",
+                  "left: 0;\n",
                   "}\n",
                   "#PV-T {\n",
                   "top: 0;\n",
@@ -406,41 +409,41 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "}\n",
                   "#PV-L {\n",
                   "left: 0;\n",
-                  "width: 50%;\n",
+                  "width: 49.5%;\n",
                   "height: 100%;\n",
                   "float: left;\n",
                   "}\n",
                   "#PV-R {\n",
                   "right: 0;\n",
-                  "width: 50%;\n",
+                  "width: 49.5%;\n",
                   "height: 100%;\n",
                   "float: right;\n",
                   "}\n",
                   "#PV-TL {\n",
                   "top: 0;\n",
                   "left: 0;\n",
-                  "width: 50%;\n",
+                  "width: 49.5%;\n",
                   "height: 50%;\n",
                   "float: left;\n",
                   "}\n",
                   "#PV-TR {\n",
                   "top: 0;\n",
                   "right: 0;\n",
-                  "width: 50%;\n",
+                  "width: 49.5%;\n",
                   "height: 50%;\n",
                   "float: right;\n",
                   "}\n",
                   "#PV-BL {\n",
                   "bottom: 0;\n",
                   "left: 0;\n",
-                  "width: 50%;\n",
+                  "width: 49.5%;\n",
                   "height: 50%;\n",
                   "float: left;\n",
                   "}\n",
                   "#PV-BR {\n",
                   "bottom: 0;\n",
                   "right: 0;\n",
-                  "width: 50%;\n",
+                  "width: 49.5%;\n",
                   "height: 50%;\n",
                   "float: right;\n",
                   "}\n",
