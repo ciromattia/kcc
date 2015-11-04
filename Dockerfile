@@ -12,7 +12,7 @@ RUN useradd -ms /bin/bash kcc && chown -R kcc:kcc /app
 
 USER kcc
 WORKDIR /app
-RUN pyinstaller -F -s kcc.py
+RUN pyinstaller -F -s --noupx kcc.py
 RUN mkdir -p dist/usr/bin dist/usr/share/applications dist/usr/share/doc/kindlecomicconverter dist/usr/share/kindlecomicconverter dist/usr/share/lintian/overrides
 RUN mv dist/kcc dist/usr/bin
 RUN cp icons/comic2ebook.png dist/usr/share/kindlecomicconverter

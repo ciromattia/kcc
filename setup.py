@@ -38,7 +38,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
 
     def run(self):
         if sys.platform == 'darwin':
-            os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
+            os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s --noupx kcc.py')
             shutil.copy('other/osx/7za', 'dist/Kindle Comic Converter.app/Contents/Resources')
             shutil.copy('other/osx/unrar', 'dist/Kindle Comic Converter.app/Contents/Resources')
             shutil.copy('other/osx/Info.plist', 'dist/Kindle Comic Converter.app/Contents')
@@ -51,7 +51,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
             os.system('appdmg kcc.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')
             exit(0)
         elif sys.platform == 'win32':
-            os.system('pyinstaller -y -F -i icons\comic2ebook.ico -n KCC -w kcc.py')
+            os.system('pyinstaller -y -F -i icons\comic2ebook.ico -n KCC -w --noupx kcc.py')
             if os.path.isfile('setup.bat'):
                 os.system('setup.bat ' + VERSION)
             exit(0)
