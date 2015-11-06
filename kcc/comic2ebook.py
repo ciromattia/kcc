@@ -107,7 +107,7 @@ def buildHTML(path, imgfile, imgfilepath):
         os.makedirs(htmlpath)
     htmlfile = os.path.join(htmlpath, filename[0] + '.xhtml')
     f = open(htmlfile, "w", encoding='UTF-8')
-    f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+    f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<!DOCTYPE html>\n",
                   "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n",
                   "<head>\n",
@@ -211,8 +211,7 @@ def buildNCX(dstdir, title, chapters, chapterNames):
                   "<meta name=\"generated\" content=\"true\"/>\n",
                   "</head>\n",
                   "<docTitle><text>", escape(title), "</text></docTitle>\n",
-                  "<navMap>"
-                  ])
+                  "<navMap>\n"])
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
         filename = getImageFileName(os.path.join(folder, chapter[1]))
@@ -253,8 +252,7 @@ def buildNAV(dstdir, title, chapters, chapterNames):
     f.writelines(["</ol>\n",
                   "</nav>\n",
                   "<nav epub:type=\"page-list\">\n",
-                  "<ol>\n"
-                  ])
+                  "<ol>\n"])
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
         filename = getImageFileName(os.path.join(folder, chapter[1]))
