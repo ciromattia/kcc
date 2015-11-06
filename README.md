@@ -155,6 +155,11 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 
 ## CHANGELOG
+####5.0.1:
+* Fixed Panel View placement issues
+* Decreased application startup time
+* Fixed multiple smaller issues
+
 ####5.0:
 * Major overhaul of internal mechanisms and GUI
 * Added cover upload feature

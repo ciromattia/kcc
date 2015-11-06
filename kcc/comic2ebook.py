@@ -107,7 +107,7 @@ def buildHTML(path, imgfile, imgfilepath):
         os.makedirs(htmlpath)
     htmlfile = os.path.join(htmlpath, filename[0] + '.xhtml')
     f = open(htmlfile, "w", encoding='UTF-8')
-    f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+    f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<!DOCTYPE html>\n",
                   "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n",
                   "<head>\n",
@@ -182,15 +182,16 @@ def buildHTML(path, imgfile, imgfilepath):
             boxes = []
         for i in range(0, len(boxes)):
             f.writelines(["<div id=\"" + boxes[i] + "\">\n",
-                          "<a class=\"app-amzn-magnify\" data-app-amzn-magnify='{\"targetId\":\"" + boxes[i] +
+                          "<a style=\"display:inline-block;width:100%;height:100%;\" class=\"app-amzn-magnify\" "
+                          "data-app-amzn-magnify='{\"targetId\":\"" + boxes[i] +
                           "-P\", \"ordinal\":" + str(order[i]) + "}'></a>\n",
                           "</div>\n"])
+        f.write("</div>\n")
         for box in boxes:
             f.writelines(["<div class=\"PV-P\" id=\"" + box + "-P\" style=\"" + additionalStyle + "\">\n",
                           "<img style=\"" + boxStyles[box] + "\" src=\"", "../" * backref, "Images/", postfix,
                           imgfilepv, "\" width=\"" + str(size[0]) + "\" height=\"" + str(size[1]) + "\"/>\n",
                           "</div>\n"])
-        f.write("</div>\n")
     f.writelines(["</body>\n",
                   "</html>\n"])
     f.close()
@@ -210,8 +211,7 @@ def buildNCX(dstdir, title, chapters, chapterNames):
                   "<meta name=\"generated\" content=\"true\"/>\n",
                   "</head>\n",
                   "<docTitle><text>", escape(title), "</text></docTitle>\n",
-                  "<navMap>"
-                  ])
+                  "<navMap>\n"])
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
         filename = getImageFileName(os.path.join(folder, chapter[1]))
@@ -252,8 +252,7 @@ def buildNAV(dstdir, title, chapters, chapterNames):
     f.writelines(["</ol>\n",
                   "</nav>\n",
                   "<nav epub:type=\"page-list\">\n",
-                  "<ol>\n"
-                  ])
+                  "<ol>\n"])
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
         filename = getImageFileName(os.path.join(folder, chapter[1]))
@@ -393,6 +392,8 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "position: absolute;\n",
                   "width: 100%;\n",
                   "height: 100%;\n",
+                  "top: 0;\n",
+                  "left: 0;\n",
                   "}\n",
                   "#PV-T {\n",
                   "top: 0;\n",
@@ -406,41 +407,41 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "}\n",
                   "#PV-L {\n",
                   "left: 0;\n",
-                  "width: 50%;\n",
+                  "width: 49.5%;\n",
                   "height: 100%;\n",
                   "float: left;\n",
                   "}\n",
                   "#PV-R {\n",
                   "right: 0;\n",
-                  "width: 50%;\n",
+                  "width: 49.5%;\n",
                   "height: 100%;\n",
                   "float: right;\n",
                   "}\n",
                   "#PV-TL {\n",
                   "top: 0;\n",
                   "left: 0;\n",
-                  "width: 50%;\n",
+                  "width: 49.5%;\n",
                   "height: 50%;\n",
                   "float: left;\n",
                   "}\n",
                   "#PV-TR {\n",
                   "top: 0;\n",
                   "right: 0;\n",
-                  "width: 50%;\n",
+                  "width: 49.5%;\n",
                   "height: 50%;\n",
                   "float: right;\n",
                   "}\n",
                   "#PV-BL {\n",
                   "bottom: 0;\n",
                   "left: 0;\n",
-                  "width: 50%;\n",
+                  "width: 49.5%;\n",
                   "height: 50%;\n",
                   "float: left;\n",
                   "}\n",
                   "#PV-BR {\n",
                   "bottom: 0;\n",
                   "right: 0;\n",
-                  "width: 50%;\n",
+                  "width: 49.5%;\n",
                   "height: 50%;\n",
                   "float: right;\n",
                   "}\n",

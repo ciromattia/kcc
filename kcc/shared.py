@@ -97,27 +97,27 @@ def check7ZFile(filePath):
 
 
 def saferReplace(old, new):
-    for x in range(50):
+    for x in range(10):
         try:
             os.replace(old, new)
         except PermissionError:
-            sleep(0.1)
+            sleep(1)
         else:
             break
     else:
-        raise PermissionError
+        raise PermissionError("Failed to move the file.")
 
 
 def saferRemove(target):
-    for x in range(50):
+    for x in range(10):
         try:
             os.remove(target)
         except PermissionError:
-            sleep(0.1)
+            sleep(1)
         else:
             break
     else:
-        raise PermissionError
+        raise PermissionError("Failed to remove the file.")
 
 
 def removeFromZIP(zipfname, *filenames):
@@ -146,7 +146,7 @@ def sanitizeTrace(traceback):
     return ''.join(format_tb(traceback))\
         .replace('C:\\Users\\pawel\\Documents\\Projekty\\KCC\\', '')\
         .replace('C:\\Python34\\', '')\
-        .replace('C:\\Python34_64\\', '')
+        .replace('c:\\python34\\', '')
 
 
 def dependencyCheck(level):
