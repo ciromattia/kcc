@@ -3,7 +3,7 @@
 FROM acidweb/kcc-base
 MAINTAINER Paweł Jastrzębski <pawelj@iosphe.re>
 
-ENV KCCVER 5.0
+ENV KCCVER 5.0.1
 ADD . /app
 
 RUN pip3 install pillow python-slugify psutil scandir pyinstaller
