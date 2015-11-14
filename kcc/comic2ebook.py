@@ -545,10 +545,10 @@ def imgFileProcessing(work):
         workImg = image.ComicPageParser((dirpath, afile), opt)
         for i in workImg.payload:
             img = image.ComicPage(i[0], i[1], i[2], i[3], i[4], opt)
-            if not opt.webtoon:
-                img.cropWhiteSpace()
-            if opt.cutpagenumbers and not opt.webtoon:
-                img.cutPageNumber()
+            if opt.cropping > 0 and not opt.webtoon:
+                img.cropWhiteSpace(opt.croppingp)
+            if opt.cropping == 2 and not opt.webtoon:
+                img.cutPageNumber(opt.croppingpn)
             img.autocontrastImage()
             img.resizeImage()
             if opt.forcepng and not opt.forcecolor:
@@ -989,8 +989,12 @@ def makeParser():
                                  help="Don't convert images to grayscale")
     processingOptions.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
                                  help="Create PNG files instead JPEG")
-    processingOptions.add_option("--nocutpagenumbers", action="store_false", dest="cutpagenumbers", default=True,
-                                 help="Don't try to cut page numbers from images")
+    processingOptions.add_option("--cropping", type="int", dest="cropping", default="2",
+                                 help="Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]")
+    processingOptions.add_option("--croppingpower", type="float", dest="croppingp", default="0.1",
+                                 help="Set margin cropping threshold [Default=0.1]")
+    processingOptions.add_option("--croppingpowerpage", type="float", dest="croppingpn", default="5.0",
+                                 help="Set page number cropping threshold [Default=5.0]")
 
     customProfileOptions.add_option("--customwidth", type="int", dest="customwidth", default=0,
                                     help="Replace screen width provided by device profile")

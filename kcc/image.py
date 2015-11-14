@@ -316,12 +316,11 @@ class ComicPage:
                     if self.image.size[0] > size[0] or self.image.size[1] > size[1]:
                         self.image.thumbnail(size, Image.LANCZOS)
 
-    def cutPageNumber(self):
+    def cutPageNumber(self, fixedThreshold):
         if ImageChops.invert(self.image).getbbox() is not None:
             widthImg, heightImg = self.image.size
             delta = 2
             diff = delta
-            fixedThreshold = 5
             if ImageStat.Stat(self.image).var[0] < 2 * fixedThreshold:
                 return self.image
             while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] < fixedThreshold\
@@ -370,12 +369,11 @@ class ComicPage:
                 diff = pageNumberCut1
             self.image = self.image.crop((0, 0, widthImg, heightImg - diff))
 
-    def cropWhiteSpace(self):
+    def cropWhiteSpace(self, fixedThreshold):
         if ImageChops.invert(self.image).getbbox() is not None:
             widthImg, heightImg = self.image.size
             delta = 10
             diff = delta
-            fixedThreshold = 0.1
             # top
             while ImageStat.Stat(self.image.crop((0, 0, widthImg, diff))).var[0] < fixedThreshold and diff < heightImg:
                 diff += delta
