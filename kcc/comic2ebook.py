@@ -1226,8 +1226,9 @@ def makeMOBIWorker(item):
     kindlegenError = ''
     try:
         if os.path.getsize(item) < 629145600:
+            print("Creating MOBI file...")
             output = Popen('kindlegen -dont_append_source -locale en "' + item + '"',
-                           stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+                           stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=False)
             for line in output.stdout:
                 line = line.decode('utf-8')
                 # ERROR: Generic error
@@ -1239,6 +1240,8 @@ def makeMOBIWorker(item):
                     kindlegenErrorCode = 23026
                 if kindlegenErrorCode > 0:
                     break
+                if "Mobi file built successfully" in line:
+                    output.terminate()
         else:
             # ERROR: EPUB too big
             kindlegenErrorCode = 23026
