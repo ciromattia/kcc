@@ -556,7 +556,7 @@ def imgFileProcessing(work):
             output.append(img.saveToDir())
         return output
     except Exception:
-        return str(sys.exc_info()[1])
+        return str(sys.exc_info()[:2])
 
 
 def getWorkFolder(afile):
