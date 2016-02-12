@@ -656,9 +656,9 @@ def getComicInfo(path, originalPath):
             if xml.data['Series']:
                 options.title = escape(xml.data['Series'])
             if xml.data['Volume']:
-                titleSuffix += ' V' + xml.data['Volume']
+                titleSuffix += ' V' + xml.data['Volume'].zfill(2)
             if xml.data['Number']:
-                titleSuffix += ' #' + xml.data['Number']
+                titleSuffix += ' #' + xml.data['Number'].zfill(3)
             options.title += titleSuffix
         for field in ['Writers', 'Pencillers', 'Inkers', 'Colorists']:
             for person in xml.data[field]:
