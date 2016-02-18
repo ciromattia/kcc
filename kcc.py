@@ -56,6 +56,12 @@ elif sys.platform.startswith('win'):
     else:
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/windows/;' + os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
+# Load additional Sentry configuration
+if getattr(sys, 'frozen', False):
+    try:
+        import kcc.sentry
+    except:
+        pass
 
 from kcc.shared import dependencyCheck
 dependencyCheck(3)

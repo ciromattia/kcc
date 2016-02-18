@@ -158,6 +158,12 @@ def dependencyCheck(level):
                 missing.append('PyQt 5.2.1+')
         except ImportError:
             missing.append('PyQt 5.2.1+')
+        try:
+            from raven import VERSION as ravenVersion
+            if StrictVersion('5.10') > StrictVersion(ravenVersion):
+                missing.append('raven 5.10+')
+        except ImportError:
+            missing.append('raven 5.10+')
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion

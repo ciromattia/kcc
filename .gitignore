@@ -13,3 +13,4 @@ kindlegen*
 *.spec
 setup.bat
 setup.sh
+kcc/sentry.py

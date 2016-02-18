@@ -32,6 +32,7 @@ from copy import copy
 from distutils.version import StrictVersion
 from xml.sax.saxutils import escape
 from platform import platform
+from raven import Client
 from .shared import md5Checksum, HTMLStripper, sanitizeTrace
 from . import __version__
 from . import comic2ebook
@@ -328,6 +329,8 @@ class WorkerThread(QtCore.QThread):
                 GUI.progress.content = ''
                 self.errors = True
                 _, _, traceback = sys.exc_info()
+                if ' is corrupted.' not in str(err):
+                    GUI.sentry.captureException()
                 MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
                                    % (jobargv[-1], str(err), sanitizeTrace(traceback)), 'error')
                 MW.addMessage.emit('Error during conversion! Please consult '
@@ -525,6 +528,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
                 self.editor.loadData(fname)
             except Exception as err:
                 _, _, traceback = sys.exc_info()
+                GUI.sentry.captureException()
                 self.showDialog("Failed to parse metadata!\n\n%s\n\nTraceback:\n%s"
                                 % (str(err), sanitizeTrace(traceback)), 'error')
             else:
@@ -688,31 +692,6 @@ class KCCGUI(KCC_ui.Ui_KCC):
     def showDialog(self, message, kind):
         if kind == 'error':
             QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
-            try:
-                doc = Document()
-                root = doc.createElement('KCCErrorReport')
-                doc.appendChild(root)
-                main = doc.createElement('Timestamp')
-                root.appendChild(main)
-                text = doc.createTextNode(datetime.fromtimestamp(time()).strftime('%Y-%m-%d %H:%M:%S'))
-                main.appendChild(text)
-                main = doc.createElement('OS')
-                root.appendChild(main)
-                text = doc.createTextNode(platform())
-                main.appendChild(text)
-                main = doc.createElement('Version')
-                root.appendChild(main)
-                text = doc.createTextNode(__version__)
-                main.appendChild(text)
-                main = doc.createElement('Error')
-                root.appendChild(main)
-                text = doc.createTextNode(message)
-                main.appendChild(text)
-                urlopen(Request(url='https://kcc.iosphe.re/ErrorHandle/', data=doc.toxml(encoding='utf-8'),
-                                headers={'Content-Type': 'application/xml',
-                                         'User-Agent': 'KindleComicConverter/' + __version__}))
-            except:
-                pass
         elif kind == 'question':
             GUI.versionCheck.setAnswer(QtWidgets.QMessageBox.question(MW, 'KCC - Question', message,
                                                                           QtWidgets.QMessageBox.Yes,
@@ -915,6 +894,7 @@ class KCCGUI(KCC_ui.Ui_KCC):
         self.GammaValue = 1.0
         self.currentMode = 1
         self.targetDirectory = ''
+        self.sentry = Client(release=__version__)
         if sys.platform.startswith('darwin'):
             self.listFontSize = 11
             self.statusBarFontSize = 10
@@ -1136,6 +1116,7 @@ class KCCGUI_MetaEditor(KCC_MetaEditor_ui.Ui_MetaEditorDialog):
                 self.parser.saveXML()
             except Exception as err:
                 _, _, traceback = sys.exc_info()
+                GUI.sentry.captureException()
                 GUI.showDialog("Failed to save metadata!\n\n%s\n\nTraceback:\n%s"
                                % (str(err), sanitizeTrace(traceback)), 'error')
             self.ui.close()
