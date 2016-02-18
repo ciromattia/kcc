@@ -90,8 +90,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
                 os.system("bash -c '%s'" % script)
                 exit(0)
             else:
-                os.system('docker build --no-cache -t kcc . && docker run --rm -v ' + os.getcwd() +
-                          ':/out kcc && docker rmi kcc')
+                os.system('docker run --rm -v ' + os.getcwd() + ':/app -e KCCVER=' + VERSION + ' acidweb/kcc')
                 exit(0)
 
 
