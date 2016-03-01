@@ -591,6 +591,7 @@ def getWorkFolder(afile):
             raise UserWarning("Failed to detect archive format.")
     else:
         raise UserWarning("Failed to open source file/directory.")
+    sanitizePermissions(path)
     newpath = mkdtemp('', 'KCC-')
     copytree(path, os.path.join(newpath, 'OEBPS', 'Images'))
     rmtree(path, True)
