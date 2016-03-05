@@ -79,7 +79,8 @@ class ProfileData:
     Profiles = {
         'K1': ("Kindle 1", (600, 670), Palette4, 1.8, (900, 1005)),
         'K2': ("Kindle 2", (600, 670), Palette15, 1.8, (900, 1005)),
-        'K345': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
+        'K3': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
+        'K45': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
         'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8, (1236, 1500)),
         'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.8, (1137, 1536)),
         'KV': ("Kindle Paperwhite 3/Voyage", (1072, 1448), Palette16, 1.8, (1608, 2172)),

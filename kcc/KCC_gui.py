@@ -885,7 +885,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle PW 1/2": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'Label': 'KPW'},
             "Kindle": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                       'DefaultUpscale': False, 'Label': 'K345'},
+                       'DefaultUpscale': False, 'Label': 'K45'},
             "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'Label': 'KDX'},
             "Kobo Mini/Touch": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
@@ -905,7 +905,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle 1": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K1'},
             "Kindle 2": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
-                         'DefaultUpscale': False, 'Label': 'K2'}
+                         'DefaultUpscale': False, 'Label': 'K2'},
+            "Kindle 3": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+                         'DefaultUpscale': False, 'Label': 'K3'},
         }
         profilesGUI = [
             "K. PW 3/Voyage",
@@ -923,6 +925,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Separator",
             "Kindle 1",
             "Kindle 2",
+            "Kindle 3",
             "Kindle DX/DXG",
         ]
 
