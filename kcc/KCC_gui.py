@@ -629,10 +629,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.gammaSlider.setValue(0)
         self.changeGamma(0)
         GUI.qualityBox.setEnabled(profile['Quality'])
+        GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
         if not profile['Quality']:
             GUI.qualityBox.setChecked(False)
-        if profile['DefaultUpscale']:
-            GUI.upscaleBox.setChecked(True)
         if str(GUI.deviceBox.currentText()) == 'Other':
             self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
                             'List of supported Non-Kindle devices.</a>', 'info')
@@ -653,9 +652,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def addMessage(self, message, icon, replace=False):
         if icon != '':
             icon = eval('self.icons.' + icon)
-            item = QtWidgets.QListWidgetItem(icon, self.stripTags(message))
+            item = QtWidgets.QListWidgetItem(icon, '   ' + self.stripTags(message))
         else:
-            item = QtWidgets.QListWidgetItem(self.stripTags(message))
+            item = QtWidgets.QListWidgetItem('   ' + self.stripTags(message))
         if replace:
             GUI.jobList.takeItem(GUI.jobList.count() - 1)
         # Due to lack of HTML support in QListWidgetItem we overlay text field with QLabel

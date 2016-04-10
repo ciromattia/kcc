@@ -71,6 +71,7 @@ from kcc import KCC_gui
 
 if __name__ == "__main__":
     freeze_support()
+    os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = "1"
     KCCAplication = KCC_gui.QApplicationMessaging(sys.argv)
     if KCCAplication.isRunning():
         if len(sys.argv) > 1:
