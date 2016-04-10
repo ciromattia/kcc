@@ -154,42 +154,40 @@ def dependencyCheck(level):
     if level > 2:
         try:
             from PyQt5.QtCore import qVersion as qtVersion
-            if StrictVersion('5.2.1') > StrictVersion(qtVersion()):
-                missing.append('PyQt 5.2.1+')
+            if StrictVersion('5.6.0') > StrictVersion(qtVersion()):
+                missing.append('PyQt 5.6.0+')
         except ImportError:
-            missing.append('PyQt 5.2.1+')
+            missing.append('PyQt 5.6.0+')
         try:
-            from raven import VERSION as ravenVersion
-            if StrictVersion('5.10') > StrictVersion(ravenVersion):
-                missing.append('raven 5.10+')
+            import raven
         except ImportError:
-            missing.append('raven 5.10+')
+            missing.append('raven 5.12.0+')
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion
-            if StrictVersion('3.2.2') > StrictVersion(psutilVersion):
-                missing.append('psutil 3.2.2+')
+            if StrictVersion('4.1.0') > StrictVersion(psutilVersion):
+                missing.append('psutil 4.1.0+')
         except ImportError:
-            missing.append('psutil 3.2.2+')
+            missing.append('psutil 4.1.0+')
         try:
             from slugify import __version__ as slugifyVersion
-            if StrictVersion('1.1.4') > StrictVersion(slugifyVersion):
-                missing.append('python-slugify 1.1.4+')
+            if StrictVersion('1.2.0') > StrictVersion(slugifyVersion):
+                missing.append('python-slugify 1.2.0+')
         except ImportError:
-            missing.append('python-slugify 1.1.4+')
+            missing.append('python-slugify 1.2.0+')
     try:
         from PIL import PILLOW_VERSION as pillowVersion
-        if StrictVersion('3.0.0') > StrictVersion(pillowVersion):
-            missing.append('Pillow 3.0.0+')
+        if StrictVersion('3.2.0') > StrictVersion(pillowVersion):
+            missing.append('Pillow 3.2.0+')
     except ImportError:
-        missing.append('Pillow 3.0.0+')
+        missing.append('Pillow 3.2.0+')
     if version_info[1] < 5:
         try:
             from scandir import __version__ as scandirVersion
-            if StrictVersion('1.1') > StrictVersion(scandirVersion):
-                missing.append('scandir 1.1+')
+            if StrictVersion('1.2') > StrictVersion(scandirVersion):
+                missing.append('scandir 1.2+')
         except ImportError:
-            missing.append('scandir 1.1+')
+            missing.append('scandir 1.2+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         exit(1)
