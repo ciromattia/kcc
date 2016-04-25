@@ -879,8 +879,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.p.ionice(1)
 
         self.profiles = {
-            "K. PW 3/Voyage": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                               'DefaultUpscale': True, 'Label': 'KV'},
+            "Kindle Oasis": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                             'DefaultUpscale': True, 'Label': 'KV'},
+            "Kindle Voyage": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                              'DefaultUpscale': True, 'Label': 'KV'},
+            "Kindle PW 3": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                            'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle PW 1/2": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'Label': 'KPW'},
             "Kindle": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -909,7 +913,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                          'DefaultUpscale': False, 'Label': 'K3'},
         }
         profilesGUI = [
-            "K. PW 3/Voyage",
+            "Kindle Oasis",
+            "Kindle Voyage",
+            "Kindle PW 3",
             "Kindle PW 1/2",
             "Kindle",
             "Separator",
@@ -922,10 +928,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Separator",
             "Other",
             "Separator",
-            "Kindle 1",
-            "Kindle 2",
-            "Kindle 3",
             "Kindle DX/DXG",
+            "Kindle 3",
+            "Kindle 2",
+            "Kindle 1",
         ]
 
         statusBarLabel = QtWidgets.QLabel('<b><a href="https://kcc.iosphe.re/">HOMEPAGE</a> - <a href="https://github.'
