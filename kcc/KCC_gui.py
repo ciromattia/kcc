@@ -751,6 +751,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings.setValue('lastDevice', GUI.deviceBox.currentIndex())
         self.settings.setValue('currentFormat', GUI.formatBox.currentIndex())
         self.settings.setValue('startNumber', self.startNumber + 1)
+        self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
         self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
                                            'rotateBox': GUI.rotateBox.checkState(),
                                            'qualityBox': GUI.qualityBox.checkState(),
@@ -859,6 +860,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
+        self.windowSize = self.settings.value('windowSize', '0x0', type=str)
         self.options = self.settings.value('options', {'gammaSlider': 0})
         self.worker = WorkerThread()
         self.versionCheck = VersionThread()
@@ -1032,6 +1034,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.versionCheck.start()
         self.tray.show()
 
+        if self.windowSize != '0x0':
+            x, y = self.windowSize.split('x')
+            MW.resize(int(x), int(y))
         MW.setWindowTitle("Kindle Comic Converter " + __version__)
         MW.show()
         MW.raise_()
