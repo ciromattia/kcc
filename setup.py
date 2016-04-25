@@ -107,14 +107,16 @@ class BuildCommand(build):
                      'build/_scripts/kcc-c2p'],
             packages=['kcc'],
             install_requires=[
-                'Pillow>=3.0.0',
-                'psutil>=3.2.2',
-                'python-slugify>=1.1.4',
+                'PyQt5>=5.6.0'
+                'Pillow>=3.2.0',
+                'psutil>=4.1.0',
+                'python-slugify>=1.2.0',
+                'raven>=5.13.0',
             ],
             zip_safe=False,
         )
         if sys.version_info[1] < 5:
-            OPTIONS['install_requires'].append('scandir>=1.1.0')
+            OPTIONS['install_requires'].append('scandir>=1.2.0')
         build.run(self)
 
 

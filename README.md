@@ -32,17 +32,17 @@ You can find the latest released binary at the following links:
 ## DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
 - Python 3.3+
-- [PyQt](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.6.0+
+- [PyQt](https://pypi.python.org/pypi/PyQt5) 5.6.0+
 - [Pillow](https://pypi.python.org/pypi/Pillow/) 3.2.0+
 - [psutil](https://pypi.python.org/pypi/psutil) 4.1.0+
 - [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.0+
-- [raven](https://pypi.python.org/pypi/raven) 5.12.0+
+- [raven](https://pypi.python.org/pypi/raven) 5.13.0+
 - [scandir](https://pypi.python.org/pypi/scandir) 1.2.0+ _(needed only when using Python 3.3 or 3.4)_
 
 On Debian based distributions these two commands should install all needed dependencies:
 ```
-sudo apt-get install python3 python3-dev python3-pip python3-pyqt5 libpng-dev libjpeg-dev p7zip-full unrar
-sudo pip3 install --upgrade pillow python-slugify psutil scandir raven
+sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full unrar
+sudo pip3 install --upgrade pillow python-slugify psutil scandir raven pyqt5
 ```
 
 ### Optional dependencies
@@ -156,6 +156,14 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 
 ## CHANGELOG
+####5.1:
+* GUI now can be resized and high DPI support was somewhat improved
+* Added profile for Kindle Oasis
+* Implemented new error reporting mechanism
+* CLI version now support additional cropping options
+* Fixed permission issues on Windows
+* Fixed multiple smaller issues
+
 ####5.0.1:
 * Fixed Panel View placement issues
 * Decreased application startup time

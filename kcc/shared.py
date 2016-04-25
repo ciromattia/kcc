@@ -144,9 +144,10 @@ def removeFromZIP(zipfname, *filenames):
 
 def sanitizeTrace(traceback):
     return ''.join(format_tb(traceback))\
-        .replace('C:\\Users\\pawel\\Documents\\Projekty\\KCC\\', '')\
-        .replace('C:\\Python34\\', '')\
-        .replace('c:\\python34\\', '')
+        .replace('C:\\Users\\pawel\\Documents\\Projekty\\KCC\\', '') \
+        .replace('C:\\Users\\Paweł\\Documents\\Projekty\\KCC\\', '') \
+        .replace('C:\\Python35\\', '')\
+        .replace('c:\\python35\\', '')
 
 
 def dependencyCheck(level):
@@ -161,7 +162,7 @@ def dependencyCheck(level):
         try:
             import raven
         except ImportError:
-            missing.append('raven 5.12.0+')
+            missing.append('raven 5.13.0+')
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion
