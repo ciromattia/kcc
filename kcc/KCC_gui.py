@@ -873,12 +873,24 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.currentMode = 1
         self.targetDirectory = ''
         self.sentry = Client(release=__version__)
-        # Decrease priority to increase system responsiveness during conversion
         if sys.platform.startswith('win'):
             from psutil import BELOW_NORMAL_PRIORITY_CLASS
             self.p = Process(os.getpid())
             self.p.nice(BELOW_NORMAL_PRIORITY_CLASS)
             self.p.ionice(1)
+        elif sys.platform.startswith('linux'):
+            APP.setStyle('fusion')
+            if self.windowSize == '0x0':
+                MW.resize(500, 500)
+        elif sys.platform.startswith('darwin'):
+            GUI.deviceBox.setMinimumSize(QtCore.QSize(0, 0))
+            GUI.formatBox.setMinimumSize(QtCore.QSize(0, 0))
+            GUI.directoryButton.setMinimumSize(QtCore.QSize(190, 0))
+            GUI.fileButton.setMinimumSize(QtCore.QSize(190, 0))
+            GUI.gridLayout.setContentsMargins(-1, -1, -1, -1)
+            GUI.toolWidget.setMinimumSize(QtCore.QSize(0, 0))
+            if self.windowSize == '0x0':
+                MW.resize(500, 500)
 
         self.profiles = {
             "Kindle Oasis": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -921,12 +933,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle PW 1/2",
             "Kindle",
             "Separator",
-            "Kobo Mini/Touch",
-            "Kobo Glo",
-            "Kobo Glo HD",
-            "Kobo Aura",
-            "Kobo Aura HD",
             "Kobo Aura H2O",
+            "Kobo Aura HD",
+            "Kobo Aura",
+            "Kobo Glo HD",
+            "Kobo Glo",
+            "Kobo Mini/Touch",
             "Separator",
             "Other",
             "Separator",
@@ -1101,3 +1113,9 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         self.ui.setWindowFlags(self.ui.windowFlags() & ~QtCore.Qt.WindowContextHelpButtonHint)
         self.okButton.clicked.connect(self.saveData)
         self.cancelButton.clicked.connect(self.ui.close)
+        if sys.platform.startswith('linux'):
+            self.ui.resize(450, 260)
+            self.ui.setMinimumSize(QtCore.QSize(450, 260))
+        elif sys.platform.startswith('darwin'):
+            self.ui.resize(450, 310)
+            self.ui.setMinimumSize(QtCore.QSize(450, 310))

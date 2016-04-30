@@ -53,7 +53,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
         elif sys.platform == 'win32':
             os.system('pyinstaller -y -F -i icons\comic2ebook.ico -n KCC -w --noupx kcc.py')
             if os.path.isfile('setup.bat'):
-                os.system('setup.bat ' + VERSION)
+                os.system('setup.bat')
             exit(0)
         else:
             if self.pyz:

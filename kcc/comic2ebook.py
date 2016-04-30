@@ -1232,7 +1232,7 @@ def makeMOBIWorker(item):
     try:
         if os.path.getsize(item) < 629145600:
             output = Popen('kindlegen -dont_append_source -locale en "' + item + '"',
-                           stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=False)
+                           stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
             for line in output.stdout:
                 line = line.decode('utf-8')
                 # ERROR: Generic error
