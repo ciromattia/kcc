@@ -75,7 +75,7 @@ Usage: kcc-c2e [options] comic_file|comic_folder
 Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
-                        Device profile (Available options: K1, K2, K345, KDX,
+                        Device profile (Available options: K1, K2, K3, K45, KDX,
                         KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O) [Default=KV]
     -m, --manga-style   Manga style (right-to-left reading and splitting)
     -w, --webtoon       Webtoon processing mode
@@ -102,7 +102,13 @@ Options:
     --whiteborders      Disable autodetection and force white borders
     --forcecolor        Don't convert images to grayscale
     --forcepng          Create PNG files instead JPEG
-    --nocutpagenumbers  Don't try to cut page numbers from images
+    --cropping=CROPPING
+                        Set cropping mode. 0: Disabled 1: Margins 2: Margins +
+                        page numbers [Default=2]
+    --croppingpower=CROPPINGP
+                        Set margin cropping threshold [Default=0.1]
+    --croppingpowerpage=CROPPINGPN
+                        Set page number cropping threshold [Default=5.0]
 
   CUSTOM PROFILE:
     --customwidth=CUSTOMWIDTH
@@ -146,7 +152,8 @@ The app relies and includes the following scripts:
 ## SAMPLE FILES CREATED BY KCC
 * [Kindle Paperwhite 3 / Voyage / Oasis](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
 * [Kindle Paperwhite 1 / 2](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
-* [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K345.mobi)
+* [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K45.mobi)
+* [Kindle Keyboard](http://kcc.iosphe.re/Samples/Ubunchu!-K3.mobi)
 * [Kindle DX/DXG](http://kcc.iosphe.re/Samples/Ubunchu!-KDX.cbz)
 * [Kobo Mini/Touch](http://kcc.iosphe.re/Samples/Ubunchu-KoMT.kepub.epub)
 * [Kobo Glo](http://kcc.iosphe.re/Samples/Ubunchu-KoG.kepub.epub)
