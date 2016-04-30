@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2015 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2016 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -545,10 +545,10 @@ def imgFileProcessing(work):
         workImg = image.ComicPageParser((dirpath, afile), opt)
         for i in workImg.payload:
             img = image.ComicPage(i[0], i[1], i[2], i[3], i[4], opt)
-            if not opt.webtoon:
-                img.cropWhiteSpace()
-            if opt.cutpagenumbers and not opt.webtoon:
-                img.cutPageNumber()
+            if opt.cropping > 0 and not opt.webtoon:
+                img.cropWhiteSpace(opt.croppingp)
+            if opt.cropping == 2 and not opt.webtoon:
+                img.cutPageNumber(opt.croppingpn)
             img.autocontrastImage()
             img.resizeImage()
             if opt.forcepng and not opt.forcecolor:
@@ -556,7 +556,7 @@ def imgFileProcessing(work):
             output.append(img.saveToDir())
         return output
     except Exception:
-        return str(sys.exc_info()[1])
+        return str(sys.exc_info()[:2])
 
 
 def getWorkFolder(afile):
@@ -591,6 +591,7 @@ def getWorkFolder(afile):
             raise UserWarning("Failed to detect archive format.")
     else:
         raise UserWarning("Failed to open source file/directory.")
+    sanitizePermissions(path)
     newpath = mkdtemp('', 'KCC-')
     copytree(path, os.path.join(newpath, 'OEBPS', 'Images'))
     rmtree(path, True)
@@ -656,9 +657,9 @@ def getComicInfo(path, originalPath):
             if xml.data['Series']:
                 options.title = escape(xml.data['Series'])
             if xml.data['Volume']:
-                titleSuffix += ' V' + xml.data['Volume']
+                titleSuffix += ' V' + xml.data['Volume'].zfill(2)
             if xml.data['Number']:
-                titleSuffix += ' #' + xml.data['Number']
+                titleSuffix += ' #' + xml.data['Number'].zfill(3)
             options.title += titleSuffix
         for field in ['Writers', 'Pencillers', 'Inkers', 'Colorists']:
             for person in xml.data[field]:
@@ -955,7 +956,7 @@ def makeParser():
     otherOptions = OptionGroup(psr, "OTHER")
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
-                           help="Device profile (Available options: K1, K2, K345, KDX, KPW, KV, KoMT, KoG, KoGHD,"
+                           help="Device profile (Available options: K1, K2, K3, K45, KDX, KPW, KV, KoMT, KoG, KoGHD,"
                                 " KoA, KoAHD, KoAH2O) [Default=KV]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")
@@ -989,8 +990,12 @@ def makeParser():
                                  help="Don't convert images to grayscale")
     processingOptions.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
                                  help="Create PNG files instead JPEG")
-    processingOptions.add_option("--nocutpagenumbers", action="store_false", dest="cutpagenumbers", default=True,
-                                 help="Don't try to cut page numbers from images")
+    processingOptions.add_option("--cropping", type="int", dest="cropping", default="2",
+                                 help="Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]")
+    processingOptions.add_option("--croppingpower", type="float", dest="croppingp", default="0.1",
+                                 help="Set margin cropping threshold [Default=0.1]")
+    processingOptions.add_option("--croppingpowerpage", type="float", dest="croppingpn", default="5.0",
+                                 help="Set page number cropping threshold [Default=5.0]")
 
     customProfileOptions.add_option("--customwidth", type="int", dest="customwidth", default=0,
                                     help="Replace screen width provided by device profile")
@@ -1014,13 +1019,13 @@ def checkOptions():
     options.iskindle = False
     options.bordersColor = None
     if options.format == 'Auto':
-        if options.profile in ['K1', 'K2', 'K345', 'KPW', 'KV']:
+        if options.profile in ['K1', 'K2', 'K3', 'K45', 'KPW', 'KV']:
             options.format = 'MOBI'
         elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O']:
             options.format = 'EPUB'
         elif options.profile in ['KDX']:
             options.format = 'CBZ'
-    if options.profile in ['K1', 'K2', 'K345', 'KPW', 'KV']:
+    if options.profile in ['K1', 'K2', 'K3', 'K45', 'KPW', 'KV']:
         options.iskindle = True
     if options.white_borders:
         options.bordersColor = 'white'
@@ -1030,7 +1035,7 @@ def checkOptions():
     if options.format == 'MOBI':
         options.batchsplit = True
     # Older Kindle don't need higher resolution files due lack of Panel View.
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX':
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K3' or options.profile == 'KDX':
         options.panelview = False
         options.hqmode = False
     # Webtoon mode mandatory options
@@ -1239,6 +1244,8 @@ def makeMOBIWorker(item):
                     kindlegenErrorCode = 23026
                 if kindlegenErrorCode > 0:
                     break
+                if ":I1036: Mobi file built successfully" in line:
+                    output.terminate()
         else:
             # ERROR: EPUB too big
             kindlegenErrorCode = 23026

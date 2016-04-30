@@ -53,7 +53,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
         elif sys.platform == 'win32':
             os.system('pyinstaller -y -F -i icons\comic2ebook.ico -n KCC -w --noupx kcc.py')
             if os.path.isfile('setup.bat'):
-                os.system('setup.bat ' + VERSION)
+                os.system('setup.bat')
             exit(0)
         else:
             if self.pyz:
@@ -90,8 +90,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
                 os.system("bash -c '%s'" % script)
                 exit(0)
             else:
-                os.system('docker build --no-cache -t kcc . && docker run --rm -v ' + os.getcwd() +
-                          ':/out kcc && docker rmi kcc')
+                os.system('docker run --rm -v ' + os.getcwd() + ':/app -e KCCVER=' + VERSION + ' acidweb/kcc')
                 exit(0)
 
 
@@ -108,14 +107,16 @@ class BuildCommand(build):
                      'build/_scripts/kcc-c2p'],
             packages=['kcc'],
             install_requires=[
-                'Pillow>=3.0.0',
-                'psutil>=3.2.2',
-                'python-slugify>=1.1.4',
+                'PyQt5>=5.6.0'
+                'Pillow>=3.2.0',
+                'psutil>=4.1.0',
+                'python-slugify>=1.2.0',
+                'raven>=5.13.0',
             ],
             zip_safe=False,
         )
         if sys.version_info[1] < 5:
-            OPTIONS['install_requires'].append('scandir>=1.1.0')
+            OPTIONS['install_requires'].append('scandir>=1.2.0')
         build.run(self)
 
 

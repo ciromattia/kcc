@@ -32,16 +32,17 @@ You can find the latest released binary at the following links:
 ## DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
 - Python 3.3+
-- [PyQt](http://www.riverbankcomputing.co.uk/software/pyqt/download5) 5.2.1+ _(5.5+ is recommended)_
-- [Pillow](http://pypi.python.org/pypi/Pillow/) 3.0.0+
-- [psutil](https://pypi.python.org/pypi/psutil) 3.2.1+
-- [python-slugify](http://pypi.python.org/pypi/python-slugify) 1.1.4+
-- [scandir](https://pypi.python.org/pypi/scandir) 1.1.0+ _(needed only when using Python 3.3 or 3.4)_
+- [PyQt](https://pypi.python.org/pypi/PyQt5) 5.6.0+
+- [Pillow](https://pypi.python.org/pypi/Pillow/) 3.2.0+
+- [psutil](https://pypi.python.org/pypi/psutil) 4.1.0+
+- [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.0+
+- [raven](https://pypi.python.org/pypi/raven) 5.13.0+
+- [scandir](https://pypi.python.org/pypi/scandir) 1.2.0+ _(needed only when using Python 3.3 or 3.4)_
 
 On Debian based distributions these two commands should install all needed dependencies:
 ```
-sudo apt-get install python3 python3-dev python3-pip python3-pyqt5 libpng-dev libjpeg-dev p7zip-full unrar
-sudo pip3 install --upgrade pillow python-slugify psutil scandir
+sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full unrar
+sudo pip3 install --upgrade pillow python-slugify psutil scandir raven pyqt5
 ```
 
 ### Optional dependencies
@@ -143,7 +144,7 @@ The app relies and includes the following scripts:
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
 ## SAMPLE FILES CREATED BY KCC
-* [Kindle Paperwhite 3 / Voyage](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
+* [Kindle Paperwhite 3 / Voyage / Oasis](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
 * [Kindle Paperwhite 1 / 2](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K345.mobi)
 * [Kindle DX/DXG](http://kcc.iosphe.re/Samples/Ubunchu!-KDX.cbz)
@@ -155,6 +156,14 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 
 ## CHANGELOG
+####5.1:
+* GUI now can be resized and high DPI support was somewhat improved
+* Added profile for Kindle Oasis
+* Implemented new error reporting mechanism
+* CLI version now support additional cropping options
+* Fixed permission issues on Windows
+* Fixed multiple smaller issues
+
 ####5.0.1:
 * Fixed Panel View placement issues
 * Decreased application startup time
@@ -454,11 +463,9 @@ The app relies and includes the following scripts:
 * When MCD metadata are used - Cover download
 * When error occurs - Automatic reporting
 
-Error report include **KCC** version, OS version and content of error message. 
-
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
 ## COPYRIGHT
-Copyright (c) 2012-2015 Ciro Mattia Gonano and Paweł Jastrzębski.
+Copyright (c) 2012-2016 Ciro Mattia Gonano and Paweł Jastrzębski.
 **KCC** is released under ISC LICENSE; see LICENSE.txt for further details.

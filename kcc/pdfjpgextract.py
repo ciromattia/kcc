@@ -1,5 +1,5 @@
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2015 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2016 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Based upon the code snippet by Ned Batchelder
 # (http://nedbatchelder.com/blog/200712/extracting_jpgs_from_pdfs.html)
@@ -61,6 +61,7 @@ class PdfJpgExtract:
             iend += endfix
             jpg = pdf[istart:iend]
             jpgfile = open(self.path + "/jpg%d.jpg" % njpg, "wb")
+            # noinspection PyTypeChecker
             jpgfile.write(jpg)
             jpgfile.close()
             njpg += 1

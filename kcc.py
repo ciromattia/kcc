@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2015 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2016 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -56,6 +56,12 @@ elif sys.platform.startswith('win'):
     else:
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/windows/;' + os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
+# Load additional Sentry configuration
+if getattr(sys, 'frozen', False):
+    try:
+        import kcc.sentry
+    except:
+        pass
 
 from kcc.shared import dependencyCheck
 dependencyCheck(3)
@@ -65,6 +71,7 @@ from kcc import KCC_gui
 
 if __name__ == "__main__":
     freeze_support()
+    os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = "1"
     KCCAplication = KCC_gui.QApplicationMessaging(sys.argv)
     if KCCAplication.isRunning():
         if len(sys.argv) > 1:

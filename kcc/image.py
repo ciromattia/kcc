@@ -1,7 +1,7 @@
 # Copyright (C) 2010  Alex Yatskov
 # Copyright (C) 2011  Stanislav (proDOOMman) Kosolapov <prodoomman@gmail.com>
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2015 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2016 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -79,10 +79,11 @@ class ProfileData:
     Profiles = {
         'K1': ("Kindle 1", (600, 670), Palette4, 1.8, (900, 1005)),
         'K2': ("Kindle 2", (600, 670), Palette15, 1.8, (900, 1005)),
-        'K345': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
+        'K3': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
+        'K45': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
         'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8, (1236, 1500)),
         'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.8, (1137, 1536)),
-        'KV': ("Kindle Paperwhite 3/Voyage", (1072, 1448), Palette16, 1.8, (1608, 2172)),
+        'KV': ("Kindle Paperwhite 3/Voyage/Oasis", (1072, 1448), Palette16, 1.8, (1608, 2172)),
         'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8, (900, 1200)),
         'KoG': ("Kobo Glo", (768, 1024), Palette16, 1.8, (1152, 1536)),
         'KoGHD': ("Kobo Glo HD", (1072, 1448), Palette16, 1.8, (1608, 2172)),
@@ -316,12 +317,11 @@ class ComicPage:
                     if self.image.size[0] > size[0] or self.image.size[1] > size[1]:
                         self.image.thumbnail(size, Image.LANCZOS)
 
-    def cutPageNumber(self):
+    def cutPageNumber(self, fixedThreshold):
         if ImageChops.invert(self.image).getbbox() is not None:
             widthImg, heightImg = self.image.size
             delta = 2
             diff = delta
-            fixedThreshold = 5
             if ImageStat.Stat(self.image).var[0] < 2 * fixedThreshold:
                 return self.image
             while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] < fixedThreshold\
@@ -370,12 +370,11 @@ class ComicPage:
                 diff = pageNumberCut1
             self.image = self.image.crop((0, 0, widthImg, heightImg - diff))
 
-    def cropWhiteSpace(self):
+    def cropWhiteSpace(self, fixedThreshold):
         if ImageChops.invert(self.image).getbbox() is not None:
             widthImg, heightImg = self.image.size
             delta = 10
             diff = delta
-            fixedThreshold = 0.1
             # top
             while ImageStat.Stat(self.image.crop((0, 0, widthImg, diff))).var[0] < fixedThreshold and diff < heightImg:
                 diff += delta
