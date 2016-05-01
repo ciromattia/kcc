@@ -4,7 +4,6 @@
 .idea
 .DS_Store
 Thumbs.db
-build
 dist
 Output
 test
@@ -14,3 +13,4 @@ kindlegen*
 setup.bat
 setup.sh
 kcc/sentry.py
+build/
