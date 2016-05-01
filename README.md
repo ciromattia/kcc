@@ -163,6 +163,9 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 
 ## CHANGELOG
+####5.1.1:
+* Fixed multiple GUI bugs
+
 ####5.1:
 * GUI now can be resized and high DPI support was somewhat improved
 * Added profile for Kindle Oasis
