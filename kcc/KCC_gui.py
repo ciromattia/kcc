@@ -883,12 +883,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if self.windowSize == '0x0':
                 MW.resize(500, 500)
         elif sys.platform.startswith('darwin'):
-            GUI.deviceBox.setMinimumSize(QtCore.QSize(0, 0))
-            GUI.formatBox.setMinimumSize(QtCore.QSize(0, 0))
-            GUI.directoryButton.setMinimumSize(QtCore.QSize(190, 0))
-            GUI.fileButton.setMinimumSize(QtCore.QSize(190, 0))
+            for element in ['editorButton', 'wikiButton', 'directoryButton', 'clearButton', 'fileButton', 'deviceBox',
+                            'convertButton', 'formatBox']:
+                eval('GUI.' + element).setMinimumSize(QtCore.QSize(0, 0))
             GUI.gridLayout.setContentsMargins(-1, -1, -1, -1)
-            GUI.toolWidget.setMinimumSize(QtCore.QSize(0, 0))
+            for element in ['gridLayout_2', 'gridLayout_3', 'gridLayout_4', 'horizontalLayout', 'horizontalLayout_2']:
+                eval('GUI.' + element).setContentsMargins(-1, 0, -1, 0)
             if self.windowSize == '0x0':
                 MW.resize(500, 500)
 
