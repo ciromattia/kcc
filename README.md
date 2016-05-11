@@ -163,6 +163,9 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 
 ## CHANGELOG
+####5.1.2:
+* Fixed error reporting
+
 ####5.1.1:
 * Fixed multiple GUI bugs
 
