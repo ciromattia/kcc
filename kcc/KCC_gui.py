@@ -461,6 +461,8 @@ class ExtendedSelectDirectoriesFileDialog(QtWidgets.QFileDialog):
 
         self.setFileMode(self.Directory)
         self.setOption(self.ShowDirsOnly, True)
+        if os.name == 'nt':
+            self.setOption(self.DontUseNativeDialog, True)
         for view in self.findChildren((QtWidgets.QListView, QtWidgets.QTreeView)):
             if isinstance(view.model(), QtWidgets.QFileSystemModel):
                 view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
