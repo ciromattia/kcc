@@ -64,7 +64,10 @@ def main(argv=None):
     if len(args) == 0:
         parser.print_help()
         return 0
-    sources = set([source for arg in args for source in glob(arg)])
+    if sys.platform.startswith('win'):
+        sources = set([source for arg in args for source in glob(arg)])
+    else:
+        sources = set(args)
     if len(sources) == 0:
         print('No matching files found.')
         return 1
