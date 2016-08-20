@@ -328,9 +328,10 @@ class WorkerThread(QtCore.QThread):
                                    'for more details.', 'error', False)
                 MW.addTrayMessage.emit('Error during conversion!', 'Critical')
             if not self.conversionAlive:
-                for item in outputPath:
-                    if os.path.exists(item):
-                        os.remove(item)
+                if 'outputPath' in locals():
+                    for item in outputPath:
+                        if os.path.exists(item):
+                            os.remove(item)
                 self.clean()
                 return
             if not self.errors:
