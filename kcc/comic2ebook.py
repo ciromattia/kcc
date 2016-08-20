@@ -960,7 +960,7 @@ def makeParser():
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
                            help="Device profile (Available options: K1, K2, K3, K45, KDX, KPW, KV, KoMT, KoG, KoGHD,"
-                                " KoA, KoAHD, KoAH2O) [Default=KV]")
+                                " KoA, KoAHD, KoAH2O, KoAO) [Default=KV]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")
     mainOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
@@ -1024,7 +1024,7 @@ def checkOptions():
     if options.format == 'Auto':
         if options.profile in ['K1', 'K2', 'K3', 'K45', 'KPW', 'KV']:
             options.format = 'MOBI'
-        elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O']:
+        elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O', 'KoAO']:
             options.format = 'EPUB'
         elif options.profile in ['KDX']:
             options.format = 'CBZ'
