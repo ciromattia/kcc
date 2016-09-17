@@ -328,9 +328,10 @@ class WorkerThread(QtCore.QThread):
                                    'for more details.', 'error', False)
                 MW.addTrayMessage.emit('Error during conversion!', 'Critical')
             if not self.conversionAlive:
-                for item in outputPath:
-                    if os.path.exists(item):
-                        os.remove(item)
+                if 'outputPath' in locals():
+                    for item in outputPath:
+                        if os.path.exists(item):
+                            os.remove(item)
                 self.clean()
                 return
             if not self.errors:
@@ -917,6 +918,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                              'DefaultUpscale': True, 'Label': 'KoAHD'},
             "Kobo Aura H2O": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
                               'DefaultUpscale': True, 'Label': 'KoAH2O'},
+            "Kobo Aura ONE": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
+                              'DefaultUpscale': True, 'Label': 'KoAO'},
             "Other": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 1,
                       'DefaultUpscale': False, 'Label': 'OTHER'},
             "Kindle 1": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -933,6 +936,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle PW 1/2",
             "Kindle",
             "Separator",
+            "Kobo Aura ONE",
             "Kobo Aura H2O",
             "Kobo Aura HD",
             "Kobo Aura",
