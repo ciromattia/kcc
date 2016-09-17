@@ -6,7 +6,7 @@ actually a comic/manga to EPUB converter that every e-reader owner can happily u
 It can also optionally optimize images by applying a number of transformations.
 
 ### A word of warning
-**KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.  
+**KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.
 Amazon's tool is for comic publishers and involves a lot of manual effort, while **KCC** is for comic/manga readers.
 _KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;-)
 
@@ -76,7 +76,7 @@ Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
                         Device profile (Available options: K1, K2, K3, K45, KDX,
-                        KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O) [Default=KV]
+                        KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O, KoAO) [Default=KV]
     -m, --manga-style   Manga style (right-to-left reading and splitting)
     -w, --webtoon       Webtoon processing mode
 
@@ -153,16 +153,16 @@ The app relies and includes the following scripts:
 * [Kindle Paperwhite 3 / Voyage / Oasis](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
 * [Kindle Paperwhite 1 / 2](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K45.mobi)
-* [Kindle Keyboard](http://kcc.iosphe.re/Samples/Ubunchu!-K3.mobi)
-* [Kindle DX/DXG](http://kcc.iosphe.re/Samples/Ubunchu!-KDX.cbz)
-* [Kobo Mini/Touch](http://kcc.iosphe.re/Samples/Ubunchu-KoMT.kepub.epub)
-* [Kobo Glo](http://kcc.iosphe.re/Samples/Ubunchu-KoG.kepub.epub)
-* [Kobo Glo HD](http://kcc.iosphe.re/Samples/Ubunchu-KoGHD.kepub.epub)
 * [Kobo Aura](http://kcc.iosphe.re/Samples/Ubunchu-KoA.kepub.epub)
 * [Kobo Aura HD](http://kcc.iosphe.re/Samples/Ubunchu-KoAHD.kepub.epub)
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
+* [Kobo Aura ONE](http://kcc.iosphe.re/Samples/Ubunchu-KoAO.kepub.epub)
 
 ## CHANGELOG
+####5.1.3:
+* Added Kobo Aura ONE profile
+* Fixed few small bugs
+
 ####5.1.2:
 * Fixed error reporting
 
