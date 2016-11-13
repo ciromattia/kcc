@@ -603,7 +603,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.upscaleBox.setEnabled(False)
             GUI.upscaleBox.setChecked(True)
         else:
-            GUI.qualityBox.setEnabled(True)
+            profile = GUI.profiles[str(GUI.deviceBox.currentText())]
+            if profile['Quality']:
+                GUI.qualityBox.setEnabled(True)
             GUI.mangaBox.setEnabled(True)
             GUI.rotateBox.setEnabled(True)
             GUI.upscaleBox.setEnabled(True)

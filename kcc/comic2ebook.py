@@ -336,29 +336,6 @@ def buildOPF(dstdir, title, filelist, cover=None):
         f.write("</manifest>\n<spine page-progression-direction=\"rtl\" toc=\"ncx\">\n")
     else:
         f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
-    # if options.iskindle and options.profile != 'Custom':
-    #     if options.righttoleft:
-    #         nextflow = 'right'
-    #     else:
-    #         nextflow = 'left'
-    #     for entry in reflist:
-    #         if '-kcc-b' in entry:
-    #             if options.righttoleft:
-    #                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-right\"/>\n")
-    #             else:
-    #                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-left\"/>\n")
-    #         elif '-kcc-c' in entry:
-    #             if options.righttoleft:
-    #                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-left\"/>\n")
-    #             else:
-    #                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-right\"/>\n")
-    #         else:
-    #             f.write("<itemref idref=\"page_" + entry + "\" properties=\"facing-page-" + nextflow + "\"/>\n")
-    #             if nextflow == 'right':
-    #                 nextflow = 'left'
-    #             else:
-    #                 nextflow = 'right'
-    # else:
     for entry in reflist:
         f.write("<itemref idref=\"page_" + entry + "\"/>\n")
     f.write("</spine>\n</package>\n")
@@ -1184,7 +1161,6 @@ def makeBook(source, qtGUI=None):
     if not GUI and options.format == 'MOBI':
         print("Creating MOBI files...")
         work = []
-        k = kindle.Kindle()
         for i in filepath:
             work.append([i])
         output = makeMOBI(work, GUI)
@@ -1193,6 +1169,7 @@ def makeBook(source, qtGUI=None):
                 print('Error: KindleGen failed to create MOBI!')
                 print(errors)
                 return filepath
+        k = kindle.Kindle()
         if k.path and k.coverSupport:
             print("Kindle detected. Uploading covers...")
         for i in filepath:
