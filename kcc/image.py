@@ -1,5 +1,6 @@
 # Copyright (C) 2010  Alex Yatskov
 # Copyright (C) 2011  Stanislav (proDOOMman) Kosolapov <prodoomman@gmail.com>
+# Copyright (c) 2016  Alberto Planas <aplanas@gmail.com>
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
 # Copyright (c) 2013-2016 Pawel Jastrzebski <pawelj@iosphe.re>
 #
@@ -20,7 +21,7 @@ import os
 from io import BytesIO
 from urllib.request import Request, urlopen
 from urllib.parse import quote
-from PIL import Image, ImageOps, ImageStat, ImageChops
+from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
 from .shared import md5Checksum
 from . import __version__
 
@@ -318,92 +319,39 @@ class ComicPage:
                     if self.image.size[0] > size[0] or self.image.size[1] > size[1]:
                         self.image.thumbnail(size, Image.LANCZOS)
 
-    def cutPageNumber(self, fixedThreshold):
-        if ImageChops.invert(self.image).getbbox() is not None:
-            widthImg, heightImg = self.image.size
-            delta = 2
-            diff = delta
-            if ImageStat.Stat(self.image).var[0] < 2 * fixedThreshold:
-                return self.image
-            while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] < fixedThreshold\
-                    and diff < heightImg:
-                diff += delta
-            diff -= delta
-            pageNumberCut1 = diff
-            if diff < delta:
-                diff = delta
-            oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0]
-            diff += delta
-            while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] - oldStat > 0\
-                    and diff < heightImg // 4:
-                oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0]
-                diff += delta
-            diff -= delta
-            pageNumberCut2 = diff
-            diff += delta
-            oldStat = ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg,
-                                                      heightImg - pageNumberCut2))).var[0]
-            while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg - pageNumberCut2))).var[0]\
-                    < fixedThreshold + oldStat and diff < heightImg // 4:
-                diff += delta
-            diff -= delta
-            pageNumberCut3 = diff
-            delta = 5
-            diff = delta
-            while ImageStat.Stat(self.image.crop((0, heightImg - pageNumberCut2, diff, heightImg))).var[0]\
-                    < fixedThreshold and diff < widthImg:
-                diff += delta
-            diff -= delta
-            pageNumberX1 = diff
-            diff = delta
-            while ImageStat.Stat(self.image.crop((widthImg - diff, heightImg - pageNumberCut2,
-                                                  widthImg, heightImg))).var[0] < fixedThreshold and diff < widthImg:
-                diff += delta
-            diff -= delta
-            pageNumberX2 = widthImg - diff
-            if pageNumberCut3 - pageNumberCut1 > 2 * delta\
-                    and float(pageNumberX2 - pageNumberX1) / float(pageNumberCut2 - pageNumberCut1) <= 9.0\
-                    and ImageStat.Stat(self.image.crop((0, heightImg - pageNumberCut3, widthImg, heightImg))).var[0]\
-                    / ImageStat.Stat(self.image).var[0] < 0.1\
-                    and pageNumberCut3 < heightImg / 4 - delta:
-                diff = pageNumberCut3
-            else:
-                diff = pageNumberCut1
-            self.image = self.image.crop((0, 0, widthImg, heightImg - diff))
+    def getBoundingBox(self, tmpImg):
+        min_margin = [int(0.005 * i + 0.5) for i in tmpImg.size]
+        max_margin = [int(0.1 * i + 0.5) for i in tmpImg.size]
+        bbox = tmpImg.getbbox()
+        bbox = (
+            max(0, min(max_margin[0], bbox[0] - min_margin[0])),
+            max(0, min(max_margin[1], bbox[1] - min_margin[1])),
+            min(tmpImg.size[0],
+                max(tmpImg.size[0] - max_margin[0], bbox[2] + min_margin[0])),
+            min(tmpImg.size[1],
+                max(tmpImg.size[1] - max_margin[1], bbox[3] + min_margin[1])),
+        )
+        return bbox
 
-    def cropWhiteSpace(self, fixedThreshold):
-        if ImageChops.invert(self.image).getbbox() is not None:
-            widthImg, heightImg = self.image.size
-            delta = 10
-            diff = delta
-            # top
-            while ImageStat.Stat(self.image.crop((0, 0, widthImg, diff))).var[0] < fixedThreshold and diff < heightImg:
-                diff += delta
-            diff -= delta
-            self.image = self.image.crop((0, diff, widthImg, heightImg))
-            widthImg, heightImg = self.image.size
-            diff = delta
-            # left
-            while ImageStat.Stat(self.image.crop((0, 0, diff, heightImg))).var[0] < fixedThreshold and diff < widthImg:
-                diff += delta
-            diff -= delta
-            self.image = self.image.crop((diff, 0, widthImg, heightImg))
-            widthImg, heightImg = self.image.size
-            diff = delta
-            # down
-            while ImageStat.Stat(self.image.crop((0, heightImg - diff, widthImg, heightImg))).var[0] < fixedThreshold\
-                    and diff < heightImg:
-                diff += delta
-            diff -= delta
-            self.image = self.image.crop((0, 0, widthImg, heightImg - diff))
-            widthImg, heightImg = self.image.size
-            diff = delta
-            # right
-            while ImageStat.Stat(self.image.crop((widthImg - diff, 0, widthImg, heightImg))).var[0] < fixedThreshold\
-                    and diff < widthImg:
-                diff += delta
-            diff -= delta
-            self.image = self.image.crop((0, 0, widthImg - diff, heightImg))
+    def cropPageNumber(self, power):
+        if self.fill != 'white':
+            tmpImg = self.image.convert(mode='L')
+        else:
+            tmpImg = ImageOps.invert(self.image.convert(mode='L'))
+        tmpImg = tmpImg.point(lambda x: x and 255)
+        tmpImg = tmpImg.filter(ImageFilter.MinFilter(size=3))
+        tmpImg = tmpImg.filter(ImageFilter.GaussianBlur(radius=5))
+        tmpImg = tmpImg.point(lambda x: (x >= 48 * power) and x)
+        self.image = self.image.crop(tmpImg.getbbox()) if tmpImg.getbbox() else self.image
+
+    def cropMargin(self, power):
+        if self.fill != 'white':
+            tmpImg = self.image.convert(mode='L')
+        else:
+            tmpImg = ImageOps.invert(self.image.convert(mode='L'))
+        tmpImg = tmpImg.filter(ImageFilter.GaussianBlur(radius=3))
+        tmpImg = tmpImg.point(lambda x: (x >= 16 * power) and x)
+        self.image = self.image.crop(self.getBoundingBox(tmpImg)) if tmpImg.getbbox() else self.image
 
 
 class Cover:
