@@ -80,9 +80,6 @@ def main(argv=None):
         makeBook(source)
     return 0
 
-def calculateZoomImageSize(imageSize, deviceRes):
-    scale = float(deviceRes[0])/float(imageSize[0])
-    return (float(deviceRes[0]), scale * imageSize[1])
 
 def buildHTML(path, imgfile, imgfilepath):
     imgfilepath = md5Checksum(imgfilepath)
@@ -124,14 +121,15 @@ def buildHTML(path, imgfile, imgfilepath):
                   "url('", "../" * backref, "Images/", postfix, imgfile, "'); " + additionalStyle + "\">\n"])
     if options.iskindle and options.panelview:
         sizeTmp = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
-        size = (int(sizeTmp[0] * 1.5), int(sizeTmp[1] * 1.5))
         if options.autoscale:
-          size = calculateZoomImageSize(sizeTmp, deviceres)
-        if size[0] <= deviceres[0]:
+            size = (getPanelViewResolution(sizeTmp, deviceres))
+        else:
+            size = (int(sizeTmp[0] * 1.5), int(sizeTmp[1] * 1.5))
+        if size[0] - deviceres[0] < deviceres[0] * 0.01:
             noHorizontalPV = True
         else:
             noHorizontalPV = False
-        if size[1] <= deviceres[1]:
+        if size[1] - deviceres[1] < deviceres[1] * 0.01:
             noVerticalPV = True
         else:
             noVerticalPV = False
@@ -674,6 +672,11 @@ def getDirectorySize(start_path='.'):
     return total_size
 
 
+def getPanelViewResolution(imageSize, deviceRes):
+    scale = float(deviceRes[0]) / float(imageSize[0])
+    return int(deviceRes[0]), int(scale * imageSize[1])
+
+
 def getPanelViewSize(deviceres, size):
     x = int(deviceres[0] / 2 - size[0] / 2) / deviceres[0] * 100
     y = int(deviceres[1] / 2 - size[1] / 2) / deviceres[1] * 100
@@ -931,11 +934,10 @@ def makeParser():
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
                            help="Device profile (Available options: K1, K2, K3, K45, KDX, KPW, KV, KoMT, KoG, KoGHD,"
                                 " KoA, KoAHD, KoAH2O, KoAO) [Default=KV]")
-    mainOptions.add_option("-a", "--auto-scale", action="store_true", dest="autoscale", default=False,
-                           help="Auto scale image in panel view by width. The zoom-in mode will have two view ports"
-                                "(top and bottom)")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")
+    mainOptions.add_option("-2", "--two-panel", action="store_true", dest="autoscale", default=False,
+                           help="Display two not four panels in Panel View mode")
     mainOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
                            help="Webtoon processing mode"),
 
