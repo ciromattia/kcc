@@ -621,7 +621,7 @@ def getComicInfo(path, originalPath):
         try:
             xml = metadata.MetadataParser(xmlPath)
         except Exception:
-            os.remove(xmlPath)
+            saferRemove(xmlPath)
             return
         options.authors = []
         if defaultTitle:
@@ -646,7 +646,7 @@ def getComicInfo(path, originalPath):
             options.chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
             options.summary = escape(xml.data['Summary'])
-        os.remove(xmlPath)
+        saferRemove(xmlPath)
 
 
 def getCoversFromMCB(mangaID):
@@ -1168,14 +1168,14 @@ def makeBook(source, qtGUI=None):
                 print('Error: Failed to tweak KindleGen output!')
                 return filepath
             else:
-                os.remove(i.replace('.epub', '.mobi') + '_toclean')
+                saferRemove(i.replace('.epub', '.mobi') + '_toclean')
             if k.path and k.coverSupport:
                 options.covers[filepath.index(i)][0].saveToKindle(k, options.covers[filepath.index(i)][1])
     return filepath
 
 
 def makeMOBIFix(item, uuid):
-    os.remove(item)
+    saferRemove(item)
     mobiPath = item.replace('.epub', '.mobi')
     move(mobiPath, mobiPath + '_toclean')
     try:
