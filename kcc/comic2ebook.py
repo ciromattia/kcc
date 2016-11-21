@@ -95,8 +95,6 @@ def buildHTML(path, imgfile, imgfilepath):
         additionalStyle = 'background-color:#FFFFFF;'
     htmlpath = ''
     postfix = ''
-    size = ''
-    imgfilepv = ''
     backref = 1
     head = path
     while True:
@@ -122,16 +120,8 @@ def buildHTML(path, imgfile, imgfilepath):
                   "<body style=\"background-image: ",
                   "url('", "../" * backref, "Images/", postfix, imgfile, "'); " + additionalStyle + "\">\n"])
     if options.iskindle and options.panelview:
-        if options.hqmode:
-            imgfilepv = list(os.path.splitext(imgfile))
-            imgfilepv[0] += "-hq"
-            imgfilepv = "".join(imgfilepv)
-            if os.path.isfile(os.path.join(head, "Images", postfix, imgfilepv)):
-                size = Image.open(os.path.join(head, "Images", postfix, imgfilepv)).size
-        if not options.hqmode or not size:
-            imgfilepv = imgfile
-            sizeTmp = Image.open(os.path.join(head, "Images", postfix, imgfilepv)).size
-            size = (int(sizeTmp[0] * 1.5), int(sizeTmp[1] * 1.5))
+        sizeTmp = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
+        size = (int(sizeTmp[0] * 1.5), int(sizeTmp[1] * 1.5))
         if size[0] <= deviceres[0]:
             noHorizontalPV = True
         else:
@@ -193,7 +183,7 @@ def buildHTML(path, imgfile, imgfilepath):
         for box in boxes:
             f.writelines(["<div class=\"PV-P\" id=\"" + box + "-P\" style=\"" + additionalStyle + "\">\n",
                           "<img style=\"" + boxStyles[box] + "\" src=\"", "../" * backref, "Images/", postfix,
-                          imgfilepv, "\" width=\"" + str(size[0]) + "\" height=\"" + str(size[1]) + "\"/>\n",
+                          imgfile, "\" width=\"" + str(size[0]) + "\" height=\"" + str(size[1]) + "\"/>\n",
                           "</div>\n"])
     f.writelines(["</body>\n",
                   "</html>\n"])
@@ -437,17 +427,15 @@ def buildEPUB(path, chapterNames, tomeNumber):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
-            filename = getImageFileName(afile)
-            if not filename[0].endswith('-hq'):
-                filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
-                if not chapter:
-                    chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
-                    chapter = True
-                if cover is None:
-                    cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
-                                         'cover' + getImageFileName(filelist[-1][1])[1])
-                    options.covers.append((image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options,
-                                                       tomeNumber), options.uuid))
+            filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
+            if not chapter:
+                chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
+                chapter = True
+            if cover is None:
+                cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
+                                     'cover' + getImageFileName(filelist[-1][1])[1])
+                options.covers.append((image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options,
+                                                   tomeNumber), options.uuid))
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapterNames and options.chapters:
         chapterlist = []
@@ -964,8 +952,6 @@ def makeParser():
                                  help="Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]")
     processingOptions.add_option("--cp", "--croppingpower", type="float", dest="croppingp", default="1.0",
                                  help="Set cropping power [Default=1.0]")
-    processingOptions.add_option("--hq", action="store_true", dest="hqmode", default=False,
-                                 help="Enable high quality Panel View")
     processingOptions.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
                                  help="Disable autodetection and force black borders")
     processingOptions.add_option("--whiteborders", action="store_true", dest="white_borders", default=False,
@@ -1015,20 +1001,16 @@ def checkOptions():
     # Older Kindle don't need higher resolution files due lack of Panel View.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K3' or options.profile == 'KDX':
         options.panelview = False
-        options.hqmode = False
     # Webtoon mode mandatory options
     if options.webtoon:
         options.panelview = False
-        options.hqmode = False
         options.righttoleft = False
         options.upscale = True
     # Disable all Kindle features for other e-readers
     if options.profile == 'OTHER':
         options.panelview = False
-        options.hqmode = False
     if 'Ko' in options.profile:
         options.panelview = False
-        options.hqmode = False
     # CBZ files on Kindle DX/DXG support higher resolution
     if options.profile == 'KDX' and options.format == 'CBZ':
         options.customheight = 1200
@@ -1041,7 +1023,7 @@ def checkOptions():
         if options.customheight != 0:
             Y = options.customheight
         newProfile = ("Custom", (int(X), int(Y)), image.ProfileData.Palette16,
-                      image.ProfileData.Profiles[options.profile][3], (int(int(X) * 1.5), int(int(Y) * 1.5)))
+                      image.ProfileData.Profiles[options.profile][3])
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]

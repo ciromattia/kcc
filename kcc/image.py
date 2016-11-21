@@ -78,21 +78,21 @@ class ProfileData:
     ]
 
     Profiles = {
-        'K1': ("Kindle 1", (600, 670), Palette4, 1.8, (900, 1005)),
-        'K2': ("Kindle 2", (600, 670), Palette15, 1.8, (900, 1005)),
-        'K3': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
-        'K45': ("Kindle", (600, 800), Palette16, 1.8, (900, 1200)),
-        'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8, (1236, 1500)),
-        'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.8, (1137, 1536)),
-        'KV': ("Kindle Paperwhite 3/Voyage/Oasis", (1072, 1448), Palette16, 1.8, (1608, 2172)),
-        'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8, (900, 1200)),
-        'KoG': ("Kobo Glo", (768, 1024), Palette16, 1.8, (1152, 1536)),
-        'KoGHD': ("Kobo Glo HD", (1072, 1448), Palette16, 1.8, (1608, 2172)),
-        'KoA': ("Kobo Aura", (758, 1024), Palette16, 1.8, (1137, 1536)),
-        'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.8, (1620, 2160)),
-        'KoAH2O': ("Kobo Aura H2O", (1080, 1430), Palette16, 1.8, (1620, 2145)),
-        'KoAO': ("Kobo Aura ONE", (1404, 1872), Palette16, 1.8, (2106, 2808)),
-        'OTHER': ("Other", (0, 0), Palette16, 1.8, (0, 0)),
+        'K1': ("Kindle 1", (600, 670), Palette4, 1.8),
+        'K2': ("Kindle 2", (600, 670), Palette15, 1.8),
+        'K3': ("Kindle", (600, 800), Palette16, 1.8),
+        'K45': ("Kindle", (600, 800), Palette16, 1.8),
+        'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8),
+        'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.8),
+        'KV': ("Kindle Paperwhite 3/Voyage/Oasis", (1072, 1448), Palette16, 1.8),
+        'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8),
+        'KoG': ("Kobo Glo", (768, 1024), Palette16, 1.8),
+        'KoGHD': ("Kobo Glo HD", (1072, 1448), Palette16, 1.8),
+        'KoA': ("Kobo Aura", (758, 1024), Palette16, 1.8),
+        'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.8),
+        'KoAH2O': ("Kobo Aura H2O", (1080, 1430), Palette16, 1.8),
+        'KoAO': ("Kobo Aura ONE", (1404, 1872), Palette16, 1.8),
+        'OTHER': ("Other", (0, 0), Palette16, 1.8),
     }
 
 
@@ -106,8 +106,6 @@ class ComicPageParser:
         self.color = self.colorCheck()
         self.fill = self.fillCheck()
         self.splitCheck()
-        if self.opt.hqmode:
-            self.sizeCheck()
 
     def getImageHistogram(self, image):
         histogram = image.histogram()
@@ -206,29 +204,16 @@ class ComicPageParser:
                 else:
                     return 'white'
 
-    def sizeCheck(self):
-        additionalPayload = []
-        width, height = self.image.size
-        dstwidth, dstheight = self.size
-        for work in self.payload:
-            if width > dstwidth and height > dstheight:
-                additionalPayload.append([work[0] + '+', work[1], work[2].copy(), work[3], work[4]])
-        self.payload = self.payload + additionalPayload
-
 
 class ComicPage:
     def __init__(self, mode, path, image, color, fill, options):
         self.opt = options
-        _, self.size, self.palette, self.gamma, self.panelviewsize = self.opt.profileData
+        _, self.size, self.palette, self.gamma = self.opt.profileData
         self.image = image
         self.color = color
         self.fill = fill
         self.rotated = False
         self.orgPath = os.path.join(path[0], path[1])
-        if '+' in mode:
-            self.hqMode = True
-        else:
-            self.hqMode = False
         if 'N' in mode:
             self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-KCC'
         elif 'R' in mode:
@@ -248,8 +233,6 @@ class ComicPage:
                 flags.append('Rotated')
             if self.fill != 'white':
                 flags.append('BlackFill')
-            if self.hqMode:
-                self.targetPath += '-HQ'
             if self.opt.forcepng:
                 self.targetPath += '.png'
                 self.image.save(self.targetPath, 'PNG', optimize=1)
@@ -283,41 +266,35 @@ class ComicPage:
         self.image = self.image.quantize(palette=palImg)
 
     def resizeImage(self):
-        if self.hqMode:
-            size = (self.panelviewsize[0], self.panelviewsize[1])
-            if self.image.size[0] > size[0] or self.image.size[1] > size[1]:
-                self.image.thumbnail(size, Image.LANCZOS)
+        if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
+            method = Image.BICUBIC
         else:
-            size = (self.size[0], self.size[1])
-            if self.image.size[0] <= size[0] and self.image.size[1] <= size[1]:
-                method = Image.BICUBIC
+            method = Image.LANCZOS
+        if self.opt.stretch:
+            self.image = self.image.resize(self.size, method)
+        elif self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1] and not self.opt.upscale:
+            if self.opt.format == 'CBZ':
+                borderw = int((self.size[0] - self.image.size[0]) / 2)
+                borderh = int((self.size[1] - self.image.size[1]) / 2)
+                self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=self.fill)
+                if self.image.size[0] != self.size[0] or self.image.size[1] != self.size[1]:
+                    self.image = ImageOps.fit(self.image, self.size, method=Image.BICUBIC, centering=(0.5, 0.5))
+        else:
+            if self.opt.format == 'CBZ':
+                ratioDev = float(self.size[0]) / float(self.size[1])
+                if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
+                    diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
+                    self.image = ImageOps.expand(self.image, border=(int(diff / 2), 0), fill=self.fill)
+                elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
+                    diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
+                    self.image = ImageOps.expand(self.image, border=(0, int(diff / 2)), fill=self.fill)
+                self.image = ImageOps.fit(self.image, self.size, method=method, centering=(0.5, 0.5))
             else:
-                method = Image.LANCZOS
-            if self.opt.stretch:
-                self.image = self.image.resize(size, method)
-            elif self.image.size[0] <= size[0] and self.image.size[1] <= size[1] and not self.opt.upscale:
-                if self.opt.format == 'CBZ':
-                    borderw = int((size[0] - self.image.size[0]) / 2)
-                    borderh = int((size[1] - self.image.size[1]) / 2)
-                    self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=self.fill)
-                    if self.image.size[0] != size[0] or self.image.size[1] != size[1]:
-                        self.image = ImageOps.fit(self.image, size, method=Image.BICUBIC, centering=(0.5, 0.5))
-            else:
-                if self.opt.format == 'CBZ':
-                    ratioDev = float(size[0]) / float(size[1])
-                    if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
-                        diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-                        self.image = ImageOps.expand(self.image, border=(int(diff / 2), 0), fill=self.fill)
-                    elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
-                        diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
-                        self.image = ImageOps.expand(self.image, border=(0, int(diff / 2)), fill=self.fill)
-                    self.image = ImageOps.fit(self.image, size, method=method, centering=(0.5, 0.5))
-                else:
-                    hpercent = size[1] / float(self.image.size[1])
-                    wsize = int((float(self.image.size[0]) * float(hpercent)))
-                    self.image = self.image.resize((wsize, size[1]), method)
-                    if self.image.size[0] > size[0] or self.image.size[1] > size[1]:
-                        self.image.thumbnail(size, Image.LANCZOS)
+                hpercent = self.size[1] / float(self.image.size[1])
+                wsize = int((float(self.image.size[0]) * float(hpercent)))
+                self.image = self.image.resize((wsize, self.size[1]), method)
+                if self.image.size[0] > self.size[0] or self.image.size[1] > self.size[1]:
+                    self.image.thumbnail(self.size, Image.LANCZOS)
 
     def getBoundingBox(self, tmpImg):
         min_margin = [int(0.005 * i + 0.5) for i in tmpImg.size]
