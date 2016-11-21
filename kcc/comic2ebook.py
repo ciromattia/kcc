@@ -80,6 +80,9 @@ def main(argv=None):
         makeBook(source)
     return 0
 
+def calculateZoomImageSize(imageSize, deviceRes):
+    scale = float(deviceRes[0])/float(imageSize[0])
+    return (float(deviceRes[0]), scale * imageSize[1])
 
 def buildHTML(path, imgfile, imgfilepath):
     imgfilepath = md5Checksum(imgfilepath)
@@ -122,6 +125,8 @@ def buildHTML(path, imgfile, imgfilepath):
     if options.iskindle and options.panelview:
         sizeTmp = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
         size = (int(sizeTmp[0] * 1.5), int(sizeTmp[1] * 1.5))
+        if options.autoscale:
+          size = calculateZoomImageSize(sizeTmp, deviceres)
         if size[0] <= deviceres[0]:
             noHorizontalPV = True
         else:
@@ -926,6 +931,9 @@ def makeParser():
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
                            help="Device profile (Available options: K1, K2, K3, K45, KDX, KPW, KV, KoMT, KoG, KoGHD,"
                                 " KoA, KoAHD, KoAH2O, KoAO) [Default=KV]")
+    mainOptions.add_option("-a", "--auto-scale", action="store_true", dest="autoscale", default=False,
+                           help="Auto scale image in panel view by width. The zoom-in mode will have two view ports"
+                                "(top and bottom)")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")
     mainOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
