@@ -27,7 +27,7 @@ try:
 except ImportError:
     walk = os.walk
 from . import rarfile
-from .shared import check7ZFile as is_7zfile, saferReplace
+from .shared import check7ZFile as is_7zfile, saferReplace, saferRemove
 
 
 class CBxArchive:
@@ -66,7 +66,7 @@ class CBxArchive:
         for root, dirnames, filenames in walk(targetdir):
             for filename in filenames:
                 if filename.startswith('__MACOSX') or filename.endswith('.DS_Store') or filename.endswith('humbs.db'):
-                    os.remove(os.path.join(root, filename))
+                    saferRemove(os.path.join(root, filename))
 
     def extractCB7(self, targetdir):
         # Workaround for some wide UTF-8 + Popen abnormalities
@@ -80,7 +80,7 @@ class CBxArchive:
             if b"Everything is Ok" in line:
                 extracted = True
         if sys.platform.startswith('darwin'):
-            os.remove(self.origFileName)
+            saferRemove(self.origFileName)
         if not extracted:
             raise OSError
 

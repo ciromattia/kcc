@@ -24,7 +24,7 @@ from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
 from PIL import Image, ImageStat, ImageOps
-from .shared import getImageFileName, walkLevel, walkSort
+from .shared import getImageFileName, walkLevel, walkSort, saferRemove
 try:
     from PyQt5 import QtCore
 except ImportError:
@@ -77,7 +77,7 @@ def mergeDirectory(work):
                     img = ImageOps.fit(img, (targetWidth, img.size[1]), method=Image.BICUBIC, centering=(0.5, 0.5))
                 result.paste(img, (0, y))
                 y += img.size[1]
-                os.remove(i)
+                saferRemove(i)
             savePath = os.path.split(imagesValid[0])
             result.save(os.path.join(savePath[0], os.path.splitext(savePath[1])[0] + '.png'), 'PNG')
     except Exception:
@@ -203,7 +203,7 @@ def splitImage(work):
                         targetHeight += panels[panel][2]
                     newPage.save(os.path.join(path, fileExpanded[0] + '-' + str(pageNumber) + '.png'), 'PNG')
                     pageNumber += 1
-            os.remove(filePath)
+            saferRemove(filePath)
     except Exception:
         return str(sys.exc_info()[1])
 
@@ -275,7 +275,7 @@ def main(argv=None, qtGUI=None):
                         pagenumber += 1
                         work.append([root, name, options])
                     else:
-                        os.remove(os.path.join(root, name))
+                        saferRemove(os.path.join(root, name))
             if GUI:
                 GUI.progressBarTick.emit('Splitting images')
                 GUI.progressBarTick.emit(str(pagenumber))

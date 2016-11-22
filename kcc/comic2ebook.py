@@ -95,8 +95,6 @@ def buildHTML(path, imgfile, imgfilepath):
         additionalStyle = 'background-color:#FFFFFF;'
     htmlpath = ''
     postfix = ''
-    size = ''
-    imgfilepv = ''
     backref = 1
     head = path
     while True:
@@ -122,21 +120,16 @@ def buildHTML(path, imgfile, imgfilepath):
                   "<body style=\"background-image: ",
                   "url('", "../" * backref, "Images/", postfix, imgfile, "'); " + additionalStyle + "\">\n"])
     if options.iskindle and options.panelview:
-        if options.hqmode:
-            imgfilepv = list(os.path.splitext(imgfile))
-            imgfilepv[0] += "-hq"
-            imgfilepv = "".join(imgfilepv)
-            if os.path.isfile(os.path.join(head, "Images", postfix, imgfilepv)):
-                size = Image.open(os.path.join(head, "Images", postfix, imgfilepv)).size
-        if not options.hqmode or not size:
-            imgfilepv = imgfile
-            sizeTmp = Image.open(os.path.join(head, "Images", postfix, imgfilepv)).size
+        sizeTmp = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
+        if options.autoscale:
+            size = (getPanelViewResolution(sizeTmp, deviceres))
+        else:
             size = (int(sizeTmp[0] * 1.5), int(sizeTmp[1] * 1.5))
-        if size[0] <= deviceres[0]:
+        if size[0] - deviceres[0] < deviceres[0] * 0.01:
             noHorizontalPV = True
         else:
             noHorizontalPV = False
-        if size[1] <= deviceres[1]:
+        if size[1] - deviceres[1] < deviceres[1] * 0.01:
             noVerticalPV = True
         else:
             noVerticalPV = False
@@ -193,7 +186,7 @@ def buildHTML(path, imgfile, imgfilepath):
         for box in boxes:
             f.writelines(["<div class=\"PV-P\" id=\"" + box + "-P\" style=\"" + additionalStyle + "\">\n",
                           "<img style=\"" + boxStyles[box] + "\" src=\"", "../" * backref, "Images/", postfix,
-                          imgfilepv, "\" width=\"" + str(size[0]) + "\" height=\"" + str(size[1]) + "\"/>\n",
+                          imgfile, "\" width=\"" + str(size[0]) + "\" height=\"" + str(size[1]) + "\"/>\n",
                           "</div>\n"])
     f.writelines(["</body>\n",
                   "</html>\n"])
@@ -336,29 +329,6 @@ def buildOPF(dstdir, title, filelist, cover=None):
         f.write("</manifest>\n<spine page-progression-direction=\"rtl\" toc=\"ncx\">\n")
     else:
         f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
-    # if options.iskindle and options.profile != 'Custom':
-    #     if options.righttoleft:
-    #         nextflow = 'right'
-    #     else:
-    #         nextflow = 'left'
-    #     for entry in reflist:
-    #         if '-kcc-b' in entry:
-    #             if options.righttoleft:
-    #                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-right\"/>\n")
-    #             else:
-    #                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-left\"/>\n")
-    #         elif '-kcc-c' in entry:
-    #             if options.righttoleft:
-    #                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-left\"/>\n")
-    #             else:
-    #                 f.write("<itemref idref=\"page_" + entry + "\" properties=\"page-spread-right\"/>\n")
-    #         else:
-    #             f.write("<itemref idref=\"page_" + entry + "\" properties=\"facing-page-" + nextflow + "\"/>\n")
-    #             if nextflow == 'right':
-    #                 nextflow = 'left'
-    #             else:
-    #                 nextflow = 'right'
-    # else:
     for entry in reflist:
         f.write("<itemref idref=\"page_" + entry + "\"/>\n")
     f.write("</spine>\n</package>\n")
@@ -460,17 +430,15 @@ def buildEPUB(path, chapterNames, tomeNumber):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
-            filename = getImageFileName(afile)
-            if not filename[0].endswith('-hq'):
-                filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
-                if not chapter:
-                    chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
-                    chapter = True
-                if cover is None:
-                    cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
-                                         'cover' + getImageFileName(filelist[-1][1])[1])
-                    options.covers.append((image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options,
-                                                       tomeNumber), options.uuid))
+            filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
+            if not chapter:
+                chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
+                chapter = True
+            if cover is None:
+                cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
+                                     'cover' + getImageFileName(filelist[-1][1])[1])
+                options.covers.append((image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options,
+                                                   tomeNumber), options.uuid))
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapterNames and options.chapters:
         chapterlist = []
@@ -548,10 +516,10 @@ def imgFileProcessing(work):
         workImg = image.ComicPageParser((dirpath, afile), opt)
         for i in workImg.payload:
             img = image.ComicPage(i[0], i[1], i[2], i[3], i[4], opt)
-            if opt.cropping > 0 and not opt.webtoon:
-                img.cropWhiteSpace(opt.croppingp)
             if opt.cropping == 2 and not opt.webtoon:
-                img.cutPageNumber(opt.croppingpn)
+                img.cropPageNumber(opt.croppingp)
+            if opt.cropping > 0 and not opt.webtoon:
+                img.cropMargin(opt.croppingp)
             img.autocontrastImage()
             img.resizeImage()
             if opt.forcepng and not opt.forcecolor:
@@ -653,7 +621,7 @@ def getComicInfo(path, originalPath):
         try:
             xml = metadata.MetadataParser(xmlPath)
         except Exception:
-            os.remove(xmlPath)
+            saferRemove(xmlPath)
             return
         options.authors = []
         if defaultTitle:
@@ -678,7 +646,7 @@ def getComicInfo(path, originalPath):
             options.chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
             options.summary = escape(xml.data['Summary'])
-        os.remove(xmlPath)
+        saferRemove(xmlPath)
 
 
 def getCoversFromMCB(mangaID):
@@ -702,6 +670,11 @@ def getDirectorySize(start_path='.'):
             fp = os.path.join(dirpath, f)
             total_size += os.path.getsize(fp)
     return total_size
+
+
+def getPanelViewResolution(imageSize, deviceRes):
+    scale = float(deviceRes[0]) / float(imageSize[0])
+    return int(deviceRes[0]), int(scale * imageSize[1])
 
 
 def getPanelViewSize(deviceres, size):
@@ -963,6 +936,8 @@ def makeParser():
                                 " KoA, KoAHD, KoAH2O, KoAO) [Default=KV]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")
+    mainOptions.add_option("-2", "--two-panel", action="store_true", dest="autoscale", default=False,
+                           help="Display two not four panels in Panel View mode")
     mainOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
                            help="Webtoon processing mode"),
 
@@ -983,8 +958,10 @@ def makeParser():
                                  help="Double page parsing mode. 0: Split 1: Rotate 2: Both [Default=0]")
     processingOptions.add_option("-g", "--gamma", type="float", dest="gamma", default="0.0",
                                  help="Apply gamma correction to linearize the image [Default=Auto]")
-    processingOptions.add_option("--hq", action="store_true", dest="hqmode", default=False,
-                                 help="Enable high quality Panel View")
+    processingOptions.add_option("-c", "--cropping", type="int", dest="cropping", default="2",
+                                 help="Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]")
+    processingOptions.add_option("--cp", "--croppingpower", type="float", dest="croppingp", default="1.0",
+                                 help="Set cropping power [Default=1.0]")
     processingOptions.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
                                  help="Disable autodetection and force black borders")
     processingOptions.add_option("--whiteborders", action="store_true", dest="white_borders", default=False,
@@ -993,12 +970,6 @@ def makeParser():
                                  help="Don't convert images to grayscale")
     processingOptions.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
                                  help="Create PNG files instead JPEG")
-    processingOptions.add_option("--cropping", type="int", dest="cropping", default="2",
-                                 help="Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]")
-    processingOptions.add_option("--croppingpower", type="float", dest="croppingp", default="0.1",
-                                 help="Set margin cropping threshold [Default=0.1]")
-    processingOptions.add_option("--croppingpowerpage", type="float", dest="croppingpn", default="5.0",
-                                 help="Set page number cropping threshold [Default=5.0]")
 
     customProfileOptions.add_option("--customwidth", type="int", dest="customwidth", default=0,
                                     help="Replace screen width provided by device profile")
@@ -1040,20 +1011,16 @@ def checkOptions():
     # Older Kindle don't need higher resolution files due lack of Panel View.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K3' or options.profile == 'KDX':
         options.panelview = False
-        options.hqmode = False
     # Webtoon mode mandatory options
     if options.webtoon:
         options.panelview = False
-        options.hqmode = False
         options.righttoleft = False
         options.upscale = True
     # Disable all Kindle features for other e-readers
     if options.profile == 'OTHER':
         options.panelview = False
-        options.hqmode = False
     if 'Ko' in options.profile:
         options.panelview = False
-        options.hqmode = False
     # CBZ files on Kindle DX/DXG support higher resolution
     if options.profile == 'KDX' and options.format == 'CBZ':
         options.customheight = 1200
@@ -1066,7 +1033,7 @@ def checkOptions():
         if options.customheight != 0:
             Y = options.customheight
         newProfile = ("Custom", (int(X), int(Y)), image.ProfileData.Palette16,
-                      image.ProfileData.Profiles[options.profile][3], (int(int(X) * 1.5), int(int(Y) * 1.5)))
+                      image.ProfileData.Profiles[options.profile][3])
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
@@ -1184,7 +1151,6 @@ def makeBook(source, qtGUI=None):
     if not GUI and options.format == 'MOBI':
         print("Creating MOBI files...")
         work = []
-        k = kindle.Kindle()
         for i in filepath:
             work.append([i])
         output = makeMOBI(work, GUI)
@@ -1193,6 +1159,7 @@ def makeBook(source, qtGUI=None):
                 print('Error: KindleGen failed to create MOBI!')
                 print(errors)
                 return filepath
+        k = kindle.Kindle()
         if k.path and k.coverSupport:
             print("Kindle detected. Uploading covers...")
         for i in filepath:
@@ -1201,14 +1168,14 @@ def makeBook(source, qtGUI=None):
                 print('Error: Failed to tweak KindleGen output!')
                 return filepath
             else:
-                os.remove(i.replace('.epub', '.mobi') + '_toclean')
+                saferRemove(i.replace('.epub', '.mobi') + '_toclean')
             if k.path and k.coverSupport:
                 options.covers[filepath.index(i)][0].saveToKindle(k, options.covers[filepath.index(i)][1])
     return filepath
 
 
 def makeMOBIFix(item, uuid):
-    os.remove(item)
+    saferRemove(item)
     mobiPath = item.replace('.epub', '.mobi')
     move(mobiPath, mobiPath + '_toclean')
     try:

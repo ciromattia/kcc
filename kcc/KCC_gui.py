@@ -33,7 +33,7 @@ from distutils.version import StrictVersion
 from xml.sax.saxutils import escape
 from platform import platform
 from raven import Client
-from .shared import md5Checksum, HTMLStripper, sanitizeTrace
+from .shared import md5Checksum, HTMLStripper, sanitizeTrace, saferRemove
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -257,7 +257,7 @@ class WorkerThread(QtCore.QThread):
         elif GUI.rotateBox.checkState() == 2:
             options.splitter = 1
         if GUI.qualityBox.isChecked():
-            options.hqmode = True
+            options.autoscale = True
         if GUI.webtoonBox.isChecked():
             options.webtoon = True
         if GUI.upscaleBox.checkState() == 1:
@@ -331,7 +331,7 @@ class WorkerThread(QtCore.QThread):
                 if 'outputPath' in locals():
                     for item in outputPath:
                         if os.path.exists(item):
-                            os.remove(item)
+                            saferRemove(item)
                 self.clean()
                 return
             if not self.errors:
@@ -358,9 +358,9 @@ class WorkerThread(QtCore.QThread):
                     if not self.conversionAlive:
                         for item in outputPath:
                             if os.path.exists(item):
-                                os.remove(item)
+                                saferRemove(item)
                             if os.path.exists(item.replace('.epub', '.mobi')):
-                                os.remove(item.replace('.epub', '.mobi'))
+                                saferRemove(item.replace('.epub', '.mobi'))
                         self.clean()
                         return
                     if self.kindlegenErrorCode[0] == 0:
@@ -381,7 +381,7 @@ class WorkerThread(QtCore.QThread):
                             for item in outputPath:
                                 GUI.progress.content = ''
                                 mobiPath = item.replace('.epub', '.mobi')
-                                os.remove(mobiPath + '_toclean')
+                                saferRemove(mobiPath + '_toclean')
                                 if GUI.targetDirectory and GUI.targetDirectory != os.path.dirname(mobiPath):
                                     try:
                                         move(mobiPath, GUI.targetDirectory)
@@ -393,15 +393,15 @@ class WorkerThread(QtCore.QThread):
                                 for item in outputPath:
                                     comic2ebook.options.covers[outputPath.index(item)][0].saveToKindle(
                                         k, comic2ebook.options.covers[outputPath.index(item)][1])
-                                MW.addMessage.emit('Kindle detected. Uploading covers...', 'info', False)
+                                MW.addMessage.emit('Kindle detected. Uploading covers... <b>Done!</b>', 'info', False)
                         else:
                             GUI.progress.content = ''
                             for item in outputPath:
                                 mobiPath = item.replace('.epub', '.mobi')
                                 if os.path.exists(mobiPath):
-                                    os.remove(mobiPath)
+                                    saferRemove(mobiPath)
                                 if os.path.exists(mobiPath + '_toclean'):
-                                    os.remove(mobiPath + '_toclean')
+                                    saferRemove(mobiPath + '_toclean')
                             MW.addMessage.emit('Failed to process MOBI file!', 'error', False)
                             MW.addTrayMessage.emit('Failed to process MOBI file!', 'Critical')
                     else:
@@ -409,9 +409,9 @@ class WorkerThread(QtCore.QThread):
                         epubSize = (os.path.getsize(self.kindlegenErrorCode[2])) // 1024 // 1024
                         for item in outputPath:
                             if os.path.exists(item):
-                                os.remove(item)
+                                saferRemove(item)
                             if os.path.exists(item.replace('.epub', '.mobi')):
-                                os.remove(item.replace('.epub', '.mobi'))
+                                saferRemove(item.replace('.epub', '.mobi'))
                         MW.addMessage.emit('KindleGen failed to create MOBI!', 'error', False)
                         MW.addTrayMessage.emit('KindleGen failed to create MOBI!', 'Critical')
                         if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':
@@ -603,7 +603,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.upscaleBox.setEnabled(False)
             GUI.upscaleBox.setChecked(True)
         else:
-            GUI.qualityBox.setEnabled(True)
+            profile = GUI.profiles[str(GUI.deviceBox.currentText())]
+            if profile['PVOptions']:
+                GUI.qualityBox.setEnabled(True)
             GUI.mangaBox.setEnabled(True)
             GUI.rotateBox.setEnabled(True)
             GUI.upscaleBox.setEnabled(True)
@@ -629,9 +631,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.changeFormat()
         GUI.gammaSlider.setValue(0)
         self.changeGamma(0)
-        GUI.qualityBox.setEnabled(profile['Quality'])
+        GUI.qualityBox.setEnabled(profile['PVOptions'])
         GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
-        if not profile['Quality']:
+        if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
         if str(GUI.deviceBox.currentText()) == 'Other':
             self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
@@ -643,7 +645,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.formatBox.setCurrentIndex(outputFormat)
         else:
             GUI.formatBox.setCurrentIndex(profile['DefaultFormat'])
-        GUI.qualityBox.setEnabled(profile['Quality'])
+        GUI.qualityBox.setEnabled(profile['PVOptions'])
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -894,39 +896,39 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 MW.resize(500, 500)
 
         self.profiles = {
-            "Kindle Oasis": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Oasis": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                              'DefaultUpscale': True, 'Label': 'KV'},
-            "Kindle Voyage": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'Label': 'KV'},
-            "Kindle PW 3": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle PW 3": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                             'DefaultUpscale': True, 'Label': 'KV'},
-            "Kindle PW 1/2": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle PW 1/2": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'Label': 'KPW'},
-            "Kindle": {'Quality': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K45'},
-            "Kindle DX/DXG": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kindle DX/DXG": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'Label': 'KDX'},
-            "Kobo Mini/Touch": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
+            "Kobo Mini/Touch": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                                 'DefaultUpscale': False, 'Label': 'KoMT'},
-            "Kobo Glo": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
+            "Kobo Glo": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                          'DefaultUpscale': False, 'Label': 'KoG'},
-            "Kobo Glo HD": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
+            "Kobo Glo HD": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                             'DefaultUpscale': False, 'Label': 'KoGHD'},
-            "Kobo Aura": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
+            "Kobo Aura": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                           'DefaultUpscale': False, 'Label': 'KoA'},
-            "Kobo Aura HD": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
+            "Kobo Aura HD": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                              'DefaultUpscale': True, 'Label': 'KoAHD'},
-            "Kobo Aura H2O": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
+            "Kobo Aura H2O": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                               'DefaultUpscale': True, 'Label': 'KoAH2O'},
-            "Kobo Aura ONE": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 1,
+            "Kobo Aura ONE": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                               'DefaultUpscale': True, 'Label': 'KoAO'},
-            "Other": {'Quality': False, 'ForceExpert': True, 'DefaultFormat': 1,
+            "Other": {'PVOptions': False, 'ForceExpert': True, 'DefaultFormat': 1,
                       'DefaultUpscale': False, 'Label': 'OTHER'},
-            "Kindle 1": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 1": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K1'},
-            "Kindle 2": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 2": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K2'},
-            "Kindle 3": {'Quality': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 3": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K3'},
         }
         profilesGUI = [
