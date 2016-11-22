@@ -75,9 +75,11 @@ Usage: kcc-c2e [options] comic_file|comic_folder
 Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
-                        Device profile (Available options: K1, K2, K3, K45, KDX,
-                        KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O, KoAO) [Default=KV]
+                        Device profile (Available options: K1, K2, K3, K45,
+                        KDX, KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O,
+                        KoAO) [Default=KV]
     -m, --manga-style   Manga style (right-to-left reading and splitting)
+    -2, --two-panel     Display two not four panels in Panel View mode
     -w, --webtoon       Webtoon processing mode
 
   OUTPUT SETTINGS:
@@ -86,29 +88,28 @@ Options:
     -t TITLE, --title=TITLE
                         Comic title [Default=filename or directory name]
     -f FORMAT, --format=FORMAT
-                        Output format (Available options: Auto, MOBI, EPUB, CBZ)
-                        [Default=Auto]
+                        Output format (Available options: Auto, MOBI, EPUB,
+                        CBZ) [Default=Auto]
     -b, --batchsplit    Split output into multiple files
 
   PROCESSING:
     -u, --upscale       Resize images smaller than device's resolution
     -s, --stretch       Stretch images to device's resolution
     -r SPLITTER, --splitter=SPLITTER
-                        Double page parsing mode. 0: Split 1: Rotate 2: Both [Default=0]
+                        Double page parsing mode. 0: Split 1: Rotate 2: Both
+                        [Default=0]
     -g GAMMA, --gamma=GAMMA
-                        Apply gamma correction to linearize the image [Default=Auto]
-    --hq                Enable high quality Panel View
+                        Apply gamma correction to linearize the image
+                        [Default=Auto]
+    -c CROPPING, --cropping=CROPPING
+                        Set cropping mode. 0: Disabled 1: Margins 2: Margins +
+                        page numbers [Default=2]
+    --cp=CROPPINGP, --croppingpower=CROPPINGP
+                        Set cropping power [Default=1.0]
     --blackborders      Disable autodetection and force black borders
     --whiteborders      Disable autodetection and force white borders
     --forcecolor        Don't convert images to grayscale
     --forcepng          Create PNG files instead JPEG
-    --cropping=CROPPING
-                        Set cropping mode. 0: Disabled 1: Margins 2: Margins +
-                        page numbers [Default=2]
-    --croppingpower=CROPPINGP
-                        Set margin cropping threshold [Default=0.1]
-    --croppingpowerpage=CROPPINGPN
-                        Set page number cropping threshold [Default=5.0]
 
   CUSTOM PROFILE:
     --customwidth=CUSTOMWIDTH
@@ -159,6 +160,12 @@ The app relies and includes the following scripts:
 * [Kobo Aura ONE](http://kcc.iosphe.re/Samples/Ubunchu-KoAO.kepub.epub)
 
 ## CHANGELOG
+####5.2:
+* Added new Panel View options
+* Implemented new margin detection algorithm
+* Removed HQ Panel View mode
+* Fixed multiple smaller issues
+
 ####5.1.3:
 * Added Kobo Aura ONE profile
 * Fixed few small bugs
