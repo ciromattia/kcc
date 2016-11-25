@@ -734,63 +734,25 @@ def sanitizePermissions(filetree):
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
 
 
-# noinspection PyUnboundLocalVariable
 def splitDirectory(path):
-    # Detect directory stucture
-    for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 0):
-        subdirectoryNumber = len(dirs)
-        filesNumber = len(files)
-    if subdirectoryNumber == 0:
-        # No subdirectories
-        mode = 0
+    level = -1
+    for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
+        for f in files:
+            if f.endswith('.jpg') or f.endswith('.jpeg') or f.endswith('.png') or f.endswith('.gif'):
+                newLevel = os.path.join(root, f).replace(os.path.join(path, 'OEBPS', 'Images'), '').count(os.sep)
+                if level != -1 and level != newLevel:
+                    level = 0
+                    break
+                else:
+                    level = newLevel
+    if level > 0:
+        splitter = splitProcess(os.path.join(path, 'OEBPS', 'Images'), level)
+        path = [path]
+        for tome in splitter:
+            path.append(tome)
+        return path
     else:
-        if filesNumber > 0:
-            print('WARNING: Automatic output splitting failed.')
-            if GUI:
-                GUI.addMessage.emit('Automatic output splitting failed. <a href='
-                                    '"https://github.com/ciromattia/kcc/wiki'
-                                    '/Automatic-output-splitting">'
-                                    'More details.</a>', 'warning', False)
-                GUI.addMessage.emit('', '', False)
-            return [path]
-        detectedSubSubdirectories = False
-        detectedFilesInSubdirectories = False
-        for root, dirs, files in walkLevel(os.path.join(path, 'OEBPS', 'Images'), 1):
-            if root != os.path.join(path, 'OEBPS', 'Images'):
-                if len(dirs) != 0:
-                    detectedSubSubdirectories = True
-                elif len(dirs) == 0 and detectedSubSubdirectories:
-                    print('WARNING: Automatic output splitting failed.')
-                    if GUI:
-                        GUI.addMessage.emit('Automatic output splitting failed. <a href='
-                                            '"https://github.com/ciromattia/kcc/wiki'
-                                            '/Automatic-output-splitting">'
-                                            'More details.</a>', 'warning', False)
-                        GUI.addMessage.emit('', '', False)
-                    return [path]
-                if len(files) != 0:
-                    detectedFilesInSubdirectories = True
-        if detectedSubSubdirectories:
-            # Two levels of subdirectories
-            mode = 2
-        else:
-            # One level of subdirectories
-            mode = 1
-        if detectedFilesInSubdirectories and detectedSubSubdirectories:
-            print('WARNING: Automatic output splitting failed.')
-            if GUI:
-                GUI.addMessage.emit('Automatic output splitting failed. <a href='
-                                    '"https://github.com/ciromattia/kcc/wiki'
-                                    '/Automatic-output-splitting">'
-                                    'More details.</a>', 'warning', False)
-                GUI.addMessage.emit('', '', False)
-            return [path]
-    # Split directories
-    splitter = splitProcess(os.path.join(path, 'OEBPS', 'Images'), mode)
-    path = [path]
-    for tome in splitter:
-        path.append(tome)
-    return path
+        raise UserWarning('Unsupported directory structure.')
 
 
 def splitProcess(path, mode):
@@ -801,10 +763,15 @@ def splitProcess(path, mode):
         targetSize = 104857600
     else:
         targetSize = 419430400
-    if mode == 0:
+    if options.batchsplit == 2 and mode == 2:
+        mode = 3
+    if mode < 3:
         for root, dirs, files in walkLevel(path, 0):
-            for name in files:
-                size = os.path.getsize(os.path.join(root, name))
+            for name in files if mode == 1 else dirs:
+                if mode == 1:
+                    size = os.path.getsize(os.path.join(root, name))
+                else:
+                    size = getDirectorySize(os.path.join(root, name))
                 if currentSize + size > targetSize:
                     currentTarget, pathRoot = createNewTome()
                     output.append(pathRoot)
@@ -813,48 +780,16 @@ def splitProcess(path, mode):
                     currentSize += size
                 if path != currentTarget:
                     move(os.path.join(root, name), os.path.join(currentTarget, name))
-    elif mode == 1:
-        for root, dirs, files in walkLevel(path, 0):
-            for name in dirs:
-                size = getDirectorySize(os.path.join(root, name))
-                if currentSize + size > targetSize:
-                    currentTarget, pathRoot = createNewTome()
-                    output.append(pathRoot)
-                    currentSize = size
-                else:
-                    currentSize += size
-                if path != currentTarget:
-                    move(os.path.join(root, name), os.path.join(currentTarget, name))
-    elif mode == 2:
+    else:
         firstTome = True
         for root, dirs, files in walkLevel(path, 0):
             for name in dirs:
-                size = getDirectorySize(os.path.join(root, name))
-                currentSize = 0
-                if size > targetSize:
-                    if not firstTome:
-                        currentTarget, pathRoot = createNewTome()
-                        output.append(pathRoot)
-                    else:
-                        firstTome = False
-                    for rootInside, dirsInside, filesInside in walkLevel(os.path.join(root, name), 0):
-                        for nameInside in dirsInside:
-                            size = getDirectorySize(os.path.join(rootInside, nameInside))
-                            if currentSize + size > targetSize:
-                                currentTarget, pathRoot = createNewTome()
-                                output.append(pathRoot)
-                                currentSize = size
-                            else:
-                                currentSize += size
-                            if path != currentTarget:
-                                move(os.path.join(rootInside, nameInside), os.path.join(currentTarget, nameInside))
+                if not firstTome:
+                    currentTarget, pathRoot = createNewTome()
+                    output.append(pathRoot)
+                    move(os.path.join(root, name), os.path.join(currentTarget, name))
                 else:
-                    if not firstTome:
-                        currentTarget, pathRoot = createNewTome()
-                        output.append(pathRoot)
-                        move(os.path.join(root, name), os.path.join(currentTarget, name))
-                    else:
-                        firstTome = False
+                    firstTome = False
     return output
 
 
@@ -947,8 +882,9 @@ def makeParser():
                              help="Comic title [Default=filename or directory name]")
     outputOptions.add_option("-f", "--format", action="store", dest="format", default="Auto",
                              help="Output format (Available options: Auto, MOBI, EPUB, CBZ) [Default=Auto]")
-    outputOptions.add_option("-b", "--batchsplit", action="store_true", dest="batchsplit", default=False,
-                             help="Split output into multiple files"),
+    outputOptions.add_option("-b", "--batchsplit", type="int", dest="batchsplit", default="0",
+                             help="Split output into multiple files. 0: Don't split 1: Automatic mode "
+                                  "2: Consider every subdirectory as separate volume [Default=0]")
 
     processingOptions.add_option("-u", "--upscale", action="store_true", dest="upscale", default=False,
                                  help="Resize images smaller than device's resolution")
@@ -1006,8 +942,8 @@ def checkOptions():
     if options.black_borders:
         options.bordersColor = 'black'
     # Splitting MOBI is not optional
-    if options.format == 'MOBI':
-        options.batchsplit = True
+    if options.format == 'MOBI' and options.batchsplit != 2:
+        options.batchsplit = 1
     # Older Kindle don't need higher resolution files due lack of Panel View.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K3' or options.profile == 'KDX':
         options.panelview = False
@@ -1078,6 +1014,7 @@ def checkPre(source):
         raise UserWarning("Target directory is not writable.")
 
 
+# noinspection PyTypeChecker
 def makeBook(source, qtGUI=None):
     global GUI
     GUI = qtGUI
@@ -1106,7 +1043,7 @@ def makeBook(source, qtGUI=None):
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     if 'Ko' in options.profile and options.format == 'CBZ':
         sanitizeTreeKobo(os.path.join(path, 'OEBPS', 'Images'))
-    if options.batchsplit:
+    if options.batchsplit > 0:
         tomes = splitDirectory(path)
     else:
         tomes = [path]
