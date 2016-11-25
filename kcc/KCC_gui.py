@@ -270,8 +270,8 @@ class WorkerThread(QtCore.QThread):
             options.white_borders = True
         elif GUI.borderBox.checkState() == 2:
             options.black_borders = True
-        if GUI.noDitheringBox.isChecked():
-            options.forcepng = True
+        if GUI.outputSplit.isChecked():
+            options.batchsplit = 2
         if GUI.colorBox.isChecked():
             options.forcecolor = True
         if GUI.currentMode > 2:
@@ -646,6 +646,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         else:
             GUI.formatBox.setCurrentIndex(profile['DefaultFormat'])
         GUI.qualityBox.setEnabled(profile['PVOptions'])
+        if str(GUI.formatBox.currentText()) == 'MOBI/AZW3':
+            GUI.outputSplit.setEnabled(True)
+        else:
+            GUI.outputSplit.setEnabled(False)
+            GUI.outputSplit.setChecked(False)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -762,7 +767,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'upscaleBox': GUI.upscaleBox.checkState(),
                                            'borderBox': GUI.borderBox.checkState(),
                                            'webtoonBox': GUI.webtoonBox.checkState(),
-                                           'noDitheringBox': GUI.noDitheringBox.checkState(),
+                                           'outputSplit': GUI.outputSplit.checkState(),
                                            'colorBox': GUI.colorBox.checkState(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
