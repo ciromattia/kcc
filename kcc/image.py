@@ -318,7 +318,7 @@ class ComicPage:
         tmpImg = tmpImg.point(lambda x: x and 255)
         tmpImg = tmpImg.filter(ImageFilter.MinFilter(size=3))
         tmpImg = tmpImg.filter(ImageFilter.GaussianBlur(radius=5))
-        tmpImg = tmpImg.point(lambda x: (x >= 48 * power) and x)
+        tmpImg = tmpImg.point(lambda x: (x >= 16 * power) and x)
         self.image = self.image.crop(tmpImg.getbbox()) if tmpImg.getbbox() else self.image
 
     def cropMargin(self, power):

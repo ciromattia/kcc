@@ -61,7 +61,6 @@ class PdfJpgExtract:
             iend += endfix
             jpg = pdf[istart:iend]
             jpgfile = open(self.path + "/jpg%d.jpg" % njpg, "wb")
-            # noinspection PyTypeChecker
             jpgfile.write(jpg)
             jpgfile.close()
             njpg += 1

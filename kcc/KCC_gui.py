@@ -21,17 +21,15 @@ import os
 import sys
 from urllib.parse import unquote
 from urllib.request import urlopen, urlretrieve, Request
-from time import sleep, time
-from datetime import datetime
+from time import sleep
 from shutil import move
 from subprocess import STDOUT, PIPE
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
-from xml.dom.minidom import parse, Document
+from xml.dom.minidom import parse
 from psutil import Popen, Process
 from copy import copy
 from distutils.version import StrictVersion
 from xml.sax.saxutils import escape
-from platform import platform
 from raven import Client
 from .shared import md5Checksum, HTMLStripper, sanitizeTrace, saferRemove
 from . import __version__
@@ -270,8 +268,8 @@ class WorkerThread(QtCore.QThread):
             options.white_borders = True
         elif GUI.borderBox.checkState() == 2:
             options.black_borders = True
-        if GUI.noDitheringBox.isChecked():
-            options.forcepng = True
+        if GUI.outputSplit.isChecked():
+            options.batchsplit = 2
         if GUI.colorBox.isChecked():
             options.forcecolor = True
         if GUI.currentMode > 2:
@@ -319,10 +317,15 @@ class WorkerThread(QtCore.QThread):
                 GUI.progress.content = ''
                 self.errors = True
                 _, _, traceback = sys.exc_info()
+                if len(err.args) == 1:
+                    MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
+                                       % (jobargv[-1], str(err), sanitizeTrace(traceback)), 'error')
+                else:
+                    MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
+                                       % (jobargv[-1], str(err.args[0]), err.args[1]), 'error')
+                    GUI.sentry.extra_context({'realTraceback': err.args[1]})
                 if ' is corrupted.' not in str(err):
                     GUI.sentry.captureException()
-                MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
-                                   % (jobargv[-1], str(err), sanitizeTrace(traceback)), 'error')
                 MW.addMessage.emit('Error during conversion! Please consult '
                                    '<a href="https://github.com/ciromattia/kcc/wiki/Error-messages">wiki</a> '
                                    'for more details.', 'error', False)
@@ -528,7 +531,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def clearJobs(self):
         GUI.jobList.clear()
 
-    # noinspection PyCallByClass,PyTypeChecker,PyArgumentList
+    # noinspection PyCallByClass,PyTypeChecker
     def openWiki(self):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://github.com/ciromattia/kcc/wiki'))
 
@@ -646,6 +649,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         else:
             GUI.formatBox.setCurrentIndex(profile['DefaultFormat'])
         GUI.qualityBox.setEnabled(profile['PVOptions'])
+        if str(GUI.formatBox.currentText()) == 'MOBI/AZW3':
+            GUI.outputSplit.setEnabled(True)
+        else:
+            GUI.outputSplit.setEnabled(False)
+            GUI.outputSplit.setChecked(False)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -700,7 +708,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.conversionAlive = False
             self.worker.sync()
         else:
-            # noinspection PyArgumentList
             if QtWidgets.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
                 dname = QtWidgets.QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
                 if dname != '':
@@ -762,7 +769,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'upscaleBox': GUI.upscaleBox.checkState(),
                                            'borderBox': GUI.borderBox.checkState(),
                                            'webtoonBox': GUI.webtoonBox.checkState(),
-                                           'noDitheringBox': GUI.noDitheringBox.checkState(),
+                                           'outputSplit': GUI.outputSplit.checkState(),
                                            'colorBox': GUI.colorBox.checkState(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
@@ -848,7 +855,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 else:
                     self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
 
-    # noinspection PyArgumentList
     def __init__(self, KCCAplication, KCCWindow):
         global APP, MW, GUI
         APP = KCCAplication

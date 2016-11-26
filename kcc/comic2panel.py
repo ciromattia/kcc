@@ -24,7 +24,7 @@ from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
 from PIL import Image, ImageStat, ImageOps
-from .shared import getImageFileName, walkLevel, walkSort, saferRemove
+from .shared import getImageFileName, walkLevel, walkSort, saferRemove, sanitizeTrace
 try:
     from PyQt5 import QtCore
 except ImportError:
@@ -81,7 +81,7 @@ def mergeDirectory(work):
             savePath = os.path.split(imagesValid[0])
             result.save(os.path.join(savePath[0], os.path.splitext(savePath[1])[0] + '.png'), 'PNG')
     except Exception:
-        return str(sys.exc_info()[1])
+        return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
 
 def sanitizePanelSize(panel, opt):
@@ -205,7 +205,7 @@ def splitImage(work):
                     pageNumber += 1
             saferRemove(filePath)
     except Exception:
-        return str(sys.exc_info()[1])
+        return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
 
 def main(argv=None, qtGUI=None):
@@ -267,7 +267,7 @@ def main(argv=None, qtGUI=None):
                     raise UserWarning("Conversion interrupted.")
                 if len(mergeWorkerOutput) > 0:
                     rmtree(options.targetDir, True)
-                    raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0])
+                    raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0][0], mergeWorkerOutput[0][1])
             print("Splitting images...")
             for root, dirs, files in walk(options.targetDir, False):
                 for name in files:
@@ -290,7 +290,7 @@ def main(argv=None, qtGUI=None):
                     raise UserWarning("Conversion interrupted.")
                 if len(splitWorkerOutput) > 0:
                     rmtree(options.targetDir, True)
-                    raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0])
+                    raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0][0], splitWorkerOutput[0][1])
                 if options.inPlace:
                     rmtree(options.sourceDir)
                     move(options.targetDir, options.sourceDir)
