@@ -93,7 +93,6 @@ def buildHTML(path, imgfile, imgfilepath):
         additionalStyle = 'background-color:#000000;'
     else:
         additionalStyle = 'background-color:#FFFFFF;'
-    htmlpath = ''
     postfix = ''
     backref = 1
     head = path
@@ -1014,7 +1013,6 @@ def checkPre(source):
         raise UserWarning("Target directory is not writable.")
 
 
-# noinspection PyTypeChecker
 def makeBook(source, qtGUI=None):
     global GUI
     GUI = qtGUI
@@ -1029,8 +1027,8 @@ def makeBook(source, qtGUI=None):
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
     detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
     if options.webtoon:
-        if image.ProfileData.Profiles[options.profile][1][1] > 1000:
-            y = 1000
+        if image.ProfileData.Profiles[options.profile][1][1] > 1024:
+            y = 1024
         else:
             y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtGUI)

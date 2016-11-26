@@ -21,17 +21,15 @@ import os
 import sys
 from urllib.parse import unquote
 from urllib.request import urlopen, urlretrieve, Request
-from time import sleep, time
-from datetime import datetime
+from time import sleep
 from shutil import move
 from subprocess import STDOUT, PIPE
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
-from xml.dom.minidom import parse, Document
+from xml.dom.minidom import parse
 from psutil import Popen, Process
 from copy import copy
 from distutils.version import StrictVersion
 from xml.sax.saxutils import escape
-from platform import platform
 from raven import Client
 from .shared import md5Checksum, HTMLStripper, sanitizeTrace, saferRemove
 from . import __version__
@@ -528,7 +526,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def clearJobs(self):
         GUI.jobList.clear()
 
-    # noinspection PyCallByClass,PyTypeChecker,PyArgumentList
+    # noinspection PyCallByClass,PyTypeChecker
     def openWiki(self):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://github.com/ciromattia/kcc/wiki'))
 
@@ -705,7 +703,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.conversionAlive = False
             self.worker.sync()
         else:
-            # noinspection PyArgumentList
             if QtWidgets.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
                 dname = QtWidgets.QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
                 if dname != '':
@@ -853,7 +850,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 else:
                     self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
 
-    # noinspection PyArgumentList
     def __init__(self, KCCAplication, KCCWindow):
         global APP, MW, GUI
         APP = KCCAplication
