@@ -46,7 +46,7 @@ try:
     from scandir import walk
 except ImportError:
     walk = os.walk
-from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, saferReplace, saferRemove
+from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, saferReplace, saferRemove, sanitizeTrace
 from . import comic2panel
 from . import image
 from . import cbxarchive
@@ -482,7 +482,7 @@ def imgDirectoryProcessing(path):
             raise UserWarning("Conversion interrupted.")
         if len(workerOutput) > 0:
             rmtree(os.path.join(path, '..', '..'), True)
-            raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0])
+            raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0][0], workerOutput[0][1])
         for file in options.imgPurgeIndex:
             if os.path.isfile(file):
                 saferRemove(file)
@@ -492,7 +492,7 @@ def imgDirectoryProcessing(path):
 
 
 def imgFileProcessingTick(output):
-    if isinstance(output, str):
+    if isinstance(output, tuple):
         workerOutput.append(output)
         workerPool.terminate()
     else:
@@ -526,7 +526,7 @@ def imgFileProcessing(work):
             output.append(img.saveToDir())
         return output
     except Exception:
-        return str(sys.exc_info()[:2])
+        return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
 
 def getWorkFolder(afile):

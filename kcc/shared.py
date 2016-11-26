@@ -144,7 +144,10 @@ def removeFromZIP(zipfname, *filenames):
 
 def sanitizeTrace(traceback):
     return ''.join(format_tb(traceback))\
-        .replace('C:\\Users\\Pawel\\Documents\\Projekty\\KCC\\', '') \
+        .replace('C:/Users/Pawel/Documents/Projekty/KCC/', '')\
+        .replace('C:/Python35/', '')\
+        .replace('c:/python35/', '')\
+        .replace('C:\\Users\\Pawel\\Documents\\Projekty\\KCC\\', '')\
         .replace('C:\\Python35\\', '')\
         .replace('c:\\python35\\', '')
 
