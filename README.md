@@ -90,7 +90,10 @@ Options:
     -f FORMAT, --format=FORMAT
                         Output format (Available options: Auto, MOBI, EPUB,
                         CBZ) [Default=Auto]
-    -b, --batchsplit    Split output into multiple files
+    -b BATCHSPLIT, --batchsplit=BATCHSPLIT
+                        Split output into multiple files. 0: Don't split 1:
+                        Automatic mode 2: Consider every subdirectory as
+                        separate volume [Default=0]
 
   PROCESSING:
     -u, --upscale       Resize images smaller than device's resolution
@@ -160,6 +163,11 @@ The app relies and includes the following scripts:
 * [Kobo Aura ONE](http://kcc.iosphe.re/Samples/Ubunchu-KoAO.kepub.epub)
 
 ## CHANGELOG
+####5.2.1:
+* Improved directory parsing
+* Tweaked margin detection algorithm
+* Improved error reporting
+
 ####5.2:
 * Added new Panel View options
 * Implemented new margin detection algorithm
