@@ -458,17 +458,34 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
             self.showMessage('Kindle Comic Converter', message, icon)
 
 
+class ExtendedSelectDirectoriesFileDialog(QtWidgets.QFileDialog):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.setFileMode(self.Directory)
+        self.setOption(self.ShowDirsOnly, True)
+        if os.name == 'nt':
+            self.setOption(self.DontUseNativeDialog, True)
+        for view in self.findChildren((QtWidgets.QListView, QtWidgets.QTreeView)):
+            if isinstance(view.model(), QtWidgets.QFileSystemModel):
+                view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+
 class KCCGUI(KCC_ui.Ui_mainWindow):
     def selectDir(self):
         if self.needClean:
             self.needClean = False
             GUI.jobList.clear()
-        dname = QtWidgets.QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
-        if dname != '':
-            if sys.platform.startswith('win'):
-                dname = dname.replace('/', '\\')
-            self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
-            GUI.jobList.addItem(dname)
+
+        fileDialog = ExtendedSelectDirectoriesFileDialog(MW, 'Select directory', self.lastPath)
+        if (fileDialog.exec_()):
+            dnames = fileDialog.selectedFiles()
+            for dname in dnames:
+                if sys.platform.startswith('win'):
+                    dname = dname.replace('/', '\\')
+                self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
+                GUI.jobList.addItem(dname)
             GUI.jobList.scrollToBottom()
 
     def selectFile(self):
