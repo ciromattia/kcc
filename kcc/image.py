@@ -119,15 +119,15 @@ class ComicPageParser:
     def splitCheck(self):
         width, height = self.image.size
         dstwidth, dstheight = self.size
-        # Only split if origin is not oriented the same as target
-        if (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:
+        if (width > height) != (dstwidth > dstheight) and width <= dstheight and height <= dstwidth \
+                and not self.opt.webtoon:
+            self.payload.append(['R', self.source, self.image.rotate(90, Image.BICUBIC, True), self.color, self.fill])
+        elif (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:
             if self.opt.splitter != 1:
                 if width > height:
-                    # Source is landscape, so split by the width
                     leftbox = (0, 0, int(width / 2), height)
                     rightbox = (int(width / 2), 0, width, height)
                 else:
-                    # Source is portrait and target is landscape, so split by the height
                     leftbox = (0, 0, width, int(height / 2))
                     rightbox = (0, int(height / 2), width, height)
                 if self.opt.righttoleft:
