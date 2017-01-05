@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'gui\KCC.ui'
+# Form implementation generated from reading ui file 'gui/KCC.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.7
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -31,7 +31,7 @@ class Ui_mainWindow(object):
         self.progressBar.setObjectName("progressBar")
         self.gridLayout.addWidget(self.progressBar, 1, 0, 1, 2)
         self.jobList = QtWidgets.QListWidget(self.centralWidget)
-        self.jobList.setStyleSheet("QListWidget#jobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;}")
+        self.jobList.setStyleSheet("QListWidget#jobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;color:rgb(0,0,0);}")
         self.jobList.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.jobList.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.jobList.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
@@ -241,7 +241,7 @@ class Ui_mainWindow(object):
         self.mangaBox.setText(_translate("mainWindow", "Manga mode"))
         self.rotateBox.setToolTip(_translate("mainWindow", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Split<br/></span>Double page spreads will be cut into two separate pages.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Rotate and split<br/></span>Double page spreads will be displayed twice. First rotated and then split. </p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate<br/></span>Double page spreads will be rotated.</p></body></html>"))
         self.rotateBox.setText(_translate("mainWindow", "Spread splitter"))
-        self.qualityBox.setToolTip(_translate("mainWindow", "<html><head/><body><p style=\'white-space:pre\'><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 4 panels<br/></span>Zoom each corner separately.</p><p style=\'white-space:pre\'><span style=\" font-weight:600; text-decoration: underline;\">Checked - 2 panels<br/></span>Zoom only the top and bottom of the page.</p></body></html>"))
+        self.qualityBox.setToolTip(_translate("mainWindow", "<html><head/><body><p style=\\\'white-space:pre\\\'><span style=\\\" font-weight:600; text-decoration: underline;\\\">Unchecked - 4 panels<br/></span>Zoom each corner separately.</p><p style=\\\'white-space:pre\\\'><span style=\\\" font-weight:600; text-decoration: underline;\\\">Checked - 2 panels<br/></span>Zoom only the top and bottom of the page.</p></body></html>"))
         self.qualityBox.setText(_translate("mainWindow", "Panel View 4/2"))
         self.webtoonBox.setToolTip(_translate("mainWindow", "<html><head/><body><p style=\'white-space:pre\'>Enable special parsing mode for Korean Webtoons.</p></body></html>"))
         self.webtoonBox.setText(_translate("mainWindow", "Webtoon mode"))
