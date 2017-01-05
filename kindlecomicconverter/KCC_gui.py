@@ -672,7 +672,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         # We still fill original text field with transparent content to trigger creation of horizontal scrollbar
         item.setForeground(QtGui.QColor('transparent'))
         label = QtWidgets.QLabel(message)
-        label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);')
+        label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);color:rgb(0,0,0);')
         label.setOpenExternalLinks(True)
         GUI.jobList.addItem(item)
         GUI.jobList.setItemWidget(item, label)

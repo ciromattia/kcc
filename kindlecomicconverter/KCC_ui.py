@@ -31,7 +31,7 @@ class Ui_mainWindow(object):
         self.progressBar.setObjectName("progressBar")
         self.gridLayout.addWidget(self.progressBar, 1, 0, 1, 2)
         self.jobList = QtWidgets.QListWidget(self.centralWidget)
-        self.jobList.setStyleSheet("QListWidget#jobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;}")
+        self.jobList.setStyleSheet("QListWidget#jobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;color:rgb(0,0,0);}")
         self.jobList.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.jobList.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.jobList.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
