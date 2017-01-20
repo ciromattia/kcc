@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2016 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2017 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -59,15 +59,15 @@ elif sys.platform.startswith('win'):
 # Load additional Sentry configuration
 if getattr(sys, 'frozen', False):
     try:
-        import kcc.sentry
+        import kindlecomicconverter.sentry
     except:
         pass
 
-from kcc.shared import dependencyCheck
+from kindlecomicconverter.shared import dependencyCheck
 dependencyCheck(3)
 
 from multiprocessing import freeze_support
-from kcc import KCC_gui
+from kindlecomicconverter import KCC_gui
 
 if __name__ == "__main__":
     freeze_support()
