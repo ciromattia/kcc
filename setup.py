@@ -38,8 +38,8 @@ class BuildBinaryCommand(distutils.cmd.Command):
 
     def run(self):
         if sys.platform == 'darwin':
-            if os.path.isfile('KCC.spec'):
-                os.system('pyinstaller KCC.spec')
+            if os.path.isfile('Kindle Comic Converter.spec'):
+                os.system('pyinstaller "Kindle Comic Converter.spec"')
             else:
                 os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s --noupx kcc.py')
             shutil.copy('other/osx/7za', 'dist/Kindle Comic Converter.app/Contents/Resources')
