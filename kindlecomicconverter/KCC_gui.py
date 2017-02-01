@@ -934,7 +934,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                          'DefaultUpscale': False, 'Label': 'K1'},
             "Kindle 2": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K2'},
-            "Kindle 3": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 3": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K3'},
         }
         profilesGUI = [
