@@ -106,6 +106,7 @@ def buildHTML(path, imgfile, imgfilepath):
     if not os.path.exists(htmlpath):
         os.makedirs(htmlpath)
     htmlfile = os.path.join(htmlpath, filename[0] + '.xhtml')
+    imgsize = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
     f = open(htmlfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<!DOCTYPE html>\n",
@@ -116,14 +117,15 @@ def buildHTML(path, imgfile, imgfilepath):
                   "<meta name=\"viewport\" "
                   "content=\"width=" + str(deviceres[0]) + ", height=" + str(deviceres[1]) + "\"/>\n"
                   "</head>\n",
-                  "<body style=\"background-image: ",
-                  "url('", "../" * backref, "Images/", postfix, imgfile, "'); " + additionalStyle + "\">\n"])
+                  "<body style=\"" + additionalStyle + "\">\n",
+                  "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsize) + "%;\">\n",
+                  "<img width=\"" + str(imgsize[0]) + "\" height=\"" + str(imgsize[1]) + "\" ",
+                  "src=\"", "../" * backref, "Images/", postfix, imgfile, "\"/>\n</div>\n"])
     if options.iskindle and options.panelview:
-        sizeTmp = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
         if options.autoscale:
-            size = (getPanelViewResolution(sizeTmp, deviceres))
+            size = (getPanelViewResolution(imgsize, deviceres))
         else:
-            size = (int(sizeTmp[0] * 1.5), int(sizeTmp[1] * 1.5))
+            size = (int(imgsize[0] * 1.5), int(imgsize[1] * 1.5))
         if size[0] - deviceres[0] < deviceres[0] * 0.01:
             noHorizontalPV = True
         else:
@@ -356,9 +358,6 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "display: block;\n",
                   "margin: 0;\n",
                   "padding: 0;\n",
-                  "background-position: center center;\n",
-                  "background-repeat: no-repeat;\n",
-                  "background-size: auto auto;\n",
                   "}\n",
                   "#PV {\n",
                   "position: absolute;\n",
@@ -669,6 +668,11 @@ def getDirectorySize(start_path='.'):
             fp = os.path.join(dirpath, f)
             total_size += os.path.getsize(fp)
     return total_size
+
+
+def getTopMargin(deviceres, size):
+    y = int((deviceres[1] - size[1]) / 2) / deviceres[1] * 100
+    return str(round(y, 1))
 
 
 def getPanelViewResolution(imageSize, deviceRes):
