@@ -345,33 +345,19 @@ class Cover:
                 source = urlopen(Request(quote(self.options.remoteCovers[self.tomeNumber]).replace('%3A', ':', 1),
                                          headers={'User-Agent': 'KindleComicConverter/' + __version__})).read()
                 self.image = Image.open(BytesIO(source))
-                self.processExternal()
             except Exception:
                 self.image = Image.open(source)
-                self.processInternal()
         else:
             self.image = Image.open(source)
-            self.processInternal()
+        self.process()
 
-    def processInternal(self):
+    def process(self):
         self.image = self.image.convert('RGB')
-        self.image = self.trim()
-        self.save()
-
-    def processExternal(self):
-        self.image = self.image.convert('RGB')
+        self.image = ImageOps.autocontrast(self.image)
+        if not self.options.forcecolor:
+            self.image = self.image.convert('L')
         self.image.thumbnail(self.options.profileData[1], Image.LANCZOS)
         self.save()
-
-    def trim(self):
-        bg = Image.new(self.image.mode, self.image.size, self.image.getpixel((0, 0)))
-        diff = ImageChops.difference(self.image, bg)
-        diff = ImageChops.add(diff, diff, 2.0, -100)
-        bbox = diff.getbbox()
-        if bbox:
-            return self.image.crop(bbox)
-        else:
-            return self.image
 
     def save(self):
         try:
@@ -380,7 +366,7 @@ class Cover:
             raise RuntimeError('Failed to process downloaded cover.')
 
     def saveToKindle(self, kindle, asin):
-        self.image = self.image.resize((300, 470), Image.ANTIALIAS).convert('L')
+        self.image = self.image.resize((300, 470), Image.ANTIALIAS)
         try:
             self.image.save(os.path.join(kindle.path.split('documents')[0], 'system', 'thumbnails',
                                          'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG')
