@@ -46,7 +46,6 @@ Name: "CB7association"; Description: "CB7"; GroupDescription: "File associations
 [Files]
 Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
-Source: "other\windows\KCC.exe.manifest"; DestDir: "{app}"; Flags: ignoreversion
 Source: "other\windows\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "other\windows\UnRAR.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "other\windows\7za.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -59,7 +58,7 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: 
 
 [Run]
 Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /passive /norestart"; StatusMsg: "Installing Microsoft Visual C++ 2015 Redistributable Package..."
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall shellexec
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall
 
 [Messages]
 WelcomeLabel1=Welcome to the KCC Setup Wizard
