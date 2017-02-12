@@ -163,6 +163,13 @@ The app relies and includes the following scripts:
 * [Kobo Aura ONE](http://kcc.iosphe.re/Samples/Ubunchu-KoAO.kepub.epub)
 
 ## CHANGELOG
+####5.3:
+* Vastly improved output compatibility for non-Kindle devices
+* Enabled old pinch zoom for Kindle devices
+* Re-enabled Panel View support for Kindle Keyboard
+* Partially re-enabled OS X file association mechanism
+* Fixed multiple smaller issues
+
 ####5.2.1:
 * Improved directory parsing
 * Tweaked margin detection algorithm
