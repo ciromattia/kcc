@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2016 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2017 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -672,7 +672,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         # We still fill original text field with transparent content to trigger creation of horizontal scrollbar
         item.setForeground(QtGui.QColor('transparent'))
         label = QtWidgets.QLabel(message)
-        label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);')
+        label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);color:rgb(0,0,0);')
         label.setOpenExternalLinks(True)
         GUI.jobList.addItem(item)
         GUI.jobList.setItemWidget(item, label)
@@ -934,7 +934,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                          'DefaultUpscale': False, 'Label': 'K1'},
             "Kindle 2": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K2'},
-            "Kindle 3": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 3": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K3'},
         }
         profilesGUI = [

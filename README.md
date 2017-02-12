@@ -163,6 +163,13 @@ The app relies and includes the following scripts:
 * [Kobo Aura ONE](http://kcc.iosphe.re/Samples/Ubunchu-KoAO.kepub.epub)
 
 ## CHANGELOG
+####5.3:
+* Vastly improved output compatibility for non-Kindle devices
+* Enabled old pinch zoom for Kindle devices
+* Re-enabled Panel View support for Kindle Keyboard
+* Partially re-enabled OS X file association mechanism
+* Fixed multiple smaller issues
+
 ####5.2.1:
 * Improved directory parsing
 * Tweaked margin detection algorithm
@@ -495,5 +502,5 @@ The app relies and includes the following scripts:
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
 ## COPYRIGHT
-Copyright (c) 2012-2016 Ciro Mattia Gonano and Paweł Jastrzębski.
+Copyright (c) 2012-2017 Ciro Mattia Gonano and Paweł Jastrzębski.
 **KCC** is released under ISC LICENSE; see LICENSE.txt for further details.

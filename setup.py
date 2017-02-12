@@ -15,7 +15,7 @@ import shutil
 import setuptools
 import distutils.cmd
 from distutils.command.build import build
-from kcc import __version__
+from kindlecomicconverter import __version__
 
 NAME = 'KindleComicConverter'
 MAIN = 'kcc.py'
@@ -38,7 +38,10 @@ class BuildBinaryCommand(distutils.cmd.Command):
 
     def run(self):
         if sys.platform == 'darwin':
-            os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s --noupx kcc.py')
+            if os.path.isfile('Kindle Comic Converter.spec'):
+                os.system('pyinstaller "Kindle Comic Converter.spec"')
+            else:
+                os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s --noupx kcc.py')
             shutil.copy('other/osx/7za', 'dist/Kindle Comic Converter.app/Contents/Resources')
             shutil.copy('other/osx/unrar', 'dist/Kindle Comic Converter.app/Contents/Resources')
             shutil.copy('other/osx/Info.plist', 'dist/Kindle Comic Converter.app/Contents')
@@ -51,7 +54,10 @@ class BuildBinaryCommand(distutils.cmd.Command):
             os.system('appdmg kcc.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')
             exit(0)
         elif sys.platform == 'win32':
-            os.system('pyinstaller -y -F -i icons\comic2ebook.ico -n KCC -w --noupx kcc.py')
+            if os.path.isfile('KCC.spec'):
+                os.system('pyinstaller KCC.spec')
+            else:
+                os.system('pyinstaller -y -F -i icons\comic2ebook.ico -n KCC -w --noupx kcc.py')
             if os.path.isfile('setup.bat'):
                 os.system('setup.bat')
             exit(0)
@@ -59,19 +65,19 @@ class BuildBinaryCommand(distutils.cmd.Command):
             if self.pyz:
                 script = '''
                 cp kcc.py __main__.py
-                zip kcc.zip __main__.py kcc/*.py
+                zip kcc.zip __main__.py kindlecomicconverter/*.py
                 echo "#!/usr/bin/env python3" > kcc-bin
                 cat kcc.zip >> kcc-bin
                 chmod +x kcc-bin
 
                 cp kcc-c2e.py __main__.py
-                zip kcc-c2e.zip __main__.py kcc/*.py
+                zip kcc-c2e.zip __main__.py kindlecomicconverter/*.py
                 echo "#!/usr/bin/env python3" > kcc-c2e-bin
                 cat kcc-c2e.zip >> kcc-c2e-bin
                 chmod +x kcc-c2e-bin
 
                 cp kcc-c2p.py __main__.py
-                zip kcc-c2p.zip __main__.py kcc/*.py
+                zip kcc-c2p.zip __main__.py kindlecomicconverter/*.py
                 echo "#!/usr/bin/env python3" > kcc-c2p-bin
                 cat kcc-c2p.zip >> kcc-c2p-bin
                 chmod +x kcc-c2p-bin

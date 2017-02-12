@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2016 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2017 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -106,6 +106,7 @@ def buildHTML(path, imgfile, imgfilepath):
     if not os.path.exists(htmlpath):
         os.makedirs(htmlpath)
     htmlfile = os.path.join(htmlpath, filename[0] + '.xhtml')
+    imgsize = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
     f = open(htmlfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<!DOCTYPE html>\n",
@@ -116,14 +117,15 @@ def buildHTML(path, imgfile, imgfilepath):
                   "<meta name=\"viewport\" "
                   "content=\"width=" + str(deviceres[0]) + ", height=" + str(deviceres[1]) + "\"/>\n"
                   "</head>\n",
-                  "<body style=\"background-image: ",
-                  "url('", "../" * backref, "Images/", postfix, imgfile, "'); " + additionalStyle + "\">\n"])
+                  "<body style=\"" + additionalStyle + "\">\n",
+                  "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsize) + "%;\">\n",
+                  "<img width=\"" + str(imgsize[0]) + "\" height=\"" + str(imgsize[1]) + "\" ",
+                  "src=\"", "../" * backref, "Images/", postfix, imgfile, "\"/>\n</div>\n"])
     if options.iskindle and options.panelview:
-        sizeTmp = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
         if options.autoscale:
-            size = (getPanelViewResolution(sizeTmp, deviceres))
+            size = (getPanelViewResolution(imgsize, deviceres))
         else:
-            size = (int(sizeTmp[0] * 1.5), int(sizeTmp[1] * 1.5))
+            size = (int(imgsize[0] * 1.5), int(imgsize[1] * 1.5))
         if size[0] - deviceres[0] < deviceres[0] * 0.01:
             noHorizontalPV = True
         else:
@@ -356,9 +358,6 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "display: block;\n",
                   "margin: 0;\n",
                   "padding: 0;\n",
-                  "background-position: center center;\n",
-                  "background-repeat: no-repeat;\n",
-                  "background-size: auto auto;\n",
                   "}\n",
                   "#PV {\n",
                   "position: absolute;\n",
@@ -671,6 +670,11 @@ def getDirectorySize(start_path='.'):
     return total_size
 
 
+def getTopMargin(deviceres, size):
+    y = int((deviceres[1] - size[1]) / 2) / deviceres[1] * 100
+    return str(round(y, 1))
+
+
 def getPanelViewResolution(imageSize, deviceRes):
     scale = float(deviceRes[0]) / float(imageSize[0])
     return int(deviceRes[0]), int(scale * imageSize[1])
@@ -820,10 +824,10 @@ def detectCorruption(tmpPath, orgPath):
             else:
                 saferRemove(os.path.join(root, name))
     if imageSmaller > imageNumber * 0.25 and not options.upscale and not options.stretch:
-        print("WARNING: More than 1/4 of images are smaller than target device resolution. "
+        print("WARNING: More than 25% of images are smaller than target device resolution. "
               "Consider enabling stretching or upscaling to improve readability.")
         if GUI:
-            GUI.addMessage.emit('More than 1/4 of images are smaller than target device resolution.', 'warning', False)
+            GUI.addMessage.emit('More than 25% of images are smaller than target device resolution.', 'warning', False)
             GUI.addMessage.emit('Consider enabling stretching or upscaling to improve readability.', 'warning', False)
             GUI.addMessage.emit('', '', False)
 
@@ -943,8 +947,8 @@ def checkOptions():
     # Splitting MOBI is not optional
     if options.format == 'MOBI' and options.batchsplit != 2:
         options.batchsplit = 1
-    # Older Kindle don't need higher resolution files due lack of Panel View.
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K3' or options.profile == 'KDX':
+    # Older Kindle models don't support Panel View.
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX':
         options.panelview = False
     # Webtoon mode mandatory options
     if options.webtoon:

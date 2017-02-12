@@ -2,7 +2,7 @@
 # Copyright (C) 2011  Stanislav (proDOOMman) Kosolapov <prodoomman@gmail.com>
 # Copyright (c) 2016  Alberto Planas <aplanas@gmail.com>
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2016 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2017 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -119,15 +119,15 @@ class ComicPageParser:
     def splitCheck(self):
         width, height = self.image.size
         dstwidth, dstheight = self.size
-        # Only split if origin is not oriented the same as target
-        if (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:
+        if (width > height) != (dstwidth > dstheight) and width <= dstheight and height <= dstwidth \
+                and not self.opt.webtoon:
+            self.payload.append(['R', self.source, self.image.rotate(90, Image.BICUBIC, True), self.color, self.fill])
+        elif (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:
             if self.opt.splitter != 1:
                 if width > height:
-                    # Source is landscape, so split by the width
                     leftbox = (0, 0, int(width / 2), height)
                     rightbox = (int(width / 2), 0, width, height)
                 else:
-                    # Source is portrait and target is landscape, so split by the height
                     leftbox = (0, 0, width, int(height / 2))
                     rightbox = (0, int(height / 2), width, height)
                 if self.opt.righttoleft:
@@ -345,33 +345,19 @@ class Cover:
                 source = urlopen(Request(quote(self.options.remoteCovers[self.tomeNumber]).replace('%3A', ':', 1),
                                          headers={'User-Agent': 'KindleComicConverter/' + __version__})).read()
                 self.image = Image.open(BytesIO(source))
-                self.processExternal()
             except Exception:
                 self.image = Image.open(source)
-                self.processInternal()
         else:
             self.image = Image.open(source)
-            self.processInternal()
+        self.process()
 
-    def processInternal(self):
+    def process(self):
         self.image = self.image.convert('RGB')
-        self.image = self.trim()
-        self.save()
-
-    def processExternal(self):
-        self.image = self.image.convert('RGB')
+        self.image = ImageOps.autocontrast(self.image)
+        if not self.options.forcecolor:
+            self.image = self.image.convert('L')
         self.image.thumbnail(self.options.profileData[1], Image.LANCZOS)
         self.save()
-
-    def trim(self):
-        bg = Image.new(self.image.mode, self.image.size, self.image.getpixel((0, 0)))
-        diff = ImageChops.difference(self.image, bg)
-        diff = ImageChops.add(diff, diff, 2.0, -100)
-        bbox = diff.getbbox()
-        if bbox:
-            return self.image.crop(bbox)
-        else:
-            return self.image
 
     def save(self):
         try:
@@ -380,7 +366,7 @@ class Cover:
             raise RuntimeError('Failed to process downloaded cover.')
 
     def saveToKindle(self, kindle, asin):
-        self.image = self.image.resize((300, 470), Image.ANTIALIAS).convert('L')
+        self.image = self.image.resize((300, 470), Image.ANTIALIAS)
         try:
             self.image.save(os.path.join(kindle.path.split('documents')[0], 'system', 'thumbnails',
                                          'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG')

@@ -12,5 +12,6 @@ kindlegen*
 *.spec
 setup.bat
 setup.sh
-kcc/sentry.py
+kindlecomicconverter/sentry.py
 build/
+.python-version
