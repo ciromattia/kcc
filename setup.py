@@ -106,7 +106,7 @@ class BuildCommand(build):
         shutil.copyfile('kcc.py', 'build/_scripts/kcc')
         shutil.copyfile('kcc-c2e.py', 'build/_scripts/kcc-c2e')
         shutil.copyfile('kcc-c2p.py', 'build/_scripts/kcc-c2p')
-        # noinspection PyShadowingNames
+        # noinspection PyUnusedLocal,PyShadowingNames
         OPTIONS = dict(
             scripts=['build/_scripts/kcc',
                      'build/_scripts/kcc-c2e',
@@ -114,15 +114,13 @@ class BuildCommand(build):
             packages=['kcc'],
             install_requires=[
                 'PyQt5>=5.6.0'
-                'Pillow>=3.2.0',
-                'psutil>=4.1.0',
-                'python-slugify>=1.2.0',
-                'raven>=5.13.0',
+                'Pillow>=4.0.0',
+                'psutil>=5.0.0',
+                'python-slugify>=1.2.1',
+                'raven>=6.0.0',
             ],
             zip_safe=False,
         )
-        if sys.version_info[1] < 5:
-            OPTIONS['install_requires'].append('scandir>=1.2.0')
         build.run(self)
 
 

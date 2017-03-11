@@ -29,10 +29,6 @@ try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
-try:
-    from scandir import walk
-except ImportError:
-    walk = os.walk
 
 
 def mergeDirectoryTick(output):
@@ -250,7 +246,7 @@ def main(argv=None, qtGUI=None):
                 mergeWorkerOutput = []
                 mergeWorkerPool = Pool()
                 mergeWork.append([options.targetDir])
-                for root, dirs, files in walk(options.targetDir, False):
+                for root, dirs, files in os.walk(options.targetDir, False):
                     dirs, files = walkSort(dirs, files)
                     for directory in dirs:
                         directoryNumer += 1
@@ -269,7 +265,7 @@ def main(argv=None, qtGUI=None):
                     rmtree(options.targetDir, True)
                     raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0][0], mergeWorkerOutput[0][1])
             print("Splitting images...")
-            for root, dirs, files in walk(options.targetDir, False):
+            for root, dirs, files in os.walk(options.targetDir, False):
                 for name in files:
                     if getImageFileName(name) is not None:
                         pagenumber += 1

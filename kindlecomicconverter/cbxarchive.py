@@ -22,10 +22,6 @@ from zipfile import is_zipfile, ZipFile
 from subprocess import STDOUT, PIPE
 from psutil import Popen
 from shutil import move, copy
-try:
-    from scandir import walk
-except ImportError:
-    walk = os.walk
 from . import rarfile
 from .shared import check7ZFile as is_7zfile, saferReplace, saferRemove
 
@@ -63,7 +59,7 @@ class CBxArchive:
     def extractCBR(self, targetdir):
         cbrFile = rarfile.RarFile(self.origFileName)
         cbrFile.extractall(targetdir)
-        for root, dirnames, filenames in walk(targetdir):
+        for root, dirnames, filenames in os.walk(targetdir):
             for filename in filenames:
                 if filename.startswith('__MACOSX') or filename.endswith('.DS_Store') or filename.endswith('humbs.db'):
                     saferRemove(os.path.join(root, filename))

@@ -42,10 +42,6 @@ try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
-try:
-    from scandir import walk
-except ImportError:
-    walk = os.walk
 from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, saferReplace, saferRemove, sanitizeTrace
 from . import comic2panel
 from . import image
@@ -424,7 +420,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "display: none;\n",
                   "}\n"])
     f.close()
-    for (dirpath, dirnames, filenames) in walk(os.path.join(path, 'OEBPS', 'Images')):
+    for (dirpath, dirnames, filenames) in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
@@ -465,7 +461,7 @@ def imgDirectoryProcessing(path):
     options.imgPurgeIndex = []
     work = []
     pagenumber = 0
-    for (dirpath, dirnames, filenames) in walk(path):
+    for (dirpath, dirnames, filenames) in os.walk(path):
         for afile in filenames:
             pagenumber += 1
             work.append([afile, dirpath, options])
@@ -663,7 +659,7 @@ def getCoversFromMCB(mangaID):
 
 def getDirectorySize(start_path='.'):
     total_size = 0
-    for dirpath, dirnames, filenames in walk(start_path):
+    for dirpath, dirnames, filenames in os.walk(start_path):
         for f in filenames:
             fp = os.path.join(dirpath, f)
             total_size += os.path.getsize(fp)
@@ -688,7 +684,7 @@ def getPanelViewSize(deviceres, size):
 
 def sanitizeTree(filetree):
     chapterNames = {}
-    for root, dirs, files in walk(filetree, False):
+    for root, dirs, files in os.walk(filetree, False):
         for name in files:
             splitname = os.path.splitext(name)
             slugified = slugify(splitname[0])
@@ -714,7 +710,7 @@ def sanitizeTree(filetree):
 
 def sanitizeTreeKobo(filetree):
     pageNumber = 0
-    for root, dirs, files in walk(filetree):
+    for root, dirs, files in os.walk(filetree):
         dirs, files = walkSort(dirs, files)
         for name in files:
             splitname = os.path.splitext(name)
@@ -730,7 +726,7 @@ def sanitizeTreeKobo(filetree):
 
 
 def sanitizePermissions(filetree):
-    for root, dirs, files in walk(filetree, False):
+    for root, dirs, files in os.walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
@@ -799,7 +795,7 @@ def splitProcess(path, mode):
 def detectCorruption(tmpPath, orgPath):
     imageNumber = 0
     imageSmaller = 0
-    for root, dirs, files in walk(tmpPath, False):
+    for root, dirs, files in os.walk(tmpPath, False):
         for name in files:
             if getImageFileName(name) is not None:
                 path = os.path.join(root, name)
@@ -850,7 +846,7 @@ def makeZIP(zipFilename, baseDir, isEPUB=False):
     zipOutput = ZipFile(zipFilename, 'w', ZIP_DEFLATED)
     if isEPUB:
         zipOutput.writestr('mimetype', 'application/epub+zip', ZIP_STORED)
-    for dirpath, dirnames, filenames in walk(baseDir):
+    for dirpath, dirnames, filenames in os.walk(baseDir):
         for name in filenames:
             path = os.path.normpath(os.path.join(dirpath, name))
             aPath = os.path.normpath(os.path.join(dirpath.replace(baseDir, ''), name))

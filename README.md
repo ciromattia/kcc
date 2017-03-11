@@ -32,17 +32,16 @@ You can find the latest released binary at the following links:
 ## DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
 - Python 3.3+
-- [PyQt](https://pypi.python.org/pypi/PyQt5) 5.6.0+
-- [Pillow](https://pypi.python.org/pypi/Pillow/) 3.2.0+
-- [psutil](https://pypi.python.org/pypi/psutil) 4.1.0+
-- [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.0+
-- [raven](https://pypi.python.org/pypi/raven) 5.13.0+
-- [scandir](https://pypi.python.org/pypi/scandir) 1.2.0+ _(needed only when using Python 3.3 or 3.4)_
+- [PyQt5](https://pypi.python.org/pypi/PyQt5) 5.6.0+
+- [Pillow](https://pypi.python.org/pypi/Pillow/) 4.0.0+
+- [psutil](https://pypi.python.org/pypi/psutil) 5.0.0+
+- [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.1+
+- [raven](https://pypi.python.org/pypi/raven) 6.0.0+
 
 On Debian based distributions these two commands should install all needed dependencies:
 ```
 sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full unrar
-sudo pip3 install --upgrade pillow python-slugify psutil scandir raven pyqt5
+sudo pip3 install --upgrade pillow python-slugify psutil pyqt5 raven
 ```
 
 ### Optional dependencies
