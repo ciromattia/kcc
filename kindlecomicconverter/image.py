@@ -206,7 +206,7 @@ class ComicPageParser:
 
 
 class ComicPage:
-    def __init__(self, mode, path, image, color, fill, options):
+    def __init__(self, options, mode, path, image, color, fill):
         self.opt = options
         _, self.size, self.palette, self.gamma = self.opt.profileData
         self.image = image
@@ -232,16 +232,16 @@ class ComicPage:
             if self.rotated:
                 flags.append('Rotated')
             if self.fill != 'white':
-                flags.append('BlackFill')
+                flags.append('BlackBackground')
             if self.opt.forcepng:
                 self.targetPath += '.png'
                 self.image.save(self.targetPath, 'PNG', optimize=1)
             else:
                 self.targetPath += '.jpg'
-                self.image.save(self.targetPath, 'JPEG', optimize=1, quality=80)
+                self.image.save(self.targetPath, 'JPEG', optimize=1, quality=85)
             return [md5Checksum(self.targetPath), flags, self.orgPath]
-        except IOError:
-            raise RuntimeError('Cannot save image.')
+        except IOError as err:
+            raise RuntimeError('Cannot save image. ' + str(err))
 
     def autocontrastImage(self):
         gamma = self.opt.gamma
@@ -361,7 +361,7 @@ class Cover:
 
     def save(self):
         try:
-            self.image.save(self.target, "JPEG", optimize=1, quality=80)
+            self.image.save(self.target, "JPEG", optimize=1, quality=85)
         except IOError:
             raise RuntimeError('Failed to process downloaded cover.')
 
@@ -369,6 +369,6 @@ class Cover:
         self.image = self.image.resize((300, 470), Image.ANTIALIAS)
         try:
             self.image.save(os.path.join(kindle.path.split('documents')[0], 'system', 'thumbnails',
-                                         'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG')
+                                         'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG', optimize=1, quality=85)
         except IOError:
             raise RuntimeError('Failed to upload cover.')

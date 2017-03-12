@@ -92,30 +92,6 @@ def check7ZFile(filePath):
     return header == b"7z\xbc\xaf'\x1c"
 
 
-def saferReplace(old, new):
-    for x in range(30):
-        try:
-            os.replace(old, new)
-        except PermissionError:
-            sleep(1)
-        else:
-            break
-    else:
-        raise PermissionError("Failed to move the file.")
-
-
-def saferRemove(target):
-    for x in range(30):
-        try:
-            os.remove(target)
-        except PermissionError:
-            sleep(1)
-        else:
-            break
-    else:
-        raise PermissionError("Failed to remove the file.")
-
-
 def removeFromZIP(zipfname, *filenames):
     tempdir = mkdtemp('', 'KCC-')
     try:
@@ -125,15 +101,7 @@ def removeFromZIP(zipfname, *filenames):
                 for item in zipread.infolist():
                     if item.filename not in filenames:
                         zipwrite.writestr(item, zipread.read(item.filename))
-        for x in range(30):
-            try:
-                copy(tempname, zipfname)
-            except PermissionError:
-                sleep(1)
-            else:
-                break
-        else:
-            raise PermissionError
+        copy(tempname, zipfname)
     finally:
         rmtree(tempdir, True)
 

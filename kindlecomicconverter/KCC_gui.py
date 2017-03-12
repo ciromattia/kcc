@@ -26,12 +26,12 @@ from shutil import move
 from subprocess import STDOUT, PIPE
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.dom.minidom import parse
+from xml.sax.saxutils import escape
 from psutil import Popen, Process
 from copy import copy
 from distutils.version import StrictVersion
-from xml.sax.saxutils import escape
 from raven import Client
-from .shared import md5Checksum, HTMLStripper, sanitizeTrace, saferRemove
+from .shared import md5Checksum, HTMLStripper, sanitizeTrace
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -334,7 +334,7 @@ class WorkerThread(QtCore.QThread):
                 if 'outputPath' in locals():
                     for item in outputPath:
                         if os.path.exists(item):
-                            saferRemove(item)
+                            os.remove(item)
                 self.clean()
                 return
             if not self.errors:
@@ -361,9 +361,9 @@ class WorkerThread(QtCore.QThread):
                     if not self.conversionAlive:
                         for item in outputPath:
                             if os.path.exists(item):
-                                saferRemove(item)
+                                os.remove(item)
                             if os.path.exists(item.replace('.epub', '.mobi')):
-                                saferRemove(item.replace('.epub', '.mobi'))
+                                os.remove(item.replace('.epub', '.mobi'))
                         self.clean()
                         return
                     if self.kindlegenErrorCode[0] == 0:
@@ -384,7 +384,7 @@ class WorkerThread(QtCore.QThread):
                             for item in outputPath:
                                 GUI.progress.content = ''
                                 mobiPath = item.replace('.epub', '.mobi')
-                                saferRemove(mobiPath + '_toclean')
+                                os.remove(mobiPath + '_toclean')
                                 if GUI.targetDirectory and GUI.targetDirectory != os.path.dirname(mobiPath):
                                     try:
                                         move(mobiPath, GUI.targetDirectory)
@@ -402,9 +402,9 @@ class WorkerThread(QtCore.QThread):
                             for item in outputPath:
                                 mobiPath = item.replace('.epub', '.mobi')
                                 if os.path.exists(mobiPath):
-                                    saferRemove(mobiPath)
+                                    os.remove(mobiPath)
                                 if os.path.exists(mobiPath + '_toclean'):
-                                    saferRemove(mobiPath + '_toclean')
+                                    os.remove(mobiPath + '_toclean')
                             MW.addMessage.emit('Failed to process MOBI file!', 'error', False)
                             MW.addTrayMessage.emit('Failed to process MOBI file!', 'Critical')
                     else:
@@ -412,9 +412,9 @@ class WorkerThread(QtCore.QThread):
                         epubSize = (os.path.getsize(self.kindlegenErrorCode[2])) // 1024 // 1024
                         for item in outputPath:
                             if os.path.exists(item):
-                                saferRemove(item)
+                                os.remove(item)
                             if os.path.exists(item.replace('.epub', '.mobi')):
-                                saferRemove(item.replace('.epub', '.mobi'))
+                                os.remove(item.replace('.epub', '.mobi'))
                         MW.addMessage.emit('KindleGen failed to create MOBI!', 'error', False)
                         MW.addTrayMessage.emit('KindleGen failed to create MOBI!', 'Critical')
                         if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':

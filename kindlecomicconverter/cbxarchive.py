@@ -23,7 +23,7 @@ from subprocess import STDOUT, PIPE
 from psutil import Popen
 from shutil import move, copy
 from . import rarfile
-from .shared import check7ZFile as is_7zfile, saferReplace, saferRemove
+from .shared import check7ZFile as is_7zfile
 
 
 class CBxArchive:
@@ -46,12 +46,12 @@ class CBxArchive:
         filelist = []
         for f in cbzFile.namelist():
             if f.startswith('__MACOSX') or f.endswith('.DS_Store') or f.endswith('humbs.db'):
-                pass    # skip MacOS special files
+                pass
             elif f.endswith('/'):
                 try:
                     os.makedirs(os.path.join(targetdir, f))
                 except Exception:
-                    pass  # the dir exists so we are going to extract the images only.
+                    pass
             else:
                 filelist.append(f)
         cbzFile.extractall(targetdir, filelist)
@@ -59,24 +59,18 @@ class CBxArchive:
     def extractCBR(self, targetdir):
         cbrFile = rarfile.RarFile(self.origFileName)
         cbrFile.extractall(targetdir)
-        for root, dirnames, filenames in os.walk(targetdir):
+        for root, _, filenames in os.walk(targetdir):
             for filename in filenames:
                 if filename.startswith('__MACOSX') or filename.endswith('.DS_Store') or filename.endswith('humbs.db'):
-                    saferRemove(os.path.join(root, filename))
+                    os.remove(os.path.join(root, filename))
 
     def extractCB7(self, targetdir):
-        # Workaround for some wide UTF-8 + Popen abnormalities
-        if sys.platform.startswith('darwin'):
-            copy(self.origFileName, os.path.join(os.path.dirname(self.origFileName), 'TMP_KCC_TMP'))
-            self.origFileName = os.path.join(os.path.dirname(self.origFileName), 'TMP_KCC_TMP')
         output = Popen('7za x "' + self.origFileName + '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -xr!Thumbs.db -o"' +
                        targetdir + '"', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         extracted = False
         for line in output.stdout:
             if b"Everything is Ok" in line:
                 extracted = True
-        if sys.platform.startswith('darwin'):
-            saferRemove(self.origFileName)
         if not extracted:
             raise OSError
 
@@ -92,10 +86,6 @@ class CBxArchive:
             adir.remove('ComicInfo.xml')
         if len(adir) == 1 and os.path.isdir(os.path.join(targetdir, adir[0])):
             for f in os.listdir(os.path.join(targetdir, adir[0])):
-                # If directory names contain UTF-8 chars shutil.move can't clean up the mess alone
-                if os.path.isdir(os.path.join(targetdir, f)):
-                    saferReplace(os.path.join(targetdir, adir[0], f), os.path.join(targetdir, adir[0], f + '-A'))
-                    f += '-A'
                 move(os.path.join(targetdir, adir[0], f), targetdir)
             os.rmdir(os.path.join(targetdir, adir[0]))
         return targetdir
