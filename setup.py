@@ -20,8 +20,6 @@ from kindlecomicconverter import __version__
 NAME = 'KindleComicConverter'
 MAIN = 'kcc.py'
 VERSION = __version__
-OPTIONS = {}
-
 
 class BuildBinaryCommand(distutils.cmd.Command):
     description = 'build binary release'
@@ -99,35 +97,9 @@ class BuildBinaryCommand(distutils.cmd.Command):
                 os.system('docker run --rm -v ' + os.getcwd() + ':/app -e KCCVER=' + VERSION + ' acidweb/kcc')
                 exit(0)
 
-
-class BuildCommand(build):
-    def run(self):
-        os.makedirs('build/_scripts/', exist_ok=True)
-        shutil.copyfile('kcc.py', 'build/_scripts/kcc')
-        shutil.copyfile('kcc-c2e.py', 'build/_scripts/kcc-c2e')
-        shutil.copyfile('kcc-c2p.py', 'build/_scripts/kcc-c2p')
-        # noinspection PyUnusedLocal,PyShadowingNames
-        OPTIONS = dict(
-            scripts=['build/_scripts/kcc',
-                     'build/_scripts/kcc-c2e',
-                     'build/_scripts/kcc-c2p'],
-            packages=['kcc'],
-            install_requires=[
-                'PyQt5>=5.6.0'
-                'Pillow>=4.0.0',
-                'psutil>=5.0.0',
-                'python-slugify>=1.2.1',
-                'raven>=6.0.0',
-            ],
-            zip_safe=False,
-        )
-        build.run(self)
-
-
 setuptools.setup(
     cmdclass={
         'build_binary': BuildBinaryCommand,
-        'build': BuildCommand,
     },
     name=NAME,
     version=VERSION,
@@ -135,7 +107,19 @@ setuptools.setup(
     author_email='ciromattia@gmail.com, pawelj@iosphe.re',
     description='Comic and Manga converter for e-book readers.',
     license='ISC License (ISCL)',
-    keywords='kindle comic mobipocket mobi cbz cbr manga',
+    keywords=['kindle', 'kobo', 'comic', 'manga', 'mobi', 'epub', 'cbz'],
     url='http://github.com/ciromattia/kcc',
-    **OPTIONS
+    scripts=['kcc.py',
+             'kcc-c2e.py',
+             'kcc-c2p.py'],
+    packages=['kindlecomicconverter'],
+    install_requires=[
+        'PyQt5>=5.6.0'
+        'Pillow>=4.0.0',
+        'psutil>=5.0.0',
+        'python-slugify>=1.2.1',
+        'raven>=6.0.0',
+    ],
+    classifiers = [],
+    zip_safe=False,
 )

@@ -15,3 +15,4 @@ setup.sh
 kindlecomicconverter/sentry.py
 build/
 .python-version
+KindleComicConverter.egg-info/
