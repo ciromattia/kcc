@@ -6,7 +6,7 @@ Usage (Windows):
     py -3 setup.py build_binary
 
 Usage (Linux/OS X):
-    python3 setup.py build_binary or python3 setup.py build_binary --pyz
+    python3 setup.py build_binary
 """
 
 import os
@@ -60,42 +60,8 @@ class BuildBinaryCommand(distutils.cmd.Command):
                 os.system('setup.bat')
             exit(0)
         else:
-            if self.pyz:
-                script = '''
-                cp kcc.py __main__.py
-                zip kcc.zip __main__.py kindlecomicconverter/*.py
-                echo "#!/usr/bin/env python3" > kcc-bin
-                cat kcc.zip >> kcc-bin
-                chmod +x kcc-bin
-
-                cp kcc-c2e.py __main__.py
-                zip kcc-c2e.zip __main__.py kindlecomicconverter/*.py
-                echo "#!/usr/bin/env python3" > kcc-c2e-bin
-                cat kcc-c2e.zip >> kcc-c2e-bin
-                chmod +x kcc-c2e-bin
-
-                cp kcc-c2p.py __main__.py
-                zip kcc-c2p.zip __main__.py kindlecomicconverter/*.py
-                echo "#!/usr/bin/env python3" > kcc-c2p-bin
-                cat kcc-c2p.zip >> kcc-c2p-bin
-                chmod +x kcc-c2p-bin
-
-                mkdir dist
-                tar --xform s:^.*/:: \
-                --xform s/LICENSE.txt/LICENSE/ \
-                --xform s/kcc-bin/kcc/ \
-                --xform s/kcc-c2p-bin/kcc-c2p/ \
-                --xform s/kcc-c2e-bin/kcc-c2e/ \
-                --xform s/comic2ebook/kcc/ \
-                -czf dist/KindleComicConverter_linux_''' + VERSION + '''.tar.gz \
-                kcc-bin kcc-c2e-bin kcc-c2p-bin LICENSE.txt README.md icons/comic2ebook.png
-                rm __main__.py kcc.zip kcc-c2e.zip kcc-c2p.zip kcc-bin kcc-c2e-bin kcc-c2p-bin
-                '''
-                os.system("bash -c '%s'" % script)
-                exit(0)
-            else:
-                os.system('docker run --rm -v ' + os.getcwd() + ':/app -e KCCVER=' + VERSION + ' acidweb/kcc')
-                exit(0)
+            os.system('docker run --rm -v ' + os.getcwd() + ':/app -e KCCVER=' + VERSION + ' acidweb/kcc')
+            exit(0)
 
 setuptools.setup(
     cmdclass={
@@ -109,12 +75,18 @@ setuptools.setup(
     license='ISC License (ISCL)',
     keywords=['kindle', 'kobo', 'comic', 'manga', 'mobi', 'epub', 'cbz'],
     url='http://github.com/ciromattia/kcc',
-    scripts=['kcc.py',
-             'kcc-c2e.py',
-             'kcc-c2p.py'],
+    entry_points={
+        'console_scripts': [
+            'kcc-c2e = kindlecomicconverter.startup:startC2E',
+            'kcc-c2p = kindlecomicconverter.startup:startC2P',
+        ],
+        'gui_scripts': [
+            'kcc = kindlecomicconverter.startup:start',
+        ],
+    },
     packages=['kindlecomicconverter'],
     install_requires=[
-        'PyQt5>=5.6.0'
+        'PyQt5>=5.6.0',
         'Pillow>=4.0.0',
         'psutil>=5.0.0',
         'python-slugify>=1.2.1',
