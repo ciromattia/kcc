@@ -24,15 +24,11 @@ from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
 from PIL import Image, ImageStat, ImageOps
-from .shared import getImageFileName, walkLevel, walkSort, saferRemove, sanitizeTrace
+from .shared import getImageFileName, walkLevel, walkSort, sanitizeTrace
 try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
-try:
-    from scandir import walk
-except ImportError:
-    walk = os.walk
 
 
 def mergeDirectoryTick(output):
@@ -52,7 +48,7 @@ def mergeDirectory(work):
         imagesValid = []
         sizes = []
         targetHeight = 0
-        for root, dirs, files in walkLevel(directory, 0):
+        for root, _, files in walkLevel(directory, 0):
             for name in files:
                 if getImageFileName(name) is not None:
                     i = Image.open(os.path.join(root, name))
@@ -77,7 +73,7 @@ def mergeDirectory(work):
                     img = ImageOps.fit(img, (targetWidth, img.size[1]), method=Image.BICUBIC, centering=(0.5, 0.5))
                 result.paste(img, (0, y))
                 y += img.size[1]
-                saferRemove(i)
+                os.remove(i)
             savePath = os.path.split(imagesValid[0])
             result.save(os.path.join(savePath[0], os.path.splitext(savePath[1])[0] + '.png'), 'PNG')
     except Exception:
@@ -203,7 +199,7 @@ def splitImage(work):
                         targetHeight += panels[panel][2]
                     newPage.save(os.path.join(path, fileExpanded[0] + '-' + str(pageNumber) + '.png'), 'PNG')
                     pageNumber += 1
-            saferRemove(filePath)
+            os.remove(filePath)
     except Exception:
         return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
@@ -250,7 +246,7 @@ def main(argv=None, qtGUI=None):
                 mergeWorkerOutput = []
                 mergeWorkerPool = Pool()
                 mergeWork.append([options.targetDir])
-                for root, dirs, files in walk(options.targetDir, False):
+                for root, dirs, files in os.walk(options.targetDir, False):
                     dirs, files = walkSort(dirs, files)
                     for directory in dirs:
                         directoryNumer += 1
@@ -269,13 +265,13 @@ def main(argv=None, qtGUI=None):
                     rmtree(options.targetDir, True)
                     raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0][0], mergeWorkerOutput[0][1])
             print("Splitting images...")
-            for root, dirs, files in walk(options.targetDir, False):
+            for root, _, files in os.walk(options.targetDir, False):
                 for name in files:
                     if getImageFileName(name) is not None:
                         pagenumber += 1
                         work.append([root, name, options])
                     else:
-                        saferRemove(os.path.join(root, name))
+                        os.remove(os.path.join(root, name))
             if GUI:
                 GUI.progressBarTick.emit('Splitting images')
                 GUI.progressBarTick.emit(str(pagenumber))

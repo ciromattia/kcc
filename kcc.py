@@ -63,24 +63,10 @@ if getattr(sys, 'frozen', False):
     except:
         pass
 
-from kindlecomicconverter.shared import dependencyCheck
-dependencyCheck(3)
-
 from multiprocessing import freeze_support
-from kindlecomicconverter import KCC_gui
+from kindlecomicconverter.startup import start
 
 if __name__ == "__main__":
     freeze_support()
-    os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = "1"
-    KCCAplication = KCC_gui.QApplicationMessaging(sys.argv)
-    if KCCAplication.isRunning():
-        if len(sys.argv) > 1:
-            KCCAplication.sendMessage(sys.argv[1])
-        else:
-            KCCAplication.sendMessage('ARISE')
-    else:
-        KCCWindow = KCC_gui.QMainWindowKCC()
-        KCCUI = KCC_gui.KCCGUI(KCCAplication, KCCWindow)
-        if len(sys.argv) > 1:
-            KCCUI.handleMessage(sys.argv[1])
-        sys.exit(KCCAplication.exec_())
+    start()
+

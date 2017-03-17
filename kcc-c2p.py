@@ -23,14 +23,9 @@ if sys.version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
     exit(1)
 
-from kindlecomicconverter.shared import dependencyCheck
-dependencyCheck(1)
-
 from multiprocessing import freeze_support
-from kindlecomicconverter import __version__
-from kindlecomicconverter.comic2panel import main
+from kindlecomicconverter.startup import startC2P
 
 if __name__ == "__main__":
     freeze_support()
-    print('comic2panel v' + __version__ + ' - Written by Ciro Mattia Gonano and Pawel Jastrzebski.')
-    sys.exit(main(sys.argv[1:]))
+    startC2P()

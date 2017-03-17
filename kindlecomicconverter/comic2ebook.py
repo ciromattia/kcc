@@ -36,17 +36,13 @@ from uuid import uuid4
 from slugify import slugify as slugifyExt
 from PIL import Image
 from subprocess import STDOUT, PIPE
-from psutil import Popen, virtual_memory
+from psutil import Popen, virtual_memory, disk_usage
 from html import escape
 try:
     from PyQt5 import QtCore
 except ImportError:
     QtCore = None
-try:
-    from scandir import walk
-except ImportError:
-    walk = os.walk
-from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, saferReplace, saferRemove, sanitizeTrace
+from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace
 from . import comic2panel
 from . import image
 from . import cbxarchive
@@ -85,11 +81,11 @@ def buildHTML(path, imgfile, imgfilepath):
     imgfilepath = md5Checksum(imgfilepath)
     filename = getImageFileName(imgfile)
     deviceres = options.profileData[1]
-    if "Rotated" in options.imgIndex[imgfilepath]:
+    if "Rotated" in options.imgMetadata[imgfilepath]:
         rotatedPage = True
     else:
         rotatedPage = False
-    if "BlackFill" in options.imgIndex[imgfilepath]:
+    if "BlackBackground" in options.imgMetadata[imgfilepath]:
         additionalStyle = 'background-color:#000000;'
     else:
         additionalStyle = 'background-color:#FFFFFF;'
@@ -424,7 +420,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "display: none;\n",
                   "}\n"])
     f.close()
-    for (dirpath, dirnames, filenames) in walk(os.path.join(path, 'OEBPS', 'Images')):
+    for dirpath, dirnames, filenames in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
@@ -461,11 +457,11 @@ def imgDirectoryProcessing(path):
     global workerPool, workerOutput
     workerPool = Pool()
     workerOutput = []
-    options.imgIndex = {}
-    options.imgPurgeIndex = []
+    options.imgMetadata = {}
+    options.imgOld = []
     work = []
     pagenumber = 0
-    for (dirpath, dirnames, filenames) in walk(path):
+    for dirpath, _, filenames in os.walk(path):
         for afile in filenames:
             pagenumber += 1
             work.append([afile, dirpath, options])
@@ -482,9 +478,9 @@ def imgDirectoryProcessing(path):
         if len(workerOutput) > 0:
             rmtree(os.path.join(path, '..', '..'), True)
             raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0][0], workerOutput[0][1])
-        for file in options.imgPurgeIndex:
+        for file in options.imgOld:
             if os.path.isfile(file):
-                saferRemove(file)
+                os.remove(file)
     else:
         rmtree(os.path.join(path, '..', '..'), True)
         raise UserWarning("Source directory is empty.")
@@ -497,8 +493,8 @@ def imgFileProcessingTick(output):
     else:
         for page in output:
             if page is not None:
-                options.imgIndex[page[0]] = page[1]
-                options.imgPurgeIndex.append(page[2])
+                options.imgMetadata[page[0]] = page[1]
+                options.imgOld.append(page[2])
     if GUI:
         GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
@@ -513,7 +509,7 @@ def imgFileProcessing(work):
         output = []
         workImg = image.ComicPageParser((dirpath, afile), opt)
         for i in workImg.payload:
-            img = image.ComicPage(i[0], i[1], i[2], i[3], i[4], opt)
+            img = image.ComicPage(opt, *i)
             if opt.cropping == 2 and not opt.webtoon:
                 img.cropPageNumber(opt.croppingp)
             if opt.cropping > 0 and not opt.webtoon:
@@ -530,6 +526,8 @@ def imgFileProcessing(work):
 
 def getWorkFolder(afile):
     if os.path.isdir(afile):
+        if disk_usage(gettempdir())[2] < getDirectorySize(afile) * 2.5:
+            raise UserWarning("Not enough disk space to perform conversion.")
         workdir = mkdtemp('', 'KCC-')
         try:
             os.rmdir(workdir)
@@ -540,24 +538,27 @@ def getWorkFolder(afile):
         except:
             rmtree(workdir, True)
             raise UserWarning("Failed to prepare a workspace.")
-    elif os.path.isfile(afile) and afile.lower().endswith('.pdf'):
-        pdf = pdfjpgextract.PdfJpgExtract(afile)
-        path, njpg = pdf.extract()
-        if njpg == 0:
-            rmtree(path, True)
-            raise UserWarning("Failed to extract images from PDF file.")
     elif os.path.isfile(afile):
-        workdir = mkdtemp('', 'KCC-')
-        cbx = cbxarchive.CBxArchive(afile)
-        if cbx.isCbxFile():
-            try:
-                path = cbx.extract(workdir)
-            except:
-                rmtree(workdir, True)
-                raise UserWarning("Failed to extract archive.")
+        if disk_usage(gettempdir())[2] < os.path.getsize(afile) * 2.5:
+            raise UserWarning("Not enough disk space to perform conversion.")
+        if afile.lower().endswith('.pdf'):
+            pdf = pdfjpgextract.PdfJpgExtract(afile)
+            path, njpg = pdf.extract()
+            if njpg == 0:
+                rmtree(path, True)
+                raise UserWarning("Failed to extract images from PDF file.")
         else:
-            rmtree(workdir, True)
-            raise UserWarning("Failed to detect archive format.")
+            workdir = mkdtemp('', 'KCC-')
+            cbx = cbxarchive.CBxArchive(afile)
+            if cbx.isCbxFile():
+                try:
+                    path = cbx.extract(workdir)
+                except:
+                    rmtree(workdir, True)
+                    raise UserWarning("Failed to extract archive.")
+            else:
+                rmtree(workdir, True)
+                raise UserWarning("Failed to detect archive format.")
     else:
         raise UserWarning("Failed to open source file/directory.")
     sanitizePermissions(path)
@@ -619,7 +620,7 @@ def getComicInfo(path, originalPath):
         try:
             xml = metadata.MetadataParser(xmlPath)
         except Exception:
-            saferRemove(xmlPath)
+            os.remove(xmlPath)
             return
         options.authors = []
         if defaultTitle:
@@ -644,7 +645,7 @@ def getComicInfo(path, originalPath):
             options.chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
             options.summary = escape(xml.data['Summary'])
-        saferRemove(xmlPath)
+        os.remove(xmlPath)
 
 
 def getCoversFromMCB(mangaID):
@@ -663,7 +664,7 @@ def getCoversFromMCB(mangaID):
 
 def getDirectorySize(start_path='.'):
     total_size = 0
-    for dirpath, dirnames, filenames in walk(start_path):
+    for dirpath, _, filenames in os.walk(start_path):
         for f in filenames:
             fp = os.path.join(dirpath, f)
             total_size += os.path.getsize(fp)
@@ -688,7 +689,7 @@ def getPanelViewSize(deviceres, size):
 
 def sanitizeTree(filetree):
     chapterNames = {}
-    for root, dirs, files in walk(filetree, False):
+    for root, dirs, files in os.walk(filetree, False):
         for name in files:
             splitname = os.path.splitext(name)
             slugified = slugify(splitname[0])
@@ -698,7 +699,7 @@ def sanitizeTree(filetree):
             newKey = os.path.join(root, slugified + splitname[1])
             key = os.path.join(root, name)
             if key != newKey:
-                saferReplace(key, newKey)
+                os.replace(key, newKey)
         for name in dirs:
             tmpName = name
             slugified = slugify(name)
@@ -708,13 +709,13 @@ def sanitizeTree(filetree):
             newKey = os.path.join(root, slugified)
             key = os.path.join(root, name)
             if key != newKey:
-                saferReplace(key, newKey)
+                os.replace(key, newKey)
     return chapterNames
 
 
 def sanitizeTreeKobo(filetree):
     pageNumber = 0
-    for root, dirs, files in walk(filetree):
+    for root, dirs, files in os.walk(filetree):
         dirs, files = walkSort(dirs, files)
         for name in files:
             splitname = os.path.splitext(name)
@@ -726,11 +727,11 @@ def sanitizeTreeKobo(filetree):
             newKey = os.path.join(root, slugified + splitname[1])
             key = os.path.join(root, name)
             if key != newKey:
-                saferReplace(key, newKey)
+                os.replace(key, newKey)
 
 
 def sanitizePermissions(filetree):
-    for root, dirs, files in walk(filetree, False):
+    for root, dirs, files in os.walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
@@ -785,7 +786,7 @@ def splitProcess(path, mode):
                     move(os.path.join(root, name), os.path.join(currentTarget, name))
     else:
         firstTome = True
-        for root, dirs, files in walkLevel(path, 0):
+        for root, dirs, _ in walkLevel(path, 0):
             for name in dirs:
                 if not firstTome:
                     currentTarget, pathRoot = createNewTome()
@@ -799,9 +800,12 @@ def splitProcess(path, mode):
 def detectCorruption(tmpPath, orgPath):
     imageNumber = 0
     imageSmaller = 0
-    for root, dirs, files in walk(tmpPath, False):
+    alreadyProcessed = False
+    for root, _, files in os.walk(tmpPath, False):
         for name in files:
             if getImageFileName(name) is not None:
+                if not alreadyProcessed and getImageFileName(name)[0].endswith('-kcc'):
+                    alreadyProcessed = True
                 path = os.path.join(root, name)
                 pathOrg = orgPath + path.split('OEBPS' + os.path.sep + 'Images')[1]
                 if os.path.getsize(path) == 0:
@@ -822,7 +826,13 @@ def detectCorruption(tmpPath, orgPath):
                     else:
                         raise RuntimeError('Image file %s is corrupted.' % pathOrg)
             else:
-                saferRemove(os.path.join(root, name))
+                os.remove(os.path.join(root, name))
+    if alreadyProcessed:
+        print("WARNING: Source files are probably created by KCC. Second conversion will decrease quality.")
+        if GUI:
+            GUI.addMessage.emit('Source files are probably created by KCC. Second conversion will decrease quality.',
+                                'warning', False)
+            GUI.addMessage.emit('', '', False)
     if imageSmaller > imageNumber * 0.25 and not options.upscale and not options.stretch:
         print("WARNING: More than 25% of images are smaller than target device resolution. "
               "Consider enabling stretching or upscaling to improve readability.")
@@ -850,7 +860,7 @@ def makeZIP(zipFilename, baseDir, isEPUB=False):
     zipOutput = ZipFile(zipFilename, 'w', ZIP_DEFLATED)
     if isEPUB:
         zipOutput.writestr('mimetype', 'application/epub+zip', ZIP_STORED)
-    for dirpath, dirnames, filenames in walk(baseDir):
+    for dirpath, _, filenames in os.walk(baseDir):
         for name in filenames:
             path = os.path.normpath(os.path.join(dirpath, name))
             aPath = os.path.normpath(os.path.join(dirpath.replace(baseDir, ''), name))
@@ -1107,14 +1117,14 @@ def makeBook(source, qtGUI=None):
                 print('Error: Failed to tweak KindleGen output!')
                 return filepath
             else:
-                saferRemove(i.replace('.epub', '.mobi') + '_toclean')
+                os.remove(i.replace('.epub', '.mobi') + '_toclean')
             if k.path and k.coverSupport:
                 options.covers[filepath.index(i)][0].saveToKindle(k, options.covers[filepath.index(i)][1])
     return filepath
 
 
 def makeMOBIFix(item, uuid):
-    saferRemove(item)
+    os.remove(item)
     mobiPath = item.replace('.epub', '.mobi')
     move(mobiPath, mobiPath + '_toclean')
     try:
