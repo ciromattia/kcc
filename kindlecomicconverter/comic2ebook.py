@@ -36,7 +36,7 @@ from uuid import uuid4
 from slugify import slugify as slugifyExt
 from PIL import Image
 from subprocess import STDOUT, PIPE
-from psutil import Popen, virtual_memory
+from psutil import Popen, virtual_memory, disk_usage
 from html import escape
 try:
     from PyQt5 import QtCore
@@ -526,6 +526,8 @@ def imgFileProcessing(work):
 
 def getWorkFolder(afile):
     if os.path.isdir(afile):
+        if disk_usage(gettempdir())[2] < getDirectorySize(afile) * 2.5:
+            raise UserWarning("Not enough disk space to perform conversion.")
         workdir = mkdtemp('', 'KCC-')
         try:
             os.rmdir(workdir)
@@ -536,24 +538,27 @@ def getWorkFolder(afile):
         except:
             rmtree(workdir, True)
             raise UserWarning("Failed to prepare a workspace.")
-    elif os.path.isfile(afile) and afile.lower().endswith('.pdf'):
-        pdf = pdfjpgextract.PdfJpgExtract(afile)
-        path, njpg = pdf.extract()
-        if njpg == 0:
-            rmtree(path, True)
-            raise UserWarning("Failed to extract images from PDF file.")
     elif os.path.isfile(afile):
-        workdir = mkdtemp('', 'KCC-')
-        cbx = cbxarchive.CBxArchive(afile)
-        if cbx.isCbxFile():
-            try:
-                path = cbx.extract(workdir)
-            except:
-                rmtree(workdir, True)
-                raise UserWarning("Failed to extract archive.")
+        if disk_usage(gettempdir())[2] < os.path.getsize(afile) * 2.5:
+            raise UserWarning("Not enough disk space to perform conversion.")
+        if afile.lower().endswith('.pdf'):
+            pdf = pdfjpgextract.PdfJpgExtract(afile)
+            path, njpg = pdf.extract()
+            if njpg == 0:
+                rmtree(path, True)
+                raise UserWarning("Failed to extract images from PDF file.")
         else:
-            rmtree(workdir, True)
-            raise UserWarning("Failed to detect archive format.")
+            workdir = mkdtemp('', 'KCC-')
+            cbx = cbxarchive.CBxArchive(afile)
+            if cbx.isCbxFile():
+                try:
+                    path = cbx.extract(workdir)
+                except:
+                    rmtree(workdir, True)
+                    raise UserWarning("Failed to extract archive.")
+            else:
+                rmtree(workdir, True)
+                raise UserWarning("Failed to detect archive format.")
     else:
         raise UserWarning("Failed to open source file/directory.")
     sanitizePermissions(path)
@@ -795,9 +800,12 @@ def splitProcess(path, mode):
 def detectCorruption(tmpPath, orgPath):
     imageNumber = 0
     imageSmaller = 0
+    alreadyProcessed = False
     for root, _, files in os.walk(tmpPath, False):
         for name in files:
             if getImageFileName(name) is not None:
+                if not alreadyProcessed and getImageFileName(name)[0].endswith('-kcc'):
+                    alreadyProcessed = True
                 path = os.path.join(root, name)
                 pathOrg = orgPath + path.split('OEBPS' + os.path.sep + 'Images')[1]
                 if os.path.getsize(path) == 0:
@@ -819,6 +827,12 @@ def detectCorruption(tmpPath, orgPath):
                         raise RuntimeError('Image file %s is corrupted.' % pathOrg)
             else:
                 os.remove(os.path.join(root, name))
+    if alreadyProcessed:
+        print("WARNING: Source files are probably created by KCC. Second conversion will decrease quality.")
+        if GUI:
+            GUI.addMessage.emit('Source files are probably created by KCC. Second conversion will decrease quality.',
+                                'warning', False)
+            GUI.addMessage.emit('', '', False)
     if imageSmaller > imageNumber * 0.25 and not options.upscale and not options.stretch:
         print("WARNING: More than 25% of images are smaller than target device resolution. "
               "Consider enabling stretching or upscaling to improve readability.")
