@@ -1,5 +1,7 @@
 ﻿# KCC
 
+[![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)]() [![PyPI](https://img.shields.io/pypi/v/KindleComicConverter.svg)]() [![AUR](https://img.shields.io/aur/version/kcc.svg)]()
+
 **Kindle Comic Converter** is a Python app to convert comic/manga files or folders to EPUB, Panel View MOBI or E-Ink optimized CBZ.
 It was initially developed for Kindle but since version 4.6 it outputs valid EPUB 3.0 so _**despite its name, KCC is
 actually a comic/manga to EPUB converter that every e-reader owner can happily use**_.
@@ -17,17 +19,23 @@ If you can fix an open issue, fork & make a pull request.
 
 If you find **KCC** valuable you can consider donating to the authors:
 - Ciro Mattia Gonano:
- - [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D8WNYNPBGDAS2)
- - [![Flattr this](http://api.flattr.com/button/flattr-badge-large.png)](http://flattr.com/thing/2260449/ciromattiakcc-on-GitHub)
+ - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D8WNYNPBGDAS2)
+ - [![Donate Flattr](https://img.shields.io/badge/Donate-Flattr-green.svg)](http://flattr.com/thing/2260449/ciromattiakcc-on-GitHub)
 - Paweł Jastrzębski:
- - [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
- - Bitcoin: 1W15wwqsfd7wbaZ6wvSJf1LW1bz6q5L8b
+ - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
+ - [![Donate Bitcoin](https://img.shields.io/badge/Donate-Bitcoin-green.svg)](https://jastrzeb.ski/donate/)
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
 - **Windows (64-bit only):** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
 - **Linux (Glibc 2.19+):** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
 - **OS X (10.9+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
+
+## PYPI
+**KCC** is also available on PyPI.
+```
+pip install KindleComicConverter
+```
 
 ## DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
@@ -162,6 +170,11 @@ The app relies and includes the following scripts:
 * [Kobo Aura ONE](http://kcc.iosphe.re/Samples/Ubunchu-KoAO.kepub.epub)
 
 ## CHANGELOG
+####5.3.1:
+* Small increase of output quality
+* Improved error reporting
+* Internal changes and tweaks
+
 ####5.3:
 * Vastly improved output compatibility for non-Kindle devices
 * Enabled old pinch zoom for Kindle devices
