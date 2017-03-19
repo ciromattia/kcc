@@ -238,13 +238,13 @@ def main(argv=None, qtGUI=None):
             work = []
             pagenumber = 1
             splitWorkerOutput = []
-            splitWorkerPool = Pool()
+            splitWorkerPool = Pool(maxtasksperchild=10)
             if options.merge:
                 print("Merging images...")
                 directoryNumer = 1
                 mergeWork = []
                 mergeWorkerOutput = []
-                mergeWorkerPool = Pool()
+                mergeWorkerPool = Pool(maxtasksperchild=10)
                 mergeWork.append([options.targetDir])
                 for root, dirs, files in os.walk(options.targetDir, False):
                     dirs, files = walkSort(dirs, files)

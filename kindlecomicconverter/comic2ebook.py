@@ -455,7 +455,7 @@ def buildEPUB(path, chapterNames, tomeNumber):
 
 def imgDirectoryProcessing(path):
     global workerPool, workerOutput
-    workerPool = Pool()
+    workerPool = Pool(maxtasksperchild=100)
     workerOutput = []
     options.imgMetadata = {}
     options.imgOld = []
@@ -1185,9 +1185,11 @@ def makeMOBI(work, qtGUI=None):
         threadNumber = 1
     elif 2 < availableMemory <= 4:
         threadNumber = 2
-    else:
+    elif 4 < availableMemory <= 8:
         threadNumber = 4
-    makeMOBIWorkerPool = Pool(threadNumber)
+    else:
+        threadNumber = None
+    makeMOBIWorkerPool = Pool(threadNumber, maxtasksperchild=10)
     for i in work:
         makeMOBIWorkerPool.apply_async(func=makeMOBIWorker, args=(i, ), callback=makeMOBIWorkerTick)
     makeMOBIWorkerPool.close()
