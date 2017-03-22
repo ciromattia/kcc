@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'gui\KCC.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.8.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -81,6 +81,7 @@ class Ui_mainWindow(object):
         self.rotateBox.setObjectName("rotateBox")
         self.gridLayout_2.addWidget(self.rotateBox, 0, 1, 1, 1)
         self.qualityBox = QtWidgets.QCheckBox(self.optionWidget)
+        self.qualityBox.setTristate(True)
         self.qualityBox.setObjectName("qualityBox")
         self.gridLayout_2.addWidget(self.qualityBox, 0, 2, 1, 1)
         self.webtoonBox = QtWidgets.QCheckBox(self.optionWidget)
@@ -241,8 +242,8 @@ class Ui_mainWindow(object):
         self.mangaBox.setText(_translate("mainWindow", "Manga mode"))
         self.rotateBox.setToolTip(_translate("mainWindow", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Split<br/></span>Double page spreads will be cut into two separate pages.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Rotate and split<br/></span>Double page spreads will be displayed twice. First rotated and then split. </p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate<br/></span>Double page spreads will be rotated.</p></body></html>"))
         self.rotateBox.setText(_translate("mainWindow", "Spread splitter"))
-        self.qualityBox.setToolTip(_translate("mainWindow", "<html><head/><body><p style=\'white-space:pre\'><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 4 panels<br/></span>Zoom each corner separately.</p><p style=\'white-space:pre\'><span style=\" font-weight:600; text-decoration: underline;\">Checked - 2 panels<br/></span>Zoom only the top and bottom of the page.</p></body></html>"))
-        self.qualityBox.setText(_translate("mainWindow", "Panel View 4/2"))
+        self.qualityBox.setToolTip(_translate("mainWindow", "<html><head/><body><p style=\'white-space:pre\'><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 4 panels<br/></span>Zoom each corner separately.</p><p style=\'white-space:pre\'><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - 2 panels<br/></span>Zoom only the top and bottom of the page.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - 4 high quality panels<br/></span>Zoom each corner separately. Try to increase the quality of magnification. Check wiki for more details.</p></body></html>"))
+        self.qualityBox.setText(_translate("mainWindow", "Panel View 4/2/HQ"))
         self.webtoonBox.setToolTip(_translate("mainWindow", "<html><head/><body><p style=\'white-space:pre\'>Enable special parsing mode for Korean Webtoons.</p></body></html>"))
         self.webtoonBox.setText(_translate("mainWindow", "Webtoon mode"))
         self.upscaleBox.setToolTip(_translate("mainWindow", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>"))

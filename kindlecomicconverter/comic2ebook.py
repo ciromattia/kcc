@@ -103,6 +103,10 @@ def buildHTML(path, imgfile, imgfilepath):
         os.makedirs(htmlpath)
     htmlfile = os.path.join(htmlpath, filename[0] + '.xhtml')
     imgsize = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
+    if options.hq:
+        imgsizeframe = deviceres
+    else:
+        imgsizeframe = imgsize
     f = open(htmlfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<!DOCTYPE html>\n",
@@ -111,17 +115,20 @@ def buildHTML(path, imgfile, imgfilepath):
                   "<title>", escape(filename[0]), "</title>\n",
                   "<link href=\"", "../" * (backref - 1), "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
                   "<meta name=\"viewport\" "
-                  "content=\"width=" + str(deviceres[0]) + ", height=" + str(deviceres[1]) + "\"/>\n"
+                  "content=\"width=" + str(imgsize[0]) + ", height=" + str(imgsize[1]) + "\"/>\n"
                   "</head>\n",
                   "<body style=\"" + additionalStyle + "\">\n",
                   "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsize) + "%;\">\n",
-                  "<img width=\"" + str(imgsize[0]) + "\" height=\"" + str(imgsize[1]) + "\" ",
+                  "<img width=\"" + str(imgsizeframe[0]) + "\" height=\"" + str(imgsizeframe[1]) + "\" ",
                   "src=\"", "../" * backref, "Images/", postfix, imgfile, "\"/>\n</div>\n"])
     if options.iskindle and options.panelview:
         if options.autoscale:
             size = (getPanelViewResolution(imgsize, deviceres))
         else:
-            size = (int(imgsize[0] * 1.5), int(imgsize[1] * 1.5))
+            if options.hq:
+                size = imgsize
+            else:
+                size = (int(imgsize[0] * 1.5), int(imgsize[1] * 1.5))
         if size[0] - deviceres[0] < deviceres[0] * 0.01:
             noHorizontalPV = True
         else:
@@ -884,6 +891,8 @@ def makeParser():
                                 " KoA, KoAHD, KoAH2O, KoAO) [Default=KV]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")
+    mainOptions.add_option("-q", "--hq", action="store_true", dest="hq", default=False,
+                           help="Try to increase the quality of magnification")
     mainOptions.add_option("-2", "--two-panel", action="store_true", dest="autoscale", default=False,
                            help="Display two not four panels in Panel View mode")
     mainOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
@@ -960,16 +969,20 @@ def checkOptions():
     # Older Kindle models don't support Panel View.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX':
         options.panelview = False
+        options.hq = False
     # Webtoon mode mandatory options
     if options.webtoon:
         options.panelview = False
         options.righttoleft = False
         options.upscale = True
+        options.hq = False
     # Disable all Kindle features for other e-readers
     if options.profile == 'OTHER':
         options.panelview = False
+        options.hq = False
     if 'Ko' in options.profile:
         options.panelview = False
+        options.hq = False
     # CBZ files on Kindle DX/DXG support higher resolution
     if options.profile == 'KDX' and options.format == 'CBZ':
         options.customheight = 1200

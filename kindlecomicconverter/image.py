@@ -209,6 +209,8 @@ class ComicPage:
     def __init__(self, options, mode, path, image, color, fill):
         self.opt = options
         _, self.size, self.palette, self.gamma = self.opt.profileData
+        if self.opt.hq:
+            self.size = (int(self.size[0] * 1.5), int(self.size[1] * 1.5))
         self.image = image
         self.color = color
         self.fill = fill
