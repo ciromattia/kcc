@@ -100,7 +100,7 @@ def splitImage(work):
         opt = work[2]
         filePath = os.path.join(path, name)
         imgOrg = Image.open(filePath).convert('RGB')
-        imgProcess = Image.open(filePath).convert('L')
+        imgProcess = Image.open(filePath).convert('1')
         widthImg, heightImg = imgOrg.size
         if heightImg > opt.height:
             if opt.debug:
@@ -123,24 +123,9 @@ def splitImage(work):
                     panels.append((panelY1, panelY2, panelY2 - panelY1))
                 yWork += 5
 
-            # Merge nearby panels
-            panelsMerged = []
-            previousPanel = False
-            for panel in panels:
-                if not previousPanel:
-                    previousPanel = panel
-                    continue
-                if panel[0] - previousPanel[1] <= 15:
-                    previousPanel = (previousPanel[0], panel[1], panel[1] - previousPanel[0])
-                else:
-                    panelsMerged.append(previousPanel)
-                    previousPanel = panel
-            if panels:
-                panelsMerged.append(panels[-1])
-
             # Split too big panels
             panelsProcessed = []
-            for panel in panelsMerged:
+            for panel in panels:
                 if panel[2] <= opt.height * 1.5:
                     panelsProcessed.append(panel)
                 elif panel[2] < opt.height * 2:
