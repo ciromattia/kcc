@@ -39,7 +39,7 @@ elif sys.platform.startswith('win'):
     class _Popen(forking.Popen):
         def __init__(self, *args, **kw):
             if hasattr(sys, 'frozen'):
-                # noinspection PyProtectedMember
+                # noinspection PyUnresolvedReferences,PyProtectedMember
                 os.putenv('_MEIPASS2', sys._MEIPASS)
             try:
                 super(_Popen, self).__init__(*args, **kw)

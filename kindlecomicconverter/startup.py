@@ -23,6 +23,7 @@ import sys
 from . import __version__
 from .shared import dependencyCheck
 
+
 def start():
     dependencyCheck(3)
     from . import KCC_gui
@@ -40,11 +41,13 @@ def start():
             KCCUI.handleMessage(sys.argv[1])
         sys.exit(KCCAplication.exec_())
 
+
 def startC2E():
     dependencyCheck(2)
     from .comic2ebook import main
     print('comic2ebook v' + __version__ + ' - Written by Ciro Mattia Gonano and Pawel Jastrzebski.')
     sys.exit(main(sys.argv[1:]))
+
 
 def startC2P():
     dependencyCheck(1)

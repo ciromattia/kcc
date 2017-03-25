@@ -17,11 +17,9 @@
 #
 
 import os
-from sys import version_info
 from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
-from time import sleep
 from shutil import rmtree, copy
 from tempfile import mkdtemp
 from zipfile import ZipFile, ZIP_DEFLATED

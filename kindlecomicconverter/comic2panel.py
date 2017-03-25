@@ -259,7 +259,8 @@ def main(argv=None, qtGUI=None):
                     raise UserWarning("Conversion interrupted.")
                 if len(mergeWorkerOutput) > 0:
                     rmtree(options.targetDir, True)
-                    raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0][0], mergeWorkerOutput[0][1])
+                    raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0][0],
+                                       mergeWorkerOutput[0][1])
             print("Splitting images...")
             for root, _, files in os.walk(options.targetDir, False):
                 for name in files:
@@ -282,7 +283,8 @@ def main(argv=None, qtGUI=None):
                     raise UserWarning("Conversion interrupted.")
                 if len(splitWorkerOutput) > 0:
                     rmtree(options.targetDir, True)
-                    raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0][0], splitWorkerOutput[0][1])
+                    raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0][0],
+                                       splitWorkerOutput[0][1])
                 if options.inPlace:
                     rmtree(options.sourceDir)
                     move(options.targetDir, options.sourceDir)

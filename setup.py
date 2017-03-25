@@ -2,10 +2,10 @@
 """
 pip/pyinstaller build script for KCC.
 
-Usage (Windows):
-    py -3 setup.py build_binary
+Install as Python package:
+    python3 setup.py install
 
-Usage (Linux/OS X):
+Create EXE/APP/DEB:
     python3 setup.py build_binary
 """
 
@@ -14,32 +14,22 @@ import sys
 import shutil
 import setuptools
 import distutils.cmd
-from distutils.command.build import build
 from kindlecomicconverter import __version__
 
 NAME = 'KindleComicConverter'
 MAIN = 'kcc.py'
 VERSION = __version__
 
+
 class BuildBinaryCommand(distutils.cmd.Command):
     description = 'build binary release'
-    user_options = [
-        ('pyz', None, 'build PYZ package'),
-    ]
-
-    def initialize_options(self):
-        # noinspection PyAttributeOutsideInit
-        self.pyz = False
-
-    def finalize_options(self):
-        pass
 
     def run(self):
         if sys.platform == 'darwin':
             if os.path.isfile('Kindle Comic Converter.spec'):
                 os.system('pyinstaller "Kindle Comic Converter.spec"')
             else:
-                os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s --noupx kcc.py')
+                os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
             shutil.copy('other/osx/7za', 'dist/Kindle Comic Converter.app/Contents/Resources')
             shutil.copy('other/osx/unrar', 'dist/Kindle Comic Converter.app/Contents/Resources')
             shutil.copy('other/osx/Info.plist', 'dist/Kindle Comic Converter.app/Contents')
@@ -92,6 +82,6 @@ setuptools.setup(
         'python-slugify>=1.2.1',
         'raven>=6.0.0',
     ],
-    classifiers = [],
+    classifiers=[],
     zip_safe=False,
 )

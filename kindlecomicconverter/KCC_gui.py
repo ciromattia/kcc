@@ -533,8 +533,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def clearJobs(self):
         GUI.jobList.clear()
 
-    # noinspection PyCallByClass,PyTypeChecker
     def openWiki(self):
+        # noinspection PyCallByClass
         QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://github.com/ciromattia/kcc/wiki'))
 
     def modeChange(self, mode):
