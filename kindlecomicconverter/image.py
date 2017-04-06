@@ -120,7 +120,7 @@ class ComicPageParser:
         width, height = self.image.size
         dstwidth, dstheight = self.size
         if (width > height) != (dstwidth > dstheight) and width <= dstheight and height <= dstwidth \
-                and not self.opt.webtoon:
+                and not self.opt.webtoon and self.opt.splitter == 1:
             self.payload.append(['R', self.source, self.image.rotate(90, Image.BICUBIC, True), self.color, self.fill])
         elif (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:
             if self.opt.splitter != 1:
