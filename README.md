@@ -1,6 +1,6 @@
 # KCC
 
-[![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)]() [![PyPI](https://img.shields.io/pypi/v/KindleComicConverter.svg)]() [![AUR](https://img.shields.io/aur/version/kcc.svg)]()
+[![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases) [![PyPI](https://img.shields.io/pypi/v/KindleComicConverter.svg)](https://pypi.python.org/pypi/KindleComicConverter) [![AUR](https://img.shields.io/aur/version/kcc.svg)](https://aur.archlinux.org/packages/kcc/)
 
 **Kindle Comic Converter** is a Python app to convert comic/manga files or folders to EPUB, Panel View MOBI or E-Ink optimized CBZ.
 It was initially developed for Kindle but since version 4.6 it outputs valid EPUB 3.0 so _**despite its name, KCC is
@@ -72,7 +72,7 @@ After completed conversion you should find ready file alongside the original inp
 
 Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more details.
 
-CLI version of **KCC** is intended for power users. It is not idiot-proof like GUI :-)
+CLI version of **KCC** is intended for power users. It allow to use options that might not be compatible and decrease quality of output. 
 
 ### Standalone `kcc-c2e.py` usage:
 
@@ -86,6 +86,7 @@ Options:
                         KDX, KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O,
                         KoAO) [Default=KV]
     -m, --manga-style   Manga style (right-to-left reading and splitting)
+    -q, --hq            Try to increase the quality of magnification
     -2, --two-panel     Display two not four panels in Panel View mode
     -w, --webtoon       Webtoon processing mode
 
@@ -170,6 +171,11 @@ The app relies and includes the following scripts:
 * [Kobo Aura ONE](http://kcc.iosphe.re/Samples/Ubunchu-KoAO.kepub.epub)
 
 ## CHANGELOG
+#### 5.4:
+* Reimplemented high quality Panel View option
+* Improved webtoon splitter
+* Fixed page splitter
+
 #### 5.3.1:
 * Small increase of output quality
 * Improved error reporting
