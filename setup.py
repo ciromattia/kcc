@@ -23,6 +23,13 @@ VERSION = __version__
 
 class BuildBinaryCommand(distutils.cmd.Command):
     description = 'build binary release'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
 
     def run(self):
         if sys.platform == 'darwin':
