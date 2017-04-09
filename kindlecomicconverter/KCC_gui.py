@@ -254,8 +254,10 @@ class WorkerThread(QtCore.QThread):
             options.splitter = 2
         elif GUI.rotateBox.checkState() == 2:
             options.splitter = 1
-        if GUI.qualityBox.isChecked():
+        if GUI.qualityBox.checkState() == 1:
             options.autoscale = True
+        elif GUI.qualityBox.checkState() == 2:
+            options.hq = True
         if GUI.webtoonBox.isChecked():
             options.webtoon = True
         if GUI.upscaleBox.checkState() == 1:
@@ -531,8 +533,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def clearJobs(self):
         GUI.jobList.clear()
 
-    # noinspection PyCallByClass,PyTypeChecker
     def openWiki(self):
+        # noinspection PyCallByClass
         QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://github.com/ciromattia/kcc/wiki'))
 
     def modeChange(self, mode):
@@ -613,6 +615,18 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.rotateBox.setEnabled(True)
             GUI.upscaleBox.setEnabled(True)
 
+    def togglequalityBox(self, value):
+        profile = GUI.profiles[str(GUI.deviceBox.currentText())]
+        if value == 2:
+            if profile['Label'] in ['KV']:
+                self.addMessage('This option is intended for older Kindle models.', 'warning')
+                self.addMessage('It might not provide any quality increase in this case.', 'warning')
+            GUI.upscaleBox.setEnabled(False)
+            GUI.upscaleBox.setChecked(True)
+        else:
+            GUI.upscaleBox.setEnabled(True)
+            GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
+
     def changeGamma(self, value):
         valueRaw = int(5 * round(float(value) / 5))
         value = '%.2f' % (float(valueRaw) / 100)
@@ -634,7 +648,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.changeFormat()
         GUI.gammaSlider.setValue(0)
         self.changeGamma(0)
-        GUI.qualityBox.setEnabled(profile['PVOptions'])
+        if not GUI.webtoonBox.isChecked():
+            GUI.qualityBox.setEnabled(profile['PVOptions'])
         GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
         if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
@@ -648,7 +663,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.formatBox.setCurrentIndex(outputFormat)
         else:
             GUI.formatBox.setCurrentIndex(profile['DefaultFormat'])
-        GUI.qualityBox.setEnabled(profile['PVOptions'])
+        if not GUI.webtoonBox.isChecked():
+            GUI.qualityBox.setEnabled(profile['PVOptions'])
         if str(GUI.formatBox.currentText()) == 'MOBI/AZW3':
             GUI.outputSplit.setEnabled(True)
         else:
@@ -1002,6 +1018,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)
         GUI.webtoonBox.stateChanged.connect(self.togglewebtoonBox)
+        GUI.qualityBox.stateChanged.connect(self.togglequalityBox)
         GUI.deviceBox.activated.connect(self.changeDevice)
         GUI.formatBox.activated.connect(self.changeFormat)
         MW.progressBarTick.connect(self.updateProgressbar)

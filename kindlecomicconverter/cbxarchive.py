@@ -16,12 +16,11 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-import sys
 import os
 from zipfile import is_zipfile, ZipFile
 from subprocess import STDOUT, PIPE
 from psutil import Popen
-from shutil import move, copy
+from shutil import move
 from . import rarfile
 from .shared import check7ZFile as is_7zfile
 

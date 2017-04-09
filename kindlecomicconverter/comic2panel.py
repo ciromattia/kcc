@@ -23,7 +23,7 @@ import sys
 from shutil import rmtree, copytree, move
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
-from PIL import Image, ImageStat, ImageOps
+from PIL import Image, ImageChops, ImageOps, ImageDraw
 from .shared import getImageFileName, walkLevel, walkSort, sanitizeTrace
 try:
     from PyQt5 import QtCore
@@ -67,8 +67,7 @@ def mergeDirectory(work):
             result = Image.new('RGB', (targetWidth, targetHeight))
             y = 0
             for i in imagesValid:
-                img = Image.open(i)
-                img = img.convert('RGB')
+                img = Image.open(i).convert('RGB')
                 if img.size[0] < targetWidth:
                     img = ImageOps.fit(img, (targetWidth, img.size[1]), method=Image.BICUBIC, centering=(0.5, 0.5))
                 result.paste(img, (0, y))
@@ -80,30 +79,8 @@ def mergeDirectory(work):
         return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
 
-def sanitizePanelSize(panel, opt):
-    newPanels = []
-    if panel[2] > 6 * opt.height:
-        diff = int(panel[2] / 8)
-        newPanels.append([panel[0], panel[1] - diff * 7, diff])
-        newPanels.append([panel[1] - diff * 7, panel[1] - diff * 6, diff])
-        newPanels.append([panel[1] - diff * 6, panel[1] - diff * 5, diff])
-        newPanels.append([panel[1] - diff * 5, panel[1] - diff * 4, diff])
-        newPanels.append([panel[1] - diff * 4, panel[1] - diff * 3, diff])
-        newPanels.append([panel[1] - diff * 3, panel[1] - diff * 2, diff])
-        newPanels.append([panel[1] - diff * 2, panel[1] - diff, diff])
-        newPanels.append([panel[1] - diff, panel[1], diff])
-    elif panel[2] > 3 * opt.height:
-        diff = int(panel[2] / 4)
-        newPanels.append([panel[0], panel[1] - diff * 3, diff])
-        newPanels.append([panel[1] - diff * 3, panel[1] - diff * 2, diff])
-        newPanels.append([panel[1] - diff * 2, panel[1] - diff, diff])
-        newPanels.append([panel[1] - diff, panel[1], diff])
-    elif panel[2] > 1.5 * opt.height:
-        newPanels.append([panel[0], panel[1] - int(panel[2] / 2), int(panel[2] / 2)])
-        newPanels.append([panel[1] - int(panel[2] / 2), panel[1], int(panel[2] / 2)])
-    else:
-        newPanels = [panel]
-    return newPanels
+def detectSolid(img):
+    return not ImageChops.invert(img).getbbox() or not img.getbbox()
 
 
 def splitImageTick(output):
@@ -121,56 +98,60 @@ def splitImage(work):
         path = work[0]
         name = work[1]
         opt = work[2]
-        # Hardcoded options
-        threshold = 1.0
-        delta = 15
-        fileExpanded = os.path.splitext(name)
         filePath = os.path.join(path, name)
-        image = Image.open(filePath)
-        image = image.convert('RGB')
-        widthImg, heightImg = image.size
+        imgOrg = Image.open(filePath).convert('RGB')
+        imgProcess = Image.open(filePath).convert('1')
+        widthImg, heightImg = imgOrg.size
         if heightImg > opt.height:
             if opt.debug:
-                from PIL import ImageDraw
-                debugImage = Image.open(filePath)
-                draw = ImageDraw.Draw(debugImage)
+                drawImg = Image.open(filePath).convert(mode='RGBA')
+                draw = ImageDraw.Draw(drawImg)
 
             # Find panels
-            y1 = 0
-            y2 = 15
+            yWork = 0
+            panelDetected = False
             panels = []
-            while y2 < heightImg:
-                while ImageStat.Stat(image.crop([0, y1, widthImg, y2])).var[0] < threshold and y2 < heightImg:
-                    y2 += delta
-                y2 -= delta
-                y1Temp = y2
-                y1 = y2 + delta
-                y2 = y1 + delta
-                while ImageStat.Stat(image.crop([0, y1, widthImg, y2])).var[0] >= threshold and y2 < heightImg:
-                    y1 += delta
-                    y2 += delta
-                if y1 + delta >= heightImg:
-                    y1 = heightImg - 1
-                y2Temp = y1
-                if opt.debug:
-                    draw.line([(0, y1Temp), (widthImg, y1Temp)], fill=(0, 255, 0))
-                    draw.line([(0, y2Temp), (widthImg, y2Temp)], fill=(255, 0, 0))
-                panelHeight = y2Temp - y1Temp
-                if panelHeight > delta:
-                    # Panels that can't be cut nicely will be forcefully splitted
-                    panelsCleaned = sanitizePanelSize([y1Temp, y2Temp, panelHeight], opt)
-                    for panel in panelsCleaned:
-                        panels.append(panel)
+            while yWork < heightImg:
+                tmpImg = imgProcess.crop([0, yWork, widthImg, yWork + 4])
+                solid = detectSolid(tmpImg)
+                if not solid and not panelDetected:
+                    panelDetected = True
+                    panelY1 = yWork - 2
+                if solid and panelDetected:
+                    panelDetected = False
+                    panelY2 = yWork + 6
+                    panels.append((panelY1, panelY2, panelY2 - panelY1))
+                yWork += 5
+
+            # Split too big panels
+            panelsProcessed = []
+            for panel in panels:
+                if panel[2] <= opt.height * 1.5:
+                    panelsProcessed.append(panel)
+                elif panel[2] < opt.height * 2:
+                    diff = panel[2] - opt.height
+                    panelsProcessed.append((panel[0], panel[1] - diff, opt.height))
+                    panelsProcessed.append((panel[1] - opt.height, panel[1], opt.height))
+                else:
+                    parts = round(panel[2] / opt.height)
+                    diff = panel[2] // parts
+                    for x in range(0, parts):
+                        panelsProcessed.append((panel[0] + (x * diff), panel[1] - ((parts - x - 1) * diff), diff))
+
             if opt.debug:
+                for panel in panelsProcessed:
+                    # noinspection PyUnboundLocalVariable
+                    draw.rectangle([(0, panel[0]), (widthImg, panel[1])], (0, 255, 0, 128), (0, 0, 255, 255))
                 # noinspection PyUnboundLocalVariable
-                debugImage.save(os.path.join(path, fileExpanded[0] + '-debug.png'), 'PNG')
+                debugImage = Image.alpha_composite(imgOrg.convert(mode='RGBA'), drawImg)
+                debugImage.save(os.path.join(path, os.path.splitext(name)[0] + '-debug.png'), 'PNG')
 
             # Create virtual pages
             pages = []
             currentPage = []
             pageLeft = opt.height
             panelNumber = 0
-            for panel in panels:
+            for panel in panelsProcessed:
                 if pageLeft - panel[2] > 0:
                     pageLeft -= panel[2]
                     currentPage.append(panelNumber)
@@ -190,14 +171,14 @@ def splitImage(work):
                 pageHeight = 0
                 targetHeight = 0
                 for panel in page:
-                    pageHeight += panels[panel][2]
-                if pageHeight > delta:
+                    pageHeight += panelsProcessed[panel][2]
+                if pageHeight > 15:
                     newPage = Image.new('RGB', (widthImg, pageHeight))
                     for panel in page:
-                        panelImg = image.crop([0, panels[panel][0], widthImg, panels[panel][1]])
+                        panelImg = imgOrg.crop([0, panelsProcessed[panel][0], widthImg, panelsProcessed[panel][1]])
                         newPage.paste(panelImg, (0, targetHeight))
-                        targetHeight += panels[panel][2]
-                    newPage.save(os.path.join(path, fileExpanded[0] + '-' + str(pageNumber) + '.png'), 'PNG')
+                        targetHeight += panelsProcessed[panel][2]
+                    newPage.save(os.path.join(path, os.path.splitext(name)[0] + '-' + str(pageNumber) + '.png'), 'PNG')
                     pageNumber += 1
             os.remove(filePath)
     except Exception:
@@ -238,13 +219,13 @@ def main(argv=None, qtGUI=None):
             work = []
             pagenumber = 1
             splitWorkerOutput = []
-            splitWorkerPool = Pool()
+            splitWorkerPool = Pool(maxtasksperchild=10)
             if options.merge:
                 print("Merging images...")
                 directoryNumer = 1
                 mergeWork = []
                 mergeWorkerOutput = []
-                mergeWorkerPool = Pool()
+                mergeWorkerPool = Pool(maxtasksperchild=10)
                 mergeWork.append([options.targetDir])
                 for root, dirs, files in os.walk(options.targetDir, False):
                     dirs, files = walkSort(dirs, files)
@@ -263,7 +244,8 @@ def main(argv=None, qtGUI=None):
                     raise UserWarning("Conversion interrupted.")
                 if len(mergeWorkerOutput) > 0:
                     rmtree(options.targetDir, True)
-                    raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0][0], mergeWorkerOutput[0][1])
+                    raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0][0],
+                                       mergeWorkerOutput[0][1])
             print("Splitting images...")
             for root, _, files in os.walk(options.targetDir, False):
                 for name in files:
@@ -286,7 +268,8 @@ def main(argv=None, qtGUI=None):
                     raise UserWarning("Conversion interrupted.")
                 if len(splitWorkerOutput) > 0:
                     rmtree(options.targetDir, True)
-                    raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0][0], splitWorkerOutput[0][1])
+                    raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0][0],
+                                       splitWorkerOutput[0][1])
                 if options.inPlace:
                     rmtree(options.sourceDir)
                     move(options.targetDir, options.sourceDir)
