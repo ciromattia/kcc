@@ -967,7 +967,7 @@ def checkOptions():
     if options.format == 'MOBI' and options.batchsplit != 2:
         options.batchsplit = 1
     # Older Kindle models don't support Panel View.
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX':
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K3' or options.profile == 'KDX':
         options.panelview = False
         options.hq = False
     # Webtoon mode mandatory options
