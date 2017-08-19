@@ -2,7 +2,7 @@
 set -e
 
 pip3 install --upgrade pip setuptools wheel
-pip3 install pillow python-slugify psutil pyinstaller raven pyqt5 certifi
+pip3 install pillow python-slugify psutil raven pyqt5 certifi https://github.com/pyinstaller/pyinstaller/archive/develop.zip
 gem install fpm
 
 cd /app
