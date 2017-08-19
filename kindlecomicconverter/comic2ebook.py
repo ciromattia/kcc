@@ -887,7 +887,7 @@ def makeParser():
     otherOptions = OptionGroup(psr, "OTHER")
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
-                           help="Device profile (Available options: K1, K2, K3, K45, KDX, KPW, KV, KoMT, KoG, KoGHD,"
+                           help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KV, KoMT, KoG, KoGHD,"
                                 " KoA, KoAHD, KoAH2O, KoAO) [Default=KV]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")
@@ -951,13 +951,13 @@ def checkOptions():
     options.iskindle = False
     options.bordersColor = None
     if options.format == 'Auto':
-        if options.profile in ['K1', 'K2', 'K3', 'K45', 'KPW', 'KV']:
+        if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV']:
             options.format = 'MOBI'
         elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O', 'KoAO']:
             options.format = 'EPUB'
         elif options.profile in ['KDX']:
             options.format = 'CBZ'
-    if options.profile in ['K1', 'K2', 'K3', 'K45', 'KPW', 'KV']:
+    if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV']:
         options.iskindle = True
     if options.white_borders:
         options.bordersColor = 'white'
@@ -967,7 +967,7 @@ def checkOptions():
     if options.format == 'MOBI' and options.batchsplit != 2:
         options.batchsplit = 1
     # Older Kindle models don't support Panel View.
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'KDX':
+    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K34' or options.profile == 'KDX':
         options.panelview = False
         options.hq = False
     # Webtoon mode mandatory options

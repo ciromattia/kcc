@@ -1,0 +1,24 @@
+language: generic
+os: osx
+osx_image: xcode6.4
+before_install:
+- brew update
+- brew install python3
+- brew upgrade node
+- pip3 install --upgrade pip setuptools wheel
+- openssl aes-256-cbc -K $encrypted_ed1022070d5f_key -iv $encrypted_ed1022070d5f_iv -in other/osx/sentry.py.enc -out kindlecomicconverter/sentry.py -d
+install:
+- pip3 install -r requirements.txt
+- pip3 install pyinstaller certifi
+- npm install appdmg
+script: python3 setup.py build_binary
+deploy:
+  provider: releases
+  api_key:
+    secure: hLjRHmcFILPvKtn0PzWrt/8ImFKGmSKzdIOj6VNANwFDPl+2tIl3pVl7MlRq6KBYU8RiV+cUDVvxG7T59WY4Dd74FSvECKjaNdSo2+00oiuovr0PHznvzH+/gDY2GOrgZihOILILgx0HYRqLQls+h5vlPPQwW6XShvaFfGT20837+ycT6EQ77mZAfXpm7agUe8tjdxV/qqrnFnHasymZiqkqd3+uZa07QfZHh1piwdNR/fAKwJXufcFcntOSs/lyTlFMIuwdtAv2mixqm3ePTrMYEX3hqv6b+dy7Usc3d88M9NKBemggQdHSWbM+xedtSEM/h2MQS/VLXsmTsXx2MgAs8r1uTf2/uecbpeOZMcFgiOx1q/nqbUnEjGPhyeaA3VNMGaXrKmiXXIe2ZHmFALTHfXoMfznJTJa53JJ7yWAmMtryt7WRNGv3TvdLkK6Jn+GY6jtvGpOWPDTGUM6afoRUyeyAb5owZGBcSCTNv+ZJFpiJPOBRg80hX3iiCtWT3q4AC6OqNko20j/yesFPTh1z+dSTGnu9TUFF5b8FcVzUSkd+y153IxVsuveq7U18uczDX+GtP/2HlMHBwwxqC/cgBibxLLsQYK7MK9esocxT4X/otsNLKgvCPhFSZ19YpHSzYSvyOtziE49n63bqbagRxK+sR5UYz8MoQeCkn24=
+  file_glob: true
+  file: dist/KindleComicConverter_osx_*
+  skip_cleanup: true
+  on:
+    repo: AcidWeb/kcc
+    tags: true
