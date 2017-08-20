@@ -67,12 +67,12 @@ sudo pip3 install --upgrade pillow python-slugify psutil pyqt5 raven
 
 ## USAGE
 
-Should be pretty self-explanatory. All options have detailed informations in tooltips.
-After completed conversion you should find ready file alongside the original input file (same directory).
+Should be pretty self-explanatory. All options have detailed information in tooltips.
+After completed conversion, you should find ready file alongside the original input file (same directory).
 
 Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more details.
 
-CLI version of **KCC** is intended for power users. It allow to use options that might not be compatible and decrease quality of output. 
+CLI version of **KCC** is intended for power users. It allows using options that might not be compatible and decrease the quality of output.
 
 ### Standalone `kcc-c2e.py` usage:
 
@@ -145,7 +145,7 @@ Options:
     -m, --merge         Combine every directory into a single image before splitting
 
   OTHER:
-    -d, --debug         Create debug file for every splitted image
+    -d, --debug         Create debug file for every split image
     -h, --help          Show this help message and exit
 ```
 

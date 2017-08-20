@@ -197,7 +197,7 @@ def main(argv=None, qtGUI=None):
     mainOptions.add_option("-m", "--merge", action="store_true", dest="merge", default=False,
                            help="Combine every directory into a single image before splitting")
     otherOptions.add_option("-d", "--debug", action="store_true", dest="debug", default=False,
-                            help="Create debug file for every splitted image")
+                            help="Create debug file for every split image")
     otherOptions.add_option("-h", "--help", action="help",
                             help="Show this help message and exit")
     parser.add_option_group(mainOptions)
