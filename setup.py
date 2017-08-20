@@ -31,12 +31,11 @@ class BuildBinaryCommand(distutils.cmd.Command):
     def finalize_options(self):
         pass
 
+    # noinspection PyShadowingNames
     def run(self):
+        VERSION = __version__
         if sys.platform == 'darwin':
-            if os.path.isfile('Kindle Comic Converter.spec'):
-                os.system('pyinstaller "Kindle Comic Converter.spec"')
-            else:
-                os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
+            os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
             shutil.copy('other/osx/7za', 'dist/Kindle Comic Converter.app/Contents/Resources')
             shutil.copy('other/osx/unrar', 'dist/Kindle Comic Converter.app/Contents/Resources')
             shutil.copy('other/osx/Info.plist', 'dist/Kindle Comic Converter.app/Contents')
@@ -44,20 +43,32 @@ class BuildBinaryCommand(distutils.cmd.Command):
             shutil.copy('other/windows/Additional-LICENSE.txt', 'dist/Kindle Comic Converter.app/Contents/Resources')
             os.chmod('dist/Kindle Comic Converter.app/Contents/Resources/unrar', 0o777)
             os.chmod('dist/Kindle Comic Converter.app/Contents/Resources/7za', 0o777)
-            if os.path.isfile('setup.sh'):
-                os.system('./setup.sh')
             os.system('appdmg kcc.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')
             exit(0)
         elif sys.platform == 'win32':
-            if os.path.isfile('KCC.spec'):
-                os.system('pyinstaller KCC.spec')
-            else:
-                os.system('pyinstaller -y -F -i icons\comic2ebook.ico -n KCC -w --noupx kcc.py')
-            if os.path.isfile('setup.bat'):
-                os.system('setup.bat')
+            os.system('pyinstaller -y -F -i icons\comic2ebook.ico -n KCC -w --noupx kcc.py')
+            if os.getenv('APPVEYOR'):
+                if len(VERSION) == 3:
+                    VERSION = VERSION + '.0'
+                os.system('setup.bat ' + VERSION)
             exit(0)
         else:
-            os.system('docker run --rm -v ' + os.getcwd() + ':/app -e KCCVER=' + VERSION + ' acidweb/kcc')
+            os.system('pyinstaller -F -s kcc.py')
+            os.system('mkdir -p dist/usr/bin dist/usr/share/applications dist/usr/share/doc/kindlecomicconverter '
+                      'dist/usr/share/kindlecomicconverter dist/usr/share/lintian/overrides')
+            os.system('mv dist/kcc dist/usr/bin')
+            os.system('cp icons/comic2ebook.png dist/usr/share/kindlecomicconverter')
+            os.system('cp LICENSE.txt dist/usr/share/doc/kindlecomicconverter/copyright')
+            os.system('cp other/linux/kindlecomicconverter.desktop dist/usr/share/applications')
+            os.system('cp other/linux/kindlecomicconverter dist/usr/share/lintian/overrides')
+            os.chdir('dist')
+            os.system('fpm -f -s dir -t deb -n kindlecomicconverter -v ' + VERSION +
+                      ' -m "Paweł Jastrzębski <pawelj@iosphe.re>" --license "ISC" '
+                      '--description "$(printf "Comic and Manga converter for e-book '
+                      'readers.\nThis app allows you to transform your PNG, JPG, GIF, '
+                      'CBZ, CBR and CB7 files\ninto EPUB or MOBI format e-books.")" '
+                      '--url "https://kcc.iosphe.re/" --deb-priority "optional" --vendor "" '
+                      '--category "graphics" -d "unrar | unrar-free" -d "p7zip-full" -d "libc6" usr')
             exit(0)
 
 setuptools.setup(

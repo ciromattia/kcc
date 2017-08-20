@@ -10,8 +10,6 @@ test
 solaio
 kindlegen*
 *.spec
-setup.bat
-setup.sh
 kindlecomicconverter/sentry.py
 build/
 .python-version
