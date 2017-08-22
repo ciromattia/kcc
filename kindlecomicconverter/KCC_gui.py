@@ -152,7 +152,7 @@ class VersionThread(QtCore.QThread):
                 self.getNewVersion()
             else:
                 MW.addMessage.emit('<a href="https://kcc.iosphe.re/">'
-                                   '<b>New version is available!</b></a> '
+                                   '<b>The new version is available!</b></a> '
                                    '(<a href="https://github.com/ciromattia/kcc/releases/">'
                                    'Changelog</a>)', 'warning', False)
 
@@ -176,7 +176,7 @@ class VersionThread(QtCore.QThread):
                 Popen(path[0] + '.exe  /SP- /silent /noicons', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
                 MW.forceShutdown.emit()
             except Exception:
-                MW.addMessage.emit('Failed to download update!', 'warning', False)
+                MW.addMessage.emit('Failed to download the update!', 'warning', False)
                 MW.hideProgressBar.emit()
                 MW.modeConvert.emit(1)
 
@@ -620,7 +620,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if value == 2:
             if profile['Label'] in ['KV']:
                 self.addMessage('This option is intended for older Kindle models.', 'warning')
-                self.addMessage('It might not provide any quality increase in this case.', 'warning')
+                self.addMessage('It will not increase quality on a device with 300 ppi screen.', 'warning')
             GUI.upscaleBox.setEnabled(False)
             GUI.upscaleBox.setChecked(True)
         else:
@@ -720,7 +720,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def convertStart(self):
         if self.conversionAlive:
             GUI.convertButton.setEnabled(False)
-            self.addMessage('Process will be interrupted. Please wait.', 'warning')
+            self.addMessage('The process will be interrupted. Please wait.', 'warning')
             self.conversionAlive = False
             self.worker.sync()
         else:
@@ -766,7 +766,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def saveSettings(self, event):
         if self.conversionAlive:
             GUI.convertButton.setEnabled(False)
-            self.addMessage('Process will be interrupted. Please wait.', 'warning')
+            self.addMessage('The process will be interrupted. Please wait.', 'warning')
             self.conversionAlive = False
             self.worker.sync()
             event.ignore()
@@ -989,9 +989,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.statusBar.addPermanentWidget(statusBarLabel, 1)
 
         self.addMessage('<b>Welcome!</b>', 'info')
-        self.addMessage('<b>Remember:</b> All options have additional informations in tooltips.', 'info')
+        self.addMessage('<b>Remember:</b> All options have additional information in tooltips.', 'info')
         if self.startNumber < 5:
-            self.addMessage('Since you are new user of <b>KCC</b> please see few '
+            self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
         rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)

@@ -53,7 +53,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
                 os.system('setup.bat ' + VERSION)
             exit(0)
         else:
-            os.system('pyinstaller -F -s kcc.py')
+            os.system('pyinstaller -y -F kcc.py')
             os.system('mkdir -p dist/usr/bin dist/usr/share/applications dist/usr/share/doc/kindlecomicconverter '
                       'dist/usr/share/kindlecomicconverter dist/usr/share/lintian/overrides')
             os.system('mv dist/kcc dist/usr/bin')

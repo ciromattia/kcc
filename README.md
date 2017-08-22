@@ -29,7 +29,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 You can find the latest released binary at the following links:
 - **Windows (64-bit only):** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
 - **Linux (Glibc 2.19+):** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
-- **OS X (10.9+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
+- **OS X (10.10+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
 
 ## PYPI
 **KCC** is also available on PyPI.
@@ -67,12 +67,12 @@ sudo pip3 install --upgrade pillow python-slugify psutil pyqt5 raven
 
 ## USAGE
 
-Should be pretty self-explanatory. All options have detailed informations in tooltips.
-After completed conversion you should find ready file alongside the original input file (same directory).
+Should be pretty self-explanatory. All options have detailed information in tooltips.
+After completed conversion, you should find ready file alongside the original input file (same directory).
 
 Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more details.
 
-CLI version of **KCC** is intended for power users. It allow to use options that might not be compatible and decrease quality of output. 
+CLI version of **KCC** is intended for power users. It allows using options that might not be compatible and decrease the quality of output.
 
 ### Standalone `kcc-c2e.py` usage:
 
@@ -82,7 +82,7 @@ Usage: kcc-c2e [options] comic_file|comic_folder
 Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
-                        Device profile (Available options: K1, K2, K3, K45,
+                        Device profile (Available options: K1, K2, K34, K578,
                         KDX, KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O,
                         KoAO) [Default=KV]
     -m, --manga-style   Manga style (right-to-left reading and splitting)
@@ -145,7 +145,7 @@ Options:
     -m, --merge         Combine every directory into a single image before splitting
 
   OTHER:
-    -d, --debug         Create debug file for every splitted image
+    -d, --debug         Create debug file for every split image
     -h, --help          Show this help message and exit
 ```
 

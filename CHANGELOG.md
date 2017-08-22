@@ -1,4 +1,8 @@
 # CHANGELOG
+#### 5.4.1:
+* Minor bug fixes and tweaks
+* Implemented new binary build pipeline
+
 #### 5.4:
 * Reimplemented high quality Panel View option
 * Improved webtoon splitter

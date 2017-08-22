@@ -835,10 +835,10 @@ def detectCorruption(tmpPath, orgPath):
             else:
                 os.remove(os.path.join(root, name))
     if alreadyProcessed:
-        print("WARNING: Source files are probably created by KCC. Second conversion will decrease quality.")
+        print("WARNING: Source files are probably created by KCC. The second conversion will decrease quality.")
         if GUI:
-            GUI.addMessage.emit('Source files are probably created by KCC. Second conversion will decrease quality.',
-                                'warning', False)
+            GUI.addMessage.emit('Source files are probably created by KCC. The second conversion will decrease quality.'
+                                , 'warning', False)
             GUI.addMessage.emit('', '', False)
     if imageSmaller > imageNumber * 0.25 and not options.upscale and not options.stretch:
         print("WARNING: More than 25% of images are smaller than target device resolution. "
