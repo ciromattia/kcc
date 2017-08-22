@@ -29,7 +29,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 You can find the latest released binary at the following links:
 - **Windows (64-bit only):** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
 - **Linux (Glibc 2.19+):** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
-- **OS X (10.9+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
+- **OS X (10.10+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
 
 ## PYPI
 **KCC** is also available on PyPI.
@@ -82,7 +82,7 @@ Usage: kcc-c2e [options] comic_file|comic_folder
 Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
-                        Device profile (Available options: K1, K2, K3, K45,
+                        Device profile (Available options: K1, K2, K34, K578,
                         KDX, KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O,
                         KoAO) [Default=KV]
     -m, --manga-style   Manga style (right-to-left reading and splitting)
