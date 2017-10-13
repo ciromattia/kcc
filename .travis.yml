@@ -21,10 +21,10 @@ before_install:
 
 install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] ; then pip install -r requirements.txt ; fi
-- if [ "$TRAVIS_OS_NAME" == "linux" ] ; then pip install certifi https://github.com/pyinstaller/pyinstaller/archive/develop.zip ; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] ; then pip install certifi PyInstaller ; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] ; then gem install fpm ; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] ; then pip3 install -r requirements.txt ; fi
-- if [ "$TRAVIS_OS_NAME" == "osx" ] ; then pip3 install certifi https://github.com/pyinstaller/pyinstaller/archive/develop.zip ; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] ; then pip3 install certifi PyInstaller ; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] ; then npm install -g appdmg ; fi
 
 script: python3 setup.py build_binary

@@ -5,7 +5,7 @@ install:
   - set PATH="%PYTHON%\\Scripts";"C:\\Program Files (x86)\\Inno Setup 5";%PATH%
   - "%PYTHON%\\python.exe -m pip install --upgrade pip setuptools wheel"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  - "%PYTHON%\\python.exe -m pip install certifi https://github.com/pyinstaller/pyinstaller/archive/develop.zip"
+  - "%PYTHON%\\python.exe -m pip install certifi PyInstaller"
   - nuget install secure-file -ExcludeVersion
   - nuget install verpatch -ExcludeVersion
   - secure-file\tools\secure-file -decrypt other\windows\Cert.pfx.enc -secret %ENCRYPTION%
