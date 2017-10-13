@@ -104,7 +104,7 @@ def buildHTML(path, imgfile, imgfilepath):
     htmlfile = os.path.join(htmlpath, filename[0] + '.xhtml')
     imgsize = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
     if options.hq:
-        imgsizeframe = deviceres
+        imgsizeframe = (int(imgsize[0] // 1.5), int(imgsize[1] // 1.5))
     else:
         imgsizeframe = imgsize
     f = open(htmlfile, "w", encoding='UTF-8')
@@ -118,7 +118,7 @@ def buildHTML(path, imgfile, imgfilepath):
                   "content=\"width=" + str(imgsize[0]) + ", height=" + str(imgsize[1]) + "\"/>\n"
                   "</head>\n",
                   "<body style=\"" + additionalStyle + "\">\n",
-                  "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsize) + "%;\">\n",
+                  "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsizeframe) + "%;\">\n",
                   "<img width=\"" + str(imgsizeframe[0]) + "\" height=\"" + str(imgsizeframe[1]) + "\" ",
                   "src=\"", "../" * backref, "Images/", postfix, imgfile, "\"/>\n</div>\n"])
     if options.iskindle and options.panelview:

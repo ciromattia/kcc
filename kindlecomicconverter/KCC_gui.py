@@ -620,7 +620,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if value == 2:
             if profile['Label'] in ['KV', 'KO']:
                 self.addMessage('This option is intended for older Kindle models.', 'warning')
-                self.addMessage('It will not increase quality on a device with 300 ppi screen.', 'warning')
+                self.addMessage('On this device, quality improvement will be negligible.', 'warning')
             GUI.upscaleBox.setEnabled(False)
             GUI.upscaleBox.setChecked(True)
         else:
