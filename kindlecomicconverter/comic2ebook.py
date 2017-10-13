@@ -699,7 +699,7 @@ def sanitizeTree(filetree):
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
             splitname = os.path.splitext(name)
-            slugified = slugify(splitname[0])
+            slugified = slugify(splitname[0], False)
             while os.path.exists(os.path.join(root, slugified + splitname[1])) and splitname[0].upper()\
                     != slugified.upper():
                 slugified += "A"
@@ -709,7 +709,7 @@ def sanitizeTree(filetree):
                 os.replace(key, newKey)
         for name in dirs:
             tmpName = name
-            slugified = slugify(name)
+            slugified = slugify(name, True)
             while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
                 slugified += "A"
             chapterNames[slugified] = tmpName
@@ -856,8 +856,11 @@ def createNewTome():
     return tomePath, tomePathRoot
 
 
-def slugify(value):
-    value = slugifyExt(value)
+def slugify(value, isDir):
+    if isDir:
+        value = slugifyExt(value, regex_pattern=r'[^-a-z0-9_\.]+')
+    else:
+        value = slugifyExt(value)
     value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
 
