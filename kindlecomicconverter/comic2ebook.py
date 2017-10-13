@@ -887,8 +887,8 @@ def makeParser():
     otherOptions = OptionGroup(psr, "OTHER")
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
-                           help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KV, KoMT, KoG, KoGHD,"
-                                " KoA, KoAHD, KoAH2O, KoAO) [Default=KV]")
+                           help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KV, KO, KoMT, KoG,"
+                                " KoGHD, KoA, KoAHD, KoAH2O, KoAO) [Default=KV]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")
     mainOptions.add_option("-q", "--hq", action="store_true", dest="hq", default=False,
@@ -951,13 +951,13 @@ def checkOptions():
     options.iskindle = False
     options.bordersColor = None
     if options.format == 'Auto':
-        if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV']:
+        if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV', 'KO']:
             options.format = 'MOBI'
         elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O', 'KoAO']:
             options.format = 'EPUB'
         elif options.profile in ['KDX']:
             options.format = 'CBZ'
-    if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV']:
+    if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV', 'KO']:
         options.iskindle = True
     if options.white_borders:
         options.bordersColor = 'white'

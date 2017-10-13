@@ -618,7 +618,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def togglequalityBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
         if value == 2:
-            if profile['Label'] in ['KV']:
+            if profile['Label'] in ['KV', 'KO']:
                 self.addMessage('This option is intended for older Kindle models.', 'warning')
                 self.addMessage('It will not increase quality on a device with 300 ppi screen.', 'warning')
             GUI.upscaleBox.setEnabled(False)
@@ -918,6 +918,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 MW.resize(500, 500)
 
         self.profiles = {
+            "Kindle Oasis 2": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                               'DefaultUpscale': True, 'Label': 'KO'},
             "Kindle Oasis": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                              'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -956,6 +958,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                              'DefaultUpscale': False, 'Label': 'K34'},
         }
         profilesGUI = [
+            "Kindle Oasis 2",
             "Kindle Oasis",
             "Kindle Voyage",
             "Kindle PW 3",
