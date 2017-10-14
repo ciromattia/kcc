@@ -43,10 +43,10 @@ class MetadataParser:
                      'Bookmarks': []}
         self.rawdata = None
         self.compressor = None
-        if self.source.endswith('.xml'):
+        if self.source.endswith('.xml') and os.path.exists(self.source):
             self.rawdata = parse(self.source)
             self.parseXML()
-        else:
+        elif not self.source.endswith('.xml'):
             if is_zipfile(self.source):
                 self.compressor = 'zip'
                 with ZipFile(self.source) as zip_file:

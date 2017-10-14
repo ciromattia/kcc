@@ -500,28 +500,38 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 GUI.jobList.scrollToBottom()
 
     def selectFileMetaEditor(self):
-        if self.UnRAR:
-            if self.sevenza:
-                fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
-                                                              'Comic (*.cbz *.cbr *.cb7)')
-            else:
-                fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
-                                                              'Comic (*.cbz *.cbr)')
+        sname = ''
+        if QtWidgets.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
+            dname = QtWidgets.QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
+            if dname != '':
+                sname = os.path.join(dname, 'ComicInfo.xml')
+                if sys.platform.startswith('win'):
+                    sname = sname.replace('/', '\\')
+                self.lastPath = os.path.abspath(sname)
         else:
-            if self.sevenza:
-                fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
-                                                              'Comic (*.cbz *.cb7)')
+            if self.UnRAR:
+                if self.sevenza:
+                    fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
+                                                                  'Comic (*.cbz *.cbr *.cb7)')
+                else:
+                    fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
+                                                                  'Comic (*.cbz *.cbr)')
             else:
-                fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
-                                                              'Comic (*.cbz)')
-        if fname[0] != '':
-            if sys.platform.startswith('win'):
-                fname = fname[0].replace('/', '\\')
-            else:
-                fname = fname[0]
-            self.lastPath = os.path.abspath(os.path.join(fname, os.pardir))
+                if self.sevenza:
+                    fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
+                                                                  'Comic (*.cbz *.cb7)')
+                else:
+                    fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
+                                                                  'Comic (*.cbz)')
+            if fname[0] != '':
+                if sys.platform.startswith('win'):
+                    sname = fname[0].replace('/', '\\')
+                else:
+                    sname = fname[0]
+                self.lastPath = os.path.abspath(os.path.join(sname, os.pardir))
+        if sname != '':
             try:
-                self.editor.loadData(fname)
+                self.editor.loadData(sname)
             except Exception as err:
                 _, _, traceback = sys.exc_info()
                 GUI.sentry.captureException()
@@ -618,9 +628,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def togglequalityBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
         if value == 2:
-            if profile['Label'] in ['KV']:
+            if profile['Label'] in ['KV', 'KO']:
                 self.addMessage('This option is intended for older Kindle models.', 'warning')
-                self.addMessage('It will not increase quality on a device with 300 ppi screen.', 'warning')
+                self.addMessage('On this device, quality improvement will be negligible.', 'warning')
             GUI.upscaleBox.setEnabled(False)
             GUI.upscaleBox.setChecked(True)
         else:
@@ -918,6 +928,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 MW.resize(500, 500)
 
         self.profiles = {
+            "Kindle Oasis 2": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                               'DefaultUpscale': True, 'Label': 'KO'},
             "Kindle Oasis": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                              'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -956,6 +968,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                              'DefaultUpscale': False, 'Label': 'K34'},
         }
         profilesGUI = [
+            "Kindle Oasis 2",
             "Kindle Oasis",
             "Kindle Voyage",
             "Kindle PW 3",
@@ -1106,7 +1119,10 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
             field.setText(', '.join(self.parser.data[field.objectName().capitalize()[:-4] + 's']))
         if self.seriesLine.text() == '':
-            self.seriesLine.setText(file.split('\\')[-1].split('/')[-1].split('.')[0])
+            if file.endswith('.xml'):
+                self.seriesLine.setText(file.split('\\')[-2])
+            else:
+                self.seriesLine.setText(file.split('\\')[-1].split('/')[-1].split('.')[0])
 
     def saveData(self):
         for field in (self.volumeLine, self.numberLine, self.muidLine):

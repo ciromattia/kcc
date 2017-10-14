@@ -104,7 +104,7 @@ def buildHTML(path, imgfile, imgfilepath):
     htmlfile = os.path.join(htmlpath, filename[0] + '.xhtml')
     imgsize = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
     if options.hq:
-        imgsizeframe = deviceres
+        imgsizeframe = (int(imgsize[0] // 1.5), int(imgsize[1] // 1.5))
     else:
         imgsizeframe = imgsize
     f = open(htmlfile, "w", encoding='UTF-8')
@@ -118,7 +118,7 @@ def buildHTML(path, imgfile, imgfilepath):
                   "content=\"width=" + str(imgsize[0]) + ", height=" + str(imgsize[1]) + "\"/>\n"
                   "</head>\n",
                   "<body style=\"" + additionalStyle + "\">\n",
-                  "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsize) + "%;\">\n",
+                  "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsizeframe) + "%;\">\n",
                   "<img width=\"" + str(imgsizeframe[0]) + "\" height=\"" + str(imgsizeframe[1]) + "\" ",
                   "src=\"", "../" * backref, "Images/", postfix, imgfile, "\"/>\n</div>\n"])
     if options.iskindle and options.panelview:
@@ -699,7 +699,7 @@ def sanitizeTree(filetree):
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
             splitname = os.path.splitext(name)
-            slugified = slugify(splitname[0])
+            slugified = slugify(splitname[0], False)
             while os.path.exists(os.path.join(root, slugified + splitname[1])) and splitname[0].upper()\
                     != slugified.upper():
                 slugified += "A"
@@ -709,7 +709,7 @@ def sanitizeTree(filetree):
                 os.replace(key, newKey)
         for name in dirs:
             tmpName = name
-            slugified = slugify(name)
+            slugified = slugify(name, True)
             while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
                 slugified += "A"
             chapterNames[slugified] = tmpName
@@ -856,8 +856,11 @@ def createNewTome():
     return tomePath, tomePathRoot
 
 
-def slugify(value):
-    value = slugifyExt(value)
+def slugify(value, isDir):
+    if isDir:
+        value = slugifyExt(value, regex_pattern=r'[^-a-z0-9_\.]+')
+    else:
+        value = slugifyExt(value)
     value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
 
@@ -887,8 +890,8 @@ def makeParser():
     otherOptions = OptionGroup(psr, "OTHER")
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
-                           help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KV, KoMT, KoG, KoGHD,"
-                                " KoA, KoAHD, KoAH2O, KoAO) [Default=KV]")
+                           help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KV, KO, KoMT, KoG,"
+                                " KoGHD, KoA, KoAHD, KoAH2O, KoAO) [Default=KV]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")
     mainOptions.add_option("-q", "--hq", action="store_true", dest="hq", default=False,
@@ -951,13 +954,13 @@ def checkOptions():
     options.iskindle = False
     options.bordersColor = None
     if options.format == 'Auto':
-        if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV']:
+        if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV', 'KO']:
             options.format = 'MOBI'
         elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O', 'KoAO']:
             options.format = 'EPUB'
         elif options.profile in ['KDX']:
             options.format = 'CBZ'
-    if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV']:
+    if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV', 'KO']:
         options.iskindle = True
     if options.white_borders:
         options.bordersColor = 'white'

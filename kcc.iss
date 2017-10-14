@@ -1,5 +1,5 @@
 ﻿#define MyAppName "Kindle Comic Converter"
-#define MyAppVersion "5.4.1"
+#define MyAppVersion "5.4.2"
 #define MyAppPublisher "Ciro Mattia Gonano, Paweł Jastrzębski"
 #define MyAppURL "http://kcc.iosphe.re/"
 #define MyAppExeName "KCC.exe"
@@ -49,7 +49,6 @@ Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
 Source: "other\windows\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "other\windows\UnRAR.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "other\windows\7za.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "other\windows\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: ignoreversion deleteafterinstall
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -57,7 +56,6 @@ Name: "{group}\Readme"; Filename: "https://github.com/ciromattia/kcc#kcc"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{tmp}\vc_redist.x64.exe"; Parameters: "/install /passive /norestart"; StatusMsg: "Installing Microsoft Visual C++ 2015 Redistributable Package..."
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall
 
 [Messages]
