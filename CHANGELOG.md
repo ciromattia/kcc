@@ -1,4 +1,10 @@
 # CHANGELOG
+#### 5.4.2:
+* Added Kindle Oasis 2 profile
+* Allowed metadata editor to edit directories
+* Fixed image stretching when HQ Panel View option was enabled
+* Fixed possible problem with directory sort order
+
 #### 5.4.1:
 * Minor bug fixes and tweaks
 * Implemented new binary build pipeline

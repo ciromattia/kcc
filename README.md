@@ -83,7 +83,7 @@ Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
                         Device profile (Available options: K1, K2, K34, K578,
-                        KDX, KPW, KV, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O,
+                        KDX, KPW, KV, KO, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O,
                         KoAO) [Default=KV]
     -m, --manga-style   Manga style (right-to-left reading and splitting)
     -q, --hq            Try to increase the quality of magnification
@@ -162,9 +162,10 @@ The app relies and includes the following scripts:
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
 ## SAMPLE FILES CREATED BY KCC
+* [Kindle Oasis 2](http://kcc.iosphe.re/Samples/Ubunchu!-KO.mobi)
 * [Kindle Paperwhite 3 / Voyage / Oasis](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
 * [Kindle Paperwhite 1 / 2](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
-* [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K45.mobi)
+* [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K578.mobi)
 * [Kobo Aura](http://kcc.iosphe.re/Samples/Ubunchu-KoA.kepub.epub)
 * [Kobo Aura HD](http://kcc.iosphe.re/Samples/Ubunchu-KoAHD.kepub.epub)
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)

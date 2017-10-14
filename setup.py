@@ -71,6 +71,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
                       '--category "graphics" -d "unrar | unrar-free" -d "p7zip-full" -d "libc6" usr')
             exit(0)
 
+
 setuptools.setup(
     cmdclass={
         'build_binary': BuildBinaryCommand,
