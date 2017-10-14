@@ -34,6 +34,7 @@ if sys.platform.startswith('darwin'):
     else:
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/osx/:' + os.environ['PATH']
 elif sys.platform.startswith('win'):
+    '''
     import multiprocessing.popen_spawn_win32 as forking
 
     class _Popen(forking.Popen):
@@ -50,7 +51,7 @@ elif sys.platform.startswith('win'):
                     else:
                         os.putenv('_MEIPASS2', '')
     forking.Popen = _Popen
-
+    '''
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
     else:

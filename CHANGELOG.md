@@ -1,4 +1,7 @@
 # CHANGELOG
+#### 5.4.3:
+* Fixed conversion crash on Windows
+
 #### 5.4.2:
 * Added Kindle Oasis 2 profile
 * Allowed metadata editor to edit directories
