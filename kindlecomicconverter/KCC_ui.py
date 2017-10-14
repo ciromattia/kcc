@@ -258,6 +258,7 @@ class Ui_mainWindow(object):
         self.colorBox.setText(_translate("mainWindow", "Color mode"))
         self.gammaLabel.setText(_translate("mainWindow", "Gamma: Auto"))
         self.editorButton.setText(_translate("mainWindow", "Editor"))
+        self.editorButton.setToolTip(_translate("mainWindow", "<html><head/><body><p  style=\'white-space:pre\'>Shift+Click to edit directory.</p></body></html>"))
         self.wikiButton.setText(_translate("mainWindow", "Wiki"))
         self.directoryButton.setToolTip(_translate("mainWindow", "<html><head/><body><p style=\'white-space:pre\'>Add directory containing JPG, PNG or GIF files to queue.<br/><span style=\" font-weight:600;\">CBR, CBZ and CB7 files inside will not be processed!</span></p></body></html>"))
         self.directoryButton.setText(_translate("mainWindow", "Add directory"))

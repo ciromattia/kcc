@@ -320,6 +320,9 @@
          <property name="text">
           <string>Editor</string>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Shift+Click to edit directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="icon">
           <iconset resource="KCC.qrc">
            <normaloff>:/Other/icons/editor.png</normaloff>:/Other/icons/editor.png</iconset>
@@ -454,7 +457,7 @@
           </font>
          </property>
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p  style='white-space:pre'&gt;Shift+Click to select the output directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Shift+Click to select the output directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Convert</string>
