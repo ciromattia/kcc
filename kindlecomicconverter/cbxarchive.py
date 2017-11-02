@@ -26,13 +26,13 @@ from .shared import check7ZFile as is_7zfile
 
 
 class CBxArchive:
-    def __init__(self, origFileName):
-        self.origFileName = origFileName
-        if is_zipfile(origFileName):
+    def __init__(self, fname):
+        self.fname = fname
+        if is_zipfile(fname):
             self.compressor = 'zip'
-        elif rarfile.is_rarfile(origFileName):
+        elif rarfile.is_rarfile(fname):
             self.compressor = 'rar'
-        elif is_7zfile(origFileName):
+        elif is_7zfile(fname):
             self.compressor = '7z'
         else:
             self.compressor = None
@@ -41,22 +41,19 @@ class CBxArchive:
         return self.compressor is not None
 
     def extractCBZ(self, targetdir):
-        cbzFile = ZipFile(self.origFileName)
+        cbzFile = ZipFile(self.fname)
         filelist = []
         for f in cbzFile.namelist():
             if f.startswith('__MACOSX') or f.endswith('.DS_Store') or f.endswith('humbs.db'):
                 pass
             elif f.endswith('/'):
-                try:
-                    os.makedirs(os.path.join(targetdir, f))
-                except Exception:
-                    pass
+                os.makedirs(os.path.join(targetdir, f), exist_ok=True)
             else:
                 filelist.append(f)
         cbzFile.extractall(targetdir, filelist)
 
     def extractCBR(self, targetdir):
-        cbrFile = rarfile.RarFile(self.origFileName)
+        cbrFile = rarfile.RarFile(self.fname)
         cbrFile.extractall(targetdir)
         for root, _, filenames in os.walk(targetdir):
             for filename in filenames:
@@ -64,7 +61,7 @@ class CBxArchive:
                     os.remove(os.path.join(root, filename))
 
     def extractCB7(self, targetdir):
-        output = Popen('7za x "' + self.origFileName + '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -xr!Thumbs.db -o"' +
+        output = Popen('7za x "' + self.fname + '" -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -xr!Thumbs.db -o"' +
                        targetdir + '"', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         extracted = False
         for line in output.stdout:

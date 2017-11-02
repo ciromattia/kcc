@@ -25,17 +25,16 @@ from string import ascii_uppercase, digits
 
 
 class PdfJpgExtract:
-    def __init__(self, origFileName):
-        self.origFileName = origFileName
-        self.filename = os.path.splitext(origFileName)
-        # noinspection PyUnusedLocal
-        self.path = self.filename[0] + "-KCC-" + ''.join(choice(ascii_uppercase + digits) for x in range(3))
+    def __init__(self, fname):
+        self.fname = fname
+        self.filename = os.path.splitext(fname)
+        self.path = self.filename[0] + "-KCC-" + ''.join(choice(ascii_uppercase + digits) for _ in range(3))
 
     def getPath(self):
         return self.path
 
     def extract(self):
-        pdf = open(self.origFileName, "rb").read()
+        pdf = open(self.fname, "rb").read()
         startmark = b"\xff\xd8"
         startfix = 0
         endmark = b"\xff\xd9"

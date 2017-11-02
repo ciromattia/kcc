@@ -299,53 +299,53 @@ class ComicPage:
                 if self.image.size[0] > self.size[0] or self.image.size[1] > self.size[1]:
                     self.image.thumbnail(self.size, Image.LANCZOS)
 
-    def getBoundingBox(self, tmpImg):
-        min_margin = [int(0.005 * i + 0.5) for i in tmpImg.size]
-        max_margin = [int(0.1 * i + 0.5) for i in tmpImg.size]
-        bbox = tmpImg.getbbox()
+    def getBoundingBox(self, tmptmg):
+        min_margin = [int(0.005 * i + 0.5) for i in tmptmg.size]
+        max_margin = [int(0.1 * i + 0.5) for i in tmptmg.size]
+        bbox = tmptmg.getbbox()
         bbox = (
             max(0, min(max_margin[0], bbox[0] - min_margin[0])),
             max(0, min(max_margin[1], bbox[1] - min_margin[1])),
-            min(tmpImg.size[0],
-                max(tmpImg.size[0] - max_margin[0], bbox[2] + min_margin[0])),
-            min(tmpImg.size[1],
-                max(tmpImg.size[1] - max_margin[1], bbox[3] + min_margin[1])),
+            min(tmptmg.size[0],
+                max(tmptmg.size[0] - max_margin[0], bbox[2] + min_margin[0])),
+            min(tmptmg.size[1],
+                max(tmptmg.size[1] - max_margin[1], bbox[3] + min_margin[1])),
         )
         return bbox
 
     def cropPageNumber(self, power):
         if self.fill != 'white':
-            tmpImg = self.image.convert(mode='L')
+            tmptmg = self.image.convert(mode='L')
         else:
-            tmpImg = ImageOps.invert(self.image.convert(mode='L'))
-        tmpImg = tmpImg.point(lambda x: x and 255)
-        tmpImg = tmpImg.filter(ImageFilter.MinFilter(size=3))
-        tmpImg = tmpImg.filter(ImageFilter.GaussianBlur(radius=5))
-        tmpImg = tmpImg.point(lambda x: (x >= 16 * power) and x)
-        self.image = self.image.crop(tmpImg.getbbox()) if tmpImg.getbbox() else self.image
+            tmptmg = ImageOps.invert(self.image.convert(mode='L'))
+        tmptmg = tmptmg.point(lambda x: x and 255)
+        tmptmg = tmptmg.filter(ImageFilter.MinFilter(size=3))
+        tmptmg = tmptmg.filter(ImageFilter.GaussianBlur(radius=5))
+        tmptmg = tmptmg.point(lambda x: (x >= 16 * power) and x)
+        self.image = self.image.crop(tmptmg.getbbox()) if tmptmg.getbbox() else self.image
 
     def cropMargin(self, power):
         if self.fill != 'white':
-            tmpImg = self.image.convert(mode='L')
+            tmptmg = self.image.convert(mode='L')
         else:
-            tmpImg = ImageOps.invert(self.image.convert(mode='L'))
-        tmpImg = tmpImg.filter(ImageFilter.GaussianBlur(radius=3))
-        tmpImg = tmpImg.point(lambda x: (x >= 16 * power) and x)
-        self.image = self.image.crop(self.getBoundingBox(tmpImg)) if tmpImg.getbbox() else self.image
+            tmptmg = ImageOps.invert(self.image.convert(mode='L'))
+        tmptmg = tmptmg.filter(ImageFilter.GaussianBlur(radius=3))
+        tmptmg = tmptmg.point(lambda x: (x >= 16 * power) and x)
+        self.image = self.image.crop(self.getBoundingBox(tmptmg)) if tmptmg.getbbox() else self.image
 
 
 class Cover:
-    def __init__(self, source, target, opt, tomeNumber):
+    def __init__(self, source, target, opt, tomeid):
         self.options = opt
         self.source = source
         self.target = target
-        if tomeNumber == 0:
-            self.tomeNumber = 1
+        if tomeid == 0:
+            self.tomeid = 1
         else:
-            self.tomeNumber = tomeNumber
-        if self.tomeNumber in self.options.remoteCovers:
+            self.tomeid = tomeid
+        if self.tomeid in self.options.remoteCovers:
             try:
-                source = urlopen(Request(quote(self.options.remoteCovers[self.tomeNumber]).replace('%3A', ':', 1),
+                source = urlopen(Request(quote(self.options.remoteCovers[self.tomeid]).replace('%3A', ':', 1),
                                          headers={'User-Agent': 'KindleComicConverter/' + __version__})).read()
                 self.image = Image.open(BytesIO(source))
             except Exception:
