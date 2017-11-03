@@ -273,17 +273,17 @@ class ComicPage:
             method = Image.BICUBIC
         else:
             method = Image.LANCZOS
-        if self.opt.stretch:
+        if self.opt.stretch or (self.opt.kfx and ('-KCC-B' in self.targetPath or '-KCC-C' in self.targetPath)):
             self.image = self.image.resize(self.size, method)
         elif self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1] and not self.opt.upscale:
-            if self.opt.format == 'CBZ':
+            if self.opt.format == 'CBZ' or self.opt.kfx:
                 borderw = int((self.size[0] - self.image.size[0]) / 2)
                 borderh = int((self.size[1] - self.image.size[1]) / 2)
                 self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=self.fill)
                 if self.image.size[0] != self.size[0] or self.image.size[1] != self.size[1]:
                     self.image = ImageOps.fit(self.image, self.size, method=Image.BICUBIC, centering=(0.5, 0.5))
         else:
-            if self.opt.format == 'CBZ':
+            if self.opt.format == 'CBZ' or self.opt.kfx:
                 ratioDev = float(self.size[0]) / float(self.size[1])
                 if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
                     diff = int(self.image.size[1] * ratioDev) - self.image.size[0]

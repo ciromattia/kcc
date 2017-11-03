@@ -88,7 +88,7 @@ def buildHTML(path, imgfile, imgfilepath):
     if "BlackBackground" in options.imgMetadata[imgfilepath]:
         additionalStyle = 'background-color:#000000;'
     else:
-        additionalStyle = 'background-color:#FFFFFF;'
+        additionalStyle = ''
     postfix = ''
     backref = 1
     head = path
@@ -287,20 +287,27 @@ def buildOPF(dstdir, title, filelist, cover=None):
     for author in options.authors:
         f.writelines(["<dc:creator>", author, "</dc:creator>\n"])
     f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
-                  "<meta name=\"cover\" content=\"cover\"/>\n",
-                  "<meta property=\"rendition:orientation\">portrait</meta>\n",
-                  "<meta property=\"rendition:spread\">portrait</meta>\n",
-                  "<meta property=\"rendition:layout\">pre-paginated</meta>\n"])
+                  "<meta name=\"cover\" content=\"cover\"/>\n"])
     if options.iskindle and options.profile != 'Custom':
-        f.writelines(["<meta name=\"original-resolution\" content=\"",
+        f.writelines(["<meta name=\"fixed-layout\" content=\"true\"/>\n",
+                      "<meta name=\"original-resolution\" content=\"",
                       str(deviceres[0]) + "x" + str(deviceres[1]) + "\"/>\n",
                       "<meta name=\"book-type\" content=\"comic\"/>\n",
-                      "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
                       "<meta name=\"primary-writing-mode\" content=\"" + writingmode + "\"/>\n",
                       "<meta name=\"zero-gutter\" content=\"true\"/>\n",
                       "<meta name=\"zero-margin\" content=\"true\"/>\n",
-                      "<meta name=\"ke-border-color\" content=\"#ffffff\"/>\n",
+                      "<meta name=\"ke-border-color\" content=\"#FFFFFF\"/>\n",
                       "<meta name=\"ke-border-width\" content=\"0\"/>\n"])
+        if options.kfx:
+            f.writelines(["<meta name=\"orientation-lock\" content=\"none\"/>\n",
+                          "<meta name=\"region-mag\" content=\"false\"/>\n"])
+        else:
+            f.writelines(["<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
+                          "<meta name=\"region-mag\" content=\"true\"/>\n"])
+    else:
+        f.writelines(["<meta property=\"rendition:orientation\">portrait</meta>\n",
+                      "<meta property=\"rendition:spread\">portrait</meta>\n",
+                      "<meta property=\"rendition:layout\">pre-paginated</meta>\n"])
     f.writelines(["</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
                   "media-type=\"application/x-dtbncx+xml\"/>\n",
                   "<item id=\"nav\" href=\"nav.xhtml\" ",
@@ -331,10 +338,43 @@ def buildOPF(dstdir, title, filelist, cover=None):
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
     if options.righttoleft:
         f.write("</manifest>\n<spine page-progression-direction=\"rtl\" toc=\"ncx\">\n")
+        pageside = "right"
     else:
         f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
-    for entry in reflist:
-        f.write("<itemref idref=\"page_" + entry + "\"/>\n")
+        pageside = "left"
+    if options.iskindle:
+        for entry in reflist:
+            if options.righttoleft:
+                if entry.endswith("-b"):
+                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-right\"/>\n")
+                    pageside = "right"
+                elif entry.endswith("-c"):
+                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-left\"/>\n")
+                    pageside = "right"
+                else:
+                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-" +
+                            pageside + "\"/>\n")
+                    if pageside == "right":
+                        pageside = "left"
+                    else:
+                        pageside = "right"
+            else:
+                if entry.endswith("-b"):
+                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-left\"/>\n")
+                    pageside = "left"
+                elif entry.endswith("-c"):
+                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-right\"/>\n")
+                    pageside = "left"
+                else:
+                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-" +
+                            pageside + "\"/>\n")
+                if pageside == "right":
+                    pageside = "left"
+                else:
+                    pageside = "right"
+    else:
+        for entry in reflist:
+            f.write("<itemref idref=\"page_" + entry + "\">\n")
     f.write("</spine>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
@@ -361,71 +401,72 @@ def buildEPUB(path, chapternames, tomenumber):
                   "display: block;\n",
                   "margin: 0;\n",
                   "padding: 0;\n",
-                  "}\n",
-                  "#PV {\n",
-                  "position: absolute;\n",
-                  "width: 100%;\n",
-                  "height: 100%;\n",
-                  "top: 0;\n",
-                  "left: 0;\n",
-                  "}\n",
-                  "#PV-T {\n",
-                  "top: 0;\n",
-                  "width: 100%;\n",
-                  "height: 50%;\n",
-                  "}\n",
-                  "#PV-B {\n",
-                  "bottom: 0;\n",
-                  "width: 100%;\n",
-                  "height: 50%;\n",
-                  "}\n",
-                  "#PV-L {\n",
-                  "left: 0;\n",
-                  "width: 49.5%;\n",
-                  "height: 100%;\n",
-                  "float: left;\n",
-                  "}\n",
-                  "#PV-R {\n",
-                  "right: 0;\n",
-                  "width: 49.5%;\n",
-                  "height: 100%;\n",
-                  "float: right;\n",
-                  "}\n",
-                  "#PV-TL {\n",
-                  "top: 0;\n",
-                  "left: 0;\n",
-                  "width: 49.5%;\n",
-                  "height: 50%;\n",
-                  "float: left;\n",
-                  "}\n",
-                  "#PV-TR {\n",
-                  "top: 0;\n",
-                  "right: 0;\n",
-                  "width: 49.5%;\n",
-                  "height: 50%;\n",
-                  "float: right;\n",
-                  "}\n",
-                  "#PV-BL {\n",
-                  "bottom: 0;\n",
-                  "left: 0;\n",
-                  "width: 49.5%;\n",
-                  "height: 50%;\n",
-                  "float: left;\n",
-                  "}\n",
-                  "#PV-BR {\n",
-                  "bottom: 0;\n",
-                  "right: 0;\n",
-                  "width: 49.5%;\n",
-                  "height: 50%;\n",
-                  "float: right;\n",
-                  "}\n",
-                  ".PV-P {\n",
-                  "width: 100%;\n",
-                  "height: 100%;\n",
-                  "top: 0;\n",
-                  "position: absolute;\n",
-                  "display: none;\n",
                   "}\n"])
+    if options.iskindle and options.panelview:
+        f.writelines(["#PV {\n",
+                      "position: absolute;\n",
+                      "width: 100%;\n",
+                      "height: 100%;\n",
+                      "top: 0;\n",
+                      "left: 0;\n",
+                      "}\n",
+                      "#PV-T {\n",
+                      "top: 0;\n",
+                      "width: 100%;\n",
+                      "height: 50%;\n",
+                      "}\n",
+                      "#PV-B {\n",
+                      "bottom: 0;\n",
+                      "width: 100%;\n",
+                      "height: 50%;\n",
+                      "}\n",
+                      "#PV-L {\n",
+                      "left: 0;\n",
+                      "width: 49.5%;\n",
+                      "height: 100%;\n",
+                      "float: left;\n",
+                      "}\n",
+                      "#PV-R {\n",
+                      "right: 0;\n",
+                      "width: 49.5%;\n",
+                      "height: 100%;\n",
+                      "float: right;\n",
+                      "}\n",
+                      "#PV-TL {\n",
+                      "top: 0;\n",
+                      "left: 0;\n",
+                      "width: 49.5%;\n",
+                      "height: 50%;\n",
+                      "float: left;\n",
+                      "}\n",
+                      "#PV-TR {\n",
+                      "top: 0;\n",
+                      "right: 0;\n",
+                      "width: 49.5%;\n",
+                      "height: 50%;\n",
+                      "float: right;\n",
+                      "}\n",
+                      "#PV-BL {\n",
+                      "bottom: 0;\n",
+                      "left: 0;\n",
+                      "width: 49.5%;\n",
+                      "height: 50%;\n",
+                      "float: left;\n",
+                      "}\n",
+                      "#PV-BR {\n",
+                      "bottom: 0;\n",
+                      "right: 0;\n",
+                      "width: 49.5%;\n",
+                      "height: 50%;\n",
+                      "float: right;\n",
+                      "}\n",
+                      ".PV-P {\n",
+                      "width: 100%;\n",
+                      "height: 100%;\n",
+                      "top: 0;\n",
+                      "position: absolute;\n",
+                      "display: none;\n",
+                      "}\n"])
     f.close()
     for dirpath, dirnames, filenames in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
@@ -906,7 +947,7 @@ def makeParser():
     outputOptions.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                              help="Comic title [Default=filename or directory name]")
     outputOptions.add_option("-f", "--format", action="store", dest="format", default="Auto",
-                             help="Output format (Available options: Auto, MOBI, EPUB, CBZ) [Default=Auto]")
+                             help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX) [Default=Auto]")
     outputOptions.add_option("-b", "--batchsplit", type="int", dest="batchsplit", default="0",
                              help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                   "2: Consider every subdirectory as separate volume [Default=0]")
@@ -953,6 +994,7 @@ def checkOptions():
     options.panelview = True
     options.iskindle = False
     options.bordersColor = None
+    options.kfx = False
     if options.format == 'Auto':
         if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV', 'KO']:
             options.format = 'MOBI'
@@ -967,7 +1009,7 @@ def checkOptions():
     if options.black_borders:
         options.bordersColor = 'black'
     # Splitting MOBI is not optional
-    if options.format == 'MOBI' and options.batchsplit != 2:
+    if (options.format == 'MOBI' or options.format == 'KFX') and options.batchsplit != 2:
         options.batchsplit = 1
     # Older Kindle models don't support Panel View.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K34' or options.profile == 'KDX':
@@ -989,6 +1031,11 @@ def checkOptions():
     # CBZ files on Kindle DX/DXG support higher resolution
     if options.profile == 'KDX' and options.format == 'CBZ':
         options.customheight = 1200
+    # KFX output create EPUB that might be can be by jhowell KFX Output Calibre plugin
+    if options.format == 'KFX':
+        options.format = 'EPUB'
+        options.kfx = True
+        options.panelview = False
     # Override profile data
     if options.customwidth != 0 or options.customheight != 0:
         X = image.ProfileData.Profiles[options.profile][1][0]
