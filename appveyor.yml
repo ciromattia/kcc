@@ -7,15 +7,13 @@ install:
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
   - "%PYTHON%\\python.exe -m pip install certifi PyInstaller"
   - nuget install secure-file -ExcludeVersion
-  - nuget install verpatch -ExcludeVersion
-  - secure-file\tools\secure-file -decrypt other\windows\Cert.pfx.enc -secret %ENCRYPTION%
   - secure-file\tools\secure-file -decrypt other\windows\sentry.py.enc -out kindlecomicconverter\sentry.py -secret %ENCRYPTION%
 
 build_script:
     - "%PYTHON%\\python.exe setup.py build_binary"
 
 after_build:
-  - ps: Get-ChildItem .\dist\KindleComicConverter_win_* | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+  - ps: Get-ChildItem .\dist\KCC* | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 
 deploy:
   provider: S3

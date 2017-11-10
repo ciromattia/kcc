@@ -47,10 +47,6 @@ class BuildBinaryCommand(distutils.cmd.Command):
             exit(0)
         elif sys.platform == 'win32':
             os.system('pyinstaller -y -F -i icons\comic2ebook.ico -n KCC -w --noupx kcc.py')
-            if os.getenv('APPVEYOR'):
-                if len(VERSION) == 3:
-                    VERSION = VERSION + '.0'
-                os.system('setup.bat ' + VERSION)
             exit(0)
         else:
             os.system('pyinstaller -y -F kcc.py')
