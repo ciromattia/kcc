@@ -899,10 +899,9 @@ def createNewTome():
 
 def slugify(value, isdir):
     if isdir:
-        value = slugifyExt(value, regex_pattern=r'[^-a-z0-9_\.]+')
-        value = value.rstrip('.')
+        value = slugifyExt(value, regex_pattern=r'[^-a-z0-9_\.]+').strip('.')
     else:
-        value = slugifyExt(value)
+        value = slugifyExt(value).strip('.')
     value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
 
