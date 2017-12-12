@@ -1,6 +1,7 @@
 # KCC
 
 [![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases) [![PyPI](https://img.shields.io/pypi/v/KindleComicConverter.svg)](https://pypi.python.org/pypi/KindleComicConverter) [![AUR](https://img.shields.io/aur/version/kcc.svg)](https://aur.archlinux.org/packages/kcc/)
+[![Docker Automated build](https://img.shields.io/docker/automated/jrottenberg/ffmpeg.svg?maxAge=2592000?style=plastic)](https://github.com/saoula/kcc/)
 
 **Kindle Comic Converter** is a Python app to convert comic/manga files or folders to EPUB, Panel View MOBI or E-Ink optimized CBZ.
 It was initially developed for Kindle but since version 4.6 it outputs valid EPUB 3.0 so _**despite its name, KCC is
@@ -30,6 +31,25 @@ You can find the latest released binary at the following links:
 - **Windows (64-bit only):** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
 - **Linux (Glibc 2.19+):** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
 - **OS X (10.10+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
+
+## DOCKER IMAGE
+Using docker? You can find the latest automated builqt docker image on [docker hub](https://hub.docker.com/r/saoula/kcc).
+
+```
+docker run --rm -v "$(pwd):/app" saoula/kcc
+```
+
+For example to convert a folder MyMangaToConvert: `docker run --rm -v "$(pwd):/app" saoula/kcc -p KPW -m --hq -u -r 2 -b 2 -f MOBI MyMangaToConvert`
+
+For convenience you can add an alias to your __~/.bashrc__ file
+```
+alias kcc='docker run --rm -v "$(pwd):/app" saoula/kcc'
+```
+
+And run the same command as above with:
+```
+kcc -p KPW -m --hq -u -r 2 -b 2 -f MOBI MyMangaToConvert
+```
 
 ## PYPI
 **KCC** is also available on PyPI.
