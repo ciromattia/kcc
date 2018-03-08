@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2017 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2018 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -93,6 +93,7 @@ def splitImageTick(output):
             splitWorkerPool.terminate()
 
 
+# noinspection PyUnboundLocalVariable
 def splitImage(work):
     try:
         path = work[0]
@@ -140,9 +141,7 @@ def splitImage(work):
 
             if opt.debug:
                 for panel in panelsProcessed:
-                    # noinspection PyUnboundLocalVariable
                     draw.rectangle([(0, panel[0]), (widthImg, panel[1])], (0, 255, 0, 128), (0, 0, 255, 255))
-                # noinspection PyUnboundLocalVariable
                 debugImage = Image.alpha_composite(imgOrg.convert(mode='RGBA'), drawImg)
                 debugImage.save(os.path.join(path, os.path.splitext(name)[0] + '-debug.png'), 'PNG')
 
@@ -185,7 +184,7 @@ def splitImage(work):
         return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
 
-def main(argv=None, qtGUI=None):
+def main(argv=None, qtgui=None):
     global options, GUI, splitWorkerPool, splitWorkerOutput, mergeWorkerPool, mergeWorkerOutput
     parser = OptionParser(usage="Usage: kcc-c2p [options] comic_folder", add_help_option=False)
     mainOptions = OptionGroup(parser, "MANDATORY")
@@ -203,8 +202,8 @@ def main(argv=None, qtGUI=None):
     parser.add_option_group(mainOptions)
     parser.add_option_group(otherOptions)
     options, args = parser.parse_args(argv)
-    if qtGUI:
-        GUI = qtGUI
+    if qtgui:
+        GUI = qtgui
     else:
         GUI = None
     if len(args) != 1:

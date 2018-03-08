@@ -1,5 +1,5 @@
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2017 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2018 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -73,8 +73,8 @@ def walkLevel(some_dir, level=1):
             del dirs[:]
 
 
-def md5Checksum(filePath):
-    with open(filePath, 'rb') as fh:
+def md5Checksum(fpath):
+    with open(fpath, 'rb') as fh:
         m = md5()
         while True:
             data = fh.read(8192)
@@ -84,8 +84,8 @@ def md5Checksum(filePath):
         return m.hexdigest()
 
 
-def check7ZFile(filePath):
-    with open(filePath, 'rb') as fh:
+def check7ZFile(fpath):
+    with open(fpath, 'rb') as fh:
         header = fh.read(6)
     return header == b"7z\xbc\xaf'\x1c"
 

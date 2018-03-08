@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2017 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2018 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -88,7 +88,7 @@ def buildHTML(path, imgfile, imgfilepath):
     if "BlackBackground" in options.imgMetadata[imgfilepath]:
         additionalStyle = 'background-color:#000000;'
     else:
-        additionalStyle = 'background-color:#FFFFFF;'
+        additionalStyle = ''
     postfix = ''
     backref = 1
     head = path
@@ -198,7 +198,7 @@ def buildHTML(path, imgfile, imgfilepath):
     return path, imgfile
 
 
-def buildNCX(dstdir, title, chapters, chapterNames):
+def buildNCX(dstdir, title, chapters, chapternames):
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
     f = open(ncxfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
@@ -217,10 +217,10 @@ def buildNCX(dstdir, title, chapters, chapterNames):
         filename = getImageFileName(os.path.join(folder, chapter[1]))
         navID = folder.replace('/', '_').replace('\\', '_')
         if options.chapters:
-            title = chapterNames[chapter[1]]
+            title = chapternames[chapter[1]]
             navID = filename[0].replace('/', '_').replace('\\', '_')
         elif os.path.basename(folder) != "Text":
-            title = chapterNames[os.path.basename(folder)]
+            title = chapternames[os.path.basename(folder)]
         f.write("<navPoint id=\"" + navID + "\"><navLabel><text>" +
                 escape(title) + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") +
                 ".xhtml\"/></navPoint>\n")
@@ -228,7 +228,7 @@ def buildNCX(dstdir, title, chapters, chapterNames):
     f.close()
 
 
-def buildNAV(dstdir, title, chapters, chapterNames):
+def buildNAV(dstdir, title, chapters, chapternames):
     navfile = os.path.join(dstdir, 'OEBPS', 'nav.xhtml')
     f = open(navfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
@@ -245,9 +245,9 @@ def buildNAV(dstdir, title, chapters, chapterNames):
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
         filename = getImageFileName(os.path.join(folder, chapter[1]))
         if options.chapters:
-            title = chapterNames[chapter[1]]
+            title = chapternames[chapter[1]]
         elif os.path.basename(folder) != "Text":
-            title = chapterNames[os.path.basename(folder)]
+            title = chapternames[os.path.basename(folder)]
         f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + escape(title) + "</a></li>\n")
     f.writelines(["</ol>\n",
                   "</nav>\n",
@@ -257,9 +257,9 @@ def buildNAV(dstdir, title, chapters, chapterNames):
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
         filename = getImageFileName(os.path.join(folder, chapter[1]))
         if options.chapters:
-            title = chapterNames[chapter[1]]
+            title = chapternames[chapter[1]]
         elif os.path.basename(folder) != "Text":
-            title = chapterNames[os.path.basename(folder)]
+            title = chapternames[os.path.basename(folder)]
         f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + escape(title) + "</a></li>\n")
     f.write("</ol>\n</nav>\n</body>\n</html>")
     f.close()
@@ -287,20 +287,27 @@ def buildOPF(dstdir, title, filelist, cover=None):
     for author in options.authors:
         f.writelines(["<dc:creator>", author, "</dc:creator>\n"])
     f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
-                  "<meta name=\"cover\" content=\"cover\"/>\n",
-                  "<meta property=\"rendition:orientation\">portrait</meta>\n",
-                  "<meta property=\"rendition:spread\">portrait</meta>\n",
-                  "<meta property=\"rendition:layout\">pre-paginated</meta>\n"])
+                  "<meta name=\"cover\" content=\"cover\"/>\n"])
     if options.iskindle and options.profile != 'Custom':
-        f.writelines(["<meta name=\"original-resolution\" content=\"",
+        f.writelines(["<meta name=\"fixed-layout\" content=\"true\"/>\n",
+                      "<meta name=\"original-resolution\" content=\"",
                       str(deviceres[0]) + "x" + str(deviceres[1]) + "\"/>\n",
                       "<meta name=\"book-type\" content=\"comic\"/>\n",
-                      "<meta name=\"RegionMagnification\" content=\"true\"/>\n",
                       "<meta name=\"primary-writing-mode\" content=\"" + writingmode + "\"/>\n",
                       "<meta name=\"zero-gutter\" content=\"true\"/>\n",
                       "<meta name=\"zero-margin\" content=\"true\"/>\n",
-                      "<meta name=\"ke-border-color\" content=\"#ffffff\"/>\n",
+                      "<meta name=\"ke-border-color\" content=\"#FFFFFF\"/>\n",
                       "<meta name=\"ke-border-width\" content=\"0\"/>\n"])
+        if options.kfx:
+            f.writelines(["<meta name=\"orientation-lock\" content=\"none\"/>\n",
+                          "<meta name=\"region-mag\" content=\"false\"/>\n"])
+        else:
+            f.writelines(["<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
+                          "<meta name=\"region-mag\" content=\"true\"/>\n"])
+    else:
+        f.writelines(["<meta property=\"rendition:orientation\">portrait</meta>\n",
+                      "<meta property=\"rendition:spread\">portrait</meta>\n",
+                      "<meta property=\"rendition:layout\">pre-paginated</meta>\n"])
     f.writelines(["</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
                   "media-type=\"application/x-dtbncx+xml\"/>\n",
                   "<item id=\"nav\" href=\"nav.xhtml\" ",
@@ -331,10 +338,43 @@ def buildOPF(dstdir, title, filelist, cover=None):
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
     if options.righttoleft:
         f.write("</manifest>\n<spine page-progression-direction=\"rtl\" toc=\"ncx\">\n")
+        pageside = "right"
     else:
         f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
-    for entry in reflist:
-        f.write("<itemref idref=\"page_" + entry + "\"/>\n")
+        pageside = "left"
+    if options.iskindle:
+        for entry in reflist:
+            if options.righttoleft:
+                if entry.endswith("-b"):
+                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-right\"/>\n")
+                    pageside = "right"
+                elif entry.endswith("-c"):
+                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-left\"/>\n")
+                    pageside = "right"
+                else:
+                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-" +
+                            pageside + "\"/>\n")
+                    if pageside == "right":
+                        pageside = "left"
+                    else:
+                        pageside = "right"
+            else:
+                if entry.endswith("-b"):
+                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-left\"/>\n")
+                    pageside = "left"
+                elif entry.endswith("-c"):
+                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-right\"/>\n")
+                    pageside = "left"
+                else:
+                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-" +
+                            pageside + "\"/>\n")
+                if pageside == "right":
+                    pageside = "left"
+                else:
+                    pageside = "right"
+    else:
+        for entry in reflist:
+            f.write("<itemref idref=\"page_" + entry + "\">\n")
     f.write("</spine>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
@@ -348,7 +388,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
     f.close()
 
 
-def buildEPUB(path, chapterNames, tomeNumber):
+def buildEPUB(path, chapternames, tomenumber):
     filelist = []
     chapterlist = []
     cover = None
@@ -361,71 +401,72 @@ def buildEPUB(path, chapterNames, tomeNumber):
                   "display: block;\n",
                   "margin: 0;\n",
                   "padding: 0;\n",
-                  "}\n",
-                  "#PV {\n",
-                  "position: absolute;\n",
-                  "width: 100%;\n",
-                  "height: 100%;\n",
-                  "top: 0;\n",
-                  "left: 0;\n",
-                  "}\n",
-                  "#PV-T {\n",
-                  "top: 0;\n",
-                  "width: 100%;\n",
-                  "height: 50%;\n",
-                  "}\n",
-                  "#PV-B {\n",
-                  "bottom: 0;\n",
-                  "width: 100%;\n",
-                  "height: 50%;\n",
-                  "}\n",
-                  "#PV-L {\n",
-                  "left: 0;\n",
-                  "width: 49.5%;\n",
-                  "height: 100%;\n",
-                  "float: left;\n",
-                  "}\n",
-                  "#PV-R {\n",
-                  "right: 0;\n",
-                  "width: 49.5%;\n",
-                  "height: 100%;\n",
-                  "float: right;\n",
-                  "}\n",
-                  "#PV-TL {\n",
-                  "top: 0;\n",
-                  "left: 0;\n",
-                  "width: 49.5%;\n",
-                  "height: 50%;\n",
-                  "float: left;\n",
-                  "}\n",
-                  "#PV-TR {\n",
-                  "top: 0;\n",
-                  "right: 0;\n",
-                  "width: 49.5%;\n",
-                  "height: 50%;\n",
-                  "float: right;\n",
-                  "}\n",
-                  "#PV-BL {\n",
-                  "bottom: 0;\n",
-                  "left: 0;\n",
-                  "width: 49.5%;\n",
-                  "height: 50%;\n",
-                  "float: left;\n",
-                  "}\n",
-                  "#PV-BR {\n",
-                  "bottom: 0;\n",
-                  "right: 0;\n",
-                  "width: 49.5%;\n",
-                  "height: 50%;\n",
-                  "float: right;\n",
-                  "}\n",
-                  ".PV-P {\n",
-                  "width: 100%;\n",
-                  "height: 100%;\n",
-                  "top: 0;\n",
-                  "position: absolute;\n",
-                  "display: none;\n",
                   "}\n"])
+    if options.iskindle and options.panelview:
+        f.writelines(["#PV {\n",
+                      "position: absolute;\n",
+                      "width: 100%;\n",
+                      "height: 100%;\n",
+                      "top: 0;\n",
+                      "left: 0;\n",
+                      "}\n",
+                      "#PV-T {\n",
+                      "top: 0;\n",
+                      "width: 100%;\n",
+                      "height: 50%;\n",
+                      "}\n",
+                      "#PV-B {\n",
+                      "bottom: 0;\n",
+                      "width: 100%;\n",
+                      "height: 50%;\n",
+                      "}\n",
+                      "#PV-L {\n",
+                      "left: 0;\n",
+                      "width: 49.5%;\n",
+                      "height: 100%;\n",
+                      "float: left;\n",
+                      "}\n",
+                      "#PV-R {\n",
+                      "right: 0;\n",
+                      "width: 49.5%;\n",
+                      "height: 100%;\n",
+                      "float: right;\n",
+                      "}\n",
+                      "#PV-TL {\n",
+                      "top: 0;\n",
+                      "left: 0;\n",
+                      "width: 49.5%;\n",
+                      "height: 50%;\n",
+                      "float: left;\n",
+                      "}\n",
+                      "#PV-TR {\n",
+                      "top: 0;\n",
+                      "right: 0;\n",
+                      "width: 49.5%;\n",
+                      "height: 50%;\n",
+                      "float: right;\n",
+                      "}\n",
+                      "#PV-BL {\n",
+                      "bottom: 0;\n",
+                      "left: 0;\n",
+                      "width: 49.5%;\n",
+                      "height: 50%;\n",
+                      "float: left;\n",
+                      "}\n",
+                      "#PV-BR {\n",
+                      "bottom: 0;\n",
+                      "right: 0;\n",
+                      "width: 49.5%;\n",
+                      "height: 50%;\n",
+                      "float: right;\n",
+                      "}\n",
+                      ".PV-P {\n",
+                      "width: 100%;\n",
+                      "height: 100%;\n",
+                      "top: 0;\n",
+                      "position: absolute;\n",
+                      "display: none;\n",
+                      "}\n"])
     f.close()
     for dirpath, dirnames, filenames in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
@@ -439,9 +480,9 @@ def buildEPUB(path, chapterNames, tomeNumber):
                 cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
                                      'cover' + getImageFileName(filelist[-1][1])[1])
                 options.covers.append((image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options,
-                                                   tomeNumber), options.uuid))
+                                                   tomenumber), options.uuid))
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
-    if not chapterNames and options.chapters:
+    if not chapternames and options.chapters:
         chapterlist = []
         globaldiff = 0
         for aChapter in options.chapters:
@@ -453,10 +494,10 @@ def buildEPUB(path, chapterNames, tomeNumber):
                 pageid -= 1
             filename = filelist[pageid][1]
             chapterlist.append((filelist[pageid][0].replace('Images', 'Text'), filename))
-            chapterNames[filename] = aChapter[1]
+            chapternames[filename] = aChapter[1]
             globaldiff = pageid - (aChapter[0] + globaldiff)
-    buildNCX(path, options.title, chapterlist, chapterNames)
-    buildNAV(path, options.title, chapterlist, chapterNames)
+    buildNCX(path, options.title, chapterlist, chapternames)
+    buildNAV(path, options.title, chapterlist, chapternames)
     buildOPF(path, options.title, filelist, cover)
 
 
@@ -542,7 +583,7 @@ def getWorkFolder(afile):
             copytree(afile, fullPath)
             sanitizePermissions(fullPath)
             return workdir
-        except:
+        except Exception:
             rmtree(workdir, True)
             raise UserWarning("Failed to prepare a workspace.")
     elif os.path.isfile(afile):
@@ -560,7 +601,7 @@ def getWorkFolder(afile):
             if cbx.isCbxFile():
                 try:
                     path = cbx.extract(workdir)
-                except:
+                except Exception:
                     rmtree(workdir, True)
                     raise UserWarning("Failed to extract archive.")
             else:
@@ -575,7 +616,7 @@ def getWorkFolder(afile):
     return newpath
 
 
-def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
+def getOutputFilename(srcpath, wantedname, ext, tomenumber):
     if srcpath[-1] == os.path.sep:
         srcpath = srcpath[:-1]
     if 'Ko' in options.profile and options.format == 'EPUB':
@@ -589,16 +630,16 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
             filename = os.path.join(os.path.abspath(options.output),
                                     os.path.basename(os.path.splitext(srcpath)[0]) + ext)
     elif os.path.isdir(srcpath):
-        filename = srcpath + tomeNumber + ext
+        filename = srcpath + tomenumber + ext
     else:
         if 'Ko' in options.profile and options.format == 'EPUB':
             path = srcpath.split(os.path.sep)
-            path[-1] = ''.join(e for e in path[-1].split('.')[0] if e.isalnum()) + tomeNumber + ext
+            path[-1] = ''.join(e for e in path[-1].split('.')[0] if e.isalnum()) + tomenumber + ext
             if not path[-1].split('.')[0]:
-                path[-1] = 'KCCPlaceholder' + tomeNumber + ext
+                path[-1] = 'KCCPlaceholder' + tomenumber + ext
             filename = os.path.sep.join(path)
         else:
-            filename = os.path.splitext(srcpath)[0] + tomeNumber + ext
+            filename = os.path.splitext(srcpath)[0] + tomenumber + ext
     if os.path.isfile(filename):
         counter = 0
         basename = os.path.splitext(filename)[0]
@@ -608,7 +649,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomeNumber):
     return filename
 
 
-def getComicInfo(path, originalPath):
+def getComicInfo(path, originalpath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.authors = ['KCC']
     options.remoteCovers = {}
@@ -617,10 +658,10 @@ def getComicInfo(path, originalPath):
     titleSuffix = ''
     if options.title == 'defaulttitle':
         defaultTitle = True
-        if os.path.isdir(originalPath):
-            options.title = os.path.basename(originalPath)
+        if os.path.isdir(originalpath):
+            options.title = os.path.basename(originalpath)
         else:
-            options.title = os.path.splitext(os.path.basename(originalPath))[0]
+            options.title = os.path.splitext(os.path.basename(originalpath))[0]
     else:
         defaultTitle = False
     if os.path.exists(xmlPath):
@@ -655,10 +696,10 @@ def getComicInfo(path, originalPath):
         os.remove(xmlPath)
 
 
-def getCoversFromMCB(mangaID):
+def getCoversFromMCB(mangaid):
     covers = {}
     try:
-        jsonRaw = urlopen(Request('http://mcd.iosphe.re/api/v1/series/' + mangaID + '/',
+        jsonRaw = urlopen(Request('http://mcd.iosphe.re/api/v1/series/' + mangaid + '/',
                                   headers={'User-Agent': 'KindleComicConverter/' + __version__}))
         jsonData = loads(jsonRaw.read().decode('utf-8'))
         for volume in jsonData['Covers']['a']:
@@ -683,9 +724,9 @@ def getTopMargin(deviceres, size):
     return str(round(y, 1))
 
 
-def getPanelViewResolution(imageSize, deviceRes):
-    scale = float(deviceRes[0]) / float(imageSize[0])
-    return int(deviceRes[0]), int(scale * imageSize[1])
+def getPanelViewResolution(imagesize, deviceres):
+    scale = float(deviceres[0]) / float(imagesize[0])
+    return int(deviceres[0]), int(scale * imagesize[1])
 
 
 def getPanelViewSize(deviceres, size):
@@ -804,19 +845,19 @@ def splitProcess(path, mode):
     return output
 
 
-def detectCorruption(tmpPath, orgPath):
+def detectCorruption(tmppath, orgpath):
     imageNumber = 0
     imageSmaller = 0
     alreadyProcessed = False
-    for root, _, files in os.walk(tmpPath, False):
+    for root, _, files in os.walk(tmppath, False):
         for name in files:
             if getImageFileName(name) is not None:
                 if not alreadyProcessed and getImageFileName(name)[0].endswith('-kcc'):
                     alreadyProcessed = True
                 path = os.path.join(root, name)
-                pathOrg = orgPath + path.split('OEBPS' + os.path.sep + 'Images')[1]
+                pathOrg = orgpath + path.split('OEBPS' + os.path.sep + 'Images')[1]
                 if os.path.getsize(path) == 0:
-                    rmtree(os.path.join(tmpPath, '..', '..'), True)
+                    rmtree(os.path.join(tmppath, '..', '..'), True)
                     raise RuntimeError('Image file %s is corrupted.' % pathOrg)
                 try:
                     img = Image.open(path)
@@ -827,7 +868,7 @@ def detectCorruption(tmpPath, orgPath):
                     if options.profileData[1][0] > img.size[0] and options.profileData[1][1] > img.size[1]:
                         imageSmaller += 1
                 except Exception as err:
-                    rmtree(os.path.join(tmpPath, '..', '..'), True)
+                    rmtree(os.path.join(tmppath, '..', '..'), True)
                     if 'decoder' in str(err) and 'not available' in str(err):
                         raise RuntimeError('Pillow was compiled without JPG and/or PNG decoder.')
                     else:
@@ -856,28 +897,28 @@ def createNewTome():
     return tomePath, tomePathRoot
 
 
-def slugify(value, isDir):
-    if isDir:
-        value = slugifyExt(value, regex_pattern=r'[^-a-z0-9_\.]+')
+def slugify(value, isdir):
+    if isdir:
+        value = slugifyExt(value, regex_pattern=r'[^-a-z0-9_\.]+').strip('.')
     else:
-        value = slugifyExt(value)
+        value = slugifyExt(value).strip('.')
     value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
 
 
-def makeZIP(zipFilename, baseDir, isEPUB=False):
-    zipFilename = os.path.abspath(zipFilename) + '.zip'
-    zipOutput = ZipFile(zipFilename, 'w', ZIP_DEFLATED)
-    if isEPUB:
+def makeZIP(zipfilename, basedir, isepub=False):
+    zipfilename = os.path.abspath(zipfilename) + '.zip'
+    zipOutput = ZipFile(zipfilename, 'w', ZIP_DEFLATED)
+    if isepub:
         zipOutput.writestr('mimetype', 'application/epub+zip', ZIP_STORED)
-    for dirpath, _, filenames in os.walk(baseDir):
+    for dirpath, _, filenames in os.walk(basedir):
         for name in filenames:
             path = os.path.normpath(os.path.join(dirpath, name))
-            aPath = os.path.normpath(os.path.join(dirpath.replace(baseDir, ''), name))
+            aPath = os.path.normpath(os.path.join(dirpath.replace(basedir, ''), name))
             if os.path.isfile(path):
                 zipOutput.write(path, aPath)
     zipOutput.close()
-    return zipFilename
+    return zipfilename
 
 
 def makeParser():
@@ -906,7 +947,7 @@ def makeParser():
     outputOptions.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                              help="Comic title [Default=filename or directory name]")
     outputOptions.add_option("-f", "--format", action="store", dest="format", default="Auto",
-                             help="Output format (Available options: Auto, MOBI, EPUB, CBZ) [Default=Auto]")
+                             help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX) [Default=Auto]")
     outputOptions.add_option("-b", "--batchsplit", type="int", dest="batchsplit", default="0",
                              help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                   "2: Consider every subdirectory as separate volume [Default=0]")
@@ -953,6 +994,7 @@ def checkOptions():
     options.panelview = True
     options.iskindle = False
     options.bordersColor = None
+    options.kfx = False
     if options.format == 'Auto':
         if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV', 'KO']:
             options.format = 'MOBI'
@@ -967,7 +1009,7 @@ def checkOptions():
     if options.black_borders:
         options.bordersColor = 'black'
     # Splitting MOBI is not optional
-    if options.format == 'MOBI' and options.batchsplit != 2:
+    if (options.format == 'MOBI' or options.format == 'KFX') and options.batchsplit != 2:
         options.batchsplit = 1
     # Older Kindle models don't support Panel View.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K34' or options.profile == 'KDX':
@@ -989,6 +1031,11 @@ def checkOptions():
     # CBZ files on Kindle DX/DXG support higher resolution
     if options.profile == 'KDX' and options.format == 'CBZ':
         options.customheight = 1200
+    # KFX output create EPUB that might be can be by jhowell KFX Output Calibre plugin
+    if options.format == 'KFX':
+        options.format = 'EPUB'
+        options.kfx = True
+        options.panelview = False
     # Override profile data
     if options.customwidth != 0 or options.customheight != 0:
         X = image.ProfileData.Profiles[options.profile][1][0]
@@ -1039,13 +1086,13 @@ def checkPre(source):
     try:
         with TemporaryFile(prefix='KCC-', dir=src):
             pass
-    except:
+    except Exception:
         raise UserWarning("Target directory is not writable.")
 
 
-def makeBook(source, qtGUI=None):
+def makeBook(source, qtgui=None):
     global GUI
-    GUI = qtGUI
+    GUI = qtgui
     if GUI:
         GUI.progressBarTick.emit('1')
     else:
@@ -1061,7 +1108,7 @@ def makeBook(source, qtGUI=None):
             y = 1024
         else:
             y = image.ProfileData.Profiles[options.profile][1][1]
-        comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtGUI)
+        comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
     print("Processing images...")
     if GUI:
         GUI.progressBarTick.emit('Processing images')
@@ -1192,9 +1239,9 @@ def makeMOBIWorker(item):
         return [kindlegenErrorCode, kindlegenError, item]
 
 
-def makeMOBI(work, qtGUI=None):
+def makeMOBI(work, qtgui=None):
     global GUI, makeMOBIWorkerPool, makeMOBIWorkerOutput
-    GUI = qtGUI
+    GUI = qtgui
     makeMOBIWorkerOutput = []
     availableMemory = virtual_memory().total / 1000000000
     if availableMemory <= 2:

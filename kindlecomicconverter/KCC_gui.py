@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2017 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2018 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -156,8 +156,8 @@ class VersionThread(QtCore.QThread):
                                    '(<a href="https://github.com/ciromattia/kcc/releases/">'
                                    'Changelog</a>)', 'warning', False)
 
-    def setAnswer(self, dialogAnswer):
-        self.answer = dialogAnswer
+    def setAnswer(self, dialoganswer):
+        self.answer = dialoganswer
 
     def getNewVersion(self):
         while self.answer is None:
@@ -180,8 +180,8 @@ class VersionThread(QtCore.QThread):
                 MW.hideProgressBar.emit()
                 MW.modeConvert.emit(1)
 
-    def getNewVersionTick(self, size, blockSize, totalSize):
-        progress = int((size / (totalSize // blockSize)) * 100)
+    def getNewVersionTick(self, size, blocksize, totalsize):
+        progress = int((size / (totalsize // blocksize)) * 100)
         if size == 0:
             MW.progressBarTick.emit('100')
         if progress > self.barProgress:
@@ -667,10 +667,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
                             'List of supported Non-Kindle devices.</a>', 'info')
 
-    def changeFormat(self, outputFormat=None):
+    def changeFormat(self, outputformat=None):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
-        if outputFormat is not None:
-            GUI.formatBox.setCurrentIndex(outputFormat)
+        if outputformat is not None:
+            GUI.formatBox.setCurrentIndex(outputformat)
         else:
             GUI.formatBox.setCurrentIndex(profile['DefaultFormat'])
         if not GUI.webtoonBox.isChecked():
@@ -881,10 +881,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 else:
                     self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
 
-    def __init__(self, KCCAplication, KCCWindow):
+    def __init__(self, kccapp, kccwindow):
         global APP, MW, GUI
-        APP = KCCAplication
-        MW = KCCWindow
+        APP = kccapp
+        MW = kccwindow
         GUI = self
         self.setupUi(MW)
         self.editor = KCCGUI_MetaEditor()

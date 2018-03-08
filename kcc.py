@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2017 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2018 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -34,24 +34,6 @@ if sys.platform.startswith('darwin'):
     else:
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/osx/:' + os.environ['PATH']
 elif sys.platform.startswith('win'):
-    '''
-    import multiprocessing.popen_spawn_win32 as forking
-
-    class _Popen(forking.Popen):
-        def __init__(self, *args, **kw):
-            if hasattr(sys, 'frozen'):
-                # noinspection PyUnresolvedReferences,PyProtectedMember
-                os.putenv('_MEIPASS2', sys._MEIPASS)
-            try:
-                super(_Popen, self).__init__(*args, **kw)
-            finally:
-                if hasattr(sys, 'frozen'):
-                    if hasattr(os, 'unsetenv'):
-                        os.unsetenv('_MEIPASS2')
-                    else:
-                        os.putenv('_MEIPASS2', '')
-    forking.Popen = _Popen
-    '''
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
     else:
@@ -61,7 +43,7 @@ elif sys.platform.startswith('win'):
 if getattr(sys, 'frozen', False):
     try:
         import kindlecomicconverter.sentry
-    except:
+    except ImportError:
         pass
 
 from multiprocessing import freeze_support
