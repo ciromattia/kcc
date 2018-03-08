@@ -1,5 +1,5 @@
 ﻿#define MyAppName "Kindle Comic Converter"
-#define MyAppVersion "5.4.3"
+#define MyAppVersion "5.4.4"
 #define MyAppPublisher "Ciro Mattia Gonano, Paweł Jastrzębski"
 #define MyAppURL "http://kcc.iosphe.re/"
 #define MyAppExeName "KCC.exe"
@@ -12,7 +12,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-AppCopyright=Copyright (C) 2012-2017 Ciro Mattia Gonano and Paweł Jastrzębski
+AppCopyright=Copyright (C) 2012-2018 Ciro Mattia Gonano and Paweł Jastrzębski
 ArchitecturesAllowed=x64 
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}

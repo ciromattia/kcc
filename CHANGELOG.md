@@ -1,4 +1,7 @@
 # CHANGELOG
+#### 5.4.4:
+* Minor bug fixes
+
 #### 5.4.3:
 * Fixed conversion crash on Windows
 
