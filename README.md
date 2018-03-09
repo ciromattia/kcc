@@ -27,9 +27,12 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
-- **Windows (64-bit only):** [http://kcc.iosphe.re/Windows/](http://kcc.iosphe.re/Windows/)
-- **Linux (Glibc 2.19+):** [http://kcc.iosphe.re/Linux/](http://kcc.iosphe.re/Linux/)
-- **OS X (10.10+):** [http://kcc.iosphe.re/OSX/](http://kcc.iosphe.re/OSX/)
+- **[Windows](http://kcc.iosphe.re/Windows/) (64-bit only)**
+- **[macOS](http://kcc.iosphe.re/OSX/) (10.10+)**
+- **Linux:** 
+  - [Ubuntu 17.10](http://kcc.iosphe.re/LinuxArtful/)
+  - [Ubuntu 16.04 / Debian 9](http://kcc.iosphe.re/LinuxXenial/)
+  - [Ubuntu 14.04 / Debian 8](http://kcc.iosphe.re/LinuxTrusty/)
 
 ## PYPI
 **KCC** is also available on PyPI.
@@ -97,7 +100,7 @@ Options:
                         Comic title [Default=filename or directory name]
     -f FORMAT, --format=FORMAT
                         Output format (Available options: Auto, MOBI, EPUB,
-                        CBZ) [Default=Auto]
+                        CBZ, KFX) [Default=Auto]
     -b BATCHSPLIT, --batchsplit=BATCHSPLIT
                         Split output into multiple files. 0: Don't split 1:
                         Automatic mode 2: Consider every subdirectory as
