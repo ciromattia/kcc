@@ -1,4 +1,7 @@
 # CHANGELOG
+#### 5.4.5:
+* Fixed EPUB output for non-Kindle devices
+
 #### 5.4.4:
 * Minor bug fixes
 

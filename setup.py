@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 pip/pyinstaller build script for KCC.
 
@@ -59,7 +60,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
             os.system('cp other/linux/kindlecomicconverter dist/usr/share/lintian/overrides')
             os.chdir('dist')
             os.system('fpm -f -s dir -t deb -n kindlecomicconverter -v ' + VERSION +
-                      ' -m "Paweł Jastrzębski <pawelj@iosphe.re>" --license "ISC" '
+                      ' -m "Pawel Jastrzebski <pawelj@iosphe.re>" --license "ISC" '
                       '--description "$(printf "Comic and Manga converter for e-book '
                       'readers.\nThis app allows you to transform your PNG, JPG, GIF, '
                       'CBZ, CBR and CB7 files\ninto EPUB or MOBI format e-books.")" '

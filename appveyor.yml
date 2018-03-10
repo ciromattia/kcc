@@ -5,7 +5,7 @@ install:
   - set PATH="%PYTHON%\\Scripts";"C:\\Program Files (x86)\\Inno Setup 5";%PATH%
   - "%PYTHON%\\python.exe -m pip install --upgrade pip setuptools wheel"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  - "%PYTHON%\\python.exe -m pip install certifi PyInstaller"
+  - "%PYTHON%\\python.exe -m pip install certifi https://github.com/bjones1/pyinstaller/archive/pyqt5_fix.zip"
   - nuget install secure-file -ExcludeVersion
   - secure-file\tools\secure-file -decrypt other\windows\sentry.py.enc -out kindlecomicconverter\sentry.py -secret %ENCRYPTION%
 

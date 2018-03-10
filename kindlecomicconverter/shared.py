@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
 # Copyright (c) 2013-2018 Pawel Jastrzebski <pawelj@iosphe.re>
 #
