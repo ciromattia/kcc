@@ -374,7 +374,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                     pageside = "right"
     else:
         for entry in reflist:
-            f.write("<itemref idref=\"page_" + entry + "\">\n")
+            f.write("<itemref idref=\"page_" + entry + "\"/>\n")
     f.write("</spine>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
