@@ -1009,7 +1009,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                             'info')
         rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         rarExitCode = rarExitCode.wait()
-        if rarExitCode == 0 or rarExitCode == 7:
+        if rarExitCode == 0 or rarExitCode == 1 or rarExitCode == 7:
             self.UnRAR = True
         else:
             self.UnRAR = False

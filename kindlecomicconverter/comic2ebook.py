@@ -1056,7 +1056,7 @@ def checkTools(source):
     if source.endswith('.CBR') or source.endswith('.RAR'):
         rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         rarExitCode = rarExitCode.wait()
-        if rarExitCode != 0 and rarExitCode != 7:
+        if rarExitCode != 0 and rarExitCode != 1 and rarExitCode != 7:
             print('ERROR: UnRAR is missing!')
             exit(1)
     elif source.endswith('.CB7') or source.endswith('.7Z'):
