@@ -815,7 +815,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             formats = ['.cbz', '.zip', '.pdf']
             if self.UnRAR:
                 formats.extend(['.cbr', '.rar'])
-                if self.sevenza:
+            if self.sevenza:
                 formats.extend(['.cb7', '.7z'])
             if os.path.isdir(message):
                 GUI.jobList.addItem(message)
@@ -826,7 +826,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     GUI.jobList.addItem(message)
                     GUI.jobList.scrollToBottom()
                 else:
-                    self.addMessage('This file type is unsupported!', 'error')
+                    self.addMessage('Unsupported file type for ' + message, 'error')
 
     def dragAndDrop(self, e):
         e.accept()
