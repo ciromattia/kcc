@@ -812,16 +812,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if self.needClean:
                 self.needClean = False
                 GUI.jobList.clear()
+            formats = ['.cbz', '.zip', '.pdf']
             if self.UnRAR:
+                formats.extend(['.cbr', '.rar'])
                 if self.sevenza:
-                    formats = ['.cbz', '.cbr', '.cb7', '.zip', '.rar', '.7z', '.pdf']
-                else:
-                    formats = ['.cbz', '.cbr', '.zip', '.rar', '.pdf']
-            else:
-                if self.sevenza:
-                    formats = ['.cbz', '.cb7', '.zip', '.7z', '.pdf']
-                else:
-                    formats = ['.cbz', '.zip', '.pdf']
+                formats.extend(['.cb7', '.7z'])
             if os.path.isdir(message):
                 GUI.jobList.addItem(message)
                 GUI.jobList.scrollToBottom()
