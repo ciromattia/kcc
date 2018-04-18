@@ -145,7 +145,7 @@ def dependencyCheck(level):
         except ImportError:
             missing.append('python-slugify 1.2.1+')
     try:
-        from PIL import PILLOW_VERSION as pillowVersion
+        from PIL import __version__ as pillowVersion
         if StrictVersion('4.0.0') > StrictVersion(pillowVersion):
             missing.append('Pillow 4.0.0+')
     except ImportError:
