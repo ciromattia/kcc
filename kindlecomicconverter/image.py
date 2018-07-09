@@ -101,6 +101,7 @@ class ProfileData:
 
 class ComicPageParser:
     def __init__(self, source, options):
+        Image.MAX_IMAGE_PIXELS = int(2048 * 2048 * 2048 // 4 // 3)
         self.opt = options
         self.source = source
         self.size = self.opt.profileData[1]
