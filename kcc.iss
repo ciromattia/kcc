@@ -47,8 +47,8 @@ Name: "CB7association"; Description: "CB7"; GroupDescription: "File associations
 Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
 Source: "other\windows\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "other\windows\UnRAR.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "other\windows\7za.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "other\windows\7z.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "other\windows\7z.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

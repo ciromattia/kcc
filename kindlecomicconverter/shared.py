@@ -24,7 +24,6 @@ from html.parser import HTMLParser
 from distutils.version import StrictVersion
 from shutil import rmtree, copy
 from tempfile import mkdtemp
-from zipfile import ZipFile, ZIP_DEFLATED
 from re import split
 from traceback import format_tb
 
@@ -85,26 +84,6 @@ def md5Checksum(fpath):
                 break
             m.update(data)
         return m.hexdigest()
-
-
-def check7ZFile(fpath):
-    with open(fpath, 'rb') as fh:
-        header = fh.read(6)
-    return header == b"7z\xbc\xaf'\x1c"
-
-
-def removeFromZIP(zipfname, *filenames):
-    tempdir = mkdtemp('', 'KCC-')
-    try:
-        tempname = os.path.join(tempdir, 'KCC.zip')
-        with ZipFile(zipfname, 'r') as zipread:
-            with ZipFile(tempname, 'w', compression=ZIP_DEFLATED) as zipwrite:
-                for item in zipread.infolist():
-                    if item.filename not in filenames:
-                        zipwrite.writestr(item, zipread.read(item.filename))
-        copy(tempname, zipfname)
-    finally:
-        rmtree(tempdir, True)
 
 
 def sanitizeTrace(traceback):

@@ -45,7 +45,7 @@ except ImportError:
 from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace
 from . import comic2panel
 from . import image
-from . import cbxarchive
+from . import comicarchive
 from . import pdfjpgextract
 from . import dualmetafix
 from . import metadata
@@ -597,16 +597,12 @@ def getWorkFolder(afile):
                 raise UserWarning("Failed to extract images from PDF file.")
         else:
             workdir = mkdtemp('', 'KCC-')
-            cbx = cbxarchive.CBxArchive(afile)
-            if cbx.isCbxFile():
-                try:
-                    path = cbx.extract(workdir)
-                except Exception:
-                    rmtree(workdir, True)
-                    raise UserWarning("Failed to extract archive.")
-            else:
+            try:
+                cbx = comicarchive.ComicArchive(afile)
+                path = cbx.extract(workdir)
+            except OSError as e:
                 rmtree(workdir, True)
-                raise UserWarning("Failed to detect archive format.")
+                raise UserWarning(e.strerror)
     else:
         raise UserWarning("Failed to open source file/directory.")
     sanitizePermissions(path)
@@ -1054,21 +1050,17 @@ def checkOptions():
 
 def checkTools(source):
     source = source.upper()
-    if source.endswith('.CBR') or source.endswith('.RAR'):
-        rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        rarExitCode = rarExitCode.wait()
-        if rarExitCode != 0 and rarExitCode != 1 and rarExitCode != 7:
-            print('ERROR: UnRAR is missing!')
-            exit(1)
-    elif source.endswith('.CB7') or source.endswith('.7Z'):
-        sevenzaExitCode = Popen('7za', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        sevenzaExitCode = sevenzaExitCode.wait()
-        if sevenzaExitCode != 0 and sevenzaExitCode != 7:
-            print('ERROR: 7za is missing!')
+    if source.endswith('.CB7') or source.endswith('.7Z') or source.endswith('.RAR') or source.endswith('.CBR') or \
+            source.endswith('.ZIP') or source.endswith('.CBZ'):
+        process = Popen('7z', stdout=PIPE, stderr=STDOUT, shell=True)
+        process.communicate()
+        if process.returncode != 0 and process.returncode != 7:
+            print('ERROR: 7z is missing!')
             exit(1)
     if options.format == 'MOBI':
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        if kindleGenExitCode.wait() != 0:
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+        kindleGenExitCode.communicate()
+        if kindleGenExitCode.returncode != 0:
             print('ERROR: KindleGen is missing!')
             exit(1)
 
@@ -1215,7 +1207,7 @@ def makeMOBIWorker(item):
     try:
         if os.path.getsize(item) < 629145600:
             output = Popen('kindlegen -dont_append_source -locale en "' + item + '"',
-                           stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+                           stdout=PIPE, stderr=STDOUT, shell=True)
             for line in output.stdout:
                 line = line.decode('utf-8')
                 # ERROR: Generic error

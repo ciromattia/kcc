@@ -173,7 +173,7 @@ class VersionThread(QtCore.QThread):
                 move(path[0], path[0] + '.exe')
                 MW.hideProgressBar.emit()
                 MW.modeConvert.emit(1)
-                Popen(path[0] + '.exe  /SP- /silent /noicons', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+                Popen(path[0] + '.exe  /SP- /silent /noicons', stdout=PIPE, stderr=STDOUT, shell=True)
                 MW.forceShutdown.emit()
             except Exception:
                 MW.addMessage.emit('Failed to download the update!', 'warning', False)
@@ -238,6 +238,7 @@ class WorkerThread(QtCore.QThread):
         MW.addTrayMessage.emit('Conversion interrupted.', 'Critical')
         MW.modeConvert.emit(1)
 
+    # noinspection PyUnboundLocalVariable
     def run(self):
         MW.modeConvert.emit(0)
 
@@ -477,20 +478,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if self.needClean:
             self.needClean = False
             GUI.jobList.clear()
-        if self.UnRAR:
-            if self.sevenza:
-                fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                                'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf)')
-            else:
-                fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                                'Comic (*.cbz *.cbr *.zip *.rar *.pdf)')
+        if self.sevenzip:
+            fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
+                                                            'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf)')
         else:
-            if self.sevenza:
-                fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                                'Comic (*.cbz *.cb7 *.zip *.7z *.pdf)')
-            else:
-                fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                                'Comic (*.cbz *.zip *.pdf)')
+            fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath, 'Comic (*.pdf)')
         for fname in fnames[0]:
             if fname != '':
                 if sys.platform.startswith('win'):
@@ -509,20 +501,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     sname = sname.replace('/', '\\')
                 self.lastPath = os.path.abspath(sname)
         else:
-            if self.UnRAR:
-                if self.sevenza:
-                    fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
-                                                                  'Comic (*.cbz *.cbr *.cb7)')
-                else:
-                    fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
-                                                                  'Comic (*.cbz *.cbr)')
+            if self.sevenzip:
+                fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
+                                                              'Comic (*.cbz *.cbr *.cb7)')
             else:
-                if self.sevenza:
-                    fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
-                                                                  'Comic (*.cbz *.cb7)')
-                else:
-                    fname = QtWidgets.QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
-                                                                  'Comic (*.cbz)')
+                fname = ['']
+                self.showDialog("Editor is disabled due to a lack of 7z.", 'error')
             if fname[0] != '':
                 if sys.platform.startswith('win'):
                     sname = fname[0].replace('/', '\\')
@@ -812,11 +796,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if self.needClean:
                 self.needClean = False
                 GUI.jobList.clear()
-            formats = ['.cbz', '.zip', '.pdf']
-            if self.UnRAR:
-                formats.extend(['.cbr', '.rar'])
-            if self.sevenza:
-                formats.extend(['.cb7', '.7z'])
+            formats = ['.pdf']
+            if self.sevenzip:
+                formats.extend(['.cb7', '.7z', '.cbz', '.zip', '.cbr', '.rar'])
             if os.path.isdir(message):
                 GUI.jobList.addItem(message)
                 GUI.jobList.scrollToBottom()
@@ -852,10 +834,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 os.chmod('/usr/local/bin/kindlegen', 0o755)
             except Exception:
                 pass
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        if kindleGenExitCode.wait() == 0:
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+        kindleGenExitCode.communicate()
+        if kindleGenExitCode.returncode == 0:
             self.kindleGen = True
-            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
             for line in versionCheck.stdout:
                 line = line.decode("utf-8")
                 if 'Amazon kindlegen' in line:
@@ -1002,22 +985,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        rarExitCode = rarExitCode.wait()
-        if rarExitCode == 0 or rarExitCode == 1 or rarExitCode == 7:
-            self.UnRAR = True
+        process = Popen('7z', stdout=PIPE, stderr=STDOUT, shell=True)
+        process.communicate()
+        if process.returncode == 0 or process.returncode == 7:
+            self.sevenzip = True
         else:
-            self.UnRAR = False
-            self.addMessage('Cannot find <a href="http://www.rarlab.com/rar_add.htm">UnRAR</a>!'
-                            ' Processing of CBR/RAR files will be disabled.', 'warning')
-        sevenzaExitCode = Popen('7za', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        sevenzaExitCode = sevenzaExitCode.wait()
-        if sevenzaExitCode == 0 or sevenzaExitCode == 7:
-            self.sevenza = True
-        else:
-            self.sevenza = False
-            self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7za</a>!'
-                            ' Processing of CB7/7Z files will be disabled.', 'warning')
+            self.sevenzip = False
+            self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7z</a>!'
+                            ' Processing of archives will be disabled.', 'warning')
         self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
@@ -1098,7 +1073,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
     def loadData(self, file):
         self.parser = metadata.MetadataParser(file)
-        if self.parser.compressor == 'rar':
+        if self.parser.format == 'RAR':
             self.editorWidget.setEnabled(False)
             self.okButton.setEnabled(False)
             self.statusLabel.setText('CBR metadata are read-only.')

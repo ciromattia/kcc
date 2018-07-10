@@ -160,7 +160,6 @@ This script born as a cross-platform alternative to `KindleComicParser` by **Dc5
 The app relies and includes the following scripts:
 
  - `DualMetaFix` script by **K. Hendricks**. Released with GPL-3 License.
- - `rarfile.py` script &copy; 2005-2014 **Marko Kreen** <markokr@gmail.com>. Released with ISC License.
  - `image.py` class from **Alex Yatskov**'s [Mangle](https://github.com/FooSoft/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches.
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 

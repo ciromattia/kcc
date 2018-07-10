@@ -19,13 +19,11 @@
 import os
 from xml.dom.minidom import parse, Document
 from re import compile
-from zipfile import is_zipfile, ZipFile, ZIP_DEFLATED
 from subprocess import STDOUT, PIPE
 from psutil import Popen
 from tempfile import mkdtemp
 from shutil import rmtree
-from .shared import removeFromZIP, check7ZFile as is_7zfile
-from . import rarfile
+from . import comicarchive
 
 
 class MetadataParser:
@@ -42,47 +40,19 @@ class MetadataParser:
                      'MUid': '',
                      'Bookmarks': []}
         self.rawdata = None
-        self.compressor = None
+        self.format = None
         if self.source.endswith('.xml') and os.path.exists(self.source):
             self.rawdata = parse(self.source)
             self.parseXML()
         elif not self.source.endswith('.xml'):
-            if is_zipfile(self.source):
-                self.compressor = 'zip'
-                with ZipFile(self.source) as zip_file:
-                    for member in zip_file.namelist():
-                        if member != 'ComicInfo.xml':
-                            continue
-                        with zip_file.open(member) as xml_file:
-                            self.rawdata = parse(xml_file)
-            elif rarfile.is_rarfile(self.source):
-                self.compressor = 'rar'
-                with rarfile.RarFile(self.source) as rar_file:
-                    for member in rar_file.namelist():
-                        if member != 'ComicInfo.xml':
-                            continue
-                        with rar_file.open(member) as xml_file:
-                            self.rawdata = parse(xml_file)
-            elif is_7zfile(self.source):
-                self.compressor = '7z'
-                workdir = mkdtemp('', 'KCC-')
-                tmpXML = os.path.join(workdir, 'ComicInfo.xml')
-                output = Popen('7za e "' + self.source + '" ComicInfo.xml -o"' + workdir + '"',
-                               stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-                extracted = False
-                for line in output.stdout:
-                    if b"Everything is Ok" in line or b"No files to process" in line:
-                        extracted = True
-                if not extracted:
-                    rmtree(workdir)
-                    raise OSError('Failed to extract 7ZIP file.')
-                if os.path.isfile(tmpXML):
-                    self.rawdata = parse(tmpXML)
-                rmtree(workdir)
-            else:
-                raise OSError('Failed to detect archive format.')
-            if self.rawdata:
-                self.parseXML()
+            try:
+                cbx = comicarchive.ComicArchive(self.source)
+                self.rawdata = cbx.extractMetadata()
+                self.format = cbx.type
+            except OSError as e:
+                raise UserWarning(e.strerror)
+        if self.rawdata:
+            self.parseXML()
 
     def parseXML(self):
         if len(self.rawdata.getElementsByTagName('Series')) != 0:
@@ -154,20 +124,9 @@ class MetadataParser:
             tmpXML = os.path.join(workdir, 'ComicInfo.xml')
             with open(tmpXML, 'w', encoding='utf-8') as f:
                 self.rawdata.writexml(f, encoding='utf-8')
-            if is_zipfile(self.source):
-                removeFromZIP(self.source, 'ComicInfo.xml')
-                with ZipFile(self.source, mode='a', compression=ZIP_DEFLATED) as zip_file:
-                    zip_file.write(tmpXML, arcname=tmpXML.split(os.sep)[-1])
-            elif rarfile.is_rarfile(self.source):
-                raise NotImplementedError
-            elif is_7zfile(self.source):
-                output = Popen('7za a "' + self.source + '" "' + tmpXML + '"',
-                               stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-                extracted = False
-                for line in output.stdout:
-                    if b"Everything is Ok" in line:
-                        extracted = True
-                if not extracted:
-                    rmtree(workdir)
-                    raise OSError('Failed to modify 7ZIP file.')
+            try:
+                cbx = comicarchive.ComicArchive(self.source)
+                cbx.addFile(tmpXML)
+            except OSError as e:
+                raise UserWarning(e.strerror)
             rmtree(workdir)

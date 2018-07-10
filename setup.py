@@ -37,13 +37,12 @@ class BuildBinaryCommand(distutils.cmd.Command):
         VERSION = __version__
         if sys.platform == 'darwin':
             os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
-            shutil.copy('other/osx/7za', 'dist/Kindle Comic Converter.app/Contents/Resources')
-            shutil.copy('other/osx/unrar', 'dist/Kindle Comic Converter.app/Contents/Resources')
+            shutil.copy('other/osx/7z', 'dist/Kindle Comic Converter.app/Contents/Resources')
+            shutil.copy('other/osx/7z.so', 'dist/Kindle Comic Converter.app/Contents/Resources')
             shutil.copy('other/osx/Info.plist', 'dist/Kindle Comic Converter.app/Contents')
             shutil.copy('LICENSE.txt', 'dist/Kindle Comic Converter.app/Contents/Resources')
             shutil.copy('other/windows/Additional-LICENSE.txt', 'dist/Kindle Comic Converter.app/Contents/Resources')
-            os.chmod('dist/Kindle Comic Converter.app/Contents/Resources/unrar', 0o777)
-            os.chmod('dist/Kindle Comic Converter.app/Contents/Resources/7za', 0o777)
+            os.chmod('dist/Kindle Comic Converter.app/Contents/Resources/7z', 0o777)
             os.system('appdmg kcc.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')
             exit(0)
         elif sys.platform == 'win32':
@@ -65,7 +64,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
                       'readers.\nThis app allows you to transform your PNG, JPG, GIF, '
                       'CBZ, CBR and CB7 files\ninto EPUB or MOBI format e-books.")" '
                       '--url "https://kcc.iosphe.re/" --deb-priority "optional" --vendor "" '
-                      '--category "graphics" -d "unrar | unrar-free" -d "p7zip-full" -d "libc6" usr')
+                      '--category "graphics" -d "p7zip-full" -d "p7zip-rar" -d "libc6" usr')
             exit(0)
 
 
