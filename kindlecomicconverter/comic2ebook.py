@@ -869,7 +869,7 @@ def detectCorruption(tmppath, orgpath):
                     if 'decoder' in str(err) and 'not available' in str(err):
                         raise RuntimeError('Pillow was compiled without JPG and/or PNG decoder.')
                     else:
-                        raise RuntimeError('Image file %s is corrupted.' % pathOrg)
+                        raise RuntimeError('Image file %s is corrupted. Error: %s' % (pathOrg, str(err)))
             else:
                 os.remove(os.path.join(root, name))
     if alreadyProcessed:
