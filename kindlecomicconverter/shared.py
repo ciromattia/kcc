@@ -22,8 +22,6 @@ import os
 from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
-from shutil import rmtree, copy
-from tempfile import mkdtemp
 from re import split
 from traceback import format_tb
 
@@ -49,8 +47,7 @@ class HTMLStripper(HTMLParser):
 def getImageFileName(imgfile):
     name, ext = os.path.splitext(imgfile)
     ext = ext.lower()
-    if name.startswith('.') or (ext != '.png' and ext != '.jpg' and ext != '.jpeg' and ext != '.gif' and
-                                ext != '.webp'):
+    if name.startswith('.') or ext not in ['.png', '.jpg', '.jpeg', '.gif', '.webp']:
         return None
     return [name, ext]
 
@@ -88,16 +85,17 @@ def md5Checksum(fpath):
 
 def sanitizeTrace(traceback):
     return ''.join(format_tb(traceback))\
-        .replace('C:/projects/kcc/', '') \
-        .replace('c:/projects/kcc/', '') \
-        .replace('C:/python36-x64/', '')\
-        .replace('c:/python36-x64/', '')\
-        .replace('C:\\projects\\kcc\\', '') \
-        .replace('c:\\projects\\kcc\\', '') \
-        .replace('C:\\python36-x64\\', '')\
-        .replace('c:\\python36-x64\\', '')
+        .replace('C:/projects/kcc/', '')\
+        .replace('c:/projects/kcc/', '')\
+        .replace('C:/python37-x64/', '')\
+        .replace('c:/python37-x64/', '')\
+        .replace('C:\\projects\\kcc\\', '')\
+        .replace('c:\\projects\\kcc\\', '')\
+        .replace('C:\\python37-x64\\', '')\
+        .replace('c:\\python37-x64\\', '')
 
 
+# noinspection PyUnresolvedReferences
 def dependencyCheck(level):
     missing = []
     if level > 2:

@@ -24,6 +24,7 @@ import shutil
 class DualMetaFixException(Exception):
     pass
 
+
 # palm database offset constants
 number_of_pdb_records = 76
 first_pdb_record = 78

@@ -63,9 +63,9 @@ sudo pip3 install --upgrade pillow python-slugify psutil pyqt5 raven
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
 - Folders containing: PNG, JPG or GIF files
-- CBZ, ZIP
-- CBR, RAR *(With `unrar` executable)*
-- CB7, 7Z *(With `7za` executable)*
+- CBZ, ZIP *(With `7z` executable)*
+- CBR, RAR *(With `7z` executable)*
+- CB7, 7Z *(With `7z` executable)*
 - PDF *(Only extracting JPG images)*
 
 ## USAGE

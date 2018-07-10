@@ -15,7 +15,7 @@ before_install:
 
 install:
 - pip3 install -r requirements.txt
-- pip3 install certifi https://github.com/bjones1/pyinstaller/archive/pyqt5_fix.zip
+- pip3 install certifi https://github.com/pyinstaller/pyinstaller/archive/develop.zip
 - npm install -g appdmg
 
 script: python3 setup.py build_binary

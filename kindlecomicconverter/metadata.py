@@ -19,8 +19,6 @@
 import os
 from xml.dom.minidom import parse, Document
 from re import compile
-from subprocess import STDOUT, PIPE
-from psutil import Popen
 from tempfile import mkdtemp
 from shutil import rmtree
 from . import comicarchive
