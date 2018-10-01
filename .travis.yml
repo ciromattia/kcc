@@ -1,0 +1,37 @@
+matrix:
+  include:
+  - os: osx
+    language: generic
+    osx_image: xcode6.4
+
+before_install:
+- brew update
+- brew install python3
+- brew uninstall node
+- travis_wait 30 brew install node@6
+- brew link node@6 --force --overwrite
+- pip3 install --upgrade pip setuptools wheel
+- openssl aes-256-cbc -K $encrypted_a95564d8ff0d_key -iv $encrypted_a95564d8ff0d_iv -in other/osx/sentry.py.enc -out kindlecomicconverter/sentry.py -d
+
+install:
+- pip3 install -r requirements.txt
+- pip3 install certifi https://github.com/bjones1/pyinstaller/archive/pyqt5_fix.zip
+- npm install -g appdmg
+
+script: python3 setup.py build_binary
+
+before_deploy:
+- shopt -s extglob
+- rm -r dist/!(*.deb|*.dmg)
+
+deploy:
+  provider: s3
+  skip_cleanup: true
+  access_key_id: AKIAIQNL5R4FI4C4NJYQ
+  secret_access_key:
+    secure: X66hYplxB4QSueljwvDfamNH/MQmHjo3mCofBcaTHAr7n2fp+yd2NzD2yy9h8NbsL0LWwx9wtJa/jpkIE02ZDfi9NrMLvKKFazzdpiyTMN5Yh85lHHyD1XIOCZRd4igaZ+O8975tJAEaEOPS+PE9XGZcRBh+y/eSJ+fMEgohaJ1MtDFbQR7X1cEw3iqbjrV2rlghZNCk/9mZEfObzAEjQiSDpv5G0IuIPRvYg/BgZt8chHVAe03B6oqcBa7uCBCTlfHIiNh1MWtP0B3NNBq3dcu9QHOFri1YqoZKuaPVCf6TFQL/NW5dFihegev2t9IwFyaBxytiT8fBkgQhP0VX8cuCwBAfnQGIogAu0eLSPp+E6dB/7Cpt2GDCk39+As8WKqt9hCRHmrvYhPA1Mq9QyEgKy/TKKKfDby3qVTIqYOQYpuQ1B7sIU651L5A+hBvZ1dqWIUz25h0zqjjeSFrcfNnf1e4tkk0QJvvnKqz0xsVaJxA2p07VJMRn8SlZQIJ2GEbMDeB5jxYtf5JzXywChP9adlPNjLna9G8ScnGSU1f7ZhsBQUEgY5jBlnX1lveyl3DUe6NP+qOTyljLWYwjx3AF4Zg10LYSecRS6hnqAUrGRmibDCIYclUzlJkVyjKGJ9uEyrUiCp0P0IsAzE1XhPVAWEyGUcWWGJG+jgmohSk=
+  bucket: kcc-deploy
+  region: eu-central-1
+  local_dir: dist
+  on:
+    repo: AcidWeb/kcc

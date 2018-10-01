@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2016 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2018 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -23,14 +23,9 @@ if sys.version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
     exit(1)
 
-from kcc.shared import dependencyCheck
-dependencyCheck(2)
-
 from multiprocessing import freeze_support
-from kcc import __version__
-from kcc.comic2ebook import main
+from kindlecomicconverter.startup import startC2E
 
 if __name__ == "__main__":
     freeze_support()
-    print('comic2ebook v' + __version__ + ' - Written by Ciro Mattia Gonano and Pawel Jastrzebski.')
-    sys.exit(main(sys.argv[1:]))
+    startC2E()
