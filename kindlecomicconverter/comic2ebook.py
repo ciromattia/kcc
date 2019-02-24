@@ -61,7 +61,10 @@ def main(argv=None):
         parser.print_help()
         return 0
     if sys.platform.startswith('win'):
-        sources = set([source for arg in args for source in glob(arg)])
+        sources = []
+        for arg in args:
+            if os.path.exists(arg):
+                sources.append(arg)
     else:
         sources = set(args)
     if len(sources) == 0:
