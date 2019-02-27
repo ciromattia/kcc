@@ -22,7 +22,7 @@ import os
 import sys
 from time import strftime, gmtime
 from copy import copy
-from glob import glob
+from glob import glob, escape
 from json import loads
 from urllib.request import Request, urlopen
 from re import sub
@@ -37,7 +37,7 @@ from slugify import slugify as slugifyExt
 from PIL import Image
 from subprocess import STDOUT, PIPE
 from psutil import Popen, virtual_memory, disk_usage
-from html import escape
+from html import escape as hescape
 try:
     from PyQt5 import QtCore
 except ImportError:
@@ -61,7 +61,7 @@ def main(argv=None):
         parser.print_help()
         return 0
     if sys.platform.startswith('win'):
-        sources = set([source for arg in args for source in glob(arg)])
+        sources = set([source for arg in args for source in glob(escape(arg))])
     else:
         sources = set(args)
     if len(sources) == 0:
@@ -112,7 +112,7 @@ def buildHTML(path, imgfile, imgfilepath):
                   "<!DOCTYPE html>\n",
                   "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n",
                   "<head>\n",
-                  "<title>", escape(filename[0]), "</title>\n",
+                  "<title>", hescape(filename[0]), "</title>\n",
                   "<link href=\"", "../" * (backref - 1), "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
                   "<meta name=\"viewport\" "
                   "content=\"width=" + str(imgsize[0]) + ", height=" + str(imgsize[1]) + "\"/>\n"
@@ -210,7 +210,7 @@ def buildNCX(dstdir, title, chapters, chapternames):
                   "<meta name=\"dtb:maxPageNumber\" content=\"0\"/>\n",
                   "<meta name=\"generated\" content=\"true\"/>\n",
                   "</head>\n",
-                  "<docTitle><text>", escape(title), "</text></docTitle>\n",
+                  "<docTitle><text>", hescape(title), "</text></docTitle>\n",
                   "<navMap>\n"])
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
@@ -222,7 +222,7 @@ def buildNCX(dstdir, title, chapters, chapternames):
         elif os.path.basename(folder) != "Text":
             title = chapternames[os.path.basename(folder)]
         f.write("<navPoint id=\"" + navID + "\"><navLabel><text>" +
-                escape(title) + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") +
+                hescape(title) + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") +
                 ".xhtml\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
@@ -235,7 +235,7 @@ def buildNAV(dstdir, title, chapters, chapternames):
                   "<!DOCTYPE html>\n",
                   "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n",
                   "<head>\n",
-                  "<title>" + escape(title) + "</title>\n",
+                  "<title>" + hescape(title) + "</title>\n",
                   "<meta charset=\"utf-8\"/>\n",
                   "</head>\n",
                   "<body>\n",
@@ -248,7 +248,7 @@ def buildNAV(dstdir, title, chapters, chapternames):
             title = chapternames[chapter[1]]
         elif os.path.basename(folder) != "Text":
             title = chapternames[os.path.basename(folder)]
-        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + escape(title) + "</a></li>\n")
+        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + hescape(title) + "</a></li>\n")
     f.writelines(["</ol>\n",
                   "</nav>\n",
                   "<nav epub:type=\"page-list\">\n",
@@ -260,7 +260,7 @@ def buildNAV(dstdir, title, chapters, chapternames):
             title = chapternames[chapter[1]]
         elif os.path.basename(folder) != "Text":
             title = chapternames[os.path.basename(folder)]
-        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + escape(title) + "</a></li>\n")
+        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + hescape(title) + "</a></li>\n")
     f.write("</ol>\n</nav>\n</body>\n</html>")
     f.close()
 
@@ -669,7 +669,7 @@ def getComicInfo(path, originalpath):
         options.authors = []
         if defaultTitle:
             if xml.data['Series']:
-                options.title = escape(xml.data['Series'])
+                options.title = hescape(xml.data['Series'])
             if xml.data['Volume']:
                 titleSuffix += ' V' + xml.data['Volume'].zfill(2)
             if xml.data['Number']:
@@ -677,7 +677,7 @@ def getComicInfo(path, originalpath):
             options.title += titleSuffix
         for field in ['Writers', 'Pencillers', 'Inkers', 'Colorists']:
             for person in xml.data[field]:
-                options.authors.append(escape(person))
+                options.authors.append(hescape(person))
         if len(options.authors) > 0:
             options.authors = list(set(options.authors))
             options.authors.sort()
@@ -688,7 +688,7 @@ def getComicInfo(path, originalpath):
         if xml.data['Bookmarks']:
             options.chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
-            options.summary = escape(xml.data['Summary'])
+            options.summary = hescape(xml.data['Summary'])
         os.remove(xmlPath)
 
 
