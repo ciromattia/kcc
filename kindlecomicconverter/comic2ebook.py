@@ -35,6 +35,10 @@ from multiprocessing import Pool
 from uuid import uuid4
 from slugify import slugify as slugifyExt
 from PIL import Image
+
+from imdirect import imdirect_open
+Image.open = imdirect_open
+
 from subprocess import STDOUT, PIPE
 from psutil import Popen, virtual_memory, disk_usage
 from html import escape
@@ -590,8 +594,9 @@ def getWorkFolder(afile):
         if disk_usage(gettempdir())[2] < os.path.getsize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
         if afile.lower().endswith('.pdf'):
+            workdir = mkdtemp('', 'KCC-')
             pdf = pdfjpgextract.PdfJpgExtract(afile)
-            path, njpg = pdf.extract()
+            path, njpg = pdf.extract(workdir)
             if njpg == 0:
                 rmtree(path, True)
                 raise UserWarning("Failed to extract images from PDF file.")

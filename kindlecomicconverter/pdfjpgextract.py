@@ -25,45 +25,114 @@ import os
 from random import choice
 from string import ascii_uppercase, digits
 
+import PyPDF4
+import PIL
+import piexif
 
 class PdfJpgExtract:
     def __init__(self, fname):
         self.fname = fname
-        self.filename = os.path.splitext(fname)
-        self.path = self.filename[0] + "-KCC-" + ''.join(choice(ascii_uppercase + digits) for _ in range(3))
 
-    def getPath(self):
-        return self.path
+    @staticmethod
+    def _save_image_from_page(pdf_page, basename):
+        ''' based on PyPDF4/Scripts/pdf-image-extractor.py '''
 
-    def extract(self):
-        pdf = open(self.fname, "rb").read()
-        startmark = b"\xff\xd8"
-        startfix = 0
-        endmark = b"\xff\xd9"
-        endfix = 2
-        i = 0
-        njpg = 0
-        os.makedirs(self.path)
-        while True:
-            istream = pdf.find(b"stream", i)
-            if istream < 0:
-                break
-            istart = pdf.find(startmark, istream, istream + 20)
-            if istart < 0:
-                i = istream + 20
+        angle = pdf_page.get("/Rotate", 0)
+
+        fname = basename
+
+        if '/XObject' not in pdf_page['/Resources']:
+            return
+
+        xObject = pdf_page['/Resources']['/XObject'].getObject()
+
+        for obj in xObject:
+
+            if xObject[obj]['/Subtype'] != '/Image':
                 continue
-            iend = pdf.find(b"endstream", istart)
-            if iend < 0:
-                raise Exception("Didn't find end of stream!")
-            iend = pdf.find(endmark, iend - 20)
-            if iend < 0:
-                raise Exception("Didn't find end of JPG!")
-            istart += startfix
-            iend += endfix
-            jpg = pdf[istart:iend]
-            jpgfile = open(self.path + "/jpg%d.jpg" % njpg, "wb")
-            jpgfile.write(jpg)
-            jpgfile.close()
-            njpg += 1
-            i = iend
-        return self.path, njpg
+
+            size = (xObject[obj]['/Width'], xObject[obj]['/Height'])
+            data = xObject[obj].getData()
+
+            if xObject[obj]['/ColorSpace'] == '/DeviceRGB':
+                mode = 'RGB'
+            else:
+                mode = 'P'
+
+            if '/Filter' in xObject[obj]:
+                if xObject[obj]['/Filter'] == '/FlateDecode':
+                    fname += '.png'
+                    img = PIL.Image.frombytes(mode, size, data)
+                    img.save(fname)
+                    img.close()
+                    break
+                elif xObject[obj]['/Filter'] == '/DCTDecode':
+                    fname += '.jpg'
+                    img = open(fname, 'wb')
+                    img.write(data)
+                    img.close()
+                    break
+                elif xObject[obj]['/Filter'] == '/JPXDecode':
+                    fname += 'jp2'
+                    img = open(fname, 'wb')
+                    img.write(data)
+                    img.close()
+                    break
+                elif xObject[obj]['/Filter'] == '/CCITTFaxDecode':
+                    fname += '.tiff'
+                    img = open(fname, 'wb')
+                    img.write(data)
+                    img.close()
+                    break
+            else:
+                fname += '.png'
+                img = PIL.Image.frombytes(mode, size, data)
+                img.save(fname)
+                img.close()
+                break
+        else:
+            ''' can't find image in pdf page '''
+            return
+
+        img = PIL.Image.open(fname)
+
+        if 'exif' in img.info:
+            exif_dict = piexif.load(img.info['exif'])
+        else:
+            exif_dict = {}
+
+        angle_orientation_map = {
+            0: 1,
+            90: 6,
+            180: 3,
+            270: 8,
+        }
+
+        if '0th' not in exif_dict:
+            exif_dict['0th'] = {}
+
+        exif_dict['0th'][piexif.ImageIFD.Orientation] = angle_orientation_map[angle]
+
+        exif_bytes = piexif.dump(exif_dict)
+
+        img.save(fname, exif = exif_bytes)
+        img.close()
+
+        return True
+
+    def extract(self, targetdir):
+
+        with open(self.fname, 'rb') as fp:
+            pdf = PyPDF4.PdfFileReader(fp)
+
+            nimg = 0
+
+            for page_num in range(pdf.getNumPages()):
+                page = pdf.getPage(page_num)
+                base_fname = targetdir + '/img-%04d'% nimg
+
+                if self._save_image_from_page(page, base_fname):
+                    nimg += 1
+
+        return targetdir, nimg
+
