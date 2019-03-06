@@ -6,7 +6,7 @@ pip/pyinstaller build script for KCC.
 Install as Python package:
     python3 setup.py install
 
-Create EXE/APP/DEB:
+Create EXE/APP:
     python3 setup.py build_binary
 """
 
@@ -49,22 +49,6 @@ class BuildBinaryCommand(distutils.cmd.Command):
             os.system('pyinstaller -y -F -i icons\\comic2ebook.ico -n KCC -w --noupx kcc.py')
             exit(0)
         else:
-            os.system('pyinstaller -y -F kcc.py')
-            os.system('mkdir -p dist/usr/bin dist/usr/share/applications dist/usr/share/doc/kindlecomicconverter '
-                      'dist/usr/share/kindlecomicconverter dist/usr/share/lintian/overrides')
-            os.system('mv dist/kcc dist/usr/bin')
-            os.system('cp icons/comic2ebook.png dist/usr/share/kindlecomicconverter')
-            os.system('cp LICENSE.txt dist/usr/share/doc/kindlecomicconverter/copyright')
-            os.system('cp other/linux/kindlecomicconverter.desktop dist/usr/share/applications')
-            os.system('cp other/linux/kindlecomicconverter dist/usr/share/lintian/overrides')
-            os.chdir('dist')
-            os.system('fpm -f -s dir -t deb -n kindlecomicconverter -v ' + VERSION +
-                      ' -m "Pawel Jastrzebski <pawelj@iosphe.re>" --license "ISC" '
-                      '--description "$(printf "Comic and Manga converter for e-book '
-                      'readers.\nThis app allows you to transform your PNG, JPG, GIF, '
-                      'CBZ, CBR and CB7 files\ninto EPUB or MOBI format e-books.")" '
-                      '--url "https://kcc.iosphe.re/" --deb-priority "optional" --vendor "" '
-                      '--category "graphics" -d "p7zip-full" -d "p7zip-rar" -d "libc6" usr')
             exit(0)
 
 

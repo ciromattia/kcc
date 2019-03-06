@@ -90,8 +90,8 @@ class ProfileData:
         'KoA': ("Kobo Aura", (758, 1024), Palette16, 1.8),
         'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.8),
         'KoAH2O': ("Kobo Aura H2O", (1080, 1430), Palette16, 1.8),
-        'KoF': ("Kobo Forma", (1440, 1920), Palette16, 1.8),
         'KoAO': ("Kobo Aura ONE", (1404, 1872), Palette16, 1.8),
+        'KoF': ("Kobo Forma", (1440, 1920), Palette16, 1.8),
         'OTHER': ("Other", (0, 0), Palette16, 1.8),
     }
 
