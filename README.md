@@ -28,7 +28,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
 - **[Windows](http://kcc.iosphe.re/Windows/) (64-bit only)**
-- **[macOS](http://kcc.iosphe.re/OSX/) (10.10+)**
+- **[macOS](http://kcc.iosphe.re/OSX/) (10.12+)**
 - **Linux:** 
   - [Ubuntu 17.10](http://kcc.iosphe.re/LinuxArtful/)
   - [Ubuntu 16.04 / Debian 9](http://kcc.iosphe.re/LinuxXenial/)
