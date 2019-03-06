@@ -1078,7 +1078,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
     def loadData(self, file):
         self.parser = metadata.MetadataParser(file)
-        if self.parser.format == 'RAR':
+        if self.parser.format in ['RAR', 'RAR5']:
             self.editorWidget.setEnabled(False)
             self.okButton.setEnabled(False)
             self.statusLabel.setText('CBR metadata are read-only.')

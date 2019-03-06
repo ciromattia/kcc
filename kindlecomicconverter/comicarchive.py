@@ -40,7 +40,7 @@ class ComicArchive:
         process.communicate()
         if process.returncode != 0:
             raise OSError('Archive is corrupted or encrypted.')
-        elif self.type not in ['7Z', 'RAR', 'ZIP']:
+        elif self.type not in ['7Z', 'RAR', 'RAR5', 'ZIP']:
             raise OSError('Unsupported archive format.')
 
     def extract(self, targetdir):
@@ -61,7 +61,7 @@ class ComicArchive:
         return targetdir
 
     def addFile(self, sourcefile):
-        if self.type == 'RAR':
+        if self.type in ['RAR', 'RAR5']:
             raise NotImplementedError
         process = Popen('7z a -y "' + self.filepath + '" "' + sourcefile + '"',
                         stdout=PIPE, stderr=STDOUT, shell=True)
