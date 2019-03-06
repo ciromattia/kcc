@@ -87,7 +87,7 @@ Options:
     -p PROFILE, --profile=PROFILE
                         Device profile (Available options: K1, K2, K34, K578,
                         KDX, KPW, KV, KO, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O,
-                        KoAO) [Default=KV]
+                        KoAO, KoF) [Default=KV]
     -m, --manga-style   Manga style (right-to-left reading and splitting)
     -q, --hq            Try to increase the quality of magnification
     -2, --two-panel     Display two not four panels in Panel View mode
@@ -165,7 +165,7 @@ The app relies and includes the following scripts:
 
 ## SAMPLE FILES CREATED BY KCC
 * [Kindle Oasis 2](http://kcc.iosphe.re/Samples/Ubunchu!-KO.mobi)
-* [Kindle Paperwhite 3 / Voyage / Oasis](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
+* [Kindle Paperwhite 3 / 4 / Voyage / Oasis](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
 * [Kindle Paperwhite 1 / 2](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K578.mobi)
 * [Kobo Aura](http://kcc.iosphe.re/Samples/Ubunchu-KoA.kepub.epub)
@@ -183,5 +183,5 @@ The app relies and includes the following scripts:
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
 ## COPYRIGHT
-Copyright (c) 2012-2018 Ciro Mattia Gonano and Paweł Jastrzębski.
+Copyright (c) 2012-2019 Ciro Mattia Gonano and Paweł Jastrzębski.
 **KCC** is released under ISC LICENSE; see LICENSE.txt for further details.

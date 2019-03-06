@@ -86,7 +86,7 @@ class ProfileData:
         'K578': ("Kindle", (600, 800), Palette16, 1.8),
         'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8),
         'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.8),
-        'KV': ("Kindle Paperwhite 3/Voyage/Oasis", (1072, 1448), Palette16, 1.8),
+        'KV': ("Kindle Paperwhite 3/4/Voyage/Oasis", (1072, 1448), Palette16, 1.8),
         'KO': ("Kindle Oasis 2", (1264, 1680), Palette16, 1.8),
         'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8),
         'KoG': ("Kobo Glo", (768, 1024), Palette16, 1.8),
