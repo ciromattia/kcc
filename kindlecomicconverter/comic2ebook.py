@@ -276,7 +276,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "xmlns=\"http://www.idpf.org/2007/opf\">\n",
                   "<metadata xmlns:opf=\"http://www.idpf.org/2007/opf\" ",
                   "xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n",
-                  "<dc:title>", title, "</dc:title>\n",
+                  "<dc:title>", hescape(title), "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
                   "<dc:identifier id=\"BookID\">urn:uuid:", options.uuid, "</dc:identifier>\n",
                   "<dc:contributor id=\"contributor\">KindleComicConverter-" + __version__ + "</dc:contributor>\n"])
