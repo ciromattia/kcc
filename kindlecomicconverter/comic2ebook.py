@@ -23,8 +23,6 @@ import sys
 from time import strftime, gmtime
 from copy import copy
 from glob import glob, escape
-from json import loads
-from urllib.request import Request, urlopen
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
@@ -648,7 +646,6 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
 def getComicInfo(path, originalpath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.authors = ['KCC']
-    options.remoteCovers = {}
     options.chapters = []
     options.summary = ''
     titleSuffix = ''
@@ -683,27 +680,11 @@ def getComicInfo(path, originalpath):
             options.authors.sort()
         else:
             options.authors = ['KCC']
-        if xml.data['MUid']:
-            options.remoteCovers = getCoversFromMCB(xml.data['MUid'])
         if xml.data['Bookmarks']:
             options.chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
             options.summary = hescape(xml.data['Summary'])
         os.remove(xmlPath)
-
-
-def getCoversFromMCB(mangaid):
-    covers = {}
-    try:
-        jsonRaw = urlopen(Request('http://mcd.iosphe.re/api/v1/series/' + mangaid + '/',
-                                  headers={'User-Agent': 'KindleComicConverter/' + __version__}))
-        jsonData = loads(jsonRaw.read().decode('utf-8'))
-        for volume in jsonData['Covers']['a']:
-            if volume['Side'] == 'front':
-                covers[int(volume['Volume'])] = volume['Raw']
-    except Exception:
-        return {}
-    return covers
 
 
 def getDirectorySize(start_path='.'):

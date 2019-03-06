@@ -20,12 +20,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from io import BytesIO
-from urllib.request import Request, urlopen
-from urllib.parse import quote
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
 from .shared import md5Checksum
-from . import __version__
 
 
 class ProfileData:
@@ -347,15 +343,7 @@ class Cover:
             self.tomeid = 1
         else:
             self.tomeid = tomeid
-        if self.tomeid in self.options.remoteCovers:
-            try:
-                source = urlopen(Request(quote(self.options.remoteCovers[self.tomeid]).replace('%3A', ':', 1),
-                                         headers={'User-Agent': 'KindleComicConverter/' + __version__})).read()
-                self.image = Image.open(BytesIO(source))
-            except Exception:
-                self.image = Image.open(source)
-        else:
-            self.image = Image.open(source)
+        self.image = Image.open(source)
         self.process()
 
     def process(self):

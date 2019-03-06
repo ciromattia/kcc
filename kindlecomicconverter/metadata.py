@@ -18,7 +18,6 @@
 
 import os
 from xml.dom.minidom import parse, Document
-from re import compile
 from tempfile import mkdtemp
 from shutil import rmtree
 from . import comicarchive
@@ -35,7 +34,6 @@ class MetadataParser:
                      'Inkers': [],
                      'Colorists': [],
                      'Summary': '',
-                     'MUid': '',
                      'Bookmarks': []}
         self.rawdata = None
         self.format = None
@@ -67,11 +65,6 @@ class MetadataParser:
                     self.data[field + 's'].append(person)
             self.data[field + 's'] = list(set(self.data[field + 's']))
             self.data[field + 's'].sort()
-        if len(self.rawdata.getElementsByTagName('ScanInformation')) != 0:
-            coverId = compile('(MCD\\()(\\d+)(\\))')\
-                .search(self.rawdata.getElementsByTagName('ScanInformation')[0].firstChild.nodeValue)
-            if coverId:
-                self.data['MUid'] = coverId.group(2)
         if len(self.rawdata.getElementsByTagName('Page')) != 0:
             for page in self.rawdata.getElementsByTagName('Page'):
                 if 'Bookmark' in page.attributes and 'Image' in page.attributes:
@@ -84,8 +77,7 @@ class MetadataParser:
             for row in (['Series', self.data['Series']], ['Volume', self.data['Volume']],
                         ['Number', self.data['Number']], ['Writer', ', '.join(self.data['Writers'])],
                         ['Penciller', ', '.join(self.data['Pencillers'])], ['Inker', ', '.join(self.data['Inkers'])],
-                        ['Colorist', ', '.join(self.data['Colorists'])], ['Summary', self.data['Summary']],
-                        ['ScanInformation', 'MCD(' + self.data['MUid'] + ')' if self.data['MUid'] else '']):
+                        ['Colorist', ', '.join(self.data['Colorists'])], ['Summary', self.data['Summary']]):
                 if self.rawdata.getElementsByTagName(row[0]):
                     node = self.rawdata.getElementsByTagName(row[0])[0]
                     if row[1]:
@@ -106,8 +98,7 @@ class MetadataParser:
             for row in (['Series', self.data['Series']], ['Volume', self.data['Volume']],
                         ['Number', self.data['Number']], ['Writer', ', '.join(self.data['Writers'])],
                         ['Penciller', ', '.join(self.data['Pencillers'])], ['Inker', ', '.join(self.data['Inkers'])],
-                        ['Colorist', ', '.join(self.data['Colorists'])], ['Summary', self.data['Summary']],
-                        ['ScanInformation', 'MCD(' + self.data['MUid'] + ')' if self.data['MUid'] else '']):
+                        ['Colorist', ', '.join(self.data['Colorists'])], ['Summary', self.data['Summary']]):
                 if row[1]:
                     main = doc.createElement(row[0])
                     root.appendChild(main)

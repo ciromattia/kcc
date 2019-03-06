@@ -24,6 +24,7 @@ from urllib.request import urlopen, urlretrieve, Request
 from time import sleep
 from shutil import move
 from subprocess import STDOUT, PIPE
+# noinspection PyUnresolvedReferences
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.dom.minidom import parse
 from xml.sax.saxutils import escape
@@ -887,6 +888,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.targetDirectory = ''
         self.sentry = Client(release=__version__)
         if sys.platform.startswith('win'):
+            # noinspection PyUnresolvedReferences
             from psutil import BELOW_NORMAL_PRIORITY_CLASS
             self.p = Process(os.getpid())
             self.p.nice(BELOW_NORMAL_PRIORITY_CLASS)
@@ -935,7 +937,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kobo Aura ONE": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                               'DefaultUpscale': True, 'Label': 'KoAO'},
             "Kobo Forma": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
-                              'DefaultUpscale': True, 'Label': 'KoF'},
+                           'DefaultUpscale': True, 'Label': 'KoF'},
             "Other": {'PVOptions': False, 'ForceExpert': True, 'DefaultFormat': 1,
                       'DefaultUpscale': False, 'Label': 'OTHER'},
             "Kindle 1": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -1084,11 +1086,8 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
             self.editorWidget.setEnabled(True)
             self.okButton.setEnabled(True)
             self.statusLabel.setText('Separate authors with a comma.')
-        for field in (self.seriesLine, self.volumeLine, self.numberLine, self.muidLine):
-            if field.objectName() == 'muidLine':
-                field.setText(self.parser.data['MUid'])
-            else:
-                field.setText(self.parser.data[field.objectName().capitalize()[:-4]])
+        for field in (self.seriesLine, self.volumeLine, self.numberLine):
+            field.setText(self.parser.data[field.objectName().capitalize()[:-4]])
         for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
             field.setText(', '.join(self.parser.data[field.objectName().capitalize()[:-4] + 's']))
         if self.seriesLine.text() == '':
@@ -1098,12 +1097,9 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
                 self.seriesLine.setText(file.split('\\')[-1].split('/')[-1].split('.')[0])
 
     def saveData(self):
-        for field in (self.volumeLine, self.numberLine, self.muidLine):
+        for field in (self.volumeLine, self.numberLine):
             if field.text().isnumeric() or self.cleanData(field.text()) == '':
-                if field.objectName() == 'muidLine':
-                    self.parser.data['MUid'] = self.cleanData(field.text())
-                else:
-                    self.parser.data[field.objectName().capitalize()[:-4]] = self.cleanData(field.text())
+                self.parser.data[field.objectName().capitalize()[:-4]] = self.cleanData(field.text())
             else:
                 self.statusLabel.setText(field.objectName().capitalize()[:-4] + ' field must be a number.')
                 break
