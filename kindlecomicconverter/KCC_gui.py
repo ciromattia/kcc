@@ -22,7 +22,7 @@ import sys
 from urllib.parse import unquote
 from urllib.request import urlopen, urlretrieve, Request
 from time import sleep
-from shutil import move
+from shutil import move, rmtree
 from subprocess import STDOUT, PIPE
 # noinspection PyUnresolvedReferences
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
@@ -32,7 +32,8 @@ from psutil import Popen, Process
 from copy import copy
 from distutils.version import StrictVersion
 from raven import Client
-from .shared import md5Checksum, HTMLStripper, sanitizeTrace
+from tempfile import gettempdir
+from .shared import md5Checksum, HTMLStripper, sanitizeTrace, walkLevel
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -1066,6 +1067,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.worker.sync()
         self.versionCheck.start()
         self.tray.show()
+
+        # Cleanup unfisnished conversion
+        for root, dirs, _ in walkLevel(gettempdir(), 0):
+            for tempdir in dirs:
+                if tempdir.startswith('KCC-'):
+                    rmtree(os.path.join(root, tempdir), True)
 
         if self.windowSize != '0x0':
             x, y = self.windowSize.split('x')
