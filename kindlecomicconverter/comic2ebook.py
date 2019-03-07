@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2018 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2019 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -22,9 +22,7 @@ import os
 import sys
 from time import strftime, gmtime
 from copy import copy
-from glob import glob
-from json import loads
-from urllib.request import Request, urlopen
+from glob import glob, escape
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
@@ -37,7 +35,7 @@ from slugify import slugify as slugifyExt
 from PIL import Image
 from subprocess import STDOUT, PIPE
 from psutil import Popen, virtual_memory, disk_usage
-from html import escape
+from html import escape as hescape
 try:
     from PyQt5 import QtCore
 except ImportError:
@@ -45,7 +43,7 @@ except ImportError:
 from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace
 from . import comic2panel
 from . import image
-from . import cbxarchive
+from . import comicarchive
 from . import pdfjpgextract
 from . import dualmetafix
 from . import metadata
@@ -61,7 +59,7 @@ def main(argv=None):
         parser.print_help()
         return 0
     if sys.platform.startswith('win'):
-        sources = set([source for arg in args for source in glob(arg)])
+        sources = set([source for arg in args for source in glob(escape(arg))])
     else:
         sources = set(args)
     if len(sources) == 0:
@@ -112,7 +110,7 @@ def buildHTML(path, imgfile, imgfilepath):
                   "<!DOCTYPE html>\n",
                   "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n",
                   "<head>\n",
-                  "<title>", escape(filename[0]), "</title>\n",
+                  "<title>", hescape(filename[0]), "</title>\n",
                   "<link href=\"", "../" * (backref - 1), "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
                   "<meta name=\"viewport\" "
                   "content=\"width=" + str(imgsize[0]) + ", height=" + str(imgsize[1]) + "\"/>\n"
@@ -210,7 +208,7 @@ def buildNCX(dstdir, title, chapters, chapternames):
                   "<meta name=\"dtb:maxPageNumber\" content=\"0\"/>\n",
                   "<meta name=\"generated\" content=\"true\"/>\n",
                   "</head>\n",
-                  "<docTitle><text>", escape(title), "</text></docTitle>\n",
+                  "<docTitle><text>", hescape(title), "</text></docTitle>\n",
                   "<navMap>\n"])
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
@@ -222,7 +220,7 @@ def buildNCX(dstdir, title, chapters, chapternames):
         elif os.path.basename(folder) != "Text":
             title = chapternames[os.path.basename(folder)]
         f.write("<navPoint id=\"" + navID + "\"><navLabel><text>" +
-                escape(title) + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") +
+                hescape(title) + "</text></navLabel><content src=\"" + filename[0].replace("\\", "/") +
                 ".xhtml\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
@@ -235,7 +233,7 @@ def buildNAV(dstdir, title, chapters, chapternames):
                   "<!DOCTYPE html>\n",
                   "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:epub=\"http://www.idpf.org/2007/ops\">\n",
                   "<head>\n",
-                  "<title>" + escape(title) + "</title>\n",
+                  "<title>" + hescape(title) + "</title>\n",
                   "<meta charset=\"utf-8\"/>\n",
                   "</head>\n",
                   "<body>\n",
@@ -248,7 +246,7 @@ def buildNAV(dstdir, title, chapters, chapternames):
             title = chapternames[chapter[1]]
         elif os.path.basename(folder) != "Text":
             title = chapternames[os.path.basename(folder)]
-        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + escape(title) + "</a></li>\n")
+        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + hescape(title) + "</a></li>\n")
     f.writelines(["</ol>\n",
                   "</nav>\n",
                   "<nav epub:type=\"page-list\">\n",
@@ -260,7 +258,7 @@ def buildNAV(dstdir, title, chapters, chapternames):
             title = chapternames[chapter[1]]
         elif os.path.basename(folder) != "Text":
             title = chapternames[os.path.basename(folder)]
-        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + escape(title) + "</a></li>\n")
+        f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + hescape(title) + "</a></li>\n")
     f.write("</ol>\n</nav>\n</body>\n</html>")
     f.close()
 
@@ -278,7 +276,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "xmlns=\"http://www.idpf.org/2007/opf\">\n",
                   "<metadata xmlns:opf=\"http://www.idpf.org/2007/opf\" ",
                   "xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n",
-                  "<dc:title>", title, "</dc:title>\n",
+                  "<dc:title>", hescape(title), "</dc:title>\n",
                   "<dc:language>en-US</dc:language>\n",
                   "<dc:identifier id=\"BookID\">urn:uuid:", options.uuid, "</dc:identifier>\n",
                   "<dc:contributor id=\"contributor\">KindleComicConverter-" + __version__ + "</dc:contributor>\n"])
@@ -597,16 +595,12 @@ def getWorkFolder(afile):
                 raise UserWarning("Failed to extract images from PDF file.")
         else:
             workdir = mkdtemp('', 'KCC-')
-            cbx = cbxarchive.CBxArchive(afile)
-            if cbx.isCbxFile():
-                try:
-                    path = cbx.extract(workdir)
-                except Exception:
-                    rmtree(workdir, True)
-                    raise UserWarning("Failed to extract archive.")
-            else:
+            try:
+                cbx = comicarchive.ComicArchive(afile)
+                path = cbx.extract(workdir)
+            except OSError as e:
                 rmtree(workdir, True)
-                raise UserWarning("Failed to detect archive format.")
+                raise UserWarning(e.strerror)
     else:
         raise UserWarning("Failed to open source file/directory.")
     sanitizePermissions(path)
@@ -652,7 +646,6 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
 def getComicInfo(path, originalpath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.authors = ['KCC']
-    options.remoteCovers = {}
     options.chapters = []
     options.summary = ''
     titleSuffix = ''
@@ -673,7 +666,7 @@ def getComicInfo(path, originalpath):
         options.authors = []
         if defaultTitle:
             if xml.data['Series']:
-                options.title = escape(xml.data['Series'])
+                options.title = hescape(xml.data['Series'])
             if xml.data['Volume']:
                 titleSuffix += ' V' + xml.data['Volume'].zfill(2)
             if xml.data['Number']:
@@ -681,33 +674,17 @@ def getComicInfo(path, originalpath):
             options.title += titleSuffix
         for field in ['Writers', 'Pencillers', 'Inkers', 'Colorists']:
             for person in xml.data[field]:
-                options.authors.append(escape(person))
+                options.authors.append(hescape(person))
         if len(options.authors) > 0:
             options.authors = list(set(options.authors))
             options.authors.sort()
         else:
             options.authors = ['KCC']
-        if xml.data['MUid']:
-            options.remoteCovers = getCoversFromMCB(xml.data['MUid'])
         if xml.data['Bookmarks']:
             options.chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
-            options.summary = escape(xml.data['Summary'])
+            options.summary = hescape(xml.data['Summary'])
         os.remove(xmlPath)
-
-
-def getCoversFromMCB(mangaid):
-    covers = {}
-    try:
-        jsonRaw = urlopen(Request('http://mcd.iosphe.re/api/v1/series/' + mangaid + '/',
-                                  headers={'User-Agent': 'KindleComicConverter/' + __version__}))
-        jsonData = loads(jsonRaw.read().decode('utf-8'))
-        for volume in jsonData['Covers']['a']:
-            if volume['Side'] == 'front':
-                covers[int(volume['Volume'])] = volume['Raw']
-    except Exception:
-        return {}
-    return covers
 
 
 def getDirectorySize(start_path='.'):
@@ -790,7 +767,8 @@ def splitDirectory(path):
     level = -1
     for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         for f in files:
-            if f.endswith('.jpg') or f.endswith('.jpeg') or f.endswith('.png') or f.endswith('.gif'):
+            if f.endswith('.jpg') or f.endswith('.jpeg') or f.endswith('.png') or f.endswith('.gif') or \
+                    f.endswith('.webp'):
                 newLevel = os.path.join(root, f).replace(os.path.join(path, 'OEBPS', 'Images'), '').count(os.sep)
                 if level != -1 and level != newLevel:
                     level = 0
@@ -872,7 +850,7 @@ def detectCorruption(tmppath, orgpath):
                     if 'decoder' in str(err) and 'not available' in str(err):
                         raise RuntimeError('Pillow was compiled without JPG and/or PNG decoder.')
                     else:
-                        raise RuntimeError('Image file %s is corrupted.' % pathOrg)
+                        raise RuntimeError('Image file %s is corrupted. Error: %s' % (pathOrg, str(err)))
             else:
                 os.remove(os.path.join(root, name))
     if alreadyProcessed:
@@ -932,7 +910,7 @@ def makeParser():
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
                            help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KV, KO, KoMT, KoG,"
-                                " KoGHD, KoA, KoAHD, KoAH2O, KoAO) [Default=KV]")
+                                " KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoF) [Default=KV]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")
     mainOptions.add_option("-q", "--hq", action="store_true", dest="hq", default=False,
@@ -1053,21 +1031,17 @@ def checkOptions():
 
 def checkTools(source):
     source = source.upper()
-    if source.endswith('.CBR') or source.endswith('.RAR'):
-        rarExitCode = Popen('unrar', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        rarExitCode = rarExitCode.wait()
-        if rarExitCode != 0 and rarExitCode != 1 and rarExitCode != 7:
-            print('ERROR: UnRAR is missing!')
-            exit(1)
-    elif source.endswith('.CB7') or source.endswith('.7Z'):
-        sevenzaExitCode = Popen('7za', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        sevenzaExitCode = sevenzaExitCode.wait()
-        if sevenzaExitCode != 0 and sevenzaExitCode != 7:
-            print('ERROR: 7za is missing!')
+    if source.endswith('.CB7') or source.endswith('.7Z') or source.endswith('.RAR') or source.endswith('.CBR') or \
+            source.endswith('.ZIP') or source.endswith('.CBZ'):
+        process = Popen('7z', stdout=PIPE, stderr=STDOUT, shell=True)
+        process.communicate()
+        if process.returncode != 0 and process.returncode != 7:
+            print('ERROR: 7z is missing!')
             exit(1)
     if options.format == 'MOBI':
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        if kindleGenExitCode.wait() != 0:
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+        kindleGenExitCode.communicate()
+        if kindleGenExitCode.returncode != 0:
             print('ERROR: KindleGen is missing!')
             exit(1)
 
@@ -1214,7 +1188,7 @@ def makeMOBIWorker(item):
     try:
         if os.path.getsize(item) < 629145600:
             output = Popen('kindlegen -dont_append_source -locale en "' + item + '"',
-                           stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+                           stdout=PIPE, stderr=STDOUT, shell=True)
             for line in output.stdout:
                 line = line.decode('utf-8')
                 # ERROR: Generic error

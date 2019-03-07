@@ -1,4 +1,0 @@
-kindlecomicconverter: binary-without-manpage usr/bin/kcc
-kindlecomicconverter: wrong-name-for-changelog-of-native-package usr/share/doc/kindlecomicconverter/changelog.Debian.gz
-kindlecomicconverter: file-missing-in-md5sums usr/share/doc/kindlecomicconverter/changelog.Debian.gz
-kindlecomicconverter: hardening-no-relro usr/bin/kcc

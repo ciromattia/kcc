@@ -2,11 +2,11 @@ matrix:
   include:
   - os: osx
     language: generic
-    osx_image: xcode6.4
+    osx_image: xcode9.2
 
 before_install:
 - brew update
-- brew install python3
+- brew upgrade python3
 - brew uninstall node
 - travis_wait 30 brew install node@6
 - brew link node@6 --force --overwrite
@@ -15,7 +15,7 @@ before_install:
 
 install:
 - pip3 install -r requirements.txt
-- pip3 install certifi https://github.com/bjones1/pyinstaller/archive/pyqt5_fix.zip
+- pip3 install certifi https://github.com/pyinstaller/pyinstaller/archive/develop.zip
 - npm install -g appdmg
 
 script: python3 setup.py build_binary

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Based on initial version of DualMetaFix. Copyright (C) 2013 Kevin Hendricks
-# Changes for KCC Copyright (C) 2014-2018 Pawel Jastrzebski <pawelj@iosphe.re>
+# Changes for KCC Copyright (C) 2014-2019 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import shutil
 
 class DualMetaFixException(Exception):
     pass
+
 
 # palm database offset constants
 number_of_pdb_records = 76

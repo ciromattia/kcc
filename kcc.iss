@@ -1,5 +1,5 @@
 ﻿#define MyAppName "Kindle Comic Converter"
-#define MyAppVersion "5.4.5"
+#define MyAppVersion "5.5.0"
 #define MyAppPublisher "Ciro Mattia Gonano, Paweł Jastrzębski"
 #define MyAppURL "http://kcc.iosphe.re/"
 #define MyAppExeName "KCC.exe"
@@ -12,7 +12,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-AppCopyright=Copyright (C) 2012-2018 Ciro Mattia Gonano and Paweł Jastrzębski
+AppCopyright=Copyright (C) 2012-2019 Ciro Mattia Gonano and Paweł Jastrzębski
 ArchitecturesAllowed=x64 
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
@@ -47,8 +47,8 @@ Name: "CB7association"; Description: "CB7"; GroupDescription: "File associations
 Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
 Source: "other\windows\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "other\windows\UnRAR.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "other\windows\7za.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "other\windows\7z.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "other\windows\7z.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

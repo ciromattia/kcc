@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2018 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2019 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -30,15 +30,15 @@ def start():
     os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = "1"
     KCCAplication = KCC_gui.QApplicationMessaging(sys.argv)
     if KCCAplication.isRunning():
-        if len(sys.argv) > 1:
-            KCCAplication.sendMessage(sys.argv[1])
+        for i in range(1, len(sys.argv)):
+            KCCAplication.sendMessage(sys.argv[i])
         else:
             KCCAplication.sendMessage('ARISE')
     else:
         KCCWindow = KCC_gui.QMainWindowKCC()
         KCCUI = KCC_gui.KCCGUI(KCCAplication, KCCWindow)
-        if len(sys.argv) > 1:
-            KCCUI.handleMessage(sys.argv[1])
+        for i in range(1, len(sys.argv)):
+            KCCUI.handleMessage(sys.argv[i])
         sys.exit(KCCAplication.exec_())
 
 

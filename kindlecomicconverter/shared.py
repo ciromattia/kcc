@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2018 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2019 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # Permission to use, copy, modify, and/or distribute this software for
 # any purpose with or without fee is hereby granted, provided that the
@@ -22,9 +22,6 @@ import os
 from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
-from shutil import rmtree, copy
-from tempfile import mkdtemp
-from zipfile import ZipFile, ZIP_DEFLATED
 from re import split
 from traceback import format_tb
 
@@ -50,7 +47,7 @@ class HTMLStripper(HTMLParser):
 def getImageFileName(imgfile):
     name, ext = os.path.splitext(imgfile)
     ext = ext.lower()
-    if name.startswith('.') or (ext != '.png' and ext != '.jpg' and ext != '.jpeg' and ext != '.gif'):
+    if name.startswith('.') or ext not in ['.png', '.jpg', '.jpeg', '.gif', '.webp']:
         return None
     return [name, ext]
 
@@ -86,38 +83,19 @@ def md5Checksum(fpath):
         return m.hexdigest()
 
 
-def check7ZFile(fpath):
-    with open(fpath, 'rb') as fh:
-        header = fh.read(6)
-    return header == b"7z\xbc\xaf'\x1c"
-
-
-def removeFromZIP(zipfname, *filenames):
-    tempdir = mkdtemp('', 'KCC-')
-    try:
-        tempname = os.path.join(tempdir, 'KCC.zip')
-        with ZipFile(zipfname, 'r') as zipread:
-            with ZipFile(tempname, 'w', compression=ZIP_DEFLATED) as zipwrite:
-                for item in zipread.infolist():
-                    if item.filename not in filenames:
-                        zipwrite.writestr(item, zipread.read(item.filename))
-        copy(tempname, zipfname)
-    finally:
-        rmtree(tempdir, True)
-
-
 def sanitizeTrace(traceback):
     return ''.join(format_tb(traceback))\
-        .replace('C:/projects/kcc/', '') \
-        .replace('c:/projects/kcc/', '') \
+        .replace('C:/projects/kcc/', '')\
+        .replace('c:/projects/kcc/', '')\
         .replace('C:/python36-x64/', '')\
         .replace('c:/python36-x64/', '')\
-        .replace('C:\\projects\\kcc\\', '') \
-        .replace('c:\\projects\\kcc\\', '') \
+        .replace('C:\\projects\\kcc\\', '')\
+        .replace('c:\\projects\\kcc\\', '')\
         .replace('C:\\python36-x64\\', '')\
         .replace('c:\\python36-x64\\', '')
 
 
+# noinspection PyUnresolvedReferences
 def dependencyCheck(level):
     missing = []
     if level > 2:
@@ -145,11 +123,11 @@ def dependencyCheck(level):
         except ImportError:
             missing.append('python-slugify 1.2.1+')
     try:
-        from PIL import PILLOW_VERSION as pillowVersion
-        if StrictVersion('4.0.0') > StrictVersion(pillowVersion):
-            missing.append('Pillow 4.0.0+')
+        from PIL import __version__ as pillowVersion
+        if StrictVersion('5.2.0') > StrictVersion(pillowVersion):
+            missing.append('Pillow 5.2.0+')
     except ImportError:
-        missing.append('Pillow 4.0.0+')
+        missing.append('Pillow 5.2.0+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         exit(1)

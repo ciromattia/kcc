@@ -28,11 +28,8 @@ If you find **KCC** valuable you can consider donating to the authors:
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
 - **[Windows](http://kcc.iosphe.re/Windows/) (64-bit only)**
-- **[macOS](http://kcc.iosphe.re/OSX/) (10.10+)**
-- **Linux:** 
-  - [Ubuntu 17.10](http://kcc.iosphe.re/LinuxArtful/)
-  - [Ubuntu 16.04 / Debian 9](http://kcc.iosphe.re/LinuxXenial/)
-  - [Ubuntu 14.04 / Debian 8](http://kcc.iosphe.re/LinuxTrusty/)
+- **[macOS](http://kcc.iosphe.re/OSX/) (10.12+)**
+- **Linux:** Currently unavailable.
 
 ## PYPI
 **KCC** is also available on PyPI.
@@ -51,21 +48,20 @@ Following software is required to run Linux version of **KCC** and/or bare sourc
 
 On Debian based distributions these two commands should install all needed dependencies:
 ```
-sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full unrar
+sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full
 sudo pip3 install --upgrade pillow python-slugify psutil pyqt5 raven
 ```
 
 ### Optional dependencies
 - [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation)*
-- [UnRAR](http://www.rarlab.com/download.htm) *(For CBR/RAR support)*
-- [7za](http://www.7-zip.org/download.html) *(For 7z/CB7 support)*
+- [7z](http://www.7-zip.org/download.html) *(For CBZ/ZIP, CBR/RAR, 7z/CB7 support)*
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
-- Folders containing: PNG, JPG or GIF files
-- CBZ, ZIP
-- CBR, RAR *(With `unrar` executable)*
-- CB7, 7Z *(With `7za` executable)*
+- Folders containing: PNG, JPG, GIF or WebP files
+- CBZ, ZIP *(With `7z` executable)*
+- CBR, RAR *(With `7z` executable)*
+- CB7, 7Z *(With `7z` executable)*
 - PDF *(Only extracting JPG images)*
 
 ## USAGE
@@ -87,7 +83,7 @@ Options:
     -p PROFILE, --profile=PROFILE
                         Device profile (Available options: K1, K2, K34, K578,
                         KDX, KPW, KV, KO, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O,
-                        KoAO) [Default=KV]
+                        KoAO, KoF) [Default=KV]
     -m, --manga-style   Manga style (right-to-left reading and splitting)
     -q, --hq            Try to increase the quality of magnification
     -2, --two-panel     Display two not four panels in Panel View mode
@@ -160,29 +156,28 @@ This script born as a cross-platform alternative to `KindleComicParser` by **Dc5
 The app relies and includes the following scripts:
 
  - `DualMetaFix` script by **K. Hendricks**. Released with GPL-3 License.
- - `rarfile.py` script &copy; 2005-2014 **Marko Kreen** <markokr@gmail.com>. Released with ISC License.
  - `image.py` class from **Alex Yatskov**'s [Mangle](https://github.com/FooSoft/mangle/) with subsequent [proDOOMman](https://github.com/proDOOMman/Mangle)'s and [Birua](https://github.com/Birua/Mangle)'s patches.
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
 ## SAMPLE FILES CREATED BY KCC
 * [Kindle Oasis 2](http://kcc.iosphe.re/Samples/Ubunchu!-KO.mobi)
-* [Kindle Paperwhite 3 / Voyage / Oasis](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
+* [Kindle Paperwhite 3 / 4 / Voyage / Oasis](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
 * [Kindle Paperwhite 1 / 2](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K578.mobi)
 * [Kobo Aura](http://kcc.iosphe.re/Samples/Ubunchu-KoA.kepub.epub)
 * [Kobo Aura HD](http://kcc.iosphe.re/Samples/Ubunchu-KoAHD.kepub.epub)
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 * [Kobo Aura ONE](http://kcc.iosphe.re/Samples/Ubunchu-KoAO.kepub.epub)
+* [Kobo Forma](http://kcc.iosphe.re/Samples/Ubunchu-KoF.kepub.epub)
 
 ## PRIVACY
-**KCC** is initiating internet connections in three cases:
-* During startup - Version check
-* When MCD metadata are used - Cover download
-* When error occurs - Automatic reporting
+**KCC** is initiating internet connections in two cases:
+* During startup - Version check.
+* When error occurs - Automatic reporting on Windows and MacOS.
 
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
 ## COPYRIGHT
-Copyright (c) 2012-2018 Ciro Mattia Gonano and Paweł Jastrzębski.
+Copyright (c) 2012-2019 Ciro Mattia Gonano and Paweł Jastrzębski.
 **KCC** is released under ISC LICENSE; see LICENSE.txt for further details.

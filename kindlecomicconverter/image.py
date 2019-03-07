@@ -4,7 +4,7 @@
 # Copyright (C) 2011  Stanislav (proDOOMman) Kosolapov <prodoomman@gmail.com>
 # Copyright (c) 2016  Alberto Planas <aplanas@gmail.com>
 # Copyright (c) 2012-2014 Ciro Mattia Gonano <ciromattia@gmail.com>
-# Copyright (c) 2013-2018 Pawel Jastrzebski <pawelj@iosphe.re>
+# Copyright (c) 2013-2019 Pawel Jastrzebski <pawelj@iosphe.re>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,12 +20,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from io import BytesIO
-from urllib.request import Request, urlopen
-from urllib.parse import quote
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
 from .shared import md5Checksum
-from . import __version__
 
 
 class ProfileData:
@@ -86,7 +82,7 @@ class ProfileData:
         'K578': ("Kindle", (600, 800), Palette16, 1.8),
         'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8),
         'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.8),
-        'KV': ("Kindle Paperwhite 3/Voyage/Oasis", (1072, 1448), Palette16, 1.8),
+        'KV': ("Kindle Paperwhite 3/4/Voyage/Oasis", (1072, 1448), Palette16, 1.8),
         'KO': ("Kindle Oasis 2", (1264, 1680), Palette16, 1.8),
         'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8),
         'KoG': ("Kobo Glo", (768, 1024), Palette16, 1.8),
@@ -95,12 +91,14 @@ class ProfileData:
         'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.8),
         'KoAH2O': ("Kobo Aura H2O", (1080, 1430), Palette16, 1.8),
         'KoAO': ("Kobo Aura ONE", (1404, 1872), Palette16, 1.8),
+        'KoF': ("Kobo Forma", (1440, 1920), Palette16, 1.8),
         'OTHER': ("Other", (0, 0), Palette16, 1.8),
     }
 
 
 class ComicPageParser:
     def __init__(self, source, options):
+        Image.MAX_IMAGE_PIXELS = int(2048 * 2048 * 2048 // 4 // 3)
         self.opt = options
         self.source = source
         self.size = self.opt.profileData[1]
@@ -345,15 +343,7 @@ class Cover:
             self.tomeid = 1
         else:
             self.tomeid = tomeid
-        if self.tomeid in self.options.remoteCovers:
-            try:
-                source = urlopen(Request(quote(self.options.remoteCovers[self.tomeid]).replace('%3A', ':', 1),
-                                         headers={'User-Agent': 'KindleComicConverter/' + __version__})).read()
-                self.image = Image.open(BytesIO(source))
-            except Exception:
-                self.image = Image.open(source)
-        else:
-            self.image = Image.open(source)
+        self.image = Image.open(source)
         self.process()
 
     def process(self):
