@@ -39,7 +39,6 @@ class MetadataParser:
         self.format = None
         if self.source.endswith('.xml') and os.path.exists(self.source):
             self.rawdata = parse(self.source)
-            self.parseXML()
         elif not self.source.endswith('.xml'):
             try:
                 cbx = comicarchive.ComicArchive(self.source)
