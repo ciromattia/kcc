@@ -1,5 +1,5 @@
 environment:
-  PYTHON: "C:\\Python37-x64"
+  PYTHON: "C:\\Python36-x64"
 
 install:
   - set PATH="%PYTHON%\\Scripts";"C:\\Program Files (x86)\\Inno Setup 5";%PATH%

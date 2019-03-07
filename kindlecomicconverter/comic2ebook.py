@@ -1033,13 +1033,13 @@ def checkTools(source):
     source = source.upper()
     if source.endswith('.CB7') or source.endswith('.7Z') or source.endswith('.RAR') or source.endswith('.CBR') or \
             source.endswith('.ZIP') or source.endswith('.CBZ'):
-        process = Popen('7z', stdout=PIPE, stderr=STDOUT, shell=True)
+        process = Popen('7z', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         process.communicate()
         if process.returncode != 0 and process.returncode != 7:
             print('ERROR: 7z is missing!')
             exit(1)
     if options.format == 'MOBI':
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         kindleGenExitCode.communicate()
         if kindleGenExitCode.returncode != 0:
             print('ERROR: KindleGen is missing!')
@@ -1188,7 +1188,7 @@ def makeMOBIWorker(item):
     try:
         if os.path.getsize(item) < 629145600:
             output = Popen('kindlegen -dont_append_source -locale en "' + item + '"',
-                           stdout=PIPE, stderr=STDOUT, shell=True)
+                           stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
             for line in output.stdout:
                 line = line.decode('utf-8')
                 # ERROR: Generic error

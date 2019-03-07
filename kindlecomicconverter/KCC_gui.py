@@ -175,7 +175,8 @@ class VersionThread(QtCore.QThread):
                 move(path[0], path[0] + '.exe')
                 MW.hideProgressBar.emit()
                 MW.modeConvert.emit(1)
-                Popen(path[0] + '.exe  /SP- /silent /noicons', stdout=PIPE, stderr=STDOUT, shell=True)
+                Popen(path[0] + '.exe  /SP- /silent /noicons', stdout=PIPE, stderr=STDOUT, stdin=PIPE, close_fds=True,
+                      shell=True)
                 MW.forceShutdown.emit()
             except Exception:
                 MW.addMessage.emit('Failed to download the update!', 'warning', False)
@@ -836,11 +837,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 os.chmod('/usr/local/bin/kindlegen', 0o755)
             except Exception:
                 pass
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         kindleGenExitCode.communicate()
         if kindleGenExitCode.returncode == 0:
             self.kindleGen = True
-            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, shell=True)
+            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
             for line in versionCheck.stdout:
                 line = line.decode("utf-8")
                 if 'Amazon kindlegen' in line:
@@ -991,7 +992,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        process = Popen('7z', stdout=PIPE, stderr=STDOUT, shell=True)
+        process = Popen('7z', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         process.communicate()
         if process.returncode == 0 or process.returncode == 7:
             self.sevenzip = True
