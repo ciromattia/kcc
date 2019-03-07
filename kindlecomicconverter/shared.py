@@ -87,12 +87,12 @@ def sanitizeTrace(traceback):
     return ''.join(format_tb(traceback))\
         .replace('C:/projects/kcc/', '')\
         .replace('c:/projects/kcc/', '')\
-        .replace('C:/python37-x64/', '')\
-        .replace('c:/python37-x64/', '')\
+        .replace('C:/python36-x64/', '')\
+        .replace('c:/python36-x64/', '')\
         .replace('C:\\projects\\kcc\\', '')\
         .replace('c:\\projects\\kcc\\', '')\
-        .replace('C:\\python37-x64\\', '')\
-        .replace('c:\\python37-x64\\', '')
+        .replace('C:\\python36-x64\\', '')\
+        .replace('c:\\python36-x64\\', '')
 
 
 # noinspection PyUnresolvedReferences

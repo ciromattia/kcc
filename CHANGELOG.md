@@ -1,5 +1,10 @@
 # CHANGELOG
 #### 5.5.0:
+* Added support for WebP format
+* Added profiles for Kindle Paperwhite 4 and Kobo Forma
+* All archives are now handled by 7z
+* Removed MCD support
+* Fixed multiple smaller issues
 
 #### 5.4.5:
 * Fixed EPUB output for non-Kindle devices
