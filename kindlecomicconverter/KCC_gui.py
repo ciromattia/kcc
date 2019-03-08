@@ -175,8 +175,7 @@ class VersionThread(QtCore.QThread):
                 move(path[0], path[0] + '.exe')
                 MW.hideProgressBar.emit()
                 MW.modeConvert.emit(1)
-                Popen(path[0] + '.exe  /SP- /silent /noicons', stdout=PIPE, stderr=STDOUT, stdin=PIPE, close_fds=True,
-                      shell=True)
+                Popen(path[0] + '.exe  /SP- /silent /noicons', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
                 MW.forceShutdown.emit()
             except Exception:
                 MW.addMessage.emit('Failed to download the update!', 'warning', False)
