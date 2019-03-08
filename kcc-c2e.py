@@ -23,9 +23,10 @@ if sys.version_info[0] != 3:
     print('ERROR: This is Python 3 script!')
     exit(1)
 
-from multiprocessing import freeze_support
+from multiprocessing import freeze_support, set_start_method
 from kindlecomicconverter.startup import startC2E
 
 if __name__ == "__main__":
+    set_start_method('spawn')
     freeze_support()
     startC2E()
