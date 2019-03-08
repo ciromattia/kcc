@@ -1,4 +1,7 @@
 # CHANGELOG
+#### 5.5.1:
+* Fixes some stability issues 
+
 #### 5.5.0:
 * Added support for WebP format
 * Added profiles for Kindle Paperwhite 4 and Kobo Forma

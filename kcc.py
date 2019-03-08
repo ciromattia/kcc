@@ -28,12 +28,12 @@ import os
 if sys.platform.startswith('darwin'):
     if getattr(sys, 'frozen', False):
         os.environ['PATH'] = os.path.dirname(os.path.abspath(sys.executable)) + \
-            '/../Resources:/usr/local/bin:/usr/bin:/bin'
+                             '/../Resources:/usr/local/bin:/usr/bin:/bin'
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources')
         os.system('defaults write com.kindlecomicconverter.KindleComicConverter ApplePersistenceIgnoreState YES')
         os.system('defaults write com.kindlecomicconverter.KindleComicConverter NSInitialToolTipDelay -int 1000')
     else:
-        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/osx/:' + os.environ['PATH']
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
 elif sys.platform.startswith('win'):
     if getattr(sys, 'frozen', False):
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
@@ -47,10 +47,11 @@ if getattr(sys, 'frozen', False):
     except ImportError:
         pass
 
-from multiprocessing import freeze_support
+from multiprocessing import freeze_support, set_start_method
 from kindlecomicconverter.startup import start
 
 if __name__ == "__main__":
+    set_start_method('spawn')
     freeze_support()
     start()
 
