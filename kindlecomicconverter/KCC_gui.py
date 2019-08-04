@@ -910,8 +910,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 MW.resize(500, 500)
 
         self.profiles = {
-            "Kindle Oasis 2": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                               'DefaultUpscale': True, 'Label': 'KO'},
+            "Kindle Oasis 2/3": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                                 'DefaultUpscale': True, 'Label': 'KO'},
             "Kindle Oasis": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                              'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
