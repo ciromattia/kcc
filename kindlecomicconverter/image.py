@@ -358,7 +358,7 @@ class Cover:
         try:
             self.image.save(self.target, "JPEG", optimize=1, quality=85)
         except IOError:
-            raise RuntimeError('Failed to process downloaded cover.')
+            raise RuntimeError('Failed to save cover.')
 
     def saveToKindle(self, kindle, asin):
         self.image = self.image.resize((300, 470), Image.ANTIALIAS)

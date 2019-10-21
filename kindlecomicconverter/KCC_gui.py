@@ -953,7 +953,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                              'DefaultUpscale': False, 'Label': 'K34'},
         }
         profilesGUI = [
-            "Kindle Oasis 2",
+            "Kindle Oasis 2/3",
             "Kindle Oasis",
             "Kindle Voyage",
             "Kindle PW 3/4",

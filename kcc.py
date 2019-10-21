@@ -42,11 +42,11 @@ elif sys.platform.startswith('win'):
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/windows/;' + os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # Load additional Sentry configuration
-if getattr(sys, 'frozen', False):
-    try:
-        import kindlecomicconverter.sentry
-    except ImportError:
-        pass
+# if getattr(sys, 'frozen', False):
+#     try:
+#        import kindlecomicconverter.sentry
+#    except ImportError:
+#        pass
 
 from multiprocessing import freeze_support, set_start_method
 from kindlecomicconverter.startup import start

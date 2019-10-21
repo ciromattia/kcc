@@ -22,6 +22,7 @@ MAIN = 'kcc.py'
 VERSION = __version__
 
 
+# noinspection PyUnresolvedReferences
 class BuildBinaryCommand(distutils.cmd.Command):
     description = 'build binary release'
     user_options = []
