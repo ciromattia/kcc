@@ -28,7 +28,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
 - **[Windows](http://kcc.iosphe.re/Windows/) (64-bit only)**
-- **[macOS](http://kcc.iosphe.re/OSX/) (10.13+)**
+- **[macOS](http://kcc.iosphe.re/OSX/) (10.14+)**
 - **Linux:** Currently unavailable.
 
 ## PYPI

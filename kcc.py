@@ -31,8 +31,6 @@ if sys.platform.startswith('darwin'):
                              '/../Resources:/Applications/Kindle Comic Creator/Kindle Comic Creator.app/Contents/' \
                              'MacOS:/usr/local/bin:/usr/bin:/bin'
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources')
-        os.system('defaults write com.kindlecomicconverter.KindleComicConverter ApplePersistenceIgnoreState YES')
-        os.system('defaults write com.kindlecomicconverter.KindleComicConverter NSInitialToolTipDelay -int 1000')
     else:
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 elif sys.platform.startswith('win'):
