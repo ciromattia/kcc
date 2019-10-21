@@ -28,7 +28,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
 - **[Windows](http://kcc.iosphe.re/Windows/) (64-bit only)**
-- **[macOS](http://kcc.iosphe.re/OSX/) (10.12+)**
+- **[macOS](http://kcc.iosphe.re/OSX/) (10.14+)**
 - **Linux:** Currently unavailable.
 
 ## PYPI
@@ -43,7 +43,7 @@ Following software is required to run Linux version of **KCC** and/or bare sourc
 - [PyQt5](https://pypi.python.org/pypi/PyQt5) 5.6.0+
 - [Pillow](https://pypi.python.org/pypi/Pillow/) 4.0.0+
 - [psutil](https://pypi.python.org/pypi/psutil) 5.0.0+
-- [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.1+
+- [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.1+, <3.0.0
 - [raven](https://pypi.python.org/pypi/raven) 6.0.0+
 
 On Debian based distributions these two commands should install all needed dependencies:
@@ -160,7 +160,7 @@ The app relies and includes the following scripts:
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
 ## SAMPLE FILES CREATED BY KCC
-* [Kindle Oasis 2](http://kcc.iosphe.re/Samples/Ubunchu!-KO.mobi)
+* [Kindle Oasis 2 / 3](http://kcc.iosphe.re/Samples/Ubunchu!-KO.mobi)
 * [Kindle Paperwhite 3 / 4 / Voyage / Oasis](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
 * [Kindle Paperwhite 1 / 2](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
 * [Kindle](http://kcc.iosphe.re/Samples/Ubunchu!-K578.mobi)
@@ -173,7 +173,7 @@ The app relies and includes the following scripts:
 ## PRIVACY
 **KCC** is initiating internet connections in two cases:
 * During startup - Version check.
-* When error occurs - Automatic reporting on Windows and MacOS.
+* When error occurs - Automatic reporting on Windows and macOS.
 
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).

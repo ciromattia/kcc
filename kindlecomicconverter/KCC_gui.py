@@ -857,7 +857,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if sys.platform.startswith('win'):
                     self.addMessage('Download it and place EXE in KCC directory.', 'error')
                 elif sys.platform.startswith('darwin'):
-                    self.addMessage('Install it using <a href="http://brew.sh/">Brew</a>.', 'error')
+                    self.addMessage('Install it using <a href="http://brew.sh/">Brew</a>: <i>brew cask install kindle-c'
+                                    'omic-creator</i>', 'error')
                 else:
                     self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
 
@@ -909,8 +910,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 MW.resize(500, 500)
 
         self.profiles = {
-            "Kindle Oasis 2": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                               'DefaultUpscale': True, 'Label': 'KO'},
+            "Kindle Oasis 2/3": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                                 'DefaultUpscale': True, 'Label': 'KO'},
             "Kindle Oasis": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                              'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -951,7 +952,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                              'DefaultUpscale': False, 'Label': 'K34'},
         }
         profilesGUI = [
-            "Kindle Oasis 2",
+            "Kindle Oasis 2/3",
             "Kindle Oasis",
             "Kindle Voyage",
             "Kindle PW 3/4",

@@ -2,24 +2,13 @@ environment:
   PYTHON: "C:\\Python37-x64"
 
 install:
-  - set PATH="%PYTHON%\\Scripts";"C:\\Program Files (x86)\\Inno Setup 5";%PATH%
+  - set PATH="%PYTHON%\\Scripts";%PATH%
   - "%PYTHON%\\python.exe -m pip install --upgrade pip setuptools wheel"
   - "%PYTHON%\\python.exe -m pip install -r requirements.txt"
   - "%PYTHON%\\python.exe -m pip install certifi https://github.com/pyinstaller/pyinstaller/archive/develop.zip"
-  - nuget install secure-file -ExcludeVersion
-  - secure-file\tools\secure-file -decrypt other\windows\sentry.py.enc -out kindlecomicconverter\sentry.py -secret %ENCRYPTION%
 
 build_script:
     - "%PYTHON%\\python.exe setup.py build_binary"
 
-after_build:
-  - ps: Get-ChildItem .\dist\KCC* | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
-
-deploy:
-  provider: S3
-  access_key_id:
-    secure: pWfyU8wtAHt354mBILwM41TemOjb+My9n3CRMnrpLzI=
-  secret_access_key:
-    secure: G0Xpxe355LMqV3s8v+TsdJYdmhFoKKA+mxK37Tlu8yNwKXKJgcnY7pcFKSdX5xS5
-  bucket: kcc-deploy
-  region: eu-central-1
+artifacts:
+  - path: dist\KCC*

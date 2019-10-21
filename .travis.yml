@@ -2,16 +2,10 @@ matrix:
   include:
   - os: osx
     language: generic
-    osx_image: xcode9.2
+    osx_image: xcode11.1
 
 before_install:
-- brew update
-- brew upgrade python3
-- brew uninstall node
-- travis_wait 30 brew install node@6
-- brew link node@6 --force --overwrite
 - pip3 install --upgrade pip setuptools wheel
-- openssl aes-256-cbc -K $encrypted_a95564d8ff0d_key -iv $encrypted_a95564d8ff0d_iv -in other/osx/sentry.py.enc -out kindlecomicconverter/sentry.py -d
 
 install:
 - pip3 install -r requirements.txt
@@ -25,13 +19,12 @@ before_deploy:
 - rm -r dist/!(*.deb|*.dmg)
 
 deploy:
-  provider: s3
-  skip_cleanup: true
-  access_key_id: AKIAIQNL5R4FI4C4NJYQ
+  provider: gcs
+  access_key_id: GOOG1EC62457RKUYFR2TIZUWV4EFSV2EP5LVLPPFXUAKADWJFDYPFW63BQSLA
   secret_access_key:
-    secure: X66hYplxB4QSueljwvDfamNH/MQmHjo3mCofBcaTHAr7n2fp+yd2NzD2yy9h8NbsL0LWwx9wtJa/jpkIE02ZDfi9NrMLvKKFazzdpiyTMN5Yh85lHHyD1XIOCZRd4igaZ+O8975tJAEaEOPS+PE9XGZcRBh+y/eSJ+fMEgohaJ1MtDFbQR7X1cEw3iqbjrV2rlghZNCk/9mZEfObzAEjQiSDpv5G0IuIPRvYg/BgZt8chHVAe03B6oqcBa7uCBCTlfHIiNh1MWtP0B3NNBq3dcu9QHOFri1YqoZKuaPVCf6TFQL/NW5dFihegev2t9IwFyaBxytiT8fBkgQhP0VX8cuCwBAfnQGIogAu0eLSPp+E6dB/7Cpt2GDCk39+As8WKqt9hCRHmrvYhPA1Mq9QyEgKy/TKKKfDby3qVTIqYOQYpuQ1B7sIU651L5A+hBvZ1dqWIUz25h0zqjjeSFrcfNnf1e4tkk0QJvvnKqz0xsVaJxA2p07VJMRn8SlZQIJ2GEbMDeB5jxYtf5JzXywChP9adlPNjLna9G8ScnGSU1f7ZhsBQUEgY5jBlnX1lveyl3DUe6NP+qOTyljLWYwjx3AF4Zg10LYSecRS6hnqAUrGRmibDCIYclUzlJkVyjKGJ9uEyrUiCp0P0IsAzE1XhPVAWEyGUcWWGJG+jgmohSk=
+    secure: sxYjeho7U3im0Ezf6cz6TjYDiLvf0kAM2ETQHYoFNbD1VVvhJJyymDCnPH80zpFKmhc1MWTB6ndwsrPfcyZDLR2meSdWGPjZfFPY3RcrfImndKi7ln+mYQDBQ7W1lGit4YcH3Ju7LHceaTbRA7fVTX8pWKOcbXL2oM+lQxTJHH32+crVma+ChhbjzTWsSLRoakt3Nhiveec5p/qSW7AFe4Zq+b3C85IgwjSJI/xVwzaWrs6p915h1zZi7KL7YCMIxfQFrvRPFR2KTbh/DoLCCrqfbD4qh0PVy1li51Ac3hd/u3foiNnTNchzgE3Nv/nbKmtFU6huuLNgzkQGuLA+yn7mKYzBwA3ZmFgoimdH9+yRCMkZ8B5VHpvfN1hgpJcyEl1T98Kv4cdtRYNB4w9iAMy1qSVxhjeI+2rjuWGoXro0lU6L4LIRCOruY3AuLCAKG8Qw5Ak9ksmIKBhZ9soxpoIwu/TYDUQkFj29IrUQucg9TEp7uAoxu8/7EHxB7hWnBRaBAAQbMuIRg7yysT3FT0Os6SB0t9+RBsVMSPuIti9JJZ2Lu0uRI1+Se+g7ItzYtJoPhBJAzAa+J9OONj0RNj2z8Vq2oIBhH4z6b6zTRMVroos3cdfYl5qIKs9SQ7rmeHoPRROcqpCznsUZ/ESa4f2MewFU/7AYcEnCesZV4xg=
   bucket: kcc-deploy
-  region: eu-central-1
-  local_dir: dist
+  local-dir: dist
+  skip_cleanup: true
   on:
-    repo: AcidWeb/kcc
+    repo: AcidWeb/KCC

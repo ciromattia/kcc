@@ -28,10 +28,9 @@ import os
 if sys.platform.startswith('darwin'):
     if getattr(sys, 'frozen', False):
         os.environ['PATH'] = os.path.dirname(os.path.abspath(sys.executable)) + \
-                             '/../Resources:/usr/local/bin:/usr/bin:/bin'
+                             '/../Resources:/Applications/Kindle Comic Creator/Kindle Comic Creator.app/Contents/' \
+                             'MacOS:/usr/local/bin:/usr/bin:/bin'
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources')
-        os.system('defaults write com.kindlecomicconverter.KindleComicConverter ApplePersistenceIgnoreState YES')
-        os.system('defaults write com.kindlecomicconverter.KindleComicConverter NSInitialToolTipDelay -int 1000')
     else:
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 elif sys.platform.startswith('win'):
@@ -41,11 +40,11 @@ elif sys.platform.startswith('win'):
         os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/windows/;' + os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # Load additional Sentry configuration
-if getattr(sys, 'frozen', False):
-    try:
-        import kindlecomicconverter.sentry
-    except ImportError:
-        pass
+# if getattr(sys, 'frozen', False):
+#     try:
+#        import kindlecomicconverter.sentry
+#    except ImportError:
+#        pass
 
 from multiprocessing import freeze_support, set_start_method
 from kindlecomicconverter.startup import start

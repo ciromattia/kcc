@@ -1,4 +1,8 @@
 # CHANGELOG
+#### 5.5.2:
+* Fixed KindleGen detection on macOS 10.15
+* Fixed multiple smaller issues
+
 #### 5.5.1:
 * Fixes some stability issues 
 
