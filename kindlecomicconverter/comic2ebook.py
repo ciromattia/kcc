@@ -302,6 +302,11 @@ def buildOPF(dstdir, title, filelist, cover=None):
         else:
             f.writelines(["<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
                           "<meta name=\"region-mag\" content=\"true\"/>\n"])
+    elif options.supportSyntheticSpread:
+        f.writelines([
+            "<meta property=\"rendition:spread\">landscape</meta>\n",
+            "<meta property=\"rendition:layout\">pre-paginated</meta>\n"
+        ])
     else:
         f.writelines(["<meta property=\"rendition:orientation\">portrait</meta>\n",
                       "<meta property=\"rendition:spread\">portrait</meta>\n",
@@ -334,38 +339,64 @@ def buildOPF(dstdir, title, filelist, cover=None):
         f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
                 mt + "\"/>\n")
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
+
+
+    def pageSpreadProperty(pageside):
+        if options.iskindle:
+            return "linear=\"yes\" properties=\"page-spread-%s\"" % pageside
+        elif options.isKobo:
+            return "properties=\"rendition:page-spread-%s\"" % pageside
+        else:
+            return ""
+
     if options.righttoleft:
         f.write("</manifest>\n<spine page-progression-direction=\"rtl\" toc=\"ncx\">\n")
         pageside = "right"
     else:
         f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
         pageside = "left"
-    if options.iskindle:
+    if options.iskindle or options.supportSyntheticSpread:
         for entry in reflist:
             if options.righttoleft:
                 if entry.endswith("-b"):
-                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-right\"/>\n")
+                    f.write(
+                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                               pageSpreadProperty("right"))
+                    )
                     pageside = "right"
                 elif entry.endswith("-c"):
-                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-left\"/>\n")
+                    f.write(
+                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                               pageSpreadProperty("left"))
+                    )
                     pageside = "right"
                 else:
-                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-" +
-                            pageside + "\"/>\n")
+                    f.write(
+                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                               pageSpreadProperty(pageside))
+                    )
                     if pageside == "right":
                         pageside = "left"
                     else:
                         pageside = "right"
             else:
                 if entry.endswith("-b"):
-                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-left\"/>\n")
+                    f.write(
+                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                               pageSpreadProperty("left"))
+                    )
                     pageside = "left"
                 elif entry.endswith("-c"):
-                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-right\"/>\n")
+                    f.write(
+                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                               pageSpreadProperty("right"))
+                    )
                     pageside = "left"
                 else:
-                    f.write("<itemref idref=\"page_" + entry + "\" linear=\"yes\" properties=\"page-spread-" +
-                            pageside + "\"/>\n")
+                    f.write(
+                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                               pageSpreadProperty(pageside))
+                    )
                 if pageside == "right":
                     pageside = "left"
                 else:
@@ -982,6 +1013,7 @@ def makeParser():
 def checkOptions(options):
     options.panelview = True
     options.iskindle = False
+    options.isKobo = False
     options.bordersColor = None
     options.keep_epub = False
     if options.format == 'EPUB-200MB':
@@ -993,6 +1025,7 @@ def checkOptions(options):
         options.keep_epub = True
         options.format = 'MOBI'
     options.kfx = False
+    options.supportSyntheticSpread = False
     if options.format == 'Auto':
         if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KV', 'KO', 'K11', 'KS']:
             options.format = 'MOBI'
@@ -1003,6 +1036,12 @@ def checkOptions(options):
             options.format = 'CBZ'
     if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KV', 'KO', 'K11', 'KS']:
         options.iskindle = True
+    elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O', 'KoAO', 'KoF']:
+        options.isKobo = True
+    # Other Kobo devices probably support synthetic spreads as well, but
+    # they haven't been tested.
+    if options.profile in ['KoF']:
+        options.supportSyntheticSpread = True
     if options.white_borders:
         options.bordersColor = 'white'
     if options.black_borders:
