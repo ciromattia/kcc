@@ -34,7 +34,7 @@ You can find the latest released binary at the following links:
 ## PYPI
 **KCC** is also available on PyPI.
 ```
-pip install KindleComicConverter
+pip install --user KindleComicConverter
 ```
 
 ## DEPENDENCIES
@@ -49,7 +49,7 @@ Following software is required to run Linux version of **KCC** and/or bare sourc
 On Debian based distributions these two commands should install all needed dependencies:
 ```
 sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full
-sudo pip3 install --upgrade pillow python-slugify psutil pyqt5 raven
+pip3 install --user --upgrade pillow python-slugify psutil pyqt5 raven
 ```
 
 ### Optional dependencies
