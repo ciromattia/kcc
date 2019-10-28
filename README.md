@@ -10,7 +10,7 @@ It can also optionally optimize images by applying a number of transformations.
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.
 Amazon's tool is for comic publishers and involves a lot of manual effort, while **KCC** is for comic/manga readers.
-_KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;-)
+_KC2_ in no way is a replacement for **KCC** so you can be quite confident we are going to carry on developing our little monster ;-)
 
 ### Issues / new features / donations
 If you have general questions about usage, feedback etc. please [post it here](http://www.mobileread.com/forums/showthread.php?t=207461).
