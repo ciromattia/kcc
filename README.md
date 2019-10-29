@@ -10,7 +10,7 @@ It can also optionally optimize images by applying a number of transformations.
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.
 Amazon's tool is for comic publishers and involves a lot of manual effort, while **KCC** is for comic/manga readers.
-_KC2_ in no way is a replacement for **KCC** so you can be quite confident we'll going to carry on developing our little monster ;-)
+_KC2_ in no way is a replacement for **KCC** so you can be quite confident we are going to carry on developing our little monster ;-)
 
 ### Issues / new features / donations
 If you have general questions about usage, feedback etc. please [post it here](http://www.mobileread.com/forums/showthread.php?t=207461).
@@ -34,7 +34,7 @@ You can find the latest released binary at the following links:
 ## PYPI
 **KCC** is also available on PyPI.
 ```
-pip install KindleComicConverter
+pip install --user KindleComicConverter
 ```
 
 ## DEPENDENCIES
@@ -49,7 +49,7 @@ Following software is required to run Linux version of **KCC** and/or bare sourc
 On Debian based distributions these two commands should install all needed dependencies:
 ```
 sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full
-sudo pip3 install --upgrade pillow python-slugify psutil pyqt5 raven
+pip3 install --user --upgrade pillow python-slugify psutil pyqt5 raven
 ```
 
 ### Optional dependencies
