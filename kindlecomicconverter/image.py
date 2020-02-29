@@ -313,7 +313,13 @@ class ComicPage:
         )
         return bbox
 
-    def cropPageNumber(self, power):
+    def maybeCrop(self, box, minimum):
+        box_area = (box[2] - box[0]) * (box[3] - box[1])
+        image_area = self.image.size[0] * self.image.size[1]
+        if (box_area / image_area) >= minimum:
+            self.image = self.image.crop(box)
+
+    def cropPageNumber(self, power, minimum):
         if self.fill != 'white':
             tmptmg = self.image.convert(mode='L')
         else:
@@ -322,16 +328,18 @@ class ComicPage:
         tmptmg = tmptmg.filter(ImageFilter.MinFilter(size=3))
         tmptmg = tmptmg.filter(ImageFilter.GaussianBlur(radius=5))
         tmptmg = tmptmg.point(lambda x: (x >= 16 * power) and x)
-        self.image = self.image.crop(tmptmg.getbbox()) if tmptmg.getbbox() else self.image
+        if tmptmg.getbbox():
+            self.maybeCrop(tmptmg.getbbox(), minimum)
 
-    def cropMargin(self, power):
+    def cropMargin(self, power, minimum):
         if self.fill != 'white':
             tmptmg = self.image.convert(mode='L')
         else:
             tmptmg = ImageOps.invert(self.image.convert(mode='L'))
         tmptmg = tmptmg.filter(ImageFilter.GaussianBlur(radius=3))
         tmptmg = tmptmg.point(lambda x: (x >= 16 * power) and x)
-        self.image = self.image.crop(self.getBoundingBox(tmptmg)) if tmptmg.getbbox() else self.image
+        if tmptmg.getbbox():
+            self.maybeCrop(self.getBoundingBox(tmptmg), minimum)
 
 
 class Cover:

@@ -557,9 +557,9 @@ def imgFileProcessing(work):
         for i in workImg.payload:
             img = image.ComicPage(opt, *i)
             if opt.cropping == 2 and not opt.webtoon:
-                img.cropPageNumber(opt.croppingp)
+                img.cropPageNumber(opt.croppingp, opt.croppingm)
             if opt.cropping > 0 and not opt.webtoon:
-                img.cropMargin(opt.croppingp)
+                img.cropMargin(opt.croppingp, opt.croppingm)
             img.autocontrastImage()
             img.resizeImage()
             if opt.forcepng and not opt.forcecolor:
@@ -942,6 +942,8 @@ def makeParser():
                                  help="Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]")
     processingOptions.add_option("--cp", "--croppingpower", type="float", dest="croppingp", default="1.0",
                                  help="Set cropping power [Default=1.0]")
+    processingOptions.add_option("--cm", "--croppingminimum", type="float", dest="croppingm", default="0.0",
+                                 help="Set cropping minimum area ratio [Default=0.0]")
     processingOptions.add_option("--blackborders", action="store_true", dest="black_borders", default=False,
                                  help="Disable autodetection and force black borders")
     processingOptions.add_option("--whiteborders", action="store_true", dest="white_borders", default=False,
