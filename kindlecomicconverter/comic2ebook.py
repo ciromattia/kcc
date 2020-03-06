@@ -789,7 +789,9 @@ def splitProcess(path, mode):
     output = []
     currentSize = 0
     currentTarget = path
-    if options.webtoon:
+    if options.targetsize:
+        targetSize = options.targetsize * 1048576
+    elif options.webtoon:
         targetSize = 104857600
     else:
         targetSize = 419430400
@@ -919,6 +921,9 @@ def makeParser():
                            help="Display two not four panels in Panel View mode")
     mainOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
                            help="Webtoon processing mode"),
+    mainOptions.add_option("--targetsize", type="int", dest="targetsize", default=None,
+                           help="the maximal size of output file in MB."
+                                "[Default=100MB for webtoon and 400MB for others]")
 
     outputOptions.add_option("-o", "--output", action="store", dest="output", default=None,
                              help="Output generated file to specified directory or file")
