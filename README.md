@@ -72,6 +72,10 @@ After completed conversion, you should find ready file alongside the original in
 Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more details.
 
 CLI version of **KCC** is intended for power users. It allows using options that might not be compatible and decrease the quality of output.
+CLI version has reduced dependencies, on Debian based distributions this commands should install all needed dependencies:
+```
+sudo apt-get install python3 p7zip-full python3-pil python3-psutil python3-slugify
+```
 
 ### Standalone `kcc-c2e.py` usage:
 
