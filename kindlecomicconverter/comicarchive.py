@@ -39,7 +39,14 @@ class ComicArchive:
                 break
         process.communicate()
         if process.returncode != 0:
-            raise OSError('Archive is corrupted or encrypted.')
+            process = Popen('unrar l -y -p1 "' + self.filepath + '"', stderr=STDOUT, stdout=PIPE, stdin=PIPE, shell=True)
+            for line in process.stdout:
+                if b'Details: ' in line:
+                    self.type = line.rstrip().decode().split(' ')[1].upper()
+                    print(self.type)
+                    break
+            if(self.type != 'RAR'):
+                raise OSError('Archive is corrupted or encrypted.')
         elif self.type not in ['7Z', 'RAR', 'RAR5', 'ZIP']:
             raise OSError('Unsupported archive format.')
 
@@ -50,7 +57,11 @@ class ComicArchive:
                         self.filepath + '"', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         process.communicate()
         if process.returncode != 0:
-            raise OSError('Failed to extract archive.')
+            process = Popen('unrar x -y -x__MACOSX -x.DS_Store -xthumbs.db -xThumbs.db "' + self.filepath + '" "' +
+                    targetdir + '"', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+            process.communicate()
+            if process.returncode != 0:
+                raise OSError('Failed to extract archive.')
         tdir = os.listdir(targetdir)
         if 'ComicInfo.xml' in tdir:
             tdir.remove('ComicInfo.xml')
