@@ -1222,7 +1222,7 @@ def makeMOBI(work, qtgui=None):
         threadNumber = 1
     elif 2 < availableMemory <= 4:
         threadNumber = 2
-    elif 4 < availableMemory <= 8:
+    elif 4 < availableMemory:
         threadNumber = 4
     else:
         threadNumber = None
