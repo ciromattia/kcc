@@ -277,6 +277,8 @@ class WorkerThread(QtCore.QThread):
             options.batchsplit = 2
         if GUI.colorBox.isChecked():
             options.forcecolor = True
+        if GUI.disableProcessingBox.isChecked():
+            options.noprocessing = True
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.widthBox.value())
             options.customheight = str(GUI.heightBox.value())
@@ -783,6 +785,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'webtoonBox': GUI.webtoonBox.checkState(),
                                            'outputSplit': GUI.outputSplit.checkState(),
                                            'colorBox': GUI.colorBox.checkState(),
+                                           'disableProcessingBox': GUI.disableProcessingBox.checkState(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
                                            'gammaSlider': float(self.gammaValue) * 100})
