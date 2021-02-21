@@ -930,6 +930,8 @@ def makeParser():
                              help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                   "2: Consider every subdirectory as separate volume [Default=0]")
 
+    processingOptions.add_option("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
+                                 help="Do not modify image and ignore any profil or processing option")
     processingOptions.add_option("-u", "--upscale", action="store_true", dest="upscale", default=False,
                                  help="Resize images smaller than device's resolution")
     processingOptions.add_option("-s", "--stretch", action="store_true", dest="stretch", default=False,
@@ -1080,10 +1082,13 @@ def makeBook(source, qtgui=None):
     if options.webtoon:
         y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
-    print("Processing images...")
-    if GUI:
-        GUI.progressBarTick.emit('Processing images')
-    imgDirectoryProcessing(os.path.join(path, "OEBPS", "Images"))
+    if options.noprocessing:
+        print("Do not process image, ignore any profil or processing option")
+    else:
+        print("Processing images...")
+        if GUI:
+            GUI.progressBarTick.emit('Processing images')
+        imgDirectoryProcessing(os.path.join(path, "OEBPS", "Images"))
     if GUI:
         GUI.progressBarTick.emit('1')
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
