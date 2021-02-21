@@ -27,7 +27,7 @@ from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp, gettempdir, TemporaryFile
-from shutil import move, copytree, rmtree
+from shutil import move, copytree, rmtree, copyfile
 from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
 from uuid import uuid4
@@ -1152,7 +1152,12 @@ def makeBook(source, qtgui=None):
             else:
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
             makeZIP(tome + '_comic', tome, True)
-        move(tome + '_comic.zip', filepath[-1])
+        copyfile(tome + '_comic.zip', filepath[-1])
+        try:
+            os.remove(tome + '_comic.zip')
+        except FileNotFoundError:
+            # newly temporary created file is not found. It might have been already deleted
+            pass
         rmtree(tome, True)
         if GUI:
             GUI.progressBarTick.emit('tick')
