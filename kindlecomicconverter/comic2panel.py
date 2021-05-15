@@ -57,9 +57,8 @@ def mergeDirectory(work):
         if len(images) > 0:
             targetWidth = max(set(sizes), key=sizes.count)
             for i in images:
-                if i[1] <= targetWidth:
-                    targetHeight += i[2]
-                    imagesValid.append(i[0])
+                targetHeight += i[2]
+                imagesValid.append(i[0])
             # Silently drop directories that contain too many images
             # 131072 = GIMP_MAX_IMAGE_SIZE / 4
             if targetHeight > 131072:
@@ -68,8 +67,10 @@ def mergeDirectory(work):
             y = 0
             for i in imagesValid:
                 img = Image.open(i).convert('RGB')
-                if img.size[0] < targetWidth:
-                    img = ImageOps.fit(img, (targetWidth, img.size[1]), method=Image.BICUBIC, centering=(0.5, 0.5))
+                if img.size[0] < targetWidth or img.size[0] > targetWidth:
+                    widthPercent = (targetWidth / float(img.size[0]))
+                    heightSize = int((float(img.size[1]) * float(widthPercent)))
+                    img = ImageOps.fit(img, (targetWidth, heightSize), method=Image.BICUBIC, centering=(0.5, 0.5))
                 result.paste(img, (0, y))
                 y += img.size[1]
                 os.remove(i)
@@ -100,6 +101,8 @@ def splitImage(work):
         name = work[1]
         opt = work[2]
         filePath = os.path.join(path, name)
+        Image.warnings.simplefilter('error', Image.DecompressionBombWarning)
+        Image.MAX_IMAGE_PIXELS = 1000000000    
         imgOrg = Image.open(filePath).convert('RGB')
         imgProcess = Image.open(filePath).convert('1')
         widthImg, heightImg = imgOrg.size
@@ -113,11 +116,16 @@ def splitImage(work):
             panelDetected = False
             panels = []
             while yWork < heightImg:
-                tmpImg = imgProcess.crop([0, yWork, widthImg, yWork + 4])
+                tmpImg = imgProcess.crop([4, yWork, widthImg-4, yWork + 4])
                 solid = detectSolid(tmpImg)
                 if not solid and not panelDetected:
                     panelDetected = True
                     panelY1 = yWork - 2
+                if heightImg - yWork <= 5:
+                    if not solid and panelDetected:
+                        panelY2 = heightImg
+                        panelDetected = False
+                        panels.append((panelY1, panelY2, panelY2 - panelY1))
                 if solid and panelDetected:
                     panelDetected = False
                     panelY2 = yWork + 6

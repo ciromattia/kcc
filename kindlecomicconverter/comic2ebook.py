@@ -1078,10 +1078,7 @@ def makeBook(source, qtgui=None):
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
     detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
     if options.webtoon:
-        if image.ProfileData.Profiles[options.profile][1][1] > 1024:
-            y = 1024
-        else:
-            y = image.ProfileData.Profiles[options.profile][1][1]
+        y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
     print("Processing images...")
     if GUI:
@@ -1222,7 +1219,7 @@ def makeMOBI(work, qtgui=None):
         threadNumber = 1
     elif 2 < availableMemory <= 4:
         threadNumber = 2
-    elif 4 < availableMemory <= 8:
+    elif 4 < availableMemory:
         threadNumber = 4
     else:
         threadNumber = None
