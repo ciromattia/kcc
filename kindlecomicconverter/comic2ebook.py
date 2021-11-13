@@ -909,7 +909,7 @@ def makeParser():
     otherOptions = OptionGroup(psr, "OTHER")
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
-                           help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KV, KO, KoMT, KoG,"
+                           help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KPW5, KV, KO, KoMT, KoG,"
                                 " KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoC, KoL, KoF) [Default=KV]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")

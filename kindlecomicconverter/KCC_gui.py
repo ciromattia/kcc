@@ -916,6 +916,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                              'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'Label': 'KV'},
+            "Kindle PW 5": {
+              'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'Label': 'KPW5',  
+            },
             "Kindle PW 3/4": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle PW 1/2": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -959,6 +962,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle Oasis 2/3",
             "Kindle Oasis",
             "Kindle Voyage",
+            "Kindle PW 5",
             "Kindle PW 3/4",
             "Kindle PW 1/2",
             "Kindle",
