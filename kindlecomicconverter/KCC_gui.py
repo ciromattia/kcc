@@ -482,9 +482,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.jobList.clear()
         if self.sevenzip:
             fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                            'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf)')
+                                                            'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf);;All (*.*)')
         else:
-            fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath, 'Comic (*.pdf)')
+            fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath, 'Comic (*.pdf);;All (*.*)')
         for fname in fnames[0]:
             if fname != '':
                 if sys.platform.startswith('win'):
