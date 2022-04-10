@@ -18,6 +18,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 
 import os
+import re
 import sys
 from urllib.parse import unquote
 from urllib.request import urlopen, urlretrieve, Request
@@ -143,7 +144,9 @@ class VersionThread(QtCore.QThread):
         except Exception:
             return
         latestVersion = XML.childNodes[0].getElementsByTagName('LatestVersion')[0].childNodes[0].toxml()
-        if StrictVersion(latestVersion) > StrictVersion(__version__):
+        if ("beta" not in __version__ and StrictVersion(latestVersion) > StrictVersion(__version__)) \
+                or ("beta" in __version__
+                    and StrictVersion(latestVersion) >= StrictVersion(re.sub(r'-beta.*', '', __version__))):
             if sys.platform.startswith('win'):
                 self.newVersion = latestVersion
                 self.md5 = XML.childNodes[0].getElementsByTagName('MD5')[0].childNodes[0].toxml()
@@ -279,6 +282,8 @@ class WorkerThread(QtCore.QThread):
             options.forcecolor = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
+        if GUI.mozJpegBox.isChecked():
+            options.mozjpeg = True
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.widthBox.value())
             options.customheight = str(GUI.heightBox.value())

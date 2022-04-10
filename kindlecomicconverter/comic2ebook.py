@@ -952,6 +952,8 @@ def makeParser():
                                  help="Don't convert images to grayscale")
     processingOptions.add_option("--forcepng", action="store_true", dest="forcepng", default=False,
                                  help="Create PNG files instead JPEG")
+    processingOptions.add_option("--mozjpeg", action="store_true", dest="mozjpeg", default=False,
+                                 help="Create JPEG files using mozJpeg")
 
     customProfileOptions.add_option("--customwidth", type="int", dest="customwidth", default=0,
                                     help="Replace screen width provided by device profile")
