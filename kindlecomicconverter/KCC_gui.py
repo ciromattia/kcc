@@ -791,6 +791,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'outputSplit': GUI.outputSplit.checkState(),
                                            'colorBox': GUI.colorBox.checkState(),
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState(),
+                                           'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
                                            'gammaSlider': float(self.gammaValue) * 100})
