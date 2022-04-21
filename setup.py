@@ -16,6 +16,7 @@ import shutil
 import setuptools
 import distutils.cmd
 from kindlecomicconverter import __version__
+from codecs import open
 
 NAME = 'KindleComicConverter'
 MAIN = 'kcc.py'
@@ -55,6 +56,9 @@ class BuildBinaryCommand(distutils.cmd.Command):
             exit(0)
 
 
+with open("requirements.txt", "r", "utf-8") as f:
+    requires = f.readlines()
+
 setuptools.setup(
     cmdclass={
         'build_binary': BuildBinaryCommand,
@@ -77,13 +81,7 @@ setuptools.setup(
         ],
     },
     packages=['kindlecomicconverter'],
-    install_requires=[
-        'PyQt5>=5.6.0',
-        'Pillow>=5.2.0',
-        'psutil>=5.0.0',
-        'python-slugify>=1.2.1',
-        'raven>=6.0.0',
-    ],
+    install_requires=requires,
     classifiers=[],
     zip_safe=False,
 )
