@@ -118,6 +118,8 @@ def dependencyCheck(level):
             missing.append('psutil 5.0.0+')
         try:
             from slugify import __version__ as slugifyVersion
+            if not isinstance(slugifyVersion, str):
+                slugifyVersion = slugifyVersion.__version__
             if StrictVersion('1.2.1') > StrictVersion(slugifyVersion):
                 missing.append('python-slugify 1.2.1+')
         except ImportError:
