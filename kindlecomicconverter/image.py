@@ -255,7 +255,7 @@ class ComicPage:
         if gamma == 1.0:
             self.image = ImageOps.autocontrast(self.image)
         else:
-            self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: 255 * (a / 255.) ** gamma))
+            self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma)))
 
     def quantizeImage(self):
         colors = len(self.palette) // 3
