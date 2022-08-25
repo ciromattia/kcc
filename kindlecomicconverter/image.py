@@ -116,6 +116,9 @@ class ComicPageParser:
         self.color = self.colorCheck()
         self.fill = self.fillCheck()
         self.splitCheck()
+        # backwards compatibility for Pillow >9.1.0
+        if not hasattr(Image, 'Resampling'):
+            Image.Resampling = Image
 
     def getImageHistogram(self, image):
         histogram = image.histogram()
@@ -248,6 +251,9 @@ class ComicPage:
             self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-KCC-B'
         elif 'S2' in mode:
             self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-KCC-C'
+        # backwards compatibility for Pillow >9.1.0
+        if not hasattr(Image, 'Resampling'):
+            Image.Resampling = Image
 
     def saveToDir(self):
         try:
@@ -375,6 +381,9 @@ class Cover:
             self.tomeid = tomeid
         self.image = Image.open(source)
         self.process()
+        # backwards compatibility for Pillow >9.1.0
+        if not hasattr(Image, 'Resampling'):
+            Image.Resampling = Image
 
     def process(self):
         self.image = self.image.convert('RGB')
