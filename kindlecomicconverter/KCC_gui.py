@@ -282,7 +282,9 @@ class WorkerThread(QtCore.QThread):
             options.forcecolor = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
-        if GUI.mozJpegBox.isChecked():
+        if GUI.mozJpegBox.checkState() == 1:
+            options.forcepng = True
+        elif GUI.mozJpegBox.checkState() == 2:
             options.mozjpeg = True
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.widthBox.value())
