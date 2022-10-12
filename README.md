@@ -41,7 +41,7 @@ pip install --user KindleComicConverter
 Following software is required to run Linux version of **KCC** and/or bare sources:
 - Python 3.3+
 - [PyQt5](https://pypi.python.org/pypi/PyQt5) 5.6.0+ (only needed for GUI)
-- [Pillow](https://pypi.python.org/pypi/Pillow/) 4.0.0+ (5.2.0+ needed for WebP support)
+- [Pillow](https://pypi.python.org/pypi/Pillow/) 4.0.0+ (5.2.0+ needed for WebP support), <8.4.0  (see https://github.com/ciromattia/kcc/issues/406)
 - [psutil](https://pypi.python.org/pypi/psutil) 5.0.0+
 - [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.1+, <3.0.0
 - [raven](https://pypi.python.org/pypi/raven) 6.0.0+ (only needed for GUI)
@@ -169,6 +169,88 @@ The app relies and includes the following scripts:
 * [Kobo Aura H2O](http://kcc.iosphe.re/Samples/Ubunchu-KoAH2O.kepub.epub)
 * [Kobo Aura ONE](http://kcc.iosphe.re/Samples/Ubunchu-KoAO.kepub.epub)
 * [Kobo Forma](http://kcc.iosphe.re/Samples/Ubunchu-KoF.kepub.epub)
+
+## USAGE FROM SOURCES
+
+_Originally posted by @hhtien1408 in https://github.com/ciromattia/kcc/issues/438#issuecomment-1281159452_
+
+        I wrote step-by-step instructions to install the lastest beta KCC-5.5.3-beta-darodi.6 based on @hiagpofranco idea
+
+$ git clone -branch beta_release https://github.com/darodi/kcc.git
+
+
+Then I installed the necessary packages. You can do it by running the following command. The requirements.txt file is inside this repository, you will see it when you clone the repo.
+
+```
+$ pip3 install -r 'requirements.txt' 
+```
+
+This should install the required packages. You can check the version by running
+
+```
+$ pip3 freeze
+```
+
+If the packages are in the wrong version, you can try to upgrade them by running
+
+```
+$ pip3 install --upgrade name_of_the_package
+
+```
+Now, it should be all done. You can go to the folder of this repo and run
+
+```
+$ wget https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz
+```
+```
+$ unzip kindlegen_linux_2.6_i386_v2_9.tar.gz
+```
+```
+$ sudo cp -R '/home/h2t/Desktop/kindlegen' '/usr/local/bin'
+``` 
+```
+$ sudo chmod +rwx '/usr/local/bin/kindlegen' 
+```
+
+Download and copy kindlegen into '/usr/local/bin' and grant execute permissions for MOBI conversion.
+
+Run python file for KCC GUI
+```
+$ python3 kcc.py
+```
+
+If everything goes well, you now should be able to use it. However, if you are still seeing the same error, you can try to change the code mentioned in #406. Go to line 258 of kcc/kindlecomicconverter/image.py file and change it with the following line:
+
+```
+self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma)))
+```
+
+Create destop file in '~/.local/share/applications' with codes:
+
+```
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Type=Application
+Name=Kindle Comic Converter
+Icon=kcc
+Exec=python3 '/home/h2t/kcc/kcc.py'
+Terminal=false
+StartupWMClass=kcc
+Name[en_US]=Kindle Comic Converter
+```
+
+Copy icon file into '/home/h2t/.local/share/icons'
+
+```
+$ sudo cp -R '/home/h2t/Desktop/kcc.png' '/home/h2t/.local/share/icons'
+```
+
+
+
+
+      
+
 
 ## PRIVACY
 **KCC** is initiating internet connections in two cases:
