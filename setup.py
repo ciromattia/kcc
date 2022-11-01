@@ -17,7 +17,7 @@ import setuptools
 import distutils.cmd
 from kindlecomicconverter import __version__
 
-NAME = 'KindleComicConverter'
+NAME = 'KindleComicConverterDarodi'
 MAIN = 'kcc.py'
 VERSION = __version__
 
@@ -49,7 +49,11 @@ class BuildBinaryCommand(distutils.cmd.Command):
             os.system('appdmg kcc.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')
             exit(0)
         elif sys.platform == 'win32':
-            os.system('pyinstaller -y -F -i icons\\comic2ebook.ico -n KCC -w --noupx kcc.py')
+            os.system('pyinstaller -y -F -i icons\\comic2ebook.ico -n KCC_' + VERSION + ' -w --noupx kcc.py')
+            exit(0)
+        elif sys.platform == 'linux':
+            os.system(
+                'pyinstaller --hidden-import=queue -y -F -i icons/comic2ebook.ico -n kcc_linux_' + VERSION + ' kcc.py')
             exit(0)
         else:
             exit(0)

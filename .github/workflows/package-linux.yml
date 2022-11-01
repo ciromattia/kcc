@@ -1,0 +1,81 @@
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: build KCC for Linux
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*"
+    
+    # Don't trigger if it's just a documentation update
+    paths-ignore:
+      - '**.md'
+      - '**.MD'
+      - '**.yml'
+      - '**.sh'
+      - 'docs/**'
+      - 'Dockerfile'
+      - 'LICENSE'
+      - '.gitattributes'
+      - '.gitignore'
+      - '.dockerignore'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.8
+        cache: 'pip'
+    - name: Install python dependencies
+      run: |
+        sudo apt-get update 
+        sudo apt-get install -y libpng-dev libjpeg-dev p7zip-full python3-pyqt5 squashfs-tools 
+        python -m pip install --upgrade pip setuptools wheel pyinstaller
+        pip install -r requirements.txt
+    - name: build binary
+      run: |
+        python setup.py build_binary
+        chmod +x dist/kcc_linux*
+    - name: upload build
+      uses: actions/upload-artifact@v3
+      with:
+        name: linux-build
+        path: dist/kcc_linux*
+#    issue with this action, disabled and commented out
+#        see https://github.com/AppImageCrafters/build-appimage/issues/5
+#        see https://appimage-builder.readthedocs.io/en/latest/intro/install.html#install-appimagetool
+#    - name: Build AppImage
+#      uses: AppImageCrafters/build-appimage-action@master
+#      env:
+#        UPDATE_INFO: gh-releases-zsync|darodi|kcc|latest|*x86_64.AppImage.zsync
+#      with:
+#        recipe: AppImageBuilder.yml
+    - name: Build AppImage
+      run: |
+        wget -O appimage-builder-x86_64.AppImage https://github.com/AppImageCrafters/appimage-builder/releases/download/v1.1.0/appimage-builder-1.1.0-x86_64.AppImage
+        chmod +x appimage-builder-x86_64.AppImage
+        sudo mv appimage-builder-x86_64.AppImage /usr/local/bin/appimage-builder
+        appimage-builder --recipe AppImageBuilder.yml --skip-test
+      env:
+        UPDATE_INFO: gh-releases-zsync|darodi|kcc|latest|*x86_64.AppImage.zsync
+
+    - name: upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: AppImage
+        path: './*.AppImage*'
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        prerelease: true
+        generate_release_notes: true
+        files: |
+          CHANGELOG.md
+          LICENSE.txt
+          dist/kcc_linux*
+          *.AppImage*
