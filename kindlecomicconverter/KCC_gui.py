@@ -280,6 +280,8 @@ class WorkerThread(QtCore.QThread):
             options.batchsplit = 2
         if GUI.colorBox.isChecked():
             options.forcecolor = True
+        if GUI.maximizeStrips.isChecked():
+            options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
         if GUI.mozJpegBox.checkState() == 1:
@@ -796,6 +798,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
+                                           'maximizeStrips': GUI.maximizeStrips.checkState(),
                                            'gammaSlider': float(self.gammaValue) * 100})
         self.settings.sync()
         self.tray.hide()

@@ -124,7 +124,20 @@ class ComicPageParser:
     def splitCheck(self):
         width, height = self.image.size
         dstwidth, dstheight = self.size
-        if (width > height) != (dstwidth > dstheight) and width <= dstheight and height <= dstwidth \
+        if self.opt.maximizestrips:
+            leftbox = (0, 0, int(width / 2), height)
+            rightbox = (int(width / 2), 0, width, height)
+            if self.opt.righttoleft:
+                pageone = self.image.crop(rightbox)
+                pagetwo = self.image.crop(leftbox)
+            else:
+                pageone = self.image.crop(leftbox)
+                pagetwo = self.image.crop(rightbox)
+            new_image = Image.new("RGB", (int(width / 2), int(height*2)))
+            new_image.paste(pageone, (0, 0))
+            new_image.paste(pagetwo, (0, height))
+            self.payload.append(['N', self.source, new_image, self.color, self.fill])
+        elif (width > height) != (dstwidth > dstheight) and width <= dstheight and height <= dstwidth \
                 and not self.opt.webtoon and self.opt.splitter == 1:
             self.payload.append(['R', self.source, self.image.rotate(90, Image.BICUBIC, True), self.color, self.fill])
         elif (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:

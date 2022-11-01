@@ -162,6 +162,16 @@
          </property>
         </widget>
        </item>
+       <item row="3" column="1">
+        <widget class="QCheckBox" name="maximizeStrips">
+         <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - 1x4&lt;br/&gt;&lt;/span&gt;Keep format 1x4 panels strips.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - 2x2&lt;br/&gt;&lt;/span&gt;Turn 1x4 strips to 2x2 to maximize screen usage.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>1x4 to 2x2 strips</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>

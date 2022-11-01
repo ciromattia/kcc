@@ -954,7 +954,8 @@ def makeParser():
                                  help="Create PNG files instead JPEG")
     processingOptions.add_option("--mozjpeg", action="store_true", dest="mozjpeg", default=False,
                                  help="Create JPEG files using mozJpeg")
-
+    processingOptions.add_option("--maximizestrips", action="store_true", dest="maximizestrips", default=False,
+                                 help="Turn 1x4 strips to 2x2 strips")
     customProfileOptions.add_option("--customwidth", type="int", dest="customwidth", default=0,
                                     help="Replace screen width provided by device profile")
     customProfileOptions.add_option("--customheight", type="int", dest="customheight", default=0,
