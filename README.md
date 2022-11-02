@@ -206,7 +206,7 @@ $ wget https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linu
 $ unzip kindlegen_linux_2.6_i386_v2_9.tar.gz
 ```
 ```
-$ sudo cp -R '/home/h2t/Desktop/kindlegen' '/usr/local/bin'
+$ sudo cp -R '/home/user/Desktop/kindlegen' '/usr/local/bin'
 ``` 
 ```
 $ sudo chmod +rwx '/usr/local/bin/kindlegen' 
@@ -219,11 +219,7 @@ Run python file for KCC GUI
 $ python3 kcc.py
 ```
 
-If everything goes well, you now should be able to use it. However, if you are still seeing the same error, you can try to change the code mentioned in #406. Go to line 258 of kcc/kindlecomicconverter/image.py file and change it with the following line:
-
-```
-self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma)))
-```
+If everything goes well, you now should be able to use it. 
 
 Create destop file in '~/.local/share/applications' with codes:
 
@@ -234,16 +230,16 @@ Create destop file in '~/.local/share/applications' with codes:
 Type=Application
 Name=Kindle Comic Converter
 Icon=kcc
-Exec=python3 '/home/h2t/kcc/kcc.py'
+Exec=python3 '/home/user/kcc/kcc.py'
 Terminal=false
 StartupWMClass=kcc
 Name[en_US]=Kindle Comic Converter
 ```
 
-Copy icon file into '/home/h2t/.local/share/icons'
+Copy icon file into '/home/user/.local/share/icons'
 
 ```
-$ sudo cp -R '/home/h2t/Desktop/kcc.png' '/home/h2t/.local/share/icons'
+$ sudo cp -R '/home/user/Desktop/kcc.png' '/home/user/.local/share/icons'
 ```
 
 
