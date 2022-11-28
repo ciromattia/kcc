@@ -116,6 +116,10 @@ class Icons:
         self.EPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/EPUB.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.KFXFormat = QtGui.QIcon()
         self.KFXFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/KFX.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.MOBIEPUBFormat = QtGui.QIcon()
+        self.MOBIEPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.KFXEPUBFormat = QtGui.QIcon()
+        self.KFXEPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/KFX.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
         self.info = QtGui.QIcon()
         self.info.addPixmap(QtGui.QPixmap(":/Status/icons/info.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -315,8 +319,7 @@ class WorkerThread(QtCore.QThread):
             jobargv = list(argv)
             jobargv.append(job)
             try:
-                comic2ebook.options = copy(options)
-                comic2ebook.checkOptions()
+                comic2ebook.options = comic2ebook.checkOptions(copy(options))
                 outputPath = comic2ebook.makeBook(job, self)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
@@ -361,7 +364,7 @@ class WorkerThread(QtCore.QThread):
                     MW.addMessage.emit('Creating CBZ files... <b>Done!</b>', 'info', True)
                 else:
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
-                if str(GUI.formatBox.currentText()) == 'MOBI/AZW3':
+                if str(GUI.formatBox.currentText()) == 'MOBI/AZW3' or str(GUI.formatBox.currentText()) == 'MOBI+EPUB':
                     MW.progressBarTick.emit('Creating MOBI files')
                     MW.progressBarTick.emit(str(len(outputPath) * 2 + 1))
                     MW.progressBarTick.emit('tick')
@@ -1064,8 +1067,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 GUI.deviceBox.addItem(self.icons.deviceKobo, profile)
             else:
                 GUI.deviceBox.addItem(self.icons.deviceKindle, profile)
-        for f in ['MOBI/AZW3', 'EPUB', 'CBZ', 'KFX']:
-            GUI.formatBox.addItem(eval('self.icons.' + f.replace('/AZW3', '') + 'Format'), f)
+        for f in ['MOBI/AZW3', 'EPUB', 'CBZ', 'KFX', 'MOBI+EPUB', 'KFX+EPUB']:
+            GUI.formatBox.addItem(eval('self.icons.' + f.replace('/AZW3', '').replace('+', '') + 'Format'), f)
         if self.lastDevice > GUI.deviceBox.count():
             self.lastDevice = 0
         if profilesGUI[self.lastDevice] == "Separator":

@@ -68,7 +68,7 @@ def main(argv=None):
     for source in sources:
         source = source.rstrip('\\').rstrip('/')
         options = copy(optionstemplate)
-        checkOptions()
+        options = checkOptions(options)
         if len(sources) > 1:
             print('Working on ' + source + '...')
         makeBook(source)
@@ -925,7 +925,8 @@ def makeParser():
     outputOptions.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                              help="Comic title [Default=filename or directory name]")
     outputOptions.add_option("-f", "--format", action="store", dest="format", default="Auto",
-                             help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX) [Default=Auto]")
+                             help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB, KFX+EPUB) "
+                                  "[Default=Auto]")
     outputOptions.add_option("-b", "--batchsplit", type="int", dest="batchsplit", default="0",
                              help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                   "2: Consider every subdirectory as separate volume [Default=0]")
@@ -972,11 +973,17 @@ def makeParser():
     return psr
 
 
-def checkOptions():
-    global options
+def checkOptions(options):
     options.panelview = True
     options.iskindle = False
     options.bordersColor = None
+    options.keep_epub = False
+    if options.format == 'MOBI+EPUB':
+        options.keep_epub = True
+        options.format = 'MOBI'
+    if options.format == 'KFX+EPUB':
+        options.keep_epub = True
+        options.format = 'KFX'
     options.kfx = False
     if options.format == 'Auto':
         if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KV', 'KO']:
@@ -1032,6 +1039,7 @@ def checkOptions():
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
+    return options
 
 
 def checkTools(source):
@@ -1166,7 +1174,8 @@ def makeBook(source, qtgui=None):
 
 
 def makeMOBIFix(item, uuid):
-    os.remove(item)
+    if not options.keep_epub:
+        os.remove(item)
     mobiPath = item.replace('.epub', '.mobi')
     move(mobiPath, mobiPath + '_toclean')
     try:
