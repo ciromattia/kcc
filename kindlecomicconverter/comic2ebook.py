@@ -79,11 +79,11 @@ def buildHTML(path, imgfile, imgfilepath):
     imgfilepath = md5Checksum(imgfilepath)
     filename = getImageFileName(imgfile)
     deviceres = options.profileData[1]
-    if "Rotated" in options.imgMetadata[imgfilepath]:
+    if not options.noprocessing and "Rotated" in options.imgMetadata[imgfilepath]:
         rotatedPage = True
     else:
         rotatedPage = False
-    if "BlackBackground" in options.imgMetadata[imgfilepath]:
+    if not options.noprocessing and "BlackBackground" in options.imgMetadata[imgfilepath]:
         additionalStyle = 'background-color:#000000;'
     else:
         additionalStyle = ''
