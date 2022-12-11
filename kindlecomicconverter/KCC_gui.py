@@ -278,6 +278,9 @@ class WorkerThread(QtCore.QThread):
             options.upscale = True
         if GUI.gammaBox.isChecked() and float(GUI.gammaValue) > 0.09:
             options.gamma = float(GUI.gammaValue)
+        options.cropping = GUI.croppingBox.checkState()
+        if GUI.croppingBox.checkState() >= 1:
+            options.croppingp = float(GUI.croppingPowerValue)
         if GUI.borderBox.checkState() == 1:
             options.white_borders = True
         elif GUI.borderBox.checkState() == 2:
@@ -609,6 +612,13 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if self.currentMode != 3:
                 self.modeChange(1)
 
+    def togglecroppingBox(self, value):
+        if value:
+             GUI.croppingWidget.setVisible(True)
+        else:
+            GUI.croppingWidget.setVisible(False)
+            self.changeCroppingPower(100)  # 1.0
+
     def togglewebtoonBox(self, value):
         if value:
             GUI.qualityBox.setEnabled(False)
@@ -648,6 +658,13 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.gammaLabel.setText('Gamma: ' + str(value))
         GUI.gammaSlider.setValue(valueRaw)
         self.gammaValue = value
+
+    def changeCroppingPower(self, value):
+        valueRaw = int(5 * round(float(value) / 5))
+        value = '%.2f' % (float(valueRaw) / 100)
+        GUI.croppingPowerLabel.setText('Cropping Power: ' + str(value))
+        GUI.croppingPowerSlider.setValue(valueRaw)
+        self.croppingPowerValue = value
 
     def changeDevice(self):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
@@ -794,6 +811,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'rotateBox': GUI.rotateBox.checkState(),
                                            'qualityBox': GUI.qualityBox.checkState(),
                                            'gammaBox': GUI.gammaBox.checkState(),
+                                           'croppingBox': GUI.croppingBox.checkState(),
+                                           'croppingPowerSlider': float(self.croppingPowerValue) * 100,
                                            'upscaleBox': GUI.upscaleBox.checkState(),
                                            'borderBox': GUI.borderBox.checkState(),
                                            'webtoonBox': GUI.webtoonBox.checkState(),
@@ -896,7 +915,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
         self.windowSize = self.settings.value('windowSize', '0x0', type=str)
-        self.options = self.settings.value('options', {'gammaSlider': 0})
+        self.options = self.settings.value('options', {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100})
         self.worker = WorkerThread()
         self.versionCheck = VersionThread()
         self.progress = ProgressThread()
@@ -905,6 +924,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.needClean = True
         self.kindleGen = False
         self.gammaValue = 1.0
+        self.croppingPowerValue = 1.0
         self.currentMode = 1
         self.targetDirectory = ''
         self.sentry = Client(release=__version__)
@@ -1063,6 +1083,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.convertButton.clicked.connect(self.convertStart)
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)
+        GUI.croppingBox.stateChanged.connect(self.togglecroppingBox)
+        GUI.croppingPowerSlider.valueChanged.connect(self.changeCroppingPower)
         GUI.webtoonBox.stateChanged.connect(self.togglewebtoonBox)
         GUI.qualityBox.stateChanged.connect(self.togglequalityBox)
         GUI.deviceBox.activated.connect(self.changeDevice)
@@ -1111,6 +1133,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if GUI.gammaSlider.isEnabled():
                     GUI.gammaSlider.setValue(int(self.options[option]))
                     self.changeGamma(int(self.options[option]))
+            elif str(option) == "croppingPowerSlider":
+                if GUI.croppingPowerSlider.isEnabled():
+                    GUI.croppingPowerSlider.setValue(int(self.options[option]))
+                    self.changeCroppingPower(int(self.options[option]))
             else:
                 try:
                     if eval('GUI.' + str(option)).isEnabled():
