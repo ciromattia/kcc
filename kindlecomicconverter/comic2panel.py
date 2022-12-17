@@ -124,6 +124,9 @@ def splitImage(work):
                     panels.append((panelY1, panelY2, panelY2 - panelY1))
                 yWork += 5
 
+            if len(panels) == 0:
+                panels.append((panelY1, heightImg, heightImg - panelY1))
+
             # Split too big panels
             panelsProcessed = []
             for panel in panels:
