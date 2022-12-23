@@ -987,6 +987,8 @@ def checkOptions(options):
     if options.format == 'EPUB-200MB':
         options.targetsize = 200
         options.format = 'EPUB'
+        if options.batchsplit != 2:
+            options.batchsplit = 1
     if options.format == 'MOBI+EPUB':
         options.keep_epub = True
         options.format = 'MOBI'
@@ -1009,7 +1011,7 @@ def checkOptions(options):
     if options.black_borders:
         options.bordersColor = 'black'
     # Splitting MOBI is not optional
-    if (options.format == 'MOBI' or options.format == 'KFX' or options.format == 'EPUB') and options.batchsplit != 2:
+    if (options.format == 'MOBI' or options.format == 'KFX') and options.batchsplit != 2:
         options.batchsplit = 1
     # Older Kindle models don't support Panel View.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K34' or options.profile == 'KDX':
