@@ -146,6 +146,9 @@ Options:
     -q, --hq            Try to increase the quality of magnification
     -2, --two-panel     Display two not four panels in Panel View mode
     -w, --webtoon       Webtoon processing mode
+    --targetsize=TARGETSIZE
+                        the maximal size of output file in MB. [Default=100MB
+                        for webtoon and 400MB for others]
 
   OUTPUT SETTINGS:
     -o OUTPUT, --output=OUTPUT
