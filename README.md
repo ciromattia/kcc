@@ -12,18 +12,7 @@ It can also optionally optimize images by applying a number of transformations.
 Amazon's tool is for comic publishers and involves a lot of manual effort, while **KCC** is for comic/manga readers.
 _KC2_ in no way is a replacement for **KCC** so you can be quite confident we are going to carry on developing our little monster ;-)
 
-### Issues / new features / donations
-If you have general questions about usage, feedback etc. please [post it here](http://www.mobileread.com/forums/showthread.php?t=207461).
-If you have some **technical** problems using KCC please [file an issue here](https://github.com/ciromattia/kcc/issues/new).
-If you can fix an open issue, fork & make a pull request.
 
-If you find **KCC** valuable you can consider donating to the authors:
-- Ciro Mattia Gonano:
-  - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D8WNYNPBGDAS2)
-  - [![Donate Flattr](https://img.shields.io/badge/Donate-Flattr-green.svg)](http://flattr.com/thing/2260449/ciromattiakcc-on-GitHub)
-- Paweł Jastrzębski:
-  - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
-  - [![Donate Bitcoin](https://img.shields.io/badge/Donate-Bitcoin-green.svg)](https://jastrzeb.ski/donate/)
 
 ## BINARY RELEASES
 You can find the latest released binary at the following links:
