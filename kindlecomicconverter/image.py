@@ -309,7 +309,8 @@ class ComicPage:
             method = Image.Resampling.BICUBIC
         else:
             method = Image.Resampling.LANCZOS
-        if self.opt.stretch or (self.opt.kfx and ('-KCC-B' in self.targetPath or '-KCC-C' in self.targetPath)):
+        if self.opt.stretch:
+        # if self.opt.stretch or (self.opt.kfx and ('-KCC-B' in self.targetPath or '-KCC-C' in self.targetPath)):
             self.image = self.image.resize(self.size, method)
         elif self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1] and not self.opt.upscale:
             if self.opt.format == 'CBZ' or self.opt.kfx:

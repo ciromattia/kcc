@@ -146,7 +146,7 @@ Options:
                         Comic title [Default=filename or directory name]
     -f FORMAT, --format=FORMAT
                         Output format (Available options: Auto, MOBI, EPUB,
-                        CBZ, KFX, MOBI+EPUB, KFX+EPUB) [Default=Auto]
+                        CBZ, KFX, MOBI+EPUB) [Default=Auto]
     -b BATCHSPLIT, --batchsplit=BATCHSPLIT
                         Split output into multiple files. 0: Don't split 1:
                         Automatic mode 2: Consider every subdirectory as

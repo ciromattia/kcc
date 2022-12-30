@@ -931,7 +931,7 @@ def makeParser():
     outputOptions.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                              help="Comic title [Default=filename or directory name]")
     outputOptions.add_option("-f", "--format", action="store", dest="format", default="Auto",
-                             help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB, KFX+EPUB) "
+                             help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB) "
                                   "[Default=Auto]")
     outputOptions.add_option("-b", "--batchsplit", type="int", dest="batchsplit", default="0",
                              help="Split output into multiple files. 0: Don't split 1: Automatic mode "
@@ -992,9 +992,6 @@ def checkOptions(options):
     if options.format == 'MOBI+EPUB':
         options.keep_epub = True
         options.format = 'MOBI'
-    if options.format == 'KFX+EPUB':
-        options.keep_epub = True
-        options.format = 'KFX'
     options.kfx = False
     if options.format == 'Auto':
         if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KV', 'KO', 'K11', 'KS']:

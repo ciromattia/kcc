@@ -118,8 +118,6 @@ class Icons:
         self.KFXFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/KFX.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.MOBIEPUBFormat = QtGui.QIcon()
         self.MOBIEPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.KFXEPUBFormat = QtGui.QIcon()
-        self.KFXEPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/KFX.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.EPUB200MBFormat = QtGui.QIcon()
         self.EPUB200MBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/EPUB.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
@@ -1114,7 +1112,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 GUI.deviceBox.addItem(self.icons.deviceKobo, profile)
             else:
                 GUI.deviceBox.addItem(self.icons.deviceKindle, profile)
-        for f in ['MOBI/AZW3', 'EPUB', 'CBZ', 'KFX', 'MOBI+EPUB', 'KFX+EPUB', 'EPUB-200MB']:
+        for f in ['MOBI/AZW3', 'EPUB', 'CBZ', 'KFX', 'MOBI+EPUB', 'EPUB-200MB']:
             format_prefix = f.replace('/AZW3', '').replace('+', '').replace('-', '')
             GUI.formatBox.addItem(eval('self.icons.' + format_prefix + 'Format'), f)
         if self.lastDevice > GUI.deviceBox.count():
