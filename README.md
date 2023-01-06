@@ -46,6 +46,11 @@ execute kcc-c2e
 docker run --rm -v "$(pwd):/app" ghcr.io/darodi/kcc:latest 
 ```
 
+example
+```bash
+$ docker run --rm -v "$(pwd):/app" ghcr.io/darodi/kcc:latest -p KPW5 ./1.cbz
+```
+
 execute kcc-c2p
 ```
 docker run --entrypoint /opt/kcc/kcc-c2p.py --rm -v "$(pwd):/app" ghcr.io/darodi/kcc:latest 
