@@ -63,7 +63,7 @@ Following software is required to run Linux version of **KCC** and/or bare sourc
 - [PyQt5](https://pypi.python.org/pypi/PyQt5) 5.6.0+ (only needed for GUI)
 - [Pillow](https://pypi.python.org/pypi/Pillow/) 4.0.0+ (5.2.0+ needed for WebP support), <8.4.0  (see https://github.com/ciromattia/kcc/issues/406)
 - [psutil](https://pypi.python.org/pypi/psutil) 5.0.0+
-- [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.1+, <3.0.0
+- [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.1+, <8.0.0
 - [raven](https://pypi.python.org/pypi/raven) 6.0.0+ (only needed for GUI)
 
 On Debian based distributions these two commands should install all needed dependencies:

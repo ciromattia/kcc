@@ -3,6 +3,7 @@
 name: build KCC for mac os
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "v*.*.*"
@@ -28,7 +29,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: 3.11
           cache: 'pip'
       - name: Install python dependencies
         run: |
@@ -36,7 +37,7 @@ jobs:
           pip install -r requirements.txt
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
       - run: npm install -g appdmg
       - name: build binary
         run: |
@@ -48,6 +49,7 @@ jobs:
           path: dist/*.dmg
       - name: Release
         uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           prerelease: true
           generate_release_notes: true

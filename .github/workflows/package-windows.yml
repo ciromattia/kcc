@@ -3,6 +3,7 @@
 name: build KCC for windows
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "v*.*.*"
@@ -28,7 +29,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: 3.11
           cache: 'pip'
       - name: Install python dependencies
         run: |
@@ -44,6 +45,7 @@ jobs:
           path: dist/*.exe
       - name: Release
         uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           prerelease: true
           generate_release_notes: true
