@@ -9,10 +9,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    # Raise pull requests for version updates
-    # Labels on pull requests for version updates only
-    labels:
-      - "pip dependencies"
 
  # Enable version updates for Docker
   - package-ecosystem: "docker"
