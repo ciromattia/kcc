@@ -18,16 +18,14 @@
 # PERFORMANCE OF THIS SOFTWARE.
 
 import os
-import re
 import sys
 from urllib.parse import unquote
-from urllib.request import urlopen, urlretrieve, Request
+from urllib.request import urlretrieve
 from time import sleep
 from shutil import move, rmtree
 from subprocess import STDOUT, PIPE
 # noinspection PyUnresolvedReferences
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
-from xml.dom.minidom import parse
 from xml.sax.saxutils import escape
 from psutil import Popen, Process
 from copy import copy
@@ -144,28 +142,31 @@ class VersionThread(QtCore.QThread):
         self.wait()
 
     def run(self):
-        try:
-            XML = parse(urlopen(Request('https://kcc.iosphe.re/Version/',
-                                        headers={'User-Agent': 'KindleComicConverter/' + __version__})))
-        except Exception:
-            return
-        latestVersion = XML.childNodes[0].getElementsByTagName('LatestVersion')[0].childNodes[0].toxml()
-        if ("beta" not in __version__ and StrictVersion(latestVersion) > StrictVersion(__version__)) \
-                or ("beta" in __version__
-                    and StrictVersion(latestVersion) >= StrictVersion(re.sub(r'-beta.*', '', __version__))):
-            if sys.platform.startswith('win'):
-                self.newVersion = latestVersion
-                self.md5 = XML.childNodes[0].getElementsByTagName('MD5')[0].childNodes[0].toxml()
-                MW.showDialog.emit('<b>New version released!</b> <a href="https://github.com/ciromattia/kcc/releases/">'
-                                   'See changelog.</a><br/><br/>Installed version: ' + __version__ +
-                                   '<br/>Current version: ' + latestVersion +
-                                   '<br/><br/>Would you like to start automatic update?', 'question')
-                self.getNewVersion()
-            else:
-                MW.addMessage.emit('<a href="https://kcc.iosphe.re/">'
-                                   '<b>The new version is available!</b></a> '
-                                   '(<a href="https://github.com/ciromattia/kcc/releases/">'
-                                   'Changelog</a>)', 'warning', False)
+        # TODO adapt with github releases
+        pass
+
+        # try:
+        #     XML = parse(urlopen(Request('https://kcc.iosphe.re/Version/',
+        #                                 headers={'User-Agent': 'KindleComicConverter/' + __version__})))
+        # except Exception:
+        #     return
+        # latestVersion = XML.childNodes[0].getElementsByTagName('LatestVersion')[0].childNodes[0].toxml()
+        # if ("beta" not in __version__ and StrictVersion(latestVersion) > StrictVersion(__version__)) \
+        #         or ("beta" in __version__
+        #             and StrictVersion(latestVersion) >= StrictVersion(re.sub(r'-beta.*', '', __version__))):
+        #     if sys.platform.startswith('win'):
+        #         self.newVersion = latestVersion
+        #         self.md5 = XML.childNodes[0].getElementsByTagName('MD5')[0].childNodes[0].toxml()
+        #         MW.showDialog.emit('<b>New version released!</b> <a href="https://github.com/ciromattia/kcc/releases/">'
+        #                            'See changelog.</a><br/><br/>Installed version: ' + __version__ +
+        #                            '<br/>Current version: ' + latestVersion +
+        #                            '<br/><br/>Would you like to start automatic update?', 'question')
+        #         self.getNewVersion()
+        #     else:
+        #         MW.addMessage.emit('<a href="https://kcc.iosphe.re/">'
+        #                            '<b>The new version is available!</b></a> '
+        #                            '(<a href="https://github.com/ciromattia/kcc/releases/">'
+        #                            'Changelog</a>)', 'warning', False)
 
     def setAnswer(self, dialoganswer):
         self.answer = dialoganswer
