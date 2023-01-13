@@ -82,8 +82,8 @@ Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
                         Device profile (Available options: K1, K2, K34, K578,
-                        KDX, KPW, KV, KO, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O,
-                        KoAO, KoF) [Default=KV]
+                        KDX, KPW, KPW5, KV, KO, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O,
+                        KoAO, KoC, KoL, KoF) [Default=KV]
     -m, --manga-style   Manga style (right-to-left reading and splitting)
     -q, --hq            Try to increase the quality of magnification
     -2, --two-panel     Display two not four panels in Panel View mode

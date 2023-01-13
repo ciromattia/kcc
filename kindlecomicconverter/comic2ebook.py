@@ -909,8 +909,8 @@ def makeParser():
     otherOptions = OptionGroup(psr, "OTHER")
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
-                           help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KV, KO, KoMT, KoG,"
-                                " KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoF) [Default=KV]")
+                           help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KPW5, KV, KO, KoMT, KoG,"
+                                " KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoC, KoL, KoF) [Default=KV]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")
     mainOptions.add_option("-q", "--hq", action="store_true", dest="hq", default=False,
@@ -974,13 +974,13 @@ def checkOptions():
     options.bordersColor = None
     options.kfx = False
     if options.format == 'Auto':
-        if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV', 'KO']:
+        if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KV', 'KO']:
             options.format = 'MOBI'
         elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O', 'KoAO']:
             options.format = 'EPUB'
         elif options.profile in ['KDX']:
             options.format = 'CBZ'
-    if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KV', 'KO']:
+    if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KV', 'KO']:
         options.iskindle = True
     if options.white_borders:
         options.bordersColor = 'white'
@@ -1078,10 +1078,7 @@ def makeBook(source, qtgui=None):
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
     detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
     if options.webtoon:
-        if image.ProfileData.Profiles[options.profile][1][1] > 1024:
-            y = 1024
-        else:
-            y = image.ProfileData.Profiles[options.profile][1][1]
+        y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
     print("Processing images...")
     if GUI:
@@ -1222,7 +1219,7 @@ def makeMOBI(work, qtgui=None):
         threadNumber = 1
     elif 2 < availableMemory <= 4:
         threadNumber = 2
-    elif 4 < availableMemory <= 8:
+    elif 4 < availableMemory:
         threadNumber = 4
     else:
         threadNumber = None
