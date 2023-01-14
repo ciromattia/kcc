@@ -1,6 +1,6 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Publish Python distributions to PyPI and TestPyPI
+name: Publish Python distributions to PyPI
 
 on:
   push:
@@ -37,12 +37,16 @@ jobs:
     - name: Build Dist
       run: |
         python setup.py sdist
-    - name: Release On TestPyPI
+#    - name: Release On TestPyPI
+#      uses: pypa/gh-action-pypi-publish@release/v1
+#      with:
+#        user: __token__
+#        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+#        repository_url: https://test.pypi.org/legacy/
+#        skip_existing: true
+#        verbose: true
+#        print_hash: true
+    - name: Publish a Python distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: __token__
-        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        repository_url: https://test.pypi.org/legacy/
-        skip_existing: true
-        verbose: true
-        print_hash: true
+        password: ${{ secrets.PYPI_API_TOKEN }}
