@@ -17,6 +17,8 @@ import setuptools
 import distutils.cmd
 from kindlecomicconverter import __version__
 
+OSX_INFO_PLIST = "other/osx/Info.plist"
+
 NAME = 'KindleComicConverter'
 MAIN = 'kcc.py'
 VERSION = __version__
@@ -37,6 +39,13 @@ class BuildBinaryCommand(distutils.cmd.Command):
     def run(self):
         VERSION = __version__
         if sys.platform == 'darwin':
+
+            with open(OSX_INFO_PLIST, 'r') as file:
+                filedata = file.read()
+            filedata = filedata.replace('5.5.2', VERSION)
+            with open(OSX_INFO_PLIST, 'w') as file:
+                file.write(filedata)
+
             os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
             os.makedirs('dist/Kindle Comic Converter.app/Contents/Resources/Codecs')
             shutil.copy('other/osx/7z', 'dist/Kindle Comic Converter.app/Contents/Resources')
@@ -49,7 +58,11 @@ class BuildBinaryCommand(distutils.cmd.Command):
             os.system('appdmg kcc.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')
             exit(0)
         elif sys.platform == 'win32':
-            os.system('pyinstaller -y -F -i icons\\comic2ebook.ico -n KCC -w --noupx kcc.py')
+            os.system('pyinstaller -y -F -i icons\\comic2ebook.ico -n KCC_' + VERSION + ' -w --noupx kcc.py')
+            exit(0)
+        elif sys.platform == 'linux':
+            os.system(
+                'pyinstaller --hidden-import=queue -y -F -i icons/comic2ebook.ico -n kcc_linux_' + VERSION + ' kcc.py')
             exit(0)
         else:
             exit(0)
@@ -81,7 +94,7 @@ setuptools.setup(
         'PyQt5>=5.6.0',
         'Pillow>=5.2.0',
         'psutil>=5.0.0',
-        'python-slugify>=1.2.1,<3.0.0',
+        'python-slugify>=1.2.1,<8.0.0',
         'raven>=6.0.0',
     ],
     classifiers=[],

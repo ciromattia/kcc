@@ -1,6 +1,8 @@
 # KCC
 
-[![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases) [![PyPI](https://img.shields.io/pypi/v/KindleComicConverter.svg)](https://pypi.python.org/pypi/KindleComicConverter) [![AUR](https://img.shields.io/aur/version/kcc.svg)](https://aur.archlinux.org/packages/kcc/)
+[![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases) 
+[![PyPI](https://img.shields.io/pypi/v/KindleComicConverter.svg)](https://pypi.python.org/pypi/KindleComicConverter) 
+[![AUR](https://img.shields.io/aur/version/kcc.svg)](https://aur.archlinux.org/packages/kcc/)
 
 **Kindle Comic Converter** is a Python app to convert comic/manga files or folders to EPUB, Panel View MOBI or E-Ink optimized CBZ.
 It was initially developed for Kindle but since version 4.6 it outputs valid EPUB 3.0 so _**despite its name, KCC is
@@ -25,36 +27,168 @@ If you find **KCC** valuable you can consider donating to the authors:
   - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
   - [![Donate Bitcoin](https://img.shields.io/badge/Donate-Bitcoin-green.svg)](https://jastrzeb.ski/donate/)
 
-## BINARY RELEASES
+
+## INSTALLATION 
+
+
+
+### BINARY RELEASES
 You can find the latest released binary at the following links:
 - **[Windows](http://kcc.iosphe.re/Windows/) (64-bit only)**
 - **[macOS](http://kcc.iosphe.re/OSX/) (10.14+)**
 - **Linux:** Currently unavailable.
 
-## PYPI
+
+
+### PYPI
 **KCC** is also available on PyPI.
 ```
 pip install --user KindleComicConverter
 ```
 
-## DEPENDENCIES
+
+### APPIMAGE
+- install 7zip
+  ```bash
+  $ sudo apt-get install -y p7zip-full
+  ```
+- Download kindlegen
+  ```bash
+  $ wget -qO- https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz | tar xvz kindlegen
+  ```
+- copy kindlegen into '/usr/local/bin' and grant execute permissions for MOBI conversion.
+  ```bash
+  $ sudo cp -R kindlegen /usr/local/bin && sudo chmod a+x /usr/local/bin/kindlegen 
+  ```
+- make appImage executable
+    ```bash
+    $ chmod a+x kindleComicConverter-latest-x86_64.AppImage
+    ```
+- run with backend x11 or it might not work with fedora
+    ```bash
+    $ GDK_BACKEND=x11 ./kindleComicConverter-latest-x86_64.AppImage
+    ```
+
+
+### DOCKER
+
+install kindlegen in your working directory and get last docker image
+```bash
+$ wget -qO- https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz | tar xvz kindlegen
+```
+```bash
+$ docker pull ghcr.io/ciromattia/kcc:latest
+```
+
+execute kcc-c2e
+```bash
+$ docker run --rm -v "$(pwd):/app" ghcr.io/ciromattia/kcc:latest 
+```
+
+example
+```bash
+$ docker run --rm -v "$(pwd):/app" ghcr.io/ciromattia/kcc:latest -p KPW5 ./1.cbz
+```
+
+execute kcc-c2p
+```bash
+$ docker run --entrypoint /opt/kcc/kcc-c2p.py --rm -v "$(pwd):/app" ghcr.io/ciromattia/kcc:latest 
+```
+
+
+### DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
 - Python 3.3+
 - [PyQt5](https://pypi.python.org/pypi/PyQt5) 5.6.0+ (only needed for GUI)
 - [Pillow](https://pypi.python.org/pypi/Pillow/) 4.0.0+ (5.2.0+ needed for WebP support)
 - [psutil](https://pypi.python.org/pypi/psutil) 5.0.0+
-- [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.1+, <3.0.0
+- [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.1+, <8.0.0
 - [raven](https://pypi.python.org/pypi/raven) 6.0.0+ (only needed for GUI)
 
 On Debian based distributions these two commands should install all needed dependencies:
-```
-sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full
-pip3 install --user --upgrade pillow python-slugify psutil pyqt5 raven
+```bash
+$ sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full python3-pyqt5
+
+$ pip3 install --user --upgrade pillow python-slugify psutil pyqt5 raven
 ```
 
-### Optional dependencies
-- [KindleGen](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation)*
+#### Optional dependencies
+- KindleGen ~~[deprecated link](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)~~ v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation)
+ – which offers a command line interface and supports [Linux](https://archive.org/details/kindlegen2.9) [(mirror1)](https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz), [Mac OSX](https://web.archive.org/web/20190905040839/https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) and [Windows](https://archive.org/details/kindlegen_win32_v2_9) – has been deprecated, but binaries can still be found on the internet.
 - [7z](http://www.7-zip.org/download.html) *(For CBZ/ZIP, CBR/RAR, 7z/CB7 support)*
+
+### INSTALL FROM SOURCES
+
+_Originally posted by @hhtien1408 in https://github.com/ciromattia/kcc/issues/438#issuecomment-1281159452_
+
+```bash
+$ git clone https://github.com/ciromattia/kcc.git
+```
+On Debian based distributions these two commands should install all needed dependencies:
+```bash
+$ sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full python3-pyqt5
+```
+Then install the necessary packages. You can do it by running the following command. The requirements.txt file is inside this repository, you will see it when you clone the repo.
+
+```bash
+$ pip3 install -r 'requirements.txt' 
+```
+
+This should install the required packages. You can check the version by running
+
+```bash
+$ pip3 freeze
+```
+
+If the packages are in the wrong version, you can try to upgrade them by running
+
+```bash
+$ pip3 install --upgrade name_of_the_package
+```
+
+Download kindlegen.
+
+```bash
+$ wget https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz | tar xvzf kindlegen
+```
+Copy kindlegen into '/usr/local/bin' and grant execute permissions for MOBI conversion.
+
+```bash
+$ sudo cp -R '/home/user/Desktop/kindlegen' '/usr/local/bin'
+
+$ sudo chmod +rwx '/usr/local/bin/kindlegen' 
+```
+
+
+Run python file for KCC GUI
+```bash
+$ python3 kcc.py
+```
+
+If everything goes well, you now should be able to use it. 
+
+Create destop file in '~/.local/share/applications' with codes:
+
+```
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Type=Application
+Name=Kindle Comic Converter
+Icon=kcc
+Exec=python3 '/home/user/kcc/kcc.py'
+Terminal=false
+StartupWMClass=kcc
+Name[en_US]=Kindle Comic Converter
+```
+
+Copy icon file into '/home/user/.local/share/icons'
+
+```bash
+$ sudo cp -R 'icons/comic2ebook.png' '/home/user/.local/share/icons'
+```
+
+
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
@@ -73,6 +207,37 @@ Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more detail
 
 CLI version of **KCC** is intended for power users. It allows using options that might not be compatible and decrease the quality of output.
 
+### Profiles:
+
+```
+        'K1': ("Kindle 1", (600, 670), Palette4, 1.8),
+        'K11': ("Kindle 11", (1072, 1448), Palette16, 1.8),
+        'K2': ("Kindle 2", (600, 670), Palette15, 1.8),
+        'K34': ("Kindle Keyboard/Touch", (600, 800), Palette16, 1.8),
+        'K578': ("Kindle", (600, 800), Palette16, 1.8),
+        'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8),
+        'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.8),
+        'KV': ("Kindle Paperwhite 3/4/Voyage/Oasis", (1072, 1448), Palette16, 1.8),
+        'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.8),
+        'KO': ("Kindle Oasis 2/3", (1264, 1680), Palette16, 1.8),
+        'KS': ("Kindle Scribe", (1860, 2480), Palette16, 1.8),
+        'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8),
+        'KoG': ("Kobo Glo", (768, 1024), Palette16, 1.8),
+        'KoGHD': ("Kobo Glo HD", (1072, 1448), Palette16, 1.8),
+        'KoA': ("Kobo Aura", (758, 1024), Palette16, 1.8),
+        'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.8),
+        'KoAH2O': ("Kobo Aura H2O", (1080, 1430), Palette16, 1.8),
+        'KoAO': ("Kobo Aura ONE", (1404, 1872), Palette16, 1.8),
+        'KoN': ("Kobo Nia", (758, 1024), Palette16, 1.8),
+        'KoC': ("Kobo Clara HD/Kobo Clara 2E", (1072, 1448), Palette16, 1.8),
+        'KoL': ("Kobo Libra H2O/Kobo Libra 2", (1264, 1680), Palette16, 1.8),
+        'KoF': ("Kobo Forma", (1440, 1920), Palette16, 1.8),
+        'KoS': ("Kobo Sage", (1440, 1920), Palette16, 1.8),
+        'KoE': ("Kobo Elipsa", (1404, 1872), Palette16, 1.8),
+        'OTHER': ("Other", (0, 0), Palette16, 1.8),
+```
+
+
 ### Standalone `kcc-c2e.py` usage:
 
 ```
@@ -82,12 +247,16 @@ Options:
   MAIN:
     -p PROFILE, --profile=PROFILE
                         Device profile (Available options: K1, K2, K34, K578,
-                        KDX, KPW, KPW5, KV, KO, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O,
-                        KoAO, KoC, KoL, KoF) [Default=KV]
+                        KDX, KPW, KPW5, KV, KO, K11, KS, KoMT, KoG, KoGHD,
+                        KoA, KoAHD, KoAH2O, KoAO, KoN, KoC, KoL, KoF, KoS,
+                        KoE) [Default=KV]
     -m, --manga-style   Manga style (right-to-left reading and splitting)
     -q, --hq            Try to increase the quality of magnification
     -2, --two-panel     Display two not four panels in Panel View mode
     -w, --webtoon       Webtoon processing mode
+    --targetsize=TARGETSIZE
+                        the maximal size of output file in MB. [Default=100MB
+                        for webtoon and 400MB for others]
 
   OUTPUT SETTINGS:
     -o OUTPUT, --output=OUTPUT
@@ -96,13 +265,15 @@ Options:
                         Comic title [Default=filename or directory name]
     -f FORMAT, --format=FORMAT
                         Output format (Available options: Auto, MOBI, EPUB,
-                        CBZ, KFX) [Default=Auto]
+                        CBZ, KFX, MOBI+EPUB) [Default=Auto]
     -b BATCHSPLIT, --batchsplit=BATCHSPLIT
                         Split output into multiple files. 0: Don't split 1:
                         Automatic mode 2: Consider every subdirectory as
                         separate volume [Default=0]
 
   PROCESSING:
+    -n, --noprocessing  Do not modify image and ignore any profil or
+                        processing option
     -u, --upscale       Resize images smaller than device's resolution
     -s, --stretch       Stretch images to device's resolution
     -r SPLITTER, --splitter=SPLITTER
@@ -120,6 +291,8 @@ Options:
     --whiteborders      Disable autodetection and force white borders
     --forcecolor        Don't convert images to grayscale
     --forcepng          Create PNG files instead JPEG
+    --mozjpeg           Create JPEG files using mozJpeg
+    --maximizestrips    Turn 1x4 strips to 2x2 strips
 
   CUSTOM PROFILE:
     --customwidth=CUSTOMWIDTH
@@ -141,7 +314,8 @@ Options:
     -y HEIGHT, --height=HEIGHT
                         Height of the target device screen
     -i, --in-place      Overwrite source directory
-    -m, --merge         Combine every directory into a single image before splitting
+    -m, --merge         Combine every directory into a single image before
+                        splitting
 
   OTHER:
     -d, --debug         Create debug file for every split image
@@ -149,7 +323,7 @@ Options:
 ```
 
 ## CREDITS
-**KCC** is made by [Ciro Mattia Gonano](http://github.com/ciromattia) and [Paweł Jastrzębski](http://github.com/AcidWeb).
+**KCC** is made by [Ciro Mattia Gonano](http://github.com/ciromattia), [Paweł Jastrzębski](http://github.com/AcidWeb) and [Darodi](http://github.com/darodi)  .
 
 This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published [here](http://www.mobileread.com/forums/showthread.php?t=192783)).
 
@@ -179,5 +353,5 @@ The app relies and includes the following scripts:
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
 ## COPYRIGHT
-Copyright (c) 2012-2019 Ciro Mattia Gonano and Paweł Jastrzębski.
-**KCC** is released under ISC LICENSE; see LICENSE.txt for further details.
+Copyright (c) 2012-2023 Ciro Mattia Gonano, Paweł Jastrzębski and Darodi.   
+**KCC** is released under ISC LICENSE; see [LICENSE.txt](./LICENSE.txt) for further details.

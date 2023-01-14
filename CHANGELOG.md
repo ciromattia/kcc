@@ -1,4 +1,38 @@
 # CHANGELOG
+
+#### 5.5.3:
+* Fix Docker 7z missing  [darodi/kcc#31](https://github.com/darodi/kcc/issues/31), thanks [@darodi](https://github.com/darodi)
+* update to python 3.11, thanks [@darodi](https://github.com/darodi)
+* Bump python from 3.8-slim-buster to 3.11-slim-buster dependabot[bot]
+* More precise type in slugify dependency check, thanks [@bamless](https://github.com/bamless)
+* Fix 'slugify' dependency check, thanks [@bamless](https://github.com/bamless)
+* Update python-slugify requirement from <3.0.0,>=1.2.1 to >=1.2.1,<8.0.0 dependabot[bot]
+* Bump actions/setup-python from 3 to 4 [darodi/kcc#32](https://github.com/darodi/kcc/issues/32) dependabot[bot]
+* Bump actions/setup-node from 2 to 3 [darodi/kcc#34](https://github.com/darodi/kcc/issues/34) dependabot[bot]
+* Fix Docker 7z missing  [darodi/kcc#31](https://github.com/darodi/kcc/issues/31), thanks [@darodi](https://github.com/darodi)
+* Spread splitter not keeping aspect ratio    [darodi/kcc#27](https://github.com/darodi/kcc/issues/27), thanks [@darodi](https://github.com/darodi)
+* activate batchsplit only for EPUB-200  [darodi/kcc#24](https://github.com/darodi/kcc/issues/24), thanks [@darodi](https://github.com/darodi)
+* Feature Request: allow split for epub and set target (email, web upload)  [darodi/kcc#21](https://github.com/darodi/kcc/issues/21), thanks [@darodi](https://github.com/darodi)
+* Adding a switch on GUI interface in order to control cropping options  [darodi/kcc#18](https://github.com/darodi/kcc/issues/18), thanks [@darodi](https://github.com/darodi)
+* profiles: add Kindle11 and Kindle Scribe  [darodi/kcc#16](https://github.com/darodi/kcc/issues/16), thanks [@darodi](https://github.com/darodi)
+* Update with new Kobo models   [darodi/kcc#15](https://github.com/darodi/kcc/issues/15), thanks [@lennie420](https://github.com/lennie420)
+* Keep epub file when selecting another type of output file [darodi/kcc#12](https://github.com/darodi/kcc/issues/12), thanks [@darodi](https://github.com/darodi)
+* fix Using 'Disable processing' option using my processed image get an error [darodi/kcc#1](https://github.com/darodi/kcc/issues/1), thanks [@darodi](https://github.com/darodi)
+* KFX Output in GUI [darodi/kcc#9](https://github.com/darodi/kcc/issues/9), thanks [@darodi](https://github.com/darodi)
+* Linux version and appImage [darodi/kcc#6](https://github.com/darodi/kcc/issues/6), thanks [@darodi](https://github.com/darodi)
+* docker image for command line [darodi/kcc#5](https://github.com/darodi/kcc/issues/5), thanks [@darodi](https://github.com/darodi)
+* Fix type error in autocontrastImage [ciromattia/kcc#432](https://github.com/ciromattia/kcc/issues/432), thanks [@darodi](https://github.com/darodi)
+* Option to turn 1x4 strips into 2x2 strips [ciromattia/kcc#439](https://github.com/ciromattia/kcc/issues/439), thanks [@darodi](https://github.com/darodi)
+* Option in GUI to have PNG instead of jpg images [darodi/kcc#3](https://github.com/darodi/kcc/issues/3), thanks [@darodi](https://github.com/darodi)
+* Use MozJPEG as the JPEG encoder : cli and GUI option [ciromattia/kcc#416](https://github.com/ciromattia/kcc/pull/416), thanks [@darodi](https://github.com/darodi)
+* Disable all image transformation : cli and GUI option [ciromattia/kcc#388](https://github.com/ciromattia/kcc/pull/388), thanks [@StudioEtrange](https://github.com/StudioEtrange)
+* file selector add All `*.*` [ciromattia/kcc#412](https://github.com/ciromattia/kcc/pull/412), thanks [@StudioEtrange](https://github.com/StudioEtrange)
+* Clarify Pillow version requirement [ciromattia/kcc#366](https://github.com/ciromattia/kcc/pull/366), thanks [@clach04](https://github.com/clach04)
+* sync requirements between setup.py and requirements.txt [ciromattia/kcc#411](https://github.com/ciromattia/kcc/pull/411), thanks [@StudioEtrange](https://github.com/StudioEtrange)
+* Add profile for Kindle PW5/Signature [ciromattia/kcc#405](https://github.com/ciromattia/kcc/pull/405), thanks [@Einlar](https://github.com/Einlar), [@darodi](https://github.com/darodi)
+* Fixed the skipped/missed images and/or panels [ciromattia/kcc#393](https://github.com/ciromattia/kcc/pull/393), thanks [@FulyaDemirkan](https://github.com/FulyaDemirkan)
+* Add profiles for the Kobo Clara HD and Libra H2O [ciromattia/kcc#331](https://github.com/ciromattia/kcc/pull/331), thanks [@fbriere](https://github.com/fbriere)
+
 #### 5.5.2:
 * Fixed KindleGen detection on macOS 10.15
 * Fixed multiple smaller issues

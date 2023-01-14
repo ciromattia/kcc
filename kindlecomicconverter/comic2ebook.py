@@ -68,7 +68,7 @@ def main(argv=None):
     for source in sources:
         source = source.rstrip('\\').rstrip('/')
         options = copy(optionstemplate)
-        checkOptions()
+        options = checkOptions(options)
         if len(sources) > 1:
             print('Working on ' + source + '...')
         makeBook(source)
@@ -789,7 +789,9 @@ def splitProcess(path, mode):
     output = []
     currentSize = 0
     currentTarget = path
-    if options.webtoon:
+    if options.targetsize:
+        targetSize = options.targetsize * 1048576
+    elif options.webtoon:
         targetSize = 104857600
     else:
         targetSize = 419430400
@@ -909,8 +911,9 @@ def makeParser():
     otherOptions = OptionGroup(psr, "OTHER")
 
     mainOptions.add_option("-p", "--profile", action="store", dest="profile", default="KV",
-                           help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KPW5, KV, KO, KoMT, KoG,"
-                                " KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoC, KoL, KoF) [Default=KV]")
+                           help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KPW5, KV, KO, "
+                                "K11, KS, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoN, KoC, KoL, KoF, KoS, KoE)"
+                                " [Default=KV]")
     mainOptions.add_option("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                            help="Manga style (right-to-left reading and splitting)")
     mainOptions.add_option("-q", "--hq", action="store_true", dest="hq", default=False,
@@ -919,13 +922,17 @@ def makeParser():
                            help="Display two not four panels in Panel View mode")
     mainOptions.add_option("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
                            help="Webtoon processing mode"),
+    mainOptions.add_option("--targetsize", type="int", dest="targetsize", default=None,
+                           help="the maximal size of output file in MB."
+                                " [Default=100MB for webtoon and 400MB for others]")
 
     outputOptions.add_option("-o", "--output", action="store", dest="output", default=None,
                              help="Output generated file to specified directory or file")
     outputOptions.add_option("-t", "--title", action="store", dest="title", default="defaulttitle",
                              help="Comic title [Default=filename or directory name]")
     outputOptions.add_option("-f", "--format", action="store", dest="format", default="Auto",
-                             help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX) [Default=Auto]")
+                             help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB) "
+                                  "[Default=Auto]")
     outputOptions.add_option("-b", "--batchsplit", type="int", dest="batchsplit", default="0",
                              help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                   "2: Consider every subdirectory as separate volume [Default=0]")
@@ -954,7 +961,8 @@ def makeParser():
                                  help="Create PNG files instead JPEG")
     processingOptions.add_option("--mozjpeg", action="store_true", dest="mozjpeg", default=False,
                                  help="Create JPEG files using mozJpeg")
-
+    processingOptions.add_option("--maximizestrips", action="store_true", dest="maximizestrips", default=False,
+                                 help="Turn 1x4 strips to 2x2 strips")
     customProfileOptions.add_option("--customwidth", type="int", dest="customwidth", default=0,
                                     help="Replace screen width provided by device profile")
     customProfileOptions.add_option("--customheight", type="int", dest="customheight", default=0,
@@ -971,20 +979,29 @@ def makeParser():
     return psr
 
 
-def checkOptions():
-    global options
+def checkOptions(options):
     options.panelview = True
     options.iskindle = False
     options.bordersColor = None
+    options.keep_epub = False
+    if options.format == 'EPUB-200MB':
+        options.targetsize = 200
+        options.format = 'EPUB'
+        if options.batchsplit != 2:
+            options.batchsplit = 1
+    if options.format == 'MOBI+EPUB':
+        options.keep_epub = True
+        options.format = 'MOBI'
     options.kfx = False
     if options.format == 'Auto':
-        if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KV', 'KO']:
+        if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KV', 'KO', 'K11', 'KS']:
             options.format = 'MOBI'
-        elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O', 'KoAO']:
+        elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O', 'KoAO',
+                                 'KoN', 'KoC', 'KoL', 'KoF', 'KoS', 'KoE']:
             options.format = 'EPUB'
         elif options.profile in ['KDX']:
             options.format = 'CBZ'
-    if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KV', 'KO']:
+    if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KV', 'KO', 'K11', 'KS']:
         options.iskindle = True
     if options.white_borders:
         options.bordersColor = 'white'
@@ -1031,6 +1048,7 @@ def checkOptions():
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
+    return options
 
 
 def checkTools(source):
@@ -1165,7 +1183,8 @@ def makeBook(source, qtgui=None):
 
 
 def makeMOBIFix(item, uuid):
-    os.remove(item)
+    if not options.keep_epub:
+        os.remove(item)
     mobiPath = item.replace('.epub', '.mobi')
     move(mobiPath, mobiPath + '_toclean')
     try:

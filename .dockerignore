@@ -1,0 +1,14 @@
+.git
+.github
+build
+dist
+KindleComicConverter.egg-info
+.dockerignore
+.gitignore
+.travis.yml
+Dockerfile
+other
+venv
+*.md
+LICENSE.txt
+MANIFEST.in

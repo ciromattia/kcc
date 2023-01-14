@@ -6,7 +6,8 @@ kindlecomicconverter/sentry.py
 other/windows/kindlegen.exe
 dist/
 build/
-KindleComicConverter.egg-info/
+KindleComicConverter*.egg-info/
 .idea/
 /venv/
-/kindlegen.exe
+/kindlegen*
+/kcc.bat

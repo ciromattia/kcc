@@ -1,4 +1,4 @@
-__version__ = '5.5.2'
+__version__ = '5.5.3'
 __license__ = 'ISC'
-__copyright__ = '2012-2019, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>'
+__copyright__ = '2012-2022, Ciro Mattia Gonano <ciromattia@gmail.com>, Pawel Jastrzebski <pawelj@iosphe.re>, darodi'
 __docformat__ = 'restructuredtext en'

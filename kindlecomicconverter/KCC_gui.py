@@ -18,16 +18,14 @@
 # PERFORMANCE OF THIS SOFTWARE.
 
 import os
-import re
 import sys
 from urllib.parse import unquote
-from urllib.request import urlopen, urlretrieve, Request
+from urllib.request import urlretrieve
 from time import sleep
 from shutil import move, rmtree
 from subprocess import STDOUT, PIPE
 # noinspection PyUnresolvedReferences
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
-from xml.dom.minidom import parse
 from xml.sax.saxutils import escape
 from psutil import Popen, Process
 from copy import copy
@@ -114,6 +112,12 @@ class Icons:
         self.CBZFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/CBZ.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.EPUBFormat = QtGui.QIcon()
         self.EPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/EPUB.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.KFXFormat = QtGui.QIcon()
+        self.KFXFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/KFX.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.MOBIEPUBFormat = QtGui.QIcon()
+        self.MOBIEPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.EPUB200MBFormat = QtGui.QIcon()
+        self.EPUB200MBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/EPUB.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
 
         self.info = QtGui.QIcon()
         self.info.addPixmap(QtGui.QPixmap(":/Status/icons/info.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -138,28 +142,31 @@ class VersionThread(QtCore.QThread):
         self.wait()
 
     def run(self):
-        try:
-            XML = parse(urlopen(Request('https://kcc.iosphe.re/Version/',
-                                        headers={'User-Agent': 'KindleComicConverter/' + __version__})))
-        except Exception:
-            return
-        latestVersion = XML.childNodes[0].getElementsByTagName('LatestVersion')[0].childNodes[0].toxml()
-        if ("beta" not in __version__ and StrictVersion(latestVersion) > StrictVersion(__version__)) \
-                or ("beta" in __version__
-                    and StrictVersion(latestVersion) >= StrictVersion(re.sub(r'-beta.*', '', __version__))):
-            if sys.platform.startswith('win'):
-                self.newVersion = latestVersion
-                self.md5 = XML.childNodes[0].getElementsByTagName('MD5')[0].childNodes[0].toxml()
-                MW.showDialog.emit('<b>New version released!</b> <a href="https://github.com/ciromattia/kcc/releases/">'
-                                   'See changelog.</a><br/><br/>Installed version: ' + __version__ +
-                                   '<br/>Current version: ' + latestVersion +
-                                   '<br/><br/>Would you like to start automatic update?', 'question')
-                self.getNewVersion()
-            else:
-                MW.addMessage.emit('<a href="https://kcc.iosphe.re/">'
-                                   '<b>The new version is available!</b></a> '
-                                   '(<a href="https://github.com/ciromattia/kcc/releases/">'
-                                   'Changelog</a>)', 'warning', False)
+        # TODO adapt with github releases
+        pass
+
+        # try:
+        #     XML = parse(urlopen(Request('https://kcc.iosphe.re/Version/',
+        #                                 headers={'User-Agent': 'KindleComicConverter/' + __version__})))
+        # except Exception:
+        #     return
+        # latestVersion = XML.childNodes[0].getElementsByTagName('LatestVersion')[0].childNodes[0].toxml()
+        # if ("beta" not in __version__ and StrictVersion(latestVersion) > StrictVersion(__version__)) \
+        #         or ("beta" in __version__
+        #             and StrictVersion(latestVersion) >= StrictVersion(re.sub(r'-beta.*', '', __version__))):
+        #     if sys.platform.startswith('win'):
+        #         self.newVersion = latestVersion
+        #         self.md5 = XML.childNodes[0].getElementsByTagName('MD5')[0].childNodes[0].toxml()
+        #         MW.showDialog.emit('<b>New version released!</b> <a href="https://github.com/ciromattia/kcc/releases/">'
+        #                            'See changelog.</a><br/><br/>Installed version: ' + __version__ +
+        #                            '<br/>Current version: ' + latestVersion +
+        #                            '<br/><br/>Would you like to start automatic update?', 'question')
+        #         self.getNewVersion()
+        #     else:
+        #         MW.addMessage.emit('<a href="https://kcc.iosphe.re/">'
+        #                            '<b>The new version is available!</b></a> '
+        #                            '(<a href="https://github.com/ciromattia/kcc/releases/">'
+        #                            'Changelog</a>)', 'warning', False)
 
     def setAnswer(self, dialoganswer):
         self.answer = dialoganswer
@@ -272,6 +279,9 @@ class WorkerThread(QtCore.QThread):
             options.upscale = True
         if GUI.gammaBox.isChecked() and float(GUI.gammaValue) > 0.09:
             options.gamma = float(GUI.gammaValue)
+        options.cropping = GUI.croppingBox.checkState()
+        if GUI.croppingBox.checkState() >= 1:
+            options.croppingp = float(GUI.croppingPowerValue)
         if GUI.borderBox.checkState() == 1:
             options.white_borders = True
         elif GUI.borderBox.checkState() == 2:
@@ -280,9 +290,13 @@ class WorkerThread(QtCore.QThread):
             options.batchsplit = 2
         if GUI.colorBox.isChecked():
             options.forcecolor = True
+        if GUI.maximizeStrips.isChecked():
+            options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
-        if GUI.mozJpegBox.isChecked():
+        if GUI.mozJpegBox.checkState() == 1:
+            options.forcepng = True
+        elif GUI.mozJpegBox.checkState() == 2:
             options.mozjpeg = True
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.widthBox.value())
@@ -309,8 +323,7 @@ class WorkerThread(QtCore.QThread):
             jobargv = list(argv)
             jobargv.append(job)
             try:
-                comic2ebook.options = copy(options)
-                comic2ebook.checkOptions()
+                comic2ebook.options = comic2ebook.checkOptions(copy(options))
                 outputPath = comic2ebook.makeBook(job, self)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
@@ -355,7 +368,7 @@ class WorkerThread(QtCore.QThread):
                     MW.addMessage.emit('Creating CBZ files... <b>Done!</b>', 'info', True)
                 else:
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
-                if str(GUI.formatBox.currentText()) == 'MOBI/AZW3':
+                if str(GUI.formatBox.currentText()) == 'MOBI/AZW3' or str(GUI.formatBox.currentText()) == 'MOBI+EPUB':
                     MW.progressBarTick.emit('Creating MOBI files')
                     MW.progressBarTick.emit(str(len(outputPath) * 2 + 1))
                     MW.progressBarTick.emit('tick')
@@ -600,6 +613,13 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if self.currentMode != 3:
                 self.modeChange(1)
 
+    def togglecroppingBox(self, value):
+        if value:
+             GUI.croppingWidget.setVisible(True)
+        else:
+            GUI.croppingWidget.setVisible(False)
+            self.changeCroppingPower(100)  # 1.0
+
     def togglewebtoonBox(self, value):
         if value:
             GUI.qualityBox.setEnabled(False)
@@ -639,6 +659,13 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.gammaLabel.setText('Gamma: ' + str(value))
         GUI.gammaSlider.setValue(valueRaw)
         self.gammaValue = value
+
+    def changeCroppingPower(self, value):
+        valueRaw = int(5 * round(float(value) / 5))
+        value = '%.2f' % (float(valueRaw) / 100)
+        GUI.croppingPowerLabel.setText('Cropping Power: ' + str(value))
+        GUI.croppingPowerSlider.setValue(valueRaw)
+        self.croppingPowerValue = value
 
     def changeDevice(self):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
@@ -785,6 +812,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'rotateBox': GUI.rotateBox.checkState(),
                                            'qualityBox': GUI.qualityBox.checkState(),
                                            'gammaBox': GUI.gammaBox.checkState(),
+                                           'croppingBox': GUI.croppingBox.checkState(),
+                                           'croppingPowerSlider': float(self.croppingPowerValue) * 100,
                                            'upscaleBox': GUI.upscaleBox.checkState(),
                                            'borderBox': GUI.borderBox.checkState(),
                                            'webtoonBox': GUI.webtoonBox.checkState(),
@@ -794,6 +823,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
+                                           'maximizeStrips': GUI.maximizeStrips.checkState(),
                                            'gammaSlider': float(self.gammaValue) * 100})
         self.settings.sync()
         self.tray.hide()
@@ -886,7 +916,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
         self.windowSize = self.settings.value('windowSize', '0x0', type=str)
-        self.options = self.settings.value('options', {'gammaSlider': 0})
+        self.options = self.settings.value('options', {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100})
         self.worker = WorkerThread()
         self.versionCheck = VersionThread()
         self.progress = ProgressThread()
@@ -895,6 +925,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.needClean = True
         self.kindleGen = False
         self.gammaValue = 1.0
+        self.croppingPowerValue = 1.0
         self.currentMode = 1
         self.targetDirectory = ''
         self.sentry = Client(release=__version__)
@@ -925,8 +956,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                              'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'Label': 'KV'},
+            "Kindle Scribe": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'Label': 'KS',
+            },
+            "Kindle 11": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'Label': 'K11',
+            },
             "Kindle PW 5": {
-              'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'Label': 'KPW5',  
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'Label': 'KPW5',
             },
             "Kindle PW 3/4": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'Label': 'KV'},
@@ -951,13 +988,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kobo Aura ONE": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                               'DefaultUpscale': True, 'Label': 'KoAO'},
             "Kobo Clara HD": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
-                           'DefaultUpscale': True, 'Label': 'KoC'},
+                              'DefaultUpscale': True, 'Label': 'KoC'},
             "Kobo Libra H2O": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
-                           'DefaultUpscale': True, 'Label': 'KoL'},
+                               'DefaultUpscale': True, 'Label': 'KoL'},
             "Kobo Forma": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                            'DefaultUpscale': True, 'Label': 'KoF'},
-            "Other": {'PVOptions': False, 'ForceExpert': True, 'DefaultFormat': 1,
-                      'DefaultUpscale': False, 'Label': 'OTHER'},
             "Kindle 1": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
                          'DefaultUpscale': False, 'Label': 'K1'},
             "Kindle 2": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
@@ -966,34 +1001,53 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                 'DefaultUpscale': False, 'Label': 'K34'},
             "Kindle Touch": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
                              'DefaultUpscale': False, 'Label': 'K34'},
+            "Kobo Nia": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1, 'DefaultUpscale': True,
+                         'Label': 'KoN'},
+            "Kobo Clara 2E": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1, 'DefaultUpscale': True,
+                              'Label': 'KoC'},
+            "Kobo Libra 2": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1, 'DefaultUpscale': True,
+                             'Label': 'KoL'},
+            "Kobo Sage": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1, 'DefaultUpscale': True,
+                          'Label': 'KoS'},
+            "Kobo Elipsa": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1, 'DefaultUpscale': True,
+                            'Label': 'KoE'},
+            "Other": {'PVOptions': False, 'ForceExpert': True, 'DefaultFormat': 1, 'DefaultUpscale': False,
+                      'Label': 'OTHER'},
         }
         profilesGUI = [
             "Kindle Oasis 2/3",
-            "Kindle Oasis",
-            "Kindle Voyage",
             "Kindle PW 5",
-            "Kindle PW 3/4",
-            "Kindle PW 1/2",
-            "Kindle",
+            "Kindle 11",
+            "Kindle Scribe",
             "Separator",
-            "Kobo Forma",
-            "Kobo Libra H2O",
-            "Kobo Clara HD",
-            "Kobo Aura ONE",
-            "Kobo Aura H2O",
-            "Kobo Aura HD",
-            "Kobo Aura",
+            "Kobo Clara 2E",
+            "Kobo Sage",
+            "Kobo Libra 2",
+            "Kobo Elipsa",
+            "Kobo Nia",
             "Separator",
             "Other",
             "Separator",
+            "Kindle Oasis",
             "Kindle Touch",
             "Kindle Keyboard",
             "Kindle DX/DXG",
+            "Kindle PW 3/4",
+            "Kindle PW 1/2",
+            "Kindle Voyage",
             "Kindle 2",
             "Kindle 1",
+            "Kindle",
             "Separator",
+            "Kobo Aura",
+            "Kobo Aura ONE",
+            "Kobo Aura H2O",
+            "Kobo Aura HD",
+            "Kobo Clara HD",
+            "Kobo Forma",
             "Kobo Glo HD",
             "Kobo Glo",
+            "Kobo Libra H2O",
             "Kobo Mini/Touch",
         ]
 
@@ -1030,6 +1084,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.convertButton.clicked.connect(self.convertStart)
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)
+        GUI.croppingBox.stateChanged.connect(self.togglecroppingBox)
+        GUI.croppingPowerSlider.valueChanged.connect(self.changeCroppingPower)
         GUI.webtoonBox.stateChanged.connect(self.togglewebtoonBox)
         GUI.qualityBox.stateChanged.connect(self.togglequalityBox)
         GUI.deviceBox.activated.connect(self.changeDevice)
@@ -1057,8 +1113,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 GUI.deviceBox.addItem(self.icons.deviceKobo, profile)
             else:
                 GUI.deviceBox.addItem(self.icons.deviceKindle, profile)
-        for f in ['MOBI/AZW3', 'EPUB', 'CBZ']:
-            GUI.formatBox.addItem(eval('self.icons.' + f.replace('/AZW3', '') + 'Format'), f)
+        for f in ['MOBI/AZW3', 'EPUB', 'CBZ', 'KFX', 'MOBI+EPUB', 'EPUB-200MB']:
+            format_prefix = f.replace('/AZW3', '').replace('+', '').replace('-', '')
+            GUI.formatBox.addItem(eval('self.icons.' + format_prefix + 'Format'), f)
         if self.lastDevice > GUI.deviceBox.count():
             self.lastDevice = 0
         if profilesGUI[self.lastDevice] == "Separator":
@@ -1078,6 +1135,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if GUI.gammaSlider.isEnabled():
                     GUI.gammaSlider.setValue(int(self.options[option]))
                     self.changeGamma(int(self.options[option]))
+            elif str(option) == "croppingPowerSlider":
+                if GUI.croppingPowerSlider.isEnabled():
+                    GUI.croppingPowerSlider.setValue(int(self.options[option]))
+                    self.changeCroppingPower(int(self.options[option]))
             else:
                 try:
                     if eval('GUI.' + str(option)).isEnabled():

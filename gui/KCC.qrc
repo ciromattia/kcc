@@ -11,6 +11,7 @@
     <file>../icons/CBZ.png</file>
     <file>../icons/EPUB.png</file>
     <file>../icons/MOBI.png</file>
+    <file>../icons/KFX.png</file>
   </qresource>
   <qresource prefix="Status">
     <file>../icons/error.png</file>
