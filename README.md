@@ -47,54 +47,6 @@ pip install --user KindleComicConverter
 ```
 
 
-### APPIMAGE
-- install 7zip
-  ```bash
-  $ sudo apt-get install -y p7zip-full
-  ```
-- Download kindlegen
-  ```bash
-  $ wget -qO- https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz | tar xvz kindlegen
-  ```
-- copy kindlegen into '/usr/local/bin' and grant execute permissions for MOBI conversion.
-  ```bash
-  $ sudo cp -R kindlegen /usr/local/bin && sudo chmod a+x /usr/local/bin/kindlegen 
-  ```
-- make appImage executable
-    ```bash
-    $ chmod a+x kindleComicConverter-latest-x86_64.AppImage
-    ```
-- run with backend x11 or it might not work with fedora
-    ```bash
-    $ GDK_BACKEND=x11 ./kindleComicConverter-latest-x86_64.AppImage
-    ```
-
-
-### DOCKER
-
-install kindlegen in your working directory and get last docker image
-```bash
-$ wget -qO- https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz | tar xvz kindlegen
-```
-```bash
-$ docker pull ghcr.io/ciromattia/kcc:latest
-```
-
-execute kcc-c2e
-```bash
-$ docker run --rm -v "$(pwd):/app" ghcr.io/ciromattia/kcc:latest 
-```
-
-example
-```bash
-$ docker run --rm -v "$(pwd):/app" ghcr.io/ciromattia/kcc:latest -p KPW5 ./1.cbz
-```
-
-execute kcc-c2p
-```bash
-$ docker run --entrypoint /opt/kcc/kcc-c2p.py --rm -v "$(pwd):/app" ghcr.io/ciromattia/kcc:latest 
-```
-
 
 ### DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
