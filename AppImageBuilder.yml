@@ -8,7 +8,7 @@ script:
 AppDir:
   path: AppDir
   app_info:
-    id: com.github.darodi.kcc
+    id: com.github.ciromattia.kcc
     name: kindleComicConverter
     icon: comic2ebook
     version: latest

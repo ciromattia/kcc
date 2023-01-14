@@ -52,7 +52,7 @@ jobs:
 #    - name: Build AppImage
 #      uses: AppImageCrafters/build-appimage-action@master
 #      env:
-#        UPDATE_INFO: gh-releases-zsync|darodi|kcc|latest|*x86_64.AppImage.zsync
+#        UPDATE_INFO: gh-releases-zsync|ciromattia|kcc|latest|*x86_64.AppImage.zsync
 #      with:
 #        recipe: AppImageBuilder.yml
     - name: Build AppImage
@@ -62,7 +62,7 @@ jobs:
         sudo mv appimage-builder-x86_64.AppImage /usr/local/bin/appimage-builder
         appimage-builder --recipe AppImageBuilder.yml --skip-test
       env:
-        UPDATE_INFO: gh-releases-zsync|darodi|kcc|latest|*x86_64.AppImage.zsync
+        UPDATE_INFO: gh-releases-zsync|ciromattia|kcc|latest|*x86_64.AppImage.zsync
 
     - name: upload artifact
       uses: actions/upload-artifact@v2

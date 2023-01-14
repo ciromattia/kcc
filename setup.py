@@ -19,7 +19,7 @@ from kindlecomicconverter import __version__
 
 OSX_INFO_PLIST = "other/osx/Info.plist"
 
-NAME = 'KindleComicConverterDarodi'
+NAME = 'KindleComicConverter'
 MAIN = 'kcc.py'
 VERSION = __version__
 
