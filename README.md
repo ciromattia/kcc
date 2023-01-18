@@ -87,17 +87,17 @@ $ docker pull ghcr.io/ciromattia/kcc:latest
 
 execute kcc-c2e
 ```bash
-$ docker run --rm -v "$(pwd):/app" ghcr.io/darodi/kcc:latest 
+$ docker run --rm -v "$(pwd):/app" ghcr.io/ciromattia/kcc:latest 
 ```
 
 example
 ```bash
-$ docker run --rm -v "$(pwd):/app" ghcr.io/darodi/kcc:latest -p KPW5 ./1.cbz
+$ docker run --rm -v "$(pwd):/app" ghcr.io/ciromattia/kcc:latest -p KPW5 ./1.cbz
 ```
 
 execute kcc-c2p
 ```bash
-$ docker run --entrypoint /opt/kcc/kcc-c2p.py --rm -v "$(pwd):/app" ghcr.io/darodi/kcc:latest 
+$ docker run --entrypoint /opt/kcc/kcc-c2p.py --rm -v "$(pwd):/app" ghcr.io/ciromattia/kcc:latest 
 ```
 
 
