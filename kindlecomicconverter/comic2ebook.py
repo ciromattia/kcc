@@ -1224,7 +1224,8 @@ def makeMOBIWorker(item):
                 if kindlegenErrorCode > 0:
                     break
                 if ":I1036: Mobi file built successfully" in line:
-                    output.terminate()
+                    output.communicate()
+                    break
         else:
             # ERROR: EPUB too big
             kindlegenErrorCode = 23026
