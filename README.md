@@ -54,7 +54,7 @@ You can find the latest binary at the following link:
 
 #### MacOS installation    
 ##### x86_64 version
-see: KindleComicConverter_osx_5.5.3b*.dmg in **https://github.com/ciromattia/kcc/releases**   
+see: KindleComicConverter_osx_*.dmg in **https://github.com/ciromattia/kcc/releases**   
 If you can't open the last beta and the OS says it's damaged, fix it with:
 ```
 xattr -d com.apple.quarantine /Applications/Kindle\ Comic\ Converter.app
