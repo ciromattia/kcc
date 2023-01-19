@@ -1,5 +1,13 @@
 # KCC
 
+[![GitHub release](https://img.shields.io/github/v/release/ciromattia/kcc?display_name=tag&include_prereleases&label=pre-release)](https://github.com/ciromattia/kcc/releases) 
+[![PyPI](https://img.shields.io/github/v/release/darodi/kcc?display_name=tag&include_prereleases&label=testPypi)](https://test.pypi.org/project/KindleComicConverterDarodi/) 
+
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/darodi/kcc/pkgs/container/kcc) 
+
+[//]: # ([![AUR]&#40;https://img.shields.io/aur/version/kcc-beta.svg?color=orange&#41;]&#40;https://aur.archlinux.org/packages/kcc-beta&#41;)
+
+
 [![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases) 
 [![PyPI](https://img.shields.io/pypi/v/KindleComicConverter.svg)](https://pypi.python.org/pypi/KindleComicConverter) 
 [![AUR](https://img.shields.io/aur/version/kcc.svg)](https://aur.archlinux.org/packages/kcc/)
@@ -33,7 +41,8 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 
 ### BINARY RELEASES
-You can find the latest released binary at the following links:
+You can find the latest binary at the following link:
+
 - **https://github.com/ciromattia/kcc/releases**
 
 
@@ -43,10 +52,71 @@ You can find the latest released binary at the following links:
 
 
 
-### PYPI
-**KCC** is also available on PyPI.
+#### MacOS installation    
+##### x86_64 version
+see: KindleComicConverter_osx_5.5.3b*.dmg in **https://github.com/ciromattia/kcc/releases**   
+If you can't open the last beta and the OS says it's damaged, fix it with:
 ```
-pip install --user KindleComicConverter
+xattr -d com.apple.quarantine /Applications/Kindle\ Comic\ Converter.app
+```
+
+##### M1/M2 arm64 version
+
+Building is not available in github on M1 arch.  
+See this building method, to build it locally:  
+_Originally posted by @celogeek in https://github.com/darodi/kcc/issues/4#issuecomment-1364553511_
+      
+
+If you can't open the last beta and the OS says it's damaged, fix it with:
+```
+xattr -d com.apple.quarantine /Applications/Kindle\ Comic\ Converter.app
+```
+
+Or you could also have a look at this other project:
+https://github.com/celogeek/go-comic-converter
+
+#### Linux installation    
+ - make binary executable  
+    ```bash
+    $ chmod a+x kcc_linux
+    ```
+ - install 7zip
+   ```bash
+   $ sudo apt-get install -y p7zip-full
+   ```
+ - Download kindlegen
+   ```bash
+   $ wget -qO- https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz | tar xvz kindlegen
+   ```
+  - copy kindlegen into '/usr/local/bin' and grant execute permissions for MOBI conversion.
+    ```bash
+    $ sudo cp -R kindlegen /usr/local/bin && sudo chmod a+x /usr/local/bin/kindlegen 
+    ```
+ - run with backend x11 or it might not work with fedora
+    ```bash
+    $ GDK_BACKEND=x11 ./kcc_linux
+    ```
+
+
+
+
+
+
+### PYPI
+**KCC** is also available on PyPI.  
+On Debian based distributions these two commands should install all needed dependencies:
+```bash
+$ sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full python3-pyqt5
+$ pip3 install --user --upgrade pillow python-slugify psutil pyqt5 raven
+```
+beta version 
+```bash
+$ pip install --index-url https://test.pypi.org/simple/  KindleComicConverterDarodi
+```
+
+stable version
+```bash
+$ pip install --user KindleComicConverter
 ```
 
 
