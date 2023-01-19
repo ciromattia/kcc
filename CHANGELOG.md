@@ -1,6 +1,6 @@
 # CHANGELOG
 
-#### 5.5.3:
+#### 5.6.0:
 * Fix Docker 7z missing  [darodi/kcc#31](https://github.com/darodi/kcc/issues/31), thanks [@darodi](https://github.com/darodi)
 * update to python 3.11, thanks [@darodi](https://github.com/darodi)
 * Bump python from 3.8-slim-buster to 3.11-slim-buster dependabot[bot]
