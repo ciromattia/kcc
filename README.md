@@ -3,7 +3,7 @@
 [![GitHub release](https://img.shields.io/github/v/release/ciromattia/kcc?display_name=tag&include_prereleases&label=pre-release)](https://github.com/ciromattia/kcc/releases) 
 [![PyPI](https://img.shields.io/github/v/release/darodi/kcc?display_name=tag&include_prereleases&label=testPypi)](https://test.pypi.org/project/KindleComicConverterDarodi/) 
 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/darodi/kcc/pkgs/container/kcc) 
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc) 
 
 [//]: # ([![AUR]&#40;https://img.shields.io/aur/version/kcc-beta.svg?color=orange&#41;]&#40;https://aur.archlinux.org/packages/kcc-beta&#41;)
 
