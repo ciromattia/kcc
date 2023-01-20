@@ -115,10 +115,10 @@ class ComicPageParser:
         self.image = Image.open(os.path.join(source[0], source[1])).convert('RGB')
         self.color = self.colorCheck()
         self.fill = self.fillCheck()
-        self.splitCheck()
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
+        self.splitCheck()
 
     def getImageHistogram(self, image):
         histogram = image.histogram()
@@ -381,10 +381,10 @@ class Cover:
         else:
             self.tomeid = tomeid
         self.image = Image.open(source)
-        self.process()
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
+        self.process()
 
     def process(self):
         self.image = self.image.convert('RGB')
