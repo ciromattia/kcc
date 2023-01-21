@@ -1036,7 +1036,7 @@ def checkOptions(options):
             options.format = 'CBZ'
     if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KV', 'KO', 'K11', 'KS']:
         options.iskindle = True
-    elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O', 'KoAO', 'KoF']:
+    elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O', 'KoAO', 'KoN', 'KoC', 'KoL', 'KoF', 'KoS', 'KoE']:
         options.isKobo = True
     # Other Kobo devices probably support synthetic spreads as well, but
     # they haven't been tested.
