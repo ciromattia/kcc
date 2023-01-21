@@ -1,5 +1,12 @@
 # CHANGELOG
 
+#### 5.6.1:
+* Fix pillow backwards compatibility, add mozjpeg-lossless-optimization to setup.py by @corylk in #461
+* fix in fedora: 7z doesn't support rar archives, use unrar by @AlicesReflexion in #370
+* Using communicate instead of terminate by @catsout in #459
+* use copyfile and delete instead of shutil.move fix #386 by @StudioEtrange in #387
+
+
 #### 5.6.0:
 * Fix Docker 7z missing  [darodi/kcc#31](https://github.com/darodi/kcc/issues/31), thanks [@darodi](https://github.com/darodi)
 * update to python 3.11, thanks [@darodi](https://github.com/darodi)
