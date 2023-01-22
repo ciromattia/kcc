@@ -181,9 +181,19 @@ Following software is required to run Linux version of **KCC** and/or bare sourc
 - [raven](https://pypi.python.org/pypi/raven) 6.0.0+ (only needed for GUI)
 
 On Debian based distributions these two commands should install all needed dependencies:
-```bash
-$ sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full python3-pyqt5
 
+
+
+```bash
+$ sudo apt-get install -y python3 python3-dev libpng-dev libjpeg-dev p7zip-full unrar-free libgl1 python3-pyqt5 && \
+    python -m pip install --upgrade pip && \
+```
+then 
+```bash
+$ python -m pip install --upgrade -r requirements.txt
+```
+or 
+```bash
 $ pip3 install --user --upgrade pillow python-slugify psutil pyqt5 raven
 ```
 
