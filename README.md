@@ -67,7 +67,7 @@ See this building method, to build it locally:
 _Originally posted by @celogeek in https://github.com/darodi/kcc/issues/4#issuecomment-1364553511_
       
 
-If you can't open the last beta and the OS says it's damaged, fix it with:
+If you can't open and the OS says it's damaged, fix it with:
 ```
 xattr -d com.apple.quarantine /Applications/Kindle\ Comic\ Converter.app
 ```
@@ -109,12 +109,12 @@ On Debian based distributions these two commands should install all needed depen
 $ sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full python3-pyqt5
 $ pip3 install --user --upgrade pillow python-slugify psutil pyqt5 raven
 ```
-beta version 
+last version 
 ```bash
 $ pip install --index-url https://test.pypi.org/simple/  KindleComicConverterDarodi
 ```
 
-stable version
+older version (v5.5.2)
 ```bash
 $ pip install --user KindleComicConverter
 ```
