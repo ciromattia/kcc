@@ -41,11 +41,6 @@ jobs:
       run: |
         python setup.py build_binary
         chmod +x dist/kcc_linux*
-    - name: upload build
-      uses: actions/upload-artifact@v3
-      with:
-        name: linux-build
-        path: dist/kcc_linux*
 #    issue with this action, disabled and commented out
 #        see https://github.com/AppImageCrafters/build-appimage/issues/5
 #        see https://appimage-builder.readthedocs.io/en/latest/intro/install.html#install-appimagetool
@@ -78,5 +73,4 @@ jobs:
         files: |
           CHANGELOG.md
           LICENSE.txt
-          dist/kcc_linux*
           *.AppImage*

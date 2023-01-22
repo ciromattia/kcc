@@ -1,16 +1,10 @@
 # KCC
 
-[![GitHub release](https://img.shields.io/github/v/release/ciromattia/kcc?display_name=tag&include_prereleases&label=pre-release)](https://github.com/ciromattia/kcc/releases) 
-[![PyPI](https://img.shields.io/github/v/release/darodi/kcc?display_name=tag&include_prereleases&label=testPypi)](https://test.pypi.org/project/KindleComicConverterDarodi/) 
-
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc) 
-
-[//]: # ([![AUR]&#40;https://img.shields.io/aur/version/kcc-beta.svg?color=orange&#41;]&#40;https://aur.archlinux.org/packages/kcc-beta&#41;)
 
 
 [![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases) 
-[![PyPI](https://img.shields.io/pypi/v/KindleComicConverter.svg)](https://pypi.python.org/pypi/KindleComicConverter) 
-[![AUR](https://img.shields.io/aur/version/kcc.svg)](https://aur.archlinux.org/packages/kcc/)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc) 
+
 
 **Kindle Comic Converter** is a Python app to convert comic/manga files or folders to EPUB, Panel View MOBI or E-Ink optimized CBZ.
 It was initially developed for Kindle but since version 4.6 it outputs valid EPUB 3.0 so _**despite its name, KCC is
@@ -38,138 +32,18 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 ## INSTALLATION 
 
-
-
 ### BINARY RELEASES
 You can find the latest binary at the following link:
 
 - **https://github.com/ciromattia/kcc/releases**
-
+- flatpak : https://flathub.org/apps/details/io.github.ciromattia.kcc
+- Docker: https://github.com/ciromattia/kcc/pkgs/container/kcc
 
 ~~- **[Windows](http://kcc.iosphe.re/Windows/) (64-bit only)**~~  
 ~~- **[macOS](http://kcc.iosphe.re/OSX/) (10.14+)**~~  
-~~- **Linux:** Currently unavailable.~~  
+~~- **Linux:** Currently unavailable.~~
 
-
-
-#### MacOS installation    
-##### x86_64 version
-see: KindleComicConverter_osx_*.dmg in **https://github.com/ciromattia/kcc/releases**   
-If you can't open the last beta and the OS says it's damaged, fix it with:
-```
-xattr -d com.apple.quarantine /Applications/Kindle\ Comic\ Converter.app
-```
-
-##### M1/M2 arm64 version
-
-Building is not available in github on M1 arch.  
-See this building method, to build it locally:  
-_Originally posted by @celogeek in https://github.com/darodi/kcc/issues/4#issuecomment-1364553511_
-      
-
-If you can't open and the OS says it's damaged, fix it with:
-```
-xattr -d com.apple.quarantine /Applications/Kindle\ Comic\ Converter.app
-```
-
-Or you could also have a look at this other project:
-https://github.com/celogeek/go-comic-converter
-
-#### Linux installation    
- - make binary executable  
-    ```bash
-    $ chmod a+x kcc_linux
-    ```
- - install 7zip
-   ```bash
-   $ sudo apt-get install -y p7zip-full
-   ```
- - Download kindlegen
-   ```bash
-   $ wget -qO- https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz | tar xvz kindlegen
-   ```
-  - copy kindlegen into '/usr/local/bin' and grant execute permissions for MOBI conversion.
-    ```bash
-    $ sudo cp -R kindlegen /usr/local/bin && sudo chmod a+x /usr/local/bin/kindlegen 
-    ```
- - run with backend x11 or it might not work with fedora
-    ```bash
-    $ GDK_BACKEND=x11 ./kcc_linux
-    ```
-
-
-
-
-
-
-### PYPI
-**KCC** is also available on PyPI.  
-On Debian based distributions these two commands should install all needed dependencies:
-```bash
-$ sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full python3-pyqt5
-$ pip3 install --user --upgrade pillow python-slugify psutil pyqt5 raven
-```
-last version 
-```bash
-$ pip install --index-url https://test.pypi.org/simple/  KindleComicConverterDarodi
-```
-
-older version (v5.5.2)
-```bash
-$ pip install --user KindleComicConverter
-```
-
-
-
-
-### APPIMAGE
-- install 7zip
-  ```bash
-  $ sudo apt-get install -y p7zip-full
-  ```
-- Download kindlegen
-  ```bash
-  $ wget -qO- https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz | tar xvz kindlegen
-  ```
-- copy kindlegen into '/usr/local/bin' and grant execute permissions for MOBI conversion.
-  ```bash
-  $ sudo cp -R kindlegen /usr/local/bin && sudo chmod a+x /usr/local/bin/kindlegen 
-  ```
-- make appImage executable
-    ```bash
-    $ chmod a+x kindleComicConverter-latest-x86_64.AppImage
-    ```
-- run with backend x11 or it might not work with fedora
-    ```bash
-    $ GDK_BACKEND=x11 ./kindleComicConverter-latest-x86_64.AppImage
-    ```
-
-
-### DOCKER
-
-install kindlegen in your working directory and get last docker image
-```bash
-$ wget -qO- https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz | tar xvz kindlegen
-```
-```bash
-$ docker pull ghcr.io/ciromattia/kcc:latest
-```
-
-execute kcc-c2e
-```bash
-$ docker run --rm -v "$(pwd):/app" ghcr.io/ciromattia/kcc:latest 
-```
-
-example
-```bash
-$ docker run --rm -v "$(pwd):/app" ghcr.io/ciromattia/kcc:latest -p KPW5 ./1.cbz
-```
-
-execute kcc-c2p
-```bash
-$ docker run --entrypoint /opt/kcc/kcc-c2p.py --rm -v "$(pwd):/app" ghcr.io/ciromattia/kcc:latest 
-```
-
+more information on [installation](https://github.com/ciromattia/kcc/wiki/Installation)
 
 ### DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
@@ -187,15 +61,9 @@ On Debian based distributions these two commands should install all needed depen
 ```bash
 $ sudo apt-get install -y python3 python3-dev libpng-dev libjpeg-dev p7zip-full unrar-free libgl1 python3-pyqt5 && \
     python -m pip install --upgrade pip && \
+    python -m pip install --upgrade -r requirements.txt
 ```
-then 
-```bash
-$ python -m pip install --upgrade -r requirements.txt
-```
-or 
-```bash
-$ pip3 install --user --upgrade pillow python-slugify psutil pyqt5 raven
-```
+
 
 #### Optional dependencies
 - Qt platform integration plugin for Deepin Desktop Environment
@@ -206,77 +74,6 @@ $ sudo apt-get install qt5dxcb-plugin
 - KindleGen ~~[deprecated link](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)~~ v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation)
  – which offers a command line interface and supports [Linux](https://archive.org/details/kindlegen2.9) [(mirror1)](https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz), [Mac OSX](https://web.archive.org/web/20190905040839/https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) and [Windows](https://archive.org/details/kindlegen_win32_v2_9) – has been deprecated, but binaries can still be found on the internet.
 - [7z](http://www.7-zip.org/download.html) *(For CBZ/ZIP, CBR/RAR, 7z/CB7 support)*
-
-### INSTALL FROM SOURCES
-
-_Originally posted by @hhtien1408 in https://github.com/ciromattia/kcc/issues/438#issuecomment-1281159452_
-
-```bash
-$ git clone https://github.com/ciromattia/kcc.git
-```
-On Debian based distributions these two commands should install all needed dependencies:
-```bash
-$ sudo apt-get install python3 python3-dev python3-pip libpng-dev libjpeg-dev p7zip-full python3-pyqt5
-```
-Then install the necessary packages. You can do it by running the following command. The requirements.txt file is inside this repository, you will see it when you clone the repo.
-
-```bash
-$ pip3 install -r 'requirements.txt' 
-```
-
-This should install the required packages. You can check the version by running
-
-```bash
-$ pip3 freeze
-```
-
-If the packages are in the wrong version, you can try to upgrade them by running
-
-```bash
-$ pip3 install --upgrade name_of_the_package
-```
-
-Download kindlegen.
-
-```bash
-$ wget https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz | tar xvzf kindlegen
-```
-Copy kindlegen into '/usr/local/bin' and grant execute permissions for MOBI conversion.
-
-```bash
-$ sudo cp -R '/home/user/Desktop/kindlegen' '/usr/local/bin'
-
-$ sudo chmod +rwx '/usr/local/bin/kindlegen' 
-```
-
-
-Run python file for KCC GUI
-```bash
-$ python3 kcc.py
-```
-
-If everything goes well, you now should be able to use it. 
-
-Create destop file in '~/.local/share/applications' with codes:
-
-```
-#!/usr/bin/env xdg-open
-
-[Desktop Entry]
-Type=Application
-Name=Kindle Comic Converter
-Icon=kcc
-Exec=python3 '/home/user/kcc/kcc.py'
-Terminal=false
-StartupWMClass=kcc
-Name[en_US]=Kindle Comic Converter
-```
-
-Copy icon file into '/home/user/.local/share/icons'
-
-```bash
-$ sudo cp -R 'icons/comic2ebook.png' '/home/user/.local/share/icons'
-```
 
 
 
