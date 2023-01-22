@@ -71,9 +71,11 @@ $ sudo apt-get install -y python3 python3-dev libpng-dev libjpeg-dev p7zip-full 
 $ sudo apt-get install qt5dxcb-plugin
 ```
 
-- KindleGen ~~[deprecated link](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)~~ v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation)
- – which offers a command line interface and supports [Linux](https://archive.org/details/kindlegen2.9) [(mirror1)](https://archive.org/download/kindlegen_linux_2_6_i386_v2_9/kindlegen_linux_2.6_i386_v2_9.tar.gz), [Mac OSX](https://web.archive.org/web/20190905040839/https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) and [Windows](https://archive.org/details/kindlegen_win32_v2_9) – has been deprecated, but binaries can still be found on the internet.
+- KindleGen ~~[deprecated link](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)~~ v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation) 
+  - It can be found in [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011)
+    `Amazon Kindle Previewer 3 Folder\lib\fc\bin`, the usual location in windows is in windows is `C:\Users\user\AppData\Local\Amazon\Kindle Previewer 3\lib\fc\bin\`
 - [7z](http://www.7-zip.org/download.html) *(For CBZ/ZIP, CBR/RAR, 7z/CB7 support)*
+- Unrar (no rar in 7z on Fedora)
 
 
 
