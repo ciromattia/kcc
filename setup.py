@@ -55,6 +55,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
             shutil.copy('LICENSE.txt', 'dist/Kindle Comic Converter.app/Contents/Resources')
             shutil.copy('other/windows/Additional-LICENSE.txt', 'dist/Kindle Comic Converter.app/Contents/Resources')
             os.chmod('dist/Kindle Comic Converter.app/Contents/Resources/7z', 0o777)
+            # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
             os.system('appdmg kcc.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')
             exit(0)
         elif sys.platform == 'win32':
