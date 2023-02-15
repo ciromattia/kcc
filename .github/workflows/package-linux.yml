@@ -60,7 +60,7 @@ jobs:
         UPDATE_INFO: gh-releases-zsync|ciromattia|kcc|latest|*x86_64.AppImage.zsync
 
     - name: upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: AppImage
         path: './*.AppImage*'
