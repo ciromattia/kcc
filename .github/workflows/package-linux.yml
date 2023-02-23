@@ -7,7 +7,7 @@ on:
   push:
     tags:
       - "v*.*.*"
-    
+
     # Don't trigger if it's just a documentation update
     paths-ignore:
       - '**.md'
@@ -23,7 +23,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -34,9 +34,9 @@ jobs:
     - name: Install python dependencies
       run: |
         sudo apt-get update 
-        sudo apt-get install -y libpng-dev libjpeg-dev p7zip-full python3-pyqt5 squashfs-tools 
-        python -m pip install --upgrade pip setuptools wheel pyinstaller
-        pip install -r requirements.txt
+        sudo apt-get install -y libpng-dev libjpeg-dev p7zip-full python3-pyqt5 python3-pip squashfs-tools libfuse2
+        python -m pip install --upgrade pip setuptools wheel certifi pyinstaller PyQt6 --no-binary pyinstaller 
+        python -m pip install -r requirements.txt
     - name: build binary
       run: |
         python setup.py build_binary
@@ -58,7 +58,6 @@ jobs:
         appimage-builder --recipe AppImageBuilder.yml --skip-test
       env:
         UPDATE_INFO: gh-releases-zsync|ciromattia|kcc|latest|*x86_64.AppImage.zsync
-
     - name: upload artifact
       uses: actions/upload-artifact@v3
       with:
