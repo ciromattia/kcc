@@ -967,6 +967,8 @@ def makeParser():
     outputOptions.add_option("-b", "--batchsplit", type="int", dest="batchsplit", default="0",
                              help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                   "2: Consider every subdirectory as separate volume [Default=0]")
+    outputOptions.add_option("-d", "--delete", action="store_true", dest="delete", default=False,
+                             help="Delete source file(s) or a directory. It's not recoverable.")
 
     processingOptions.add_option("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
                                  help="Do not modify image and ignore any profil or processing option")
@@ -1225,6 +1227,12 @@ def makeBook(source, qtgui=None):
                 os.remove(i.replace('.epub', '.mobi') + '_toclean')
             if k.path and k.coverSupport:
                 options.covers[filepath.index(i)][0].saveToKindle(k, options.covers[filepath.index(i)][1])
+    if options.delete:
+        if os.path.isfile(source):
+            os.remove(source)
+        elif os.path.isdir(source):
+            rmtree(source)
+
     return filepath
 
 
