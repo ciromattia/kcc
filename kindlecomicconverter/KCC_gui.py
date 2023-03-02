@@ -294,6 +294,10 @@ class WorkerThread(QtCore.QThread):
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
+        if GUI.deleteBox.checkState() == 1:
+            options.delete = 2
+        elif GUI.deleteBox.checkState() == 2:
+            options.delete = 1
         if GUI.mozJpegBox.checkState() == 1:
             options.forcepng = True
         elif GUI.mozJpegBox.checkState() == 2:
@@ -638,6 +642,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.rotateBox.setEnabled(True)
             GUI.upscaleBox.setEnabled(True)
 
+    def toggledeleteBox(self, value):
+        if value:
+            GUI.deleteBox.setEnabled(False)
+            GUI.deleteBox.setChecked(False)
+        else:
+            GUI.deleteBox.setEnabled(True)
+            GUI.deleteBox.setChecked(True)
+
     def togglequalityBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
         if value == 2:
@@ -823,6 +835,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
+                                           'deleteBox': GUI.deleteBox.value(),
                                            'maximizeStrips': GUI.maximizeStrips.checkState(),
                                            'gammaSlider': float(self.gammaValue) * 100})
         self.settings.sync()
@@ -1085,6 +1098,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)
         GUI.croppingBox.stateChanged.connect(self.togglecroppingBox)
+        GUI.deleteBox.stateChanged.connect(self.toggledeleteBox)
         GUI.croppingPowerSlider.valueChanged.connect(self.changeCroppingPower)
         GUI.webtoonBox.stateChanged.connect(self.togglewebtoonBox)
         GUI.qualityBox.stateChanged.connect(self.togglequalityBox)
