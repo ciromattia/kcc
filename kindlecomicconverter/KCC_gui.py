@@ -294,6 +294,8 @@ class WorkerThread(QtCore.QThread):
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
+        if GUI.deleteBox.isChecked():
+            options.delete = True
         if GUI.mozJpegBox.checkState() == 1:
             options.forcepng = True
         elif GUI.mozJpegBox.checkState() == 2:
@@ -823,6 +825,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
+                                           'deleteBox': GUI.deleteBox.value(),
                                            'maximizeStrips': GUI.maximizeStrips.checkState(),
                                            'gammaSlider': float(self.gammaValue) * 100})
         self.settings.sync()

@@ -175,10 +175,20 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="1">
+        <widget class="QCheckBox" name="deleteBox">
+         <property name="toolTip">
+          <string>Delete input file(s) or directory. It's not recoverable!</string>
+         </property>
+         <property name="text">
+          <string>Delete input</string>
+         </property>
+        </widget>
+       </item>
        <item row="4" column="2">
         <widget class="QCheckBox" name="disableProcessingBox">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Do not process any image, ignore profil and processing options&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;pre style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Do not process any image, ignore profile and processing options&lt;/pre&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Disable processing</string>
@@ -257,7 +267,7 @@
        <item>
         <widget class="QSlider" name="croppingPowerSlider">
          <property name="maximum">
-          <number>10</number>
+          <number>200</number>
          </property>
          <property name="singleStep">
           <number>1</number>
@@ -600,6 +610,7 @@
   <tabstop>croppingBox</tabstop>
   <tabstop>mozJpegBox</tabstop>
   <tabstop>maximizeStrips</tabstop>
+  <tabstop>deleteBox</tabstop>
   <tabstop>disableProcessingBox</tabstop>
   <tabstop>editorButton</tabstop>
   <tabstop>wikiButton</tabstop>
