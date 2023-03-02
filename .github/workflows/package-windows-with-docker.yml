@@ -1,0 +1,63 @@
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: build KCC for windows with docker
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+#      - name: Set up Python
+#        uses: actions/setup-python@v4
+#        with:
+#          python-version: 3.11
+#          cache: 'pip'
+#      - name: Install python dependencies
+#        run: |
+#          python -m pip install --upgrade pip setuptools wheel pyinstaller
+#          pip install -r requirements.txt
+#      - name: build binary
+#        run: |
+#          pyi-makespec -F -i icons\\comic2ebook.ico -n KCC_test -w --noupx kcc.py
+      - name: Package Application
+        uses: JackMcKew/pyinstaller-action-windows@main
+        with:
+          path: .
+          spec: ./kcc.spec
+      - name: Package Application
+        uses: JackMcKew/pyinstaller-action-windows@main
+        with:
+          path: .
+          spec: ./kcc-c2e.spec
+      - name: Package Application
+        uses: JackMcKew/pyinstaller-action-windows@main
+        with:
+          path: .
+          spec: ./kcc-c2p.spec
+      - name: rename binaries
+        run: |   
+          version_built=$(cat kindlecomicconverter/__init__.py | grep version | awk '{print $3}' | sed "s/[^.0-9b]//g")
+          mv dist/windows/kcc.exe dist/windows/kcc_${version_built}.exe 
+          mv dist/windows/kcc-c2e.exe dist/windows/kcc-c2e_${version_built}.exe 
+          mv dist/windows/kcc-c2p.exe dist/windows/kcc-c2p_${version_built}.exe
+      - name: upload build
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-build
+          path: dist/windows/*.exe
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          prerelease: true
+          generate_release_notes: true
+          files: |
+            CHANGELOG.md
+            LICENSE.txt
+            dist/windows/*.exe
