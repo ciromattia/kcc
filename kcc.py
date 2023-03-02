@@ -28,16 +28,20 @@ import os
 if sys.platform.startswith('darwin'):
     if getattr(sys, 'frozen', False):
         os.environ['PATH'] = os.path.dirname(os.path.abspath(sys.executable)) + \
-                             '/../Resources:/Applications/Kindle Comic Creator/Kindle Comic Creator.app/Contents/' \
-                             'MacOS:/usr/local/bin:/usr/bin:/bin'
+                             '/../Resources:/Applications/Kindle Comic Creator/Kindle Comic Creator.app/Contents/MacOS:' \
+                             '/Applications/Kindle Previewer 3.app/Contents/lib/fc/bin/:/usr/local/bin:/usr/bin:/bin'
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources')
     else:
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 elif sys.platform.startswith('win'):
     if getattr(sys, 'frozen', False):
+        os.environ['PATH'] = '%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\;' + \
+                             os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
     else:
-        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/windows/;' + os.environ['PATH']
+        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/windows/;' \
+                             '%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\;' + \
+                             os.environ['PATH']
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # Load additional Sentry configuration
 # if getattr(sys, 'frozen', False):
