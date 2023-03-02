@@ -72,7 +72,7 @@ class Ui_mainWindow(object):
         self.gridLayout_2.addWidget(self.croppingBox, 3, 2, 1, 1)
         self.deleteBox = QtWidgets.QCheckBox(self.optionWidget)
         self.deleteBox.setTristate(True)
-        self.deleteBox.setObjectName("delete Bod")
+        self.deleteBox.setObjectName("delete Box")
         self.gridLayout_2.addWidget(self.deleteBox, 5, 2, 1, 1)
         self.disableProcessingBox = QtWidgets.QCheckBox(self.optionWidget)
         self.disableProcessingBox.setObjectName("disableProcessingBox")
