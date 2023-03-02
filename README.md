@@ -180,12 +180,16 @@ Options:
                         page numbers [Default=2]
     --cp=CROPPINGP, --croppingpower=CROPPINGP
                         Set cropping power [Default=1.0]
+    --cm=CROPPINGM, --croppingminimum=CROPPINGM
+                        Set cropping minimum area ratio [Default=0.0]
     --blackborders      Disable autodetection and force black borders
     --whiteborders      Disable autodetection and force white borders
     --forcecolor        Don't convert images to grayscale
     --forcepng          Create PNG files instead JPEG
     --mozjpeg           Create JPEG files using mozJpeg
     --maximizestrips    Turn 1x4 strips to 2x2 strips
+    -d, --delete        Delete source file(s) or a directory. It's not
+                        recoverable.
 
   CUSTOM PROFILE:
     --customwidth=CUSTOMWIDTH

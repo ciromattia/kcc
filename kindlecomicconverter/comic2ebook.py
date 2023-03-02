@@ -996,6 +996,9 @@ def makeParser():
                                  help="Create JPEG files using mozJpeg")
     processingOptions.add_option("--maximizestrips", action="store_true", dest="maximizestrips", default=False,
                                  help="Turn 1x4 strips to 2x2 strips")
+    processingOptions.add_option("-d", "--delete", action="store_true", dest="delete", default=False,
+                             help="Delete source file(s) or a directory. It's not recoverable.")
+
     customProfileOptions.add_option("--customwidth", type="int", dest="customwidth", default=0,
                                     help="Replace screen width provided by device profile")
     customProfileOptions.add_option("--customheight", type="int", dest="customheight", default=0,
@@ -1225,6 +1228,12 @@ def makeBook(source, qtgui=None):
                 os.remove(i.replace('.epub', '.mobi') + '_toclean')
             if k.path and k.coverSupport:
                 options.covers[filepath.index(i)][0].saveToKindle(k, options.covers[filepath.index(i)][1])
+    if options.delete:
+        if os.path.isfile(source):
+            os.remove(source)
+        elif os.path.isdir(source):
+            rmtree(source)
+
     return filepath
 
 
