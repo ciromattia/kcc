@@ -967,8 +967,6 @@ def makeParser():
     outputOptions.add_option("-b", "--batchsplit", type="int", dest="batchsplit", default="0",
                              help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                   "2: Consider every subdirectory as separate volume [Default=0]")
-    outputOptions.add_option("-d", "--delete", action="store_true", dest="delete", default=False,
-                             help="Delete source file(s) or a directory. It's not recoverable.")
 
     processingOptions.add_option("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
                                  help="Do not modify image and ignore any profil or processing option")
@@ -998,6 +996,9 @@ def makeParser():
                                  help="Create JPEG files using mozJpeg")
     processingOptions.add_option("--maximizestrips", action="store_true", dest="maximizestrips", default=False,
                                  help="Turn 1x4 strips to 2x2 strips")
+    processingOptions.add_option("-d", "--delete", action="store_true", dest="delete", default=False,
+                             help="Delete source file(s) or a directory. It's not recoverable.")
+
     customProfileOptions.add_option("--customwidth", type="int", dest="customwidth", default=0,
                                     help="Replace screen width provided by device profile")
     customProfileOptions.add_option("--customheight", type="int", dest="customheight", default=0,
