@@ -825,7 +825,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
-                                           'deleteBox': GUI.deleteBox.value(),
+                                           'deleteBox': GUI.deleteBox.checkState(),
                                            'maximizeStrips': GUI.maximizeStrips.checkState(),
                                            'gammaSlider': float(self.gammaValue) * 100})
         self.settings.sync()
