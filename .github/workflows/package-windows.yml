@@ -31,10 +31,13 @@ jobs:
         with:
           python-version: 3.11
           cache: 'pip'
-      - name: Install python dependencies
+      - name: Install dependencies
+        env:
+          PYINSTALLER_COMPILE_BOOTLOADER: 1
         run: |
-          python -m pip install --upgrade pip setuptools wheel pyinstaller
+          python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
+          pip install certifi pyinstaller --no-binary pyinstaller
       - name: build binary
         run: |
           python setup.py build_binary
