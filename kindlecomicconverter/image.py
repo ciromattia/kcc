@@ -265,6 +265,7 @@ class ComicPage:
             if self.fill != 'white':
                 flags.append('BlackBackground')
             if self.opt.forcepng:
+                self.image.info["transparency"] = None
                 self.targetPath += '.png'
                 self.image.save(self.targetPath, 'PNG', optimize=1)
             else:
