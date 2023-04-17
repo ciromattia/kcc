@@ -1022,7 +1022,7 @@ def checkOptions(options):
     options.bordersColor = None
     options.keep_epub = False
     if options.format == 'EPUB-200MB':
-        options.targetsize = 200
+        options.targetsize = 195
         options.format = 'EPUB'
         if options.batchsplit != 2:
             options.batchsplit = 1
