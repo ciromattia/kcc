@@ -1054,9 +1054,6 @@ def checkOptions(options):
     # Splitting MOBI is not optional
     if (options.format == 'MOBI' or options.format == 'KFX') and options.batchsplit != 2:
         options.batchsplit = 1
-    # Disable Panel View for kindle scribe.
-    if options.profile == 'KS':
-        options.panelview = False
     # Older Kindle models don't support Panel View.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K34' or options.profile == 'KDX':
         options.panelview = False
