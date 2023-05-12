@@ -57,7 +57,7 @@ class ComicArchive:
                         self.filepath + '"', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         process.communicate()
         if process.returncode != 0:
-            process = Popen('unrar x -y -x__MACOSX -x.DS_Store -xthumbs.db -xThumbs.db "' + self.filepath + '" "' +
+            process = Popen('unrar x -y -o+ -x__MACOSX -x.DS_Store -xthumbs.db -xThumbs.db "' + self.filepath + '" "' +
                     targetdir + '"', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
             process.communicate()
             if process.returncode != 0:
