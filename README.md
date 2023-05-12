@@ -87,6 +87,8 @@ $ sudo apt-get install qt5dxcb-plugin
 - CB7, 7Z *(With `7z` executable)*
 - PDF *(Only extracting JPG images)*
 
+Add 7z to PATH via `setx path "%path%;C:\Program Files\7-Zip"`
+
 ## USAGE
 
 Should be pretty self-explanatory. All options have detailed information in tooltips.
