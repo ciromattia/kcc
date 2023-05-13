@@ -1092,8 +1092,8 @@ def checkOptions(options):
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
-    # kindle scribe conversion to mobi is limited in resolution by kindlegen
-    if options.profile == 'KS' and options.format == 'MOBI':
+    # kindle scribe conversion to mobi is limited in resolution by kindlegen, same with send to kindle and epub
+    if options.profile == 'KS' and (options.format == 'MOBI' or options.format == 'EPUB'):
         options.profileData = list(options.profileData)
         options.profileData[1] = (1440, 1920)
     return options
