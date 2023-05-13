@@ -59,7 +59,7 @@ On Debian based distributions these two commands should install all needed depen
 
 
 ```bash
-$ sudo apt-get install -y python3 python3-dev libpng-dev libjpeg-dev p7zip-full unrar-free libgl1 python3-pyqt5 && \
+$ sudo apt-get install -y python3 python3-dev libpng-dev libjpeg-dev p7zip-full p7zip-rar unrar-free libgl1 python3-pyqt5 && \
     python -m pip install --upgrade pip && \
     python -m pip install --upgrade -r requirements.txt
 ```
