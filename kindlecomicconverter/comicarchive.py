@@ -65,6 +65,8 @@ class ComicArchive:
             process.communicate()
             if process.returncode != 0:
                 raise OSError('Failed to extract archive.')
+        elif process.returncode != 0:
+            raise OSError('Failed to extract archive. Check if p7zip-rar is installed.')
         tdir = os.listdir(targetdir)
         if 'ComicInfo.xml' in tdir:
             tdir.remove('ComicInfo.xml')
