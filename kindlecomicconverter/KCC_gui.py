@@ -1153,7 +1153,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.versionCheck.start()
         self.tray.show()
 
-        # Cleanup unfisnished conversion
+        # Cleanup unfinished conversion
         for root, dirs, _ in walkLevel(gettempdir(), 0):
             for tempdir in dirs:
                 if tempdir.startswith('KCC-'):

@@ -1092,6 +1092,10 @@ def checkOptions(options):
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
+    # kindle scribe conversion to mobi is limited in resolution by kindlegen
+    if options.profile == 'KS' and options.format == 'MOBI':
+        options.profileData = list(options.profileData)
+        options.profileData[1] = (1440, 1920)
     return options
 
 
@@ -1147,7 +1151,7 @@ def makeBook(source, qtgui=None):
         y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
     if options.noprocessing:
-        print("Do not process image, ignore any profil or processing option")
+        print("Do not process image, ignore any profile or processing option")
     else:
         print("Processing images...")
         if GUI:
