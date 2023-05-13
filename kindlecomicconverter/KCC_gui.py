@@ -255,7 +255,7 @@ class WorkerThread(QtCore.QThread):
         MW.modeConvert.emit(0)
 
         parser = comic2ebook.makeParser()
-        options, _ = parser.parse_args()
+        options = parser.parse_args()
         argv = ''
         currentJobs = []
 

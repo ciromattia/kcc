@@ -20,8 +20,8 @@
 
 import os
 import sys
+from argparse import ArgumentParser
 from shutil import rmtree, copytree, move
-from optparse import OptionParser, OptionGroup
 from multiprocessing import Pool
 from PIL import Image, ImageChops, ImageOps, ImageDraw
 from .shared import getImageFileName, walkLevel, walkSort, sanitizeTrace
@@ -102,7 +102,7 @@ def splitImage(work):
         opt = work[2]
         filePath = os.path.join(path, name)
         Image.warnings.simplefilter('error', Image.DecompressionBombWarning)
-        Image.MAX_IMAGE_PIXELS = 1000000000    
+        Image.MAX_IMAGE_PIXELS = 1000000000
         imgOrg = Image.open(filePath).convert('RGB')
         imgProcess = Image.open(filePath).convert('1')
         widthImg, heightImg = imgOrg.size
@@ -116,7 +116,7 @@ def splitImage(work):
             panelDetected = False
             panels = []
             while yWork < heightImg:
-                tmpImg = imgProcess.crop([4, yWork, widthImg-4, yWork + 4])
+                tmpImg = imgProcess.crop((4, yWork, widthImg-4, yWork + 4))
                 solid = detectSolid(tmpImg)
                 if not solid and not panelDetected:
                     panelDetected = True
@@ -149,7 +149,7 @@ def splitImage(work):
 
             if opt.debug:
                 for panel in panelsProcessed:
-                    draw.rectangle([(0, panel[0]), (widthImg, panel[1])], (0, 255, 0, 128), (0, 0, 255, 255))
+                    draw.rectangle(((0, panel[0]), (widthImg, panel[1])), (0, 255, 0, 128), (0, 0, 255, 255))
                 debugImage = Image.alpha_composite(imgOrg.convert(mode='RGBA'), drawImg)
                 debugImage.save(os.path.join(path, os.path.splitext(name)[0] + '-debug.png'), 'PNG')
 
@@ -182,7 +182,7 @@ def splitImage(work):
                 if pageHeight > 15:
                     newPage = Image.new('RGB', (widthImg, pageHeight))
                     for panel in page:
-                        panelImg = imgOrg.crop([0, panelsProcessed[panel][0], widthImg, panelsProcessed[panel][1]])
+                        panelImg = imgOrg.crop((0, panelsProcessed[panel][0], widthImg, panelsProcessed[panel][1]))
                         newPage.paste(panelImg, (0, targetHeight))
                         targetHeight += panelsProcessed[panel][2]
                     newPage.save(os.path.join(path, os.path.splitext(name)[0] + '-' + str(pageNumber) + '.png'), 'PNG')
@@ -193,97 +193,100 @@ def splitImage(work):
 
 
 def main(argv=None, qtgui=None):
-    global options, GUI, splitWorkerPool, splitWorkerOutput, mergeWorkerPool, mergeWorkerOutput
-    parser = OptionParser(usage="Usage: kcc-c2p [options] comic_folder", add_help_option=False)
-    mainOptions = OptionGroup(parser, "MANDATORY")
-    otherOptions = OptionGroup(parser, "OTHER")
-    mainOptions.add_option("-y", "--height", type="int", dest="height", default=0,
-                           help="Height of the target device screen")
-    mainOptions.add_option("-i", "--in-place", action="store_true", dest="inPlace", default=False,
-                           help="Overwrite source directory")
-    mainOptions.add_option("-m", "--merge", action="store_true", dest="merge", default=False,
-                           help="Combine every directory into a single image before splitting")
-    otherOptions.add_option("-d", "--debug", action="store_true", dest="debug", default=False,
-                            help="Create debug file for every split image")
-    otherOptions.add_option("-h", "--help", action="help",
-                            help="Show this help message and exit")
-    parser.add_option_group(mainOptions)
-    parser.add_option_group(otherOptions)
-    options, args = parser.parse_args(argv)
+    global args, GUI, splitWorkerPool, splitWorkerOutput, mergeWorkerPool, mergeWorkerOutput
+    parser = ArgumentParser(prog="kcc-c2p", usage="kcc-c2p [options] [input]", add_help=False)
+
+    mandatory_options = parser.add_argument_group("MANDATORY")
+    main_options = parser.add_argument_group("MAIN")
+    other_options = parser.add_argument_group("OTHER")
+    mandatory_options.add_argument("input", action="extend", nargs="*", default=None,
+                              help="Full path to comic folder(s) to be processed. Separate multiple inputs"
+                                   " with spaces.")
+    main_options.add_argument("-y", "--height", type=int, dest="height", default=0,
+                              help="Height of the target device screen")
+    main_options.add_argument("-i", "--in-place", action="store_true", dest="inPlace", default=False,
+                              help="Overwrite source directory")
+    main_options.add_argument("-m", "--merge", action="store_true", dest="merge", default=False,
+                              help="Combine every directory into a single image before splitting")
+    other_options.add_argument("-d", "--debug", action="store_true", dest="debug", default=False,
+                               help="Create debug file for every split image")
+    other_options.add_argument("-h", "--help", action="help",
+                               help="Show this help message and exit")
+    args = parser.parse_args(argv)
     if qtgui:
         GUI = qtgui
     else:
         GUI = None
-    if len(args) != 1:
+    if not argv or args.input == []:
         parser.print_help()
         return 1
-    if options.height > 0:
-        options.sourceDir = args[0]
-        options.targetDir = args[0] + "-Splitted"
-        if os.path.isdir(options.sourceDir):
-            rmtree(options.targetDir, True)
-            copytree(options.sourceDir, options.targetDir)
-            work = []
-            pagenumber = 1
-            splitWorkerOutput = []
-            splitWorkerPool = Pool(maxtasksperchild=10)
-            if options.merge:
-                print("Merging images...")
-                directoryNumer = 1
-                mergeWork = []
-                mergeWorkerOutput = []
-                mergeWorkerPool = Pool(maxtasksperchild=10)
-                mergeWork.append([options.targetDir])
-                for root, dirs, files in os.walk(options.targetDir, False):
-                    dirs, files = walkSort(dirs, files)
-                    for directory in dirs:
-                        directoryNumer += 1
-                        mergeWork.append([os.path.join(root, directory)])
+    if args.height > 0:
+        for sourceDir in args.input:
+            targetDir = sourceDir + "-Splitted"
+            if os.path.isdir(sourceDir):
+                rmtree(targetDir, True)
+                copytree(sourceDir, targetDir)
+                work = []
+                pagenumber = 1
+                splitWorkerOutput = []
+                splitWorkerPool = Pool(maxtasksperchild=10)
+                if args.merge:
+                    print("Merging images...")
+                    directoryNumer = 1
+                    mergeWork = []
+                    mergeWorkerOutput = []
+                    mergeWorkerPool = Pool(maxtasksperchild=10)
+                    mergeWork.append([targetDir])
+                    for root, dirs, files in os.walk(targetDir, False):
+                        dirs, files = walkSort(dirs, files)
+                        for directory in dirs:
+                            directoryNumer += 1
+                            mergeWork.append([os.path.join(root, directory)])
+                    if GUI:
+                        GUI.progressBarTick.emit('Combining images')
+                        GUI.progressBarTick.emit(str(directoryNumer))
+                    for i in mergeWork:
+                        mergeWorkerPool.apply_async(func=mergeDirectory, args=(i, ), callback=mergeDirectoryTick)
+                    mergeWorkerPool.close()
+                    mergeWorkerPool.join()
+                    if GUI and not GUI.conversionAlive:
+                        rmtree(targetDir, True)
+                        raise UserWarning("Conversion interrupted.")
+                    if len(mergeWorkerOutput) > 0:
+                        rmtree(targetDir, True)
+                        raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0][0],
+                                           mergeWorkerOutput[0][1])
+                print("Splitting images...")
+                for root, _, files in os.walk(targetDir, False):
+                    for name in files:
+                        if getImageFileName(name) is not None:
+                            pagenumber += 1
+                            work.append([root, name, args])
+                        else:
+                            os.remove(os.path.join(root, name))
                 if GUI:
-                    GUI.progressBarTick.emit('Combining images')
-                    GUI.progressBarTick.emit(str(directoryNumer))
-                for i in mergeWork:
-                    mergeWorkerPool.apply_async(func=mergeDirectory, args=(i, ), callback=mergeDirectoryTick)
-                mergeWorkerPool.close()
-                mergeWorkerPool.join()
-                if GUI and not GUI.conversionAlive:
-                    rmtree(options.targetDir, True)
-                    raise UserWarning("Conversion interrupted.")
-                if len(mergeWorkerOutput) > 0:
-                    rmtree(options.targetDir, True)
-                    raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0][0],
-                                       mergeWorkerOutput[0][1])
-            print("Splitting images...")
-            for root, _, files in os.walk(options.targetDir, False):
-                for name in files:
-                    if getImageFileName(name) is not None:
-                        pagenumber += 1
-                        work.append([root, name, options])
-                    else:
-                        os.remove(os.path.join(root, name))
-            if GUI:
-                GUI.progressBarTick.emit('Splitting images')
-                GUI.progressBarTick.emit(str(pagenumber))
-                GUI.progressBarTick.emit('tick')
-            if len(work) > 0:
-                for i in work:
-                    splitWorkerPool.apply_async(func=splitImage, args=(i, ), callback=splitImageTick)
-                splitWorkerPool.close()
-                splitWorkerPool.join()
-                if GUI and not GUI.conversionAlive:
-                    rmtree(options.targetDir, True)
-                    raise UserWarning("Conversion interrupted.")
-                if len(splitWorkerOutput) > 0:
-                    rmtree(options.targetDir, True)
-                    raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0][0],
-                                       splitWorkerOutput[0][1])
-                if options.inPlace:
-                    rmtree(options.sourceDir)
-                    move(options.targetDir, options.sourceDir)
+                    GUI.progressBarTick.emit('Splitting images')
+                    GUI.progressBarTick.emit(str(pagenumber))
+                    GUI.progressBarTick.emit('tick')
+                if len(work) > 0:
+                    for i in work:
+                        splitWorkerPool.apply_async(func=splitImage, args=(i, ), callback=splitImageTick)
+                    splitWorkerPool.close()
+                    splitWorkerPool.join()
+                    if GUI and not GUI.conversionAlive:
+                        rmtree(targetDir, True)
+                        raise UserWarning("Conversion interrupted.")
+                    if len(splitWorkerOutput) > 0:
+                        rmtree(targetDir, True)
+                        raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0][0],
+                                           splitWorkerOutput[0][1])
+                    if args.inPlace:
+                        rmtree(sourceDir)
+                        move(targetDir, sourceDir)
+                else:
+                    rmtree(targetDir, True)
+                    raise UserWarning("Source directory is empty.")
             else:
-                rmtree(options.targetDir, True)
-                raise UserWarning("Source directory is empty.")
-        else:
-            raise UserWarning("Provided path is not a directory.")
+                raise UserWarning("Provided input is not a directory.")
     else:
         raise UserWarning("Target height is not set.")
