@@ -55,7 +55,7 @@ class ComicArchive:
 
     def extract(self, targetdir):
         if not os.path.isdir(targetdir):
-            raise OSError('Target directory don\'t exist.')
+            raise OSError('Target directory doesn\'t exist.')
         process = Popen('7z x -y -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -xr!Thumbs.db -o"' + targetdir + '" "' +
                         self.filepath + '"', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         process.communicate()

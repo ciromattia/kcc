@@ -19,8 +19,9 @@
 # PERFORMANCE OF THIS SOFTWARE.
 
 import sys
-if sys.version_info[0] != 3:
-    print('ERROR: This is Python 3 script!')
+
+if sys.version_info < (3, 8, 0):
+    print('ERROR: This is a Python 3.8+ script!')
     exit(1)
 
 from multiprocessing import freeze_support, set_start_method
