@@ -1,5 +1,25 @@
 # CHANGELOG
 
+
+#### 5.6.2:
+* build pipeline : drop pypi by @darodi in [#465](https://github.com/ciromattia/kcc/pull/465)
+* supporting Kindle Previewer by @darodi in [#466](https://github.com/ciromattia/kcc/pull/466)
+* Bump actions/upload-artifact from 2 to 3 by @dependabot in [#468](https://github.com/ciromattia/kcc/pull/468)
+* new appImage by @darodi in [#483](https://github.com/ciromattia/kcc/pull/483)
+* Bump actions/checkout from 2 to 3 by @dependabot in [#484](https://github.com/ciromattia/kcc/pull/484)
+* supporting Kindle Previewer by @darodi in [#486](https://github.com/ciromattia/kcc/pull/486)
+* comic2ebook/func: Add a delete option (closes #458) by @Constantin1489 in [#485](https://github.com/ciromattia/kcc/pull/485)
+* Add command line executables to CI/pipelines by @darodi in [#487](https://github.com/ciromattia/kcc/pull/487)
+* gui/func: Add a 'delete after conversion' button (closes #458) by @Constantin1489 in [#488](https://github.com/ciromattia/kcc/pull/488)
+* fix crashes on png transparency by @axu2 in [#494](https://github.com/ciromattia/kcc/pull/494)
+* Update python-slugify requirement from <8.0.0,>=1.2.1 to >=1.2.1,<9.0.0 by @dependabot in [#473](https://github.com/ciromattia/kcc/pull/473)
+* Updates GUI text for new Homebrew version by @thatrobotdev in [#491](https://github.com/ciromattia/kcc/pull/491)
+* Even with EPUB-200MB option selected, created file is above 200MB by @darodi in [#503](https://github.com/ciromattia/kcc/pull/503)
+* limit kindle scribe image size to (1440, 1920) when using kindlegen by @darodi in [#514](https://github.com/ciromattia/kcc/pull/514)
+* add 7z to PATH by @axu2 in [#513](https://github.com/ciromattia/kcc/pull/513)
+* use unrar for fedora only by @darodi in [#515](https://github.com/ciromattia/kcc/pull/515)
+
+
 #### 5.6.1:
 * Fix pillow backwards compatibility, add mozjpeg-lossless-optimization to setup.py by @corylk in #461
 * fix in fedora: 7z doesn't support rar archives, use unrar by @AlicesReflexion in #370
