@@ -313,22 +313,35 @@ class ComicPage:
         self.image = self.image.quantize(palette=palImg)
 
     def resizeImage(self):
-        ratio_device = float(self.size[1]) / float(self.size[0])
-        ratio_image = float(self.image.size[1]) / float(self.image.size[0])
+
+        ratio_device = float(self.size[0]) / float(self.size[1])
+        ratio_image = float(self.image.size[0]) / float(self.image.size[1])
         method = self.resize_method()
         if self.opt.stretch:
             self.image = self.image.resize(self.size, method)
         elif method == Image.Resampling.BICUBIC and not self.opt.upscale:
             if self.opt.format == 'CBZ' or self.opt.kfx:
-                self.image = ImageOps.pad(self.image, self.size, method, self.fill) 
+                borderw = int((self.size[0] - self.image.size[0]) / 2)
+                borderh = int((self.size[1] - self.image.size[1]) / 2)
+                self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=self.fill)
+                if self.image.size[0] != self.size[0] or self.image.size[1] != self.size[1]:
+                    self.image = ImageOps.fit(self.image, self.size, method=method, centering=(0.5, 0.5))
         else: # if image bigger than device resolution or smaller with upscaling
             if self.opt.format == 'CBZ' or self.opt.kfx:
-                self.image = ImageOps.pad(self.image, self.size, method, self.fill)
+                if ratio_image < ratio_device:
+                    diff = int(self.image.size[1] * ratio_device) - self.image.size[0]
+                    self.image = ImageOps.expand(self.image, border=(int(diff / 2), 0), fill=self.fill)
+                elif ratio_image > ratio_device:
+                    diff = int(self.image.size[0] / ratio_device) - self.image.size[1]
+                    self.image = ImageOps.expand(self.image, border=(0, int(diff / 2)), fill=self.fill)
+                self.image = ImageOps.fit(self.image, self.size, method=method, centering=(0.5, 0.5))
             else:
-                if abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
+                if abs(1 / ratio_image - 1 / ratio_device) < AUTO_CROP_THRESHOLD:
                     self.image = ImageOps.fit(self.image, self.size, method=method)
                 else:
                     self.image = ImageOps.contain(self.image, self.size, method=method)
+                if self.image.size[0] > self.size[0] or self.image.size[1] > self.size[1]:
+                    self.image.thumbnail(self.size, Image.Resampling.LANCZOS)
 
     def resize_method(self):
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
