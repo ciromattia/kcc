@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.8
+  - python=3.11
   - Pillow>=5.2.0
   - psutil>=5.0.0
   - python-slugify>=1.2.1
