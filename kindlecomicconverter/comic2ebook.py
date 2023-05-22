@@ -36,10 +36,6 @@ from PIL import Image
 from subprocess import STDOUT, PIPE
 from psutil import Popen, virtual_memory, disk_usage
 from html import escape as hescape
-try:
-    from PyQt5 import QtCore
-except ImportError:
-    QtCore = None
 from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace
 from . import comic2panel
 from . import image

@@ -25,10 +25,6 @@ from shutil import rmtree, copytree, move
 from multiprocessing import Pool
 from PIL import Image, ImageChops, ImageOps, ImageDraw
 from .shared import getImageFileName, walkLevel, walkSort, sanitizeTrace
-try:
-    from PyQt5 import QtCore
-except ImportError:
-    QtCore = None
 
 
 def mergeDirectoryTick(output):

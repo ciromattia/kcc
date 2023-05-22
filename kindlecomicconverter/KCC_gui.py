@@ -26,7 +26,7 @@ from time import sleep
 from shutil import move, rmtree
 from subprocess import STDOUT, PIPE
 # noinspection PyUnresolvedReferences
-from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
+from PyQt6 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.sax.saxutils import escape
 from psutil import Popen, Process
 from copy import copy
@@ -51,7 +51,7 @@ class QApplicationMessaging(QtWidgets.QApplication):
         self._timeout = 1000
         self._locked = False
         socket = QtNetwork.QLocalSocket(self)
-        socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
+        socket.connectToServer(self._key, QtCore.QIODeviceBase.OpenModeFlag.WriteOnly)
         if not socket.waitForConnected(self._timeout):
             self._server = QtNetwork.QLocalServer(self)
             self._server.newConnection.connect(self.handleMessage)
@@ -65,7 +65,7 @@ class QApplicationMessaging(QtWidgets.QApplication):
             self._server.close()
 
     def event(self, e):
-        if e.type() == QtCore.QEvent.FileOpen:
+        if e.type() == QtCore.QEvent.Type.FileOpen:
             self.messageFromOtherInstance.emit(bytes(e.file(), 'UTF-8'))
             return True
         else:
@@ -81,7 +81,7 @@ class QApplicationMessaging(QtWidgets.QApplication):
 
     def sendMessage(self, message):
         socket = QtNetwork.QLocalSocket(self)
-        socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
+        socket.connectToServer(self._key, QtCore.QIODeviceBase.OpenModeFlag.WriteOnly)
         socket.waitForConnected(self._timeout)
         socket.write(bytes(message, 'UTF-8'))
         socket.waitForBytesWritten(self._timeout)
@@ -101,34 +101,34 @@ class QMainWindowKCC(QtWidgets.QMainWindow):
 class Icons:
     def __init__(self):
         self.deviceKindle = QtGui.QIcon()
-        self.deviceKindle.addPixmap(QtGui.QPixmap(":/Devices/icons/Kindle.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.deviceKindle.addPixmap(QtGui.QPixmap(":/Devices/icons/Kindle.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.deviceKobo = QtGui.QIcon()
-        self.deviceKobo.addPixmap(QtGui.QPixmap(":/Devices/icons/Kobo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.deviceKobo.addPixmap(QtGui.QPixmap(":/Devices/icons/Kobo.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.deviceOther = QtGui.QIcon()
-        self.deviceOther.addPixmap(QtGui.QPixmap(":/Devices/icons/Other.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.deviceOther.addPixmap(QtGui.QPixmap(":/Devices/icons/Other.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
 
         self.MOBIFormat = QtGui.QIcon()
-        self.MOBIFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.MOBIFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.CBZFormat = QtGui.QIcon()
-        self.CBZFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/CBZ.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.CBZFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/CBZ.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.EPUBFormat = QtGui.QIcon()
-        self.EPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/EPUB.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.EPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/EPUB.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.KFXFormat = QtGui.QIcon()
-        self.KFXFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/KFX.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.KFXFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/KFX.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.MOBIEPUBFormat = QtGui.QIcon()
-        self.MOBIEPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.MOBIEPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.EPUB200MBFormat = QtGui.QIcon()
-        self.EPUB200MBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/EPUB.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.EPUB200MBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/EPUB.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
 
         self.info = QtGui.QIcon()
-        self.info.addPixmap(QtGui.QPixmap(":/Status/icons/info.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.info.addPixmap(QtGui.QPixmap(":/Status/icons/info.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.warning = QtGui.QIcon()
-        self.warning.addPixmap(QtGui.QPixmap(":/Status/icons/warning.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.warning.addPixmap(QtGui.QPixmap(":/Status/icons/warning.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.error = QtGui.QIcon()
-        self.error.addPixmap(QtGui.QPixmap(":/Status/icons/error.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.error.addPixmap(QtGui.QPixmap(":/Status/icons/error.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
 
         self.programIcon = QtGui.QIcon()
-        self.programIcon.addPixmap(QtGui.QPixmap(":/Icon/icons/comic2ebook.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.programIcon.addPixmap(QtGui.QPixmap(":/Icon/icons/comic2ebook.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
 
 
 class VersionThread(QtCore.QThread):
@@ -227,28 +227,28 @@ class WorkerThread(QtCore.QThread):
         options.format = str(GUI.formatBox.currentText()).replace('/AZW3', '')
         if GUI.mangaBox.isChecked():
             options.righttoleft = True
-        if GUI.rotateBox.checkState() == 1:
+        if GUI.rotateBox.checkState().value == 1:
             options.splitter = 2
-        elif GUI.rotateBox.checkState() == 2:
+        elif GUI.rotateBox.checkState().value == 2:
             options.splitter = 1
-        if GUI.qualityBox.checkState() == 1:
+        if GUI.qualityBox.checkState().value == 1:
             options.autoscale = True
-        elif GUI.qualityBox.checkState() == 2:
+        elif GUI.qualityBox.checkState().value == 2:
             options.hq = True
         if GUI.webtoonBox.isChecked():
             options.webtoon = True
-        if GUI.upscaleBox.checkState() == 1:
+        if GUI.upscaleBox.checkState().value == 1:
             options.stretch = True
-        elif GUI.upscaleBox.checkState() == 2:
+        elif GUI.upscaleBox.checkState().value == 2:
             options.upscale = True
         if GUI.gammaBox.isChecked() and float(GUI.gammaValue) > 0.09:
             options.gamma = float(GUI.gammaValue)
-        options.cropping = GUI.croppingBox.checkState()
-        if GUI.croppingBox.checkState() >= 1:
+        options.cropping = GUI.croppingBox.checkState().value
+        if GUI.croppingBox.checkState().value >= 1:
             options.croppingp = float(GUI.croppingPowerValue)
         if GUI.borderBox.checkState() == 1:
             options.white_borders = True
-        elif GUI.borderBox.checkState() == 2:
+        elif GUI.borderBox.checkState().value == 2:
             options.black_borders = True
         if GUI.outputSplit.isChecked():
             options.batchsplit = 2
@@ -260,9 +260,9 @@ class WorkerThread(QtCore.QThread):
             options.noprocessing = True
         if GUI.deleteBox.isChecked():
             options.delete = True
-        if GUI.mozJpegBox.checkState() == 1:
+        if GUI.mozJpegBox.checkState().value == 1:
             options.forcepng = True
-        elif GUI.mozJpegBox.checkState() == 2:
+        elif GUI.mozJpegBox.checkState().value == 2:
             options.mozjpeg = True
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.widthBox.value())
@@ -444,7 +444,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         MW.activateWindow()
 
     def addTrayMessage(self, message, icon):
-        icon = eval('QtWidgets.QSystemTrayIcon.' + icon)
+        icon = eval('QtWidgets.QSystemTrayIcon.MessageIcon.' + icon)
         if self.supportsMessages() and not MW.isActiveWindow():
             self.showMessage('Kindle Comic Converter', message, icon)
 
@@ -554,7 +554,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.conversionAlive = False
             self.worker.sync()
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap(":/Other/icons/convert.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(":/Other/icons/convert.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
             GUI.convertButton.setIcon(icon)
             GUI.convertButton.setText('Convert')
             GUI.centralWidget.setAcceptDrops(True)
@@ -562,7 +562,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.conversionAlive = True
             self.worker.sync()
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap(":/Other/icons/clear.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(":/Other/icons/clear.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
             GUI.convertButton.setIcon(icon)
             GUI.convertButton.setText('Abort')
             GUI.centralWidget.setAcceptDrops(False)
@@ -693,7 +693,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def showDialog(self, message, kind):
         if kind == 'error':
-            QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
+            QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.StandardButton.Ok)
         elif kind == 'question':
             GUI.versionCheck.setAnswer(QtWidgets.QMessageBox.question(MW, 'KCC - Question', message,
                                                                       QtWidgets.QMessageBox.Yes,
@@ -721,7 +721,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.conversionAlive = False
             self.worker.sync()
         else:
-            if QtWidgets.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
+            if QtWidgets.QApplication.keyboardModifiers() == QtCore.Qt.KeyboardModifier.ShiftModifier:
                 dname = QtWidgets.QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
                 if dname != '':
                     if sys.platform.startswith('win'):
@@ -1024,7 +1024,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                           'com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DO'
                                           'NATE</a> - <a href="http://www.mobileread.com/forums/showthread.php?t=207461'
                                           '">FORUM</a></b>')
-        statusBarLabel.setAlignment(QtCore.Qt.AlignCenter)
+        statusBarLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         statusBarLabel.setOpenExternalLinks(True)
         GUI.statusBar.addPermanentWidget(statusBarLabel, 1)
 
@@ -1111,7 +1111,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             else:
                 try:
                     if eval('GUI.' + str(option)).isEnabled():
-                        eval('GUI.' + str(option)).setCheckState(self.options[option])
+                        eval('GUI.' + str(option)).setCheckState(QtCore.CheckState(self.options[option]))
                 except AttributeError:
                     pass
         self.worker.sync()
@@ -1185,7 +1185,7 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         self.ui = QtWidgets.QDialog()
         self.parser = None
         self.setupUi(self.ui)
-        self.ui.setWindowFlags(self.ui.windowFlags() & ~QtCore.Qt.WindowContextHelpButtonHint)
+        self.ui.setWindowFlags(self.ui.windowFlags() & ~QtCore.Qt.WindowType.WindowContextHelpButtonHint)
         self.okButton.clicked.connect(self.saveData)
         self.cancelButton.clicked.connect(self.ui.close)
         if sys.platform.startswith('linux'):

@@ -100,7 +100,7 @@ def dependencyCheck(level):
     missing = []
     if level > 2:
         try:
-            from PyQt5.QtCore import qVersion as qtVersion
+            from PyQt6.QtCore import qVersion as qtVersion
             if StrictVersion('5.6.0') > StrictVersion(qtVersion()):
                 missing.append('PyQt 5.6.0+')
         except ImportError:
