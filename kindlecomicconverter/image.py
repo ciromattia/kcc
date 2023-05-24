@@ -24,6 +24,13 @@ import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
 from .shared import md5Checksum
 
+# 0.045 was determined by
+# 1200 / 824 = 1.456 (Kindle DX resolution)
+# 2250 / 1500 = 1.5 (Typical manga page resolution)
+# 1.5 - 1.456 < 0.045
+# 0.045 / 1.5 = 0.03 (So maximum 3% of is cropped)
+AUTO_CROP_THRESHOLD = 0.045
+
 
 class ProfileData:
     def __init__(self):
@@ -306,36 +313,32 @@ class ComicPage:
         self.image = self.image.quantize(palette=palImg)
 
     def resizeImage(self):
-        if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
-            method = Image.Resampling.BICUBIC
-        else:
-            method = Image.Resampling.LANCZOS
+        ratio_device = float(self.size[1]) / float(self.size[0])
+        ratio_image = float(self.image.size[1]) / float(self.image.size[0])
+        method = self.resize_method()
         if self.opt.stretch:
-        # if self.opt.stretch or (self.opt.kfx and ('-KCC-B' in self.targetPath or '-KCC-C' in self.targetPath)):
             self.image = self.image.resize(self.size, method)
-        elif self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1] and not self.opt.upscale:
+        elif method == Image.Resampling.BICUBIC and not self.opt.upscale:
             if self.opt.format == 'CBZ' or self.opt.kfx:
                 borderw = int((self.size[0] - self.image.size[0]) / 2)
                 borderh = int((self.size[1] - self.image.size[1]) / 2)
                 self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=self.fill)
                 if self.image.size[0] != self.size[0] or self.image.size[1] != self.size[1]:
-                    self.image = ImageOps.fit(self.image, self.size, method=Image.Resampling.BICUBIC, centering=(0.5, 0.5))
-        else:
-            if self.opt.format == 'CBZ' or self.opt.kfx:
-                ratioDev = float(self.size[0]) / float(self.size[1])
-                if (float(self.image.size[0]) / float(self.image.size[1])) < ratioDev:
-                    diff = int(self.image.size[1] * ratioDev) - self.image.size[0]
-                    self.image = ImageOps.expand(self.image, border=(int(diff / 2), 0), fill=self.fill)
-                elif (float(self.image.size[0]) / float(self.image.size[1])) > ratioDev:
-                    diff = int(self.image.size[0] / ratioDev) - self.image.size[1]
-                    self.image = ImageOps.expand(self.image, border=(0, int(diff / 2)), fill=self.fill)
-                self.image = ImageOps.fit(self.image, self.size, method=method, centering=(0.5, 0.5))
+                    self.image = ImageOps.fit(self.image, self.size, method=method)
+        else: # if image bigger than device resolution or smaller with upscaling
+            if abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
+                self.image = ImageOps.fit(self.image, self.size, method=method)
+            elif self.opt.format == 'CBZ' or self.opt.kfx:
+                self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
-                hpercent = self.size[1] / float(self.image.size[1])
-                wsize = int((float(self.image.size[0]) * float(hpercent)))
-                self.image = self.image.resize((wsize, self.size[1]), method)
-                if self.image.size[0] > self.size[0] or self.image.size[1] > self.size[1]:
-                    self.image.thumbnail(self.size, Image.Resampling.LANCZOS)
+                self.image = ImageOps.contain(self.image, self.size, method=method)
+
+    def resize_method(self):
+        if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
+            method = Image.Resampling.BICUBIC
+        else:
+            method = Image.Resampling.LANCZOS
+        return method
 
     def getBoundingBox(self, tmptmg):
         min_margin = [int(0.005 * i + 0.5) for i in tmptmg.size]

@@ -16,11 +16,12 @@
 # OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
-
+import json
 import os
+import re
 import sys
 from urllib.parse import unquote
-from urllib.request import urlretrieve
+from urllib.request import urlretrieve, urlopen
 from time import sleep
 from shutil import move, rmtree
 from subprocess import STDOUT, PIPE
@@ -142,63 +143,26 @@ class VersionThread(QtCore.QThread):
         self.wait()
 
     def run(self):
-        # TODO adapt with github releases
-        pass
+        try:
+            last_version_url = urlopen("https://api.github.com/repos/ciromattia/kcc/releases/latest")
+            data = last_version_url.read()
+            encoding = last_version_url.info().get_content_charset('utf-8')
+            json_parser = json.loads(data.decode(encoding))
 
-        # try:
-        #     XML = parse(urlopen(Request('https://kcc.iosphe.re/Version/',
-        #                                 headers={'User-Agent': 'KindleComicConverter/' + __version__})))
-        # except Exception:
-        #     return
-        # latestVersion = XML.childNodes[0].getElementsByTagName('LatestVersion')[0].childNodes[0].toxml()
-        # if ("beta" not in __version__ and StrictVersion(latestVersion) > StrictVersion(__version__)) \
-        #         or ("beta" in __version__
-        #             and StrictVersion(latestVersion) >= StrictVersion(re.sub(r'-beta.*', '', __version__))):
-        #     if sys.platform.startswith('win'):
-        #         self.newVersion = latestVersion
-        #         self.md5 = XML.childNodes[0].getElementsByTagName('MD5')[0].childNodes[0].toxml()
-        #         MW.showDialog.emit('<b>New version released!</b> <a href="https://github.com/ciromattia/kcc/releases/">'
-        #                            'See changelog.</a><br/><br/>Installed version: ' + __version__ +
-        #                            '<br/>Current version: ' + latestVersion +
-        #                            '<br/><br/>Would you like to start automatic update?', 'question')
-        #         self.getNewVersion()
-        #     else:
-        #         MW.addMessage.emit('<a href="https://kcc.iosphe.re/">'
-        #                            '<b>The new version is available!</b></a> '
-        #                            '(<a href="https://github.com/ciromattia/kcc/releases/">'
-        #                            'Changelog</a>)', 'warning', False)
+            html_url = json_parser["html_url"]
+            latest_version = json_parser["tag_name"]
+            latest_version = re.sub(r'^v', "", latest_version)
+
+            if ("b" not in __version__ and StrictVersion(latest_version) > StrictVersion(__version__)) \
+                    or ("b" in __version__
+                        and StrictVersion(latest_version) >= StrictVersion(re.sub(r'b.*', '', __version__))):
+                MW.addMessage.emit('<a href="' + html_url + '"><b>The new version is available!</b></a>', 'warning',
+                                   False)
+        except Exception:
+            return
 
     def setAnswer(self, dialoganswer):
         self.answer = dialoganswer
-
-    def getNewVersion(self):
-        while self.answer is None:
-            sleep(1)
-        if self.answer == QtWidgets.QMessageBox.Yes:
-            try:
-                MW.modeConvert.emit(-1)
-                MW.progressBarTick.emit('Downloading update')
-                path = urlretrieve('https://kcc.iosphe.re/Windows/KindleComicConverter_win_' +
-                                   self.newVersion + '.exe', reporthook=self.getNewVersionTick)
-                if self.md5 != md5Checksum(path[0]):
-                    raise Exception
-                move(path[0], path[0] + '.exe')
-                MW.hideProgressBar.emit()
-                MW.modeConvert.emit(1)
-                Popen(path[0] + '.exe  /SP- /silent /noicons', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-                MW.forceShutdown.emit()
-            except Exception:
-                MW.addMessage.emit('Failed to download the update!', 'warning', False)
-                MW.hideProgressBar.emit()
-                MW.modeConvert.emit(1)
-
-    def getNewVersionTick(self, size, blocksize, totalsize):
-        progress = int((size / (totalsize // blocksize)) * 100)
-        if size == 0:
-            MW.progressBarTick.emit('100')
-        if progress > self.barProgress:
-            self.barProgress = progress
-            MW.progressBarTick.emit('tick')
 
 
 class ProgressThread(QtCore.QThread):
@@ -255,7 +219,7 @@ class WorkerThread(QtCore.QThread):
         MW.modeConvert.emit(0)
 
         parser = comic2ebook.makeParser()
-        options, _ = parser.parse_args()
+        options = parser.parse_args()
         argv = ''
         currentJobs = []
 
@@ -506,7 +470,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
                                                             'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf);;All (*.*)')
         else:
-            fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath, 'Comic (*.pdf);;All (*.*)')
+            fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
+                                                            'Comic (*.pdf);;All (*.*)')
         for fname in fnames[0]:
             if fname != '':
                 if sys.platform.startswith('win'):
@@ -617,7 +582,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def togglecroppingBox(self, value):
         if value:
-             GUI.croppingWidget.setVisible(True)
+            GUI.croppingWidget.setVisible(True)
         else:
             GUI.croppingWidget.setVisible(False)
             self.changeCroppingPower(100)  # 1.0
@@ -731,8 +696,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
         elif kind == 'question':
             GUI.versionCheck.setAnswer(QtWidgets.QMessageBox.question(MW, 'KCC - Question', message,
-                                                                          QtWidgets.QMessageBox.Yes,
-                                                                          QtWidgets.QMessageBox.No))
+                                                                      QtWidgets.QMessageBox.Yes,
+                                                                      QtWidgets.QMessageBox.No))
 
     def updateProgressbar(self, command):
         if command == 'tick':
@@ -1075,7 +1040,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.sevenzip = True
         else:
             self.sevenzip = False
-            self.addMessage('Cannot find <a href="http://www.7-zip.org/download.html">7z</a>!'
+            self.addMessage('Add <a href="http://www.7-zip.org/download.html">7z</a> to PATH!'
                             ' Processing of archives will be disabled.', 'warning')
         self.detectKindleGen(True)
 
@@ -1153,7 +1118,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.versionCheck.start()
         self.tray.show()
 
-        # Cleanup unfisnished conversion
+        # Cleanup unfinished conversion
         for root, dirs, _ in walkLevel(gettempdir(), 0):
             for tempdir in dirs:
                 if tempdir.startswith('KCC-'):

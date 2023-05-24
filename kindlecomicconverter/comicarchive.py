@@ -19,6 +19,7 @@
 #
 
 import os
+import distro
 from psutil import Popen
 from shutil import move
 from subprocess import STDOUT, PIPE
@@ -38,30 +39,34 @@ class ComicArchive:
                 self.type = line.rstrip().decode().split(' = ')[1].upper()
                 break
         process.communicate()
-        if process.returncode != 0:
+        if process.returncode != 0 and distro.id() == 'fedora':
             process = Popen('unrar l -y -p1 "' + self.filepath + '"', stderr=STDOUT, stdout=PIPE, stdin=PIPE, shell=True)
             for line in process.stdout:
                 if b'Details: ' in line:
                     self.type = line.rstrip().decode().split(' ')[1].upper()
-                    print(self.type)
                     break
-            if(self.type != 'RAR'):
+            process.communicate()
+            if process.returncode != 0:
                 raise OSError('Archive is corrupted or encrypted.')
+            elif self.type not in ['7Z', 'RAR', 'RAR5', 'ZIP']:
+                raise OSError('Unsupported archive format.')
         elif self.type not in ['7Z', 'RAR', 'RAR5', 'ZIP']:
             raise OSError('Unsupported archive format.')
 
     def extract(self, targetdir):
         if not os.path.isdir(targetdir):
-            raise OSError('Target directory don\'t exist.')
+            raise OSError('Target directory doesn\'t exist.')
         process = Popen('7z x -y -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -xr!Thumbs.db -o"' + targetdir + '" "' +
                         self.filepath + '"', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         process.communicate()
-        if process.returncode != 0:
+        if process.returncode != 0 and distro.id() == 'fedora':
             process = Popen('unrar x -y -x__MACOSX -x.DS_Store -xthumbs.db -xThumbs.db "' + self.filepath + '" "' +
                     targetdir + '"', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
             process.communicate()
             if process.returncode != 0:
                 raise OSError('Failed to extract archive.')
+        elif process.returncode != 0:
+            raise OSError('Failed to extract archive. Check if p7zip-rar is installed.')
         tdir = os.listdir(targetdir)
         if 'ComicInfo.xml' in tdir:
             tdir.remove('ComicInfo.xml')
