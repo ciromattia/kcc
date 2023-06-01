@@ -1041,7 +1041,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         else:
             self.sevenzip = False
             self.addMessage('Add <a href="http://www.7-zip.org/download.html">7z</a> to PATH!'
-                            ' Processing of archives will be disabled.', 'warning')
+                            ' CBZ/CBR/ZIP/etc processing disabled.', 'warning')
         self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
