@@ -34,7 +34,8 @@ class MetadataParser:
                      'Inkers': [],
                      'Colorists': [],
                      'Summary': '',
-                     'Bookmarks': []}
+                     'Bookmarks': [],
+                     'Title': ''}
         self.rawdata = None
         self.format = None
         if self.source.endswith('.xml') and os.path.exists(self.source):
@@ -58,6 +59,8 @@ class MetadataParser:
             self.data['Number'] = self.rawdata.getElementsByTagName('Number')[0].firstChild.nodeValue
         if len(self.rawdata.getElementsByTagName('Summary')) != 0:
             self.data['Summary'] = self.rawdata.getElementsByTagName('Summary')[0].firstChild.nodeValue
+        if len(self.rawdata.getElementsByTagName('Title')) != 0:
+            self.data['Title'] = self.rawdata.getElementsByTagName('Title')[0].firstChild.nodeValue
         for field in ['Writer', 'Penciller', 'Inker', 'Colorist']:
             if len(self.rawdata.getElementsByTagName(field)) != 0:
                 for person in self.rawdata.getElementsByTagName(field)[0].firstChild.nodeValue.split(', '):
@@ -76,7 +79,8 @@ class MetadataParser:
             for row in (['Series', self.data['Series']], ['Volume', self.data['Volume']],
                         ['Number', self.data['Number']], ['Writer', ', '.join(self.data['Writers'])],
                         ['Penciller', ', '.join(self.data['Pencillers'])], ['Inker', ', '.join(self.data['Inkers'])],
-                        ['Colorist', ', '.join(self.data['Colorists'])], ['Summary', self.data['Summary']]):
+                        ['Colorist', ', '.join(self.data['Colorists'])], ['Summary', self.data['Summary']],
+                        ['Title', self.data['Title']]):
                 if self.rawdata.getElementsByTagName(row[0]):
                     node = self.rawdata.getElementsByTagName(row[0])[0]
                     if row[1]:
@@ -97,7 +101,8 @@ class MetadataParser:
             for row in (['Series', self.data['Series']], ['Volume', self.data['Volume']],
                         ['Number', self.data['Number']], ['Writer', ', '.join(self.data['Writers'])],
                         ['Penciller', ', '.join(self.data['Pencillers'])], ['Inker', ', '.join(self.data['Inkers'])],
-                        ['Colorist', ', '.join(self.data['Colorists'])], ['Summary', self.data['Summary']]):
+                        ['Colorist', ', '.join(self.data['Colorists'])], ['Summary', self.data['Summary']],
+                        ['Title', self.data['Title']]):
                 if row[1]:
                     main = doc.createElement(row[0])
                     root.appendChild(main)
