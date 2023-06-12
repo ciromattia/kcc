@@ -1045,7 +1045,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.sevenzip = True
         else:
             self.sevenzip = False
-            self.addMessage('Install <a href="https://www.7-zip.org/">7-Zip</a> and add 7z to PATH!'
+            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#7-zip">Install 7z and add to PATH!</a>!'
                             ' CBZ/CBR/ZIP/etc processing disabled.', 'warning')
         self.detectKindleGen(True)
 
