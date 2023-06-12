@@ -16,6 +16,10 @@ It can also optionally optimize images by applying a number of transformations.
 Amazon's tool is for comic publishers and involves a lot of manual effort, while **KCC** is for comic/manga readers.
 _KC2_ in no way is a replacement for **KCC** so you can be quite confident we are going to carry on developing our little monster ;-)
 
+### Downloads
+
+https://github.com/ciromattia/kcc/releases
+
 ### Issues / new features / donations
 If you have general questions about usage, feedback etc. please [post it here](http://www.mobileread.com/forums/showthread.php?t=207461).
 If you have some **technical** problems using KCC please [file an issue here](https://github.com/ciromattia/kcc/issues/new).
