@@ -61,9 +61,11 @@ class PdfJpgExtract:
             istart += startfix
             iend += endfix
             jpg = pdf[istart:iend]
-            jpgfile = open(self.path + "/jpg%d.jpg" % njpg, "wb")
-            jpgfile.write(jpg)
-            jpgfile.close()
-            njpg += 1
+            # hopefully skip single pixels
+            if (iend-istart - 160) > 4:
+                jpgfile = open(self.path + "/jpg%d.jpg" % njpg, "wb")
+                jpgfile.write(jpg)
+                jpgfile.close()
+                njpg += 1
             i = iend
         return self.path, njpg
