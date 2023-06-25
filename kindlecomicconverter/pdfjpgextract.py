@@ -60,12 +60,18 @@ class PdfJpgExtract:
                 raise Exception("Didn't find end of JPG!")
             istart += startfix
             iend += endfix
-            jpg = pdf[istart:iend]
-            # hopefully skip single pixels
-            if (iend-istart - 160) > 4:
-                jpgfile = open(self.path + "/jpg%d.jpg" % njpg, "wb")
-                jpgfile.write(jpg)
-                jpgfile.close()
-                njpg += 1
             i = iend
+
+            # skip stray images a few pixels in size in some PDFs
+            # typical images are many thousands in size
+            # https://github.com/ciromattia/kcc/pull/546
+            if iend - istart < 300:
+                continue
+
+            jpg = pdf[istart:iend]
+            jpgfile = open(self.path + "/jpg%d.jpg" % njpg, "wb")
+            jpgfile.write(jpg)
+            jpgfile.close()
+            njpg += 1
+
         return self.path, njpg
