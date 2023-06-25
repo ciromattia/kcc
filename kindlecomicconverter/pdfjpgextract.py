@@ -25,6 +25,11 @@ import os
 from random import choice
 from string import ascii_uppercase, digits
 
+# skip stray images a few pixels in size in some PDFs
+# typical images are many thousands in length
+# https://github.com/ciromattia/kcc/pull/546
+STRAY_IMAGE_LENGTH_THRESHOLD = 300
+
 
 class PdfJpgExtract:
     def __init__(self, fname):
@@ -62,10 +67,7 @@ class PdfJpgExtract:
             iend += endfix
             i = iend
 
-            # skip stray images a few pixels in size in some PDFs
-            # typical images are many thousands in size
-            # https://github.com/ciromattia/kcc/pull/546
-            if iend - istart < 300:
+            if iend - istart < STRAY_IMAGE_LENGTH_THRESHOLD:
                 continue
 
             jpg = pdf[istart:iend]
