@@ -748,7 +748,7 @@ def sanitizeTree(filetree):
     for root, dirs, files in os.walk(filetree, False):
         for i, name in enumerate(files):
             splitname = os.path.splitext(name)
-            newKey = os.path.join(root, f'{i:04}' + splitname[1])
+            newKey = os.path.join(root, f'{i:04}-kcc' + splitname[1])
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
