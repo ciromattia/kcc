@@ -746,13 +746,9 @@ def getPanelViewSize(deviceres, size):
 def sanitizeTree(filetree):
     chapterNames = {}
     for root, dirs, files in os.walk(filetree, False):
-        for name in files:
+        for i, name in enumerate(files):
             splitname = os.path.splitext(name)
-            slugified = slugify(splitname[0], False)
-            while os.path.exists(os.path.join(root, slugified + splitname[1])) and splitname[0].upper()\
-                    != slugified.upper():
-                slugified += "A"
-            newKey = os.path.join(root, slugified + splitname[1])
+            newKey = os.path.join(root, f'{i:04}' + splitname[1])
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
@@ -909,7 +905,6 @@ def createNewTome():
 
 
 def slugify(value, isdir):
-    return value
     if isdir:
         value = slugify_ext(value, regex_pattern=r'[^-a-z0-9_\.]+').strip('.')
     else:
