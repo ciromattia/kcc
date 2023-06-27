@@ -749,13 +749,10 @@ def sanitizeTree(filetree):
         for i, name in enumerate(files):
             splitname = os.path.splitext(name)
 
-            slugified = f'{i:04}-kcc'
-            if splitname[0].endswith('-KCC-A'):
-                slugified += '-a'
-            elif splitname[0].endswith('-KCC-B'):
-                slugified += '-b'
-            elif splitname[0].endswith('-KCC-C'):
-                slugified += '-c'
+            slugified = f'{i:04}'
+            for ending in '-KCC-A', '-KCC-B', '-KCC-C', '-KCC':
+                if splitname[0].endswith(ending):
+                    slugified += ending.lower()
 
             newKey = os.path.join(root, slugified + splitname[1])
             key = os.path.join(root, name)
