@@ -748,7 +748,16 @@ def sanitizeTree(filetree):
     for root, dirs, files in os.walk(filetree, False):
         for i, name in enumerate(files):
             splitname = os.path.splitext(name)
-            newKey = os.path.join(root, f'{i:04}-kcc' + splitname[1])
+
+            slugified = f'{i:04}-kcc'
+            if splitname[0].endswith('-KCC-A'):
+                slugified += '-a'
+            elif splitname[0].endswith('-KCC-B'):
+                slugified += '-b'
+            elif splitname[0].endswith('-KCC-C'):
+                slugified += '-c'
+
+            newKey = os.path.join(root, slugified + splitname[1])
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
@@ -763,23 +772,6 @@ def sanitizeTree(filetree):
             if key != newKey:
                 os.replace(key, newKey)
     return chapterNames
-
-
-def sanitizeTreeKobo(filetree):
-    pageNumber = 0
-    for root, dirs, files in os.walk(filetree):
-        dirs, files = walkSort(dirs, files)
-        for name in files:
-            splitname = os.path.splitext(name)
-            slugified = str(pageNumber).zfill(5)
-            pageNumber += 1
-            while os.path.exists(os.path.join(root, slugified + splitname[1])) and splitname[0].upper()\
-                    != slugified.upper():
-                slugified += "A"
-            newKey = os.path.join(root, slugified + splitname[1])
-            key = os.path.join(root, name)
-            if key != newKey:
-                os.replace(key, newKey)
 
 
 def sanitizePermissions(filetree):
