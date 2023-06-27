@@ -29,7 +29,11 @@ from .shared import md5Checksum
 # 2250 / 1500 = 1.5 (Typical manga page resolution)
 # 1.5 - 1.456 < 0.045
 # 0.045 / 1.5 = 0.03 (So maximum 3% of is cropped)
-AUTO_CROP_THRESHOLD = 0.045
+HEIGHT_CROP_THRESHOLD = 0.045
+
+# This value was determined visually to crop a similar proportion
+# Shouldn't use same value as above since Kindles aren't square
+WIDTH_CROP_THRESHOLD = -0.03 
 
 
 class ProfileData:
@@ -326,7 +330,7 @@ class ComicPage:
                 if self.image.size[0] != self.size[0] or self.image.size[1] != self.size[1]:
                     self.image = ImageOps.fit(self.image, self.size, method=method)
         else: # if image bigger than device resolution or smaller with upscaling
-            if abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
+            if WIDTH_CROP_THRESHOLD < ratio_image - ratio_device < HEIGHT_CROP_THRESHOLD:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
             elif self.opt.format == 'CBZ' or self.opt.kfx:
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
