@@ -750,7 +750,7 @@ def sanitizeTree(filetree):
             splitname = os.path.splitext(name)
 
             slugified = f'{i:04}'
-            for suffix in '-KCC-A', '-KCC-B', '-KCC-C', '-KCC':
+            for suffix in '-KCC', '-KCC-A', '-KCC-B', '-KCC-C':
                 if splitname[0].endswith(suffix):
                     slugified += suffix.lower()
 
