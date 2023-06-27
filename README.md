@@ -32,7 +32,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 ## INSTALLATION 
 
-### BINARY RELEASES
+### DOWNLOADS
 You can find the latest binary at the following link:
 
 - **https://github.com/ciromattia/kcc/releases**
