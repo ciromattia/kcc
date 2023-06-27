@@ -753,6 +753,7 @@ def sanitizeTree(filetree):
             for suffix in '-KCC', '-KCC-A', '-KCC-B', '-KCC-C':
                 if splitname[0].endswith(suffix):
                     slugified += suffix.lower()
+                    break
 
             newKey = os.path.join(root, slugified + splitname[1])
             key = os.path.join(root, name)
