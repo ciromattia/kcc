@@ -32,7 +32,13 @@ from .shared import md5Checksum
 HEIGHT_CROP_THRESHOLD = 0.045
 
 # This value was determined visually to crop a similar proportion
-# Shouldn't use same value as above since Kindles aren't square
+# Using a 1920x1440 screen as an example
+#
+# 1920/1393-1920/1440 = 0.04498683895
+# 1440 - 1393 = 47
+# 
+# 1877/1440-1920/144=-0.02986111111
+# 1920 - 1877 = 43 
 WIDTH_CROP_THRESHOLD = -0.03 
 
 
