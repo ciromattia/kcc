@@ -1147,8 +1147,6 @@ def makeBook(source, qtgui=None):
     if GUI:
         GUI.progressBarTick.emit('1')
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
-    if 'Ko' in options.profile and options.format == 'CBZ':
-        sanitizeTreeKobo(os.path.join(path, 'OEBPS', 'Images'))
     if options.batchsplit > 0:
         tomes = splitDirectory(path)
     else:
