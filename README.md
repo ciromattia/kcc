@@ -32,7 +32,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 ## INSTALLATION 
 
-### BINARY RELEASES
+### DOWNLOADS
 You can find the latest binary at the following link:
 
 - **https://github.com/ciromattia/kcc/releases**
@@ -86,8 +86,6 @@ $ sudo apt-get install qt5dxcb-plugin
 - CBR, RAR *(With `7z` executable)*
 - CB7, 7Z *(With `7z` executable)*
 - PDF *(Only extracting JPG images)*
-
-Add 7z to PATH via `setx path "%path%;C:\Program Files\7-Zip"`
 
 ## USAGE
 

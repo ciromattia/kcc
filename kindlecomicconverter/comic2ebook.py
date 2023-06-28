@@ -691,7 +691,9 @@ def getComicInfo(path, originalpath):
             os.remove(xmlPath)
             return
         options.authors = []
-        if defaultTitle:
+        if xml.data['Title']:
+            options.title = hescape(xml.data['Title'])
+        elif defaultTitle:
             if xml.data['Series']:
                 options.title = hescape(xml.data['Series'])
             if xml.data['Volume']:
