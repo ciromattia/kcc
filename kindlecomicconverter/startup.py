@@ -39,7 +39,7 @@ def start():
         KCCUI = KCC_gui.KCCGUI(KCCAplication, KCCWindow)
         for i in range(1, len(sys.argv)):
             KCCUI.handleMessage(sys.argv[i])
-        sys.exit(KCCAplication.exec())
+        sys.exit(KCCAplication.exec_())
 
 
 def startC2E():
