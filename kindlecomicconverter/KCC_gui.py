@@ -21,19 +21,18 @@ import os
 import re
 import sys
 from urllib.parse import unquote
-from urllib.request import urlretrieve, urlopen
+from urllib.request import urlopen
 from time import sleep
 from shutil import move, rmtree
 from subprocess import STDOUT, PIPE
-# noinspection PyUnresolvedReferences
-from PyQt6 import QtGui, QtCore, QtWidgets, QtNetwork
+from PySide6 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.sax.saxutils import escape
 from psutil import Popen, Process
 from copy import copy
 from distutils.version import StrictVersion
 from raven import Client
 from tempfile import gettempdir
-from .shared import md5Checksum, HTMLStripper, sanitizeTrace, walkLevel
+from .shared import HTMLStripper, sanitizeTrace, walkLevel
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -43,7 +42,7 @@ from . import KCC_ui_editor
 
 
 class QApplicationMessaging(QtWidgets.QApplication):
-    messageFromOtherInstance = QtCore.pyqtSignal(bytes)
+    messageFromOtherInstance = QtCore.Signal(bytes)
 
     def __init__(self, argv):
         QtWidgets.QApplication.__init__(self, argv)
@@ -89,13 +88,13 @@ class QApplicationMessaging(QtWidgets.QApplication):
 
 
 class QMainWindowKCC(QtWidgets.QMainWindow):
-    progressBarTick = QtCore.pyqtSignal(str)
-    modeConvert = QtCore.pyqtSignal(int)
-    addMessage = QtCore.pyqtSignal(str, str, bool)
-    addTrayMessage = QtCore.pyqtSignal(str, str)
-    showDialog = QtCore.pyqtSignal(str, str)
-    hideProgressBar = QtCore.pyqtSignal()
-    forceShutdown = QtCore.pyqtSignal()
+    progressBarTick = QtCore.Signal(str)
+    modeConvert = QtCore.Signal(int)
+    addMessage = QtCore.Signal(str, str, bool)
+    addTrayMessage = QtCore.Signal(str, str)
+    showDialog = QtCore.Signal(str, str)
+    hideProgressBar = QtCore.Signal()
+    forceShutdown = QtCore.Signal()
 
 
 class Icons:
