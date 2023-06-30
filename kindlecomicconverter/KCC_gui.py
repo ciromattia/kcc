@@ -429,7 +429,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def __init__(self):
         super().__init__()
         if self.isSystemTrayAvailable():
-            QtWidgets.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
+            self.setIcon(GUI.icons.programIcon)
             self.activated.connect(self.catchClicks)
 
     def catchClicks(self):
