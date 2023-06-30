@@ -25,6 +25,7 @@ from urllib.request import urlopen
 from time import sleep
 from shutil import move, rmtree
 from subprocess import STDOUT, PIPE
+# noinspection PyUnresolvedReferences
 from PySide6 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.sax.saxutils import escape
 from psutil import Popen, Process
