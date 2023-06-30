@@ -222,28 +222,28 @@ class WorkerThread(QtCore.QThread):
         options.format = gui_current_format
         if GUI.mangaBox.isChecked():
             options.righttoleft = True
-        if GUI.rotateBox.checkState().value == 1:
+        if GUI.rotateBox.checkState() == QtCore.Qt.CheckState.PartiallyChecked:
             options.splitter = 2
-        elif GUI.rotateBox.checkState().value == 2:
+        elif GUI.rotateBox.checkState() == QtCore.Qt.CheckState.Checked:
             options.splitter = 1
-        if GUI.qualityBox.checkState().value == 1:
+        if GUI.qualityBox.checkState() == QtCore.Qt.CheckState.PartiallyChecked:
             options.autoscale = True
-        elif GUI.qualityBox.checkState().value == 2:
+        elif GUI.qualityBox.checkState() == QtCore.Qt.CheckState.Checked:
             options.hq = True
         if GUI.webtoonBox.isChecked():
             options.webtoon = True
-        if GUI.upscaleBox.checkState().value == 1:
+        if GUI.upscaleBox.checkState() == QtCore.Qt.CheckState.PartiallyChecked:
             options.stretch = True
-        elif GUI.upscaleBox.checkState().value == 2:
+        elif GUI.upscaleBox.checkState() == QtCore.Qt.CheckState.Checked:
             options.upscale = True
         if GUI.gammaBox.isChecked() and float(GUI.gammaValue) > 0.09:
             options.gamma = float(GUI.gammaValue)
         options.cropping = GUI.croppingBox.checkState().value
-        if GUI.croppingBox.checkState().value >= 1:
+        if GUI.croppingBox.checkState() != QtCore.Qt.CheckState.Unchecked:
             options.croppingp = float(GUI.croppingPowerValue)
-        if GUI.borderBox.checkState() == 1:
+        if GUI.borderBox.checkState() == QtCore.Qt.CheckState.PartiallyChecked:
             options.white_borders = True
-        elif GUI.borderBox.checkState().value == 2:
+        elif GUI.borderBox.checkState() == QtCore.Qt.CheckState.Checked:
             options.black_borders = True
         if GUI.outputSplit.isChecked():
             options.batchsplit = 2
@@ -255,9 +255,9 @@ class WorkerThread(QtCore.QThread):
             options.noprocessing = True
         if GUI.deleteBox.isChecked():
             options.delete = True
-        if GUI.mozJpegBox.checkState().value == 1:
+        if GUI.mozJpegBox.checkState() == QtCore.Qt.CheckState.PartiallyChecked:
             options.forcepng = True
-        elif GUI.mozJpegBox.checkState().value == 2:
+        elif GUI.mozJpegBox.checkState() == QtCore.Qt.CheckState.Checked:
             options.mozjpeg = True
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.widthBox.value())
