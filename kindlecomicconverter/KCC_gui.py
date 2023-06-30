@@ -27,6 +27,7 @@ from shutil import move, rmtree
 from subprocess import STDOUT, PIPE
 # noinspection PyUnresolvedReferences
 from PySide6 import QtGui, QtCore, QtWidgets, QtNetwork
+from PySide6.QtCore import Qt
 from xml.sax.saxutils import escape
 from psutil import Popen, Process
 from copy import copy
@@ -222,28 +223,28 @@ class WorkerThread(QtCore.QThread):
         options.format = gui_current_format
         if GUI.mangaBox.isChecked():
             options.righttoleft = True
-        if GUI.rotateBox.checkState() == QtCore.Qt.CheckState.PartiallyChecked:
+        if GUI.rotateBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.splitter = 2
-        elif GUI.rotateBox.checkState() == QtCore.Qt.CheckState.Checked:
+        elif GUI.rotateBox.checkState() == Qt.CheckState.Checked:
             options.splitter = 1
-        if GUI.qualityBox.checkState() == QtCore.Qt.CheckState.PartiallyChecked:
+        if GUI.qualityBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.autoscale = True
-        elif GUI.qualityBox.checkState() == QtCore.Qt.CheckState.Checked:
+        elif GUI.qualityBox.checkState() == Qt.CheckState.Checked:
             options.hq = True
         if GUI.webtoonBox.isChecked():
             options.webtoon = True
-        if GUI.upscaleBox.checkState() == QtCore.Qt.CheckState.PartiallyChecked:
+        if GUI.upscaleBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.stretch = True
-        elif GUI.upscaleBox.checkState() == QtCore.Qt.CheckState.Checked:
+        elif GUI.upscaleBox.checkState() == Qt.CheckState.Checked:
             options.upscale = True
         if GUI.gammaBox.isChecked() and float(GUI.gammaValue) > 0.09:
             options.gamma = float(GUI.gammaValue)
         options.cropping = GUI.croppingBox.checkState().value
-        if GUI.croppingBox.checkState() != QtCore.Qt.CheckState.Unchecked:
+        if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
             options.croppingp = float(GUI.croppingPowerValue)
-        if GUI.borderBox.checkState() == QtCore.Qt.CheckState.PartiallyChecked:
+        if GUI.borderBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.white_borders = True
-        elif GUI.borderBox.checkState() == QtCore.Qt.CheckState.Checked:
+        elif GUI.borderBox.checkState() == Qt.CheckState.Checked:
             options.black_borders = True
         if GUI.outputSplit.isChecked():
             options.batchsplit = 2
@@ -255,9 +256,9 @@ class WorkerThread(QtCore.QThread):
             options.noprocessing = True
         if GUI.deleteBox.isChecked():
             options.delete = True
-        if GUI.mozJpegBox.checkState() == QtCore.Qt.CheckState.PartiallyChecked:
+        if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.forcepng = True
-        elif GUI.mozJpegBox.checkState() == QtCore.Qt.CheckState.Checked:
+        elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
             options.mozjpeg = True
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.widthBox.value())
