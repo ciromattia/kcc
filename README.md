@@ -59,16 +59,9 @@ On Debian based distributions these two commands should install all needed depen
 
 
 ```bash
-$ sudo apt-get install -y python3 python3-dev libpng-dev libjpeg-dev p7zip-full p7zip-rar unrar-free libgl1 python3-pyqt5 && \
+$ sudo apt-get install -y python3 python3-dev libpng-dev libjpeg-dev p7zip-full p7zip-rar unrar-free libgl1 python3-pyside6 && \
     python -m pip install --upgrade pip && \
     python -m pip install --upgrade -r requirements.txt
-```
-
-
-#### Optional dependencies
-- Qt platform integration plugin for Deepin Desktop Environment
-```bash
-$ sudo apt-get install qt5dxcb-plugin
 ```
 
 - KindleGen ~~[deprecated link](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)~~ v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation) 
