@@ -65,7 +65,7 @@ $ sudo apt-get install -y python3 python3-dev libpng-dev libjpeg-dev p7zip-full 
 ```
 
 
- #### Optional dependencies
+#### Optional dependencies
 - KindleGen ~~[deprecated link](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)~~ v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation) 
   - It can be found in [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011)
     `Amazon Kindle Previewer 3 Folder\lib\fc\bin`, the usual location in windows is in windows is `C:\Users\user\AppData\Local\Amazon\Kindle Previewer 3\lib\fc\bin\`
