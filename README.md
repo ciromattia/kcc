@@ -39,10 +39,6 @@ You can find the latest binary at the following link:
 - flatpak : https://flathub.org/apps/details/io.github.ciromattia.kcc
 - Docker: https://github.com/ciromattia/kcc/pkgs/container/kcc
 
-~~- **[Windows](http://kcc.iosphe.re/Windows/) (64-bit only)**~~  
-~~- **[macOS](http://kcc.iosphe.re/OSX/) (10.14+)**~~  
-~~- **Linux:** Currently unavailable.~~
-
 more information on [installation](https://github.com/ciromattia/kcc/wiki/Installation)
 
 ### DEPENDENCIES
