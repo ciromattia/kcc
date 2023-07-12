@@ -27,7 +27,7 @@ try:
     import mozjpeg_lossless_optimization
 except ImportError as e:
     print(e)
-    print("Check https://github.com/ciromattia/kcc/issues/541#issuecomment-1587343401")
+    print("WARNING: https://github.com/ciromattia/kcc/issues/541#issuecomment-1587343401")
 
 # 0.045 was determined by
 # 1200 / 824 = 1.456 (Kindle DX resolution)
