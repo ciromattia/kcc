@@ -746,7 +746,7 @@ def getPanelViewSize(deviceres, size):
 def sanitizeTree(filetree):
     chapterNames = {}
     for root, dirs, files in os.walk(filetree, False):
-        for i, name in enumerate(files):
+        for i, name in enumerate(sorted(files)):
             splitname = os.path.splitext(name)
 
             slugified = f'{i:04}'
