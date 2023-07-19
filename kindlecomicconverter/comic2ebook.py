@@ -761,7 +761,8 @@ def sanitizeTree(filetree):
         for i, name in enumerate(sorted(files)):
             splitname = os.path.splitext(name)
 
-            slugified = f'{i:04}'
+            # file needs kcc at front AND back to avoid renaming issues
+            slugified = f'kcc-{i:04}'
             for suffix in '-KCC', '-KCC-A', '-KCC-B', '-KCC-C':
                 if splitname[0].endswith(suffix):
                     slugified += suffix.lower()
