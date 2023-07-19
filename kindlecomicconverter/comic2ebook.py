@@ -513,18 +513,30 @@ def buildEPUB(path, chapternames, tomenumber):
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapternames and options.chapters:
         chapterlist = []
-        globaldiff = 0
+
+        global_diff = 0
+        diff_delta = 0
+
+        # if split
+        if options.splitter == 0:
+            diff_delta = 1
+        # if rotate and split
+        elif options.splitter == 2:
+            diff_delta = 2
+
         for aChapter in options.chapters:
             pageid = aChapter[0]
-            for x in range(0, pageid + globaldiff + 1):
+            cur_diff = global_diff
+            global_diff = 0
+
+            for x in range(0, pageid + cur_diff + 1):
                 if '-kcc-b' in filelist[x][1]:
-                    pageid += 1
-            if '-kcc-c' in filelist[pageid][1]:
-                pageid -= 1
+                    pageid += diff_delta
+                    global_diff += diff_delta
+
             filename = filelist[pageid][1]
             chapterlist.append((filelist[pageid][0].replace('Images', 'Text'), filename))
             chapternames[filename] = aChapter[1]
-            globaldiff = pageid - (aChapter[0] + globaldiff)
     buildNCX(path, options.title, chapterlist, chapternames)
     buildNAV(path, options.title, chapterlist, chapternames)
     buildOPF(path, options.title, filelist, cover)
