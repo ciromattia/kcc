@@ -501,22 +501,16 @@ def buildEPUB(path, chapternames, tomenumber):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
-            if options.coverfile:
-                if (getImageFileName(afile)[0] == 'cover-kcc'):   
-                    if (os.path.isfile(os.path.join(dirpath, 'cover-kcc' + getImageFileName(afile)[1]))):
-                        cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
-                                     'cover' + getImageFileName(afile)[1])
-                        options.covers.append((image.Cover(os.path.join(dirpath, afile),
-                                                cover, options, tomenumber), options.uuid))
-                        if options.coverpage:
-                            os.remove(os.path.join(dirpath, afile))
-                            continue
-            elif cover is None:
+            if cover is None:
                 cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
                                      'cover' + getImageFileName(afile)[1])
                 options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
                                                    tomenumber), options.uuid))
-                if options.coverpage:
+                if options.usecoverfile:
+                    if (os.path.isfile(os.path.join(dirpath, 'cover-kcc' + getImageFileName(afile)[1]))):
+                        options.covers.append((image.Cover(os.path.join(dirpath, 'cover-kcc' + getImageFileName(afile)[1]),
+                                                cover, options, tomenumber), options.uuid))                    
+                if options.nocoverpage:
                     os.remove(os.path.join(dirpath, afile))
                     continue     
             filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
@@ -995,9 +989,9 @@ def makeParser():
     output_options.add_argument("-b", "--batchsplit", type=int, dest="batchsplit", default="0",
                                 help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                      "2: Consider every subdirectory as separate volume [Default=0]")
-    output_options.add_argument("--prefercoverfile", action="store_true", dest="coverfile", default=False,
+    output_options.add_argument("--prefercoverfile", action="store_true", dest="usecoverfile", default=False,
                               help="Use cover.jpeg as cover if it exists")
-    output_options.add_argument("--nocoveraspage", action="store_true", dest="coverpage", default=False,
+    output_options.add_argument("--nocoveraspage", action="store_true", dest="nocoverpage", default=False,
                               help="Don't create a page for the cover inside the book")
 
     processing_options.add_argument("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
