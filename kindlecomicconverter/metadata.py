@@ -46,7 +46,7 @@ class MetadataParser:
                 self.rawdata = cbx.extractMetadata()
                 self.format = cbx.type
             except OSError as e:
-                raise UserWarning(e.strerror)
+                raise UserWarning(e)
         if self.rawdata:
             self.parseXML()
 
@@ -121,5 +121,5 @@ class MetadataParser:
                 cbx = comicarchive.ComicArchive(self.source)
                 cbx.addFile(tmpXML)
             except OSError as e:
-                raise UserWarning(e.strerror)
+                raise UserWarning(e)
             rmtree(workdir)

@@ -39,18 +39,14 @@ You can find the latest binary at the following link:
 - flatpak : https://flathub.org/apps/details/io.github.ciromattia.kcc
 - Docker: https://github.com/ciromattia/kcc/pkgs/container/kcc
 
-~~- **[Windows](http://kcc.iosphe.re/Windows/) (64-bit only)**~~  
-~~- **[macOS](http://kcc.iosphe.re/OSX/) (10.14+)**~~  
-~~- **Linux:** Currently unavailable.~~
-
 more information on [installation](https://github.com/ciromattia/kcc/wiki/Installation)
 
 ### DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
 - Python 3.3+
-- [PyQt5](https://pypi.python.org/pypi/PyQt5) 5.6.0+ (only needed for GUI)
+- [PySide6](https://pypi.org/project/PySide6/) 6.5.1+ (only needed for GUI)
 - [Pillow](https://pypi.python.org/pypi/Pillow/) 4.0.0+ (5.2.0+ needed for WebP support)
-- [psutil](https://pypi.python.org/pypi/psutil) 5.0.0+
+- [psutil](https://pypi.python.org/pypi/psutil) 5.9.5+
 - [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.1+, <8.0.0
 - [raven](https://pypi.python.org/pypi/raven) 6.0.0+ (only needed for GUI)
 

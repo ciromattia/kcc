@@ -771,23 +771,23 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings.setValue('currentFormat', GUI.formatBox.currentIndex())
         self.settings.setValue('startNumber', self.startNumber + 1)
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
-        self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
-                                           'rotateBox': GUI.rotateBox.checkState(),
-                                           'qualityBox': GUI.qualityBox.checkState(),
-                                           'gammaBox': GUI.gammaBox.checkState(),
-                                           'croppingBox': GUI.croppingBox.checkState(),
+        self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState().value,
+                                           'rotateBox': GUI.rotateBox.checkState().value,
+                                           'qualityBox': GUI.qualityBox.checkState().value,
+                                           'gammaBox': GUI.gammaBox.checkState().value,
+                                           'croppingBox': GUI.croppingBox.checkState().value,
                                            'croppingPowerSlider': float(self.croppingPowerValue) * 100,
-                                           'upscaleBox': GUI.upscaleBox.checkState(),
-                                           'borderBox': GUI.borderBox.checkState(),
-                                           'webtoonBox': GUI.webtoonBox.checkState(),
-                                           'outputSplit': GUI.outputSplit.checkState(),
-                                           'colorBox': GUI.colorBox.checkState(),
-                                           'disableProcessingBox': GUI.disableProcessingBox.checkState(),
-                                           'mozJpegBox': GUI.mozJpegBox.checkState(),
+                                           'upscaleBox': GUI.upscaleBox.checkState().value,
+                                           'borderBox': GUI.borderBox.checkState().value,
+                                           'webtoonBox': GUI.webtoonBox.checkState().value,
+                                           'outputSplit': GUI.outputSplit.checkState().value,
+                                           'colorBox': GUI.colorBox.checkState().value,
+                                           'disableProcessingBox': GUI.disableProcessingBox.checkState().value,
+                                           'mozJpegBox': GUI.mozJpegBox.checkState().value,
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
-                                           'deleteBox': GUI.deleteBox.checkState(),
-                                           'maximizeStrips': GUI.maximizeStrips.checkState(),
+                                           'deleteBox': GUI.deleteBox.checkState().value,
+                                           'maximizeStrips': GUI.maximizeStrips.checkState().value,
                                            'gammaSlider': float(self.gammaValue) * 100})
         self.settings.sync()
         self.tray.hide()
@@ -874,7 +874,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.setupUi(MW)
         self.editor = KCCGUI_MetaEditor()
         self.icons = Icons()
-        self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
+        self.settings = QtCore.QSettings('ciromattia', 'kcc')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
@@ -1116,7 +1116,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             else:
                 try:
                     if eval('GUI.' + str(option)).isEnabled():
-                        eval('GUI.' + str(option)).setCheckState(QtCore.CheckState(self.options[option]))
+                        eval('GUI.' + str(option)).setCheckState(Qt.CheckState(self.options[option]))
                 except AttributeError:
                     pass
         self.worker.sync()

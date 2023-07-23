@@ -1,4 +1,4 @@
-PySide6
+PySide6>=6.5.1
 Pillow>=5.2.0
 psutil>=5.9.5
 python-slugify>=1.2.1
