@@ -744,17 +744,24 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.detectKindleGen()
                 if not self.kindleGen:
                     GUI.jobList.clear()
-                    self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                    '1000765211"><b>KindleGen</b></a>! MOBI conversion is unavailable!', 'error')
-                    if sys.platform.startswith('win'):
-                        self.addMessage('Download it and place EXE in KCC directory.', 'error')
-                    elif sys.platform.startswith('darwin'):
-                        self.addMessage('Install it using <a href="http://brew.sh/">Homebrew</a>.', 'error')
-                    else:
-                        self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
+                    self.display_kindlegen_missing()
                     self.needClean = True
                     return
             self.worker.start()
+
+    def display_kindlegen_missing(self):
+        self.addMessage('Cannot find <b>KindleGen</b> from '
+                        '<a href="https://www.amazon.com/b?node=23496309011"><b>Kindle Comic Creator</b></a> or '
+                        '<a href="https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011">'
+                        '<b>Kindle Previewer</b></a>! MOBI conversion is unavailable!', 'error')
+        if sys.platform.startswith('win'):
+            self.addMessage('Download it and place EXE in KCC directory.', 'error')
+        elif sys.platform.startswith('darwin'):
+            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation/_edit#kindlegen">'
+                            'Install the kindle-comic-creator cask using Homebrew</a> to enable MOBI conversion',
+                            'error')
+        else:
+            self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
 
     def saveSettings(self, event):
         if self.conversionAlive:
@@ -849,22 +856,15 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if StrictVersion(versionCheck) < StrictVersion('2.9'):
-                        self.addMessage('Your <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                        '1000765211">KindleGen</a> is outdated! MOBI conversion might fail.', 'warning')
+                        self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
+                                        ' is outdated! MOBI conversion might fail.', 'warning')
                     break
         else:
             self.kindleGen = False
             if startup:
-                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
-                                '<b>KindleGen</b></a>! MOBI conversion will be unavailable!', 'error')
-                if sys.platform.startswith('win'):
-                    self.addMessage('Download it and place EXE in KCC directory.', 'error')
-                elif sys.platform.startswith('darwin'):
-                    self.addMessage('Install it using <a href="http://brew.sh/">Homebrew</a>: '
-                                    '<i>brew install --cask kindle-comic-creator</i> or '
-                                    '<i>brew install --cask kindle-previewer</i>', 'error')
-                else:
-                    self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
+                self.display_kindlegen_missing()
+
+
 
     def __init__(self, kccapp, kccwindow):
         global APP, MW, GUI
