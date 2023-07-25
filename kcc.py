@@ -27,22 +27,37 @@ if sys.version_info < (3, 8, 0):
 # OS specific workarounds
 import os
 if sys.platform.startswith('darwin'):
+    mac_paths = [
+        '/Applications/Kindle Previewer 3.app/Contents/lib/fc/bin/',
+        '/Applications/Kindle Comic Creator/Kindle Comic Creator.app/Contents/MacOS',
+    ]
     if getattr(sys, 'frozen', False):
-        os.environ['PATH'] = os.path.dirname(os.path.abspath(sys.executable)) + \
-                             '/../Resources:/Applications/Kindle Comic Creator/Kindle Comic Creator.app/Contents/MacOS:' \
-                             '/Applications/Kindle Previewer 3.app/Contents/lib/fc/bin/:/usr/local/bin:/usr/bin:/bin'
+        os.environ['PATH'] += os.pathsep + os.pathsep.join(mac_paths +
+            [
+                os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources',
+                '/usr/local/bin',
+                '/usr/bin',
+                '/bin',
+            ]
+        )
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources')
     else:
+        os.environ['PATH'] += os.pathsep + os.pathsep.join(mac_paths)
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 elif sys.platform.startswith('win'):
+    win_paths = [
+        '%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\',
+        'C:\\Program Files\\7-Zip',
+    ]
     if getattr(sys, 'frozen', False):
-        os.environ['PATH'] = '%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\;' + \
-                             os.environ['PATH']
+        os.environ['PATH'] += os.pathsep + os.pathsep.join(win_paths)
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
     else:
-        os.environ['PATH'] = os.path.dirname(os.path.abspath(__file__)) + '/other/windows/;' \
-                             '%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\;' + \
-                             os.environ['PATH']
+        os.environ['PATH'] += os.pathsep + os.pathsep.join(win_paths +
+            [
+                os.path.dirname(os.path.abspath(__file__)) + '/other/windows/',
+            ]
+        )
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # Load additional Sentry configuration
 # if getattr(sys, 'frozen', False):
