@@ -67,7 +67,6 @@ $ sudo apt-get install -y python3 python3-dev libpng-dev libjpeg-dev p7zip-full 
   - `KindleGen` can be found in [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011)
     `Amazon Kindle Previewer 3 Folder\lib\fc\bin`,    the usual location in windows is in windows is `C:\Users\user\AppData\Local\Amazon\Kindle Previewer 3\lib\fc\bin\`
   - `KindleGen` can be also be found in [Kindle Comic Creator](https://www.amazon.com/b?node=23496309011)
-
 - [7z](http://www.7-zip.org/download.html) *(For CBZ/ZIP, CBR/RAR, 7z/CB7 support)*
 - Unrar (no rar in 7z on Fedora)
 
