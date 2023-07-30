@@ -35,10 +35,10 @@ if sys.platform.startswith('darwin'):
         os.environ['PATH'] += os.pathsep + os.pathsep.join(mac_paths +
             [
                 '/opt/homebrew/bin',
-                os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources',
                 '/usr/local/bin',
                 '/usr/bin',
                 '/bin',
+                os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources',
             ]
         )
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources')
