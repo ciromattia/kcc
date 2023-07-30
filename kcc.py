@@ -38,10 +38,9 @@ if sys.platform.startswith('darwin'):
                 '/usr/local/bin',
                 '/usr/bin',
                 '/bin',
-                os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources',
             ]
         )
-        os.chdir(os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources')
+        os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
     else:
         os.environ['PATH'] += os.pathsep + os.pathsep.join(mac_paths)
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
