@@ -757,7 +757,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if sys.platform.startswith('win'):
             self.addMessage('Download it and place EXE in KCC directory.', 'error')
         elif sys.platform.startswith('darwin'):
-            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation/_edit#kindlegen">'
+            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#kindlegen">'
                             'Install the kindle-comic-creator cask using Homebrew</a> to enable MOBI conversion',
                             'error')
         else:
@@ -1046,7 +1046,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.sevenzip = True
         else:
             self.sevenzip = False
-            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#7-zip">Install 7z and add to PATH!</a>!'
+            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#7-zip">Cannot find 7z</a>!'
                             ' CBZ/CBR/ZIP/etc processing disabled.', 'warning')
         self.detectKindleGen(True)
 
