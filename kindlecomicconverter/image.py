@@ -20,14 +20,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import io
 import os
+import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
 from .shared import md5Checksum
-
-try:
-    import mozjpeg_lossless_optimization
-except ImportError as e:
-    print(e)
-    print("WARNING: https://github.com/ciromattia/kcc/issues/541#issuecomment-1587343401")
 
 # 0.045 was determined by
 # 1200 / 824 = 1.456 (Kindle DX resolution)
