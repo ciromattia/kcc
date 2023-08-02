@@ -19,6 +19,7 @@
 #
 
 import os
+import subprocess
 import distro
 from psutil import Popen
 from shutil import move
@@ -59,14 +60,11 @@ class ComicArchive:
         process = Popen('7z x -y -xr!__MACOSX -xr!.DS_Store -xr!thumbs.db -xr!Thumbs.db -o"' + targetdir + '" "' +
                         self.filepath + '"', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         process.communicate()
-        if process.returncode != 0 and distro.id() == 'fedora':
-            process = Popen('unrar x -y -x__MACOSX -x.DS_Store -xthumbs.db -xThumbs.db "' + self.filepath + '" "' +
-                    targetdir + '"', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-            process.communicate()
-            if process.returncode != 0:
-                raise OSError('Failed to extract archive.')
-        elif process.returncode != 0:
-            raise OSError('Failed to extract archive. Check if p7zip-rar is installed.')
+        if process.returncode != 0:
+            process = subprocess.run(f"unar '{self.filepath}' -f -o '{targetdir}'", 
+                stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+        if process.returncode != 0:
+            raise OSError('Failed to extract archive. Check if unar is installed.')
         tdir = os.listdir(targetdir)
         if 'ComicInfo.xml' in tdir:
             tdir.remove('ComicInfo.xml')
