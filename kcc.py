@@ -47,6 +47,7 @@ if sys.platform.startswith('darwin'):
 elif sys.platform.startswith('win'):
     win_paths = [
         '%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\',
+        '%LOCALAPPDATA%\\Amazon\\KC2',
         'C:\\Program Files\\7-Zip',
     ]
     if getattr(sys, 'frozen', False):
