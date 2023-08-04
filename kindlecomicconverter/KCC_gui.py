@@ -756,7 +756,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if sys.platform.startswith('win'):
             self.addMessage('Download it and place EXE in KCC directory.', 'error')
         elif sys.platform.startswith('darwin'):
-            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#kindlegen">'
+            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation/_edit#kindlegen">'
                             'Install the kindle-comic-creator cask using Homebrew</a> to enable MOBI conversion',
                             'error')
         else:
