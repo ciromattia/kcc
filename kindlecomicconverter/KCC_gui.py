@@ -18,7 +18,6 @@
 # PERFORMANCE OF THIS SOFTWARE.
 import json
 import os
-import platform
 import re
 import subprocess
 import sys
