@@ -37,11 +37,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
     def run(self):
         VERSION = __version__
         if sys.platform == 'darwin':
-
             os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
-            os.makedirs('dist/Kindle Comic Converter.app/Contents/Resources/Codecs')
-            shutil.copy('LICENSE.txt', 'dist/Kindle Comic Converter.app/Contents/Resources')
-            shutil.copy('other/windows/Additional-LICENSE.txt', 'dist/Kindle Comic Converter.app/Contents/Resources')
             # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
             os.system('appdmg kcc.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')
             exit(0)
