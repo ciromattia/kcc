@@ -19,6 +19,8 @@
 #
 
 import os
+import platform
+import subprocess
 import distro
 from psutil import Popen
 from shutil import move
@@ -65,6 +67,11 @@ class ComicArchive:
             process.communicate()
             if process.returncode != 0:
                 raise OSError('Failed to extract archive.')
+        elif process.returncode != 0 and platform.system() == 'Darwin':
+            process = subprocess.run(f"unar '{self.filepath}' -f -o '{targetdir}'", 
+                stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+            if process.returncode != 0:
+                raise Exception(process.stdout.decode("utf-8"))
         elif process.returncode != 0:
             raise OSError('Failed to extract archive. Check if p7zip-rar is installed.')
         tdir = os.listdir(targetdir)

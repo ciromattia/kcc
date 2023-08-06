@@ -34,13 +34,13 @@ if sys.platform.startswith('darwin'):
     if getattr(sys, 'frozen', False):
         os.environ['PATH'] += os.pathsep + os.pathsep.join(mac_paths +
             [
-                os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources',
+                '/opt/homebrew/bin',
                 '/usr/local/bin',
                 '/usr/bin',
                 '/bin',
             ]
         )
-        os.chdir(os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources')
+        os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
     else:
         os.environ['PATH'] += os.pathsep + os.pathsep.join(mac_paths)
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
