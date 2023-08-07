@@ -295,13 +295,14 @@ def buildOPF(dstdir, title, filelist, cover=None):
                       "<meta name=\"zero-gutter\" content=\"true\"/>\n",
                       "<meta name=\"zero-margin\" content=\"true\"/>\n",
                       "<meta name=\"ke-border-color\" content=\"#FFFFFF\"/>\n",
-                      "<meta name=\"ke-border-width\" content=\"0\"/>\n"])
+                      "<meta name=\"ke-border-width\" content=\"0\"/>\n",
+                      "<meta property=\"rendition:spread\">landscape</meta>\n",
+                      "<meta property=\"rendition:layout\">pre-paginated</meta>\n",
+                      "<meta name=\"orientation-lock\" content=\"none\"/>\n"])
         if options.kfx:
-            f.writelines(["<meta name=\"orientation-lock\" content=\"none\"/>\n",
-                          "<meta name=\"region-mag\" content=\"false\"/>\n"])
+            f.writelines(["<meta name=\"region-mag\" content=\"false\"/>\n"])
         else:
-            f.writelines(["<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
-                          "<meta name=\"region-mag\" content=\"true\"/>\n"])
+            f.writelines(["<meta name=\"region-mag\" content=\"true\"/>\n"])
     elif options.supportSyntheticSpread:
         f.writelines([
             "<meta property=\"rendition:spread\">landscape</meta>\n",
