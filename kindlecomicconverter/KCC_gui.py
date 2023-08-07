@@ -19,6 +19,7 @@
 import json
 import os
 import re
+import subprocess
 import sys
 from urllib.parse import unquote
 from urllib.request import urlretrieve, urlopen
@@ -859,6 +860,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                         self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
                                         ' is outdated! MOBI conversion might fail.', 'warning')
                     break
+            where_command = 'where kindlegen.exe'
+            if os.name == 'posix':
+                where_command = 'which kindlegen'
+            process = subprocess.run(where_command, stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+            locations = process.stdout.decode('utf-8').split('\n')
+            self.addMessage(f"<b>KindleGen Found:</b> {locations[0]}", 'info')
         else:
             self.kindleGen = False
             if startup:
