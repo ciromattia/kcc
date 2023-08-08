@@ -28,7 +28,6 @@ WizardSmallImageFile=icons\Wizard-Small.bmp
 UninstallDisplayName={#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
 ChangesAssociations=True
-InfoAfterFile=other\windows\InstallWarning.rtf
 SignTool=SignTool /d $q{#MyAppName}$q /du $q{#MyAppURL}$q $f
 MinVersion=0,6.0
 OutputDir=dist
@@ -46,9 +45,6 @@ Name: "CB7association"; Description: "CB7"; GroupDescription: "File associations
 [Files]
 Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion solidbreak
-Source: "other\windows\Additional-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "other\windows\7z.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "other\windows\7z.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
