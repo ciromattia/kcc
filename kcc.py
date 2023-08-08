@@ -45,6 +45,7 @@ if sys.platform.startswith('darwin'):
         os.environ['PATH'] += os.pathsep + os.pathsep.join(mac_paths)
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 elif sys.platform.startswith('win'):
+    # prioritize KC2 since KP3 version is buggy as of v3.72
     win_paths = [
         os.path.expandvars('%LOCALAPPDATA%\\Amazon\\KC2'),
         os.path.expandvars('%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\'),
