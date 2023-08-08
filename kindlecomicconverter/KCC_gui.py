@@ -752,18 +752,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.worker.start()
 
     def display_kindlegen_missing(self):
-        self.addMessage('Cannot find <b>KindleGen</b> from '
-                        '<a href="https://www.amazon.com/b?node=23496309011"><b>Kindle Comic Creator</b></a> or '
-                        '<a href="https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011">'
-                        '<b>Kindle Previewer</b></a>! MOBI conversion is unavailable!', 'error')
-        if sys.platform.startswith('win'):
-            self.addMessage('Download it and place EXE in KCC directory.', 'error')
-        elif sys.platform.startswith('darwin'):
-            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#kindlegen">'
-                            'Install the kindle-comic-creator cask using Homebrew</a> to enable MOBI conversion',
-                            'error')
-        else:
-            self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
+        self.addMessage(
+            '<a href="https://github.com/ciromattia/kcc/wiki/Installation#kindlegen"><b>Cannot find KindleGen</b></a>: MOBI conversion is unavailable!', 
+            'error'
+        )
 
     def saveSettings(self, event):
         if self.conversionAlive:
