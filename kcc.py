@@ -27,6 +27,7 @@ if sys.version_info < (3, 8, 0):
 # OS specific workarounds
 import os
 if sys.platform.startswith('darwin'):
+    # prioritize KC2 since it optionally also installs KP3
     mac_paths = [
         '/Applications/Kindle Comic Creator/Kindle Comic Creator.app/Contents/MacOS',
         '/Applications/Kindle Previewer 3.app/Contents/lib/fc/bin/',
@@ -45,7 +46,7 @@ if sys.platform.startswith('darwin'):
         os.environ['PATH'] += os.pathsep + os.pathsep.join(mac_paths)
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 elif sys.platform.startswith('win'):
-    # prioritize KC2 since KP3 version is buggy as of v3.72
+    # prioritize KC2 since it optionally also installs KP3
     win_paths = [
         os.path.expandvars('%LOCALAPPDATA%\\Amazon\\KC2'),
         os.path.expandvars('%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\'),
