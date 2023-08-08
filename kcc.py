@@ -56,11 +56,7 @@ elif sys.platform.startswith('win'):
         os.environ['PATH'] += os.pathsep + os.pathsep.join(win_paths)
         os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
     else:
-        os.environ['PATH'] += os.pathsep + os.pathsep.join(win_paths +
-            [
-                os.path.dirname(os.path.abspath(__file__)) + '/other/windows/',
-            ]
-        )
+        os.environ['PATH'] += os.pathsep + os.pathsep.join(win_paths)
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # Load additional Sentry configuration
 # if getattr(sys, 'frozen', False):
