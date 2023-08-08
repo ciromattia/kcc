@@ -19,6 +19,7 @@
 import json
 import os
 import re
+import subprocess
 import sys
 from urllib.parse import unquote
 from urllib.request import urlopen
@@ -644,6 +645,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if not GUI.webtoonBox.isChecked():
             GUI.qualityBox.setEnabled(profile['PVOptions'])
         GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
+        GUI.mangaBox.setChecked(True)
         if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
         if str(GUI.deviceBox.currentText()) == 'Other':
@@ -757,7 +759,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if sys.platform.startswith('win'):
             self.addMessage('Download it and place EXE in KCC directory.', 'error')
         elif sys.platform.startswith('darwin'):
-            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation/_edit#kindlegen">'
+            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#kindlegen">'
                             'Install the kindle-comic-creator cask using Homebrew</a> to enable MOBI conversion',
                             'error')
         else:
@@ -859,6 +861,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                         self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
                                         ' is outdated! MOBI conversion might fail.', 'warning')
                     break
+            where_command = 'where kindlegen.exe'
+            if os.name == 'posix':
+                where_command = 'which kindlegen'
+            process = subprocess.run(where_command, stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+            locations = process.stdout.decode('utf-8').split('\n')
+            self.addMessage(f"<b>KindleGen Found:</b> {locations[0]}", 'info')
         else:
             self.kindleGen = False
             if startup:
@@ -932,7 +940,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle Scribe": {
-                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'Label': 'KS',
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'Label': 'KS',
             },
             "Kindle 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'Label': 'K11',
@@ -1046,7 +1054,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.sevenzip = True
         else:
             self.sevenzip = False
-            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#7-zip">Install 7z and add to PATH!</a>!'
+            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#7-zip">Cannot find 7z</a>!'
                             ' CBZ/CBR/ZIP/etc processing disabled.', 'warning')
         self.detectKindleGen(True)
 

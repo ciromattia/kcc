@@ -34,19 +34,20 @@ if sys.platform.startswith('darwin'):
     if getattr(sys, 'frozen', False):
         os.environ['PATH'] += os.pathsep + os.pathsep.join(mac_paths +
             [
-                os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources',
+                '/opt/homebrew/bin',
                 '/usr/local/bin',
                 '/usr/bin',
                 '/bin',
             ]
         )
-        os.chdir(os.path.dirname(os.path.abspath(sys.executable)) + '/../Resources')
+        os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
     else:
         os.environ['PATH'] += os.pathsep + os.pathsep.join(mac_paths)
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 elif sys.platform.startswith('win'):
     win_paths = [
-        '%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\',
+        os.path.expandvars('%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\'),
+        os.path.expandvars('%LOCALAPPDATA%\\Amazon\\KC2'),
         'C:\\Program Files\\7-Zip',
     ]
     if getattr(sys, 'frozen', False):

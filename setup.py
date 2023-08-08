@@ -17,8 +17,6 @@ import setuptools
 import distutils.cmd
 from kindlecomicconverter import __version__
 
-OSX_INFO_PLIST = "other/osx/Info.plist"
-
 NAME = 'KindleComicConverter'
 MAIN = 'kcc.py'
 VERSION = __version__
@@ -39,22 +37,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
     def run(self):
         VERSION = __version__
         if sys.platform == 'darwin':
-
-            with open(OSX_INFO_PLIST, 'r') as file:
-                filedata = file.read()
-            filedata = filedata.replace('5.5.2', VERSION)
-            with open(OSX_INFO_PLIST, 'w') as file:
-                file.write(filedata)
-
             os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
-            os.makedirs('dist/Kindle Comic Converter.app/Contents/Resources/Codecs')
-            shutil.copy('other/osx/7z', 'dist/Kindle Comic Converter.app/Contents/Resources')
-            shutil.copy('other/osx/7z.so', 'dist/Kindle Comic Converter.app/Contents/Resources')
-            shutil.copy('other/osx/Rar.so', 'dist/Kindle Comic Converter.app/Contents/Resources/Codecs')
-            shutil.copy('other/osx/Info.plist', 'dist/Kindle Comic Converter.app/Contents')
-            shutil.copy('LICENSE.txt', 'dist/Kindle Comic Converter.app/Contents/Resources')
-            shutil.copy('other/windows/Additional-LICENSE.txt', 'dist/Kindle Comic Converter.app/Contents/Resources')
-            os.chmod('dist/Kindle Comic Converter.app/Contents/Resources/7z', 0o777)
             # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
             os.system('appdmg kcc.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')
             exit(0)

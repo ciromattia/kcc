@@ -291,13 +291,14 @@ def buildOPF(dstdir, title, filelist, cover=None):
                       "<meta name=\"zero-gutter\" content=\"true\"/>\n",
                       "<meta name=\"zero-margin\" content=\"true\"/>\n",
                       "<meta name=\"ke-border-color\" content=\"#FFFFFF\"/>\n",
-                      "<meta name=\"ke-border-width\" content=\"0\"/>\n"])
+                      "<meta name=\"ke-border-width\" content=\"0\"/>\n",
+                      "<meta property=\"rendition:spread\">landscape</meta>\n",
+                      "<meta property=\"rendition:layout\">pre-paginated</meta>\n",
+                      "<meta name=\"orientation-lock\" content=\"none\"/>\n"])
         if options.kfx:
-            f.writelines(["<meta name=\"orientation-lock\" content=\"none\"/>\n",
-                          "<meta name=\"region-mag\" content=\"false\"/>\n"])
+            f.writelines(["<meta name=\"region-mag\" content=\"false\"/>\n"])
         else:
-            f.writelines(["<meta name=\"orientation-lock\" content=\"portrait\"/>\n",
-                          "<meta name=\"region-mag\" content=\"true\"/>\n"])
+            f.writelines(["<meta name=\"region-mag\" content=\"true\"/>\n"])
     elif options.supportSyntheticSpread:
         f.writelines([
             "<meta property=\"rendition:spread\">landscape</meta>\n",
@@ -509,18 +510,30 @@ def buildEPUB(path, chapternames, tomenumber):
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapternames and options.chapters:
         chapterlist = []
-        globaldiff = 0
+
+        global_diff = 0
+        diff_delta = 0
+
+        # if split
+        if options.splitter == 0:
+            diff_delta = 1
+        # if rotate and split
+        elif options.splitter == 2:
+            diff_delta = 2
+
         for aChapter in options.chapters:
             pageid = aChapter[0]
-            for x in range(0, pageid + globaldiff + 1):
+            cur_diff = global_diff
+            global_diff = 0
+
+            for x in range(0, pageid + cur_diff + 1):
                 if '-kcc-b' in filelist[x][1]:
-                    pageid += 1
-            if '-kcc-c' in filelist[pageid][1]:
-                pageid -= 1
+                    pageid += diff_delta
+                    global_diff += diff_delta
+
             filename = filelist[pageid][1]
             chapterlist.append((filelist[pageid][0].replace('Images', 'Text'), filename))
             chapternames[filename] = aChapter[1]
-            globaldiff = pageid - (aChapter[0] + globaldiff)
     buildNCX(path, options.title, chapterlist, chapternames)
     buildNAV(path, options.title, chapterlist, chapternames)
     buildOPF(path, options.title, filelist, cover)
@@ -744,19 +757,23 @@ def getPanelViewSize(deviceres, size):
 def sanitizeTree(filetree):
     chapterNames = {}
     for root, dirs, files in os.walk(filetree, False):
-        for name in files:
+        for i, name in enumerate(sorted(files)):
             splitname = os.path.splitext(name)
-            slugified = slugify(splitname[0], False)
-            while os.path.exists(os.path.join(root, slugified + splitname[1])) and splitname[0].upper()\
-                    != slugified.upper():
-                slugified += "A"
+
+            # file needs kcc at front AND back to avoid renaming issues
+            slugified = f'kcc-{i:04}'
+            for suffix in '-KCC', '-KCC-A', '-KCC-B', '-KCC-C':
+                if splitname[0].endswith(suffix):
+                    slugified += suffix.lower()
+                    break
+
             newKey = os.path.join(root, slugified + splitname[1])
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
         for name in dirs:
             tmpName = name
-            slugified = slugify(name, True)
+            slugified = slugify(name)
             while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
                 slugified += "A"
             chapterNames[slugified] = tmpName
@@ -765,23 +782,6 @@ def sanitizeTree(filetree):
             if key != newKey:
                 os.replace(key, newKey)
     return chapterNames
-
-
-def sanitizeTreeKobo(filetree):
-    pageNumber = 0
-    for root, dirs, files in os.walk(filetree):
-        dirs, files = walkSort(dirs, files)
-        for name in files:
-            splitname = os.path.splitext(name)
-            slugified = str(pageNumber).zfill(5)
-            pageNumber += 1
-            while os.path.exists(os.path.join(root, slugified + splitname[1])) and splitname[0].upper()\
-                    != slugified.upper():
-                slugified += "A"
-            newKey = os.path.join(root, slugified + splitname[1])
-            key = os.path.join(root, name)
-            if key != newKey:
-                os.replace(key, newKey)
 
 
 def sanitizePermissions(filetree):
@@ -906,11 +906,8 @@ def createNewTome():
     return tomePath, tomePathRoot
 
 
-def slugify(value, isdir):
-    if isdir:
-        value = slugify_ext(value, regex_pattern=r'[^-a-z0-9_\.]+').strip('.')
-    else:
-        value = slugify_ext(value).strip('.')
+def slugify(value):
+    value = slugify_ext(value, regex_pattern=r'[^-a-z0-9_\.]+').strip('.')
     value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
 
@@ -1157,8 +1154,6 @@ def makeBook(source, qtgui=None):
     if GUI:
         GUI.progressBarTick.emit('1')
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
-    if 'Ko' in options.profile and options.format == 'CBZ':
-        sanitizeTreeKobo(os.path.join(path, 'OEBPS', 'Images'))
     if options.batchsplit > 0:
         tomes = splitDirectory(path)
     else:
