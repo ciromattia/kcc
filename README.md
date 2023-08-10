@@ -47,8 +47,6 @@ Installation Wiki: https://github.com/ciromattia/kcc/wiki/Installation
 - flatpak : https://flathub.org/apps/details/io.github.ciromattia.kcc
 - Docker: https://github.com/ciromattia/kcc/pkgs/container/kcc
 
-
-
 ### DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
 - Python 3.3+
