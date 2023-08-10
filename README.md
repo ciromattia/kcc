@@ -39,7 +39,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 Click on **Assets** of the latest release. 
 
 You probably want either 
-- `KCC_*.*.*.exe` (Windows)
+- `kcc_*.*.*.exe` (Windows)
 - `KindleComicConverter_osx_*.*.*.dmg` (Mac)
 
 Installation Wiki: https://github.com/ciromattia/kcc/wiki/Installation
