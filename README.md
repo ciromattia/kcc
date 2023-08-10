@@ -33,13 +33,19 @@ If you find **KCC** valuable you can consider donating to the authors:
 ## INSTALLATION 
 
 ### DOWNLOADS
-You can find the latest binary at the following link:
 
 - **https://github.com/ciromattia/kcc/releases**
+
+Click on **Assets** of the latest release. 
+
+You probably want either 
+- `kcc_*.*.*.exe` (Windows)
+- `KindleComicConverter_osx_*.*.*.dmg` (Mac)
+
+Installation Wiki: https://github.com/ciromattia/kcc/wiki/Installation
+
 - flatpak : https://flathub.org/apps/details/io.github.ciromattia.kcc
 - Docker: https://github.com/ciromattia/kcc/pkgs/container/kcc
-
-more information on [installation](https://github.com/ciromattia/kcc/wiki/Installation)
 
 ### DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
