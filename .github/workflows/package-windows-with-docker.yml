@@ -26,17 +26,17 @@ jobs:
 #        run: |
 #          pyi-makespec -F -i icons\\comic2ebook.ico -n KCC_test -w --noupx kcc.py
       - name: Package Application
-        uses: JackMcKew/pyinstaller-action-windows@main
+        uses: JackMcKew/pyinstaller-action-windows@python3-10-pyinstaller-5-3
         with:
           path: .
           spec: ./kcc.spec
       - name: Package Application
-        uses: JackMcKew/pyinstaller-action-windows@main
+        uses: JackMcKew/pyinstaller-action-windows@python3-10-pyinstaller-5-3
         with:
           path: .
           spec: ./kcc-c2e.spec
       - name: Package Application
-        uses: JackMcKew/pyinstaller-action-windows@main
+        uses: JackMcKew/pyinstaller-action-windows@python3-10-pyinstaller-5-3
         with:
           path: .
           spec: ./kcc-c2p.spec
