@@ -843,7 +843,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if kindleGenExitCode.returncode == 0:
             self.kindleGen = True
             versionCheck = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, stdin=PIPE, encoding='UTF-8')
-            for line in versionCheck.stdout:
+            for line in versionCheck.stdout.splitlines():
                 if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if StrictVersion(versionCheck) < StrictVersion('2.9'):
@@ -854,7 +854,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if os.name == 'posix':
                 where_command = ['which', 'kindlegen']
             process = subprocess.run(where_command, stdout=PIPE, stderr=STDOUT, stdin=PIPE, encoding='UTF-8')
-            locations = process.stdout.split('\n')
+            locations = process.stdout.splitlines()
             self.addMessage(f"<b>KindleGen Found:</b> {locations[0]}", 'info')
         else:
             self.kindleGen = False

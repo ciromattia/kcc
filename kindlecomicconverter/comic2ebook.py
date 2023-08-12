@@ -1266,7 +1266,7 @@ def makeMOBIWorker(item):
         if os.path.getsize(item) < 629145600:
             output = subprocess.run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
                            stdout=PIPE, stderr=STDOUT, stdin=PIPE, encoding='UTF-8')
-            for line in output.stdout:
+            for line in output.stdout.splitlines():
                 # ERROR: Generic error
                 if "Error(" in line:
                     kindlegenErrorCode = 1

@@ -34,16 +34,16 @@ class ComicArchive:
         self.type = None
         if not os.path.isfile(self.filepath):
             raise OSError('File not found.')
-        process = subprocess.run(['7z', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE, stdin=PIPE)
-        for line in process.stdout.split(b'\n'):
-            if b'Type =' in line:
-                self.type = line.rstrip().decode().split(' = ')[1].upper()
+        process = subprocess.run(['7z', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE, stdin=PIPE, encoding='UTF-8')
+        for line in process.stdout.splitlines():
+            if 'Type =' in line:
+                self.type = line.rstrip().split(' = ')[1].upper()
                 break
         if process.returncode != 0 and distro.id() == 'fedora':
-            process = subprocess.run(['unrar', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE, stdin=PIPE)
-            for line in process.stdout.split(b'\n'):
-                if b'Details: ' in line:
-                    self.type = line.rstrip().decode().split(' ')[1].upper()
+            process = subprocess.run(['unrar', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE, stdin=PIPE, encoding='UTF-8')
+            for line in process.stdout.splitlines():
+                if 'Details: ' in line:
+                    self.type = line.rstrip().split(' ')[1].upper()
                     break
             if process.returncode != 0:
                 raise OSError('Archive is corrupted or encrypted.')
