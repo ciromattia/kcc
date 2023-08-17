@@ -1102,12 +1102,12 @@ def checkTools(source):
     source = source.upper()
     if source.endswith('.CB7') or source.endswith('.7Z') or source.endswith('.RAR') or source.endswith('.CBR') or \
             source.endswith('.ZIP') or source.endswith('.CBZ'):
-        process = subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT, stdin=PIPE)
+        process = subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
         if process.returncode != 0 and process.returncode != 7:
             print('ERROR: 7z is missing!')
             exit(1)
     if options.format == 'MOBI':
-        kindleGenExitCode = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, stdin=PIPE)
+        kindleGenExitCode = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT)
         if kindleGenExitCode.returncode != 0:
             print('ERROR: KindleGen is missing!')
             exit(1)
@@ -1265,7 +1265,7 @@ def makeMOBIWorker(item):
     try:
         if os.path.getsize(item) < 629145600:
             output = subprocess.run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
-                           stdout=PIPE, stderr=STDOUT, stdin=PIPE, encoding='UTF-8')
+                           stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
             for line in output.stdout.splitlines():
                 # ERROR: Generic error
                 if "Error(" in line:

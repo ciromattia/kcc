@@ -839,10 +839,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 os.chmod('/usr/local/bin/kindlegen', 0o755)
             except Exception:
                 pass
-        kindleGenExitCode = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, stdin=PIPE, encoding='UTF-8')
+        kindleGenExitCode = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
         if kindleGenExitCode.returncode == 0:
             self.kindleGen = True
-            versionCheck = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, stdin=PIPE, encoding='UTF-8')
+            versionCheck = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
             for line in versionCheck.stdout.splitlines():
                 if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
@@ -853,7 +853,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             where_command = ['where', 'kindlegen.exe']
             if os.name == 'posix':
                 where_command = ['which', 'kindlegen']
-            process = subprocess.run(where_command, stdout=PIPE, stderr=STDOUT, stdin=PIPE, encoding='UTF-8')
+            process = subprocess.run(where_command, stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
             locations = process.stdout.splitlines()
             self.addMessage(f"<b>KindleGen Found:</b> {locations[0]}", 'info')
         else:
@@ -1037,7 +1037,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        process = subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT, stdin=PIPE)
+        process = subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
         if process.returncode == 0 or process.returncode == 7:
             self.sevenzip = True
         else:
