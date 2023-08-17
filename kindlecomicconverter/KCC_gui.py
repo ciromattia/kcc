@@ -441,7 +441,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         MW.activateWindow()
 
     def addTrayMessage(self, message, icon):
-        icon = eval('QtWidgets.QSystemTrayIcon.MessageIcon.' + icon)
+        icon = getattr(QtWidgets.QSystemTrayIcon.MessageIcon, icon)
         if self.supportsMessages() and not MW.isActiveWindow():
             self.showMessage('Kindle Comic Converter', message, icon)
 
@@ -673,7 +673,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def addMessage(self, message, icon, replace=False):
         if icon != '':
-            icon = eval('self.icons.' + icon)
+            icon = getattr(self.icons, icon)
             item = QtWidgets.QListWidgetItem(icon, '   ' + self.stripTags(message))
         else:
             item = QtWidgets.QListWidgetItem('   ' + self.stripTags(message))
@@ -907,10 +907,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         elif sys.platform.startswith('darwin'):
             for element in ['editorButton', 'wikiButton', 'directoryButton', 'clearButton', 'fileButton', 'deviceBox',
                             'convertButton', 'formatBox']:
-                eval('GUI.' + element).setMinimumSize(QtCore.QSize(0, 0))
+                getattr(GUI, element).setMinimumSize(QtCore.QSize(0, 0))
             GUI.gridLayout.setContentsMargins(-1, -1, -1, -1)
             for element in ['gridLayout_2', 'gridLayout_3', 'gridLayout_4', 'horizontalLayout', 'horizontalLayout_2']:
-                eval('GUI.' + element).setContentsMargins(-1, 0, -1, 0)
+                getattr(GUI, element).setContentsMargins(-1, 0, -1, 0)
             if self.windowSize == '0x0':
                 MW.resize(500, 500)
 
@@ -1089,7 +1089,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             else:
                 GUI.deviceBox.addItem(self.icons.deviceKindle, profile)
         for f in self.formats:
-            GUI.formatBox.addItem(eval('self.icons.' + self.formats[f]['icon'] + 'Format'), f)
+            GUI.formatBox.addItem(getattr(self.icons, self.formats[f]['icon'] + 'Format'), f)
         if self.lastDevice > GUI.deviceBox.count():
             self.lastDevice = 0
         if profilesGUI[self.lastDevice] == "Separator":
@@ -1115,8 +1115,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     self.changeCroppingPower(int(self.options[option]))
             else:
                 try:
-                    if eval('GUI.' + str(option)).isEnabled():
-                        eval('GUI.' + str(option)).setCheckState(Qt.CheckState(self.options[option]))
+                    if getattr(GUI, option).isEnabled():
+                        getattr(GUI, option).setCheckState(Qt.CheckState(self.options[option]))
                 except AttributeError:
                     pass
         self.worker.sync()
