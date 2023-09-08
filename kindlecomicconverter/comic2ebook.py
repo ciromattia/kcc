@@ -1105,13 +1105,13 @@ def checkTools(source):
         process.communicate()
         if process.returncode != 0 and process.returncode != 7:
             print('ERROR: 7z is missing!')
-            exit(1)
+            sys.exit(1)
     if options.format == 'MOBI':
         kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
         kindleGenExitCode.communicate()
         if kindleGenExitCode.returncode != 0:
             print('ERROR: KindleGen is missing!')
-            exit(1)
+            sys.exit(1)
 
 
 def checkPre(source):

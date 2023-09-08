@@ -23,6 +23,7 @@ from hashlib import md5
 from html.parser import HTMLParser
 from distutils.version import StrictVersion
 from re import split
+import sys
 from traceback import format_tb
 
 
@@ -133,4 +134,4 @@ def dependencyCheck(level):
         missing.append('Pillow 5.2.0+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
-        exit(1)
+        sys.exit(1)
