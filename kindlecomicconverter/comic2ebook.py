@@ -31,6 +31,7 @@ from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree, copyfile
 from multiprocessing import Pool
 from uuid import uuid4
+from natsort import natsorted
 from slugify import slugify as slugify_ext
 from PIL import Image
 from subprocess import STDOUT, PIPE
@@ -761,7 +762,7 @@ def getPanelViewSize(deviceres, size):
 def sanitizeTree(filetree):
     chapterNames = {}
     for root, dirs, files in os.walk(filetree, False):
-        for i, name in enumerate(sorted(files)):
+        for i, name in enumerate(natsorted(files)):
             splitname = os.path.splitext(name)
 
             # file needs kcc at front AND back to avoid renaming issues
