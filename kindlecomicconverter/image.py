@@ -24,12 +24,7 @@ import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
 from .shared import md5Checksum
 
-# 0.045 was determined by
-# 1200 / 824 = 1.456 (Kindle DX resolution)
-# 2250 / 1500 = 1.5 (Typical manga page resolution)
-# 1.5 - 1.456 < 0.045
-# 0.045 / 1.5 = 0.03 (So maximum 3% of is cropped)
-AUTO_CROP_THRESHOLD = 0.045
+AUTO_CROP_THRESHOLD = 0.015
 
 
 class ProfileData:
