@@ -512,6 +512,7 @@ def buildEPUB(path, chapternames, tomenumber):
                 options.covers.append((image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options,
                                                    tomenumber), options.uuid))
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
+    filelen = len(filelist)
     if not chapternames and options.chapters:
         chapterlist = []
 
@@ -531,10 +532,12 @@ def buildEPUB(path, chapternames, tomenumber):
             global_diff = 0
 
             for x in range(0, pageid + cur_diff + 1):
-                if '-kcc-b' in filelist[x][1]:
+                if x < filelen and '-kcc-b' in filelist[x][1]:
                     pageid += diff_delta
                     global_diff += diff_delta
 
+            if pageid >= filelen:
+              pageid = filelen-1
             filename = filelist[pageid][1]
             chapterlist.append((filelist[pageid][0].replace('Images', 'Text'), filename))
             chapternames[filename] = aChapter[1]
