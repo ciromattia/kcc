@@ -512,8 +512,8 @@ def buildEPUB(path, chapternames, tomenumber):
                 options.covers.append((image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options,
                                                    tomenumber), options.uuid))
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
-    filelen = len(filelist)
     if not chapternames and options.chapters:
+        filelen = len(filelist)
         chapterlist = []
 
         global_diff = 0
@@ -526,15 +526,27 @@ def buildEPUB(path, chapternames, tomenumber):
         elif options.splitter == 2:
             diff_delta = 2
 
+        # if spread pages are already merged in the source file
+        # needed as the indexing will calculate incorrectly as 2
+        # pages for the spread are considered as 1 meaning bookmarks
+        # will shift to incorrect locations
+        if options.alreadymerged and diff_delta > 0:
+            diff_delta -= 1
+
         for aChapter in options.chapters:
             pageid = aChapter[0]
             cur_diff = global_diff
             global_diff = 0
 
             for x in range(0, pageid + cur_diff + 1):
-                if x < filelen and '-kcc-b' in filelist[x][1]:
-                    pageid += diff_delta
-                    global_diff += diff_delta
+                # checking against filelen is not required if user knows that the spread pages are already merged and toggled on the alreadymerged option, but if not, it will result in an IndexError
+                if x < filelen:
+                  if'-kcc-b' in filelist[x][1]:
+                      pageid += diff_delta
+                      global_diff += diff_delta
+                  if options.alreadymerged and options.splitter == 1 and '-kcc-a' in filelist[x][1]:
+                      pageid -= 1
+                      global_diff -= 1
 
             if pageid >= filelen:
               pageid = filelen-1
