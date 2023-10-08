@@ -223,11 +223,7 @@ class WorkerThread(QtCore.QThread):
         options.format = gui_current_format
         if GUI.mangaBox.isChecked():
             options.righttoleft = True
-        if GUI.mergeBox.isChecked():
-            options.alreadymerged = True
-        if GUI.rotateBox.checkState() == 0:
-            options.splitter = 0
-        elif GUI.rotateBox.checkState() == 1:
+        if GUI.rotateBox.checkState() == 1:
             options.splitter = 2
         elif GUI.rotateBox.checkState() == 2:
             options.splitter = 1
@@ -776,7 +772,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings.setValue('startNumber', self.startNumber + 1)
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
         self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
-                                           'mergeBox': GUI.mergeBox.checkState(),
                                            'rotateBox': GUI.rotateBox.checkState(),
                                            'qualityBox': GUI.qualityBox.checkState(),
                                            'gammaBox': GUI.gammaBox.checkState(),
