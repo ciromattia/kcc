@@ -513,6 +513,8 @@ def buildEPUB(path, chapternames, tomenumber):
                                                    tomenumber), options.uuid))
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapternames and options.chapters:
+        truepagecount = 0
+        filelen = len(filelist)
         chapterlist = []
 
         global_diff = 0
@@ -525,52 +527,41 @@ def buildEPUB(path, chapternames, tomenumber):
         elif options.splitter == 2:
             diff_delta = 2
 
-        try:
-            for aChapter in options.chapters:
-                pageid = aChapter[0]
-                cur_diff = global_diff
-                global_diff = 0
+        for p in range(0, filelen):
+            if options.splitter == 0 and '-kcc-b' in filelist[p][1]: #split page (unchecked)
+                truepagecount += 2
+            elif options.splitter > 0 and '-kcc-a' in filelist[p][1]: #split + rotate page / rotate page(indeterminate / checked)
+                truepagecount += 2
+            elif 'kcc.' in filelist[p][1]:
+                truepagecount += 1
 
-                for x in range(0, pageid + cur_diff + 1):
-                    if '-kcc-b' in filelist[x][1]:
-                        pageid += diff_delta
-                        global_diff += diff_delta
-
-                filename = filelist[pageid][1]
-                chapterlist.append((filelist[pageid][0].replace('Images', 'Text'), filename))
-                chapternames[filename] = aChapter[1]
-        except IndexError:
-            # IndexError caught usually indicates that spread pages
-            # are already merged in the source file, resulting in indexing
-            # that will calculate incorrectly as 2 pages for the spread are
-            # considered as 1, meaning bookmarks will shift to incorrect locations
-            filelen = len(filelist)
-            chapterlist = []
-            global_diff = 0
-
+        sourcehasspreads = False
+        if truepagecount != options.sourcepagecount:
+            # when the 'true' vs source page counts are mismatched, it usually
+            # indicates that 2 page spreads exist and are merged in the source file
+            sourcehasspreads = True
             if diff_delta > 0:
                 diff_delta -= 1
 
-            for aChapter in options.chapters:
-                pageid = aChapter[0]
-                cur_diff = global_diff
-                global_diff = 0
+        for aChapter in options.chapters:
+            pageid = aChapter[0]
+            cur_diff = global_diff
+            global_diff = 0
 
-                for x in range(0, pageid + cur_diff + 1):
-                    if x < filelen:
-                        if'-kcc-b' in filelist[x][1]:
-                            pageid += diff_delta
-                            global_diff += diff_delta
-                        if options.splitter == 1 and '-kcc-a' in filelist[x][1]:
-                            pageid -= 1
-                            global_diff -= 1
+            for x in range(0, pageid + cur_diff + 1):
+                if x < filelen:
+                    if'-kcc-b' in filelist[x][1]:
+                        pageid += diff_delta
+                        global_diff += diff_delta
+                    if sourcehasspreads and options.splitter == 1 and '-kcc-a' in filelist[x][1]:
+                        pageid -= 1
+                        global_diff -= 1
 
-                if pageid >= filelen:
-                    pageid = filelen-1
-                filename = filelist[pageid][1]
-                chapterlist.append((filelist[pageid][0].replace('Images', 'Text'), filename))
-                chapternames[filename] = aChapter[1]
-    print(chapternames)
+            if pageid >= filelen:
+                pageid = filelen - 1
+            filename = filelist[pageid][1]
+            chapterlist.append((filelist[pageid][0].replace('Images', 'Text'), filename))
+            chapternames[filename] = aChapter[1]
     buildNCX(path, options.title, chapterlist, chapternames)
     buildNAV(path, options.title, chapterlist, chapternames)
     buildOPF(path, options.title, filelist, cover)
@@ -588,6 +579,7 @@ def imgDirectoryProcessing(path):
         for afile in filenames:
             pagenumber += 1
             work.append([afile, dirpath, options])
+    options.sourcepagecount = pagenumber
     if GUI:
         GUI.progressBarTick.emit(str(pagenumber))
     if len(work) > 0:
