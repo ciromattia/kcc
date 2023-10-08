@@ -513,7 +513,6 @@ def buildEPUB(path, chapternames, tomenumber):
                                                    tomenumber), options.uuid))
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapternames and options.chapters:
-        truepagecount = 0
         filelen = len(filelist)
         chapterlist = []
 
@@ -527,19 +526,8 @@ def buildEPUB(path, chapternames, tomenumber):
         elif options.splitter == 2:
             diff_delta = 2
 
-        for p in range(0, filelen):
-            if options.splitter == 0 and '-kcc-b' in filelist[p][1]: #split page (unchecked)
-                truepagecount += 2
-            elif options.splitter > 0 and '-kcc-a' in filelist[p][1]: #split + rotate page / rotate page(indeterminate / checked)
-                truepagecount += 2
-            elif 'kcc.' in filelist[p][1]:
-                truepagecount += 1
-
-        sourcehasspreads = False
-        if truepagecount != options.sourcepagecount:
-            # when the 'true' vs source page counts are mismatched, it usually
+        if options.hasspreadpages:
             # indicates that 2 page spreads exist and are merged in the source file
-            sourcehasspreads = True
             if diff_delta > 0:
                 diff_delta -= 1
 
@@ -553,7 +541,7 @@ def buildEPUB(path, chapternames, tomenumber):
                     if'-kcc-b' in filelist[x][1]:
                         pageid += diff_delta
                         global_diff += diff_delta
-                    if sourcehasspreads and options.splitter == 1 and '-kcc-a' in filelist[x][1]:
+                    if options.hasspreadpages and options.splitter == 1 and '-kcc-a' in filelist[x][1]:
                         pageid -= 1
                         global_diff -= 1
 
@@ -579,7 +567,6 @@ def imgDirectoryProcessing(path):
         for afile in filenames:
             pagenumber += 1
             work.append([afile, dirpath, options])
-    options.sourcepagecount = pagenumber
     if GUI:
         GUI.progressBarTick.emit(str(pagenumber))
     if len(work) > 0:
@@ -606,10 +593,12 @@ def imgFileProcessingTick(output):
         workerOutput.append(output)
         workerPool.terminate()
     else:
-        for page in output:
+        for page in output[0]:
             if page is not None:
                 options.imgMetadata[page[0]] = page[1]
                 options.imgOld.append(page[2])
+        if not options.hasspreadpages:
+            options.hasspreadpages = output[1]
     if GUI:
         GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
@@ -623,6 +612,7 @@ def imgFileProcessing(work):
         opt = work[2]
         output = []
         workImg = image.ComicPageParser((dirpath, afile), opt)
+        hasspreadpages = workImg.opt.hasspreadpages
         for i in workImg.payload:
             img = image.ComicPage(opt, *i)
             if opt.cropping == 2 and not opt.webtoon:
@@ -634,7 +624,7 @@ def imgFileProcessing(work):
             if opt.forcepng and not opt.forcecolor:
                 img.quantizeImage()
             output.append(img.saveToDir())
-        return output
+        return [output, hasspreadpages]
     except Exception:
         return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
@@ -1119,6 +1109,8 @@ def checkOptions(options):
     if options.profile == 'KS' and (options.format == 'MOBI' or options.format == 'EPUB'):
         options.profileData = list(options.profileData)
         options.profileData[1] = (1440, 1920)
+    # flag if source file contains spread pages, set to True when a split check is done
+    options.hasspreadpages = False
     return options
 
 
