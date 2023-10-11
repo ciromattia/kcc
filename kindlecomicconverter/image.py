@@ -174,7 +174,7 @@ class ComicPageParser:
             if self.opt.splitter > 0:
                 self.payload.append(['R', self.source, self.image.rotate(90, Image.Resampling.BICUBIC, True),
                                     self.color, self.fill])
-            self.opt.hasspreadpages = True
+            self.opt.spreadadjust = True
         else:
             self.payload.append(['N', self.source, self.image, self.color, self.fill])
 

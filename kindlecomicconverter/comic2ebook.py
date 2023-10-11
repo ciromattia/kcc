@@ -526,9 +526,8 @@ def buildEPUB(path, chapternames, tomenumber):
         elif options.splitter == 2:
             diff_delta = 2
 
-        if options.hasspreadpages:
-            # indicates that 2 page spreads exist and are merged in the source file
-            if diff_delta > 0:
+        if options.spreadadjust:
+            if (options.splitter == 0 or options.splitter == 2):
                 diff_delta -= 1
 
         for aChapter in options.chapters:
@@ -541,7 +540,7 @@ def buildEPUB(path, chapternames, tomenumber):
                     if'-kcc-b' in filelist[x][1]:
                         pageid += diff_delta
                         global_diff += diff_delta
-                    if options.hasspreadpages and options.splitter == 1 and '-kcc-a' in filelist[x][1]:
+                    if options.spreadadjust and options.splitter == 1 and '-kcc-a' in filelist[x][1]:
                         pageid -= 1
                         global_diff -= 1
 
@@ -597,8 +596,9 @@ def imgFileProcessingTick(output):
             if page is not None:
                 options.imgMetadata[page[0]] = page[1]
                 options.imgOld.append(page[2])
-        if not options.hasspreadpages:
-            options.hasspreadpages = output[1]
+        # options.doublepageattribute is True when there is a DoublePage attribute already found in the xml
+        if not options.doublepageattribute and not options.spreadadjust:
+            options.spreadadjust = output[1]
     if GUI:
         GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
@@ -612,7 +612,7 @@ def imgFileProcessing(work):
         opt = work[2]
         output = []
         workImg = image.ComicPageParser((dirpath, afile), opt)
-        hasspreadpages = workImg.opt.hasspreadpages
+        spreadadjust = workImg.opt.spreadadjust
         for i in workImg.payload:
             img = image.ComicPage(opt, *i)
             if opt.cropping == 2 and not opt.webtoon:
@@ -624,7 +624,7 @@ def imgFileProcessing(work):
             if opt.forcepng and not opt.forcecolor:
                 img.quantizeImage()
             output.append(img.saveToDir())
-        return [output, hasspreadpages]
+        return [output, spreadadjust]
     except Exception:
         return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
@@ -706,6 +706,9 @@ def getComicInfo(path, originalpath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.authors = ['KCC']
     options.chapters = []
+    options.doublepageattribute = False
+    # toggled only when splitCheck finds spread pages in source files AND the ComicInfo.xml does not find a DoublePage attribute in Pages list
+    options.spreadadjust = False
     options.summary = ''
     titleSuffix = ''
     if options.title == 'defaulttitle':
@@ -743,6 +746,8 @@ def getComicInfo(path, originalpath):
             options.authors = ['KCC']
         if xml.data['Bookmarks']:
             options.chapters = xml.data['Bookmarks']
+        if xml.data['DoublePages']:
+            options.doublepageattribute = xml.data['DoublePages']
         if xml.data['Summary']:
             options.summary = hescape(xml.data['Summary'])
         os.remove(xmlPath)
@@ -1109,8 +1114,6 @@ def checkOptions(options):
     if options.profile == 'KS' and (options.format == 'MOBI' or options.format == 'EPUB'):
         options.profileData = list(options.profileData)
         options.profileData[1] = (1440, 1920)
-    # flag if source file contains spread pages, set to True when a split check is done
-    options.hasspreadpages = False
     return options
 
 

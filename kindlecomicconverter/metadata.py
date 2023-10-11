@@ -35,6 +35,7 @@ class MetadataParser:
                      'Colorists': [],
                      'Summary': '',
                      'Bookmarks': [],
+                     'DoublePages': False,
                      'Title': ''}
         self.rawdata = None
         self.format = None
@@ -72,6 +73,8 @@ class MetadataParser:
                 if 'Bookmark' in page.attributes and 'Image' in page.attributes:
                     self.data['Bookmarks'].append((int(page.attributes['Image'].value),
                                                    page.attributes['Bookmark'].value))
+                if 'DoublePage' in page.attributes:
+                    self.data['DoublePages'] = True
 
     def saveXML(self):
         if self.rawdata:
