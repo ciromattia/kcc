@@ -526,9 +526,8 @@ def buildEPUB(path, chapternames, tomenumber):
         elif options.splitter == 2:
             diff_delta = 2
 
-        if options.spreadadjust:
-            if (options.splitter == 0 or options.splitter == 2):
-                diff_delta -= 1
+        if options.spreadadjust and options.splitter != 1:
+            diff_delta -= 1
 
         for aChapter in options.chapters:
             pageid = aChapter[0]
@@ -537,7 +536,7 @@ def buildEPUB(path, chapternames, tomenumber):
 
             for x in range(0, pageid + cur_diff + 1):
                 if x < filelen:
-                    if'-kcc-b' in filelist[x][1]:
+                    if '-kcc-b' in filelist[x][1]:
                         pageid += diff_delta
                         global_diff += diff_delta
                     if options.spreadadjust and options.splitter == 1 and '-kcc-a' in filelist[x][1]:
@@ -587,18 +586,19 @@ def imgDirectoryProcessing(path):
         raise UserWarning("Source directory is empty.")
 
 
-def imgFileProcessingTick(output):
+def imgFileProcessingTick(result):
+    output, spreadadjust = result
     if isinstance(output, tuple):
         workerOutput.append(output)
         workerPool.terminate()
     else:
-        for page in output[0]:
+        for page in output:
             if page is not None:
                 options.imgMetadata[page[0]] = page[1]
                 options.imgOld.append(page[2])
         # options.doublepageattribute is True when there is a DoublePage attribute already found in the xml
         if not options.doublepageattribute and not options.spreadadjust:
-            options.spreadadjust = output[1]
+            options.spreadadjust = spreadadjust
     if GUI:
         GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
@@ -624,7 +624,7 @@ def imgFileProcessing(work):
             if opt.forcepng and not opt.forcecolor:
                 img.quantizeImage()
             output.append(img.saveToDir())
-        return [output, spreadadjust]
+        return (output, spreadadjust)
     except Exception:
         return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
