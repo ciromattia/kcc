@@ -42,6 +42,8 @@ You probably want either
 - `kcc_*.*.*.exe` (Windows)
 - `KindleComicConverter_osx_*.*.*.dmg` (Mac)
 
+The `c2e` and `c2p` versions are command line tools for power users.
+
 Installation Wiki: https://github.com/ciromattia/kcc/wiki/Installation
 
 - flatpak : https://flathub.org/apps/details/io.github.ciromattia.kcc
