@@ -44,8 +44,8 @@ jobs:
         run: |   
           version_built=$(cat kindlecomicconverter/__init__.py | grep version | awk '{print $3}' | sed "s/[^.0-9b]//g")
           mv dist/windows/kcc.exe dist/windows/kcc_${version_built}.exe 
-          mv dist/windows/kcc-c2e.exe dist/windows/kcc-c2e_${version_built}.exe 
-          mv dist/windows/kcc-c2p.exe dist/windows/kcc-c2p_${version_built}.exe
+          mv dist/windows/kcc-c2e.exe dist/windows/kcc_c2e_${version_built}.exe 
+          mv dist/windows/kcc-c2p.exe dist/windows/kcc_c2p_${version_built}.exe
       - name: upload build
         uses: actions/upload-artifact@v3
         with:
