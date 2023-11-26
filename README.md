@@ -56,14 +56,14 @@ The installation process has been greatly streamlined. No need to add 7z to PATH
 
 ### 7-Zip
 
-#### Windows
+#### Windows 7-Zip
 
 First install 7z from https://www.7-zip.org/ or with command line:
 ```
 winget install --id 7zip.7zip
 ```
 
-#### macOS
+#### macOS 7-Zip/Unar
 with [Homebrew](https://brew.sh/) installed
 ```
 brew install p7zip
@@ -72,7 +72,7 @@ brew install unar
 
 ### KindleGen
 
-#### Windows / macOS
+#### Windows / macOS KindleGen
 
 Install [Kindle Previewer 3 (KP3)](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011). KCC will automatically detect KindleGen from it.
 
