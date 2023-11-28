@@ -37,7 +37,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
     def run(self):
         VERSION = __version__
         if sys.platform == 'darwin':
-            os.system('pyinstaller -y -F -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
+            os.system('pyinstaller -y -D -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
             # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
             os.system('appdmg kcc.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')
             sys.exit(0)
