@@ -29,7 +29,7 @@ from subprocess import STDOUT, PIPE
 # noinspection PyUnresolvedReferences
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.sax.saxutils import escape
-from psutil import Process
+from psutil import Popen, Process
 from copy import copy
 from distutils.version import StrictVersion
 from raven import Client
@@ -839,22 +839,24 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 os.chmod('/usr/local/bin/kindlegen', 0o755)
             except Exception:
                 pass
-        kindleGenExitCode = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+        kindleGenExitCode.communicate()
         if kindleGenExitCode.returncode == 0:
             self.kindleGen = True
-            versionCheck = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
-            for line in versionCheck.stdout.splitlines():
+            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+            for line in versionCheck.stdout:
+                line = line.decode("utf-8")
                 if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if StrictVersion(versionCheck) < StrictVersion('2.9'):
                         self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
                                         ' is outdated! MOBI conversion might fail.', 'warning')
                     break
-            where_command = ['where', 'kindlegen.exe']
+            where_command = 'where kindlegen.exe'
             if os.name == 'posix':
-                where_command = ['which', 'kindlegen']
-            process = subprocess.run(where_command, stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
-            locations = process.stdout.splitlines()
+                where_command = 'which kindlegen'
+            process = subprocess.run(where_command, stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+            locations = process.stdout.decode('utf-8').split('\n')
             self.addMessage(f"<b>KindleGen Found:</b> {locations[0]}", 'info')
         else:
             self.kindleGen = False
@@ -1037,7 +1039,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        process = subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
+        process = Popen('7z', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+        process.communicate()
         if process.returncode == 0 or process.returncode == 7:
             self.sevenzip = True
         else:
