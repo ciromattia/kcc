@@ -752,7 +752,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def display_kindlegen_missing(self):
         self.addMessage(
-            '<a href="https://github.com/ciromattia/kcc/wiki/Installation#kindlegen"><b>Cannot find KindleGen</b></a>: MOBI conversion is unavailable!', 
+            '<a href="https://github.com/ciromattia/kcc#kindlegen"><b>Install KindleGen (link)</b></a> to enable MOBI conversion for Kindles!', 
             'error'
         )
 
@@ -1042,8 +1042,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.sevenzip = True
         else:
             self.sevenzip = False
-            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#7-zip">Cannot find 7z</a>!'
-                            ' CBZ/CBR/ZIP/etc processing disabled.', 'warning')
+            self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
+                            ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
         self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
