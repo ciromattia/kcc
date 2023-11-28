@@ -728,7 +728,7 @@ def getComicInfo(path, originalpath):
             options.authors.sort()
         else:
             options.authors = ['KCC']
-        if xml.data['Bookmarks']:
+        if xml.data['Bookmarks'] and options.batchsplit == 0:
             options.chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
             options.summary = hescape(xml.data['Summary'])
