@@ -46,7 +46,7 @@ On Windows 11, you may need to run in compatibility mode for an older Windows ve
 
 On Mac, right click open to get past the security warning.
 
-For flatpak and Docker versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
+For flatpak, Docker, amd AppImage versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
 
 ## INSTALL DEPENDENCIES
 
@@ -75,11 +75,6 @@ brew install unar
 #### Windows / macOS KindleGen
 
 Install [Kindle Previewer 3 (KP3)](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011). KCC will automatically detect KindleGen from it.
-
-An older version of KindleGen can be automatically detected from [Kindle Comic Creator (KC2)](https://www.amazon.com/Kindle-Comic-Creator/b?ie=UTF8&node=23496309011) as backup in case you have issues with KP3.
-
-For Linux users or those wanting more info refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
-
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
