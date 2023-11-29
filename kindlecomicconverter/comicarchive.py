@@ -73,10 +73,6 @@ class ComicArchive:
         tdir = os.listdir(targetdir)
         if 'ComicInfo.xml' in tdir:
             tdir.remove('ComicInfo.xml')
-        if len(tdir) == 1 and os.path.isdir(os.path.join(targetdir, tdir[0])):
-            for f in os.listdir(os.path.join(targetdir, tdir[0])):
-                move(os.path.join(targetdir, tdir[0], f), targetdir)
-            os.rmdir(os.path.join(targetdir, tdir[0]))
         return targetdir
 
     def addFile(self, sourcefile):
