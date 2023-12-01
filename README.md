@@ -44,9 +44,9 @@ more information on [installation](https://github.com/ciromattia/kcc/wiki/Instal
 ### DEPENDENCIES
 Following software is required to run Linux version of **KCC** and/or bare sources:
 - Python 3.3+
-- [PySide6](https://pypi.org/project/PySide6/) 6.5.1+ (only needed for GUI)
+- [PyQt5](https://pypi.python.org/pypi/PyQt5) 5.6.0+ (only needed for GUI)
 - [Pillow](https://pypi.python.org/pypi/Pillow/) 4.0.0+ (5.2.0+ needed for WebP support)
-- [psutil](https://pypi.python.org/pypi/psutil) 5.9.5+
+- [psutil](https://pypi.python.org/pypi/psutil) 5.0.0+
 - [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.1+, <8.0.0
 - [raven](https://pypi.python.org/pypi/raven) 6.0.0+ (only needed for GUI)
 
@@ -55,13 +55,18 @@ On Debian based distributions these two commands should install all needed depen
 
 
 ```bash
-$ sudo apt-get install -y python3 python3-dev libpng-dev libjpeg-dev p7zip-full p7zip-rar unrar-free libgl1 && \
+$ sudo apt-get install -y python3 python3-dev libpng-dev libjpeg-dev p7zip-full p7zip-rar unrar-free libgl1 python3-pyqt5 && \
     python -m pip install --upgrade pip && \
     python -m pip install --upgrade -r requirements.txt
 ```
 
 
 #### Optional dependencies
+- Qt platform integration plugin for Deepin Desktop Environment
+```bash
+$ sudo apt-get install qt5dxcb-plugin
+```
+
 - KindleGen ~~[(deprecated link)](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)~~ v2.9+  (For MOBI generation) 
   - should be placed in a directory reachable by your _PATH_ or in _KCC_ directory
   - `KindleGen` can be found in [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011)
