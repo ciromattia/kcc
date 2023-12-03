@@ -61,8 +61,6 @@ class ComicArchive:
         elif process.returncode != 0 and platform.system() == 'Darwin':
             process = subprocess.run(['unar', self.filepath, '-f', '-o', targetdir], 
                 stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
-            if process.returncode != 0:
-                raise Exception(process.stdout)
         elif process.returncode != 0:
             raise OSError(process.stdout.strip())
         tdir = os.listdir(targetdir)
