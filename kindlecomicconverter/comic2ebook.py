@@ -1103,13 +1103,15 @@ def checkTools(source):
     source = source.upper()
     if source.endswith('.CB7') or source.endswith('.7Z') or source.endswith('.RAR') or source.endswith('.CBR') or \
             source.endswith('.ZIP') or source.endswith('.CBZ'):
-        process = subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
-        if process.returncode != 0 and process.returncode != 7:
+        try:
+            subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
+        except FileNotFoundError:
             print('ERROR: 7z is missing!')
             sys.exit(1)
     if options.format == 'MOBI':
-        kindleGenExitCode = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT)
-        if kindleGenExitCode.returncode != 0:
+        try:
+            subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT)
+        except FileNotFoundError:
             print('ERROR: KindleGen is missing!')
             sys.exit(1)
 

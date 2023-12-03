@@ -839,10 +839,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 os.chmod('/usr/local/bin/kindlegen', 0o755)
             except Exception:
                 pass
-        kindleGenExitCode = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
-        if kindleGenExitCode.returncode == 0:
-            self.kindleGen = True
+        try:
             versionCheck = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+            self.kindleGen = True
             for line in versionCheck.stdout.splitlines():
                 if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
@@ -856,12 +855,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             process = subprocess.run(where_command, stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
             locations = process.stdout.splitlines()
             self.addMessage(f"<b>KindleGen Found:</b> {locations[0]}", 'info')
-        else:
+        except FileNotFoundError:
             self.kindleGen = False
             if startup:
                 self.display_kindlegen_missing()
-
-
 
     def __init__(self, kccapp, kccwindow):
         global APP, MW, GUI
@@ -1037,10 +1034,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        process = subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
-        if process.returncode == 0 or process.returncode == 7:
+        try:
+            subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
             self.sevenzip = True
-        else:
+        except FileNotFoundError:
             self.sevenzip = False
             self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
                             ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
