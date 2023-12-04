@@ -48,7 +48,7 @@ On Mac, right click open to get past the security warning.
 
 For flatpak, Docker, amd AppImage versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
 
-## INSTALL DEPENDENCIES
+## Prerequisites
 
 You'll need to install various tools to access important but optional features.
 
