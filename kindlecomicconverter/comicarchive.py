@@ -82,7 +82,7 @@ class ComicArchive:
 
     def extractMetadata(self):
         process = subprocess.run(['7z', 'x', '-y', '-so', self.filepath, 'ComicInfo.xml'],
-                        stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+                        stdout=PIPE, stderr=STDOUT)
         if process.returncode != 0:
             raise OSError('Failed to extract archive.')
         try:
