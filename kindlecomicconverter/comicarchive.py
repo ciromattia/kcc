@@ -28,12 +28,15 @@ from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
 
 
+EXTRACTION_ERROR = 'Failed to extract archive. Try extracting file outside of KCC and using the extracted folder directly.'
+
 class ComicArchive:
     def __init__(self, filepath):
         self.filepath = filepath
         self.type = None
         if not os.path.isfile(self.filepath):
             raise OSError('File not found.')
+        # encoding the output of 7z on Windows to UTF-8 can cause issues
         process = subprocess.run(['7z', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE)
         for line in process.stdout.splitlines():
             if b'Type =' in line:
@@ -46,7 +49,7 @@ class ComicArchive:
                     self.type = line.rstrip().decode().split(' ')[1].upper()
                     break
             if process.returncode != 0:
-                raise OSError(process.stdout.strip())
+                raise OSError(EXTRACTION_ERROR)
 
     def extract(self, targetdir):
         if not os.path.isdir(targetdir):
@@ -57,12 +60,12 @@ class ComicArchive:
             process = subprocess.run(['unrar', 'x', '-y', '-x__MACOSX', '-x.DS_Store', '-xthumbs.db', '-xThumbs.db', self.filepath, targetdir] 
                     , stdout=PIPE, stderr=STDOUT)
             if process.returncode != 0:
-                raise OSError('Failed to extract archive.')
+                raise OSError(EXTRACTION_ERROR)
         elif process.returncode != 0 and platform.system() == 'Darwin':
             process = subprocess.run(['unar', self.filepath, '-f', '-o', targetdir], 
                 stdout=PIPE, stderr=STDOUT)
         elif process.returncode != 0:
-            raise OSError('Failed to extract archive. Try extracting the file outside of KCC.')
+            raise OSError(EXTRACTION_ERROR)
         tdir = os.listdir(targetdir)
         if 'ComicInfo.xml' in tdir:
             tdir.remove('ComicInfo.xml')
@@ -84,7 +87,7 @@ class ComicArchive:
         process = subprocess.run(['7z', 'x', '-y', '-so', self.filepath, 'ComicInfo.xml'],
                         stdout=PIPE, stderr=STDOUT)
         if process.returncode != 0:
-            raise OSError('Failed to extract archive.')
+            raise OSError(EXTRACTION_ERROR)
         try:
             return parseString(process.stdout)
         except ExpatError:
