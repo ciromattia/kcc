@@ -62,7 +62,7 @@ class ComicArchive:
             process = subprocess.run(['unar', self.filepath, '-f', '-o', targetdir], 
                 stdout=PIPE, stderr=STDOUT)
         elif process.returncode != 0:
-            raise OSError(process.stdout.strip())
+            raise OSError('Failed to extract archive. Try extracting the file outside of KCC.')
         tdir = os.listdir(targetdir)
         if 'ComicInfo.xml' in tdir:
             tdir.remove('ComicInfo.xml')
