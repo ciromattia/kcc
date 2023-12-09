@@ -52,7 +52,6 @@ class ComicArchive:
                 raise OSError(EXTRACTION_ERROR)
 
     def extract(self, targetdir):
-        raise OSError(EXTRACTION_ERROR)
         if not os.path.isdir(targetdir):
             raise OSError('Target directory doesn\'t exist.')
         process = subprocess.run(['7z', 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
