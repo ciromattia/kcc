@@ -52,7 +52,7 @@ class ComicArchive:
         if not os.path.isdir(targetdir):
             raise OSError('Target directory doesn\'t exist.')
         process = subprocess.run(['7z', 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
-                                 stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+                                 stdout=PIPE, stderr=STDOUT)
         if process.returncode != 0 and distro.id() == 'fedora':
             process = subprocess.run(['unrar', 'x', '-y', '-x__MACOSX', '-x.DS_Store', '-xthumbs.db', '-xThumbs.db', self.filepath, targetdir] 
                     , stdout=PIPE, stderr=STDOUT)
@@ -60,7 +60,7 @@ class ComicArchive:
                 raise OSError('Failed to extract archive.')
         elif process.returncode != 0 and platform.system() == 'Darwin':
             process = subprocess.run(['unar', self.filepath, '-f', '-o', targetdir], 
-                stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+                stdout=PIPE, stderr=STDOUT)
         elif process.returncode != 0:
             raise OSError(process.stdout.strip())
         tdir = os.listdir(targetdir)
