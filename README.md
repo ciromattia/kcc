@@ -46,9 +46,9 @@ On Windows 11, you may need to run in compatibility mode for an older Windows ve
 
 On Mac, right click open to get past the security warning.
 
-For flatpak, Docker, amd AppImage versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
+For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
 
-## INSTALL DEPENDENCIES
+## PREREQUISITES
 
 You'll need to install various tools to access important but optional features.
 
