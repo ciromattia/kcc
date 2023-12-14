@@ -29,7 +29,7 @@ from subprocess import STDOUT, PIPE
 # noinspection PyUnresolvedReferences
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.sax.saxutils import escape
-from psutil import Process
+from psutil import Popen, Process
 from copy import copy
 from distutils.version import StrictVersion
 from raven import Client
@@ -752,7 +752,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def display_kindlegen_missing(self):
         self.addMessage(
-            '<a href="https://github.com/ciromattia/kcc/wiki/Installation#kindlegen"><b>Cannot find KindleGen</b></a>: MOBI conversion is unavailable!', 
+            '<a href="https://github.com/ciromattia/kcc#kindlegen"><b>Install KindleGen (link)</b></a> to enable MOBI conversion for Kindles!', 
             'error'
         )
 
@@ -839,23 +839,19 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 os.chmod('/usr/local/bin/kindlegen', 0o755)
             except Exception:
                 pass
-        kindleGenExitCode = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+        kindleGenExitCode.communicate()
         if kindleGenExitCode.returncode == 0:
             self.kindleGen = True
-            versionCheck = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
-            for line in versionCheck.stdout.splitlines():
+            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+            for line in versionCheck.stdout:
+                line = line.decode("utf-8")
                 if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if StrictVersion(versionCheck) < StrictVersion('2.9'):
                         self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
                                         ' is outdated! MOBI conversion might fail.', 'warning')
                     break
-            where_command = ['where', 'kindlegen.exe']
-            if os.name == 'posix':
-                where_command = ['which', 'kindlegen']
-            process = subprocess.run(where_command, stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
-            locations = process.stdout.splitlines()
-            self.addMessage(f"<b>KindleGen Found:</b> {locations[0]}", 'info')
         else:
             self.kindleGen = False
             if startup:
@@ -1037,13 +1033,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        process = subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
+        process = Popen('7z', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+        process.communicate()
         if process.returncode == 0 or process.returncode == 7:
             self.sevenzip = True
         else:
             self.sevenzip = False
-            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#7-zip">Cannot find 7z</a>!'
-                            ' CBZ/CBR/ZIP/etc processing disabled.', 'warning')
+            self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
+                            ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
         self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)

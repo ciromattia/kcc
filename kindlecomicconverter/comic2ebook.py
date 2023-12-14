@@ -38,7 +38,7 @@ from natsort import natsorted
 from slugify import slugify as slugify_ext
 from PIL import Image
 from subprocess import STDOUT, PIPE
-from psutil import virtual_memory, disk_usage
+from psutil import Popen, virtual_memory, disk_usage
 from html import escape as hescape
 try:
     from PyQt5 import QtCore
@@ -728,7 +728,7 @@ def getComicInfo(path, originalpath):
             options.authors.sort()
         else:
             options.authors = ['KCC']
-        if xml.data['Bookmarks']:
+        if xml.data['Bookmarks'] and options.batchsplit == 0:
             options.chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
             options.summary = hescape(xml.data['Summary'])
@@ -1103,12 +1103,14 @@ def checkTools(source):
     source = source.upper()
     if source.endswith('.CB7') or source.endswith('.7Z') or source.endswith('.RAR') or source.endswith('.CBR') or \
             source.endswith('.ZIP') or source.endswith('.CBZ'):
-        process = subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
+        process = Popen('7z', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+        process.communicate()
         if process.returncode != 0 and process.returncode != 7:
             print('ERROR: 7z is missing!')
             sys.exit(1)
     if options.format == 'MOBI':
-        kindleGenExitCode = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT)
+        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+        kindleGenExitCode.communicate()
         if kindleGenExitCode.returncode != 0:
             print('ERROR: KindleGen is missing!')
             sys.exit(1)
@@ -1265,9 +1267,10 @@ def makeMOBIWorker(item):
     kindlegenError = ''
     try:
         if os.path.getsize(item) < 629145600:
-            output = subprocess.run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
-                           stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
-            for line in output.stdout.splitlines():
+            output = Popen('kindlegen -dont_append_source -locale en "' + item + '"',
+                           stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
+            for line in output.stdout:
+                line = line.decode('utf-8')
                 # ERROR: Generic error
                 if "Error(" in line:
                     kindlegenErrorCode = 1
@@ -1278,6 +1281,7 @@ def makeMOBIWorker(item):
                 if kindlegenErrorCode > 0:
                     break
                 if ":I1036: Mobi file built successfully" in line:
+                    output.communicate()
                     break
         else:
             # ERROR: EPUB too big
