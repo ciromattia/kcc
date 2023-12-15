@@ -36,7 +36,6 @@ class ComicArchive:
         self.type = None
         if not os.path.isfile(self.filepath):
             raise OSError('File not found.')
-        # encoding the output of 7z on Windows to UTF-8 can cause issues
         process = subprocess.run(['7z', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE)
         for line in process.stdout.splitlines():
             if b'Type =' in line:
