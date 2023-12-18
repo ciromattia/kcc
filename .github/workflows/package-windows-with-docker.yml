@@ -47,7 +47,7 @@ jobs:
           mv dist/windows/kcc-c2e.exe dist/windows/kcc_c2e_${version_built}.exe 
           mv dist/windows/kcc-c2p.exe dist/windows/kcc_c2p_${version_built}.exe
       - name: upload build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-build
           path: dist/windows/*.exe
