@@ -28,7 +28,7 @@ import requests
 # noinspection PyUnresolvedReferences
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.sax.saxutils import escape
-from psutil import Popen, Process
+from psutil import Process
 from copy import copy
 from distutils.version import StrictVersion
 from raven import Client
@@ -835,25 +835,20 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 os.chmod('/usr/local/bin/kindlegen', 0o755)
             except Exception:
                 pass
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        kindleGenExitCode.communicate()
-        if kindleGenExitCode.returncode == 0:
+        try:
+            versionCheck = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
             self.kindleGen = True
-            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-            for line in versionCheck.stdout:
-                line = line.decode("utf-8")
+            for line in versionCheck.stdout.splitlines():
                 if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if StrictVersion(versionCheck) < StrictVersion('2.9'):
                         self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
                                         ' is outdated! MOBI conversion might fail.', 'warning')
                     break
-        else:
+        except FileNotFoundError:
             self.kindleGen = False
             if startup:
                 self.display_kindlegen_missing()
-
-
 
     def __init__(self, kccapp, kccwindow):
         global APP, MW, GUI
@@ -1029,11 +1024,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        process = Popen('7z', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        process.communicate()
-        if process.returncode == 0 or process.returncode == 7:
+        try:
+            subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
             self.sevenzip = True
-        else:
+        except FileNotFoundError:
             self.sevenzip = False
             self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
                             ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
