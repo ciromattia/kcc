@@ -19,6 +19,8 @@
 #
 
 import os
+import pathlib
+import re
 import subprocess
 import sys
 from argparse import ArgumentParser
@@ -32,7 +34,7 @@ from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree, copyfile
 from multiprocessing import Pool
 from uuid import uuid4
-from natsort import natsorted
+from natsort import os_sorted
 from slugify import slugify as slugify_ext
 from PIL import Image
 from subprocess import STDOUT, PIPE
@@ -673,11 +675,9 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
         filename = srcpath + tomenumber + ext
     else:
         if 'Ko' in options.profile and options.format == 'EPUB':
-            path = srcpath.split(os.path.sep)
-            path[-1] = ''.join(e for e in path[-1].split('.')[0] if e.isalnum()) + tomenumber + ext
-            if not path[-1].split('.')[0]:
-                path[-1] = 'KCCPlaceholder' + tomenumber + ext
-            filename = os.path.sep.join(path)
+            src = pathlib.Path(srcpath)
+            name = re.sub(r'\W+', '_', src.stem) + tomenumber + ext
+            filename = src.with_name(name)
         else:
             filename = os.path.splitext(srcpath)[0] + tomenumber + ext
     if os.path.isfile(filename):
@@ -763,7 +763,7 @@ def getPanelViewSize(deviceres, size):
 def sanitizeTree(filetree):
     chapterNames = {}
     for root, dirs, files in os.walk(filetree, False):
-        for i, name in enumerate(natsorted(files)):
+        for i, name in enumerate(os_sorted(files)):
             splitname = os.path.splitext(name)
 
             # file needs kcc at front AND back to avoid renaming issues
