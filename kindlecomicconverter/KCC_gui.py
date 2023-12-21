@@ -18,6 +18,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 import os
 import re
+import subprocess
 import sys
 from urllib.parse import unquote
 from time import sleep
