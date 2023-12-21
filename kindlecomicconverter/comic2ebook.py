@@ -19,6 +19,9 @@
 #
 
 import os
+import pathlib
+import re
+import subprocess
 import sys
 from argparse import ArgumentParser
 from time import strftime, gmtime
@@ -672,11 +675,9 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
         filename = srcpath + tomenumber + ext
     else:
         if 'Ko' in options.profile and options.format == 'EPUB':
-            path = srcpath.split(os.path.sep)
-            path[-1] = ''.join(e for e in path[-1].split('.')[0] if e.isalnum()) + tomenumber + ext
-            if not path[-1].split('.')[0]:
-                path[-1] = 'KCCPlaceholder' + tomenumber + ext
-            filename = os.path.sep.join(path)
+            src = pathlib.Path(srcpath)
+            name = re.sub(r'\W+', '_', src.stem) + tomenumber + ext
+            filename = src.with_name(name)
         else:
             filename = os.path.splitext(srcpath)[0] + tomenumber + ext
     if os.path.isfile(filename):
