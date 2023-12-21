@@ -16,16 +16,15 @@
 # OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
-import json
 import os
 import re
-import subprocess
 import sys
 from urllib.parse import unquote
-from urllib.request import urlretrieve, urlopen
 from time import sleep
 from shutil import move, rmtree
 from subprocess import STDOUT, PIPE
+
+import requests
 # noinspection PyUnresolvedReferences
 from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
 from xml.sax.saxutils import escape
@@ -139,10 +138,7 @@ class VersionThread(QtCore.QThread):
 
     def run(self):
         try:
-            last_version_url = urlopen("https://api.github.com/repos/ciromattia/kcc/releases/latest")
-            data = last_version_url.read()
-            encoding = last_version_url.info().get_content_charset('utf-8')
-            json_parser = json.loads(data.decode(encoding))
+            json_parser = requests.get("https://api.github.com/repos/ciromattia/kcc/releases/latest").json()
 
             html_url = json_parser["html_url"]
             latest_version = json_parser["tag_name"]
