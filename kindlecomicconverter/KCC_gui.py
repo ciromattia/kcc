@@ -16,21 +16,21 @@
 # OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
-import json
 import os
 import re
 import subprocess
 import sys
 from urllib.parse import unquote
-from urllib.request import urlopen
 from time import sleep
 from shutil import move, rmtree
 from subprocess import STDOUT, PIPE
+
+import requests
 # noinspection PyUnresolvedReferences
 from PySide6 import QtGui, QtCore, QtWidgets, QtNetwork
 from PySide6.QtCore import Qt
 from xml.sax.saxutils import escape
-from psutil import Popen, Process
+from psutil import Process
 from copy import copy
 from distutils.version import StrictVersion
 from raven import Client
@@ -140,10 +140,7 @@ class VersionThread(QtCore.QThread):
 
     def run(self):
         try:
-            last_version_url = urlopen("https://api.github.com/repos/ciromattia/kcc/releases/latest")
-            data = last_version_url.read()
-            encoding = last_version_url.info().get_content_charset('utf-8')
-            json_parser = json.loads(data.decode(encoding))
+            json_parser = requests.get("https://api.github.com/repos/ciromattia/kcc/releases/latest").json()
 
             html_url = json_parser["html_url"]
             latest_version = json_parser["tag_name"]
@@ -753,7 +750,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def display_kindlegen_missing(self):
         self.addMessage(
-            '<a href="https://github.com/ciromattia/kcc/wiki/Installation#kindlegen"><b>Cannot find KindleGen</b></a>: MOBI conversion is unavailable!', 
+            '<a href="https://github.com/ciromattia/kcc#kindlegen"><b>Install KindleGen (link)</b></a> to enable MOBI conversion for Kindles!', 
             'error'
         )
 
@@ -840,31 +837,20 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 os.chmod('/usr/local/bin/kindlegen', 0o755)
             except Exception:
                 pass
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        kindleGenExitCode.communicate()
-        if kindleGenExitCode.returncode == 0:
+        try:
+            versionCheck = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
             self.kindleGen = True
-            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-            for line in versionCheck.stdout:
-                line = line.decode("utf-8")
+            for line in versionCheck.stdout.splitlines():
                 if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if StrictVersion(versionCheck) < StrictVersion('2.9'):
                         self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
                                         ' is outdated! MOBI conversion might fail.', 'warning')
                     break
-            where_command = 'where kindlegen.exe'
-            if os.name == 'posix':
-                where_command = 'which kindlegen'
-            process = subprocess.run(where_command, stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-            locations = process.stdout.decode('utf-8').split('\n')
-            self.addMessage(f"<b>KindleGen Found:</b> {locations[0]}", 'info')
-        else:
+        except FileNotFoundError:
             self.kindleGen = False
             if startup:
                 self.display_kindlegen_missing()
-
-
 
     def __init__(self, kccapp, kccwindow):
         global APP, MW, GUI
@@ -944,7 +930,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                               'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle PW 1/2": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'Label': 'KPW'},
-            "Kindle": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 4/5/7/8/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K578'},
             "Kindle DX/DXG": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'Label': 'KDX'},
@@ -1012,7 +998,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle Voyage",
             "Kindle 2",
             "Kindle 1",
-            "Kindle",
+            "Kindle 4/5/7/8/10",
             "Separator",
             "Kobo Aura",
             "Kobo Aura ONE",
@@ -1040,14 +1026,13 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        process = Popen('7z', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        process.communicate()
-        if process.returncode == 0 or process.returncode == 7:
+        try:
+            subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
             self.sevenzip = True
-        else:
+        except FileNotFoundError:
             self.sevenzip = False
-            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#7-zip">Cannot find 7z</a>!'
-                            ' CBZ/CBR/ZIP/etc processing disabled.', 'warning')
+            self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
+                            ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
         self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)

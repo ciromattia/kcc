@@ -19,6 +19,9 @@
 #
 
 import os
+import pathlib
+import re
+import subprocess
 import sys
 from argparse import ArgumentParser
 from time import strftime, gmtime
@@ -31,10 +34,11 @@ from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree, copyfile
 from multiprocessing import Pool
 from uuid import uuid4
+from natsort import os_sorted
 from slugify import slugify as slugify_ext
 from PIL import Image
 from subprocess import STDOUT, PIPE
-from psutil import Popen, virtual_memory, disk_usage
+from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace
 from . import comic2panel
@@ -667,11 +671,9 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
         filename = srcpath + tomenumber + ext
     else:
         if 'Ko' in options.profile and options.format == 'EPUB':
-            path = srcpath.split(os.path.sep)
-            path[-1] = ''.join(e for e in path[-1].split('.')[0] if e.isalnum()) + tomenumber + ext
-            if not path[-1].split('.')[0]:
-                path[-1] = 'KCCPlaceholder' + tomenumber + ext
-            filename = os.path.sep.join(path)
+            src = pathlib.Path(srcpath)
+            name = re.sub(r'\W+', '_', src.stem) + tomenumber + ext
+            filename = src.with_name(name)
         else:
             filename = os.path.splitext(srcpath)[0] + tomenumber + ext
     if os.path.isfile(filename):
@@ -722,7 +724,7 @@ def getComicInfo(path, originalpath):
             options.authors.sort()
         else:
             options.authors = ['KCC']
-        if xml.data['Bookmarks']:
+        if xml.data['Bookmarks'] and options.batchsplit == 0:
             options.chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
             options.summary = hescape(xml.data['Summary'])
@@ -757,7 +759,7 @@ def getPanelViewSize(deviceres, size):
 def sanitizeTree(filetree):
     chapterNames = {}
     for root, dirs, files in os.walk(filetree, False):
-        for i, name in enumerate(sorted(files)):
+        for i, name in enumerate(os_sorted(files)):
             splitname = os.path.splitext(name)
 
             # file needs kcc at front AND back to avoid renaming issues
@@ -1097,17 +1099,17 @@ def checkTools(source):
     source = source.upper()
     if source.endswith('.CB7') or source.endswith('.7Z') or source.endswith('.RAR') or source.endswith('.CBR') or \
             source.endswith('.ZIP') or source.endswith('.CBZ'):
-        process = Popen('7z', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        process.communicate()
-        if process.returncode != 0 and process.returncode != 7:
+        try:
+            subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
+        except FileNotFoundError:
             print('ERROR: 7z is missing!')
-            exit(1)
+            sys.exit(1)
     if options.format == 'MOBI':
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        kindleGenExitCode.communicate()
-        if kindleGenExitCode.returncode != 0:
+        try:
+            subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT)
+        except FileNotFoundError:
             print('ERROR: KindleGen is missing!')
-            exit(1)
+            sys.exit(1)
 
 
 def checkPre(source):
@@ -1261,10 +1263,9 @@ def makeMOBIWorker(item):
     kindlegenError = ''
     try:
         if os.path.getsize(item) < 629145600:
-            output = Popen('kindlegen -dont_append_source -locale en "' + item + '"',
-                           stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-            for line in output.stdout:
-                line = line.decode('utf-8')
+            output = subprocess.run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
+                           stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+            for line in output.stdout.splitlines():
                 # ERROR: Generic error
                 if "Error(" in line:
                     kindlegenErrorCode = 1
@@ -1275,7 +1276,6 @@ def makeMOBIWorker(item):
                 if kindlegenErrorCode > 0:
                     break
                 if ":I1036: Mobi file built successfully" in line:
-                    output.communicate()
                     break
         else:
             # ERROR: EPUB too big

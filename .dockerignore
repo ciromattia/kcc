@@ -7,7 +7,6 @@ KindleComicConverter.egg-info
 .gitignore
 .travis.yml
 Dockerfile
-other
 venv
 *.md
 LICENSE.txt
