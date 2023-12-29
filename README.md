@@ -28,6 +28,8 @@ If you find **KCC** valuable you can consider donating to the authors:
 - Paweł Jastrzębski:
   - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
   - [![Donate Bitcoin](https://img.shields.io/badge/Donate-Bitcoin-green.svg)](https://jastrzeb.ski/donate/)
+- Alex Xu
+  - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=QFJVE7A6LCP6U&no_recurring=0&item_name=Kindle+Comic+Converter&currency_code=USD)
 
 
 ## DOWNLOADS
@@ -209,7 +211,12 @@ OTHER:
 ```
 
 ## CREDITS
-**KCC** is made by [Ciro Mattia Gonano](http://github.com/ciromattia), [Paweł Jastrzębski](http://github.com/AcidWeb) and [Darodi](http://github.com/darodi)  .
+**KCC** is made by 
+
+- [Ciro Mattia Gonano](http://github.com/ciromattia)
+- [Paweł Jastrzębski](http://github.com/AcidWeb)
+- [Darodi](http://github.com/darodi)
+- [Alex Xu](http://github.com/axu2)
 
 This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published [here](http://www.mobileread.com/forums/showthread.php?t=192783)).
 
