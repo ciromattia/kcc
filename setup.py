@@ -82,6 +82,8 @@ setuptools.setup(
         'raven>=6.0.0',
         'requests>=2.31.0',
         'mozjpeg-lossless-optimization>=1.1.2',
+        'natsort[fast]>=8.4.0',
+        'distro',
     ],
     classifiers=[],
     zip_safe=False,
