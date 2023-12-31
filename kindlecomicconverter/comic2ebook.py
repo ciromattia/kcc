@@ -1267,8 +1267,11 @@ def makeMOBIWorker(item):
     kindlegenError = ''
     try:
         if os.path.getsize(item) < 629145600:
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = subprocess.SW_HIDE
             output = subprocess.run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
-                           stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+                           stdout=PIPE, stderr=STDOUT, encoding='UTF-8', startupinfo=startupinfo)
             for line in output.stdout.splitlines():
                 # ERROR: Generic error
                 if "Error(" in line:
