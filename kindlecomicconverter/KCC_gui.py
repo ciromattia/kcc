@@ -34,14 +34,13 @@ from copy import copy
 from distutils.version import StrictVersion
 from raven import Client
 from tempfile import gettempdir
-from .shared import md5Checksum, HTMLStripper, sanitizeTrace, walkLevel
+from .shared import md5Checksum, HTMLStripper, sanitizeTrace, walkLevel, subprocess_run_silent
 from . import __version__
 from . import comic2ebook
 from . import metadata
 from . import kindle
 from . import KCC_ui
 from . import KCC_ui_editor
-from .utils import run_subprocess_silent
 
 
 class QApplicationMessaging(QtWidgets.QApplication):
@@ -838,7 +837,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             except Exception:
                 pass
         try:
-            versionCheck = run_subprocess_silent(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+            versionCheck = subprocess_run_silent(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
             self.kindleGen = True
             for line in versionCheck.stdout.splitlines():
                 if 'Amazon kindlegen' in line:
@@ -1027,7 +1026,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
         try:
-            run_subprocess_silent(['7z'], stdout=PIPE, stderr=STDOUT)
+            subprocess_run_silent(['7z'], stdout=PIPE, stderr=STDOUT)
             self.sevenzip = True
         except FileNotFoundError:
             self.sevenzip = False
