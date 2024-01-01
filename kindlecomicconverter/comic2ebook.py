@@ -53,6 +53,7 @@ from . import dualmetafix
 from . import metadata
 from . import kindle
 from . import __version__
+from .utils import run_subprocess_silent
 
 
 def main(argv=None):
@@ -1104,13 +1105,13 @@ def checkTools(source):
     if source.endswith('.CB7') or source.endswith('.7Z') or source.endswith('.RAR') or source.endswith('.CBR') or \
             source.endswith('.ZIP') or source.endswith('.CBZ'):
         try:
-            subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
+            run_subprocess_silent(['7z'], stdout=PIPE, stderr=STDOUT)
         except FileNotFoundError:
             print('ERROR: 7z is missing!')
             sys.exit(1)
     if options.format == 'MOBI':
         try:
-            subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT)
+            run_subprocess_silent(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT)
         except FileNotFoundError:
             print('ERROR: KindleGen is missing!')
             sys.exit(1)
@@ -1267,11 +1268,8 @@ def makeMOBIWorker(item):
     kindlegenError = ''
     try:
         if os.path.getsize(item) < 629145600:
-            startupinfo = subprocess.STARTUPINFO()
-            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-            startupinfo.wShowWindow = subprocess.SW_HIDE
-            output = subprocess.run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
-                           stdout=PIPE, stderr=STDOUT, encoding='UTF-8', startupinfo=startupinfo)
+            output = run_subprocess_silent(['kindlegen', '-dont_append_source', '-locale', 'en', item],
+                           stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
             for line in output.stdout.splitlines():
                 # ERROR: Generic error
                 if "Error(" in line:
