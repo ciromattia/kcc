@@ -260,6 +260,8 @@ class WorkerThread(QtCore.QThread):
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.widthBox.value())
             options.customheight = str(GUI.heightBox.value())
+        if GUI.targetDirectory != '':
+            options.output = GUI.targetDirectory
 
         for i in range(GUI.jobList.count()):
             # Make sure that we don't consider any system message as job to do
