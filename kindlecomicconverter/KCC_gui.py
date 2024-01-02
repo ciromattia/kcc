@@ -35,7 +35,8 @@ from copy import copy
 from distutils.version import StrictVersion
 from raven import Client
 from tempfile import gettempdir
-from .shared import HTMLStripper, sanitizeTrace, walkLevel
+
+from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run_silent
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -261,6 +262,8 @@ class WorkerThread(QtCore.QThread):
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.widthBox.value())
             options.customheight = str(GUI.heightBox.value())
+        if GUI.targetDirectory != '':
+            options.output = GUI.targetDirectory
 
         for i in range(GUI.jobList.count()):
             # Make sure that we don't consider any system message as job to do
@@ -838,7 +841,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             except Exception:
                 pass
         try:
-            versionCheck = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+            versionCheck = subprocess_run_silent(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
             self.kindleGen = True
             for line in versionCheck.stdout.splitlines():
                 if 'Amazon kindlegen' in line:
@@ -911,9 +914,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
 
         self.profiles = {
-            "Kindle Oasis 2/3": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Oasis 9/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                  'DefaultUpscale': True, 'Label': 'KO'},
-            "Kindle Oasis": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Oasis 8": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                              'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'Label': 'KV'},
@@ -923,16 +926,16 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'Label': 'K11',
             },
-            "Kindle PW 5": {
+            "Kindle Paperwhite 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'Label': 'KPW5',
             },
-            "Kindle PW 3/4": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Paperwhite 7/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'Label': 'KV'},
-            "Kindle PW 1/2": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Paperwhite 5/6": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'Label': 'KPW'},
             "Kindle 4/5/7/8/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K578'},
-            "Kindle DX/DXG": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kindle DX": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'Label': 'KDX'},
             "Kobo Mini/Touch": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                                 'DefaultUpscale': False, 'Label': 'KoMT'},
@@ -976,10 +979,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                       'Label': 'OTHER'},
         }
         profilesGUI = [
-            "Kindle Oasis 2/3",
-            "Kindle PW 5",
-            "Kindle 11",
             "Kindle Scribe",
+            "Kindle 11",
+            "Kindle Paperwhite 11",
+            "Kindle Oasis 9/10",
             "Separator",
             "Kobo Clara 2E",
             "Kobo Sage",
@@ -989,16 +992,16 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Separator",
             "Other",
             "Separator",
-            "Kindle Oasis",
+            "Kindle Oasis 8",
+            "Kindle Paperwhite 7/10",
+            "Kindle Voyage",
+            "Kindle Paperwhite 5/6",
+            "Kindle 4/5/7/8/10",
             "Kindle Touch",
             "Kindle Keyboard",
-            "Kindle DX/DXG",
-            "Kindle PW 3/4",
-            "Kindle PW 1/2",
-            "Kindle Voyage",
+            "Kindle DX",
             "Kindle 2",
             "Kindle 1",
-            "Kindle 4/5/7/8/10",
             "Separator",
             "Kobo Aura",
             "Kobo Aura ONE",
@@ -1027,7 +1030,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
         try:
-            subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
+            subprocess_run_silent(['7z'], stdout=PIPE, stderr=STDOUT)
             self.sevenzip = True
         except FileNotFoundError:
             self.sevenzip = False

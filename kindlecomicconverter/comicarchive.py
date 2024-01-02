@@ -26,6 +26,7 @@ from shutil import move
 from subprocess import STDOUT, PIPE
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
+from .shared import subprocess_run_silent
 
 EXTRACTION_ERROR = 'Failed to extract archive. Try extracting file outside of KCC.'
 
@@ -36,13 +37,13 @@ class ComicArchive:
         self.type = None
         if not os.path.isfile(self.filepath):
             raise OSError('File not found.')
-        process = subprocess.run(['7z', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE)
+        process = subprocess_run_silent(['7z', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE)
         for line in process.stdout.splitlines():
             if b'Type =' in line:
                 self.type = line.rstrip().decode().split(' = ')[1].upper()
                 break
         if process.returncode != 0 and distro.id() == 'fedora':
-            process = subprocess.run(['unrar', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE)
+            process = subprocess_run_silent(['unrar', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE)
             for line in process.stdout.splitlines():
                 if b'Details: ' in line:
                     self.type = line.rstrip().decode().split(' ')[1].upper()
@@ -53,15 +54,15 @@ class ComicArchive:
     def extract(self, targetdir):
         if not os.path.isdir(targetdir):
             raise OSError('Target directory doesn\'t exist.')
-        process = subprocess.run(['7z', 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
+        process = subprocess_run_silent(['7z', 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
                                  stdout=PIPE, stderr=STDOUT)
         if process.returncode != 0 and distro.id() == 'fedora':
-            process = subprocess.run(['unrar', 'x', '-y', '-x__MACOSX', '-x.DS_Store', '-xthumbs.db', '-xThumbs.db', self.filepath, targetdir] 
+            process = subprocess_run_silent(['unrar', 'x', '-y', '-x__MACOSX', '-x.DS_Store', '-xthumbs.db', '-xThumbs.db', self.filepath, targetdir] 
                     , stdout=PIPE, stderr=STDOUT)
             if process.returncode != 0:
                 raise OSError(EXTRACTION_ERROR)
         elif process.returncode != 0 and platform.system() == 'Darwin':
-            process = subprocess.run(['unar', self.filepath, '-f', '-o', targetdir], 
+            process = subprocess_run_silent(['unar', self.filepath, '-f', '-o', targetdir], 
                 stdout=PIPE, stderr=STDOUT)
         elif process.returncode != 0:
             raise OSError(EXTRACTION_ERROR)
@@ -73,13 +74,13 @@ class ComicArchive:
     def addFile(self, sourcefile):
         if self.type in ['RAR', 'RAR5']:
             raise NotImplementedError
-        process = subprocess.run(['7z', 'a', '-y', self.filepath, sourcefile],
+        process = subprocess_run_silent(['7z', 'a', '-y', self.filepath, sourcefile],
                         stdout=PIPE, stderr=STDOUT)
         if process.returncode != 0:
             raise OSError('Failed to add the file.')
 
     def extractMetadata(self):
-        process = subprocess.run(['7z', 'x', '-y', '-so', self.filepath, 'ComicInfo.xml'],
+        process = subprocess_run_silent(['7z', 'x', '-y', '-so', self.filepath, 'ComicInfo.xml'],
                         stdout=PIPE, stderr=STDOUT)
         if process.returncode != 0:
             raise OSError(EXTRACTION_ERROR)
