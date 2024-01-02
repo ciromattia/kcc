@@ -21,6 +21,7 @@
 import os
 from hashlib import md5
 from html.parser import HTMLParser
+import subprocess
 from distutils.version import StrictVersion
 from re import split
 import sys
@@ -135,3 +136,8 @@ def dependencyCheck(level):
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         sys.exit(1)
+
+def subprocess_run_silent(command, **kwargs):
+    if (os.name == 'nt'):
+        kwargs.setdefault('creationflags', subprocess.CREATE_NO_WINDOW)
+    return subprocess.run(command, **kwargs)

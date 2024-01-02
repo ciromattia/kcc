@@ -34,7 +34,7 @@ from copy import copy
 from distutils.version import StrictVersion
 from raven import Client
 from tempfile import gettempdir
-from .shared import md5Checksum, HTMLStripper, sanitizeTrace, walkLevel
+from .shared import md5Checksum, HTMLStripper, sanitizeTrace, walkLevel, subprocess_run_silent
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -837,7 +837,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             except Exception:
                 pass
         try:
-            versionCheck = subprocess.run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+            versionCheck = subprocess_run_silent(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
             self.kindleGen = True
             for line in versionCheck.stdout.splitlines():
                 if 'Amazon kindlegen' in line:
@@ -1026,7 +1026,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
         try:
-            subprocess.run(['7z'], stdout=PIPE, stderr=STDOUT)
+            subprocess_run_silent(['7z'], stdout=PIPE, stderr=STDOUT)
             self.sevenzip = True
         except FileNotFoundError:
             self.sevenzip = False
