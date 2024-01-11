@@ -862,7 +862,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.setupUi(MW)
         self.editor = KCCGUI_MetaEditor()
         self.icons = Icons()
-        self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
+        self.settings = QtCore.QSettings('ciromattia', 'kcc')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
