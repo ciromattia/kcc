@@ -12,7 +12,6 @@ Create EXE/APP:
 
 import os
 import sys
-import shutil
 import setuptools
 import distutils.cmd
 from kindlecomicconverter import __version__
