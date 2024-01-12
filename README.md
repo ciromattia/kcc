@@ -76,7 +76,7 @@ brew install unar
 
 #### Windows / macOS KindleGen
 
-Install [Kindle Previewer 3 (KP3)](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011). KCC will automatically detect KindleGen from it.
+Install [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011). KCC will automatically detect KindleGen from it.
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
