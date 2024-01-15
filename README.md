@@ -39,7 +39,7 @@ If you find **KCC** valuable you can consider donating to the authors:
 Click on **Assets** of the latest release. 
 
 You probably want either 
-- `kcc_*.*.*.exe` (Windows)
+- `KCC_*.*.*.exe` (Windows)
 - `kcc_macos_apple_*.*.*.dmg` (recent Mac with M1 chip or later)
 - `kcc_macos_intel_*.*.*.dmg` (older Mac with Intel chip)
 
