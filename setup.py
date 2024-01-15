@@ -11,6 +11,7 @@ Create EXE/APP:
 """
 
 import os
+import platform
 import sys
 import setuptools
 import distutils.cmd
@@ -38,7 +39,8 @@ class BuildBinaryCommand(distutils.cmd.Command):
         if sys.platform == 'darwin':
             os.system('pyinstaller -y -D -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
             # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
-            os.system('appdmg kcc.json dist/KindleComicConverter_osx_' + VERSION + '.dmg')
+            chip = 'apple' if platform.processor() == 'arm' else 'intel'
+            os.system(f'appdmg kcc.json dist/kcc_macos_{chip}_{VERSION}.dmg')
             sys.exit(0)
         elif sys.platform == 'win32':
             os.system('pyinstaller -y -F -i icons\\comic2ebook.ico -n KCC_' + VERSION + ' -w --noupx kcc.py')
