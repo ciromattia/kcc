@@ -80,7 +80,7 @@ jobs:
       - name: upload build
         uses: actions/upload-artifact@v4
         with:
-          name: mac-os-build-${{ RUNNER.ARCH }}
+          name: mac-os-build-${{ runner.arch }}
           path: dist/*.dmg
       - name: Release
         uses: softprops/action-gh-release@v1
