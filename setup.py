@@ -39,12 +39,7 @@ class BuildBinaryCommand(distutils.cmd.Command):
         if sys.platform == 'darwin':
             os.system('pyinstaller -y -D -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
             # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
-            chip = {
-                'arm': 'apple',
-                'i386': 'intel'
-            }
-            cpu = platform.processor()
-            os.system(f'appdmg kcc.json dist/kcc_macos_{chip.get(cpu, cpu)}_{VERSION}.dmg')
+            os.system(f'appdmg kcc.json dist/kcc_macos_{platform.machine()}_{VERSION}.dmg')
             sys.exit(0)
         elif sys.platform == 'win32':
             os.system('pyinstaller -y -F -i icons\\comic2ebook.ico -n KCC_' + VERSION + ' -w --noupx kcc.py')
