@@ -64,9 +64,9 @@ RUN set -x && \
         && \
     # Install required python modules
     python -m pip install --upgrade pip && \
-    python -m pip install -r /opt/kcc/requirements.txt && \
+#    python -m pip install -r /opt/kcc/requirements.txt && \
     python -m venv /opt/venv && \
-    # python -m pip install --upgrade pillow python-slugify psutil raven mozjpeg-lossless-optimization
+    python -m pip install --upgrade pillow python-slugify psutil raven mozjpeg-lossless-optimization
 
 
 ######################################################################################
@@ -120,9 +120,9 @@ RUN set -x && \
         && \
     # Install required python modules
     python -m pip install --upgrade pip && \
-    python -m pip install -r /opt/kcc/requirements.txt && \
+#    python -m pip install -r /opt/kcc/requirements.txt && \
     python -m venv /opt/venv && \
-    # python -m pip install --upgrade pillow python-slugify psutil raven mozjpeg-lossless-optimization
+    python -m pip install --upgrade pillow python-slugify psutil raven mozjpeg-lossless-optimization
 
 
 ######################################################################################
@@ -156,5 +156,5 @@ WORKDIR /app
 RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get -yq upgrade && \
     apt-get install -y p7zip-full unrar-free  && \
     ln -s /app/kindlegen /bin/kindlegen && \
-    echo docker-base-20240127 > /IMAGE_VERSION
+    echo docker-base-20230809 > /IMAGE_VERSION
 
