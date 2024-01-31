@@ -39,8 +39,9 @@ If you find **KCC** valuable you can consider donating to the authors:
 Click on **Assets** of the latest release. 
 
 You probably want either 
-- `kcc_*.*.*.exe` (Windows)
-- `KindleComicConverter_osx_*.*.*.dmg` (Mac)
+- `KCC_*.*.*.exe` (Windows)
+- `kcc_macos_arm_*.*.*.dmg` (recent Mac with Apple Silicon M1 chip or later)
+- `kcc_macos_i386_*.*.*.dmg` (older Mac with Intel chip)
 
 The `c2e` and `c2p` versions are command line tools for power users.
 
