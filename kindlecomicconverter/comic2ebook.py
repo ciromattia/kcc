@@ -21,7 +21,6 @@
 import os
 import pathlib
 import re
-import subprocess
 import sys
 from argparse import ArgumentParser
 from time import strftime, gmtime
@@ -36,7 +35,7 @@ from multiprocessing import Pool
 from uuid import uuid4
 from natsort import os_sorted
 from slugify import slugify as slugify_ext
-from PIL import Image
+from PIL import Image, ImageFile
 from subprocess import STDOUT, PIPE
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
@@ -50,6 +49,8 @@ from . import dualmetafix
 from . import metadata
 from . import kindle
 from . import __version__
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 def main(argv=None):
