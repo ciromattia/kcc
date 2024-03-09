@@ -55,7 +55,7 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 
 You'll need to install various tools to access important but optional features.
 
-The installation process has been greatly streamlined. No need to add 7z to PATH or locate KindleGen from the internet and put it in a special folder with KCC. Just run it and KCC will tell you what to install.
+**DO NOT CHANGE THE DEFAULT INSTALLATION LOCATION.**
 
 ### 7-Zip
 
@@ -77,7 +77,7 @@ brew install unar
 
 #### Windows / macOS KindleGen
 
-Install [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011). KCC will automatically detect KindleGen from it.
+It's included in [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011).
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
