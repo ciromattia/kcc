@@ -55,7 +55,7 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 
 You'll need to install various tools to access important but optional features.
 
-**DO NOT CHANGE THE DEFAULT INSTALLATION LOCATION.**
+By default on Windows, KCC is expecting these to be installed on the C:// drive.
 
 ### 7-Zip
 
