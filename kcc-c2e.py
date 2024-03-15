@@ -22,7 +22,7 @@ import sys
 
 if sys.version_info < (3, 8, 0):
     print('ERROR: This is a Python 3.8+ script!')
-    exit(1)
+    sys.exit(1)
 
 from multiprocessing import freeze_support, set_start_method
 from kindlecomicconverter.startup import startC2E

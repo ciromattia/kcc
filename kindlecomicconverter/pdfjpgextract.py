@@ -25,6 +25,11 @@ import os
 from random import choice
 from string import ascii_uppercase, digits
 
+# skip stray images a few pixels in size in some PDFs
+# typical images are many thousands in length
+# https://github.com/ciromattia/kcc/pull/546
+STRAY_IMAGE_LENGTH_THRESHOLD = 300
+
 
 class PdfJpgExtract:
     def __init__(self, fname):
@@ -60,10 +65,15 @@ class PdfJpgExtract:
                 raise Exception("Didn't find end of JPG!")
             istart += startfix
             iend += endfix
+            i = iend
+
+            if iend - istart < STRAY_IMAGE_LENGTH_THRESHOLD:
+                continue
+
             jpg = pdf[istart:iend]
             jpgfile = open(self.path + "/jpg%d.jpg" % njpg, "wb")
             jpgfile.write(jpg)
             jpgfile.close()
             njpg += 1
-            i = iend
+
         return self.path, njpg

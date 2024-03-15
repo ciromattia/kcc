@@ -31,8 +31,7 @@ class Kindle:
     def findDevice(self):
         for drive in reversed(psutil.disk_partitions(False)):
             if (drive[2] == 'FAT32' and drive[3] == 'rw,removable') or \
-               (drive[2] == 'vfat' and 'rw' in drive[3]) or \
-               (drive[2] == 'msdos' and 'rw' in drive[3]):
+               (drive[2] in ('vfat', 'msdos', 'FAT') and 'rw' in drive[3]):
                 if os.path.isdir(os.path.join(drive[1], 'system')) and \
                         os.path.isdir(os.path.join(drive[1], 'documents')):
                     return drive[1]

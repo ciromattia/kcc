@@ -8,7 +8,7 @@ RUN echo "I'm building for $TARGETOS/$TARGETARCH/$TARGETVARIANT"
 COPY requirements.txt /opt/kcc/
 ENV PATH="/opt/venv/bin:$PATH"
 RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get -yq upgrade && \
-    apt-get install -y libpng-dev libjpeg-dev p7zip-full unrar-free libgl1 python3-pyqt5 && \
+    apt-get install -y libpng-dev libjpeg-dev p7zip-full unrar-free libgl1 && \
     python -m pip install --upgrade pip && \
     python -m venv /opt/venv && \
     python -m pip install -r /opt/kcc/requirements.txt
@@ -55,7 +55,6 @@ RUN set -x && \
     KEPT_PACKAGES+=(p7zip-full) && \
     KEPT_PACKAGES+=(python3) && \
     KEPT_PACKAGES+=(python3-pip) && \
-    KEPT_PACKAGES+=(python3-pyqt5) && \
     KEPT_PACKAGES+=(unrar-free) && \
     # Install packages
     DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get -yq upgrade && \
@@ -112,7 +111,6 @@ RUN set -x && \
     KEPT_PACKAGES+=(p7zip-full) && \
     KEPT_PACKAGES+=(python3) && \
     KEPT_PACKAGES+=(python3-pip) && \
-    KEPT_PACKAGES+=(python3-pyqt5) && \
     KEPT_PACKAGES+=(unrar-free) && \
     # Install packages
     DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get -yq upgrade && \
@@ -158,5 +156,5 @@ WORKDIR /app
 RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get -yq upgrade && \
     apt-get install -y p7zip-full unrar-free  && \
     ln -s /app/kindlegen /bin/kindlegen && \
-    echo docker-base-20230514 > /IMAGE_VERSION
+    echo docker-base-20230809 > /IMAGE_VERSION
 

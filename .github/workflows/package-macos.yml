@@ -23,11 +23,14 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        os: [ macos-latest, macos-14 ]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.11
           cache: 'pip'
@@ -66,7 +69,7 @@ jobs:
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 16
       - run: npm install -g appdmg
@@ -75,9 +78,9 @@ jobs:
         run: |
           python setup.py build_binary
       - name: upload build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: mac-os-build
+          name: mac-os-build-${{ runner.arch }}
           path: dist/*.dmg
       - name: Release
         uses: softprops/action-gh-release@v1
