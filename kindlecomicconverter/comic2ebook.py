@@ -974,7 +974,7 @@ def makeParser():
                                 help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                      "2: Consider every subdirectory as separate volume [Default=0]")
     output_options.add_argument("--duplicatecover", action="store_true", dest="duplicatecover", default=False,
-                              help="Duplicate the cover as the first page in the book")
+                                help="Duplicate the cover as the first page in the book")
 
     processing_options.add_argument("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
                                     help="Do not modify image and ignore any profil or processing option")
