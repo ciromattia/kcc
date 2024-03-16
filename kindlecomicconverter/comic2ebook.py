@@ -508,7 +508,7 @@ def buildEPUB(path, chapternames, tomenumber):
                                                    tomenumber), options.uuid))
                 if options.coverpage:
                     os.remove(os.path.join(dirpath, afile))
-                    continue     
+                    continue
             filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
