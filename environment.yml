@@ -5,11 +5,12 @@ channels:
 dependencies:
   - python=3.11
   - Pillow>=5.2.0
-  - psutil>=5.0.0
+  - psutil>=5.9.5
   - python-slugify>=1.2.1
   - raven>=6.0.0
   - distro
+  - natsort[fast]>=8.4.0
   - pip
   - pip:
     - mozjpeg-lossless-optimization>=1.1.2
-    - PyQt5>=5.6.0
+    - pyside6>=6.5.1

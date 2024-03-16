@@ -25,17 +25,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.11
         cache: 'pip'
     - name: Install python dependencies
       run: |
         sudo apt-get update 
-        sudo apt-get install -y libpng-dev libjpeg-dev p7zip-full p7zip-rar python3-pyqt5 python3-pip squashfs-tools libfuse2
-        python -m pip install --upgrade pip setuptools wheel certifi pyinstaller PyQt6 --no-binary pyinstaller 
+        sudo apt-get install -y libpng-dev libjpeg-dev p7zip-full p7zip-rar python3-pip squashfs-tools libfuse2
+        python -m pip install --upgrade pip setuptools wheel certifi pyinstaller --no-binary pyinstaller 
         python -m pip install -r requirements.txt
     - name: build binary
       run: |
@@ -59,7 +59,7 @@ jobs:
       env:
         UPDATE_INFO: gh-releases-zsync|ciromattia|kcc|latest|*x86_64.AppImage.zsync
     - name: upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: AppImage
         path: './*.AppImage*'

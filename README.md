@@ -28,52 +28,58 @@ If you find **KCC** valuable you can consider donating to the authors:
 - Paweł Jastrzębski:
   - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
   - [![Donate Bitcoin](https://img.shields.io/badge/Donate-Bitcoin-green.svg)](https://jastrzeb.ski/donate/)
+- Alex Xu
+  - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=QFJVE7A6LCP6U&no_recurring=0&item_name=Kindle+Comic+Converter&currency_code=USD)
 
 
-## INSTALLATION 
-
-### DOWNLOADS
-You can find the latest binary at the following link:
+## DOWNLOADS
 
 - **https://github.com/ciromattia/kcc/releases**
-- flatpak : https://flathub.org/apps/details/io.github.ciromattia.kcc
-- Docker: https://github.com/ciromattia/kcc/pkgs/container/kcc
 
-more information on [installation](https://github.com/ciromattia/kcc/wiki/Installation)
+Click on **Assets** of the latest release. 
 
-### DEPENDENCIES
-Following software is required to run Linux version of **KCC** and/or bare sources:
-- Python 3.3+
-- [PyQt5](https://pypi.python.org/pypi/PyQt5) 5.6.0+ (only needed for GUI)
-- [Pillow](https://pypi.python.org/pypi/Pillow/) 4.0.0+ (5.2.0+ needed for WebP support)
-- [psutil](https://pypi.python.org/pypi/psutil) 5.0.0+
-- [python-slugify](https://pypi.python.org/pypi/python-slugify) 1.2.1+, <8.0.0
-- [raven](https://pypi.python.org/pypi/raven) 6.0.0+ (only needed for GUI)
+You probably want either 
+- `KCC_*.*.*.exe` (Windows)
+- `kcc_macos_arm_*.*.*.dmg` (recent Mac with Apple Silicon M1 chip or later)
+- `kcc_macos_i386_*.*.*.dmg` (older Mac with Intel chip)
 
-On Debian based distributions these two commands should install all needed dependencies:
+The `c2e` and `c2p` versions are command line tools for power users.
 
+On Windows 11, you may need to run in compatibility mode for an older Windows version.
 
+On Mac, right click open to get past the security warning.
 
-```bash
-$ sudo apt-get install -y python3 python3-dev libpng-dev libjpeg-dev p7zip-full p7zip-rar unrar-free libgl1 python3-pyqt5 && \
-    python -m pip install --upgrade pip && \
-    python -m pip install --upgrade -r requirements.txt
+For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
+
+## PREREQUISITES
+
+You'll need to install various tools to access important but optional features.
+
+### 7-Zip
+
+#### Windows 7-Zip
+
+First install 7z from https://www.7-zip.org/ or with command line:
+```
+winget install --id 7zip.7zip
 ```
 
+Make sure to install the `64-bit x64` version and install it on the C drive!
 
-#### Optional dependencies
-- Qt platform integration plugin for Deepin Desktop Environment
-```bash
-$ sudo apt-get install qt5dxcb-plugin
+#### macOS 7-Zip/Unar
+with [Homebrew](https://brew.sh/) installed
+```
+brew install p7zip
+brew install unar
 ```
 
-- KindleGen ~~[deprecated link](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)~~ v2.9+ in a directory reachable by your _PATH_ or in _KCC_ directory *(For MOBI generation) 
-  - It can be found in [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011)
-    `Amazon Kindle Previewer 3 Folder\lib\fc\bin`, the usual location in windows is in windows is `C:\Users\user\AppData\Local\Amazon\Kindle Previewer 3\lib\fc\bin\`
-- [7z](http://www.7-zip.org/download.html) *(For CBZ/ZIP, CBR/RAR, 7z/CB7 support)*
-- Unrar (no rar in 7z on Fedora)
+### KindleGen
 
+#### Windows / macOS KindleGen
 
+It's included in [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011).
+
+On Windows, KCC expects it to be installed on the C drive!
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
@@ -208,7 +214,12 @@ OTHER:
 ```
 
 ## CREDITS
-**KCC** is made by [Ciro Mattia Gonano](http://github.com/ciromattia), [Paweł Jastrzębski](http://github.com/AcidWeb) and [Darodi](http://github.com/darodi)  .
+**KCC** is made by 
+
+- [Ciro Mattia Gonano](http://github.com/ciromattia)
+- [Paweł Jastrzębski](http://github.com/AcidWeb)
+- [Darodi](http://github.com/darodi)
+- [Alex Xu](http://github.com/axu2)
 
 This script born as a cross-platform alternative to `KindleComicParser` by **Dc5e** (published [here](http://www.mobileread.com/forums/showthread.php?t=192783)).
 

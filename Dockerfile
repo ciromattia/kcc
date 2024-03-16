@@ -1,5 +1,5 @@
 # Select final stage based on TARGETARCH ARG
-FROM ghcr.io/ciromattia/kcc:docker-base-20230514
+FROM ghcr.io/ciromattia/kcc:docker-base-20230809
 LABEL com.kcc.name="Kindle Comic Converter"
 LABEL com.kcc.author="Ciro Mattia Gonano, Paweł Jastrzębski and Darodi"
 LABEL org.opencontainers.image.description='Kindle Comic Converter'

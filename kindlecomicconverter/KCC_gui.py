@@ -16,24 +16,26 @@
 # OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
-import json
 import os
 import re
 import sys
 from urllib.parse import unquote
-from urllib.request import urlretrieve, urlopen
 from time import sleep
 from shutil import move, rmtree
 from subprocess import STDOUT, PIPE
+
+import requests
 # noinspection PyUnresolvedReferences
-from PyQt5 import QtGui, QtCore, QtWidgets, QtNetwork
+from PySide6 import QtGui, QtCore, QtWidgets, QtNetwork
+from PySide6.QtCore import Qt
 from xml.sax.saxutils import escape
-from psutil import Popen, Process
+from psutil import Process
 from copy import copy
 from distutils.version import StrictVersion
 from raven import Client
 from tempfile import gettempdir
-from .shared import md5Checksum, HTMLStripper, sanitizeTrace, walkLevel
+
+from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run_silent
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -43,7 +45,7 @@ from . import KCC_ui_editor
 
 
 class QApplicationMessaging(QtWidgets.QApplication):
-    messageFromOtherInstance = QtCore.pyqtSignal(bytes)
+    messageFromOtherInstance = QtCore.Signal(bytes)
 
     def __init__(self, argv):
         QtWidgets.QApplication.__init__(self, argv)
@@ -51,7 +53,7 @@ class QApplicationMessaging(QtWidgets.QApplication):
         self._timeout = 1000
         self._locked = False
         socket = QtNetwork.QLocalSocket(self)
-        socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
+        socket.connectToServer(self._key, QtCore.QIODeviceBase.OpenModeFlag.WriteOnly)
         if not socket.waitForConnected(self._timeout):
             self._server = QtNetwork.QLocalServer(self)
             self._server.newConnection.connect(self.handleMessage)
@@ -65,7 +67,7 @@ class QApplicationMessaging(QtWidgets.QApplication):
             self._server.close()
 
     def event(self, e):
-        if e.type() == QtCore.QEvent.FileOpen:
+        if e.type() == QtCore.QEvent.Type.FileOpen:
             self.messageFromOtherInstance.emit(bytes(e.file(), 'UTF-8'))
             return True
         else:
@@ -81,7 +83,7 @@ class QApplicationMessaging(QtWidgets.QApplication):
 
     def sendMessage(self, message):
         socket = QtNetwork.QLocalSocket(self)
-        socket.connectToServer(self._key, QtCore.QIODevice.WriteOnly)
+        socket.connectToServer(self._key, QtCore.QIODeviceBase.OpenModeFlag.WriteOnly)
         socket.waitForConnected(self._timeout)
         socket.write(bytes(message, 'UTF-8'))
         socket.waitForBytesWritten(self._timeout)
@@ -89,40 +91,40 @@ class QApplicationMessaging(QtWidgets.QApplication):
 
 
 class QMainWindowKCC(QtWidgets.QMainWindow):
-    progressBarTick = QtCore.pyqtSignal(str)
-    modeConvert = QtCore.pyqtSignal(int)
-    addMessage = QtCore.pyqtSignal(str, str, bool)
-    addTrayMessage = QtCore.pyqtSignal(str, str)
-    showDialog = QtCore.pyqtSignal(str, str)
-    hideProgressBar = QtCore.pyqtSignal()
-    forceShutdown = QtCore.pyqtSignal()
+    progressBarTick = QtCore.Signal(str)
+    modeConvert = QtCore.Signal(int)
+    addMessage = QtCore.Signal(str, str, bool)
+    addTrayMessage = QtCore.Signal(str, str)
+    showDialog = QtCore.Signal(str, str)
+    hideProgressBar = QtCore.Signal()
+    forceShutdown = QtCore.Signal()
 
 
 class Icons:
     def __init__(self):
         self.deviceKindle = QtGui.QIcon()
-        self.deviceKindle.addPixmap(QtGui.QPixmap(":/Devices/icons/Kindle.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.deviceKindle.addPixmap(QtGui.QPixmap(":/Devices/icons/Kindle.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.deviceKobo = QtGui.QIcon()
-        self.deviceKobo.addPixmap(QtGui.QPixmap(":/Devices/icons/Kobo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.deviceKobo.addPixmap(QtGui.QPixmap(":/Devices/icons/Kobo.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.deviceOther = QtGui.QIcon()
-        self.deviceOther.addPixmap(QtGui.QPixmap(":/Devices/icons/Other.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.deviceOther.addPixmap(QtGui.QPixmap(":/Devices/icons/Other.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
 
         self.MOBIFormat = QtGui.QIcon()
-        self.MOBIFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.MOBIFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/MOBI.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.CBZFormat = QtGui.QIcon()
-        self.CBZFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/CBZ.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.CBZFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/CBZ.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.EPUBFormat = QtGui.QIcon()
-        self.EPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/EPUB.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.EPUBFormat.addPixmap(QtGui.QPixmap(":/Formats/icons/EPUB.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
 
         self.info = QtGui.QIcon()
-        self.info.addPixmap(QtGui.QPixmap(":/Status/icons/info.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.info.addPixmap(QtGui.QPixmap(":/Status/icons/info.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.warning = QtGui.QIcon()
-        self.warning.addPixmap(QtGui.QPixmap(":/Status/icons/warning.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.warning.addPixmap(QtGui.QPixmap(":/Status/icons/warning.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.error = QtGui.QIcon()
-        self.error.addPixmap(QtGui.QPixmap(":/Status/icons/error.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.error.addPixmap(QtGui.QPixmap(":/Status/icons/error.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
 
         self.programIcon = QtGui.QIcon()
-        self.programIcon.addPixmap(QtGui.QPixmap(":/Icon/icons/comic2ebook.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.programIcon.addPixmap(QtGui.QPixmap(":/Icon/icons/comic2ebook.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
 
 
 class VersionThread(QtCore.QThread):
@@ -138,10 +140,7 @@ class VersionThread(QtCore.QThread):
 
     def run(self):
         try:
-            last_version_url = urlopen("https://api.github.com/repos/ciromattia/kcc/releases/latest")
-            data = last_version_url.read()
-            encoding = last_version_url.info().get_content_charset('utf-8')
-            json_parser = json.loads(data.decode(encoding))
+            json_parser = requests.get("https://api.github.com/repos/ciromattia/kcc/releases/latest").json()
 
             html_url = json_parser["html_url"]
             latest_version = json_parser["tag_name"]
@@ -222,28 +221,28 @@ class WorkerThread(QtCore.QThread):
         options.format = gui_current_format
         if GUI.mangaBox.isChecked():
             options.righttoleft = True
-        if GUI.rotateBox.checkState() == 1:
+        if GUI.rotateBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.splitter = 2
-        elif GUI.rotateBox.checkState() == 2:
+        elif GUI.rotateBox.checkState() == Qt.CheckState.Checked:
             options.splitter = 1
-        if GUI.qualityBox.checkState() == 1:
+        if GUI.qualityBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.autoscale = True
-        elif GUI.qualityBox.checkState() == 2:
+        elif GUI.qualityBox.checkState() == Qt.CheckState.Checked:
             options.hq = True
         if GUI.webtoonBox.isChecked():
             options.webtoon = True
-        if GUI.upscaleBox.checkState() == 1:
+        if GUI.upscaleBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.stretch = True
-        elif GUI.upscaleBox.checkState() == 2:
+        elif GUI.upscaleBox.checkState() == Qt.CheckState.Checked:
             options.upscale = True
         if GUI.gammaBox.isChecked() and float(GUI.gammaValue) > 0.09:
             options.gamma = float(GUI.gammaValue)
-        options.cropping = GUI.croppingBox.checkState()
-        if GUI.croppingBox.checkState() >= 1:
+        options.cropping = GUI.croppingBox.checkState().value
+        if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
             options.croppingp = float(GUI.croppingPowerValue)
-        if GUI.borderBox.checkState() == 1:
+        if GUI.borderBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.white_borders = True
-        elif GUI.borderBox.checkState() == 2:
+        elif GUI.borderBox.checkState() == Qt.CheckState.Checked:
             options.black_borders = True
         if GUI.outputSplit.isChecked():
             options.batchsplit = 2
@@ -255,13 +254,15 @@ class WorkerThread(QtCore.QThread):
             options.noprocessing = True
         if GUI.deleteBox.isChecked():
             options.delete = True
-        if GUI.mozJpegBox.checkState() == 1:
+        if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.forcepng = True
-        elif GUI.mozJpegBox.checkState() == 2:
+        elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
             options.mozjpeg = True
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.widthBox.value())
             options.customheight = str(GUI.heightBox.value())
+        if GUI.targetDirectory != '':
+            options.output = GUI.targetDirectory
 
         for i in range(GUI.jobList.count()):
             # Make sure that we don't consider any system message as job to do
@@ -430,7 +431,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def __init__(self):
         super().__init__()
         if self.isSystemTrayAvailable():
-            QtWidgets.QSystemTrayIcon.__init__(self, GUI.icons.programIcon, MW)
+            self.setIcon(GUI.icons.programIcon)
             self.activated.connect(self.catchClicks)
 
     def catchClicks(self):
@@ -439,7 +440,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         MW.activateWindow()
 
     def addTrayMessage(self, message, icon):
-        icon = eval('QtWidgets.QSystemTrayIcon.' + icon)
+        icon = getattr(QtWidgets.QSystemTrayIcon.MessageIcon, icon)
         if self.supportsMessages() and not MW.isActiveWindow():
             self.showMessage('Kindle Comic Converter', message, icon)
 
@@ -549,7 +550,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.conversionAlive = False
             self.worker.sync()
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap(":/Other/icons/convert.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(":/Other/icons/convert.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
             GUI.convertButton.setIcon(icon)
             GUI.convertButton.setText('Convert')
             GUI.centralWidget.setAcceptDrops(True)
@@ -557,7 +558,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.conversionAlive = True
             self.worker.sync()
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap(":/Other/icons/clear.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap(":/Other/icons/clear.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
             GUI.convertButton.setIcon(icon)
             GUI.convertButton.setText('Abort')
             GUI.centralWidget.setAcceptDrops(False)
@@ -643,6 +644,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if not GUI.webtoonBox.isChecked():
             GUI.qualityBox.setEnabled(profile['PVOptions'])
         GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
+        GUI.mangaBox.setChecked(True)
         if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
         if str(GUI.deviceBox.currentText()) == 'Other':
@@ -670,7 +672,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def addMessage(self, message, icon, replace=False):
         if icon != '':
-            icon = eval('self.icons.' + icon)
+            icon = getattr(self.icons, icon)
             item = QtWidgets.QListWidgetItem(icon, '   ' + self.stripTags(message))
         else:
             item = QtWidgets.QListWidgetItem('   ' + self.stripTags(message))
@@ -688,7 +690,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def showDialog(self, message, kind):
         if kind == 'error':
-            QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.Ok)
+            QtWidgets.QMessageBox.critical(MW, 'KCC - Error', message, QtWidgets.QMessageBox.StandardButton.Ok)
         elif kind == 'question':
             GUI.versionCheck.setAnswer(QtWidgets.QMessageBox.question(MW, 'KCC - Question', message,
                                                                       QtWidgets.QMessageBox.Yes,
@@ -716,7 +718,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.conversionAlive = False
             self.worker.sync()
         else:
-            if QtWidgets.QApplication.keyboardModifiers() == QtCore.Qt.ShiftModifier:
+            if QtWidgets.QApplication.keyboardModifiers() == QtCore.Qt.KeyboardModifier.ShiftModifier:
                 dname = QtWidgets.QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
                 if dname != '':
                     if sys.platform.startswith('win'):
@@ -743,17 +745,16 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.detectKindleGen()
                 if not self.kindleGen:
                     GUI.jobList.clear()
-                    self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                    '1000765211"><b>KindleGen</b></a>! MOBI conversion is unavailable!', 'error')
-                    if sys.platform.startswith('win'):
-                        self.addMessage('Download it and place EXE in KCC directory.', 'error')
-                    elif sys.platform.startswith('darwin'):
-                        self.addMessage('Install it using <a href="http://brew.sh/">Homebrew</a>.', 'error')
-                    else:
-                        self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
+                    self.display_kindlegen_missing()
                     self.needClean = True
                     return
             self.worker.start()
+
+    def display_kindlegen_missing(self):
+        self.addMessage(
+            '<a href="https://github.com/ciromattia/kcc#kindlegen"><b>Install KindleGen (link)</b></a> to enable MOBI conversion for Kindles!', 
+            'error'
+        )
 
     def saveSettings(self, event):
         if self.conversionAlive:
@@ -770,23 +771,23 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings.setValue('currentFormat', GUI.formatBox.currentIndex())
         self.settings.setValue('startNumber', self.startNumber + 1)
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
-        self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
-                                           'rotateBox': GUI.rotateBox.checkState(),
-                                           'qualityBox': GUI.qualityBox.checkState(),
-                                           'gammaBox': GUI.gammaBox.checkState(),
-                                           'croppingBox': GUI.croppingBox.checkState(),
+        self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState().value,
+                                           'rotateBox': GUI.rotateBox.checkState().value,
+                                           'qualityBox': GUI.qualityBox.checkState().value,
+                                           'gammaBox': GUI.gammaBox.checkState().value,
+                                           'croppingBox': GUI.croppingBox.checkState().value,
                                            'croppingPowerSlider': float(self.croppingPowerValue) * 100,
-                                           'upscaleBox': GUI.upscaleBox.checkState(),
-                                           'borderBox': GUI.borderBox.checkState(),
-                                           'webtoonBox': GUI.webtoonBox.checkState(),
-                                           'outputSplit': GUI.outputSplit.checkState(),
-                                           'colorBox': GUI.colorBox.checkState(),
-                                           'disableProcessingBox': GUI.disableProcessingBox.checkState(),
-                                           'mozJpegBox': GUI.mozJpegBox.checkState(),
+                                           'upscaleBox': GUI.upscaleBox.checkState().value,
+                                           'borderBox': GUI.borderBox.checkState().value,
+                                           'webtoonBox': GUI.webtoonBox.checkState().value,
+                                           'outputSplit': GUI.outputSplit.checkState().value,
+                                           'colorBox': GUI.colorBox.checkState().value,
+                                           'disableProcessingBox': GUI.disableProcessingBox.checkState().value,
+                                           'mozJpegBox': GUI.mozJpegBox.checkState().value,
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
-                                           'deleteBox': GUI.deleteBox.checkState(),
-                                           'maximizeStrips': GUI.maximizeStrips.checkState(),
+                                           'deleteBox': GUI.deleteBox.checkState().value,
+                                           'maximizeStrips': GUI.maximizeStrips.checkState().value,
                                            'gammaSlider': float(self.gammaValue) * 100})
         self.settings.sync()
         self.tray.hide()
@@ -838,32 +839,20 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 os.chmod('/usr/local/bin/kindlegen', 0o755)
             except Exception:
                 pass
-        kindleGenExitCode = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        kindleGenExitCode.communicate()
-        if kindleGenExitCode.returncode == 0:
+        try:
+            versionCheck = subprocess_run_silent(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
             self.kindleGen = True
-            versionCheck = Popen('kindlegen -locale en', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-            for line in versionCheck.stdout:
-                line = line.decode("utf-8")
+            for line in versionCheck.stdout.splitlines():
                 if 'Amazon kindlegen' in line:
                     versionCheck = line.split('V')[1].split(' ')[0]
                     if StrictVersion(versionCheck) < StrictVersion('2.9'):
-                        self.addMessage('Your <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId='
-                                        '1000765211">KindleGen</a> is outdated! MOBI conversion might fail.', 'warning')
+                        self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
+                                        ' is outdated! MOBI conversion might fail.', 'warning')
                     break
-        else:
+        except FileNotFoundError:
             self.kindleGen = False
             if startup:
-                self.addMessage('Cannot find <a href="http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211">'
-                                '<b>KindleGen</b></a>! MOBI conversion will be unavailable!', 'error')
-                if sys.platform.startswith('win'):
-                    self.addMessage('Download it and place EXE in KCC directory.', 'error')
-                elif sys.platform.startswith('darwin'):
-                    self.addMessage('Install it using <a href="http://brew.sh/">Homebrew</a>: '
-                                    '<i>brew install --cask kindle-comic-creator</i> or '
-                                    '<i>brew install --cask kindle-previewer</i>', 'error')
-                else:
-                    self.addMessage('Download it and place executable in /usr/local/bin directory.', 'error')
+                self.display_kindlegen_missing()
 
     def __init__(self, kccapp, kccwindow):
         global APP, MW, GUI
@@ -873,7 +862,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.setupUi(MW)
         self.editor = KCCGUI_MetaEditor()
         self.icons = Icons()
-        self.settings = QtCore.QSettings('KindleComicConverter', 'KindleComicConverter')
+        self.settings = QtCore.QSettings('ciromattia', 'kcc')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
@@ -906,10 +895,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         elif sys.platform.startswith('darwin'):
             for element in ['editorButton', 'wikiButton', 'directoryButton', 'clearButton', 'fileButton', 'deviceBox',
                             'convertButton', 'formatBox']:
-                eval('GUI.' + element).setMinimumSize(QtCore.QSize(0, 0))
+                getattr(GUI, element).setMinimumSize(QtCore.QSize(0, 0))
             GUI.gridLayout.setContentsMargins(-1, -1, -1, -1)
             for element in ['gridLayout_2', 'gridLayout_3', 'gridLayout_4', 'horizontalLayout', 'horizontalLayout_2']:
-                eval('GUI.' + element).setContentsMargins(-1, 0, -1, 0)
+                getattr(GUI, element).setContentsMargins(-1, 0, -1, 0)
             if self.windowSize == '0x0':
                 MW.resize(500, 500)
 
@@ -924,28 +913,28 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
 
         self.profiles = {
-            "Kindle Oasis 2/3": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Oasis 9/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                  'DefaultUpscale': True, 'Label': 'KO'},
-            "Kindle Oasis": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Oasis 8": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                              'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'Label': 'KV'},
             "Kindle Scribe": {
-                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'Label': 'KS',
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'Label': 'KS',
             },
             "Kindle 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'Label': 'K11',
             },
-            "Kindle PW 5": {
+            "Kindle PW 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'Label': 'KPW5',
             },
-            "Kindle PW 3/4": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle PW 7/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'Label': 'KV'},
-            "Kindle PW 1/2": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle PW 5/6": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'Label': 'KPW'},
-            "Kindle": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 4/5/7/8/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'Label': 'K578'},
-            "Kindle DX/DXG": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 2,
+            "Kindle DX": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'Label': 'KDX'},
             "Kobo Mini/Touch": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                                 'DefaultUpscale': False, 'Label': 'KoMT'},
@@ -989,10 +978,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                       'Label': 'OTHER'},
         }
         profilesGUI = [
-            "Kindle Oasis 2/3",
-            "Kindle PW 5",
-            "Kindle 11",
             "Kindle Scribe",
+            "Kindle 11",
+            "Kindle PW 11",
+            "Kindle Oasis 9/10",
             "Separator",
             "Kobo Clara 2E",
             "Kobo Sage",
@@ -1002,16 +991,16 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Separator",
             "Other",
             "Separator",
-            "Kindle Oasis",
+            "Kindle Oasis 8",
+            "Kindle PW 7/10",
+            "Kindle Voyage",
+            "Kindle PW 5/6",
+            "Kindle 4/5/7/8/10",
             "Kindle Touch",
             "Kindle Keyboard",
-            "Kindle DX/DXG",
-            "Kindle PW 3/4",
-            "Kindle PW 1/2",
-            "Kindle Voyage",
+            "Kindle DX",
             "Kindle 2",
             "Kindle 1",
-            "Kindle",
             "Separator",
             "Kobo Aura",
             "Kobo Aura ONE",
@@ -1029,7 +1018,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                           'com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DO'
                                           'NATE</a> - <a href="http://www.mobileread.com/forums/showthread.php?t=207461'
                                           '">FORUM</a></b>')
-        statusBarLabel.setAlignment(QtCore.Qt.AlignCenter)
+        statusBarLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         statusBarLabel.setOpenExternalLinks(True)
         GUI.statusBar.addPermanentWidget(statusBarLabel, 1)
 
@@ -1039,14 +1028,13 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        process = Popen('7z', stdout=PIPE, stderr=STDOUT, stdin=PIPE, shell=True)
-        process.communicate()
-        if process.returncode == 0 or process.returncode == 7:
+        try:
+            subprocess_run_silent(['7z'], stdout=PIPE, stderr=STDOUT)
             self.sevenzip = True
-        else:
+        except FileNotFoundError:
             self.sevenzip = False
-            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/Installation#7-zip">Install 7z and add to PATH!</a>!'
-                            ' CBZ/CBR/ZIP/etc processing disabled.', 'warning')
+            self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
+                            ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
         self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
@@ -1088,7 +1076,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             else:
                 GUI.deviceBox.addItem(self.icons.deviceKindle, profile)
         for f in self.formats:
-            GUI.formatBox.addItem(eval('self.icons.' + self.formats[f]['icon'] + 'Format'), f)
+            GUI.formatBox.addItem(getattr(self.icons, self.formats[f]['icon'] + 'Format'), f)
         if self.lastDevice > GUI.deviceBox.count():
             self.lastDevice = 0
         if profilesGUI[self.lastDevice] == "Separator":
@@ -1114,8 +1102,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     self.changeCroppingPower(int(self.options[option]))
             else:
                 try:
-                    if eval('GUI.' + str(option)).isEnabled():
-                        eval('GUI.' + str(option)).setCheckState(self.options[option])
+                    if getattr(GUI, option).isEnabled():
+                        getattr(GUI, option).setCheckState(Qt.CheckState(self.options[option]))
                 except AttributeError:
                     pass
         self.worker.sync()
@@ -1189,7 +1177,7 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         self.ui = QtWidgets.QDialog()
         self.parser = None
         self.setupUi(self.ui)
-        self.ui.setWindowFlags(self.ui.windowFlags() & ~QtCore.Qt.WindowContextHelpButtonHint)
+        self.ui.setWindowFlags(self.ui.windowFlags() & ~QtCore.Qt.WindowType.WindowContextHelpButtonHint)
         self.okButton.clicked.connect(self.saveData)
         self.cancelButton.clicked.connect(self.ui.close)
         if sys.platform.startswith('linux'):
