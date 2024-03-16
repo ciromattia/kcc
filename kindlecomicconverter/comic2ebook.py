@@ -689,8 +689,8 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
 
 def getComicInfo(path, originalpath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
-    options.chapters = []
     options.authors = ['KCC']
+    options.chapters = []
     options.summary = ''
     titleSuffix = ''
     if options.title == 'defaulttitle':
@@ -701,12 +701,6 @@ def getComicInfo(path, originalpath):
             options.title = os.path.splitext(os.path.basename(originalpath))[0]
     else:
         defaultTitle = False
-    if options.author == 'defaultauthor':
-        defaultAuthor = True
-        options.authors = ['KCC']
-    else:
-        defaultAuthor = False
-        options.authors = [options.author]
     if os.path.exists(xmlPath):
         try:
             xml = metadata.MetadataParser(xmlPath)
