@@ -690,6 +690,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
 def getComicInfo(path, originalpath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.chapters = []
+    options.authors = ['KCC']
     options.summary = ''
     titleSuffix = ''
     if options.title == 'defaulttitle':
@@ -699,7 +700,7 @@ def getComicInfo(path, originalpath):
         else:
             options.title = os.path.splitext(os.path.basename(originalpath))[0]
     else:
-        defaultTitle = False    
+        defaultTitle = False
     if options.author == 'defaultauthor':
         defaultAuthor = True
         options.authors = ['KCC']
@@ -712,6 +713,7 @@ def getComicInfo(path, originalpath):
         except Exception:
             os.remove(xmlPath)
             return
+        options.authors = []
         if xml.data['Title']:
             options.title = hescape(xml.data['Title'])
         elif defaultTitle:
@@ -722,17 +724,14 @@ def getComicInfo(path, originalpath):
             if xml.data['Number']:
                 titleSuffix += ' #' + xml.data['Number'].zfill(3)
             options.title += titleSuffix
-        if defaultAuthor:    
-            options.authors = []
-            for field in ['Writers', 'Pencillers', 'Inkers', 'Colorists']:
-                for person in xml.data[field]:
-                    options.authors.append(hescape(person))
-            if len(options.authors) > 0:
-                options.authors = list(set(options.authors))
-                options.authors.sort()
-            else:
-                options.authors = ['KCC']
-                
+        for field in ['Writers', 'Pencillers', 'Inkers', 'Colorists']:
+            for person in xml.data[field]:
+                options.authors.append(hescape(person))
+        if len(options.authors) > 0:
+            options.authors = list(set(options.authors))
+            options.authors.sort()
+        else:
+            options.authors = ['KCC']
         if xml.data['Bookmarks']:
             options.chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
@@ -987,8 +986,6 @@ def makeParser():
                                 help="Output generated file to specified directory or file")
     output_options.add_argument("-t", "--title", action="store", dest="title", default="defaulttitle",
                                 help="Comic title [Default=filename or directory name]")
-    output_options.add_argument("-a", "--author", action="store", dest="author", default="defaultauthor",
-                                help="Author name [Default=KCC]")
     output_options.add_argument("-f", "--format", action="store", dest="format", default="Auto",
                                 help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB) "
                                      "[Default=Auto]")
