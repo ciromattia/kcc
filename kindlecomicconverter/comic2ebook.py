@@ -509,7 +509,7 @@ def buildEPUB(path, chapternames, tomenumber):
                                      'cover' + getImageFileName(afile)[1])
                 options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
                                                    tomenumber), options.uuid))
-                if not options.duplicatecover:
+                if options.dedupecover:
                     os.remove(os.path.join(dirpath, afile))
                     continue
             filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
@@ -973,8 +973,8 @@ def makeParser():
     output_options.add_argument("-b", "--batchsplit", type=int, dest="batchsplit", default="0",
                                 help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                      "2: Consider every subdirectory as separate volume [Default=0]")
-    output_options.add_argument("--duplicatecover", action="store_true", dest="duplicatecover", default=False,
-                                help="Duplicate the cover as the first page in the book")
+    output_options.add_argument("--dedupecover", action="store_true", dest="dedupecover", default=False,
+                                help="De-duplicate the cover as the first page in the book")
 
     processing_options.add_argument("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
                                     help="Do not modify image and ignore any profil or processing option")
