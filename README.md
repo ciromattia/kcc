@@ -142,7 +142,9 @@ Depending on your system [Python](https://www.python.org) may be called either `
 
 If you want to edit the code, a good code editor is [VS Code](https://code.visualstudio.com).
 
-If you want to edit the UI, install Qt Creator, included in **Qt for desktop development**. https://www.qt.io/download-qt-installer-oss
+If you want to edit the `.ui` files, use [Qt Creator](https://www.qt.io/download-qt-installer-oss), included in **Qt for desktop development**.
+Then use the `gen_ui_files` scripts to autogenerate the python UI.
+
 
 ### Windows
 
