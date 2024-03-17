@@ -132,55 +132,6 @@ sudo apt-get install python3 p7zip-full python3-pil python3-psutil python3-slugi
         'OTHER': ("Other", (0, 0), Palette16, 1.8),
 ```
 
-## INSTALL FROM SOURCE
-
-This section is for developers who want to contribute to KCC or power users who want to run the latest code without waiting for an official release.
-
-Easiest to use [GitHub Desktop](https://desktop.github.com) to clone the KCC repo. From GitHub Desktop, click on `Repository` in the toolbar, then `Command Prompt` (Windows)/`Terminal` (Mac) to open a window in the KCC repo. 
-
-Depending on your system [Python](https://www.python.org) may be called either `python` or `python3`. We use virtual environments to manage dependencies.
-
-If you want to edit the code, a good code editor is [VS Code](https://code.visualstudio.com).
-
-If you want to edit the `.ui` files, use [Qt Creator](https://www.qt.io/download-qt-installer-oss), included in **Qt for desktop development**.
-Then use the `gen_ui_files` scripts to autogenerate the python UI.
-
-
-### Windows
-
-One time setup and running for the first time:
-```
-python -m venv venv
-venv\Scripts\activate.bat
-pip install -r requirements.txt
-python kcc.py
-```
-
-Every time you close Command Prompt, you will need to re-activate the virtual environment and re-run:
-
-```
-venv\Scripts\activate.bat
-python kcc.py
-```
-
-### Mac
-
-One time setup and running for the first time:
-```
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python kcc.py
-```
-
-Every time you close Terminal, you will need to reactivate the virtual environment and re-run:
-
-```
-source venv/bin/activate
-python kcc.py
-```
-
-
 ### Standalone `kcc-c2e.py` usage:
 
 ```
@@ -259,6 +210,54 @@ MAIN:
 OTHER:
   -d, --debug           Create debug file for every split image
   -h, --help            Show this help message and exit
+```
+
+## INSTALL FROM SOURCE
+
+This section is for developers who want to contribute to KCC or power users who want to run the latest code without waiting for an official release.
+
+Easiest to use [GitHub Desktop](https://desktop.github.com) to clone the KCC repo. From GitHub Desktop, click on `Repository` in the toolbar, then `Command Prompt` (Windows)/`Terminal` (Mac) to open a window in the KCC repo. 
+
+Depending on your system [Python](https://www.python.org) may be called either `python` or `python3`. We use virtual environments (venv) to manage dependencies.
+
+If you want to edit the code, a good code editor is [VS Code](https://code.visualstudio.com).
+
+If you want to edit the `.ui` files, use [Qt Creator](https://www.qt.io/download-qt-installer-oss), included in **Qt for desktop development**.
+Then use the `gen_ui_files` scripts to autogenerate the python UI.
+
+
+### Windows install from source
+
+One time setup and running for the first time:
+```
+python -m venv venv
+venv\Scripts\activate.bat
+pip install -r requirements.txt
+python kcc.py
+```
+
+Every time you close Command Prompt, you will need to re-activate the virtual environment and re-run:
+
+```
+venv\Scripts\activate.bat
+python kcc.py
+```
+
+### macOS install from source
+
+One time setup and running for the first time:
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python kcc.py
+```
+
+Every time you close Terminal, you will need to reactivate the virtual environment and re-run:
+
+```
+source venv/bin/activate
+python kcc.py
 ```
 
 ## CREDITS
