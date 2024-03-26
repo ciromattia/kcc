@@ -733,6 +733,28 @@ def getComicInfo(path, originalpath):
         os.remove(xmlPath)
 
 
+def parseCliMetadata():
+    metadata_string = options.metadatastring
+    metadata_string = metadata_string.replace("\;", "____SEMICOLON____")
+    metadata_string = metadata_string.replace("\=", "____EQUALS____")
+    metadata = {}
+    try:
+        metadata = dict(s.split('=', 1) for s in metadata_string.split(';'))
+    except ValueError:
+        print("Failed to parse provided metadata.")
+
+    for key in metadata:
+        metadata[key] = metadata[key].replace("____SEMICOLON____", ";")
+        metadata[key] = metadata[key].replace("____EQUALS____", "=")
+        
+    if "title" in metadata:
+        options.title = metadata["title"]
+    if "author" in metadata:
+        options.authors = [metadata["author"]]
+    if "summary" in metadata:
+        options.summary = metadata["summary"]
+
+
 def getDirectorySize(start_path='.'):
     total_size = 0
     for dirpath, _, filenames in os.walk(start_path):
@@ -970,6 +992,10 @@ def makeParser():
     output_options.add_argument("-b", "--batchsplit", type=int, dest="batchsplit", default="0",
                                 help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                      "2: Consider every subdirectory as separate volume [Default=0]")
+    output_options.add_argument("-e", "--metadata", action="store", dest="metadatastring", default=False,
+                                help="Specify target metadata. E.g. 'title=The Comic;author=The Author' "
+                                     "Use \; and \= for ; and = respectively in value fields. "
+                                     "Available fields: title, author, summary"),
 
     processing_options.add_argument("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
                                     help="Do not modify image and ignore any profil or processing option")
@@ -1145,6 +1171,8 @@ def makeBook(source, qtgui=None):
     print("Checking images...")
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
     detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
+    if options.metadatastring:
+        parseCliMetadata()
     if options.webtoon:
         y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
