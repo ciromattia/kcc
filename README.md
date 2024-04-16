@@ -64,7 +64,7 @@ First install 7z from https://www.7-zip.org/ or with command line:
 winget install --id 7zip.7zip
 ```
 
-Make sure to install the `64-bit x64` version and install it on the C drive!
+On Windows, make sure to install the `64-bit x64` version. KCC expects it to be installed to `C:\Program Files\7-Zip` (on the `C:\` drive) which is default.
 
 #### macOS 7-Zip/Unar
 with [Homebrew](https://brew.sh/) installed
@@ -79,7 +79,7 @@ brew install unar
 
 It's included in [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011).
 
-On Windows, KCC expects it to be installed on the C drive!
+On Windows, KCC expects it to be installed on the `C:/` drive, which is by default.
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
