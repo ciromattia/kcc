@@ -59,12 +59,12 @@ You'll need to install various tools to access important but optional features.
 
 #### Windows 7-Zip
 
-First install 7z from https://www.7-zip.org/ or with command line:
+First install the `64-bit x64` version of 7z from https://www.7-zip.org/ or with command line:
 ```
 winget install --id 7zip.7zip
 ```
 
-On Windows, make sure to install the `64-bit x64` version. KCC expects it to be installed to `C:\Program Files\7-Zip` (on the `C:\` drive) which is default.
+KCC expects it to be installed to the default location at `C:\Program Files\7-Zip\`
 
 #### macOS 7-Zip/Unar
 with [Homebrew](https://brew.sh/) installed
@@ -79,7 +79,7 @@ brew install unar
 
 It's included in [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011).
 
-On Windows, KCC expects it to be installed on the `C:/` drive, which is by default.
+On Windows, KCC expects it to be installed to the default location at `%LOCALAPPDATA%\Amazon\Kindle Previewer 3\lib\fc\bin\`
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
