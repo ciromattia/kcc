@@ -77,7 +77,7 @@ brew install unar
 
 #### Windows / macOS KindleGen
 
-It's included in [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011).
+It's included in [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011). Install it and `kindlegen` will be auto-detected.
 
 On Windows, KCC expects `kindlegen` to be installed to the default location at `%LOCALAPPDATA%\Amazon\Kindle Previewer 3\lib\fc\bin\`. If KCC has trouble detecting it, just copy `kindlegen` from that location and put it next to KCC.
 
