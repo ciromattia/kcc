@@ -53,7 +53,7 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 
 ## PREREQUISITES
 
-You'll need to install various tools to access important but optional features.
+You'll need to install various tools to access important but optional features. Close and re-open KCC to get KCC to detect them.
 
 ### 7-Zip
 
