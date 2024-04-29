@@ -308,6 +308,7 @@ class ComicPage:
         self.image = self.image.quantize(palette=palImg)
 
     def resizeImage(self):
+        # kindlegen max height is 1920
         ratio_device = float(self.size[1]) / float(self.size[0])
         ratio_image = float(self.image.size[1]) / float(self.image.size[0])
         method = self.resize_method()
@@ -322,18 +323,26 @@ class ComicPage:
                     self.image = ImageOps.fit(self.image, self.size, method=method)
         else: # if image bigger than device resolution or smaller with upscaling
             if abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
+                if self.opt.profileData[0] == 'Kindle Scribe':
+                    self.size = (1440, 1920)
                 self.image = ImageOps.fit(self.image, self.size, method=method)
             elif self.opt.format == 'CBZ' or self.opt.kfx:
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
+                if self.opt.profileData[0] == 'Kindle Scribe':
+                    self.size = (1860, 1920)
                 self.image = ImageOps.contain(self.image, self.size, method=method)
 
     def resize_method(self):
+        if self.opt.profileData[0] == 'Kindle Scribe':
+            if self.image.size[0] <= 1440 and self.image.size[1] <= 1920:
+                return Image.Resampling.BICUBIC
+            else:
+                return Image.Resampling.LANCZOS
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
-            method = Image.Resampling.BICUBIC
+            return Image.Resampling.BICUBIC
         else:
-            method = Image.Resampling.LANCZOS
-        return method
+            return Image.Resampling.LANCZOS
 
     def getBoundingBox(self, tmptmg):
         min_margin = [int(0.005 * i + 0.5) for i in tmptmg.size]
