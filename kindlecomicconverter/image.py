@@ -239,6 +239,7 @@ class ComicPage:
         _, self.size, self.palette, self.gamma = self.opt.profileData
         if self.opt.hq:
             self.size = (int(self.size[0] * 1.5), int(self.size[1] * 1.5))
+        self.kindle_scribe_azw3 = (options.profile == 'KS') and (options.format in ('MOBI', 'EPUB'))
         self.image = image
         self.color = color
         self.fill = fill
@@ -323,18 +324,18 @@ class ComicPage:
                     self.image = ImageOps.fit(self.image, self.size, method=method)
         else: # if image bigger than device resolution or smaller with upscaling
             if abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
-                if self.opt.profileData[0] == 'Kindle Scribe':
+                if self.kindle_scribe_azw3:
                     self.size = (1440, 1920)
                 self.image = ImageOps.fit(self.image, self.size, method=method)
             elif self.opt.format == 'CBZ' or self.opt.kfx:
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
-                if self.opt.profileData[0] == 'Kindle Scribe':
+                if self.kindle_scribe_azw3:
                     self.size = (1860, 1920)
                 self.image = ImageOps.contain(self.image, self.size, method=method)
 
     def resize_method(self):
-        if self.opt.profileData[0] == 'Kindle Scribe':
+        if self.kindle_scribe_azw3:
             if self.image.size[0] <= 1440 and self.image.size[1] <= 1920:
                 return Image.Resampling.BICUBIC
             else:
