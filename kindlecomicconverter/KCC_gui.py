@@ -492,6 +492,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             else:
                 fname = ['']
                 self.showDialog("Editor is disabled due to a lack of 7z.", 'error')
+                self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
+                ' to enable metadata editing.', 'warning')
             if fname[0] != '':
                 if sys.platform.startswith('win'):
                     sname = fname[0].replace('/', '\\')
