@@ -74,7 +74,6 @@ KCC expects `7z` to be installed to the default location at `C:\Program Files\7-
 with [Homebrew](https://brew.sh/) installed
 ```
 brew install p7zip
-brew install unar
 ```
 
 ### KindleGen
