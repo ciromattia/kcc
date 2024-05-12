@@ -644,6 +644,9 @@ def getWorkFolder(afile):
             try:
                 cbx = comicarchive.ComicArchive(afile)
                 path = cbx.extract(workdir)
+                tdir = os.listdir(workdir)
+                if 'ComicInfo.xml' in tdir:
+                    tdir.remove('ComicInfo.xml')        
             except OSError as e:
                 rmtree(workdir, True)
                 raise UserWarning(e)
