@@ -57,7 +57,7 @@ You'll need to install various tools to access important but optional features. 
 
 ### 7-Zip
 
-Required if you are using an older Windows version <2018.
+Required if you are using an older Windows version (~2018).
 
 Optional otherwise for metadata editing.
 
