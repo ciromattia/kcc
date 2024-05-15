@@ -51,6 +51,11 @@ On Mac, right click open to get past the security warning.
 
 For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
 
+## FAQ
+
+- [Kindle Scribe cover guide](https://github.com/ciromattia/kcc/issues/508) (also works for older Kindles)
+- [Windows 7 support](https://github.com/ciromattia/kcc/issues/678)
+
 ## PREREQUISITES
 
 You'll need to install various tools to access important but optional features. Close and re-open KCC to get KCC to detect them.
