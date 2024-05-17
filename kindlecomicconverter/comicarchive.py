@@ -23,7 +23,7 @@ import platform
 import subprocess
 import distro
 from shutil import move
-from subprocess import STDOUT, PIPE
+from subprocess import STDOUT, PIPE, CalledProcessError
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
 from .shared import subprocess_run_silent
@@ -37,7 +37,10 @@ class ComicArchive:
         self.type = None
         if not os.path.isfile(self.filepath):
             raise OSError('File not found.')
-        process = subprocess_run_silent(['7z', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE)
+        try:
+            process = subprocess_run_silent(['7z', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE)
+        except FileNotFoundError:
+            return
         for line in process.stdout.splitlines():
             if b'Type =' in line:
                 self.type = line.rstrip().decode().split(' = ')[1].upper()
@@ -54,6 +57,12 @@ class ComicArchive:
     def extract(self, targetdir):
         if not os.path.isdir(targetdir):
             raise OSError('Target directory doesn\'t exist.')
+        try:
+            process = subprocess_run_silent(['tar', '-xf', self.filepath, '-C', targetdir], 
+                                            stdout=PIPE, stderr=STDOUT, check=True)
+            return targetdir
+        except (FileNotFoundError, CalledProcessError):
+            pass
         process = subprocess_run_silent(['7z', 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
                                  stdout=PIPE, stderr=STDOUT)
         if process.returncode != 0 and distro.id() == 'fedora':
@@ -66,9 +75,6 @@ class ComicArchive:
                 stdout=PIPE, stderr=STDOUT)
         elif process.returncode != 0:
             raise OSError(EXTRACTION_ERROR)
-        tdir = os.listdir(targetdir)
-        if 'ComicInfo.xml' in tdir:
-            tdir.remove('ComicInfo.xml')
         return targetdir
 
     def addFile(self, sourcefile):

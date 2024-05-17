@@ -462,7 +462,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if self.needClean:
             self.needClean = False
             GUI.jobList.clear()
-        if self.sevenzip:
+        if self.tar or self.sevenzip:
             fnames = QtWidgets.QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
                                                             'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf);;All (*.*)')
         else:
@@ -492,6 +492,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             else:
                 fname = ['']
                 self.showDialog("Editor is disabled due to a lack of 7z.", 'error')
+                self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
+                ' to enable metadata editing.', 'warning')
             if fname[0] != '':
                 if sys.platform.startswith('win'):
                     sname = fname[0].replace('/', '\\')
@@ -802,7 +804,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.needClean = False
                 GUI.jobList.clear()
             formats = ['.pdf']
-            if self.sevenzip:
+            if self.tar or self.sevenzip:
                 formats.extend(['.cb7', '.7z', '.cbz', '.zip', '.cbr', '.rar'])
             if os.path.isdir(message):
                 GUI.jobList.addItem(message)
@@ -1029,12 +1031,18 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
         try:
+            subprocess_run_silent(['tar'], stdout=PIPE, stderr=STDOUT)
+            self.tar = True
+        except FileNotFoundError:
+            self.tar = False
+        try:
             subprocess_run_silent(['7z'], stdout=PIPE, stderr=STDOUT)
             self.sevenzip = True
         except FileNotFoundError:
             self.sevenzip = False
-            self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
-                            ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
+            if not self.tar:
+                self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
+                                ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
         self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
