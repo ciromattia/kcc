@@ -239,6 +239,7 @@ class ComicPage:
         _, self.size, self.palette, self.gamma = self.opt.profileData
         if self.opt.hq:
             self.size = (int(self.size[0] * 1.5), int(self.size[1] * 1.5))
+        self.kindle_scribe_azw3 = (options.profile == 'KS') and (options.format in ('MOBI', 'EPUB'))
         self.image = image
         self.color = color
         self.fill = fill
@@ -308,6 +309,9 @@ class ComicPage:
         self.image = self.image.quantize(palette=palImg)
 
     def resizeImage(self):
+        # kindle scribe conversion to mobi is limited in resolution by kindlegen, same with send to kindle and epub
+        if self.kindle_scribe_azw3:
+            self.size = (1440, 1920)
         ratio_device = float(self.size[1]) / float(self.size[0])
         ratio_image = float(self.image.size[1]) / float(self.image.size[0])
         method = self.resize_method()
@@ -326,14 +330,15 @@ class ComicPage:
             elif self.opt.format == 'CBZ' or self.opt.kfx:
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
+                if self.kindle_scribe_azw3:
+                    self.size[0] = 1860
                 self.image = ImageOps.contain(self.image, self.size, method=method)
 
     def resize_method(self):
         if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
-            method = Image.Resampling.BICUBIC
+            return Image.Resampling.BICUBIC
         else:
-            method = Image.Resampling.LANCZOS
-        return method
+            return Image.Resampling.LANCZOS
 
     def getBoundingBox(self, tmptmg):
         min_margin = [int(0.005 * i + 0.5) for i in tmptmg.size]

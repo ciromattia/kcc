@@ -504,15 +504,18 @@ def buildEPUB(path, chapternames, tomenumber):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
+            if cover is None:
+                cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
+                                     'cover' + getImageFileName(afile)[1])
+                options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
+                                                   tomenumber), options.uuid))
+                if options.dedupecover:
+                    os.remove(os.path.join(dirpath, afile))
+                    continue
             filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
                 chapter = True
-            if cover is None:
-                cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
-                                     'cover' + getImageFileName(filelist[-1][1])[1])
-                options.covers.append((image.Cover(os.path.join(filelist[-1][0], filelist[-1][1]), cover, options,
-                                                   tomenumber), options.uuid))
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapternames and options.chapters:
         chapterlist = []
@@ -644,6 +647,9 @@ def getWorkFolder(afile):
             try:
                 cbx = comicarchive.ComicArchive(afile)
                 path = cbx.extract(workdir)
+                tdir = os.listdir(workdir)
+                if 'ComicInfo.xml' in tdir:
+                    tdir.remove('ComicInfo.xml')        
             except OSError as e:
                 rmtree(workdir, True)
                 raise UserWarning(e)
@@ -978,6 +984,8 @@ def makeParser():
     output_options.add_argument("-b", "--batchsplit", type=int, dest="batchsplit", default="0",
                                 help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                      "2: Consider every subdirectory as separate volume [Default=0]")
+    output_options.add_argument("--dedupecover", action="store_true", dest="dedupecover", default=False,
+                                help="De-duplicate the cover as the first page in the book")
 
     processing_options.add_argument("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
                                     help="Do not modify image and ignore any profil or processing option")
@@ -1098,10 +1106,6 @@ def checkOptions(options):
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
-    # kindle scribe conversion to mobi is limited in resolution by kindlegen, same with send to kindle and epub
-    if options.profile == 'KS' and (options.format == 'MOBI' or options.format == 'EPUB'):
-        options.profileData = list(options.profileData)
-        options.profileData[1] = (1440, 1920)
     return options
 
 
