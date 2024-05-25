@@ -49,6 +49,7 @@ from . import dualmetafix
 from . import metadata
 from . import kindle
 from . import __version__
+from . import KCC_gui
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -1142,7 +1143,15 @@ def checkPre(source):
             pass
     except Exception:
         raise UserWarning("Target directory is not writable.")
+    
+def listFilesS(source):
+    return [item for item in os.listdir(source) if os.path.isfile(os.path.join(source, item))]
 
+def listCbzFilesS(source):
+    return [item for item in os.listdir(source) if os.path.isfile(os.path.join(source, item)) and item.endswith('.cbz')]
+
+def countCbzFilesS(source):
+    return len([item for item in os.listdir(source) if os.path.isfile(os.path.join(source, item)) and item.endswith('.cbz')])
 
 def makeBook(source, qtgui=None):
     global GUI
@@ -1154,9 +1163,17 @@ def makeBook(source, qtgui=None):
     checkPre(source)
     print("Preparing source images...")
     path = getWorkFolder(source)
+    pathOebpsImages = os.path.join(path, "OEBPS", "Images")
     print("Checking images...")
-    getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
-    detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
+    getComicInfo(pathOebpsImages, source)
+    listFiles, listCbzFiles, countCbzFiles = listFilesS(pathOebpsImages), listCbzFilesS(pathOebpsImages), countCbzFilesS(pathOebpsImages)
+    if countCbzFiles:
+        for file in listCbzFiles:
+            KCC_gui.WorkerThread.displayProgressMessage(file)
+            makeBook(os.path.join(source, file)) 
+        if listFiles:
+            return []
+    detectCorruption(pathOebpsImages, source)
     if options.webtoon:
         y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
@@ -1166,10 +1183,10 @@ def makeBook(source, qtgui=None):
         print("Processing images...")
         if GUI:
             GUI.progressBarTick.emit('Processing images')
-        imgDirectoryProcessing(os.path.join(path, "OEBPS", "Images"))
+        imgDirectoryProcessing(pathOebpsImages)
     if GUI:
         GUI.progressBarTick.emit('1')
-    chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    chapterNames = sanitizeTree(pathOebpsImages)
     if options.batchsplit > 0:
         tomes = splitDirectory(path)
     else:

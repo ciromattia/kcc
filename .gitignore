@@ -12,3 +12,4 @@ KindleComicConverter*.egg-info/
 /kindlegen*
 /kcc.bat
 .DS_Store
+.vscode/
