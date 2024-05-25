@@ -206,7 +206,16 @@ class WorkerThread(QtCore.QThread):
         MW.addMessage.emit('<b>Conversion interrupted.</b>', 'error', False)
         MW.addTrayMessage.emit('Conversion interrupted.', 'Critical')
         MW.modeConvert.emit(1)
-
+        
+    def displayProgressMessage(self):
+        MW.addMessage.emit('<b>Source:</b> ' + self, 'info', False)
+        MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', False)
+        GUI.progress.content = 'Creating EPUB files'
+        MW.addMessage.emit('Creating MOBI files... <b>Done!</b>', 'info', False)
+        GUI.progress.content = 'Creating MOBI files'
+        MW.addMessage.emit('Processing MOBI files... <b>Done!</b>', 'info', False)
+        GUI.progress.content = 'Processing MOBI files... <b>Done!</b>'
+        
     # noinspection PyUnboundLocalVariable
     def run(self):
         MW.modeConvert.emit(0)
