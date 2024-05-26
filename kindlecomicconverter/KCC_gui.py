@@ -207,15 +207,6 @@ class WorkerThread(QtCore.QThread):
         MW.addTrayMessage.emit('Conversion interrupted.', 'Critical')
         MW.modeConvert.emit(1)
         
-    def displayProgressMessage(self):
-        MW.addMessage.emit('<b>Source:</b> ' + self, 'info', False)
-        MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', False)
-        GUI.progress.content = 'Creating EPUB files'
-        MW.addMessage.emit('Creating MOBI files... <b>Done!</b>', 'info', False)
-        GUI.progress.content = 'Creating MOBI files'
-        MW.addMessage.emit('Processing MOBI files... <b>Done!</b>', 'info', False)
-        GUI.progress.content = 'Processing MOBI files... <b>Done!</b>'
-        
     # noinspection PyUnboundLocalVariable
     def run(self):
         MW.modeConvert.emit(0)
@@ -461,12 +452,23 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if self.needClean:
             self.needClean = False
             GUI.jobList.clear()
+        
         dname = QtWidgets.QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
         if dname != '':
             if sys.platform.startswith('win'):
                 dname = dname.replace('/', '\\')
             self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
+            
             GUI.jobList.addItem(dname)
+            
+            for root, _, files in os.walk(dname):
+                for file in files:
+                    if file.lower().endswith('.cbz'):
+                        file_path = os.path.join(root, file)
+                        if sys.platform.startswith('win'):
+                            file_path = file_path.replace('/', '\\')
+                        GUI.jobList.addItem(file_path)
+            
             GUI.jobList.scrollToBottom()
 
     def selectFile(self):
