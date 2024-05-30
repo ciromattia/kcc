@@ -454,19 +454,17 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.jobList.clear()
         
         dname = QtWidgets.QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
-        if dname != '':
-            if sys.platform.startswith('win'):
-                dname = dname.replace('/', '\\')
+        if dname:
             self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
             
             GUI.jobList.addItem(dname)
             
+            supported_extensions = ('.cb7', '.7z', '.cbz', '.zip', '.cbr', '.rar')
+            
             for root, _, files in os.walk(dname):
                 for file in files:
-                    if file.lower().endswith('.cbz'):
+                    if file.lower().endswith(supported_extensions):
                         file_path = os.path.join(root, file)
-                        if sys.platform.startswith('win'):
-                            file_path = file_path.replace('/', '\\')
                         GUI.jobList.addItem(file_path)
             
             GUI.jobList.scrollToBottom()
