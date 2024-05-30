@@ -206,7 +206,7 @@ class WorkerThread(QtCore.QThread):
         MW.addMessage.emit('<b>Conversion interrupted.</b>', 'error', False)
         MW.addTrayMessage.emit('Conversion interrupted.', 'Critical')
         MW.modeConvert.emit(1)
-        
+
     # noinspection PyUnboundLocalVariable
     def run(self):
         MW.modeConvert.emit(0)
