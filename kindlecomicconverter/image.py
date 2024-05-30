@@ -331,7 +331,7 @@ class ComicPage:
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
                 if self.kindle_scribe_azw3:
-                    self.size[0] = 1860
+                    self.size = (1860, 1920)
                 self.image = ImageOps.contain(self.image, self.size, method=method)
 
     def resize_method(self):
