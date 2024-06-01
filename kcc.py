@@ -50,8 +50,9 @@ elif sys.platform.startswith('win'):
     win_paths = [
         os.path.expandvars('%LOCALAPPDATA%\\Amazon\\KC2'),
         os.path.expandvars('%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\'),
-        os.path.expandvars('%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Amazon\\KC2'),
-        os.path.expandvars('%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\'),
+        'C:\\Apps\\Kindle Previewer 3\\lib\\fc\\bin',
+        'D:\\Apps\\Kindle Previewer 3\\lib\\fc\\bin',
+        'E:\\Apps\\Kindle Previewer 3\\lib\\fc\\bin',
         'C:\\Program Files\\7-Zip',
         'D:\\Program Files\\7-Zip',
         'E:\\Program Files\\7-Zip',
