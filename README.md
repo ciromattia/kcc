@@ -2,8 +2,8 @@
 
 
 
-[![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases) 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc) 
+[![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc)
 
 
 **Kindle Comic Converter** is a Python app to convert comic/manga files or folders to EPUB, Panel View MOBI or E-Ink optimized CBZ.
@@ -36,9 +36,9 @@ If you find **KCC** valuable you can consider donating to the authors:
 
 - **https://github.com/ciromattia/kcc/releases**
 
-Click on **Assets** of the latest release. 
+Click on **Assets** of the latest release.
 
-You probably want either 
+You probably want either
 - `KCC_*.*.*.exe` (Windows)
 - `kcc_macos_arm_*.*.*.dmg` (recent Mac with Apple Silicon M1 chip or later)
 - `kcc_macos_i386_*.*.*.dmg` (older Mac with Intel chip)
@@ -220,7 +220,7 @@ OTHER:
 
 This section is for developers who want to contribute to KCC or power users who want to run the latest code without waiting for an official release.
 
-Easiest to use [GitHub Desktop](https://desktop.github.com) to clone the KCC repo. From GitHub Desktop, click on `Repository` in the toolbar, then `Command Prompt` (Windows)/`Terminal` (Mac) to open a window in the KCC repo. 
+Easiest to use [GitHub Desktop](https://desktop.github.com) to clone the KCC repo. From GitHub Desktop, click on `Repository` in the toolbar, then `Command Prompt` (Windows)/`Terminal` (Mac) to open a window in the KCC repo.
 
 Depending on your system [Python](https://www.python.org) may be called either `python` or `python3`. We use virtual environments (venv) to manage dependencies.
 
@@ -265,7 +265,7 @@ python kcc.py
 ```
 
 ## CREDITS
-**KCC** is made by 
+**KCC** is made by
 
 - [Ciro Mattia Gonano](http://github.com/ciromattia)
 - [Paweł Jastrzębski](http://github.com/AcidWeb)
@@ -300,5 +300,5 @@ The app relies and includes the following scripts:
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
 ## COPYRIGHT
-Copyright (c) 2012-2023 Ciro Mattia Gonano, Paweł Jastrzębski and Darodi.   
+Copyright (c) 2012-2023 Ciro Mattia Gonano, Paweł Jastrzębski and Darodi.
 **KCC** is released under ISC LICENSE; see [LICENSE.txt](./LICENSE.txt) for further details.
