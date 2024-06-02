@@ -99,6 +99,7 @@ class ProfileData:
         'KoAO': ("Kobo Aura ONE", (1404, 1872), Palette16, 1.8),
         'KoN': ("Kobo Nia", (758, 1024), Palette16, 1.8),
         'KoC': ("Kobo Clara HD/Kobo Clara 2E", (1072, 1448), Palette16, 1.8),
+        'KoCC': ("Kobo Clara Colour", (1072, 1448), Palette16, 1.8),
         'KoL': ("Kobo Libra H2O/Kobo Libra 2", (1264, 1680), Palette16, 1.8),
         'KoLC': ("Kobo Libra Colour", (1264, 1680), Palette16, 1.8),
         'KoF': ("Kobo Forma", (1440, 1920), Palette16, 1.8),
