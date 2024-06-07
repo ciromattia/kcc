@@ -572,14 +572,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.convertButton.setEnabled(False)
             GUI.centralWidget.setAcceptDrops(False)
 
-    def setColorMode(self, enable):
-        if enable < 1:
-            status = False
-        else:
-            status = True
-            GUI.colorBox.setEnabled(status)
-        GUI.colorBox.setChecked(status)
-
     def togglegammaBox(self, value):
         if value:
             if self.currentMode != 3:
@@ -651,9 +643,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         else:
             self.modeChange(1)
         if profile['ForceColor']:
-            self.setColorMode(1)
-        else:
-            self.setColorMode(0)
+            GUI.colorBox.setChecked(profile.ForceColor)
+            GUI.colorBox.setEnabled(profile.ForceColor)
         self.changeFormat()
         GUI.gammaSlider.setValue(0)
         self.changeGamma(0)
