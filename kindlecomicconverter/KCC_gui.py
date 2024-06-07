@@ -642,9 +642,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.modeChange(2)
         else:
             self.modeChange(1)
-        if profile['ForceColor']:
-            GUI.colorBox.setChecked(profile.ForceColor)
-            GUI.colorBox.setEnabled(profile.ForceColor)
+        GUI.colorBox.setChecked(profile['ForceColor'])
         self.changeFormat()
         GUI.gammaSlider.setValue(0)
         self.changeGamma(0)
