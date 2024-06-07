@@ -906,7 +906,7 @@ def detectCorruption(tmppath, orgpath):
             GUI.addMessage.emit('Source files are probably created by KCC. The second conversion will decrease quality.'
                                 , 'warning', False)
             GUI.addMessage.emit('', '', False)
-    if imageSmaller > imageNumber * 0.25 and not options.upscale and not options.stretch:
+    if imageSmaller > imageNumber * 0.25 and not options.upscale and not options.stretch and options.profile != 'KS':
         print("WARNING: More than 25% of images are smaller than target device resolution. "
               "Consider enabling stretching or upscaling to improve readability.")
         if GUI:
