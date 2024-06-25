@@ -60,30 +60,19 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 
 You'll need to install various tools to access important but optional features. Close and re-open KCC to get KCC to detect them.
 
-### 7-Zip
-
-#### Windows 7-Zip
-
-First install the `64-bit x64` version of 7z from https://www.7-zip.org/ or with command line:
-```
-winget install --id 7zip.7zip
-```
-
-KCC expects `7z` to be installed to the default location at `C:\Program Files\7-Zip\`.
-
-#### macOS 7-Zip/Unar
-with [Homebrew](https://brew.sh/) installed
-```
-brew install p7zip
-brew install unar
-```
-
 ### KindleGen
 
 #### Windows / macOS KindleGen
 
 Install [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011) and `kindlegen` will be autodetected from it.
 
+If you have issues detecting it, or use another OS, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation#kindlegen
+
+### 7-Zip
+
+This is an optional requirement as of KCC 6.1.0. You only need to install it if 1) you are using advanced features, 2) are using Windows 10 (2017) or ealier, or 3) need to use an older KCC version.
+
+If you need to install it, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation#7-zip
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
