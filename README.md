@@ -70,7 +70,7 @@ If you have issues detecting it, or use another OS, refer to the wiki: https://g
 
 ### 7-Zip
 
-This is an optional requirement as of KCC 6.1.0. You only need to install it if 1) you are using advanced features, 2) are using Windows 10 (2017) or ealier, or 3) need to use an older KCC version.
+This is an optional requirement as of KCC 6.1.0. You only need to install it if 1) you are using advanced features, 2) are using Windows 10 (2017) or earlier, or 3) need to use an older KCC version.
 
 If you need to install it, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation#7-zip
 
