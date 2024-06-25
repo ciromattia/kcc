@@ -62,11 +62,9 @@ You'll need to install various tools to access important but optional features. 
 
 ### KindleGen
 
-#### Windows / macOS KindleGen
+On Windows/macOS, install [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011) and `kindlegen` will be autodetected from it.
 
-Install [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011) and `kindlegen` will be autodetected from it.
-
-If you have issues detecting it, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation#kindlegen
+On other OS or if you have issues detecting it, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation#kindlegen
 
 ### 7-Zip
 
