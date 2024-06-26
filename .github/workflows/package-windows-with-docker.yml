@@ -29,11 +29,6 @@ jobs:
         uses: JackMcKew/pyinstaller-action-windows@main
         with:
           path: .
-          spec: ./kcc.spec
-      - name: Package Application
-        uses: JackMcKew/pyinstaller-action-windows@main
-        with:
-          path: .
           spec: ./kcc-c2e.spec
       - name: Package Application
         uses: JackMcKew/pyinstaller-action-windows@main
