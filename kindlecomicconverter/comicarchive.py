@@ -70,9 +70,6 @@ class ComicArchive:
                     , stdout=PIPE, stderr=STDOUT)
             if process.returncode != 0:
                 raise OSError(EXTRACTION_ERROR)
-        elif process.returncode != 0 and platform.system() == 'Darwin':
-            process = subprocess_run_silent(['unar', self.filepath, '-f', '-o', targetdir], 
-                stdout=PIPE, stderr=STDOUT)
         elif process.returncode != 0:
             raise OSError(EXTRACTION_ERROR)
         return targetdir
