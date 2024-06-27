@@ -1143,7 +1143,6 @@ def checkPre(source):
     except Exception:
         raise UserWarning("Target directory is not writable.")
 
-
 def makeBook(source, qtgui=None):
     global GUI
     GUI = qtgui
@@ -1155,8 +1154,9 @@ def makeBook(source, qtgui=None):
     print("Preparing source images...")
     path = getWorkFolder(source)
     print("Checking images...")
-    getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
-    detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
+    pathOebpsImages = os.path.join(path, "OEBPS", "Images")
+    getComicInfo(pathOebpsImages, source)
+    detectCorruption(pathOebpsImages, source)
     if options.webtoon:
         y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
@@ -1166,10 +1166,10 @@ def makeBook(source, qtgui=None):
         print("Processing images...")
         if GUI:
             GUI.progressBarTick.emit('Processing images')
-        imgDirectoryProcessing(os.path.join(path, "OEBPS", "Images"))
+        imgDirectoryProcessing(pathOebpsImages)
     if GUI:
         GUI.progressBarTick.emit('1')
-    chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    chapterNames = sanitizeTree(pathOebpsImages)
     if options.batchsplit > 0:
         tomes = splitDirectory(path)
     else:
