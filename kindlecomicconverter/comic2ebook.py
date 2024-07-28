@@ -816,12 +816,22 @@ def detectCalibreHTML(path):
                 htmlFolder = os.path.join(root, files[0].replace('.html', '_files'))
                 if os.path.isdir(htmlFolder):
                     imagesFolder = os.path.join(htmlFolder, 'OPS', 'images')
+                    imagesFolderNoOPS = os.path.join(htmlFolder, 'images')
                     if os.path.isdir(imagesFolder):
                         cover = os.path.join(htmlFolder, 'cover.jpeg')
                         if os.path.exists(cover):
                             os.remove(htmlFile)
                             for f in os.listdir(imagesFolder):
                                 move(os.path.join(imagesFolder, f), root)
+                            move(cover, os.path.join(root, '0000.jpg'))
+                            rmtree(htmlFolder)
+                            return True
+                    elif os.path.isdir(imagesFolderNoOPS):
+                        cover = os.path.join(htmlFolder, 'cover.jpeg')
+                        if os.path.exists(cover):
+                            os.remove(htmlFile)
+                            for f in os.listdir(imagesFolderNoOPS):
+                                move(os.path.join(imagesFolderNoOPS, f), root)
                             move(cover, os.path.join(root, '0000.jpg'))
                             rmtree(htmlFolder)
                             return True
