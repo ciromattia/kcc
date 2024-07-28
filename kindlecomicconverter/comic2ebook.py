@@ -808,6 +808,26 @@ def sanitizePermissions(filetree):
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
 
 
+def detectCalibreHTML(path):
+    if os.path.isdir(path):
+        for root, _, files in os.walk(path):
+            if len(files) == 1 and files[0].endswith('.html'):
+                htmlFile = os.path.join(root, files[0])
+                htmlFolder = os.path.join(root, files[0].replace('.html', '_files'))
+                if os.path.isdir(htmlFolder):
+                    imagesFolder = os.path.join(htmlFolder, 'OPS', 'images')
+                    if os.path.isdir(imagesFolder):
+                        cover = os.path.join(htmlFolder, 'cover.jpeg')
+                        if os.path.exists(cover):
+                            os.remove(htmlFile)
+                            for f in os.listdir(imagesFolder):
+                                move(os.path.join(imagesFolder, f), root)
+                            move(cover, os.path.join(root, '0000.jpg'))
+                            rmtree(htmlFolder)
+                            return True
+    return False
+
+
 def splitDirectory(path):
     level = -1
     for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
@@ -1155,6 +1175,7 @@ def makeBook(source, qtgui=None):
     print("Preparing source images...")
     path = getWorkFolder(source)
     print("Checking images...")
+    detectCalibreHTML(path)
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
     detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
     if options.webtoon:
