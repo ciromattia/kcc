@@ -277,7 +277,7 @@
        <item>
         <widget class="QSlider" name="croppingPowerSlider">
          <property name="maximum">
-          <number>200</number>
+          <number>300</number>
          </property>
          <property name="singleStep">
           <number>1</number>

@@ -159,7 +159,7 @@ class Ui_mainWindow(object):
 
         self.croppingPowerSlider = QSlider(self.croppingWidget)
         self.croppingPowerSlider.setObjectName(u"croppingPowerSlider")
-        self.croppingPowerSlider.setMaximum(200)
+        self.croppingPowerSlider.setMaximum(300)
         self.croppingPowerSlider.setSingleStep(1)
         self.croppingPowerSlider.setOrientation(Qt.Horizontal)
 
