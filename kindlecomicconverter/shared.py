@@ -22,7 +22,7 @@ import os
 from hashlib import md5
 from html.parser import HTMLParser
 import subprocess
-from distutils.version import StrictVersion
+from packaging import version
 from re import split
 import sys
 from traceback import format_tb
@@ -103,7 +103,7 @@ def dependencyCheck(level):
     if level > 2:
         try:
             from PySide6.QtCore import qVersion as qtVersion
-            if StrictVersion('6.5.1') > StrictVersion(qtVersion()):
+            if version.parse('6.5.1') > version.parse(qtVersion()):
                 missing.append('PySide 6.5.1+')
         except ImportError:
             missing.append('PySide 6.5.1+')
@@ -114,7 +114,7 @@ def dependencyCheck(level):
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion
-            if StrictVersion('5.0.0') > StrictVersion(psutilVersion):
+            if version.parse('5.0.0') > version.parse(psutilVersion):
                 missing.append('psutil 5.0.0+')
         except ImportError:
             missing.append('psutil 5.0.0+')
@@ -123,13 +123,13 @@ def dependencyCheck(level):
             from slugify import __version__ as slugifyVersion
             if isinstance(slugifyVersion, ModuleType):
                 slugifyVersion = slugifyVersion.__version__
-            if StrictVersion('1.2.1') > StrictVersion(slugifyVersion):
+            if version.parse('1.2.1') > version.parse(slugifyVersion):
                 missing.append('python-slugify 1.2.1+')
         except ImportError:
             missing.append('python-slugify 1.2.1+')
     try:
         from PIL import __version__ as pillowVersion
-        if StrictVersion('5.2.0') > StrictVersion(pillowVersion):
+        if version.parse('5.2.0') > version.parse(pillowVersion):
             missing.append('Pillow 5.2.0+')
     except ImportError:
         missing.append('Pillow 5.2.0+')

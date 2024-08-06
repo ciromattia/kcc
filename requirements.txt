@@ -7,3 +7,5 @@ raven>=6.0.0
 mozjpeg-lossless-optimization>=1.1.2
 natsort[fast]>=8.4.0
 distro>=1.8.0
+packaging==24.1
+
