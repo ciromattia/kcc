@@ -40,7 +40,7 @@ from subprocess import STDOUT, PIPE
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 
-from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run_silent
+from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
 from . import comic2panel
 from . import image
 from . import comicarchive
@@ -1114,13 +1114,13 @@ def checkTools(source):
     if source.endswith('.CB7') or source.endswith('.7Z') or source.endswith('.RAR') or source.endswith('.CBR') or \
             source.endswith('.ZIP') or source.endswith('.CBZ'):
         try:
-            subprocess_run_silent(['7z'], stdout=PIPE, stderr=STDOUT)
+            subprocess_run(['7z'], stdout=PIPE, stderr=STDOUT)
         except FileNotFoundError:
             print('ERROR: 7z is missing!')
             sys.exit(1)
     if options.format == 'MOBI':
         try:
-            subprocess_run_silent(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT)
+            subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT)
         except FileNotFoundError:
             print('ERROR: KindleGen is missing!')
             sys.exit(1)
@@ -1277,7 +1277,7 @@ def makeMOBIWorker(item):
     kindlegenError = ''
     try:
         if os.path.getsize(item) < 629145600:
-            output = subprocess_run_silent(['kindlegen', '-dont_append_source', '-locale', 'en', item],
+            output = subprocess_run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
                            stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
             for line in output.stdout.splitlines():
                 # ERROR: Generic error
