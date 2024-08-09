@@ -20,6 +20,7 @@
 
 from functools import cached_property
 import os
+import platform
 import distro
 from subprocess import STDOUT, PIPE, CalledProcessError
 from xml.dom.minidom import parseString
@@ -63,11 +64,17 @@ class ComicArchive:
         if not os.path.isdir(targetdir):
             raise OSError('Target directory doesn\'t exist.')
 
+        missing = []
+
         extraction_commands = [
-            ['tar', '-xf', self.filepath, '-C', targetdir],
+            ['tard', '-xf', self.filepath, '-C', targetdir],
             ['7z', 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
         ]
-        missing = []
+
+        if platform.system() == 'Darwin':
+            extraction_commands.append(
+                ['unar', self.filepath, '-f', '-o', targetdir]
+            )
 
         if distro.id() == 'fedora':
             extraction_commands.append(
@@ -84,7 +91,7 @@ class ComicArchive:
                 pass
         
         if missing:
-            raise OSError(f'Extraction failed, try downloading {missing}')
+            raise OSError(f'Extraction failed, try downloading <a href="https://github.com/ciromattia/kcc#7-zip">additional extraction software.</a>  ')
         else:
             raise OSError(EXTRACTION_ERROR)
 
