@@ -52,7 +52,9 @@ class ComicArchive:
                 for line in process.stdout.splitlines():
                     if b'Type =' in line:
                         return line.rstrip().decode().split(' = ')[1].upper()
-            except (FileNotFoundError, CalledProcessError):
+            except FileNotFoundError:
+                pass
+            except CalledProcessError:
                 pass
 
         raise OSError(EXTRACTION_ERROR)
@@ -65,6 +67,7 @@ class ComicArchive:
             ['tar', '-xf', self.filepath, '-C', targetdir],
             ['7z', 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
         ]
+        missing = []
 
         if distro.id() == 'fedora':
             extraction_commands.append(
@@ -75,10 +78,15 @@ class ComicArchive:
             try:
                 subprocess_run(cmd, capture_output=True, check=True)
                 return targetdir
-            except (FileNotFoundError, CalledProcessError):
+            except FileNotFoundError:
+                missing.append(cmd[0])
+            except CalledProcessError:
                 pass
-
-        raise OSError(EXTRACTION_ERROR)
+        
+        if missing:
+            raise OSError(f'Extraction failed, try downloading {missing}')
+        else:
+            raise OSError(EXTRACTION_ERROR)
 
     def addFile(self, sourcefile):
         if self.type in ['RAR', 'RAR5']:
