@@ -67,7 +67,7 @@ class ComicArchive:
         missing = []
 
         extraction_commands = [
-            ['tard', '-xf', self.filepath, '-C', targetdir],
+            ['tar', '-xf', self.filepath, '-C', targetdir],
             ['7z', 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
         ]
 
@@ -91,7 +91,7 @@ class ComicArchive:
                 pass
         
         if missing:
-            raise OSError(f'Extraction failed, try downloading <a href="https://github.com/ciromattia/kcc#7-zip">additional extraction software.</a>  ')
+            raise OSError(f'Extraction failed, download <a href="https://github.com/ciromattia/kcc#7-zip">specialized extraction software.</a>  ')
         else:
             raise OSError(EXTRACTION_ERROR)
 
