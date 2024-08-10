@@ -137,7 +137,7 @@ def dependencyCheck(level):
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         sys.exit(1)
 
-def subprocess_run_silent(command, **kwargs):
+def subprocess_run(command, **kwargs):
     if (os.name == 'nt'):
         kwargs.setdefault('creationflags', subprocess.CREATE_NO_WINDOW)
     return subprocess.run(command, **kwargs)

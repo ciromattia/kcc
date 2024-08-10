@@ -18,15 +18,14 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
+from functools import cached_property
 import os
 import platform
-import subprocess
 import distro
-from shutil import move
 from subprocess import STDOUT, PIPE, CalledProcessError
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
-from .shared import subprocess_run_silent
+from .shared import subprocess_run
 
 EXTRACTION_ERROR = 'Failed to extract archive. Try extracting file outside of KCC.'
 
@@ -34,56 +33,78 @@ EXTRACTION_ERROR = 'Failed to extract archive. Try extracting file outside of KC
 class ComicArchive:
     def __init__(self, filepath):
         self.filepath = filepath
-        self.type = None
         if not os.path.isfile(self.filepath):
             raise OSError('File not found.')
-        try:
-            process = subprocess_run_silent(['7z', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE)
-        except FileNotFoundError:
-            return
-        for line in process.stdout.splitlines():
-            if b'Type =' in line:
-                self.type = line.rstrip().decode().split(' = ')[1].upper()
-                break
-        if process.returncode != 0 and distro.id() == 'fedora':
-            process = subprocess_run_silent(['unrar', 'l', '-y', '-p1', self.filepath], stderr=STDOUT, stdout=PIPE)
-            for line in process.stdout.splitlines():
-                if b'Details: ' in line:
-                    self.type = line.rstrip().decode().split(' ')[1].upper()
-                    break
-            if process.returncode != 0:
-                raise OSError(EXTRACTION_ERROR)
+
+    @cached_property
+    def type(self):    
+        extraction_commands = [
+            ['7z', 'l', '-y', '-p1', self.filepath],
+        ]
+
+        if distro.id() == 'fedora':
+            extraction_commands.append(
+                ['unrar', 'l', '-y', '-p1', self.filepath],
+            )
+
+        for cmd in extraction_commands:
+            try:
+                process = subprocess_run(cmd, capture_output=True, check=True)
+                for line in process.stdout.splitlines():
+                    if b'Type =' in line:
+                        return line.rstrip().decode().split(' = ')[1].upper()
+            except FileNotFoundError:
+                pass
+            except CalledProcessError:
+                pass
+
+        raise OSError(EXTRACTION_ERROR)
 
     def extract(self, targetdir):
         if not os.path.isdir(targetdir):
             raise OSError('Target directory doesn\'t exist.')
-        try:
-            process = subprocess_run_silent(['tar', '-xf', self.filepath, '-C', targetdir], 
-                                            stdout=PIPE, stderr=STDOUT, check=True)
-            return targetdir
-        except (FileNotFoundError, CalledProcessError):
-            pass
-        process = subprocess_run_silent(['7z', 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
-                                 stdout=PIPE, stderr=STDOUT)
-        if process.returncode != 0 and distro.id() == 'fedora':
-            process = subprocess_run_silent(['unrar', 'x', '-y', '-x__MACOSX', '-x.DS_Store', '-xthumbs.db', '-xThumbs.db', self.filepath, targetdir] 
-                    , stdout=PIPE, stderr=STDOUT)
-            if process.returncode != 0:
-                raise OSError(EXTRACTION_ERROR)
-        elif process.returncode != 0:
+
+        missing = []
+
+        extraction_commands = [
+            ['tar', '-xf', self.filepath, '-C', targetdir],
+            ['7z', 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
+        ]
+
+        if platform.system() == 'Darwin':
+            extraction_commands.append(
+                ['unar', self.filepath, '-f', '-o', targetdir]
+            )
+
+        if distro.id() == 'fedora':
+            extraction_commands.append(
+                ['unrar', 'x', '-y', '-x__MACOSX', '-x.DS_Store', '-xthumbs.db', '-xThumbs.db', self.filepath, targetdir]
+            )
+        
+        for cmd in extraction_commands:
+            try:
+                subprocess_run(cmd, capture_output=True, check=True)
+                return targetdir
+            except FileNotFoundError:
+                missing.append(cmd[0])
+            except CalledProcessError:
+                pass
+        
+        if missing:
+            raise OSError(f'Extraction failed, install <a href="https://github.com/ciromattia/kcc#7-zip">specialized extraction software.</a>  ')
+        else:
             raise OSError(EXTRACTION_ERROR)
-        return targetdir
 
     def addFile(self, sourcefile):
         if self.type in ['RAR', 'RAR5']:
             raise NotImplementedError
-        process = subprocess_run_silent(['7z', 'a', '-y', self.filepath, sourcefile],
+        process = subprocess_run(['7z', 'a', '-y', self.filepath, sourcefile],
                         stdout=PIPE, stderr=STDOUT)
         if process.returncode != 0:
             raise OSError('Failed to add the file.')
 
     def extractMetadata(self):
-        process = subprocess_run_silent(['7z', 'x', '-y', '-so', self.filepath, 'ComicInfo.xml'],
+        process = subprocess_run(['7z', 'x', '-y', '-so', self.filepath, 'ComicInfo.xml'],
                         stdout=PIPE, stderr=STDOUT)
         if process.returncode != 0:
             raise OSError(EXTRACTION_ERROR)
