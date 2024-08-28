@@ -210,8 +210,6 @@ OTHER:
 
 ## INSTALL FROM SOURCE
 
-Note: Python 3.12+ is unsupported, please use Python 3.11. https://github.com/ciromattia/kcc/issues/618
-
 This section is for developers who want to contribute to KCC or power users who want to run the latest code without waiting for an official release.
 
 Easiest to use [GitHub Desktop](https://desktop.github.com) to clone the KCC repo. From GitHub Desktop, click on `Repository` in the toolbar, then `Command Prompt` (Windows)/`Terminal` (Mac) to open a window in the KCC repo.
