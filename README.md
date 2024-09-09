@@ -56,6 +56,7 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 - [Kindle Scribe cover guide](https://github.com/ciromattia/kcc/issues/508) (also works for older Kindles)
 - [Windows 7 support](https://github.com/ciromattia/kcc/issues/678)
 - [Combine files/chapters](https://github.com/ciromattia/kcc/issues/612#issuecomment-2117985011)
+- [Flatpak mobi conversion stuck](https://github.com/ciromattia/kcc/wiki/Installation#linux)
 
 ## PREREQUISITES
 
