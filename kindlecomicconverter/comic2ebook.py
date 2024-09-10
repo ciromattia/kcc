@@ -286,8 +286,12 @@ def buildOPF(dstdir, title, filelist, cover=None):
         f.writelines(["<dc:description>", options.summary, "</dc:description>\n"])
     for author in options.authors:
         f.writelines(["<dc:creator>", author, "</dc:creator>\n"])
-    f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
-                  "<meta name=\"cover\" content=\"cover\"/>\n"])
+    if options.dedupecover:
+        f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
+                      "<meta name=\"cover\" content=\"img_Images_kcc-0000\"/>\n"])
+    else:
+        f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
+                      "<meta name=\"cover\" content=\"cover\"/>\n"])
     if options.iskindle and options.profile != 'Custom':
         f.writelines(["<meta name=\"fixed-layout\" content=\"true\"/>\n",
                       "<meta name=\"original-resolution\" content=\"",
@@ -327,6 +331,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
         f.write("<item id=\"cover\" href=\"Images/cover" + filename[1] + "\" media-type=\"" + mt +
                 "\" properties=\"cover-image\"/>\n")
     reflist = []
+    firstLoop = True
     for path in filelist:
         folder = path[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\').replace("\\", "/")
         filename = getImageFileName(path[1])
@@ -339,8 +344,13 @@ def buildOPF(dstdir, title, filelist, cover=None):
             mt = 'image/png'
         else:
             mt = 'image/jpeg'
-        f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
-                mt + "\"/>\n")
+        if options.dedupecover and firstLoop:
+            f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
+                    mt + "\" properties=\"cover-image\"/>\n")
+        else:
+            f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
+                    mt + "\"/>\n")
+        firstLoop = False
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
 
 
@@ -504,14 +514,12 @@ def buildEPUB(path, chapternames, tomenumber):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
-            if cover is None:
-                cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
-                                     'cover' + getImageFileName(afile)[1])
-                options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
-                                                   tomenumber), options.uuid))
-                if options.dedupecover:
-                    os.remove(os.path.join(dirpath, afile))
-                    continue
+            if not options.dedupecover:
+                if cover is None:
+                    cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
+                                         'cover' + getImageFileName(afile)[1])
+                    options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
+                                                       tomenumber), options.uuid))
             filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
