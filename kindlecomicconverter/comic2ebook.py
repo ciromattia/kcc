@@ -287,8 +287,13 @@ def buildOPF(dstdir, title, filelist, cover=None):
     for author in options.authors:
         f.writelines(["<dc:creator>", author, "</dc:creator>\n"])
     if options.dedupecover:
-        f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
-                      "<meta name=\"cover\" content=\"img_Images_kcc-0000\"/>\n"])
+        for path in filelist:
+            dupeFolder = path[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\').replace("\\", "/")
+            dupeFilename = getImageFileName(path[1])
+            dupeUniqueid = os.path.join(dupeFolder, dupeFilename[0]).replace('/', '_').replace('\\', '_')
+            f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
+                          "<meta name=\"cover\" content=\"img_" + str(dupeUniqueid) + "\"/>\n"])
+            break
     else:
         f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
                       "<meta name=\"cover\" content=\"cover\"/>\n"])
