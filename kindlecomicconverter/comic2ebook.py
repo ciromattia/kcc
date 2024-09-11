@@ -373,55 +373,64 @@ def buildOPF(dstdir, title, filelist, cover=None):
     else:
         f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
         pageside = "left"
+    firstLoop = True
     if options.iskindle or options.supportSyntheticSpread:
         for entry in reflist:
-            if options.righttoleft:
-                if entry.endswith("-b"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("right"))
-                    )
-                    pageside = "right"
-                elif entry.endswith("-c"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("left"))
-                    )
-                    pageside = "right"
+            if options.dedupecover and firstLoop:
+                firstLoop = False
+                continue
+            else:
+                if options.righttoleft:
+                    if entry.endswith("-b"):
+                        f.write(
+                            "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                                   pageSpreadProperty("right"))
+                        )
+                        pageside = "right"
+                    elif entry.endswith("-c"):
+                        f.write(
+                            "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                                   pageSpreadProperty("left"))
+                        )
+                        pageside = "right"
+                    else:
+                        f.write(
+                            "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                                   pageSpreadProperty(pageside))
+                        )
+                        if pageside == "right":
+                            pageside = "left"
+                        else:
+                            pageside = "right"
                 else:
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty(pageside))
-                    )
+                    if entry.endswith("-b"):
+                        f.write(
+                            "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                                   pageSpreadProperty("left"))
+                        )
+                        pageside = "left"
+                    elif entry.endswith("-c"):
+                        f.write(
+                            "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                                   pageSpreadProperty("right"))
+                        )
+                        pageside = "left"
+                    else:
+                        f.write(
+                            "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                                   pageSpreadProperty(pageside))
+                        )
                     if pageside == "right":
                         pageside = "left"
                     else:
                         pageside = "right"
-            else:
-                if entry.endswith("-b"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("left"))
-                    )
-                    pageside = "left"
-                elif entry.endswith("-c"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("right"))
-                    )
-                    pageside = "left"
-                else:
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty(pageside))
-                    )
-                if pageside == "right":
-                    pageside = "left"
-                else:
-                    pageside = "right"
     else:
         for entry in reflist:
-            f.write("<itemref idref=\"page_" + entry + "\"/>\n")
+            if options.dedupecover and firstLoop:
+                firstLoop = False
+                continue
+            else:
+                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
     f.write("</spine>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
