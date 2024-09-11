@@ -352,10 +352,10 @@ def buildOPF(dstdir, title, filelist, cover=None):
         if options.dedupecover and firstLoop:
             f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
                     mt + "\" properties=\"cover-image\"/>\n")
+            firstLoop = False
         else:
             f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
                     mt + "\"/>\n")
-        firstLoop = False
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
 
 
@@ -392,7 +392,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                             "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                                    pageSpreadProperty("left"))
                         )
-                        pageside = "right"
+                        pageside = "left"
                     else:
                         f.write(
                             "<itemref idref=\"page_%s\" %s/>\n" % (entry,
@@ -414,7 +414,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                             "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                                    pageSpreadProperty("right"))
                         )
-                        pageside = "left"
+                        pageside = "right"
                     else:
                         f.write(
                             "<itemref idref=\"page_%s\" %s/>\n" % (entry,
@@ -426,11 +426,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                         pageside = "right"
     else:
         for entry in reflist:
-            if options.dedupecover and firstLoop:
-                firstLoop = False
-                continue
-            else:
-                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
+            f.write("<itemref idref=\"page_" + entry + "\"/>\n")
     f.write("</spine>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
