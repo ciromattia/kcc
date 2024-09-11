@@ -525,12 +525,11 @@ def buildEPUB(path, chapternames, tomenumber):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
-            if not options.dedupecover:
-                if cover is None:
-                    cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
-                                         'cover' + getImageFileName(afile)[1])
-                    options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
-                                                       tomenumber), options.uuid))
+            if cover is None and not options.dedupecover:
+                cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
+                                     'cover' + getImageFileName(afile)[1])
+                options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
+                                                   tomenumber), options.uuid))
             filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
