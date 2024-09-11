@@ -377,7 +377,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
     if options.iskindle or options.supportSyntheticSpread:
         for entry in reflist:
             if options.dedupecover and firstLoop:
-                f.write("<itemref idref=\"page_%s\"/>\n" % (entry))
+                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
                 firstLoop = False
                 continue
             else:
