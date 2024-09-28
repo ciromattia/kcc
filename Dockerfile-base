@@ -64,9 +64,8 @@ RUN set -x && \
         && \
     # Install required python modules
     python -m pip install --upgrade pip && \
-#    python -m pip install -r /opt/kcc/requirements.txt && \
     python -m venv /opt/venv && \
-    python -m pip install --upgrade pillow python-slugify psutil raven mozjpeg-lossless-optimization
+    python -m pip install -r /opt/kcc/requirements.txt
 
 
 ######################################################################################
