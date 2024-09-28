@@ -28,6 +28,8 @@ ENV LC_ALL=C.UTF-8 \
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+COPY requirements.txt /opt/kcc/
+
 RUN set -x && \
     TEMP_PACKAGES=() && \
     KEPT_PACKAGES=() && \
