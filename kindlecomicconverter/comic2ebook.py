@@ -685,7 +685,11 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
     if srcpath[-1] == os.path.sep:
         srcpath = srcpath[:-1]
     if 'Ko' in options.profile and options.format == 'EPUB':
-        ext = '.kepub.epub'
+        if options.noKepub:
+            # Just use normal epub extension if no_kepub option is true
+            ext = '.epub'
+        else:
+            ext = '.kepub.epub'
     if wantedname is not None:
         if wantedname.endswith(ext):
             filename = os.path.abspath(wantedname)
@@ -999,6 +1003,8 @@ def makeParser():
     output_options.add_argument("-f", "--format", action="store", dest="format", default="Auto",
                                 help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB) "
                                      "[Default=Auto]")
+    output_options.add_argument("--nokepub", action="store_true", dest="noKepub", default=False,
+                                help="If format is EPUB, output file with '.epub' extension rather than '.kepub.epub'")
     output_options.add_argument("-b", "--batchsplit", type=int, dest="batchsplit", default="0",
                                 help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                      "2: Consider every subdirectory as separate volume [Default=0]")
