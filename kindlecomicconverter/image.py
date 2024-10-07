@@ -23,6 +23,7 @@ import os
 import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
 from .shared import md5Checksum
+from .page_number_crop_alg import get_bbox_crop_margin_page_number
 
 AUTO_CROP_THRESHOLD = 0.015
 
@@ -363,16 +364,10 @@ class ComicPage:
             self.image = self.image.crop(box)
 
     def cropPageNumber(self, power, minimum):
-        if self.fill != 'white':
-            tmptmg = self.image.convert(mode='L')
-        else:
-            tmptmg = ImageOps.invert(self.image.convert(mode='L'))
-        tmptmg = tmptmg.point(lambda x: x and 255)
-        tmptmg = tmptmg.filter(ImageFilter.MinFilter(size=3))
-        tmptmg = tmptmg.filter(ImageFilter.GaussianBlur(radius=5))
-        tmptmg = tmptmg.point(lambda x: (x >= 16 * power) and x)
-        if tmptmg.getbbox():
-            self.maybeCrop(tmptmg.getbbox(), minimum)
+        bbox = get_bbox_crop_margin_page_number(self.image, power, self.fill)
+
+        if bbox:
+            self.maybeCrop(bbox, minimum)
 
     def cropMargin(self, power, minimum):
         if self.fill != 'white':
