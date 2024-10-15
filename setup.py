@@ -14,6 +14,7 @@ import os
 import platform
 import sys
 import setuptools
+import distutils.cmd
 from kindlecomicconverter import __version__
 
 NAME = 'KindleComicConverter'
@@ -22,7 +23,7 @@ VERSION = __version__
 
 
 # noinspection PyUnresolvedReferences
-class BuildBinaryCommand(setuptools.Command):
+class BuildBinaryCommand(distutils.cmd.Command):
     description = 'build binary release'
     user_options = []
 
