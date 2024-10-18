@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'KCC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.6.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -26,7 +26,7 @@ class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         if not mainWindow.objectName():
             mainWindow.setObjectName(u"mainWindow")
-        mainWindow.resize(450, 400)
+        mainWindow.resize(481, 400)
         icon = QIcon()
         icon.addFile(u":/Icon/icons/comic2ebook.png", QSize(), QIcon.Normal, QIcon.Off)
         mainWindow.setWindowIcon(icon)
@@ -139,7 +139,7 @@ class Ui_mainWindow(object):
         self.gammaSlider.setObjectName(u"gammaSlider")
         self.gammaSlider.setMaximum(250)
         self.gammaSlider.setSingleStep(5)
-        self.gammaSlider.setOrientation(Qt.Horizontal)
+        self.gammaSlider.setOrientation(Qt.Orientation.Horizontal)
 
         self.horizontalLayout_2.addWidget(self.gammaSlider)
 
@@ -159,9 +159,9 @@ class Ui_mainWindow(object):
 
         self.croppingPowerSlider = QSlider(self.croppingWidget)
         self.croppingPowerSlider.setObjectName(u"croppingPowerSlider")
-        self.croppingPowerSlider.setMaximum(200)
+        self.croppingPowerSlider.setMaximum(300)
         self.croppingPowerSlider.setSingleStep(1)
-        self.croppingPowerSlider.setOrientation(Qt.Horizontal)
+        self.croppingPowerSlider.setOrientation(Qt.Orientation.Horizontal)
 
         self.horizontalLayout_3.addWidget(self.croppingPowerSlider)
 
@@ -170,7 +170,7 @@ class Ui_mainWindow(object):
 
         self.buttonWidget = QWidget(self.centralWidget)
         self.buttonWidget.setObjectName(u"buttonWidget")
-        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.buttonWidget.sizePolicy().hasHeightForWidth())
@@ -267,9 +267,9 @@ class Ui_mainWindow(object):
         self.jobList = QListWidget(self.centralWidget)
         self.jobList.setObjectName(u"jobList")
         self.jobList.setStyleSheet(u"QListWidget#jobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;color:rgb(0,0,0);}")
-        self.jobList.setSelectionMode(QAbstractItemView.NoSelection)
-        self.jobList.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-        self.jobList.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.jobList.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.jobList.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.jobList.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
 
         self.gridLayout.addWidget(self.jobList, 2, 0, 1, 2)
 
@@ -278,7 +278,7 @@ class Ui_mainWindow(object):
         self.progressBar.setMinimumSize(QSize(0, 30))
         self.progressBar.setFont(font)
         self.progressBar.setVisible(False)
-        self.progressBar.setAlignment(Qt.AlignJustify|Qt.AlignVCenter)
+        self.progressBar.setAlignment(Qt.AlignmentFlag.AlignJustify|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout.addWidget(self.progressBar, 1, 0, 1, 2)
 
@@ -290,7 +290,7 @@ class Ui_mainWindow(object):
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
         self.hLabel = QLabel(self.customWidget)
         self.hLabel.setObjectName(u"hLabel")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.hLabel.sizePolicy().hasHeightForWidth())
