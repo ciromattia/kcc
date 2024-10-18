@@ -23,6 +23,7 @@ import os
 import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
 from .shared import md5Checksum
+from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 
 AUTO_CROP_THRESHOLD = 0.015
 
@@ -342,20 +343,6 @@ class ComicPage:
         else:
             return Image.Resampling.LANCZOS
 
-    def getBoundingBox(self, tmptmg):
-        min_margin = [int(0.005 * i + 0.5) for i in tmptmg.size]
-        max_margin = [int(0.1 * i + 0.5) for i in tmptmg.size]
-        bbox = tmptmg.getbbox()
-        bbox = (
-            max(0, min(max_margin[0], bbox[0] - min_margin[0])),
-            max(0, min(max_margin[1], bbox[1] - min_margin[1])),
-            min(tmptmg.size[0],
-                max(tmptmg.size[0] - max_margin[0], bbox[2] + min_margin[0])),
-            min(tmptmg.size[1],
-                max(tmptmg.size[1] - max_margin[1], bbox[3] + min_margin[1])),
-        )
-        return bbox
-
     def maybeCrop(self, box, minimum):
         box_area = (box[2] - box[0]) * (box[3] - box[1])
         image_area = self.image.size[0] * self.image.size[1]
@@ -363,26 +350,16 @@ class ComicPage:
             self.image = self.image.crop(box)
 
     def cropPageNumber(self, power, minimum):
-        if self.fill != 'white':
-            tmptmg = self.image.convert(mode='L')
-        else:
-            tmptmg = ImageOps.invert(self.image.convert(mode='L'))
-        tmptmg = tmptmg.point(lambda x: x and 255)
-        tmptmg = tmptmg.filter(ImageFilter.MinFilter(size=3))
-        tmptmg = tmptmg.filter(ImageFilter.GaussianBlur(radius=5))
-        tmptmg = tmptmg.point(lambda x: (x >= 16 * power) and x)
-        if tmptmg.getbbox():
-            self.maybeCrop(tmptmg.getbbox(), minimum)
+        bbox = get_bbox_crop_margin_page_number(self.image, power, self.fill)
+        
+        if bbox:
+            self.maybeCrop(bbox, minimum)
 
     def cropMargin(self, power, minimum):
-        if self.fill != 'white':
-            tmptmg = self.image.convert(mode='L')
-        else:
-            tmptmg = ImageOps.invert(self.image.convert(mode='L'))
-        tmptmg = tmptmg.filter(ImageFilter.GaussianBlur(radius=3))
-        tmptmg = tmptmg.point(lambda x: (x >= 16 * power) and x)
-        if tmptmg.getbbox():
-            self.maybeCrop(self.getBoundingBox(tmptmg), minimum)
+        bbox = get_bbox_crop_margin(self.image, power, self.fill)
+        
+        if bbox:
+            self.maybeCrop(bbox, minimum)
 
 
 class Cover:

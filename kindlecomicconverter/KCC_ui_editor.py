@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'MetaEditor.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.2
+## Created by: Qt User Interface Compiler version 6.6.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -117,7 +117,7 @@ class Ui_editorDialog(object):
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.statusLabel = QLabel(self.optionWidget)
         self.statusLabel.setObjectName(u"statusLabel")
-        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.statusLabel.sizePolicy().hasHeightForWidth())
