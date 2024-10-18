@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
+    <width>481</width>
     <height>400</height>
    </rect>
   </property>
@@ -242,7 +242,7 @@
           <number>5</number>
          </property>
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
         </widget>
        </item>
@@ -277,13 +277,13 @@
        <item>
         <widget class="QSlider" name="croppingPowerSlider">
          <property name="maximum">
-          <number>200</number>
+          <number>300</number>
          </property>
          <property name="singleStep">
           <number>1</number>
          </property>
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
         </widget>
        </item>
@@ -489,13 +489,13 @@
        <string notr="true">QListWidget#jobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;color:rgb(0,0,0);}</string>
       </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::NoSelection</enum>
+       <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
       </property>
       <property name="verticalScrollMode">
-       <enum>QAbstractItemView::ScrollPerPixel</enum>
+       <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
       </property>
       <property name="horizontalScrollMode">
-       <enum>QAbstractItemView::ScrollPerPixel</enum>
+       <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
       </property>
      </widget>
     </item>
@@ -516,7 +516,7 @@
        <bool>false</bool>
       </property>
       <property name="alignment">
-       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+       <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
      </widget>
     </item>
