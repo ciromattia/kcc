@@ -50,7 +50,10 @@ def get_bbox_crop_margin_page_number(img, power=1, background_color='white'):
     '''
     threshold = threshold_from_power(power)
     bw_img = img.point(lambda p: 255 if p <= threshold else 0)
-    left, top_y_pos, right, bot_y_pos = bw_img.getbbox()
+    bw_bbox = bw_img.getbbox()
+        
+    if not bw_bbox: # bbox cannot be found in case that the entire resulted image is black.
+        return None
     
     '''
     We inspect the lower bottom part of the image where we suspect might be a page number.
