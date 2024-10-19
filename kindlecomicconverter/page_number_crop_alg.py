@@ -55,6 +55,8 @@ def get_bbox_crop_margin_page_number(img, power=1, background_color='white'):
     if not bw_bbox: # bbox cannot be found in case that the entire resulted image is black.
         return None
     
+    left, top_y_pos, right, bot_y_pos = bw_bbox
+    
     '''
     We inspect the lower bottom part of the image where we suspect might be a page number.
     We assume that page number consist of 1 to 3 digits and the total min and max size of the number
