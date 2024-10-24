@@ -928,11 +928,17 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle Scribe": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS',
             },
-            "Kindle 11": {
+            "Kindle 11/12": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'K11',
             },
             "Kindle PW 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW5',
+            },
+            "Kindle PW 12": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW6',
+            },
+            "Kindle CS 12": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': True, 'Label': 'KCS12',
             },
             "Kindle PW 7/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KV'},
@@ -989,8 +995,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         }
         profilesGUI = [
             "Kindle Scribe",
-            "Kindle 11",
-            "Kindle PW 11",
+            "Kindle 11/12",
+            "Kindle PW 12",
+            "Kindle CS 12",
             "Kindle Oasis 9/10",
             "Separator",
             "Kobo Clara 2E",
@@ -1003,6 +1010,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Separator",
             "Other",
             "Separator",
+            "Kindle PW 11",
             "Kindle Oasis 8",
             "Kindle PW 7/10",
             "Kindle Voyage",

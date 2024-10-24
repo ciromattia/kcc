@@ -80,7 +80,7 @@ class ProfileData:
 
     Profiles = {
         'K1': ("Kindle 1", (600, 670), Palette4, 1.8),
-        'K11': ("Kindle 11", (1072, 1448), Palette16, 1.8),
+        'K11': ("Kindle 11/12", (1072, 1448), Palette16, 1.8),
         'K2': ("Kindle 2", (600, 670), Palette15, 1.8),
         'K34': ("Kindle Keyboard/Touch", (600, 800), Palette16, 1.8),
         'K578': ("Kindle", (600, 800), Palette16, 1.8),
@@ -88,6 +88,8 @@ class ProfileData:
         'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.8),
         'KV': ("Kindle Paperwhite 3/4/Voyage/Oasis", (1072, 1448), Palette16, 1.8),
         'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.8),
+        'KPW6': ("Kindle Paperwhite 6", (1264, 1680), Palette16, 1.8),
+        'KCS12': ("Kindle Colorsoft", (1264, 1680), Palette16, 1.8),
         'KO': ("Kindle Oasis 2/3", (1264, 1680), Palette16, 1.8),
         'KS': ("Kindle Scribe", (1860, 2480), Palette16, 1.8),
         'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8),
