@@ -78,7 +78,7 @@ class ProfileData:
     PalleteNull = [
     ]
 
-    Profiles = {
+    ProfilesKindle = {
         'K1': ("Kindle 1", (600, 670), Palette4, 1.8),
         'K11': ("Kindle 11/12", (1072, 1448), Palette16, 1.8),
         'K2': ("Kindle 2", (600, 670), Palette15, 1.8),
@@ -92,6 +92,9 @@ class ProfileData:
         'KCS12': ("Kindle Colorsoft", (1264, 1680), Palette16, 1.8),
         'KO': ("Kindle Oasis 2/3", (1264, 1680), Palette16, 1.8),
         'KS': ("Kindle Scribe", (1860, 2480), Palette16, 1.8),
+    }
+
+    ProfilesKobo = {
         'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8),
         'KoG': ("Kobo Glo", (768, 1024), Palette16, 1.8),
         'KoGHD': ("Kobo Glo HD", (1072, 1448), Palette16, 1.8),
@@ -107,6 +110,11 @@ class ProfileData:
         'KoF': ("Kobo Forma", (1440, 1920), Palette16, 1.8),
         'KoS': ("Kobo Sage", (1440, 1920), Palette16, 1.8),
         'KoE': ("Kobo Elipsa", (1404, 1872), Palette16, 1.8),
+    }
+
+    Profiles = {
+        **ProfilesKindle,
+        **ProfilesKobo,
         'OTHER': ("Other", (0, 0), Palette16, 1.8),
     }
 

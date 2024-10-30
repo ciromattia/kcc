@@ -1046,16 +1046,15 @@ def checkOptions(options):
     options.kfx = False
     options.supportSyntheticSpread = False
     if options.format == 'Auto':
-        if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KPW6', 'KCS12', 'KV', 'KO', 'K11', 'KS']:
-            options.format = 'MOBI'
-        elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O', 'KoAO',
-                                 'KoN', 'KoC', 'KoCC', 'KoL', 'KoLC', 'KoF', 'KoS', 'KoE']:
-            options.format = 'EPUB'
-        elif options.profile in ['KDX']:
+        if options.profile in ['KDX']:
             options.format = 'CBZ'
-    if options.profile in ['K1', 'K2', 'K34', 'K578', 'KPW', 'KPW5', 'KPW6', 'KCS12', 'KV', 'KO', 'K11', 'KS']:
+        elif options.profile in image.ProfileData.ProfilesKindle.keys():
+            options.format = 'MOBI'
+        else:
+            options.format = 'EPUB'
+    if options.profile in image.ProfileData.ProfilesKindle.keys():
         options.iskindle = True
-    elif options.profile in ['OTHER', 'KoMT', 'KoG', 'KoGHD', 'KoA', 'KoAHD', 'KoAH2O', 'KoAO', 'KoN', 'KoC', 'KoCC', 'KoL', 'KoLC', 'KoF', 'KoS', 'KoE']:
+    else:
         options.isKobo = True
     # Other Kobo devices probably support synthetic spreads as well, but
     # they haven't been tested.
