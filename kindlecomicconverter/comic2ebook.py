@@ -957,8 +957,7 @@ def makeParser():
                                    help="Full path to comic folder or file(s) to be processed.")
 
     main_options.add_argument("-p", "--profile", action="store", dest="profile", default="KV",
-                              help="Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KPW5, KPW6, KCS12, KV, KO, "
-                                   "K11, KS, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoN, KoC, KoCC, KoL, KoLC, KoF, KoS, KoE)"
+                              help=f"Device profile (Available options: {', '.join(image.ProfileData.Profiles.keys())})"
                                    " [Default=KV]")
     main_options.add_argument("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                               help="Manga style (right-to-left reading and splitting)")
