@@ -147,7 +147,7 @@ class DualMobiMetaFix:
         rec0 = self.datain_rec0
         rec0 = del_exth(rec0, 501)
         rec0 = del_exth(rec0, 113)
-        rec0 = add_exth(rec0, 501, b'EBOK')
+        rec0 = add_exth(rec0, 501, b'PDOC')
         rec0 = add_exth(rec0, 113, asin)
         replacesection(self.datain, 0, rec0)
 
@@ -174,7 +174,7 @@ class DualMobiMetaFix:
         rec0 = self.datain_kfrec0
         rec0 = del_exth(rec0, 501)
         rec0 = del_exth(rec0, 113)
-        rec0 = add_exth(rec0, 501, b'EBOK')
+        rec0 = add_exth(rec0, 501, b'PDOC')
         rec0 = add_exth(rec0, 113, asin)
         replacesection(self.datain, datain_kf8, rec0)
 
