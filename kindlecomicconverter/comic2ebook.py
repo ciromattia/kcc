@@ -420,7 +420,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
     f.close()
 
 
-def buildEPUB(path, chapternames, tomenumber):
+def buildEPUB(path, chapternames, tomenumber, ischunked):
     filelist = []
     chapterlist = []
     cover = None
@@ -517,7 +517,7 @@ def buildEPUB(path, chapternames, tomenumber):
                 chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
                 chapter = True
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
-    if not chapternames and options.chapters:
+    if not chapternames and options.chapters and not ischunked:
         chapterlist = []
 
         global_diff = 0
@@ -738,7 +738,7 @@ def getComicInfo(path, originalpath):
                 options.authors.sort()
             else:
                 options.authors = ['KCC']
-        if xml.data['Bookmarks'] and options.batchsplit == 0:
+        if xml.data['Bookmarks']:
             options.chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
             options.summary = hescape(xml.data['Summary'])
@@ -1202,10 +1202,11 @@ def makeBook(source, qtgui=None):
             makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
         else:
             print("Creating EPUB file...")
-            buildEPUB(tome, chapterNames, tomeNumber)
             if len(tomes) > 1:
+                buildEPUB(tome, chapterNames, tomeNumber, True)
                 filepath.append(getOutputFilename(source, options.output, '.epub', ' ' + str(tomeNumber)))
             else:
+                buildEPUB(tome, chapterNames, tomeNumber, False)
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
             makeZIP(tome + '_comic', tome, True)
         copyfile(tome + '_comic.zip', filepath[-1])
