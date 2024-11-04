@@ -928,7 +928,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle Scribe": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS',
             },
-            "Kindle 11/12": {
+            "Kindle 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'K11',
             },
             "Kindle PW 11": {
