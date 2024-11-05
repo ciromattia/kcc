@@ -24,8 +24,8 @@ from . import image
 
 class Kindle:
     def __init__(self, profile):
-        self.path = self.findDevice()
         self.profile = profile
+        self.path = self.findDevice()
         if self.path:
             self.coverSupport = self.checkThumbnails()
         else:
