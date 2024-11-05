@@ -994,8 +994,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                       'Label': 'OTHER'},
         }
         profilesGUI = [
-            "Kindle PW 12",
             "Kindle CS 12",
+            "Kindle PW 12",
             "Kindle Scribe",
             "Kindle PW 11",
             "Kindle 11",
