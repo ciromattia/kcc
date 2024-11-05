@@ -1227,7 +1227,7 @@ def makeBook(source, qtgui=None):
                 print('Error: KindleGen failed to create MOBI!')
                 print(errors)
                 return filepath
-        k = kindle.Kindle()
+        k = kindle.Kindle(options.profile)
         if k.path and k.coverSupport:
             print("Kindle detected. Uploading covers...")
         for i in filepath:
@@ -1249,12 +1249,13 @@ def makeBook(source, qtgui=None):
 
 
 def makeMOBIFix(item, uuid):
+    is_pdoc = options.profile in image.ProfileData.ProfilesKindlePDOC.keys()
     if not options.keep_epub:
         os.remove(item)
     mobiPath = item.replace('.epub', '.mobi')
     move(mobiPath, mobiPath + '_toclean')
     try:
-        dualmetafix.DualMobiMetaFix(mobiPath + '_toclean', mobiPath, bytes(uuid, 'UTF-8'))
+        dualmetafix.DualMobiMetaFix(mobiPath + '_toclean', mobiPath, bytes(uuid, 'UTF-8'), is_pdoc)
         return [True]
     except Exception as err:
         return [False, format(err)]
