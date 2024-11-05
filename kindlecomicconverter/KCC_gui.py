@@ -994,10 +994,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                       'Label': 'OTHER'},
         }
         profilesGUI = [
-            "Kindle Scribe",
-            "Kindle 11/12",
             "Kindle PW 12",
             "Kindle CS 12",
+            "Kindle Scribe",
+            "Kindle PW 11",
+            "Kindle 11",
             "Kindle Oasis 9/10",
             "Separator",
             "Kobo Clara 2E",
@@ -1010,7 +1011,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Separator",
             "Other",
             "Separator",
-            "Kindle PW 11",
             "Kindle Oasis 8",
             "Kindle PW 7/10",
             "Kindle Voyage",
