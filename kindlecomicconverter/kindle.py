@@ -19,9 +19,12 @@
 import os.path
 import psutil
 
+from . import image
+
 
 class Kindle:
-    def __init__(self):
+    def __init__(self, profile):
+        self.profile = profile
         self.path = self.findDevice()
         if self.path:
             self.coverSupport = self.checkThumbnails()
@@ -29,6 +32,8 @@ class Kindle:
             self.coverSupport = False
 
     def findDevice(self):
+        if self.profile in image.ProfileData.ProfilesKindlePDOC.keys():
+            return False
         for drive in reversed(psutil.disk_partitions(False)):
             if (drive[2] == 'FAT32' and drive[3] == 'rw,removable') or \
                (drive[2] in ('vfat', 'msdos', 'FAT', 'apfs') and 'rw' in drive[3]):

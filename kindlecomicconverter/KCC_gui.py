@@ -380,7 +380,7 @@ class WorkerThread(QtCore.QThread):
                                     except Exception:
                                         pass
                             MW.addMessage.emit('Processing MOBI files... <b>Done!</b>', 'info', True)
-                            k = kindle.Kindle()
+                            k = kindle.Kindle(options.profile)
                             if k.path and k.coverSupport:
                                 for item in outputPath:
                                     comic2ebook.options.covers[outputPath.index(item)][0].saveToKindle(
