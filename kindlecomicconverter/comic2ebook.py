@@ -530,8 +530,21 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
         elif options.splitter == 2:
             diff_delta = 2
 
+        first_chapter_is_cover_only = False
+        if len(options.chapters) > 1:
+            first_chapter_length = options.chapters[1][0] - options.chapters[0][0]
+            first_chapter_is_cover_only = first_chapter_length == 1
+
         for aChapter in options.chapters:
             pageid = aChapter[0]
+
+            if options.dedupecover:
+                if first_chapter_is_cover_only:
+                    first_chapter_is_cover_only = False
+                    continue
+                else:
+                    pageid = max(0, pageid - 1)
+
             cur_diff = global_diff
             global_diff = 0
 
