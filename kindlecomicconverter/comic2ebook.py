@@ -532,6 +532,13 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
 
         for aChapter in options.chapters:
             pageid = aChapter[0]
+
+            if options.dedupecover:
+                if pageid == 0:
+                    continue
+                else:
+                    pageid -= 1
+
             cur_diff = global_diff
             global_diff = 0
 
