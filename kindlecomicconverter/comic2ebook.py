@@ -530,7 +530,6 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
         elif options.splitter == 2:
             diff_delta = 2
 
-
         for aChapter in options.chapters:
             pageid = aChapter[0]
 
