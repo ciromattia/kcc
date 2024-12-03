@@ -70,9 +70,11 @@ If you have issues detecting it, get stuck on the MOBI conversion step, or use L
 
 ### 7-Zip
 
-This is no longer required as of KCC 6.1. 
+This is only required for certain files and advanced features. 
 
-If you still need it, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation#7-zip
+KCC will ask you to install if needed. 
+
+Refer to the wiki to install: https://github.com/ciromattia/kcc/wiki/Installation#7-zip
 
 ## INPUT FORMATS
 **KCC** can understand and convert, at the moment, the following input types:
