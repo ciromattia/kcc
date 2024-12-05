@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 python:3.12-slim-bullseye as compile-amd64
+FROM --platform=linux/amd64 python:3.13-slim-bullseye as compile-amd64
 ARG TARGETOS
 ARG TARGETARCH
 ARG TARGETVARIANT
@@ -16,7 +16,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get -yq upgrade && \
 
 ######################################################################################
 
-FROM --platform=linux/arm64 python:3.12-slim-bullseye as compile-arm64
+FROM --platform=linux/arm64 python:3.13-slim-bullseye as compile-arm64
 ARG TARGETOS
 ARG TARGETARCH
 ARG TARGETVARIANT
@@ -73,7 +73,7 @@ RUN set -x && \
 
 ######################################################################################
 
-FROM --platform=linux/arm/v7 python:3.12-slim-bullseye as compile-armv7
+FROM --platform=linux/arm/v7 python:3.13-slim-bullseye as compile-armv7
 ARG TARGETOS
 ARG TARGETARCH
 ARG TARGETVARIANT
@@ -130,13 +130,13 @@ RUN set -x && \
 
 
 ######################################################################################
-FROM --platform=linux/amd64 python:3.12-slim-bullseye as build-amd64
+FROM --platform=linux/amd64 python:3.13-slim-bullseye as build-amd64
 COPY --from=compile-amd64 /opt/venv /opt/venv
 
-FROM --platform=linux/arm64 python:3.12-slim-bullseye as build-arm64
+FROM --platform=linux/arm64 python:3.13-slim-bullseye as build-arm64
 COPY --from=compile-arm64 /opt/venv /opt/venv
 
-FROM --platform=linux/arm/v7 python:3.12-slim-bullseye as build-armv7
+FROM --platform=linux/arm/v7 python:3.13-slim-bullseye as build-armv7
 COPY --from=compile-armv7 /opt/venv /opt/venv
 ######################################################################################
 
