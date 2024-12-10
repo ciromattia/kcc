@@ -990,6 +990,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                           'Label': 'KoS'},
             "Kobo Elipsa": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1, 'DefaultUpscale': True, 'ForceColor': False,
                             'Label': 'KoE'},
+            "reMarkable 1": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1, 'DefaultUpscale': True, 'ForceColor': False,
+                             'Label': 'Rmk1'},
+            "reMarkable 2": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1, 'DefaultUpscale': True, 'ForceColor': False,
+                             'Label': 'Rmk2'},
+            "reMarkable Paper Pro": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1, 'DefaultUpscale': True, 'ForceColor': True,
+                             'Label': 'RmkPP'},
             "Other": {'PVOptions': False, 'ForceExpert': True, 'DefaultFormat': 1, 'DefaultUpscale': False, 'ForceColor': False,
                       'Label': 'OTHER'},
         }
@@ -1008,6 +1014,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kobo Libra Colour",
             "Kobo Elipsa",
             "Kobo Nia",
+            "Separator",
+            "reMarkable 1",
+            "reMarkable 2",
+            "reMarkable Paper Pro",
             "Separator",
             "Other",
             "Separator",
@@ -1097,6 +1107,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 GUI.deviceBox.addItem(self.icons.deviceOther, profile)
             elif profile == "Separator":
                 GUI.deviceBox.insertSeparator(GUI.deviceBox.count() + 1)
+            elif 'reMarkable' in profile:
+                GUI.deviceBox.addItem(self.icons.deviceOther, profile)
             elif 'Ko' in profile:
                 GUI.deviceBox.addItem(self.icons.deviceKobo, profile)
             else:
