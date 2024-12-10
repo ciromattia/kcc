@@ -124,6 +124,9 @@ sudo apt-get install python3 p7zip-full python3-pil python3-psutil python3-slugi
         'KoF': ("Kobo Forma", (1440, 1920), Palette16, 1.8),
         'KoS': ("Kobo Sage", (1440, 1920), Palette16, 1.8),
         'KoE': ("Kobo Elipsa", (1404, 1872), Palette16, 1.8),
+        'Rmk1': ("reMarkable 1", (1404, 1872), Palette16, 1.8),
+        'Rmk2': ("reMarkable 2", (1404, 1872), Palette16, 1.8),
+        'RmkPP': ("reMarkable Paper Pro", (1620, 2160), Palette16, 1.8),
         'OTHER': ("Other", (0, 0), Palette16, 1.8),
 ```
 

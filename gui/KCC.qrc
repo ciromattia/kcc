@@ -6,6 +6,7 @@
     <file>../icons/Kobo.png</file>
     <file>../icons/Other.png</file>
     <file>../icons/Kindle.png</file>
+    <file>../icons/Rmk.png</file>
   </qresource>
   <qresource prefix="Formats">
     <file>../icons/CBZ.png</file>
