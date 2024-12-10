@@ -106,6 +106,8 @@ class Icons:
         self.deviceKindle.addPixmap(QtGui.QPixmap(":/Devices/icons/Kindle.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.deviceKobo = QtGui.QIcon()
         self.deviceKobo.addPixmap(QtGui.QPixmap(":/Devices/icons/Kobo.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        self.deviceRmk = QtGui.QIcon()
+        self.deviceRmk.addPixmap(QtGui.QPixmap(":/Devices/icons/Rmk.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.deviceOther = QtGui.QIcon()
         self.deviceOther.addPixmap(QtGui.QPixmap(":/Devices/icons/Other.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
 
@@ -1107,8 +1109,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 GUI.deviceBox.addItem(self.icons.deviceOther, profile)
             elif profile == "Separator":
                 GUI.deviceBox.insertSeparator(GUI.deviceBox.count() + 1)
-            elif 'reMarkable' in profile:
-                GUI.deviceBox.addItem(self.icons.deviceOther, profile)
+            elif 'reM' in profile:
+                GUI.deviceBox.addItem(self.icons.deviceRmk, profile)
             elif 'Ko' in profile:
                 GUI.deviceBox.addItem(self.icons.deviceKobo, profile)
             else:
