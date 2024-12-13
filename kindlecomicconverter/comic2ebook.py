@@ -400,10 +400,10 @@ def buildOPF(dstdir, title, filelist, cover=None):
                         "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                                pageSpreadProperty(pageside))
                     )
-                if pageside == "right":
-                    pageside = "left"
-                else:
-                    pageside = "right"
+                    if pageside == "right":
+                        pageside = "left"
+                    else:
+                        pageside = "right"
     else:
         for entry in reflist:
             f.write("<itemref idref=\"page_" + entry + "\"/>\n")
