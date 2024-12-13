@@ -361,7 +361,13 @@ def buildOPF(dstdir, title, filelist, cover=None):
     if options.iskindle or options.supportSyntheticSpread:
         for entry in reflist:
             if options.righttoleft:
-                if entry.endswith("-b"):
+                if entry.endswith("-a"):
+                    f.write(
+                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                               pageSpreadProperty("center"))
+                    )
+                    pageside = "right"
+                elif entry.endswith("-b"):
                     f.write(
                         "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                                pageSpreadProperty("right"))
@@ -383,7 +389,13 @@ def buildOPF(dstdir, title, filelist, cover=None):
                     else:
                         pageside = "right"
             else:
-                if entry.endswith("-b"):
+                if entry.endswith("-a"):
+                    f.write(
+                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                               pageSpreadProperty("center"))
+                    )
+                    pageside = "left"
+                elif entry.endswith("-b"):
                     f.write(
                         "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                                pageSpreadProperty("left"))
