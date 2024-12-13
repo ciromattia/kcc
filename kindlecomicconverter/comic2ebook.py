@@ -361,7 +361,13 @@ def buildOPF(dstdir, title, filelist, cover=None):
     if options.iskindle or options.supportSyntheticSpread:
         for entry in reflist:
             if options.righttoleft:
-                if entry.endswith("-b"):
+                if entry.endswith("-a"):
+                    f.write(
+                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                               pageSpreadProperty("center"))
+                    )
+                    pageside = "right"
+                elif entry.endswith("-b"):
                     f.write(
                         "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                                pageSpreadProperty("right"))
@@ -383,7 +389,13 @@ def buildOPF(dstdir, title, filelist, cover=None):
                     else:
                         pageside = "right"
             else:
-                if entry.endswith("-b"):
+                if entry.endswith("-a"):
+                    f.write(
+                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                               pageSpreadProperty("center"))
+                    )
+                    pageside = "left"
+                elif entry.endswith("-b"):
                     f.write(
                         "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                                pageSpreadProperty("left"))
@@ -400,10 +412,10 @@ def buildOPF(dstdir, title, filelist, cover=None):
                         "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                                pageSpreadProperty(pageside))
                     )
-                if pageside == "right":
-                    pageside = "left"
-                else:
-                    pageside = "right"
+                    if pageside == "right":
+                        pageside = "left"
+                    else:
+                        pageside = "right"
     else:
         for entry in reflist:
             f.write("<itemref idref=\"page_" + entry + "\"/>\n")
