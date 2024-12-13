@@ -358,6 +358,11 @@ def buildOPF(dstdir, title, filelist, cover=None):
     else:
         f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
         pageside = "left"
+    if options.dedupecover:
+        if pageside == "right":
+            pageside = "left"
+        else:
+            pageside = "right"
     if options.iskindle or options.supportSyntheticSpread:
         for entry in reflist:
             if options.righttoleft:
@@ -521,9 +526,6 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
                                      'cover' + getImageFileName(afile)[1])
                 options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
                                                    tomenumber), options.uuid))
-                if options.dedupecover:
-                    os.remove(os.path.join(dirpath, afile))
-                    continue
             filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
@@ -544,13 +546,6 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
 
         for aChapter in options.chapters:
             pageid = aChapter[0]
-
-            if options.dedupecover:
-                if pageid == 0:
-                    continue
-                else:
-                    pageid -= 1
-
             cur_diff = global_diff
             global_diff = 0
 
