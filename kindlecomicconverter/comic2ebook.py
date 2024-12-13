@@ -286,8 +286,17 @@ def buildOPF(dstdir, title, filelist, cover=None):
         f.writelines(["<dc:description>", options.summary, "</dc:description>\n"])
     for author in options.authors:
         f.writelines(["<dc:creator>", author, "</dc:creator>\n"])
-    f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
-                  "<meta name=\"cover\" content=\"cover\"/>\n"])
+    if options.dedupecover:
+        for path in filelist:
+            dupeFolder = path[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\').replace("\\", "/")
+            dupeFilename = getImageFileName(path[1])
+            dupeUniqueid = os.path.join(dupeFolder, dupeFilename[0]).replace('/', '_').replace('\\', '_')
+            f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
+                          "<meta name=\"cover\" content=\"img_" + str(dupeUniqueid) + "\"/>\n"])
+            break
+    else:
+        f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
+                      "<meta name=\"cover\" content=\"cover\"/>\n"])
     if options.iskindle and options.profile != 'Custom':
         f.writelines(["<meta name=\"fixed-layout\" content=\"true\"/>\n",
                       "<meta name=\"original-resolution\" content=\"",
@@ -327,6 +336,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
         f.write("<item id=\"cover\" href=\"Images/cover" + filename[1] + "\" media-type=\"" + mt +
                 "\" properties=\"cover-image\"/>\n")
     reflist = []
+    firstLoop = True
     for path in filelist:
         folder = path[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\').replace("\\", "/")
         filename = getImageFileName(path[1])
@@ -339,8 +349,13 @@ def buildOPF(dstdir, title, filelist, cover=None):
             mt = 'image/png'
         else:
             mt = 'image/jpeg'
-        f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
-                mt + "\"/>\n")
+        if options.dedupecover and firstLoop:
+            f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
+                    mt + "\" properties=\"cover-image\"/>\n")
+            firstLoop = False
+        else:
+            f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
+                    mt + "\"/>\n")
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
 
 
@@ -358,52 +373,58 @@ def buildOPF(dstdir, title, filelist, cover=None):
     else:
         f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
         pageside = "left"
+    firstLoop = True
     if options.iskindle or options.supportSyntheticSpread:
         for entry in reflist:
-            if options.righttoleft:
-                if entry.endswith("-b"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("right"))
-                    )
-                    pageside = "right"
-                elif entry.endswith("-c"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("left"))
-                    )
-                    pageside = "right"
+            if options.dedupecover and firstLoop:
+                f.write("<itemref idref=\"page_" + entry + "\"/>\n")
+                firstLoop = False
+                continue
+            else:
+                if options.righttoleft:
+                    if entry.endswith("-b"):
+                        f.write(
+                            "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                                   pageSpreadProperty("right"))
+                        )
+                        pageside = "right"
+                    elif entry.endswith("-c"):
+                        f.write(
+                            "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                                   pageSpreadProperty("left"))
+                        )
+                        pageside = "left"
+                    else:
+                        f.write(
+                            "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                                   pageSpreadProperty(pageside))
+                        )
+                        if pageside == "right":
+                            pageside = "left"
+                        else:
+                            pageside = "right"
                 else:
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty(pageside))
-                    )
+                    if entry.endswith("-b"):
+                        f.write(
+                            "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                                   pageSpreadProperty("left"))
+                        )
+                        pageside = "left"
+                    elif entry.endswith("-c"):
+                        f.write(
+                            "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                                   pageSpreadProperty("right"))
+                        )
+                        pageside = "right"
+                    else:
+                        f.write(
+                            "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                                   pageSpreadProperty(pageside))
+                        )
                     if pageside == "right":
                         pageside = "left"
                     else:
                         pageside = "right"
-            else:
-                if entry.endswith("-b"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("left"))
-                    )
-                    pageside = "left"
-                elif entry.endswith("-c"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("right"))
-                    )
-                    pageside = "left"
-                else:
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty(pageside))
-                    )
-                if pageside == "right":
-                    pageside = "left"
-                else:
-                    pageside = "right"
     else:
         for entry in reflist:
             f.write("<itemref idref=\"page_" + entry + "\"/>\n")
@@ -504,14 +525,11 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
-            if cover is None:
+            if cover is None and not options.dedupecover:
                 cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
                                      'cover' + getImageFileName(afile)[1])
                 options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
                                                    tomenumber), options.uuid))
-                if options.dedupecover:
-                    os.remove(os.path.join(dirpath, afile))
-                    continue
             filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
