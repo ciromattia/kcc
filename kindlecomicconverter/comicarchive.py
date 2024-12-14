@@ -42,7 +42,7 @@ class ComicArchive:
             ['7z', 'l', '-y', '-p1', self.filepath],
         ]
 
-        if distro.id() == 'fedora':
+        if distro.id() == 'fedora' or distro.like() == 'fedora':
             extraction_commands.append(
                 ['unrar', 'l', '-y', '-p1', self.filepath],
             )
@@ -76,7 +76,7 @@ class ComicArchive:
                 ['unar', self.filepath, '-f', '-o', targetdir]
             )
 
-        if distro.id() == 'fedora':
+        if distro.id() == 'fedora' or distro.like() == 'fedora':
             extraction_commands.append(
                 ['unrar', 'x', '-y', '-x__MACOSX', '-x.DS_Store', '-xthumbs.db', '-xThumbs.db', self.filepath, targetdir]
             )

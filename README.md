@@ -124,6 +124,9 @@ sudo apt-get install python3 p7zip-full python3-pil python3-psutil python3-slugi
         'KoF': ("Kobo Forma", (1440, 1920), Palette16, 1.8),
         'KoS': ("Kobo Sage", (1440, 1920), Palette16, 1.8),
         'KoE': ("Kobo Elipsa", (1404, 1872), Palette16, 1.8),
+        'Rmk1': ("reMarkable 1", (1404, 1872), Palette16, 1.8),
+        'Rmk2': ("reMarkable 2", (1404, 1872), Palette16, 1.8),
+        'RmkPP': ("reMarkable Paper Pro", (1620, 2160), Palette16, 1.8),
         'OTHER': ("Other", (0, 0), Palette16, 1.8),
 ```
 
@@ -137,7 +140,8 @@ MANDATORY:
 
 MAIN:
   -p PROFILE, --profile PROFILE
-                        Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KPW5, KV, KO, K11, KS, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoN, KoC, KoL, KoF, KoS, KoE) [Default=KV]
+                        Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KPW5, KV, KO, K11, KS, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoN, KoC, KoCC, KoL, KoLC, KoF, KoS, KoE)
+                        [Default=KV]
   -m, --manga-style     Manga style (right-to-left reading and splitting)
   -q, --hq              Try to increase the quality of magnification
   -2, --two-panel       Display two not four panels in Panel View mode
@@ -172,10 +176,14 @@ OUTPUT SETTINGS:
                         Output generated file to specified directory or file
   -t TITLE, --title TITLE
                         Comic title [Default=filename or directory name]
+  -a AUTHOR, --author AUTHOR
+                        Author name [Default=KCC]
   -f FORMAT, --format FORMAT
                         Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB) [Default=Auto]
+  --nokepub             If format is EPUB, output file with '.epub' extension rather than '.kepub.epub'
   -b BATCHSPLIT, --batchsplit BATCHSPLIT
                         Split output into multiple files. 0: Don't split 1: Automatic mode 2: Consider every subdirectory as separate volume [Default=0]
+  --dedupecover         De-duplicate the cover as the first page in the book
 
 CUSTOM PROFILE:
   --customwidth CUSTOMWIDTH

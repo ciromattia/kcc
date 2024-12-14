@@ -119,9 +119,16 @@ class ProfileData:
         'KoE': ("Kobo Elipsa", (1404, 1872), Palette16, 1.8),
     }
 
+    ProfilesRemarkable = {
+        'Rmk1': ("reMarkable 1", (1404, 1872), Palette16, 1.8),
+        'Rmk2': ("reMarkable 2", (1404, 1872), Palette16, 1.8),
+        'RmkPP': ("reMarkable Paper Pro", (1620, 2160), Palette16, 1.8),
+    }
+
     Profiles = {
         **ProfilesKindle,
         **ProfilesKobo,
+        **ProfilesRemarkable,
         'OTHER': ("Other", (0, 0), Palette16, 1.8),
     }
 
