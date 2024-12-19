@@ -358,6 +358,11 @@ def buildOPF(dstdir, title, filelist, cover=None):
     else:
         f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
         pageside = "left"
+    if options.spreadshift:
+        if pageside == "right":
+            pageside = "left"
+        else:
+            pageside = "right"
     if options.iskindle or options.supportSyntheticSpread:
         for entry in reflist:
             if options.righttoleft:
@@ -521,9 +526,6 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
                                      'cover' + getImageFileName(afile)[1])
                 options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
                                                    tomenumber), options.uuid))
-                if options.dedupecover:
-                    os.remove(os.path.join(dirpath, afile))
-                    continue
             filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
@@ -544,13 +546,6 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
 
         for aChapter in options.chapters:
             pageid = aChapter[0]
-
-            if options.dedupecover:
-                if pageid == 0:
-                    continue
-                else:
-                    pageid -= 1
-
             cur_diff = global_diff
             global_diff = 0
 
@@ -1008,8 +1003,8 @@ def makeParser():
     output_options.add_argument("-b", "--batchsplit", type=int, dest="batchsplit", default="0",
                                 help="Split output into multiple files. 0: Don't split 1: Automatic mode "
                                      "2: Consider every subdirectory as separate volume [Default=0]")
-    output_options.add_argument("--dedupecover", action="store_true", dest="dedupecover", default=False,
-                                help="De-duplicate the cover as the first page in the book")
+    output_options.add_argument("--spreadshift", action="store_true", dest="spreadshift", default=False,
+                                help="Shift first page to opposite side in landscape for spread alignment")
 
     processing_options.add_argument("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
                                     help="Do not modify image and ignore any profil or processing option")

@@ -256,8 +256,8 @@ class WorkerThread(QtCore.QThread):
             options.noprocessing = True
         if GUI.deleteBox.isChecked():
             options.delete = True
-        if GUI.dedupeCoverBox.isChecked():
-            options.dedupecover = True
+        if GUI.spreadShiftBox.isChecked():
+            options.spreadshift = True
         if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.forcepng = True
         elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
@@ -794,7 +794,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
                                            'deleteBox': GUI.deleteBox.checkState().value,
-                                           'dedupeCoverBox': GUI.dedupeCoverBox.checkState().value,
+                                           'spreadShiftBox': GUI.spreadShiftBox.checkState().value,
                                            'maximizeStrips': GUI.maximizeStrips.checkState().value,
                                            'gammaSlider': float(self.gammaValue) * 100})
         self.settings.sync()
