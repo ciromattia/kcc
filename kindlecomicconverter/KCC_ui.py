@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'KCC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.3
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -28,7 +28,7 @@ class Ui_mainWindow(object):
             mainWindow.setObjectName(u"mainWindow")
         mainWindow.resize(481, 400)
         icon = QIcon()
-        icon.addFile(u":/Icon/icons/comic2ebook.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u":/Icon/icons/comic2ebook.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         mainWindow.setWindowIcon(icon)
         self.centralWidget = QWidget(mainWindow)
         self.centralWidget.setObjectName(u"centralWidget")
@@ -116,10 +116,10 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.disableProcessingBox, 4, 2, 1, 1)
 
-        self.dedupeCoverBox = QCheckBox(self.optionWidget)
-        self.dedupeCoverBox.setObjectName(u"dedupeCoverBox")
+        self.spreadShiftBox = QCheckBox(self.optionWidget)
+        self.spreadShiftBox.setObjectName(u"spreadShiftBox")
 
-        self.gridLayout_2.addWidget(self.dedupeCoverBox, 4, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.spreadShiftBox, 4, 0, 1, 1)
 
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
@@ -139,7 +139,6 @@ class Ui_mainWindow(object):
         self.gammaSlider.setObjectName(u"gammaSlider")
         self.gammaSlider.setMaximum(250)
         self.gammaSlider.setSingleStep(5)
-        self.gammaSlider.setOrientation(Qt.Orientation.Horizontal)
 
         self.horizontalLayout_2.addWidget(self.gammaSlider)
 
@@ -161,7 +160,6 @@ class Ui_mainWindow(object):
         self.croppingPowerSlider.setObjectName(u"croppingPowerSlider")
         self.croppingPowerSlider.setMaximum(300)
         self.croppingPowerSlider.setSingleStep(1)
-        self.croppingPowerSlider.setOrientation(Qt.Orientation.Horizontal)
 
         self.horizontalLayout_3.addWidget(self.croppingPowerSlider)
 
@@ -182,7 +180,7 @@ class Ui_mainWindow(object):
         self.directoryButton.setObjectName(u"directoryButton")
         self.directoryButton.setMinimumSize(QSize(0, 30))
         icon1 = QIcon()
-        icon1.addFile(u":/Other/icons/folder_new.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon1.addFile(u":/Other/icons/folder_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.directoryButton.setIcon(icon1)
 
         self.gridLayout_4.addWidget(self.directoryButton, 0, 0, 1, 1)
@@ -191,7 +189,7 @@ class Ui_mainWindow(object):
         self.fileButton.setObjectName(u"fileButton")
         self.fileButton.setMinimumSize(QSize(0, 30))
         icon2 = QIcon()
-        icon2.addFile(u":/Other/icons/document_new.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon2.addFile(u":/Other/icons/document_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.fileButton.setIcon(icon2)
 
         self.gridLayout_4.addWidget(self.fileButton, 0, 3, 1, 1)
@@ -215,7 +213,7 @@ class Ui_mainWindow(object):
         font.setBold(True)
         self.convertButton.setFont(font)
         icon3 = QIcon()
-        icon3.addFile(u":/Other/icons/convert.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon3.addFile(u":/Other/icons/convert.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.convertButton.setIcon(icon3)
 
         self.gridLayout_4.addWidget(self.convertButton, 1, 2, 1, 1)
@@ -224,7 +222,7 @@ class Ui_mainWindow(object):
         self.clearButton.setObjectName(u"clearButton")
         self.clearButton.setMinimumSize(QSize(0, 30))
         icon4 = QIcon()
-        icon4.addFile(u":/Other/icons/clear.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon4.addFile(u":/Other/icons/clear.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.clearButton.setIcon(icon4)
 
         self.gridLayout_4.addWidget(self.clearButton, 0, 2, 1, 1)
@@ -247,7 +245,7 @@ class Ui_mainWindow(object):
         self.editorButton.setObjectName(u"editorButton")
         self.editorButton.setMinimumSize(QSize(0, 30))
         icon5 = QIcon()
-        icon5.addFile(u":/Other/icons/editor.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon5.addFile(u":/Other/icons/editor.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.editorButton.setIcon(icon5)
 
         self.horizontalLayout.addWidget(self.editorButton)
@@ -256,7 +254,7 @@ class Ui_mainWindow(object):
         self.wikiButton.setObjectName(u"wikiButton")
         self.wikiButton.setMinimumSize(QSize(0, 30))
         icon6 = QIcon()
-        icon6.addFile(u":/Other/icons/wiki.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon6.addFile(u":/Other/icons/wiki.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.wikiButton.setIcon(icon6)
 
         self.horizontalLayout.addWidget(self.wikiButton)
@@ -267,9 +265,9 @@ class Ui_mainWindow(object):
         self.jobList = QListWidget(self.centralWidget)
         self.jobList.setObjectName(u"jobList")
         self.jobList.setStyleSheet(u"QListWidget#jobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;color:rgb(0,0,0);}")
-        self.jobList.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
-        self.jobList.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
-        self.jobList.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.jobList.setSelectionMode(QAbstractItemView.NoSelection)
+        self.jobList.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
+        self.jobList.setHorizontalScrollMode(QAbstractItemView.ScrollPerItem)
 
         self.gridLayout.addWidget(self.jobList, 2, 0, 1, 2)
 
@@ -278,7 +276,6 @@ class Ui_mainWindow(object):
         self.progressBar.setMinimumSize(QSize(0, 30))
         self.progressBar.setFont(font)
         self.progressBar.setVisible(False)
-        self.progressBar.setAlignment(Qt.AlignmentFlag.AlignJustify|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout.addWidget(self.progressBar, 1, 0, 1, 2)
 
@@ -416,9 +413,9 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.disableProcessingBox.setText(QCoreApplication.translate("mainWindow", u"Disable processing", None))
 #if QT_CONFIG(tooltip)
-        self.dedupeCoverBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Don't duplicate the first page as the cover. Useful for 2 page spread alignment.</p></body></html>", None))
+        self.spreadShiftBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Shift first page to opposite side in landscape. Useful for 2 page spread alignment.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.dedupeCoverBox.setText(QCoreApplication.translate("mainWindow", u"De-dupe cover", None))
+        self.spreadShiftBox.setText(QCoreApplication.translate("mainWindow", u"Spread shift", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
         self.croppingPowerLabel.setText(QCoreApplication.translate("mainWindow", u"Cropping power:", None))
 #if QT_CONFIG(tooltip)

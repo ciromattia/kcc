@@ -183,7 +183,7 @@ OUTPUT SETTINGS:
   --nokepub             If format is EPUB, output file with '.epub' extension rather than '.kepub.epub'
   -b BATCHSPLIT, --batchsplit BATCHSPLIT
                         Split output into multiple files. 0: Don't split 1: Automatic mode 2: Consider every subdirectory as separate volume [Default=0]
-  --dedupecover         De-duplicate the cover as the first page in the book
+  --spreadshift         Shift first page to opposite side in landscape for two page spread alignment
 
 CUSTOM PROFILE:
   --customwidth CUSTOMWIDTH

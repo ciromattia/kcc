@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'MetaEditor.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.3
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -27,7 +27,7 @@ class Ui_editorDialog(object):
         editorDialog.resize(400, 260)
         editorDialog.setMinimumSize(QSize(400, 260))
         icon = QIcon()
-        icon.addFile(u":/Icon/icons/comic2ebook.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u":/Icon/icons/comic2ebook.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         editorDialog.setWindowIcon(icon)
         self.verticalLayout = QVBoxLayout(editorDialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -129,7 +129,7 @@ class Ui_editorDialog(object):
         self.okButton.setObjectName(u"okButton")
         self.okButton.setMinimumSize(QSize(0, 30))
         icon1 = QIcon()
-        icon1.addFile(u":/Other/icons/convert.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon1.addFile(u":/Other/icons/convert.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.okButton.setIcon(icon1)
 
         self.horizontalLayout.addWidget(self.okButton)
@@ -138,7 +138,7 @@ class Ui_editorDialog(object):
         self.cancelButton.setObjectName(u"cancelButton")
         self.cancelButton.setMinimumSize(QSize(0, 30))
         icon2 = QIcon()
-        icon2.addFile(u":/Other/icons/clear.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon2.addFile(u":/Other/icons/clear.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.cancelButton.setIcon(icon2)
 
         self.horizontalLayout.addWidget(self.cancelButton)
