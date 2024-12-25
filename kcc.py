@@ -18,16 +18,17 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
+import os
 import sys
+import platform
+
+from pathlib import Path
 
 if sys.version_info < (3, 8, 0):
     print('ERROR: This is a Python 3.8+ script!')
     sys.exit(1)
 
-# OS specific workarounds
-import os
-if sys.platform.startswith('darwin'):
-    # prioritize KC2 since it optionally also installs KP3
+if platform.system() == 'Darwin':
     mac_paths = [
         '/Applications/Kindle Comic Creator/Kindle Comic Creator.app/Contents/MacOS',
         '/Applications/Kindle Previewer 3.app/Contents/lib/fc/bin/',
@@ -45,8 +46,23 @@ if sys.platform.startswith('darwin'):
     else:
         os.environ['PATH'] += os.pathsep + os.pathsep.join(mac_paths)
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
-elif sys.platform.startswith('win'):
-    # prioritize KC2 since it optionally also installs KP3
+
+elif platform.system() == 'Linux':
+    if getattr(sys, 'frozen', False):
+        os.environ['PATH'] += os.pathsep + os.pathsep.join(
+            [
+                str(Path.home() / ".local" / "bin"),
+                '/opt/homebrew/bin',
+                '/usr/local/bin',
+                '/usr/bin',
+                '/bin',
+            ]
+        )
+        os.chdir(os.path.dirname(os.path.abspath(sys.executable)))
+    else:
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+elif platform.system() == 'Windows':
     win_paths = [
         os.path.expandvars('%LOCALAPPDATA%\\Amazon\\KC2'),
         os.path.expandvars('%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\'),
@@ -64,12 +80,7 @@ elif sys.platform.startswith('win'):
     else:
         os.environ['PATH'] += os.pathsep + os.pathsep.join(win_paths)
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
-# Load additional Sentry configuration
-# if getattr(sys, 'frozen', False):
-#     try:
-#        import kindlecomicconverter.sentry
-#    except ImportError:
-#        pass
+
 
 from multiprocessing import freeze_support, set_start_method
 from kindlecomicconverter.startup import start
