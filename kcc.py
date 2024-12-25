@@ -63,7 +63,6 @@ elif platform.system() == 'Linux':
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 elif platform.system() == 'Windows':
-    # prioritize KC2 since it optionally also installs KP3
     win_paths = [
         os.path.expandvars('%LOCALAPPDATA%\\Amazon\\KC2'),
         os.path.expandvars('%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\'),
