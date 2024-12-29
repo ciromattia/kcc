@@ -35,7 +35,7 @@ from packaging.version import Version
 from raven import Client
 from tempfile import gettempdir
 
-from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
+from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run, darkMode
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -689,7 +689,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         # We still fill original text field with transparent content to trigger creation of horizontal scrollbar
         item.setForeground(QtGui.QColor('transparent'))
         label = QtWidgets.QLabel(message)
-        label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);color:rgb(0,0,0);')
+        if darkMode():
+            label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);color:rgb(255,255,255);')
+        else:
+            label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);color:rgb(0,0,0);')
         label.setOpenExternalLinks(True)
         GUI.jobList.addItem(item)
         GUI.jobList.setItemWidget(item, label)

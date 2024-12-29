@@ -26,6 +26,7 @@ from packaging.version import Version
 from re import split
 import sys
 from traceback import format_tb
+import platform
 
 
 class HTMLStripper(HTMLParser):
@@ -141,3 +142,38 @@ def subprocess_run(command, **kwargs):
     if (os.name == 'nt'):
         kwargs.setdefault('creationflags', subprocess.CREATE_NO_WINDOW)
     return subprocess.run(command, **kwargs)
+
+def darkMode() -> bool:
+    if platform.system() == "Windows":
+        try:
+            import winreg
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize')
+            if winreg.QueryValueEx(key, 'AppsUseLightTheme') == 1:
+                return False
+            else:
+                return True
+        except:
+            return False
+    elif platform.system() == "Darwin":
+        try:
+            from AppKit import NSUserDefaults
+            if NSUserDefaults.standardUserDefaults().stringForKey_('AppleInterfaceStyle') == 'Dark':
+                return True
+            else:
+                return False
+        except:
+            return False
+    elif platform.system() == "Linux":
+        try:
+            from gi.repository import Gio
+            theme = Gio.Settings.new('org.gnome.desktop.interface').get_string('gtk-theme')
+            if 'dark' in theme.lower():
+                return True
+            elif theme == "Dracula":
+                return True
+            else:
+                return False
+        except:
+            return False
+    else:
+        return False
