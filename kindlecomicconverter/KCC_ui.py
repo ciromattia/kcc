@@ -264,7 +264,7 @@ class Ui_mainWindow(object):
 
         self.jobList = QListWidget(self.centralWidget)
         self.jobList.setObjectName(u"jobList")
-        self.jobList.setStyleSheet(u"QListWidget#jobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;color:rgb(0,0,0);}")
+        self.jobList.setStyleSheet(u"QListWidget#jobList {background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;color:rgb(0,0,0);}")
         self.jobList.setSelectionMode(QAbstractItemView.NoSelection)
         self.jobList.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
         self.jobList.setHorizontalScrollMode(QAbstractItemView.ScrollPerItem)
