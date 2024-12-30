@@ -459,7 +459,17 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if sys.platform.startswith('win'):
                 dname = dname.replace('/', '\\')
             self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
-            GUI.jobList.addItem(dname)
+            #formatting like addMessage to ensure theme compatibility
+            item = QtWidgets.QListWidgetItem(dname)
+            item.setForeground(QtGui.QColor('transparent'))
+            label = QtWidgets.QLabel(dname)
+            color_scheme = QtWidgets.QApplication.styleHints().colorScheme()
+            if color_scheme == QtWidgets.QApplication.styleHints().colorScheme().Dark:
+                label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);color:rgb(255,255,255);')
+            else:
+                label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);color:rgb(0,0,0);')
+            GUI.jobList.addItem(item)
+            GUI.jobList.setItemWidget(item, label)
             GUI.jobList.scrollToBottom()
 
     def selectFile(self):
@@ -477,7 +487,17 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if sys.platform.startswith('win'):
                     fname = fname.replace('/', '\\')
                 self.lastPath = os.path.abspath(os.path.join(fname, os.pardir))
-                GUI.jobList.addItem(fname)
+                #formatting like addMessage to ensure theme compatibility
+                item = QtWidgets.QListWidgetItem(fname)
+                item.setForeground(QtGui.QColor('transparent'))
+                label = QtWidgets.QLabel(fname)
+                color_scheme = QtWidgets.QApplication.styleHints().colorScheme()
+                if color_scheme == QtWidgets.QApplication.styleHints().colorScheme().Dark:
+                    label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);color:rgb(255,255,255);')
+                else:
+                    label.setStyleSheet('background-image:url('');background-color:rgba(0,0,0,0);color:rgb(0,0,0);')
+                GUI.jobList.addItem(item)
+                GUI.jobList.setItemWidget(item, label)
                 GUI.jobList.scrollToBottom()
 
     def selectFileMetaEditor(self):
