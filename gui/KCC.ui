@@ -480,7 +480,7 @@
     <item row="2" column="0" colspan="2">
      <widget class="QListWidget" name="jobList">
       <property name="styleSheet">
-       <string notr="true">QListWidget#jobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;color:rgb(0,0,0);}</string>
+       <string notr="true">QListWidget#jobList {background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;color:rgb(0,0,0);}</string>
       </property>
       <property name="selectionMode">
        <enum>QAbstractItemView::NoSelection</enum>

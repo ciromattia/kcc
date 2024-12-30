@@ -26,6 +26,8 @@ from packaging.version import Version
 from re import split
 import sys
 from traceback import format_tb
+from PySide6.QtGui import QStyleHints
+import platform
 
 
 class HTMLStripper(HTMLParser):
