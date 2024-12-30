@@ -148,7 +148,7 @@ def darkMode() -> bool:
         try:
             import winreg
             key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize')
-            if winreg.QueryValueEx(key, 'AppsUseLightTheme') == 1:
+            if winreg.QueryValueEx(key, 'AppsUseLightTheme') == (1, 4):
                 return False
             else:
                 return True
