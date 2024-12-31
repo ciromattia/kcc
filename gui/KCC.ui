@@ -196,12 +196,12 @@
         </widget>
        </item>
        <item row="4" column="0">
-        <widget class="QCheckBox" name="dedupeCoverBox">
+        <widget class="QCheckBox" name="spreadShiftBox">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Don't duplicate the first page as the cover. Useful for 2 page spread alignment.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>Shift first page to opposite side in landscape for two page spread alignment</string>
          </property>
          <property name="text">
-          <string>De-dupe cover</string>
+          <string>Spread shift</string>
          </property>
         </widget>
        </item>
