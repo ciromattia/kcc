@@ -20,6 +20,8 @@
 
 import sys
 
+from kcc import modify_path
+
 if sys.version_info < (3, 8, 0):
     print('ERROR: This is a Python 3.8+ script!')
     sys.exit(1)
@@ -28,6 +30,7 @@ from multiprocessing import freeze_support, set_start_method
 from kindlecomicconverter.startup import startC2E
 
 if __name__ == "__main__":
+    modify_path()
     set_start_method('spawn')
     freeze_support()
     startC2E()
