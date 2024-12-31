@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>481</width>
+    <width>450</width>
     <height>400</height>
    </rect>
   </property>
@@ -198,7 +198,7 @@
        <item row="4" column="0">
         <widget class="QCheckBox" name="spreadShiftBox">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shift first page to opposite side in landscape. Useful for 2 page spread alignment.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>Shift first page to opposite side in landscape for two page spread alignment</string>
          </property>
          <property name="text">
           <string>Spread shift</string>
@@ -241,6 +241,9 @@
          <property name="singleStep">
           <number>5</number>
          </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
         </widget>
        </item>
       </layout>
@@ -278,6 +281,9 @@
          </property>
          <property name="singleStep">
           <number>1</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
@@ -486,10 +492,10 @@
        <enum>QAbstractItemView::NoSelection</enum>
       </property>
       <property name="verticalScrollMode">
-       <enum>QAbstractItemView::ScrollPerItem</enum>
+       <enum>QAbstractItemView::ScrollPerPixel</enum>
       </property>
       <property name="horizontalScrollMode">
-       <enum>QAbstractItemView::ScrollPerItem</enum>
+       <enum>QAbstractItemView::ScrollPerPixel</enum>
       </property>
      </widget>
     </item>
@@ -508,6 +514,9 @@
       </property>
       <property name="visible">
        <bool>false</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
