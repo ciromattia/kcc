@@ -175,7 +175,7 @@ class ComicPageParser:
             self.payload.append(['N', self.source, new_image, self.color, self.fill])
         elif (width > height) != (dstwidth > dstheight) and width <= dstheight and height <= dstwidth \
                 and not self.opt.webtoon and self.opt.splitter == 1:
-            self.payload.append(['R', self.source, self.image, self.color, self.fill])
+            self.payload.append(['R', self.source, self.image.rotate(90, Image.Resampling.BICUBIC, True), self.color, self.fill])
         elif (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:
             if self.opt.splitter != 1:
                 if width > height:
@@ -193,7 +193,7 @@ class ComicPageParser:
                 self.payload.append(['S1', self.source, pageone, self.color, self.fill])
                 self.payload.append(['S2', self.source, pagetwo, self.color, self.fill])
             if self.opt.splitter > 0:
-                self.payload.append(['R', self.source, self.image,
+                self.payload.append(['R', self.source, self.image.rotate(90, Image.Resampling.BICUBIC, True),
                                     self.color, self.fill])
         else:
             self.payload.append(['N', self.source, self.image, self.color, self.fill])
