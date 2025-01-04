@@ -26,7 +26,7 @@ class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         if not mainWindow.objectName():
             mainWindow.setObjectName(u"mainWindow")
-        mainWindow.resize(481, 400)
+        mainWindow.resize(450, 400)
         icon = QIcon()
         icon.addFile(u":/Icon/icons/comic2ebook.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         mainWindow.setWindowIcon(icon)
@@ -139,6 +139,7 @@ class Ui_mainWindow(object):
         self.gammaSlider.setObjectName(u"gammaSlider")
         self.gammaSlider.setMaximum(250)
         self.gammaSlider.setSingleStep(5)
+        self.gammaSlider.setOrientation(Qt.Horizontal)
 
         self.horizontalLayout_2.addWidget(self.gammaSlider)
 
@@ -160,6 +161,7 @@ class Ui_mainWindow(object):
         self.croppingPowerSlider.setObjectName(u"croppingPowerSlider")
         self.croppingPowerSlider.setMaximum(300)
         self.croppingPowerSlider.setSingleStep(1)
+        self.croppingPowerSlider.setOrientation(Qt.Horizontal)
 
         self.horizontalLayout_3.addWidget(self.croppingPowerSlider)
 
@@ -264,10 +266,10 @@ class Ui_mainWindow(object):
 
         self.jobList = QListWidget(self.centralWidget)
         self.jobList.setObjectName(u"jobList")
-        self.jobList.setStyleSheet(u"QListWidget#jobList {background:#ffffff;background-image:url(:/Other/icons/list_background.png);background-position:center center;background-repeat:no-repeat;color:rgb(0,0,0);}")
+        self.jobList.setStyleSheet(u"")
         self.jobList.setSelectionMode(QAbstractItemView.NoSelection)
-        self.jobList.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
-        self.jobList.setHorizontalScrollMode(QAbstractItemView.ScrollPerItem)
+        self.jobList.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.jobList.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
 
         self.gridLayout.addWidget(self.jobList, 2, 0, 1, 2)
 
@@ -276,6 +278,7 @@ class Ui_mainWindow(object):
         self.progressBar.setMinimumSize(QSize(0, 30))
         self.progressBar.setFont(font)
         self.progressBar.setVisible(False)
+        self.progressBar.setAlignment(Qt.AlignJustify|Qt.AlignVCenter)
 
         self.gridLayout.addWidget(self.progressBar, 1, 0, 1, 2)
 
@@ -413,7 +416,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.disableProcessingBox.setText(QCoreApplication.translate("mainWindow", u"Disable processing", None))
 #if QT_CONFIG(tooltip)
-        self.spreadShiftBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Shift first page to opposite side in landscape. Useful for 2 page spread alignment.</p></body></html>", None))
+        self.spreadShiftBox.setToolTip(QCoreApplication.translate("mainWindow", u"Shift first page to opposite side in landscape for two page spread alignment", None))
 #endif // QT_CONFIG(tooltip)
         self.spreadShiftBox.setText(QCoreApplication.translate("mainWindow", u"Spread shift", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))

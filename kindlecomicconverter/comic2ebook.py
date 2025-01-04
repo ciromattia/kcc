@@ -298,22 +298,15 @@ def buildOPF(dstdir, title, filelist, cover=None):
                       "<meta name=\"zero-margin\" content=\"true\"/>\n",
                       "<meta name=\"ke-border-color\" content=\"#FFFFFF\"/>\n",
                       "<meta name=\"ke-border-width\" content=\"0\"/>\n",
-                      "<meta property=\"rendition:spread\">landscape</meta>\n",
-                      "<meta property=\"rendition:layout\">pre-paginated</meta>\n",
                       "<meta name=\"orientation-lock\" content=\"none\"/>\n"])
         if options.kfx:
             f.writelines(["<meta name=\"region-mag\" content=\"false\"/>\n"])
         else:
             f.writelines(["<meta name=\"region-mag\" content=\"true\"/>\n"])
-    elif options.supportSyntheticSpread:
-        f.writelines([
-            "<meta property=\"rendition:spread\">landscape</meta>\n",
-            "<meta property=\"rendition:layout\">pre-paginated</meta>\n"
-        ])
-    else:
-        f.writelines(["<meta property=\"rendition:orientation\">portrait</meta>\n",
-                      "<meta property=\"rendition:spread\">portrait</meta>\n",
-                      "<meta property=\"rendition:layout\">pre-paginated</meta>\n"])
+    f.writelines([
+        "<meta property=\"rendition:spread\">landscape</meta>\n",
+        "<meta property=\"rendition:layout\">pre-paginated</meta>\n"
+    ])
     f.writelines(["</metadata>\n<manifest>\n<item id=\"ncx\" href=\"toc.ncx\" ",
                   "media-type=\"application/x-dtbncx+xml\"/>\n",
                   "<item id=\"nav\" href=\"nav.xhtml\" ",
@@ -363,67 +356,63 @@ def buildOPF(dstdir, title, filelist, cover=None):
             pageside = "left"
         else:
             pageside = "right"
-    if options.iskindle or options.supportSyntheticSpread:
-        for entry in reflist:
-            if options.righttoleft:
-                if entry.endswith("-a"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("center"))
-                    )
-                    pageside = "right"
-                elif entry.endswith("-b"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("right"))
-                    )
-                    pageside = "right"
-                elif entry.endswith("-c"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("left"))
-                    )
-                    pageside = "right"
-                else:
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty(pageside))
-                    )
-                    if pageside == "right":
-                        pageside = "left"
-                    else:
-                        pageside = "right"
+    for entry in reflist:
+        if options.righttoleft:
+            if entry.endswith("-a"):
+                f.write(
+                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                            pageSpreadProperty("center"))
+                )
+                pageside = "right"
+            elif entry.endswith("-b"):
+                f.write(
+                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                            pageSpreadProperty("right"))
+                )
+                pageside = "right"
+            elif entry.endswith("-c"):
+                f.write(
+                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                            pageSpreadProperty("left"))
+                )
+                pageside = "right"
             else:
-                if entry.endswith("-a"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("center"))
-                    )
-                    pageside = "left"
-                elif entry.endswith("-b"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("left"))
-                    )
-                    pageside = "left"
-                elif entry.endswith("-c"):
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty("right"))
-                    )
+                f.write(
+                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                            pageSpreadProperty(pageside))
+                )
+                if pageside == "right":
                     pageside = "left"
                 else:
-                    f.write(
-                        "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                               pageSpreadProperty(pageside))
-                    )
-                    if pageside == "right":
-                        pageside = "left"
-                    else:
-                        pageside = "right"
-    else:
-        for entry in reflist:
-            f.write("<itemref idref=\"page_" + entry + "\"/>\n")
+                    pageside = "right"
+        else:
+            if entry.endswith("-a"):
+                f.write(
+                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                            pageSpreadProperty("center"))
+                )
+                pageside = "left"
+            elif entry.endswith("-b"):
+                f.write(
+                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                            pageSpreadProperty("left"))
+                )
+                pageside = "left"
+            elif entry.endswith("-c"):
+                f.write(
+                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                            pageSpreadProperty("right"))
+                )
+                pageside = "left"
+            else:
+                f.write(
+                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
+                                                            pageSpreadProperty(pageside))
+                )
+                if pageside == "right":
+                    pageside = "left"
+                else:
+                    pageside = "right"
     f.write("</spine>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
@@ -1063,7 +1052,6 @@ def checkOptions(options):
         options.keep_epub = True
         options.format = 'MOBI'
     options.kfx = False
-    options.supportSyntheticSpread = False
     if options.format == 'Auto':
         if options.profile in ['KDX']:
             options.format = 'CBZ'
@@ -1075,10 +1063,6 @@ def checkOptions(options):
         options.iskindle = True
     else:
         options.isKobo = True
-    # Other Kobo devices probably support synthetic spreads as well, but
-    # they haven't been tested.
-    if options.profile in ['KoF']:
-        options.supportSyntheticSpread = True
     if options.white_borders:
         options.bordersColor = 'white'
     if options.black_borders:
