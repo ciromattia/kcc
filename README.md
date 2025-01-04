@@ -184,6 +184,7 @@ OUTPUT SETTINGS:
   -b BATCHSPLIT, --batchsplit BATCHSPLIT
                         Split output into multiple files. 0: Don't split 1: Automatic mode 2: Consider every subdirectory as separate volume [Default=0]
   --spreadshift         Shift first page to opposite side in landscape for two page spread alignment
+  --norotate            Do not rotate double page spreads in spread splitter option.
 
 CUSTOM PROFILE:
   --customwidth CUSTOMWIDTH

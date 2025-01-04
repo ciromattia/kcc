@@ -994,6 +994,8 @@ def makeParser():
                                      "2: Consider every subdirectory as separate volume [Default=0]")
     output_options.add_argument("--spreadshift", action="store_true", dest="spreadshift", default=False,
                                 help="Shift first page to opposite side in landscape for spread alignment")
+    output_options.add_argument("--norotate", action="store_true", dest="norotate", default=False,
+                                help="Do not rotate double page spreads in spread splitter option.")
 
     processing_options.add_argument("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
                                     help="Do not modify image and ignore any profil or processing option")
