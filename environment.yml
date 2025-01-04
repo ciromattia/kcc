@@ -9,7 +9,7 @@ dependencies:
   - python-slugify>=1.2.1
   - raven>=6.0.0
   - distro
-  - natsort[fast]>=8.4.0
+  - natsort>=8.4.0
   - pip
   - pip:
     - mozjpeg-lossless-optimization>=1.1.2
