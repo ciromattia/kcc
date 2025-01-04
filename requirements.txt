@@ -6,6 +6,6 @@ python-slugify>=1.2.1
 raven>=6.0.0
 packaging>=23.2
 mozjpeg-lossless-optimization>=1.1.2
-natsort[fast]>=8.4.0
+natsort>=8.4.0
 distro>=1.8.0
 numpy>=1.22.4,<2.0.0
