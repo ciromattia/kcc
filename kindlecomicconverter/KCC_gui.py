@@ -269,6 +269,8 @@ class WorkerThread(QtCore.QThread):
             options.customheight = str(GUI.heightBox.value())
         if GUI.targetDirectory != '':
             options.output = GUI.targetDirectory
+        if GUI.authorEdit.text():
+            options.author = str(GUI.authorEdit.text())
 
         for i in range(GUI.jobList.count()):
             # Make sure that we don't consider any system message as job to do
