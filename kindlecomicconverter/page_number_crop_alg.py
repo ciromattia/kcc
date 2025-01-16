@@ -1,5 +1,7 @@
 from PIL import ImageOps, ImageFilter
 import numpy as np
+from .common_crop import threshold_from_power, group_close_values
+
 
 '''
 Some assupmptions on the page number sizes
@@ -51,12 +53,11 @@ def get_bbox_crop_margin_page_number(img, power=1, background_color='white'):
     threshold = threshold_from_power(power)
     bw_img = img.point(lambda p: 255 if p <= threshold else 0)
     bw_bbox = bw_img.getbbox()
-        
     if not bw_bbox: # bbox cannot be found in case that the entire resulted image is black.
         return None
     
     left, top_y_pos, right, bot_y_pos = bw_bbox
-    
+
     '''
     We inspect the lower bottom part of the image where we suspect might be a page number.
     We assume that page number consist of 1 to 3 digits and the total min and max size of the number
@@ -73,7 +74,7 @@ def get_bbox_crop_margin_page_number(img, power=1, background_color='white'):
     img_part_mat = np.array(img_part)
     window_groups = []
     for i in range(img_part.size[1]):
-        row_groups = [(g[0], g[1], i, i) for g in group_pixels(img_part_mat[i], img.size[0]*max_dist_size[0], threshold)]
+        row_groups = [(g[0], g[1], i, i) for g in group_close_values(np.where(img_part_mat[i] <= threshold)[0], img.size[0]*max_dist_size[0])]
         window_groups.extend(row_groups)
 
     window_groups = np.array(window_groups)
@@ -109,7 +110,6 @@ def get_bbox_crop_margin_page_number(img, power=1, background_color='white'):
         cropped_bbox = (0, 0, img.size[0], bot_y_pos-(window_h-boxes_in_same_y_range[0][2]+1))
 
     cropped_bbox = bw_img.crop(cropped_bbox).getbbox()
-    
     return cropped_bbox
 
 
@@ -143,33 +143,6 @@ def get_bbox_crop_margin(img, power=1, background_color='white'):
     bw_img = img.point(lambda p: 255 if p <= threshold else 0)
 
     return bw_img.getbbox()
-
-
-'''
-Groups close pixels together (x axis)
-'''
-def group_pixels(row, max_dist_tolerated, threshold):
-    groups = []
-    idx = np.where(row <= threshold)[0]
-
-    group_start = -1
-    group_end = 0
-    for i in range(len(idx)):
-        dist = idx[i] - group_end
-        if group_start == -1:
-            group_start = idx[i]
-            group_end = idx[i]
-        elif dist <= max_dist_tolerated:
-            group_end = idx[i]
-        else:
-            groups.append((group_start, group_end))
-            group_start = -1
-            group_end = -1
-            
-    if group_start != -1:
-        groups.append((group_start, group_end))
-        
-    return groups
 
 
 def box_intersect(box1, box2, max_dist):
@@ -209,7 +182,3 @@ def merge_boxes(boxes, max_dist_tolerated):
         else:
             j += 1
     return boxes
-
-
-def threshold_from_power(power):
-    return 240-(power*64)

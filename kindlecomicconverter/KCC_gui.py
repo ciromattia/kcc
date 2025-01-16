@@ -242,6 +242,7 @@ class WorkerThread(QtCore.QThread):
         options.cropping = GUI.croppingBox.checkState().value
         if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
             options.croppingp = float(GUI.croppingPowerValue)
+        options.interpanelcrop = GUI.interPanelCropBox.checkState().value
         if GUI.borderBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.white_borders = True
         elif GUI.borderBox.checkState() == Qt.CheckState.Checked:

@@ -612,6 +612,8 @@ def imgFileProcessing(work):
                 img.cropPageNumber(opt.croppingp, opt.croppingm)
             if opt.cropping > 0 and not opt.webtoon:
                 img.cropMargin(opt.croppingp, opt.croppingm)
+            if opt.interpanelcrop > 0:
+                img.cropInterPanelEmptySections("horizontal" if opt.interpanelcrop == 1 else "both")
             img.autocontrastImage()
             img.resizeImage()
             if opt.forcepng and not opt.forcecolor:
@@ -1013,6 +1015,8 @@ def makeParser():
                                     help="Set cropping power [Default=1.0]")
     processing_options.add_argument("--cm", "--croppingminimum", type=float, dest="croppingm", default="0.0",
                                     help="Set cropping minimum area ratio [Default=0.0]")
+    processing_options.add_argument("--ipc", "--interpanelcrop", type=int, dest="interpanelcrop", default="0",
+                                    help="Crop empty sections. 0: Disabled 1: Horizontally 2: Both [Default=0]")
     processing_options.add_argument("--blackborders", action="store_true", dest="black_borders", default=False,
                                     help="Disable autodetection and force black borders")
     processing_options.add_argument("--whiteborders", action="store_true", dest="white_borders", default=False,

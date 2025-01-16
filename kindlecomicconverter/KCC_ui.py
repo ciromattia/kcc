@@ -138,6 +138,12 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.authorEdit, 0, 0, 1, 1)
 
+        self.interPanelCropBox = QCheckBox(self.optionWidget)
+        self.interPanelCropBox.setObjectName(u"interPanelCropBox")
+        self.interPanelCropBox.setTristate(True)
+
+        self.gridLayout_2.addWidget(self.interPanelCropBox, 6, 2, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -444,6 +450,7 @@ class Ui_mainWindow(object):
         self.authorEdit.setToolTip(QCoreApplication.translate("mainWindow", u"Default Author is KCC", None))
 #endif // QT_CONFIG(tooltip)
         self.authorEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Author", None))
+        self.interPanelCropBox.setText(QCoreApplication.translate("mainWindow", u"Inter-panel crop", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
         self.croppingPowerLabel.setText(QCoreApplication.translate("mainWindow", u"Cropping power:", None))
 #if QT_CONFIG(tooltip)
