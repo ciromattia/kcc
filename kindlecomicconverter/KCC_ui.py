@@ -26,7 +26,7 @@ class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         if not mainWindow.objectName():
             mainWindow.setObjectName(u"mainWindow")
-        mainWindow.resize(450, 400)
+        mainWindow.resize(482, 448)
         icon = QIcon()
         icon.addFile(u":/Icon/icons/comic2ebook.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         mainWindow.setWindowIcon(icon)
@@ -133,7 +133,7 @@ class Ui_mainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.authorEdit.sizePolicy().hasHeightForWidth())
         self.authorEdit.setSizePolicy(sizePolicy)
-        self.authorEdit.setFocusPolicy(Qt.ClickFocus)
+        self.authorEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self.authorEdit.setClearButtonEnabled(False)
 
         self.gridLayout_2.addWidget(self.authorEdit, 0, 0, 1, 1)
@@ -156,7 +156,7 @@ class Ui_mainWindow(object):
         self.gammaSlider.setObjectName(u"gammaSlider")
         self.gammaSlider.setMaximum(250)
         self.gammaSlider.setSingleStep(5)
-        self.gammaSlider.setOrientation(Qt.Horizontal)
+        self.gammaSlider.setOrientation(Qt.Orientation.Horizontal)
 
         self.horizontalLayout_2.addWidget(self.gammaSlider)
 
@@ -178,7 +178,7 @@ class Ui_mainWindow(object):
         self.croppingPowerSlider.setObjectName(u"croppingPowerSlider")
         self.croppingPowerSlider.setMaximum(300)
         self.croppingPowerSlider.setSingleStep(1)
-        self.croppingPowerSlider.setOrientation(Qt.Horizontal)
+        self.croppingPowerSlider.setOrientation(Qt.Orientation.Horizontal)
 
         self.horizontalLayout_3.addWidget(self.croppingPowerSlider)
 
@@ -284,9 +284,9 @@ class Ui_mainWindow(object):
         self.jobList = QListWidget(self.centralWidget)
         self.jobList.setObjectName(u"jobList")
         self.jobList.setStyleSheet(u"")
-        self.jobList.setSelectionMode(QAbstractItemView.NoSelection)
-        self.jobList.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-        self.jobList.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.jobList.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.jobList.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.jobList.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
 
         self.gridLayout.addWidget(self.jobList, 2, 0, 1, 2)
 
@@ -295,7 +295,7 @@ class Ui_mainWindow(object):
         self.progressBar.setMinimumSize(QSize(0, 30))
         self.progressBar.setFont(font)
         self.progressBar.setVisible(False)
-        self.progressBar.setAlignment(Qt.AlignJustify|Qt.AlignVCenter)
+        self.progressBar.setAlignment(Qt.AlignmentFlag.AlignJustify|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout.addWidget(self.progressBar, 1, 0, 1, 2)
 
