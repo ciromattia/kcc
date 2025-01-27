@@ -229,6 +229,8 @@ If you want to edit the code, a good code editor is [VS Code](https://code.visua
 If you want to edit the `.ui` files, use [Qt Creator](https://www.qt.io/download-qt-installer-oss), included in **Qt for desktop development**.
 Then use the `gen_ui_files` scripts to autogenerate the python UI.
 
+An example PR adding a new checkbox is here: https://github.com/ciromattia/kcc/pull/785
+
 
 ### Windows install from source
 
