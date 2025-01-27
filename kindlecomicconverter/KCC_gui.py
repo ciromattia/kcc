@@ -244,6 +244,7 @@ class WorkerThread(QThread):
         options.cropping = GUI.croppingBox.checkState().value
         if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
             options.croppingp = float(GUI.croppingPowerValue)
+        options.interpanelcrop = GUI.interPanelCropBox.checkState().value
         if GUI.borderBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.white_borders = True
         elif GUI.borderBox.checkState() == Qt.CheckState.Checked:
@@ -789,6 +790,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'gammaBox': GUI.gammaBox.checkState().value,
                                            'croppingBox': GUI.croppingBox.checkState().value,
                                            'croppingPowerSlider': float(self.croppingPowerValue) * 100,
+                                           'interPanelCropBox': GUI.interPanelCropBox.checkState().value,
                                            'upscaleBox': GUI.upscaleBox.checkState().value,
                                            'borderBox': GUI.borderBox.checkState().value,
                                            'webtoonBox': GUI.webtoonBox.checkState().value,

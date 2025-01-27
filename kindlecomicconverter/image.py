@@ -24,6 +24,7 @@ import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
 from .shared import md5Checksum
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
+from .inter_panel_crop_alg import crop_empty_inter_panel
 
 AUTO_CROP_THRESHOLD = 0.015
 
@@ -390,6 +391,8 @@ class ComicPage:
         if bbox:
             self.maybeCrop(bbox, minimum)
 
+    def cropInterPanelEmptySections(self, direction):
+        self.image = crop_empty_inter_panel(self.image, direction, background_color=self.fill)
 
 class Cover:
     def __init__(self, source, target, opt, tomeid):

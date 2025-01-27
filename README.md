@@ -163,6 +163,8 @@ PROCESSING:
                         Set cropping power [Default=1.0]
   --cm CROPPINGM, --croppingminimum CROPPINGM
                         Set cropping minimum area ratio [Default=0.0]
+  --ipc INTERPANELCROP, --interpanelcrop INTERPANELCROP
+                        Crop empty sections. 0: Disabled 1: Horizontally 2: Both [Default=0]
   --blackborders        Disable autodetection and force black borders
   --whiteborders        Disable autodetection and force white borders
   --forcecolor          Don't convert images to grayscale
