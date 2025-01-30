@@ -251,6 +251,12 @@ venv\Scripts\activate.bat
 python kcc.py
 ```
 
+You can build a `.exe` of KCC like the downloads we offer with
+
+```
+python setup.py build_binary
+```
+
 ### macOS install from source
 
 One time setup and running for the first time:
@@ -266,6 +272,12 @@ Every time you close Terminal, you will need to reactivate the virtual environme
 ```
 source venv/bin/activate
 python kcc.py
+```
+
+You can build a `.app` of KCC like the downloads we offer with
+
+```
+python setup.py build_binary
 ```
 
 ## CREDITS
