@@ -893,7 +893,6 @@ def detectCorruption(tmppath, orgpath):
     alreadyProcessed = False
     for root, _, files in os.walk(tmppath, False):
         for name in files:
-            
             if getImageFileName(name) is not None:
                 if not alreadyProcessed and getImageFileName(name)[0].endswith('-kcc'):
                     alreadyProcessed = True
