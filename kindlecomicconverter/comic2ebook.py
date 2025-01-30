@@ -652,9 +652,19 @@ def getWorkFolder(afile):
             try:
                 cbx = comicarchive.ComicArchive(afile)
                 path = cbx.extract(workdir)
+                sanitizePermissions(path)
                 tdir = os.listdir(workdir)
-                if 'ComicInfo.xml' in tdir:
-                    tdir.remove('ComicInfo.xml')        
+                is_nested_single_dir = False
+                if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
+                    tdir.remove('ComicInfo.xml')
+                    is_nested_single_dir = os.path.isdir(os.path.join(workdir, tdir[0]))
+                    if is_nested_single_dir:
+                        os.replace(
+                            os.path.join(workdir, 'ComicInfo.xml'),
+                            os.path.join(workdir, tdir[0], 'ComicInfo.xml')
+                        )
+                if len(tdir) == 1 and is_nested_single_dir:
+                    path = os.path.join(workdir, tdir[0])           
             except OSError as e:
                 rmtree(workdir, True)
                 raise UserWarning(e)
@@ -908,7 +918,10 @@ def detectCorruption(tmppath, orgpath):
                     else:
                         raise RuntimeError('Image file %s is corrupted. Error: %s' % (pathOrg, str(err)))
             else:
-                os.remove(os.path.join(root, name))
+                try:
+                    os.remove(os.path.join(root, name))
+                except OSError as e:
+                    raise RuntimeError(f"{name}: {e}")
     if alreadyProcessed:
         print("WARNING: Source files are probably created by KCC. The second conversion will decrease quality.")
         if GUI:
