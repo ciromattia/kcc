@@ -650,6 +650,7 @@ def getWorkFolder(afile):
             try:
                 cbx = comicarchive.ComicArchive(afile)
                 path = cbx.extract(workdir)
+                sanitizePermissions(path)
                 tdir = os.listdir(workdir)
                 is_nested_single_dir = False
                 if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
