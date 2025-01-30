@@ -840,7 +840,8 @@ def batch_directory(path):
                 else:
                     level = newLevel
     if level > 0:
-        batcher = batch_process(os.path.join(path, 'OEBPS', 'Images'), level)
+        parent = pathlib.Path(path).parent
+        batcher = batch_process(os.path.join(path, 'OEBPS', 'Images'), level, parent)
         path = [path]
         for tome in batcher:
             path.append(tome)
@@ -849,7 +850,7 @@ def batch_directory(path):
         raise UserWarning('Unsupported directory structure.')
 
 
-def batch_process(path, mode):
+def batch_process(path, mode, parent):
     output = []
     currentSize = 0
     currentTarget = path
@@ -869,7 +870,7 @@ def batch_process(path, mode):
                 else:
                     size = getDirectorySize(os.path.join(root, name))
                 if currentSize + size > targetSize:
-                    currentTarget, pathRoot = createNewTome()
+                    currentTarget, pathRoot = createNewTome(parent)
                     output.append(pathRoot)
                     currentSize = size
                 else:
@@ -881,7 +882,7 @@ def batch_process(path, mode):
         for root, dirs, _ in walkLevel(path, 0):
             for name in dirs:
                 if not firstTome:
-                    currentTarget, pathRoot = createNewTome()
+                    currentTarget, pathRoot = createNewTome(parent)
                     output.append(pathRoot)
                     move(os.path.join(root, name), os.path.join(currentTarget, name))
                 else:
@@ -937,8 +938,8 @@ def detectCorruption(tmppath, orgpath):
             GUI.addMessage.emit('', '', False)
 
 
-def createNewTome():
-    tomePathRoot = mkdtemp('', 'KCC-')
+def createNewTome(parent):
+    tomePathRoot = mkdtemp('', 'KCC-', parent)
     tomePath = os.path.join(tomePathRoot, 'OEBPS', 'Images')
     os.makedirs(tomePath)
     return tomePath, tomePathRoot
