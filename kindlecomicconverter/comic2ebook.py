@@ -893,6 +893,7 @@ def detectCorruption(tmppath, orgpath):
     alreadyProcessed = False
     for root, _, files in os.walk(tmppath, False):
         for name in files:
+            
             if getImageFileName(name) is not None:
                 if not alreadyProcessed and getImageFileName(name)[0].endswith('-kcc'):
                     alreadyProcessed = True
@@ -916,7 +917,10 @@ def detectCorruption(tmppath, orgpath):
                     else:
                         raise RuntimeError('Image file %s is corrupted. Error: %s' % (pathOrg, str(err)))
             else:
-                os.remove(os.path.join(root, name))
+                try:
+                    os.remove(os.path.join(root, name))
+                except OSError as e:
+                    raise RuntimeError(f"{name}: {e}")
     if alreadyProcessed:
         print("WARNING: Source files are probably created by KCC. The second conversion will decrease quality.")
         if GUI:
