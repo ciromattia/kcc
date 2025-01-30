@@ -827,7 +827,7 @@ def sanitizePermissions(filetree):
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
 
 
-def splitDirectory(path):
+def batch_directory(path):
     level = -1
     for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         for f in files:
@@ -840,16 +840,16 @@ def splitDirectory(path):
                 else:
                     level = newLevel
     if level > 0:
-        splitter = splitProcess(os.path.join(path, 'OEBPS', 'Images'), level)
+        batcher = batch_process(os.path.join(path, 'OEBPS', 'Images'), level)
         path = [path]
-        for tome in splitter:
+        for tome in batcher:
             path.append(tome)
         return path
     else:
         raise UserWarning('Unsupported directory structure.')
 
 
-def splitProcess(path, mode):
+def batch_process(path, mode):
     output = []
     currentSize = 0
     currentTarget = path
@@ -1192,7 +1192,7 @@ def makeBook(source, qtgui=None):
         GUI.progressBarTick.emit('1')
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     if options.batchsplit > 0:
-        tomes = splitDirectory(path)
+        tomes = batch_directory(path)
     else:
         tomes = [path]
     filepath = []
