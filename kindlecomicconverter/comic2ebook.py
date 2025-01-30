@@ -628,7 +628,7 @@ def getWorkFolder(afile):
     if os.path.isdir(afile):
         if disk_usage(gettempdir())[2] < getDirectorySize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
-        workdir = mkdtemp('', 'KCC-')
+        workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
         try:
             os.rmdir(workdir)
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
@@ -648,7 +648,7 @@ def getWorkFolder(afile):
                 rmtree(path, True)
                 raise UserWarning("Failed to extract images from PDF file.")
         else:
-            workdir = mkdtemp('', 'KCC-')
+            workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
             try:
                 cbx = comicarchive.ComicArchive(afile)
                 path = cbx.extract(workdir)
@@ -671,9 +671,9 @@ def getWorkFolder(afile):
     else:
         raise UserWarning("Failed to open source file/directory.")
     sanitizePermissions(path)
-    newpath = mkdtemp('', 'KCC-')
+    newpath = mkdtemp('', 'KCC-', os.path.dirname(afile))
     copytree(path, os.path.join(newpath, 'OEBPS', 'Images'))
-    rmtree(path, True)
+    rmtree(workdir, True)
     return newpath
 
 
@@ -827,7 +827,7 @@ def sanitizePermissions(filetree):
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
 
 
-def splitDirectory(path):
+def batch_directory(path):
     level = -1
     for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         for f in files:
@@ -840,16 +840,17 @@ def splitDirectory(path):
                 else:
                     level = newLevel
     if level > 0:
-        splitter = splitProcess(os.path.join(path, 'OEBPS', 'Images'), level)
+        parent = pathlib.Path(path).parent
+        batcher = batch_process(os.path.join(path, 'OEBPS', 'Images'), level, parent)
         path = [path]
-        for tome in splitter:
+        for tome in batcher:
             path.append(tome)
         return path
     else:
         raise UserWarning('Unsupported directory structure.')
 
 
-def splitProcess(path, mode):
+def batch_process(path, mode, parent):
     output = []
     currentSize = 0
     currentTarget = path
@@ -869,7 +870,7 @@ def splitProcess(path, mode):
                 else:
                     size = getDirectorySize(os.path.join(root, name))
                 if currentSize + size > targetSize:
-                    currentTarget, pathRoot = createNewTome()
+                    currentTarget, pathRoot = createNewTome(parent)
                     output.append(pathRoot)
                     currentSize = size
                 else:
@@ -881,7 +882,7 @@ def splitProcess(path, mode):
         for root, dirs, _ in walkLevel(path, 0):
             for name in dirs:
                 if not firstTome:
-                    currentTarget, pathRoot = createNewTome()
+                    currentTarget, pathRoot = createNewTome(parent)
                     output.append(pathRoot)
                     move(os.path.join(root, name), os.path.join(currentTarget, name))
                 else:
@@ -937,8 +938,8 @@ def detectCorruption(tmppath, orgpath):
             GUI.addMessage.emit('', '', False)
 
 
-def createNewTome():
-    tomePathRoot = mkdtemp('', 'KCC-')
+def createNewTome(parent):
+    tomePathRoot = mkdtemp('', 'KCC-', parent)
     tomePath = os.path.join(tomePathRoot, 'OEBPS', 'Images')
     os.makedirs(tomePath)
     return tomePath, tomePathRoot
@@ -1192,7 +1193,7 @@ def makeBook(source, qtgui=None):
         GUI.progressBarTick.emit('1')
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     if options.batchsplit > 0:
-        tomes = splitDirectory(path)
+        tomes = batch_directory(path)
     else:
         tomes = [path]
     filepath = []
