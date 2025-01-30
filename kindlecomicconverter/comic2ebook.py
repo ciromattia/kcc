@@ -628,7 +628,7 @@ def getWorkFolder(afile):
     if os.path.isdir(afile):
         if disk_usage(gettempdir())[2] < getDirectorySize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
-        workdir = mkdtemp('', 'KCC-')
+        workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
         try:
             os.rmdir(workdir)
             fullPath = os.path.join(workdir, 'OEBPS', 'Images')
@@ -648,7 +648,7 @@ def getWorkFolder(afile):
                 rmtree(path, True)
                 raise UserWarning("Failed to extract images from PDF file.")
         else:
-            workdir = mkdtemp('', 'KCC-')
+            workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
             try:
                 cbx = comicarchive.ComicArchive(afile)
                 path = cbx.extract(workdir)
@@ -671,9 +671,9 @@ def getWorkFolder(afile):
     else:
         raise UserWarning("Failed to open source file/directory.")
     sanitizePermissions(path)
-    newpath = mkdtemp('', 'KCC-')
+    newpath = mkdtemp('', 'KCC-', os.path.dirname(afile))
     copytree(path, os.path.join(newpath, 'OEBPS', 'Images'))
-    rmtree(path, True)
+    rmtree(workdir, True)
     return newpath
 
 
