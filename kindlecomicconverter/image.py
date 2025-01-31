@@ -352,7 +352,7 @@ class ComicPage:
 
     def optimizeForDisplay(self):
         if (self.opt.displayType == DisplayType.KALEIDO3_COLOR):
-            unsharpFilter = ImageFilter.UnsharpMask()
+            unsharpFilter = ImageFilter.UnsharpMask(radius=1, percent=75)
             self.image = self.image.filter(unsharpFilter)
             self.image = self.image.filter(ImageFilter.BoxBlur(1.0))
             self.image = self.image.filter(unsharpFilter)
