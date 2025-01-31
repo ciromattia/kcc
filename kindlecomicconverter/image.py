@@ -26,9 +26,19 @@ from .shared import md5Checksum
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
 
+from enum import Enum
+
 AUTO_CROP_THRESHOLD = 0.015
 
+class DisplayType(Enum):
+    GENERIC_BW = "DISPLAY_GENERIC_BW"
+    KALEIDO3_COLOR = "KALEIDO3_COLOR"
 
+def DisplayTypeFromDeviceName(deviceName):
+    if (deviceName == "Kindle CS 12" or deviceName == "Kobo Libra Colour" or deviceName == "Kobo Clara Colour"):
+        return DisplayType.KALEIDO3_COLOR
+    
+    return DisplayType.GENERIC_BW
 class ProfileData:
     def __init__(self):
         pass
@@ -132,7 +142,6 @@ class ProfileData:
         **ProfilesRemarkable,
         'OTHER': ("Other", (0, 0), Palette16, 1.8),
     }
-
 
 class ComicPageParser:
     def __init__(self, source, options):
@@ -340,6 +349,13 @@ class ComicPage:
         self.image = self.image.convert('RGB')
         # Quantize is deprecated but new function call it internally anyway...
         self.image = self.image.quantize(palette=palImg)
+
+    def optimizeForDisplay(self):
+        if (self.opt.displayType == DisplayType.KALEIDO3_COLOR):
+            unsharpFilter = ImageFilter.UnsharpMask()
+            self.image = self.image.filter(unsharpFilter)
+            self.image = self.image.filter(ImageFilter.BoxBlur(1.0))
+            self.image = self.image.filter(unsharpFilter)
 
     def resizeImage(self):
         # kindle scribe conversion to mobi is limited in resolution by kindlegen, same with send to kindle and epub

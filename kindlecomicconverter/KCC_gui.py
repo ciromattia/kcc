@@ -44,7 +44,7 @@ from . import metadata
 from . import kindle
 from . import KCC_ui
 from . import KCC_ui_editor
-
+from .image import DisplayTypeFromDeviceName
 
 class QApplicationMessaging(QApplication):
     messageFromOtherInstance = Signal(bytes)
@@ -185,7 +185,6 @@ class ProgressThread(QThread):
     def stop(self):
         self.running = False
 
-
 class WorkerThread(QThread):
     def __init__(self):
         QThread.__init__(self)
@@ -221,6 +220,7 @@ class WorkerThread(QThread):
         currentJobs = []
 
         options.profile = GUI.profiles[str(GUI.deviceBox.currentText())]['Label']
+        options.displayType = DisplayTypeFromDeviceName(str(GUI.deviceBox.currentText()))
         gui_current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
         options.format = gui_current_format
         if GUI.mangaBox.isChecked():

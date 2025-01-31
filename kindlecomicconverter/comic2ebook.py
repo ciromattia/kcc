@@ -616,6 +616,7 @@ def imgFileProcessing(work):
                 img.cropInterPanelEmptySections("horizontal" if opt.interpanelcrop == 1 else "both")
             img.autocontrastImage()
             img.resizeImage()
+            img.optimizeForDisplay()
             if opt.forcepng and not opt.forcecolor:
                 img.quantizeImage()
             output.append(img.saveToDir())
