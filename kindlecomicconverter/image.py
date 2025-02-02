@@ -351,8 +351,9 @@ class ComicPage:
         self.image = self.image.quantize(palette=palImg)
 
     def optimizeForDisplay(self):
-        if (self.opt.displayType == DisplayType.KALEIDO3_COLOR):
-            unsharpFilter = ImageFilter.UnsharpMask(radius=1, percent=75)
+        # Reduce rainbow artifacts for grayscale images by breaking up dither patterns that cause Moire interference with color filter array
+        if (self.opt.displayType == DisplayType.KALEIDO3_COLOR and not self.color):
+            unsharpFilter = ImageFilter.UnsharpMask(radius=1, percent=100)
             self.image = self.image.filter(unsharpFilter)
             self.image = self.image.filter(ImageFilter.BoxBlur(1.0))
             self.image = self.image.filter(unsharpFilter)
