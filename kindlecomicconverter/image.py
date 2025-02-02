@@ -317,13 +317,13 @@ class ComicPage:
                 self.targetPath += '.jpg'
                 if self.opt.mozjpeg:
                     with io.BytesIO() as output:
-                        self.image.save(output, format="JPEG", optimize=1, quality=85)
+                        self.image.save(output, format="JPEG", optimize=1, quality=97)
                         input_jpeg_bytes = output.getvalue()
                         output_jpeg_bytes = mozjpeg_lossless_optimization.optimize(input_jpeg_bytes)
                         with open(self.targetPath, "wb") as output_jpeg_file:
                             output_jpeg_file.write(output_jpeg_bytes)
                 else:
-                    self.image.save(self.targetPath, 'JPEG', optimize=1, quality=85)
+                    self.image.save(self.targetPath, 'JPEG', optimize=1, quality=97)
             return [md5Checksum(self.targetPath), flags, self.orgPath]
         except IOError as err:
             raise RuntimeError('Cannot save image. ' + str(err))
