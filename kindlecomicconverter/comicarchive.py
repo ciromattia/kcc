@@ -67,8 +67,8 @@ class ComicArchive:
         missing = []
 
         extraction_commands = [
-            ['tar', '--exclude', '__MACOSX', '--exclude', '.DS_Store', '--exclude', 'thumbs.db', '--exclude', 'Thumbs.db', '-xf', self.filepath, '-C', targetdir],
             ['7z', 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
+            ['tar', '--exclude', '__MACOSX', '--exclude', '.DS_Store', '--exclude', 'thumbs.db', '--exclude', 'Thumbs.db', '-xf', self.filepath, '-C', targetdir],
         ]
 
         if platform.system() == 'Darwin':

@@ -39,6 +39,7 @@ from PIL import Image, ImageFile
 from subprocess import STDOUT, PIPE
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
+from datetime import datetime
 
 from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
 from . import comic2panel
@@ -51,7 +52,6 @@ from . import kindle
 from . import __version__
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-
 
 def main(argv=None):
     global options
@@ -643,6 +643,7 @@ def getWorkFolder(afile):
         if disk_usage(gettempdir())[2] < os.path.getsize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
         if afile.lower().endswith('.pdf'):
+            progressUpdate("Extracting JPG from PDF...")
             pdf = pdfjpgextract.PdfJpgExtract(afile)
             path, njpg = pdf.extract()
             if njpg == 0:
@@ -652,6 +653,7 @@ def getWorkFolder(afile):
             workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
             try:
                 cbx = comicarchive.ComicArchive(afile)
+                progressUpdate("Extracting archive...")
                 path = cbx.extract(workdir)
                 sanitizePermissions(path)
                 tdir = os.listdir(workdir)
@@ -821,6 +823,7 @@ def sanitizeTree(filetree):
 
 
 def sanitizePermissions(filetree):
+    progressUpdate("Santizing permissions for extracted files...")
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
@@ -1166,19 +1169,27 @@ def checkPre(source):
     except Exception:
         raise UserWarning("Target directory is not writable.")
 
+def progressUpdate(updateVal):
+    if GUI:
+        GUI.progressBarTick.emit('2')
+        GUI.progressBarTick.emit(updateVal)
+        GUI.progressBarTick.emit('tick')
+    if isinstance(updateVal, str):
+        print(updateVal)
 
 def makeBook(source, qtgui=None):
-    global GUI
+    global GUI 
     GUI = qtgui
     if GUI:
         GUI.progressBarTick.emit('1')
     else:
         checkTools(source)
+    progressUpdate("Checking pre-conditions...")
     checkPre(source)
-    print("Preparing source images...")
+    progressUpdate("Preparing source images...")
     path = getWorkFolder(source)
-    print("Checking images...")
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
+    progressUpdate("Checking images...")
     detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
     if options.webtoon:
         y = image.ProfileData.Profiles[options.profile][1][1]
@@ -1186,12 +1197,9 @@ def makeBook(source, qtgui=None):
     if options.noprocessing:
         print("Do not process image, ignore any profile or processing option")
     else:
-        print("Processing images...")
-        if GUI:
-            GUI.progressBarTick.emit('Processing images')
+        progressUpdate("Processing images...")
         imgDirectoryProcessing(os.path.join(path, "OEBPS", "Images"))
-    if GUI:
-        GUI.progressBarTick.emit('1')
+    progressUpdate("Determine chapter names...")
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     if options.batchsplit > 0:
         tomes = batch_directory(path)
