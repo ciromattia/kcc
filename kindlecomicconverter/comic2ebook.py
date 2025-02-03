@@ -823,7 +823,7 @@ def sanitizeTree(filetree):
 
 
 def sanitizePermissions(filetree):
-    progressUpdate("Santizing permissions for extracted files...")
+    progressUpdate(f"Sanitizing permissions for {filetree}...")
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
@@ -955,18 +955,16 @@ def slugify(value):
     return value
 
 
-def makeZIP(zipfilename, basedir, isepub=False):
+def makeZIP(zipfilename, basedir, bookFormat):
+    start = datetime.now()
     zipfilename = os.path.abspath(zipfilename) + '.zip'
-    zipOutput = ZipFile(zipfilename, 'w', ZIP_DEFLATED)
-    if isepub:
-        zipOutput.writestr('mimetype', 'application/epub+zip', ZIP_STORED)
-    for dirpath, _, filenames in os.walk(basedir):
-        for name in filenames:
-            path = os.path.normpath(os.path.join(dirpath, name))
-            aPath = os.path.normpath(os.path.join(dirpath.replace(basedir, ''), name))
-            if os.path.isfile(path):
-                zipOutput.write(path, aPath)
-    zipOutput.close()
+    if bookFormat == 'EPUB':
+        mimetypeFile = open(os.path.join(basedir, 'mimetype'), 'w')
+        mimetypeFile.write('application/epub+zip')
+        mimetypeFile.close()
+    subprocess_run(f'7z a -tzip \"{zipfilename}\" \"{os.path.join(basedir, "*")}\"', capture_output=True, check=True)
+    end = datetime.now()
+    print(f'Zipping completed in {(end - start).microseconds} microseconds')
     return zipfilename
 
 
@@ -1207,13 +1205,6 @@ def makeBook(source, qtgui=None):
         tomes = [path]
     filepath = []
     tomeNumber = 0
-    if GUI:
-        if options.format == 'CBZ':
-            GUI.progressBarTick.emit('Compressing CBZ files')
-        else:
-            GUI.progressBarTick.emit('Compressing EPUB files')
-        GUI.progressBarTick.emit(str(len(tomes) + 1))
-        GUI.progressBarTick.emit('tick')
     options.baseTitle = options.title
     options.covers = []
     for tome in tomes:
@@ -1224,22 +1215,25 @@ def makeBook(source, qtgui=None):
         elif len(tomes) > 1:
             tomeNumber += 1
             options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
+        
+        zipSourceDir = ""
         if options.format == 'CBZ':
-            print("Creating CBZ file...")
+            progressUpdate("Creating CBZ file...")
             if len(tomes) > 1:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ' ' + str(tomeNumber)))
             else:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
-            makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
+            zipSourceDir = os.path.join(tome, "OEBPS", "Images")
         else:
-            print("Creating EPUB file...")
+            progressUpdate("Creating EPUB file...")
             if len(tomes) > 1:
                 buildEPUB(tome, chapterNames, tomeNumber, True)
                 filepath.append(getOutputFilename(source, options.output, '.epub', ' ' + str(tomeNumber)))
             else:
                 buildEPUB(tome, chapterNames, tomeNumber, False)
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
-            makeZIP(tome + '_comic', tome, True)
+            zipSourceDir = tome
+        makeZIP(tome + '_comic', zipSourceDir, options.format)
         copyfile(tome + '_comic.zip', filepath[-1])
         try:
             os.remove(tome + '_comic.zip')
