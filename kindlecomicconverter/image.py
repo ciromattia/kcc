@@ -317,13 +317,13 @@ class ComicPage:
                 self.targetPath += '.jpg'
                 if self.opt.mozjpeg:
                     with io.BytesIO() as output:
-                        self.image.save(output, format="JPEG", optimize=1, quality=98)
+                        self.image.save(output, format="JPEG", optimize=1, quality=97)
                         input_jpeg_bytes = output.getvalue()
                         output_jpeg_bytes = mozjpeg_lossless_optimization.optimize(input_jpeg_bytes)
                         with open(self.targetPath, "wb") as output_jpeg_file:
                             output_jpeg_file.write(output_jpeg_bytes)
                 else:
-                    self.image.save(self.targetPath, 'JPEG', optimize=1, quality=98)
+                    self.image.save(self.targetPath, 'JPEG', optimize=1, quality=97)
             return [md5Checksum(self.targetPath), flags, self.orgPath]
         except IOError as err:
             raise RuntimeError('Cannot save image. ' + str(err))
@@ -436,7 +436,7 @@ class Cover:
 
     def save(self):
         try:
-            self.image.save(self.target, "JPEG", optimize=1, quality=85)
+            self.image.save(self.target, "JPEG", optimize=1, quality=100)
         except IOError:
             raise RuntimeError('Failed to save cover.')
 
@@ -444,6 +444,6 @@ class Cover:
         self.image = self.image.resize((300, 470), Image.Resampling.LANCZOS)
         try:
             self.image.save(os.path.join(kindle.path.split('documents')[0], 'system', 'thumbnails',
-                                         'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG', optimize=1, quality=85)
+                                         'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG', optimize=1, quality=100)
         except IOError:
             raise RuntimeError('Failed to upload cover.')
