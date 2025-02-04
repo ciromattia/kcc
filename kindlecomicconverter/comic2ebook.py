@@ -28,7 +28,6 @@ from copy import copy
 from glob import glob, escape
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
-from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree, copyfile
 from multiprocessing import Pool
@@ -41,7 +40,7 @@ from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 from time import perf_counter
 
-from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
+from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
 from . import comic2panel
 from . import image
 from . import comicarchive
@@ -78,7 +77,6 @@ def main(argv=None):
 
 
 def buildHTML(path, imgfile, imgfilepath):
-    imgfilepath = md5Checksum(imgfilepath)
     filename = getImageFileName(imgfile)
     deviceres = options.profileData[1]
     if not options.noprocessing and "Rotated" in options.imgMetadata[imgfilepath]:
@@ -342,9 +340,6 @@ def buildOPF(dstdir, title, filelist, cover=None):
         f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
                 mt + "\"/>\n")
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
-    end = perf_counter()
-    print(f"buildOPF completed in {(end - start)} seconds")
-
 
     def pageSpreadProperty(pageside):
         if options.iskindle:
@@ -433,7 +428,8 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "</rootfiles>\n",
                   "</container>"])
     f.close()
-
+    end = perf_counter()
+    print(f"buildOPF completed in {(end - start)} seconds")
 
 def buildEPUB(path, chapternames, tomenumber, ischunked):
     filelist = []
@@ -525,13 +521,12 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
                                      'cover' + getImageFileName(afile)[1])
                 options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
                                                    tomenumber), options.uuid))
-            filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
             if not chapter:
-                chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
+                chapterlist.append((dirpath.replace('Images', 'Text'), afile))
                 chapter = True
+            filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
     htmlBuildingEnd = perf_counter()
     print(f"Chapter HTML building completed in {(htmlBuildingEnd - htmlBuildingStart)} seconds")
-    chapterNameOverwriteStart = perf_counter()
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapternames and options.chapters and not ischunked:
         chapterlist = []
@@ -559,8 +554,6 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
             filename = filelist[pageid][1]
             chapterlist.append((filelist[pageid][0].replace('Images', 'Text'), filename))
             chapternames[filename] = aChapter[1]
-    chapterNameOverwriteEnd = perf_counter()
-    print(f"Chapter overwite processing completed in {(chapterNameOverwriteEnd - chapterNameOverwriteStart)} seconds")
     buildNCX(path, options.title, chapterlist, chapternames)
     buildNAV(path, options.title, chapterlist, chapternames)
     buildOPF(path, options.title, filelist, cover)
@@ -825,6 +818,7 @@ def sanitizeTree(filetree):
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
+                options.imgMetadata[newKey] = options.imgMetadata.pop(key)
         for name in dirs:
             tmpName = name
             slugified = slugify(name)
