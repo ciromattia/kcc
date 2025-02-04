@@ -22,7 +22,6 @@ import io
 import os
 import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
-from .shared import md5Checksum
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
 
@@ -320,8 +319,8 @@ class ComicPage:
                         with open(self.targetPath, "wb") as output_jpeg_file:
                             output_jpeg_file.write(output_jpeg_bytes)
                 else:
-                    self.image.save(self.targetPath, 'JPEG', optimize=1, quality=85)
-            return [md5Checksum(self.targetPath), flags, self.orgPath]
+                    self.image.save(self.targetPath, 'JPEG', optimize=1, quality=97)
+            return [self.targetPath, flags, self.orgPath]
         except IOError as err:
             raise RuntimeError('Cannot save image. ' + str(err))
 
