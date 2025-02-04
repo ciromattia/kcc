@@ -39,7 +39,7 @@ from PIL import Image, ImageFile
 from subprocess import STDOUT, PIPE
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
-from datetime import datetime
+from time import perf_counter
 
 from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
 from . import comic2panel
@@ -199,6 +199,7 @@ def buildHTML(path, imgfile, imgfilepath):
 
 
 def buildNCX(dstdir, title, chapters, chapternames):
+    start = perf_counter()
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
     f = open(ncxfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
@@ -226,9 +227,12 @@ def buildNCX(dstdir, title, chapters, chapternames):
                 ".xhtml\"/></navPoint>\n")
     f.write("</navMap>\n</ncx>")
     f.close()
+    end = perf_counter()
+    print(f"buildNCX completed in {(end - start)} seconds")
 
 
 def buildNAV(dstdir, title, chapters, chapternames):
+    start = perf_counter()
     navfile = os.path.join(dstdir, 'OEBPS', 'nav.xhtml')
     f = open(navfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
@@ -263,9 +267,12 @@ def buildNAV(dstdir, title, chapters, chapternames):
         f.write("<li><a href=\"" + filename[0].replace("\\", "/") + ".xhtml\">" + hescape(title) + "</a></li>\n")
     f.write("</ol>\n</nav>\n</body>\n</html>")
     f.close()
+    end = perf_counter()
+    print(f"buildNAV completed in {(end - start)} seconds")
 
 
 def buildOPF(dstdir, title, filelist, cover=None):
+    start = perf_counter()
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
     deviceres = options.profileData[1]
     if options.righttoleft:
@@ -335,6 +342,8 @@ def buildOPF(dstdir, title, filelist, cover=None):
         f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
                 mt + "\"/>\n")
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
+    end = perf_counter()
+    print(f"buildOPF completed in {(end - start)} seconds")
 
 
     def pageSpreadProperty(pageside):
@@ -506,6 +515,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
                       "display: none;\n",
                       "}\n"])
     f.close()
+    htmlBuildingStart = perf_counter()
     for dirpath, dirnames, filenames in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
@@ -519,6 +529,9 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
                 chapter = True
+    htmlBuildingEnd = perf_counter()
+    print(f"Chapter HTML building completed in {(htmlBuildingEnd - htmlBuildingStart)} seconds")
+    chapterNameOverwriteStart = perf_counter()
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapternames and options.chapters and not ischunked:
         chapterlist = []
@@ -546,6 +559,8 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
             filename = filelist[pageid][1]
             chapterlist.append((filelist[pageid][0].replace('Images', 'Text'), filename))
             chapternames[filename] = aChapter[1]
+    chapterNameOverwriteEnd = perf_counter()
+    print(f"Chapter overwite processing completed in {(chapterNameOverwriteEnd - chapterNameOverwriteStart)} seconds")
     buildNCX(path, options.title, chapterlist, chapternames)
     buildNAV(path, options.title, chapterlist, chapternames)
     buildOPF(path, options.title, filelist, cover)
@@ -824,7 +839,7 @@ def sanitizeTree(filetree):
 
 
 def sanitizePermissions(filetree):
-    progressUpdate(f"Sanitizing permissions for working director...")
+    progressUpdate(f"Sanitizing permissions for working directory...")
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
@@ -953,15 +968,15 @@ def slugify(value):
 
 
 def makeZIP(zipfilename, basedir, bookFormat):
-    start = datetime.now()
+    start = perf_counter()
     zipfilename = os.path.abspath(zipfilename) + '.zip'
     if bookFormat == 'EPUB':
         mimetypeFile = open(os.path.join(basedir, 'mimetype'), 'w')
         mimetypeFile.write('application/epub+zip')
         mimetypeFile.close()
     subprocess_run(f'7z a -tzip \"{zipfilename}\" \"{os.path.join(basedir, "*")}\"', capture_output=True, check=True)
-    end = datetime.now()
-    print(f'Zipping completed in {(end - start).microseconds} microseconds')
+    end = perf_counter()
+    print(f'Zipping completed in {(end - start)} seconds')
     return zipfilename
 
 
