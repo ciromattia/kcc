@@ -690,9 +690,9 @@ def getWorkFolder(afile):
                 raise UserWarning(e)
     else:
         raise UserWarning("Failed to open source file/directory.")
+    progressUpdate("Moving sanitized directory into working directory...")
     newpath = mkdtemp('', 'KCC-', os.path.dirname(afile))
-    copytree(path, os.path.join(newpath, 'OEBPS', 'Images'))
-    rmtree(workdir, True)
+    os.renames(path, os.path.join(newpath, 'OEBPS', 'Images'))
     return newpath
 
 
@@ -840,12 +840,14 @@ def sanitizeTree(filetree):
 
 def sanitizePermissions(filetree):
     progressUpdate(f"Sanitizing permissions for working directory...")
+    start = perf_counter()
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
-
+    end = perf_counter()
+    print(f"sanitizePermissions completed in {(end - start)} seconds")
 
 def batch_directory(path):
     level = -1
@@ -1198,6 +1200,7 @@ def makeBook(source, qtgui=None):
     checkPre(source)
     progressUpdate("Preparing source images...")
     path = getWorkFolder(source)
+    progressUpdate("Checking for ComicInfo.xml...")
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
     progressUpdate("Checking image quality/processing misconfiguration...")
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
