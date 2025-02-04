@@ -141,7 +141,13 @@ class ComicPageParser:
         self.source = source
         self.size = self.opt.profileData[1]
         self.payload = []
-        self.image = Image.open(os.path.join(source[0], source[1])).convert('RGB')
+
+        # Detect corruption in source image, let caller catch any exceptions triggered.
+        srcImgPath = os.path.join(source[0], source[1])
+        self.image = Image.open(srcImgPath)
+        self.image.verify()
+        self.image = Image.open(srcImgPath).convert('RGB')
+
         self.color = self.colorCheck()
         self.fill = self.fillCheck()
         # backwards compatibility for Pillow >9.1.0
