@@ -647,6 +647,7 @@ def getWorkFolder(afile):
             progressUpdate("Extracting JPG from PDF...")
             pdf = pdfjpgextract.PdfJpgExtract(afile)
             path, njpg = pdf.extract()
+            sanitizePermissions(path)
             if njpg == 0:
                 rmtree(path, True)
                 raise UserWarning("Failed to extract images from PDF file.")
@@ -674,7 +675,6 @@ def getWorkFolder(afile):
                 raise UserWarning(e)
     else:
         raise UserWarning("Failed to open source file/directory.")
-    sanitizePermissions(path)
     newpath = mkdtemp('', 'KCC-', os.path.dirname(afile))
     copytree(path, os.path.join(newpath, 'OEBPS', 'Images'))
     rmtree(workdir, True)
@@ -824,7 +824,7 @@ def sanitizeTree(filetree):
 
 
 def sanitizePermissions(filetree):
-    progressUpdate(f"Sanitizing permissions for {filetree}...")
+    progressUpdate(f"Sanitizing permissions for working director...")
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
