@@ -38,7 +38,7 @@ from PIL import Image, ImageFile
 from subprocess import STDOUT, PIPE
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
-from time import perf_counter
+from time import perf_counter, sleep
 
 from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
 from . import comic2panel
@@ -558,6 +558,17 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
     buildNAV(path, options.title, chapterlist, chapternames)
     buildOPF(path, options.title, filelist, cover)
 
+def deleteFileWithRetries(file, retryCount):
+    lastException = None
+    for i in range(0, retryCount):
+        try:
+            os.remove(file)
+            return
+        except Exception as err:
+            lastException = err
+            sleep(0.5)
+            continue
+    raise lastException
 
 def imgDirectoryProcessing(path):
     global workerPool, workerOutput
@@ -587,7 +598,7 @@ def imgDirectoryProcessing(path):
             raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0][0], workerOutput[0][1])
         for file in options.imgOld:
             if os.path.isfile(file):
-                os.remove(file)
+                deleteFileWithRetries(file, 5)
     else:
         rmtree(os.path.join(path, '..', '..'), True)
         raise UserWarning("Source directory is empty.")
