@@ -888,8 +888,7 @@ def chunk_process(path, mode, parent):
                     firstTome = False
     return output
 
-
-def detectCorruption(tmppath, orgpath):
+def detectSuboptimalProcessing(tmppath, orgpath):
     imageNumber = 0
     imageSmaller = 0
     alreadyProcessed = False
@@ -905,9 +904,6 @@ def detectCorruption(tmppath, orgpath):
                     raise RuntimeError('Image file %s is corrupted.' % pathOrg)
                 try:
                     img = Image.open(path)
-                    img.verify()
-                    img = Image.open(path)
-                    img.load()
                     imageNumber += 1
                     if options.profileData[1][0] > img.size[0] and options.profileData[1][1] > img.size[1]:
                         imageSmaller += 1
@@ -1179,7 +1175,7 @@ def makeBook(source, qtgui=None):
     path = getWorkFolder(source)
     print("Checking images...")
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
-    detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
+    detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
     if options.webtoon:
         y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
