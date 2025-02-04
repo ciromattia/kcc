@@ -564,7 +564,8 @@ def imgDirectoryProcessing(path):
             pagenumber += 1
             work.append([afile, dirpath, options])
     if GUI:
-        GUI.progressBarTick.emit(str(pagenumber))
+        GUI.progressBarTick.emit(str(pagenumber + 1))
+        GUI.progressBarTick.emit('tick') # ensure any text displays after resetting progress bar's maximum progress
     if len(work) > 0:
         for i in work:
             workerPool.apply_async(func=imgFileProcessing, args=(i,), callback=imgFileProcessingTick)
@@ -893,8 +894,7 @@ def batch_process(path, mode, parent):
                     firstTome = False
     return output
 
-
-def detectCorruption(tmppath, orgpath):
+def detectSuboptimalProcessing(tmppath, orgpath):
     imageNumber = 0
     imageSmaller = 0
     alreadyProcessed = False
@@ -910,9 +910,6 @@ def detectCorruption(tmppath, orgpath):
                     raise RuntimeError('Image file %s is corrupted.' % pathOrg)
                 try:
                     img = Image.open(path)
-                    img.verify()
-                    img = Image.open(path)
-                    img.load()
                     imageNumber += 1
                     if options.profileData[1][0] > img.size[0] and options.profileData[1][1] > img.size[1]:
                         imageSmaller += 1
@@ -1187,8 +1184,8 @@ def makeBook(source, qtgui=None):
     progressUpdate("Preparing source images...")
     path = getWorkFolder(source)
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
-    progressUpdate("Checking images...")
-    detectCorruption(os.path.join(path, "OEBPS", "Images"), source)
+    progressUpdate("Checking image quality/processing misconfiguration...")
+    detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
     if options.webtoon:
         y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
