@@ -598,7 +598,7 @@ def imgDirectoryProcessing(path):
             raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0][0], workerOutput[0][1])
         for file in options.imgOld:
             if os.path.isfile(file):
-                deleteFileWithRetries(file, 5)
+                deleteFileWithRetries(file, 50)
     else:
         rmtree(os.path.join(path, '..', '..'), True)
         raise UserWarning("Source directory is empty.")
