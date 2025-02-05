@@ -840,6 +840,10 @@ def sanitizeTree(filetree):
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
+                existingImgPathKeys = list(options.imgMetadata.keys())
+                for imgPath in existingImgPathKeys:
+                    if (key in imgPath):
+                        options.imgMetadata[imgPath.replace(key, newKey)] = options.imgMetadata.pop(imgPath)
     return chapterNames
 
 
