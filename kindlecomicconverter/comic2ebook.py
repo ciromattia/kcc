@@ -644,6 +644,7 @@ def getWorkFolder(afile):
         if afile.lower().endswith('.pdf'):
             pdf = pdfjpgextract.PdfJpgExtract(afile)
             path, njpg = pdf.extract()
+            sanitizePermissions(path)
             if njpg == 0:
                 rmtree(path, True)
                 raise UserWarning("Failed to extract images from PDF file.")
@@ -670,7 +671,6 @@ def getWorkFolder(afile):
                 raise UserWarning(e)
     else:
         raise UserWarning("Failed to open source file/directory.")
-    sanitizePermissions(path)
     newpath = mkdtemp('', 'KCC-', os.path.dirname(afile))
     copytree(path, os.path.join(newpath, 'OEBPS', 'Images'))
     rmtree(workdir, True)
