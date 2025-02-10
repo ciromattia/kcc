@@ -341,6 +341,14 @@ class ComicPage:
         # Quantize is deprecated but new function call it internally anyway...
         self.image = self.image.quantize(palette=palImg)
 
+    def optimizeForDisplay(self, reducerainbow):
+        # Reduce rainbow artifacts for grayscale images by breaking up dither patterns that cause Moire interference with color filter array
+        if reducerainbow and not self.color:
+            unsharpFilter = ImageFilter.UnsharpMask(radius=1, percent=100)
+            self.image = self.image.filter(unsharpFilter)
+            self.image = self.image.filter(ImageFilter.BoxBlur(1.0))
+            self.image = self.image.filter(unsharpFilter)
+
     def resizeImage(self):
         # kindle scribe conversion to mobi is limited in resolution by kindlegen, same with send to kindle and epub
         if self.kindle_scribe_azw3:

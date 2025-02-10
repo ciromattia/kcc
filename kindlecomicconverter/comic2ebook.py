@@ -616,6 +616,7 @@ def imgFileProcessing(work):
                 img.cropInterPanelEmptySections("horizontal" if opt.interpanelcrop == 1 else "both")
             img.autocontrastImage()
             img.resizeImage()
+            img.optimizeForDisplay(opt.reducerainbow)
             if opt.forcepng and not opt.forcecolor:
                 img.quantizeImage()
             output.append(img.saveToDir())
@@ -1037,6 +1038,8 @@ def makeParser():
                                     help="Disable autodetection and force white borders")
     processing_options.add_argument("--forcecolor", action="store_true", dest="forcecolor", default=False,
                                     help="Don't convert images to grayscale")
+    output_options.add_argument("--reducerainbow", action="store_true", dest="reducerainbow", default=False,
+                                help="Reduce rainbow effect on color eink by slightly blurring images.")
     processing_options.add_argument("--forcepng", action="store_true", dest="forcepng", default=False,
                                     help="Create PNG files instead JPEG")
     processing_options.add_argument("--mozjpeg", action="store_true", dest="mozjpeg", default=False,
