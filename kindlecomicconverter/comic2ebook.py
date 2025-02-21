@@ -645,6 +645,7 @@ def getWorkFolder(afile):
         if afile.lower().endswith('.pdf'):
             pdf = pdfjpgextract.PdfJpgExtract(afile)
             path, njpg = pdf.extract()
+            workdir = path
             sanitizePermissions(path)
             if njpg == 0:
                 rmtree(path, True)
