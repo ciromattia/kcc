@@ -672,8 +672,7 @@ def getWorkFolder(afile):
     else:
         raise UserWarning("Failed to open source file/directory.")
     newpath = mkdtemp('', 'KCC-', os.path.dirname(afile))
-    copytree(path, os.path.join(newpath, 'OEBPS', 'Images'))
-    rmtree(workdir, True)
+    os.renames(path, os.path.join(newpath, 'OEBPS', 'Images'))
     return newpath
 
 
