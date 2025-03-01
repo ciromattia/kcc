@@ -657,16 +657,14 @@ def getWorkFolder(afile):
                 path = cbx.extract(workdir)
                 sanitizePermissions(path)
                 tdir = os.listdir(workdir)
-                is_nested_single_dir = False
                 if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
                     tdir.remove('ComicInfo.xml')
-                    is_nested_single_dir = os.path.isdir(os.path.join(workdir, tdir[0]))
-                    if is_nested_single_dir:
+                    if os.path.isdir(os.path.join(workdir, tdir[0])):
                         os.replace(
                             os.path.join(workdir, 'ComicInfo.xml'),
                             os.path.join(workdir, tdir[0], 'ComicInfo.xml')
                         )
-                if len(tdir) == 1 and is_nested_single_dir:
+                if len(tdir) == 1 and os.path.isdir(os.path.join(workdir, tdir[0])):
                     path = os.path.join(workdir, tdir[0])           
             except OSError as e:
                 rmtree(workdir, True)
