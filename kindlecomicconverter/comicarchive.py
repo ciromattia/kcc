@@ -76,6 +76,8 @@ class ComicArchive:
                 ['unar', self.filepath, '-f', '-o', targetdir]
             )
 
+        extraction_commands.reverse()
+
         if distro.id() == 'fedora' or distro.like() == 'fedora':
             extraction_commands.append(
                 ['unrar', 'x', '-y', '-x__MACOSX', '-x.DS_Store', '-xthumbs.db', '-xThumbs.db', self.filepath, targetdir]
