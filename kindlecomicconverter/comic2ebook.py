@@ -666,7 +666,7 @@ def getWorkFolder(afile):
                             os.path.join(workdir, 'ComicInfo.xml'),
                             os.path.join(workdir, tdir[0], 'ComicInfo.xml')
                         )
-                if len(tdir) == 1 and is_nested_single_dir:
+                if len(tdir) == 1 and os.path.isdir(os.path.join(workdir, tdir[0])):
                     path = os.path.join(workdir, tdir[0])           
             except OSError as e:
                 rmtree(workdir, True)
