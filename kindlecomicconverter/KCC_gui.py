@@ -317,13 +317,8 @@ class WorkerThread(QThread):
                 GUI.progress.content = ''
                 self.errors = True
                 _, _, traceback = sys.exc_info()
-                if len(err.args) == 1:
-                    MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
-                                       % (jobargv[-1], str(err), sanitizeTrace(traceback)), 'error')
-                else:
-                    MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
-                                       % (jobargv[-1], str(err.args[0]), err.args[1]), 'error')
-                    GUI.sentry.extra_context({'realTraceback': err.args[1]})
+                MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
+                                   % (jobargv[-1], str(err), sanitizeTrace(traceback)), 'error')
                 if ' is corrupted.' not in str(err):
                     GUI.sentry.captureException()
                 MW.addMessage.emit('Error during conversion! Please consult '
