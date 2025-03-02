@@ -68,9 +68,11 @@ If you have issues detecting it, get stuck on the MOBI conversion step, or use L
 
 ### 7-Zip
 
-This is only required for certain files and advanced features. 
+This is optional but will make conversions much faster.
 
-KCC will ask you to install if needed. 
+This is required for certain files and advanced features. 
+
+KCC will ask you to install if needed.
 
 Refer to the wiki to install: https://github.com/ciromattia/kcc/wiki/Installation#7-zip
 
