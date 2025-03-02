@@ -422,8 +422,6 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "</rootfiles>\n",
                   "</container>"])
     f.close()
-    end = perf_counter()
-    print(f"buildOPF completed in {(end - start)} seconds")
 
 def buildEPUB(path, chapternames, tomenumber, ischunked):
     filelist = []

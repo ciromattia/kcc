@@ -319,7 +319,7 @@ class ComicPage:
                         with open(self.targetPath, "wb") as output_jpeg_file:
                             output_jpeg_file.write(output_jpeg_bytes)
                 else:
-                    self.image.save(self.targetPath, 'JPEG', optimize=1, quality=97)
+                    self.image.save(self.targetPath, 'JPEG', optimize=1, quality=85)
             return [self.targetPath, flags, self.orgPath]
         except IOError as err:
             raise RuntimeError('Cannot save image. ' + str(err))
