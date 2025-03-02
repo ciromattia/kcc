@@ -28,6 +28,7 @@ from copy import copy
 from glob import glob, escape
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
+from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree, copyfile
 from multiprocessing import Pool
