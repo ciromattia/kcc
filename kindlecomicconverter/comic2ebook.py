@@ -1174,6 +1174,7 @@ def checkPre(source):
 
 
 def makeBook(source, qtgui=None):
+    start = perf_counter()
     global GUI
     GUI = qtgui
     if GUI:
@@ -1276,6 +1277,8 @@ def makeBook(source, qtgui=None):
         elif os.path.isdir(source):
             rmtree(source)
 
+    end = perf_counter()
+    print(f"makeBook: {end - start} seconds")
     return filepath
 
 
