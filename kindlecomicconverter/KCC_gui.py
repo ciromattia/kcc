@@ -37,7 +37,7 @@ from packaging.version import Version
 from raven import Client
 from tempfile import gettempdir
 
-from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
+from .shared import HTMLStripper, available_archive_tools, sanitizeTrace, walkLevel, subprocess_run
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -1066,19 +1066,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
-        try:
-            subprocess_run(['tar'], stdout=PIPE, stderr=STDOUT)
-            self.tar = True
-        except FileNotFoundError:
-            self.tar = False
-        try:
-            subprocess_run(['7z'], stdout=PIPE, stderr=STDOUT)
-            self.sevenzip = True
-        except FileNotFoundError:
-            self.sevenzip = False
-            if not self.tar:
-                self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
-                                ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
+        
+        self.tar = 'tar' in available_archive_tools()
+        self.sevenzip = '7z' in available_archive_tools()
+        if not any([self.tar, self.sevenzip]):
+            self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
+                            ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
         self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
