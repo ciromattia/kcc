@@ -23,7 +23,7 @@ import pathlib
 import re
 import sys
 from argparse import ArgumentParser
-from time import strftime, gmtime
+from time import perf_counter, strftime, gmtime
 from copy import copy
 from glob import glob, escape
 from re import sub
@@ -40,7 +40,7 @@ from subprocess import STDOUT, PIPE
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 
-from .shared import md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
+from .shared import available_archive_tools, md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
 from . import comic2panel
 from . import image
 from . import comicarchive
@@ -946,17 +946,27 @@ def slugify(value):
 
 
 def makeZIP(zipfilename, basedir, isepub=False):
+    start = perf_counter()
     zipfilename = os.path.abspath(zipfilename) + '.zip'
-    zipOutput = ZipFile(zipfilename, 'w', ZIP_DEFLATED)
-    if isepub:
-        zipOutput.writestr('mimetype', 'application/epub+zip', ZIP_STORED)
-    for dirpath, _, filenames in os.walk(basedir):
-        for name in filenames:
-            path = os.path.normpath(os.path.join(dirpath, name))
-            aPath = os.path.normpath(os.path.join(dirpath.replace(basedir, ''), name))
-            if os.path.isfile(path):
-                zipOutput.write(path, aPath)
-    zipOutput.close()
+    if '7z' in available_archive_tools():
+        if isepub:
+            mimetypeFile = open(os.path.join(basedir, 'mimetype'), 'w')
+            mimetypeFile.write('application/epub+zip')
+            mimetypeFile.close()
+        subprocess_run(['7z', 'a', '-tzip', zipfilename, basedir], capture_output=True, check=True)
+    else:
+        zipOutput = ZipFile(zipfilename, 'w', ZIP_DEFLATED)
+        if isepub:
+            zipOutput.writestr('mimetype', 'application/epub+zip', ZIP_STORED)
+        for dirpath, _, filenames in os.walk(basedir):
+            for name in filenames:
+                path = os.path.normpath(os.path.join(dirpath, name))
+                aPath = os.path.normpath(os.path.join(dirpath.replace(basedir, ''), name))
+                if os.path.isfile(path):
+                    zipOutput.write(path, aPath)
+        zipOutput.close()
+    end = perf_counter()
+    print(f"makeZIP time: {end - start} seconds")
     return zipfilename
 
 
@@ -1131,9 +1141,7 @@ def checkTools(source):
     source = source.upper()
     if source.endswith('.CB7') or source.endswith('.7Z') or source.endswith('.RAR') or source.endswith('.CBR') or \
             source.endswith('.ZIP') or source.endswith('.CBZ'):
-        try:
-            subprocess_run(['7z'], stdout=PIPE, stderr=STDOUT)
-        except FileNotFoundError:
+        if '7z' not in available_archive_tools():
             print('ERROR: 7z is missing!')
             sys.exit(1)
     if options.format == 'MOBI':
