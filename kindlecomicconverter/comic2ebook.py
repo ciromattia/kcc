@@ -567,10 +567,13 @@ def imgDirectoryProcessing(path):
     if GUI:
         GUI.progressBarTick.emit(str(pagenumber))
     if len(work) > 0:
+        img_processing_start = perf_counter()
         for i in work:
             workerPool.apply_async(func=imgFileProcessing, args=(i,), callback=imgFileProcessingTick)
         workerPool.close()
         workerPool.join()
+        img_processing_end = perf_counter()
+        print(f"imgFileProcessing: {img_processing_end - img_processing_start} seconds")
         if GUI and not GUI.conversionAlive:
             rmtree(os.path.join(path, '..', '..'), True)
             raise UserWarning("Conversion interrupted.")
