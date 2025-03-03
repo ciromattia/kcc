@@ -33,7 +33,7 @@ from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree, copyfile
 from multiprocessing import Pool
 from uuid import uuid4
-from natsort import os_sorted
+from natsort import os_sort_keygen
 from slugify import slugify as slugify_ext
 from PIL import Image, ImageFile
 from subprocess import STDOUT, PIPE
@@ -51,7 +51,7 @@ from . import kindle
 from . import __version__
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-
+OS_SORT_KEY = os_sort_keygen()
 
 def main(argv=None):
     global options
@@ -790,12 +790,16 @@ def getPanelViewSize(deviceres, size):
 
 def sanitizeTree(filetree):
     chapterNames = {}
-    for root, dirs, files in os.walk(filetree, False):
-        for i, name in enumerate(os_sorted(files)):
+    page = 1
+    for root, dirs, files in os.walk(filetree):
+        dirs.sort(key=OS_SORT_KEY)
+        files.sort(key=OS_SORT_KEY)
+        for name in files:
             splitname = os.path.splitext(name)
 
             # file needs kcc at front AND back to avoid renaming issues
-            slugified = f'kcc-{i:04}'
+            slugified = f'kcc-{page:04}'
+            page += 1
             for suffix in '-KCC', '-KCC-A', '-KCC-B', '-KCC-C':
                 if splitname[0].endswith(suffix):
                     slugified += suffix.lower()
@@ -805,7 +809,7 @@ def sanitizeTree(filetree):
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
-        for name in dirs:
+        for i, name in enumerate(dirs):
             tmpName = name
             slugified = slugify(name)
             while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
@@ -815,6 +819,7 @@ def sanitizeTree(filetree):
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
+                dirs[i] = newKey
     return chapterNames
 
 
