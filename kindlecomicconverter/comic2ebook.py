@@ -504,6 +504,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
                       "display: none;\n",
                       "}\n"])
     f.close()
+    build_html_start = perf_counter()
     for dirpath, dirnames, filenames in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
@@ -517,6 +518,8 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
                 chapterlist.append((dirpath.replace('Images', 'Text'), afile))
                 chapter = True
             filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
+    build_html_end = perf_counter()
+    print(f"buildHTML: {build_html_end - build_html_start} seconds")
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapternames and options.chapters and not ischunked:
         chapterlist = []
