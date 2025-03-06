@@ -75,6 +75,16 @@ def walkLevel(some_dir, level=1):
             del dirs[:]
 
 
+def md5Checksum(fpath):
+    with open(fpath, 'rb') as fh:
+        m = md5()
+        while True:
+            data = fh.read(8192)
+            if not data:
+                break
+            m.update(data)
+        return m.hexdigest()
+
 
 def sanitizeTrace(traceback):
     return ''.join(format_tb(traceback))\

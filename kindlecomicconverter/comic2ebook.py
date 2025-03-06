@@ -40,7 +40,7 @@ from subprocess import STDOUT, PIPE
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 
-from .shared import available_archive_tools, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
+from .shared import available_archive_tools, md5Checksum, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
 from . import comic2panel
 from . import image
 from . import comicarchive
@@ -78,6 +78,7 @@ def main(argv=None):
 
 
 def buildHTML(path, imgfile, imgfilepath):
+    imgfilepath = md5Checksum(imgfilepath)
     filename = getImageFileName(imgfile)
     deviceres = options.profileData[1]
     if not options.noprocessing and "Rotated" in options.imgMetadata[imgfilepath]:
@@ -424,6 +425,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "</container>"])
     f.close()
 
+
 def buildEPUB(path, chapternames, tomenumber, ischunked):
     filelist = []
     chapterlist = []
@@ -504,7 +506,6 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
                       "display: none;\n",
                       "}\n"])
     f.close()
-    build_html_start = perf_counter()
     for dirpath, dirnames, filenames in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
@@ -514,12 +515,10 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
                                      'cover' + getImageFileName(afile)[1])
                 options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
                                                    tomenumber), options.uuid))
-            if not chapter:
-                chapterlist.append((dirpath.replace('Images', 'Text'), afile))
-                chapter = True
             filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
-    build_html_end = perf_counter()
-    print(f"buildHTML: {build_html_end - build_html_start} seconds")
+            if not chapter:
+                chapterlist.append((dirpath.replace('Images', 'Text'), filelist[-1][1]))
+                chapter = True
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
     if not chapternames and options.chapters and not ischunked:
         chapterlist = []
@@ -567,13 +566,10 @@ def imgDirectoryProcessing(path):
     if GUI:
         GUI.progressBarTick.emit(str(pagenumber))
     if len(work) > 0:
-        img_processing_start = perf_counter()
         for i in work:
             workerPool.apply_async(func=imgFileProcessing, args=(i,), callback=imgFileProcessingTick)
         workerPool.close()
         workerPool.join()
-        img_processing_end = perf_counter()
-        print(f"imgFileProcessing: {img_processing_end - img_processing_start} seconds")
         if GUI and not GUI.conversionAlive:
             rmtree(os.path.join(path, '..', '..'), True)
             raise UserWarning("Conversion interrupted.")
@@ -813,7 +809,6 @@ def sanitizeTree(filetree):
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
-                options.imgMetadata[newKey] = options.imgMetadata.pop(key)
         for i, name in enumerate(dirs):
             tmpName = name
             slugified = slugify(name)
@@ -825,10 +820,6 @@ def sanitizeTree(filetree):
             if key != newKey:
                 os.replace(key, newKey)
                 dirs[i] = newKey
-                existingImgPathKeys = list(options.imgMetadata.keys())
-                for imgPath in existingImgPathKeys:
-                    if imgPath.startswith(key):
-                        options.imgMetadata[newKey + imgPath.removeprefix(key)] = options.imgMetadata.pop(imgPath)
     return chapterNames
 
 
