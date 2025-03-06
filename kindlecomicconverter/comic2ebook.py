@@ -819,7 +819,6 @@ def sanitizeTree(filetree):
                     options.imgMetadata[newKey] = options.imgMetadata.pop(key)
                 else:
                     options.imgMetadata[newKey] = []
-                    print(f"WARNING: {key} not in options.imgMetadata")
                 
         for i, name in enumerate(dirs):
             tmpName = name
