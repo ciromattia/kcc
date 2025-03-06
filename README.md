@@ -321,5 +321,5 @@ The app relies and includes the following scripts:
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 
 ## COPYRIGHT
-Copyright (c) 2012-2023 Ciro Mattia Gonano, Paweł Jastrzębski and Darodi.
+Copyright (c) 2012-2025 Ciro Mattia Gonano, Paweł Jastrzębski, Darodi and Alex Xu.
 **KCC** is released under ISC LICENSE; see [LICENSE.txt](./LICENSE.txt) for further details.
