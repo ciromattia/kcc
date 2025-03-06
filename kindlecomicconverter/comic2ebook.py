@@ -80,6 +80,8 @@ def main(argv=None):
 def buildHTML(path, imgfile, imgfilepath):
     filename = getImageFileName(imgfile)
     deviceres = options.profileData[1]
+    if not imgfilepath in options.imgMetadata:
+        options.imgMetadata[imgfilepath] = []
     if not options.noprocessing and "Rotated" in options.imgMetadata[imgfilepath]:
         rotatedPage = True
     else:
@@ -813,7 +815,12 @@ def sanitizeTree(filetree):
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
-                options.imgMetadata[newKey] = options.imgMetadata.pop(key)
+                if key in options.imgMetadata:
+                    options.imgMetadata[newKey] = options.imgMetadata.pop(key)
+                else:
+                    options.imgMetadata[newKey] = []
+                    print(f"WARNING: {key} not in options.imgMetadata")
+                
         for i, name in enumerate(dirs):
             tmpName = name
             slugified = slugify(name)
