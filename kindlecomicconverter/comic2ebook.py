@@ -802,6 +802,7 @@ def sanitizeTree(filetree):
         for name in files:
             splitname = os.path.splitext(name)
 
+            # 9999 page limit
             slugified = f'kcc-{page:04}'
             page += 1
 
