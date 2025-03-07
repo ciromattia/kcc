@@ -299,13 +299,12 @@ class ComicPage:
 
     def saveToDir(self):
         try:
-            flags = []
             if not self.opt.forcecolor and not self.opt.forcepng:
                 self.image = self.image.convert('L')
             if self.rotated:
-                flags.append('Rotated')
+                self.targetPath += '-Rotated'
             if self.fill != 'white':
-                flags.append('BlackBackground')
+                self.targetPath += '-BlackBackground'
             if self.opt.forcepng:
                 self.image.info["transparency"] = None
                 self.targetPath += '.png'
@@ -321,7 +320,9 @@ class ComicPage:
                             output_jpeg_file.write(output_jpeg_bytes)
                 else:
                     self.image.save(self.targetPath, 'JPEG', optimize=1, quality=85)
-            return [Path(self.targetPath).name, flags, self.orgPath]
+            if os.path.isfile(self.orgPath):
+                os.remove(self.orgPath)
+            return Path(self.targetPath).name
         except IOError as err:
             raise RuntimeError('Cannot save image. ' + str(err))
 
