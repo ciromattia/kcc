@@ -19,7 +19,7 @@
 #
 
 import os
-from pathlib import Path
+import pathlib
 import re
 import sys
 from argparse import ArgumentParser
@@ -78,7 +78,7 @@ def main(argv=None):
 
 
 def buildHTML(path, imgfile, imgfilepath):
-    key = Path(imgfilepath).name
+    key = pathlib.Path(imgfilepath).name
     filename = getImageFileName(imgfile)
     deviceres = options.profileData[1]
     if not options.noprocessing and "Rotated" in options.imgMetadata[key]:
@@ -702,7 +702,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
         filename = srcpath + tomenumber + ext
     else:
         if 'Ko' in options.profile and options.format == 'EPUB':
-            src = Path(srcpath)
+            src = pathlib.Path(srcpath)
             name = re.sub(r'\W+', '_', src.stem) + tomenumber + ext
             filename = src.with_name(name)
         else:
@@ -843,7 +843,7 @@ def chunk_directory(path):
                 else:
                     level = newLevel
     if level > 0:
-        parent = Path(path).parent
+        parent = pathlib.Path(path).parent
         chunker = chunk_process(os.path.join(path, 'OEBPS', 'Images'), level, parent)
         path = [path]
         for tome in chunker:
