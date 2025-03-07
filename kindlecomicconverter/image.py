@@ -20,6 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import io
 import os
+from pathlib import Path
 import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
@@ -320,7 +321,7 @@ class ComicPage:
                             output_jpeg_file.write(output_jpeg_bytes)
                 else:
                     self.image.save(self.targetPath, 'JPEG', optimize=1, quality=85)
-            return [self.targetPath, flags, self.orgPath]
+            return [Path(self.targetPath).name, flags, self.orgPath]
         except IOError as err:
             raise RuntimeError('Cannot save image. ' + str(err))
 

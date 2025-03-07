@@ -19,7 +19,7 @@
 #
 
 import os
-import pathlib
+from pathlib import Path
 import re
 import sys
 from argparse import ArgumentParser
@@ -78,13 +78,14 @@ def main(argv=None):
 
 
 def buildHTML(path, imgfile, imgfilepath):
+    key = Path(imgfilepath).name
     filename = getImageFileName(imgfile)
     deviceres = options.profileData[1]
-    if not options.noprocessing and "Rotated" in options.imgMetadata[imgfilepath]:
+    if not options.noprocessing and "Rotated" in options.imgMetadata[key]:
         rotatedPage = True
     else:
         rotatedPage = False
-    if not options.noprocessing and "BlackBackground" in options.imgMetadata[imgfilepath]:
+    if not options.noprocessing and "BlackBackground" in options.imgMetadata[key]:
         additionalStyle = 'background-color:#000000;'
     else:
         additionalStyle = ''
@@ -701,7 +702,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
         filename = srcpath + tomenumber + ext
     else:
         if 'Ko' in options.profile and options.format == 'EPUB':
-            src = pathlib.Path(srcpath)
+            src = Path(srcpath)
             name = re.sub(r'\W+', '_', src.stem) + tomenumber + ext
             filename = src.with_name(name)
         else:
@@ -801,19 +802,13 @@ def sanitizeTree(filetree):
         for name in files:
             splitname = os.path.splitext(name)
 
-            # file needs kcc at front AND back to avoid renaming issues
             slugified = f'kcc-{page:04}'
             page += 1
-            for suffix in '-KCC', '-KCC-A', '-KCC-B', '-KCC-C':
-                if splitname[0].endswith(suffix):
-                    slugified += suffix.lower()
-                    break
 
             newKey = os.path.join(root, slugified + splitname[1])
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
-                options.imgMetadata[newKey] = options.imgMetadata.pop(key)
         for i, name in enumerate(dirs):
             tmpName = name
             slugified = slugify(name)
@@ -825,10 +820,6 @@ def sanitizeTree(filetree):
             if key != newKey:
                 os.replace(key, newKey)
                 dirs[i] = newKey
-                existingImgPathKeys = list(options.imgMetadata.keys())
-                for imgPath in existingImgPathKeys:
-                    if imgPath.startswith(key):
-                        options.imgMetadata[newKey + imgPath.removeprefix(key)] = options.imgMetadata.pop(imgPath)
     return chapterNames
 
 
@@ -852,7 +843,7 @@ def chunk_directory(path):
                 else:
                     level = newLevel
     if level > 0:
-        parent = pathlib.Path(path).parent
+        parent = Path(path).parent
         chunker = chunk_process(os.path.join(path, 'OEBPS', 'Images'), level, parent)
         path = [path]
         for tome in chunker:
@@ -1198,6 +1189,7 @@ def makeBook(source, qtgui=None):
     print("Checking images...")
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
+    chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     if options.webtoon:
         y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
@@ -1210,7 +1202,6 @@ def makeBook(source, qtgui=None):
         imgDirectoryProcessing(os.path.join(path, "OEBPS", "Images"))
     if GUI:
         GUI.progressBarTick.emit('1')
-    chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     if options.batchsplit > 0:
         tomes = chunk_directory(path)
     else:
