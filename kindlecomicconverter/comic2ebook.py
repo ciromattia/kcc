@@ -541,7 +541,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
             global_diff = 0
 
             for x in range(0, pageid + cur_diff + 1):
-                if '-kcc-b' in filelist[x][1]:
+                if '-KCC-B' in filelist[x][1]:
                     pageid += diff_delta
                     global_diff += diff_delta
 
