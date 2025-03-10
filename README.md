@@ -33,6 +33,9 @@ If you find **KCC** valuable you can consider donating to the authors:
 - Alex Xu (active 2023-Present)
   - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=QFJVE7A6LCP6U&no_recurring=0&item_name=Kindle+Comic+Converter&currency_code=USD)
 
+## Sponsors
+
+- Free code signing on Windows provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/)
 
 ## DOWNLOADS
 
