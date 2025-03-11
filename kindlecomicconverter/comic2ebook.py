@@ -77,14 +77,15 @@ def main(argv=None):
     return 0
 
 
-def buildHTML(path, imgfile):
+def buildHTML(path, imgfile, imgfilepath):
+    key = pathlib.Path(imgfilepath).name
     filename = getImageFileName(imgfile)
     deviceres = options.profileData[1]
-    if not options.noprocessing and "Rotated" in imgfile:
+    if not options.noprocessing and "Rotated" in options.imgMetadata[key]:
         rotatedPage = True
     else:
         rotatedPage = False
-    if not options.noprocessing and "BlackBackground" in imgfile:
+    if not options.noprocessing and "BlackBackground" in options.imgMetadata[key]:
         additionalStyle = 'background-color:#000000;'
     else:
         additionalStyle = ''
@@ -517,7 +518,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), afile))
                 chapter = True
-            filelist.append(buildHTML(dirpath, afile))
+            filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
     build_html_end = perf_counter()
     print(f"buildHTML: {build_html_end - build_html_start} seconds")
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
@@ -556,6 +557,7 @@ def imgDirectoryProcessing(path):
     global workerPool, workerOutput
     workerPool = Pool(maxtasksperchild=100)
     workerOutput = []
+    options.imgMetadata = {}
     work = []
     pagenumber = 0
     for dirpath, _, filenames in os.walk(path):
@@ -587,7 +589,10 @@ def imgFileProcessingTick(output):
     if isinstance(output, tuple):
         workerOutput.append(output)
         workerPool.terminate()
-
+    else:
+        for page in output:
+            if page is not None:
+                options.imgMetadata[page[0]] = page[1]
     if GUI:
         GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
