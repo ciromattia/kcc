@@ -558,7 +558,6 @@ def imgDirectoryProcessing(path):
     workerPool = Pool(maxtasksperchild=100)
     workerOutput = []
     options.imgMetadata = {}
-    options.imgOld = []
     work = []
     pagenumber = 0
     for dirpath, _, filenames in os.walk(path):
@@ -581,9 +580,6 @@ def imgDirectoryProcessing(path):
         if len(workerOutput) > 0:
             rmtree(os.path.join(path, '..', '..'), True)
             raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0][0], workerOutput[0][1])
-        for file in options.imgOld:
-            if os.path.isfile(file):
-                os.remove(file)
     else:
         rmtree(os.path.join(path, '..', '..'), True)
         raise UserWarning("Source directory is empty.")
@@ -597,7 +593,6 @@ def imgFileProcessingTick(output):
         for page in output:
             if page is not None:
                 options.imgMetadata[page[0]] = page[1]
-                options.imgOld.append(page[2])
     if GUI:
         GUI.progressBarTick.emit('tick')
         if not GUI.conversionAlive:
