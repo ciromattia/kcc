@@ -41,11 +41,22 @@ jobs:
       - name: build binary
         run: |
           python setup.py build_binary
-      - name: upload build
+      - name: upload-unsigned-artifact
+        id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
           path: dist/*.exe
+      - id: optional_step_id
+        uses: signpath/github-action-submit-signing-request@v1.1
+        with:
+         api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+         organization-id: '1dc1bad6-4a8c-4f85-af30-5c5d3d392ea6'
+         project-slug: 'kcc'
+         signing-policy-slug: 'release-signing'
+         github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
+         wait-for-completion: true
+         output-artifact-directory: 'dist/windows/signed/'
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
@@ -55,4 +66,4 @@ jobs:
           files: |
             CHANGELOG.md
             LICENSE.txt
-            dist/*.exe
+            dist/windows/signed/*.exe
