@@ -216,7 +216,7 @@ def buildNCX(dstdir, title, chapters, chapternames):
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
         filename = getImageFileName(os.path.join(folder, chapter[1]))
         navID = folder.replace('/', '_').replace('\\', '_')
-        if options.chapters:
+        if options.comicinfo_chapters:
             title = chapternames[chapter[1]]
             navID = filename[0].replace('/', '_').replace('\\', '_')
         elif os.path.basename(folder) != "Text":
@@ -244,7 +244,7 @@ def buildNAV(dstdir, title, chapters, chapternames):
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
         filename = getImageFileName(os.path.join(folder, chapter[1]))
-        if options.chapters:
+        if options.comicinfo_chapters:
             title = chapternames[chapter[1]]
         elif os.path.basename(folder) != "Text":
             title = chapternames[os.path.basename(folder)]
@@ -256,7 +256,7 @@ def buildNAV(dstdir, title, chapters, chapternames):
     for chapter in chapters:
         folder = chapter[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\')
         filename = getImageFileName(os.path.join(folder, chapter[1]))
-        if options.chapters:
+        if options.comicinfo_chapters:
             title = chapternames[chapter[1]]
         elif os.path.basename(folder) != "Text":
             title = chapternames[os.path.basename(folder)]
@@ -522,7 +522,10 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
     build_html_end = perf_counter()
     print(f"buildHTML: {build_html_end - build_html_start} seconds")
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
-    if not chapternames and options.chapters and not ischunked:
+    if ischunked:
+       options.comicinfo_chapters = []
+    
+    if not chapternames and options.comicinfo_chapters:
         chapterlist = []
 
         global_diff = 0
@@ -535,7 +538,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
         elif options.splitter == 2:
             diff_delta = 2
 
-        for aChapter in options.chapters:
+        for aChapter in options.comicinfo_chapters:
             pageid = aChapter[0]
             cur_diff = global_diff
             global_diff = 0
@@ -713,7 +716,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
 
 def getComicInfo(path, originalpath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
-    options.chapters = []
+    options.comicinfo_chapters = []
     options.summary = ''
     titleSuffix = ''
     if options.title == 'defaulttitle':
@@ -755,7 +758,7 @@ def getComicInfo(path, originalpath):
             else:
                 options.authors = ['KCC']
         if xml.data['Bookmarks']:
-            options.chapters = xml.data['Bookmarks']
+            options.comicinfo_chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
             options.summary = hescape(xml.data['Summary'])
         os.remove(xmlPath)
