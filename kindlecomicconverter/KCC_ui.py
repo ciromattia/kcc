@@ -424,7 +424,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.qualityBox.setText(QCoreApplication.translate("mainWindow", u"Panel View 4/2/HQ", None))
 #if QT_CONFIG(tooltip)
-        self.disableProcessingBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><pre style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Do not process any image, ignore profile and processing options</pre></body></html>", None))
+        self.disableProcessingBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Do not rotate double page spreads in spread splitter option.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.disableProcessingBox.setText(QCoreApplication.translate("mainWindow", u"Disable processing", None))
 #if QT_CONFIG(tooltip)
