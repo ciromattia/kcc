@@ -300,7 +300,7 @@ class WorkerThread(QThread):
             jobargv.append(job)
             try:
                 comic2ebook.options = comic2ebook.checkOptions(copy(options))
-                print(comic2ebook.options)
+                print(job)
                 outputPath = comic2ebook.makeBook(job, self)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
@@ -348,6 +348,7 @@ class WorkerThread(QThread):
                     MW.addMessage.emit('Creating MOBI files', 'info', False)
                     GUI.progress.content = 'Creating MOBI files'
                     work = []
+                    print(outputPath)
                     for item in outputPath:
                         work.append([item])
                     self.workerOutput = comic2ebook.makeMOBI(work, self)
