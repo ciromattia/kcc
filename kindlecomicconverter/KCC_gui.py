@@ -222,6 +222,7 @@ class WorkerThread(QThread):
 
         options.profile = GUI.profiles[str(GUI.deviceBox.currentText())]['Label']
         gui_current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
+        print(gui_current_format)
         options.format = gui_current_format
         if GUI.mangaBox.isChecked():
             options.righttoleft = True
@@ -299,6 +300,7 @@ class WorkerThread(QThread):
             jobargv.append(job)
             try:
                 comic2ebook.options = comic2ebook.checkOptions(copy(options))
+                print(comic2ebook.options)
                 outputPath = comic2ebook.makeBook(job, self)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
@@ -338,6 +340,7 @@ class WorkerThread(QThread):
                     MW.addMessage.emit('Creating CBZ files... <b>Done!</b>', 'info', True)
                 else:
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
+                print(gui_current_format)
                 if 'MOBI' in gui_current_format:
                     MW.progressBarTick.emit('Creating MOBI files')
                     MW.progressBarTick.emit(str(len(outputPath) * 2 + 1))
@@ -922,7 +925,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "CBZ": {'icon': 'CBZ', 'format': 'CBZ'},
             "EPUB (Calibre KFX)": {'icon': 'EPUB', 'format': 'KFX'},
             "MOBI + EPUB": {'icon': 'MOBI', 'format': 'MOBI+EPUB'},
-            "EPUB (200MB limit)": {'icon': 'EPUB', 'format': 'EPUB-200MB'}
+            "EPUB (200MB limit)": {'icon': 'EPUB', 'format': 'EPUB-200MB'},
+            "MOBI + EPUB (200MB limit)": {'icon': 'MOBI', 'format': 'MOBI+EPUB-200MB'}
         }
 
 
