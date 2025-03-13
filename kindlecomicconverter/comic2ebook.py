@@ -1076,6 +1076,12 @@ def checkOptions(options):
         options.format = 'EPUB'
         if options.batchsplit != 2:
             options.batchsplit = 1
+    if options.format == 'MOBI+EPUB-200MB':
+        options.keep_epub = True
+        options.targetsize = 195
+        options.format = 'MOBI'
+        if options.batchsplit != 2:
+            options.batchsplit = 1
     if options.format == 'MOBI+EPUB':
         options.keep_epub = True
         options.format = 'MOBI'
