@@ -358,19 +358,19 @@ def buildOPF(dstdir, title, filelist, cover=None):
             pageside = "right"
     for entry in reflist:
         if options.righttoleft:
-            if entry.endswith("-a"):
+            if entry.endswith("-kcc-a"):
                 f.write(
                     "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                             pageSpreadProperty("center"))
                 )
                 pageside = "right"
-            elif entry.endswith("-b"):
+            elif entry.endswith("-kcc-b"):
                 f.write(
                     "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                             pageSpreadProperty("right"))
                 )
                 pageside = "right"
-            elif entry.endswith("-c"):
+            elif entry.endswith("-kcc-c"):
                 f.write(
                     "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                             pageSpreadProperty("left"))
@@ -386,19 +386,19 @@ def buildOPF(dstdir, title, filelist, cover=None):
                 else:
                     pageside = "right"
         else:
-            if entry.endswith("-a"):
+            if entry.endswith("-kcc-a"):
                 f.write(
                     "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                             pageSpreadProperty("center"))
                 )
                 pageside = "left"
-            elif entry.endswith("-b"):
+            elif entry.endswith("-kcc-b"):
                 f.write(
                     "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                             pageSpreadProperty("left"))
                 )
                 pageside = "left"
-            elif entry.endswith("-c"):
+            elif entry.endswith("-kcc-c"):
                 f.write(
                     "<itemref idref=\"page_%s\" %s/>\n" % (entry,
                                                             pageSpreadProperty("right"))
@@ -544,7 +544,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
             global_diff = 0
 
             for x in range(0, pageid + cur_diff + 1):
-                if '-KCC-B' in filelist[x][1]:
+                if '-kcc-b' in filelist[x][1]:
                     pageid += diff_delta
                     global_diff += diff_delta
 
