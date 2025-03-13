@@ -222,7 +222,6 @@ class WorkerThread(QThread):
 
         options.profile = GUI.profiles[str(GUI.deviceBox.currentText())]['Label']
         gui_current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
-        print(gui_current_format)
         options.format = gui_current_format
         if GUI.mangaBox.isChecked():
             options.righttoleft = True
@@ -300,7 +299,6 @@ class WorkerThread(QThread):
             jobargv.append(job)
             try:
                 comic2ebook.options = comic2ebook.checkOptions(copy(options))
-                print(job)
                 outputPath = comic2ebook.makeBook(job, self)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
@@ -340,7 +338,6 @@ class WorkerThread(QThread):
                     MW.addMessage.emit('Creating CBZ files... <b>Done!</b>', 'info', True)
                 else:
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
-                print(gui_current_format)
                 if 'MOBI' in gui_current_format:
                     MW.progressBarTick.emit('Creating MOBI files')
                     MW.progressBarTick.emit(str(len(outputPath) * 2 + 1))
@@ -348,7 +345,6 @@ class WorkerThread(QThread):
                     MW.addMessage.emit('Creating MOBI files', 'info', False)
                     GUI.progress.content = 'Creating MOBI files'
                     work = []
-                    print(outputPath)
                     for item in outputPath:
                         work.append([item])
                     self.workerOutput = comic2ebook.makeMOBI(work, self)
