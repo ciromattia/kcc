@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'KCC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -424,7 +424,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.qualityBox.setText(QCoreApplication.translate("mainWindow", u"Panel View 4/2/HQ", None))
 #if QT_CONFIG(tooltip)
-        self.disableProcessingBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><pre style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Do not process any image, ignore profile and processing options</pre></body></html>", None))
+        self.disableProcessingBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><pre style='white-space:pre'; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Do not process any image, ignore profile and processing options</pre></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.disableProcessingBox.setText(QCoreApplication.translate("mainWindow", u"Disable processing", None))
 #if QT_CONFIG(tooltip)
