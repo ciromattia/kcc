@@ -31,7 +31,7 @@ If you find **KCC** valuable you can consider donating to the authors:
   - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
   - [![Donate Bitcoin](https://img.shields.io/badge/Donate-Bitcoin-green.svg)](https://jastrzeb.ski/donate/)
 - Alex Xu (active 2023-Present)
-  - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?business=QFJVE7A6LCP6U&no_recurring=0&item_name=Kindle+Comic+Converter&currency_code=USD)
+  - [![Donate KoFi](https://img.shields.io/badge/Donate-KoFi-blue.svg)](https://ko-fi.com/eink_dude)
 
 ## Sponsors
 
