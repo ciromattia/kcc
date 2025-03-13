@@ -13,6 +13,8 @@ It can also optionally optimize images by applying a number of transformations.
 
 ![image](https://github.com/user-attachments/assets/36ad2131-6677-4559-bd6f-314a90c27218)
 
+YouTube tutorial (please subscribe): https://www.youtube.com/watch?v=IR2Fhcm9658
+
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.
 Amazon's tool is for comic publishers and involves a lot of manual effort, while **KCC** is for comic/manga readers.
