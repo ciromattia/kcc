@@ -285,14 +285,14 @@ class ComicPage:
         self.rotated = False
         self.orgPath = os.path.join(path[0], path[1])
         if 'N' in mode:
-            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-KCC'
+            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc'
         elif 'R' in mode:
-            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-KCC-A'
+            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc-a'
             self.rotated = True
         elif 'S1' in mode:
-            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-KCC-B'
+            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc-b'
         elif 'S2' in mode:
-            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-KCC-C'
+            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc-c'
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
