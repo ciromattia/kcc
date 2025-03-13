@@ -31,7 +31,8 @@ If you find **KCC** valuable you can consider donating to the authors:
   - [![Donate PayPal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YTTJ4LK2JDHPS)
   - [![Donate Bitcoin](https://img.shields.io/badge/Donate-Bitcoin-green.svg)](https://jastrzeb.ski/donate/)
 - Alex Xu (active 2023-Present)
-  - [![Donate KoFi](https://img.shields.io/badge/Donate-KoFi-blue.svg)](https://ko-fi.com/eink_dude)
+
+  [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q41BW8HS)
 
 ## Sponsors
 
