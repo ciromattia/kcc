@@ -843,11 +843,6 @@ def chunk_directory(path):
             if getImageFileName(f):
                 newLevel = os.path.join(root, f).replace(os.path.join(path, 'OEBPS', 'Images'), '').count(os.sep)
                 if level != -1 and level != newLevel:
-                    print("Unsupported directory structure. Chapters disabled.")
-                    if GUI:
-                        GUI.addMessage.emit('Unsupported directory structure. Chapters disabled.'
-                                            , 'warning', False)
-                        GUI.addMessage.emit('', '', False)
                     flattenTree(os.path.join(path, 'OEBPS', 'Images'))
                     level = 1
                     break
@@ -881,11 +876,6 @@ def chunk_process(path, mode, parent):
             for entry in it:
                 if not entry.name.startswith('.') and entry.is_dir():
                     if getDirectorySize(os.path.join(path, entry)) > targetSize:
-                        print("Nested folders are too large. Chapters disabled.")
-                        if GUI:
-                            GUI.addMessage.emit('Nested folders are too large. Chapters disabled.'
-                                                , 'warning', False)
-                            GUI.addMessage.emit('', '', False)
                         flattenTree(path)
                         mode = 1
     if mode < 3:
