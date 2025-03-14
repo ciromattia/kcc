@@ -871,7 +871,7 @@ def chunk_process(path, mode, parent):
         targetSize = 419430400
     if options.batchsplit == 2 and mode == 2:
         mode = 3
-    if mode == 2:
+    if options.batchsplit == 1 and mode == 2:
         with os.scandir(path) as it:
             for entry in it:
                 if not entry.name.startswith('.') and entry.is_dir():
