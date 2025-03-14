@@ -878,6 +878,7 @@ def chunk_process(path, mode, parent):
                     if getDirectorySize(os.path.join(path, entry)) > targetSize:
                         flattenTree(path)
                         mode = 1
+                        break
     if mode < 3:
         for root, dirs, files in walkLevel(path, 0):
             for name in files if mode == 1 else dirs:
