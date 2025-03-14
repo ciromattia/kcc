@@ -820,6 +820,14 @@ def sanitizeTree(filetree):
     return chapterNames
 
 
+def flattenTree(filetree):
+    for root, dirs, files in os.walk(filetree, topdown=False):
+        for name in files:
+            os.rename(os.path.join(root, name), os.path.join(filetree, name))
+        for name in dirs:
+            os.rmdir(os.path.join(root, name))
+
+
 def sanitizePermissions(filetree):
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
@@ -847,7 +855,7 @@ def chunk_directory(path):
             path.append(tome)
         return path
     else:
-        raise UserWarning('Unsupported directory structure.')
+        raise UserWarning('Unsupported directory structure. Enable Flatten directories option.')
 
 
 def chunk_process(path, mode, parent):
@@ -1016,6 +1024,8 @@ def makeParser():
                                      "2: Consider every subdirectory as separate volume [Default=0]")
     output_options.add_argument("--spreadshift", action="store_true", dest="spreadshift", default=False,
                                 help="Shift first page to opposite side in landscape for spread alignment")
+    output_options.add_argument("--flatten", action="store_true", dest="flatten", default=False,
+                                help="Remove nested folders to fix unsupported directory structure error. Disables chapters.")
     output_options.add_argument("--norotate", action="store_true", dest="norotate", default=False,
                                 help="Do not rotate double page spreads in spread splitter option.")
 
@@ -1193,6 +1203,8 @@ def makeBook(source, qtgui=None):
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
     chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    if options.flatten:
+        flattenTree(os.path.join(path, 'OEBPS', 'Images'))
     if options.webtoon:
         y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
