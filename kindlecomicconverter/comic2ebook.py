@@ -820,6 +820,14 @@ def sanitizeTree(filetree):
     return chapterNames
 
 
+def flattenTree(filetree):
+    for root, dirs, files in os.walk(filetree, topdown=False):
+        for name in files:
+            os.rename(os.path.join(root, name), os.path.join(filetree, name))
+        for name in dirs:
+            os.rmdir(os.path.join(root, name))
+
+
 def sanitizePermissions(filetree):
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
@@ -835,7 +843,8 @@ def chunk_directory(path):
             if getImageFileName(f):
                 newLevel = os.path.join(root, f).replace(os.path.join(path, 'OEBPS', 'Images'), '').count(os.sep)
                 if level != -1 and level != newLevel:
-                    level = 0
+                    flattenTree(os.path.join(path, 'OEBPS', 'Images'))
+                    level = 1
                     break
                 else:
                     level = newLevel
@@ -862,6 +871,14 @@ def chunk_process(path, mode, parent):
         targetSize = 419430400
     if options.batchsplit == 2 and mode == 2:
         mode = 3
+    if options.batchsplit == 1 and mode == 2:
+        with os.scandir(path) as it:
+            for entry in it:
+                if not entry.name.startswith('.') and entry.is_dir():
+                    if getDirectorySize(os.path.join(path, entry)) > targetSize:
+                        flattenTree(path)
+                        mode = 1
+                        break
     if mode < 3:
         for root, dirs, files in walkLevel(path, 0):
             for name in files if mode == 1 else dirs:
