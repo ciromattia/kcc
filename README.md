@@ -5,11 +5,11 @@
 [![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc)
 
-
-**Kindle Comic Converter** is a Python app to convert comic/manga files or folders to EPUB, Panel View MOBI or E-Ink optimized CBZ.
-It was initially developed for Kindle but since version 4.6 it outputs valid EPUB 3.0 so _**despite its name, KCC is
-actually a comic/manga to EPUB converter that every e-reader owner can happily use**_.
-It can also optionally optimize images by applying a number of transformations.
+**Kindle Comic Converter** is a Python app to optimize comics and manga for eink readers like Kindle, Kobo, ReMarkable, and more. 
+Its main feature is various optional image processing steps to look good on eink screens, 
+which have different requirements than normal LCD screens.
+Supported input formats include folders/CBZ/CBR/PDF of JPG/PNG files and more.
+Supported output formats include MOBI/AZW3, EPUB, KEPUB, and CBZ.
 
 ![image](https://github.com/user-attachments/assets/36ad2131-6677-4559-bd6f-314a90c27218)
 
