@@ -63,6 +63,9 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 - [Windows 7 support](https://github.com/ciromattia/kcc/issues/678)
 - [Combine files/chapters](https://github.com/ciromattia/kcc/issues/612#issuecomment-2117985011)
 - [Flatpak mobi conversion stuck](https://github.com/ciromattia/kcc/wiki/Installation#linux)
+- Image too dark?
+  - The default gamma correction of 1.8 makes the image darker, and is useful for faded/gray artwork/text. Disable by setting gamma = 1.0
+- [Better PDF support (Humble Bundle, Fanatical, etc)](https://github.com/ciromattia/kcc/issues/680)
 
 ## PREREQUISITES
 
