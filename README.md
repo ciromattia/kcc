@@ -5,7 +5,7 @@
 [![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc)
 
-**Kindle Comic Converter** is a Python app to optimize comics and manga for eink readers like Kindle, Kobo, ReMarkable, and more. 
+**Kindle Comic Converter** optimizes comics and manga for eink readers like Kindle, Kobo, ReMarkable, and more. 
 Its main feature is various optional image processing steps to look good on eink screens, 
 which have different requirements than normal LCD screens.
 Supported input formats include folders/CBZ/CBR/PDF of JPG/PNG files and more.
