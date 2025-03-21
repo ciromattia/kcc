@@ -433,9 +433,14 @@ class Cover:
         w, h = self.image.size
         if w / h > 2:
             if self.options.righttoleft:
-                self.image = self.image.crop((0, 0, w/2 + w * 0.02, h))
+                self.image = self.image.crop((w/6, 0, w/2 - w * 0.02, h))
             else:
-                self.image = self.image.crop((w/2 - w * 0.02, 0, w, h))
+                self.image = self.image.crop((w/2 + w * 0.02, 0, 5/6 * w, h))
+        elif w / h > 1.3:
+            if self.options.righttoleft:
+                self.image = self.image.crop((0, 0, w/2 - w * 0.03, h))
+            else:
+                self.image = self.image.crop((w/2 + w * 0.03, 0, w, h))
         self.image.thumbnail(self.options.profileData[1], Image.Resampling.LANCZOS)
         self.save()
 
