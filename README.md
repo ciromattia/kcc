@@ -8,6 +8,7 @@
 **Kindle Comic Converter** optimizes comics and manga for eink readers like Kindle, Kobo, ReMarkable, and more. 
 Its main feature is various optional image processing steps to look good on eink screens, 
 which have different requirements than normal LCD screens.
+It also does filesize optimization by downscaling to your specific device's screen resolution.
 Supported input formats include folders/CBZ/CBR/PDF of JPG/PNG files and more.
 Supported output formats include MOBI/AZW3, EPUB, KEPUB, and CBZ.
 
