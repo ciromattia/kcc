@@ -65,6 +65,9 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 - Image too dark?
   - The default gamma correction of 1.8 makes the image darker, and is useful for faded/gray artwork/text. Disable by setting gamma = 1.0
 - [Better PDF support (Humble Bundle, Fanatical, etc)](https://github.com/ciromattia/kcc/issues/680)
+- Cannot connect Kindle Scribe or 2024+ Kindle to macOS
+  - Use official MTP [Amazon USB File Transfer app](https://www.amazon.com/gp/help/customer/display.html/ref=hp_Connect_USB_MTP?nodeId=TCUBEdEkbIhK07ysFu)
+    (no login required). Works much better than previously recommended Android File Transfer. Cannot run simutaneously with other transfer apps.
 
 ## PREREQUISITES
 
