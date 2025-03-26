@@ -54,7 +54,7 @@ jobs:
          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
          organization-id: '1dc1bad6-4a8c-4f85-af30-5c5d3d392ea6'
          project-slug: 'kcc'
-         signing-policy-slug: 'test-signing'
+         signing-policy-slug: 'release-signing'
          github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
          wait-for-completion: true
          output-artifact-directory: 'dist/'
