@@ -53,10 +53,10 @@ jobs:
          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
          organization-id: '1dc1bad6-4a8c-4f85-af30-5c5d3d392ea6'
          project-slug: 'kcc'
-         signing-policy-slug: 'release-signing'
+         signing-policy-slug: 'test-signing'
          github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
          wait-for-completion: true
-         output-artifact-directory: 'dist/windows/signed/'
+         output-artifact-directory: 'dist/'
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
@@ -66,4 +66,4 @@ jobs:
           files: |
             CHANGELOG.md
             LICENSE.txt
-            dist/windows/signed/*.exe
+            dist/*.exe
