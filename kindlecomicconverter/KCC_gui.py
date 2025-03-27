@@ -278,6 +278,8 @@ class WorkerThread(QThread):
             options.output = GUI.targetDirectory
         if GUI.authorEdit.text():
             options.author = str(GUI.authorEdit.text())
+        if GUI.splitSizeCheckBox.isChecked():
+            options.targetsize = int(GUI.splitSizeBox.value())
 
         for i in range(GUI.jobList.count()):
             # Make sure that we don't consider any system message as job to do
@@ -677,6 +679,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         else:
             GUI.outputSplit.setEnabled(False)
             GUI.outputSplit.setChecked(False)
+        if (GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'EPUB-200MB' or
+            GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'MOBI+EPUB-200MB'):
+            GUI.splitSizeCheckBox.setChecked(False)
+            GUI.splitSizeWidget.setEnabled(False)
+        else:
+            GUI.splitSizeWidget.setEnabled(True)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -804,7 +812,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'spreadShiftBox': GUI.spreadShiftBox.checkState().value,
                                            'noRotateBox': GUI.noRotateBox.checkState().value,
                                            'maximizeStrips': GUI.maximizeStrips.checkState().value,
-                                           'gammaSlider': float(self.gammaValue) * 100})
+                                           'gammaSlider': float(self.gammaValue) * 100,
+                                           'splitSizeCheckBox': GUI.splitSizeCheckBox.checkState().value,
+                                           'splitSizeBox': GUI.splitSizeBox.value()})
         self.settings.sync()
         self.tray.hide()
 
@@ -1142,6 +1152,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if GUI.croppingPowerSlider.isEnabled():
                     GUI.croppingPowerSlider.setValue(int(self.options[option]))
                     self.changeCroppingPower(int(self.options[option]))
+            elif str(option) == "splitSizeBox":
+                GUI.splitSizeBox.setValue(int(self.options[option]))
             else:
                 try:
                     if getattr(GUI, option).isEnabled():
