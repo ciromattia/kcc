@@ -26,7 +26,7 @@ class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         if not mainWindow.objectName():
             mainWindow.setObjectName(u"mainWindow")
-        mainWindow.resize(482, 448)
+        mainWindow.resize(519, 501)
         icon = QIcon()
         icon.addFile(u":/Icon/icons/comic2ebook.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         mainWindow.setWindowIcon(icon)
@@ -148,6 +148,30 @@ class Ui_mainWindow(object):
         self.reduceRainbowBox.setObjectName(u"reduceRainbowBox")
 
         self.gridLayout_2.addWidget(self.reduceRainbowBox, 7, 2, 1, 1)
+
+        self.splitSizeWidget = QWidget(self.optionWidget)
+        self.splitSizeWidget.setObjectName(u"splitSizeWidget")
+        sizePolicy.setHeightForWidth(self.splitSizeWidget.sizePolicy().hasHeightForWidth())
+        self.splitSizeWidget.setSizePolicy(sizePolicy)
+        self.horizontalLayout_4 = QHBoxLayout(self.splitSizeWidget)
+        self.horizontalLayout_4.setSpacing(0)
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
+        self.splitSizeCheckBox = QCheckBox(self.splitSizeWidget)
+        self.splitSizeCheckBox.setObjectName(u"splitSizeCheckBox")
+
+        self.horizontalLayout_4.addWidget(self.splitSizeCheckBox)
+
+        self.splitSizeBox = QSpinBox(self.splitSizeWidget)
+        self.splitSizeBox.setObjectName(u"splitSizeBox")
+        self.splitSizeBox.setMinimum(100)
+        self.splitSizeBox.setMaximum(1024)
+        self.splitSizeBox.setValue(400)
+
+        self.horizontalLayout_4.addWidget(self.splitSizeBox)
+
+
+        self.gridLayout_2.addWidget(self.splitSizeWidget, 6, 0, 1, 1)
 
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
@@ -367,18 +391,24 @@ class Ui_mainWindow(object):
         QWidget.setTabOrder(self.gammaBox, self.borderBox)
         QWidget.setTabOrder(self.borderBox, self.outputSplit)
         QWidget.setTabOrder(self.outputSplit, self.colorBox)
-        QWidget.setTabOrder(self.colorBox, self.croppingBox)
-        QWidget.setTabOrder(self.croppingBox, self.mozJpegBox)
+        QWidget.setTabOrder(self.colorBox, self.mozJpegBox)
         QWidget.setTabOrder(self.mozJpegBox, self.maximizeStrips)
-        QWidget.setTabOrder(self.maximizeStrips, self.deleteBox)
+        QWidget.setTabOrder(self.maximizeStrips, self.croppingBox)
+        QWidget.setTabOrder(self.croppingBox, self.spreadShiftBox)
+        QWidget.setTabOrder(self.spreadShiftBox, self.deleteBox)
         QWidget.setTabOrder(self.deleteBox, self.disableProcessingBox)
-        QWidget.setTabOrder(self.disableProcessingBox, self.editorButton)
+        QWidget.setTabOrder(self.disableProcessingBox, self.splitSizeCheckBox)
+        QWidget.setTabOrder(self.splitSizeCheckBox, self.splitSizeBox)
+        QWidget.setTabOrder(self.splitSizeBox, self.noRotateBox)
+        QWidget.setTabOrder(self.noRotateBox, self.interPanelCropBox)
+        QWidget.setTabOrder(self.interPanelCropBox, self.reduceRainbowBox)
+        QWidget.setTabOrder(self.reduceRainbowBox, self.heightBox)
+        QWidget.setTabOrder(self.heightBox, self.croppingPowerSlider)
+        QWidget.setTabOrder(self.croppingPowerSlider, self.editorButton)
         QWidget.setTabOrder(self.editorButton, self.wikiButton)
         QWidget.setTabOrder(self.wikiButton, self.jobList)
         QWidget.setTabOrder(self.jobList, self.gammaSlider)
         QWidget.setTabOrder(self.gammaSlider, self.widthBox)
-        QWidget.setTabOrder(self.widthBox, self.heightBox)
-        QWidget.setTabOrder(self.heightBox, self.croppingPowerSlider)
 
         self.retranslateUi(mainWindow)
 
@@ -463,6 +493,10 @@ class Ui_mainWindow(object):
         self.reduceRainbowBox.setToolTip(QCoreApplication.translate("mainWindow", u"Reduce rainbow effect on color eink by slightly blurring images", None))
 #endif // QT_CONFIG(tooltip)
         self.reduceRainbowBox.setText(QCoreApplication.translate("mainWindow", u"Reduce Rainbow", None))
+#if QT_CONFIG(tooltip)
+        self.splitSizeWidget.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:700; text-decoration: underline;\">Unchecked<br/></span>Default=100 MB for webtoon, 400 MB for others.</p><p><span style=\" font-weight:700; text-decoration: underline;\">Checked<br/></span>The maximal size of output file in MB before split occurs.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.splitSizeCheckBox.setText(QCoreApplication.translate("mainWindow", u"Split size MB:", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
         self.croppingPowerLabel.setText(QCoreApplication.translate("mainWindow", u"Cropping power:", None))
 #if QT_CONFIG(tooltip)
