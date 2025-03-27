@@ -165,7 +165,7 @@ class Ui_mainWindow(object):
         self.splitSizeBox = QSpinBox(self.splitSizeWidget)
         self.splitSizeBox.setObjectName(u"splitSizeBox")
         self.splitSizeBox.setMinimum(100)
-        self.splitSizeBox.setMaximum(1024)
+        self.splitSizeBox.setMaximum(600)
         self.splitSizeBox.setValue(400)
 
         self.horizontalLayout_4.addWidget(self.splitSizeBox)
