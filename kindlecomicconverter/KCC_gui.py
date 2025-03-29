@@ -689,7 +689,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'MOBI+EPUB-200MB'):
             GUI.chunkSizeCheckBox.setEnabled(False)
             GUI.chunkSizeCheckBox.setChecked(False)
-        else:
+        elif not GUI.webtoonBox.isChecked():
             GUI.chunkSizeCheckBox.setEnabled(True)
 
     def stripTags(self, html):
