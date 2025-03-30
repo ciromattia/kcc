@@ -613,7 +613,7 @@ def imgFileProcessing(work):
             img = image.ComicPage(opt, *i)
             if opt.cropping == 2 and not opt.webtoon:
                 img.cropPageNumber(opt.croppingp, opt.croppingm)
-            if opt.cropping > 0 and not opt.webtoon:
+            if opt.cropping == 1 and not opt.webtoon:
                 img.cropMargin(opt.croppingp, opt.croppingm)
             if opt.interpanelcrop > 0:
                 img.cropInterPanelEmptySections("horizontal" if opt.interpanelcrop == 1 else "both")
