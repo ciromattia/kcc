@@ -548,7 +548,7 @@ class Ui_mainWindow(object):
 #if QT_CONFIG(tooltip)
         self.reduceRainbowBox.setToolTip(QCoreApplication.translate("mainWindow", u"Reduce rainbow effect on color eink by slightly blurring images", None))
 #endif // QT_CONFIG(tooltip)
-        self.reduceRainbowBox.setText(QCoreApplication.translate("mainWindow", u"Reduce Rainbow", None))
+        self.reduceRainbowBox.setText(QCoreApplication.translate("mainWindow", u"Rainbow blur", None))
 #if QT_CONFIG(tooltip)
         self.chunkSizeCheckBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:700; text-decoration: underline;\">Unchecked<br/></span>Maximal output file size is 100 MB for Webtoon, 400 MB for others before split occurs.</p><p><span style=\" font-weight:700; text-decoration: underline;\">Checked</span><br/>Output file size specified in &quot;Chunk size MB&quot; before split occurs.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

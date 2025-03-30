@@ -600,7 +600,7 @@
           <string>Reduce rainbow effect on color eink by slightly blurring images</string>
          </property>
          <property name="text">
-          <string>Reduce Rainbow</string>
+          <string>Rainbow blur</string>
          </property>
         </widget>
        </item>
