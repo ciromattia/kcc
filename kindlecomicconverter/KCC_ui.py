@@ -558,6 +558,6 @@ class Ui_mainWindow(object):
         self.chunkSizeWidget.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Warning: chunk size greater than default may cause<br/>performance/battery issues, especially on older devices.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.chunkSizeLabel.setText(QCoreApplication.translate("mainWindow", u"Chunk size MB:", None))
-        self.chunkSizeWarnLabel.setText(QCoreApplication.translate("mainWindow", u"Greater than default may cause performance issues", None))
+        self.chunkSizeWarnLabel.setText(QCoreApplication.translate("mainWindow", u"Greater than default may cause performance issues on older ereaders.", None))
     # retranslateUi
 

@@ -723,7 +723,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Greater than default may cause performance issues</string>
+          <string>Greater than default may cause performance issues on older ereaders.</string>
          </property>
         </widget>
        </item>
