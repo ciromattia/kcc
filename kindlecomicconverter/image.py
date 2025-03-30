@@ -392,7 +392,7 @@ class ComicPage:
     def maybeCrop(self, box, minimum):
         w, h = self.image.size
         left, upper, right, lower = box
-        ratio = 0.8
+        ratio = 0.5
         box = left * ratio, upper * ratio, right + (w - right) * (1 - ratio), lower + (h - lower) * (1 - ratio)
         box_area = (box[2] - box[0]) * (box[3] - box[1])
         image_area = self.image.size[0] * self.image.size[1]
