@@ -278,6 +278,8 @@ class WorkerThread(QThread):
             options.output = GUI.targetDirectory
         if GUI.authorEdit.text():
             options.author = str(GUI.authorEdit.text())
+        if GUI.chunkSizeCheckBox.isChecked():
+            options.targetsize = int(GUI.chunkSizeBox.value())
 
         for i in range(GUI.jobList.count()):
             # Make sure that we don't consider any system message as job to do
@@ -605,6 +607,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.rotateBox.setChecked(False)
             GUI.upscaleBox.setEnabled(False)
             GUI.upscaleBox.setChecked(True)
+            GUI.chunkSizeCheckBox.setEnabled(False)
+            GUI.chunkSizeCheckBox.setChecked(False)
         else:
             profile = GUI.profiles[str(GUI.deviceBox.currentText())]
             if profile['PVOptions']:
@@ -612,6 +616,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.mangaBox.setEnabled(True)
             GUI.rotateBox.setEnabled(True)
             GUI.upscaleBox.setEnabled(True)
+            GUI.chunkSizeCheckBox.setEnabled(True)
 
     def togglequalityBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
@@ -624,6 +629,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         else:
             GUI.upscaleBox.setEnabled(True)
             GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
+    
+    def togglechunkSizeCheckBox(self, value):
+        GUI.chunkSizeWidget.setVisible(value)
 
     def changeGamma(self, value):
         valueRaw = int(5 * round(float(value) / 5))
@@ -677,6 +685,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         else:
             GUI.outputSplit.setEnabled(False)
             GUI.outputSplit.setChecked(False)
+        if (GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'EPUB-200MB' or
+            GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'MOBI+EPUB-200MB'):
+            GUI.chunkSizeCheckBox.setEnabled(False)
+            GUI.chunkSizeCheckBox.setChecked(False)
+        elif not GUI.webtoonBox.isChecked():
+            GUI.chunkSizeCheckBox.setEnabled(True)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -804,7 +818,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'spreadShiftBox': GUI.spreadShiftBox.checkState().value,
                                            'noRotateBox': GUI.noRotateBox.checkState().value,
                                            'maximizeStrips': GUI.maximizeStrips.checkState().value,
-                                           'gammaSlider': float(self.gammaValue) * 100})
+                                           'gammaSlider': float(self.gammaValue) * 100,
+                                           'chunkSizeCheckBox': GUI.chunkSizeCheckBox.checkState().value,
+                                           'chunkSizeBox': GUI.chunkSizeBox.value()})
         self.settings.sync()
         self.tray.hide()
 
@@ -1090,6 +1106,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.croppingPowerSlider.valueChanged.connect(self.changeCroppingPower)
         GUI.webtoonBox.stateChanged.connect(self.togglewebtoonBox)
         GUI.qualityBox.stateChanged.connect(self.togglequalityBox)
+        GUI.chunkSizeCheckBox.stateChanged.connect(self.togglechunkSizeCheckBox)
         GUI.deviceBox.activated.connect(self.changeDevice)
         GUI.formatBox.activated.connect(self.changeFormat)
         MW.progressBarTick.connect(self.updateProgressbar)
@@ -1142,6 +1159,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if GUI.croppingPowerSlider.isEnabled():
                     GUI.croppingPowerSlider.setValue(int(self.options[option]))
                     self.changeCroppingPower(int(self.options[option]))
+            elif str(option) == "chunkSizeBox":
+                GUI.chunkSizeBox.setValue(int(self.options[option]))
             else:
                 try:
                     if getattr(GUI, option).isEnabled():
