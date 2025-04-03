@@ -190,13 +190,18 @@ class Ui_mainWindow(object):
         self.croppingWidget = QWidget(self.centralWidget)
         self.croppingWidget.setObjectName(u"croppingWidget")
         self.croppingWidget.setVisible(False)
-        self.horizontalLayout_3 = QHBoxLayout(self.croppingWidget)
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout_5 = QGridLayout(self.croppingWidget)
+        self.gridLayout_5.setObjectName(u"gridLayout_5")
+        self.gridLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.preserveMarginLabel = QLabel(self.croppingWidget)
+        self.preserveMarginLabel.setObjectName(u"preserveMarginLabel")
+
+        self.gridLayout_5.addWidget(self.preserveMarginLabel, 1, 0, 1, 1)
+
         self.croppingPowerLabel = QLabel(self.croppingWidget)
         self.croppingPowerLabel.setObjectName(u"croppingPowerLabel")
 
-        self.horizontalLayout_3.addWidget(self.croppingPowerLabel)
+        self.gridLayout_5.addWidget(self.croppingPowerLabel, 0, 0, 1, 1)
 
         self.croppingPowerSlider = QSlider(self.croppingWidget)
         self.croppingPowerSlider.setObjectName(u"croppingPowerSlider")
@@ -204,7 +209,19 @@ class Ui_mainWindow(object):
         self.croppingPowerSlider.setSingleStep(1)
         self.croppingPowerSlider.setOrientation(Qt.Orientation.Horizontal)
 
-        self.horizontalLayout_3.addWidget(self.croppingPowerSlider)
+        self.gridLayout_5.addWidget(self.croppingPowerSlider, 0, 1, 1, 1)
+
+        self.preserveMarginBox = QSpinBox(self.croppingWidget)
+        self.preserveMarginBox.setObjectName(u"preserveMarginBox")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.preserveMarginBox.sizePolicy().hasHeightForWidth())
+        self.preserveMarginBox.setSizePolicy(sizePolicy2)
+        self.preserveMarginBox.setMaximum(100)
+        self.preserveMarginBox.setValue(0)
+
+        self.gridLayout_5.addWidget(self.preserveMarginBox, 1, 1, 1, 1)
 
 
         self.gridLayout.addWidget(self.croppingWidget, 9, 0, 1, 2)
@@ -276,11 +293,11 @@ class Ui_mainWindow(object):
 
         self.authorEdit = QLineEdit(self.optionWidget)
         self.authorEdit.setObjectName(u"authorEdit")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.authorEdit.sizePolicy().hasHeightForWidth())
-        self.authorEdit.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.authorEdit.sizePolicy().hasHeightForWidth())
+        self.authorEdit.setSizePolicy(sizePolicy3)
         self.authorEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self.authorEdit.setClearButtonEnabled(False)
 
@@ -355,8 +372,8 @@ class Ui_mainWindow(object):
 
         self.chunkSizeWidget = QWidget(self.centralWidget)
         self.chunkSizeWidget.setObjectName(u"chunkSizeWidget")
-        sizePolicy2.setHeightForWidth(self.chunkSizeWidget.sizePolicy().hasHeightForWidth())
-        self.chunkSizeWidget.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.chunkSizeWidget.sizePolicy().hasHeightForWidth())
+        self.chunkSizeWidget.setSizePolicy(sizePolicy3)
         self.chunkSizeWidget.setVisible(False)
         self.horizontalLayout_4 = QHBoxLayout(self.chunkSizeWidget)
         self.horizontalLayout_4.setSpacing(0)
@@ -364,11 +381,11 @@ class Ui_mainWindow(object):
         self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.chunkSizeLabel = QLabel(self.chunkSizeWidget)
         self.chunkSizeLabel.setObjectName(u"chunkSizeLabel")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.chunkSizeLabel.sizePolicy().hasHeightForWidth())
-        self.chunkSizeLabel.setSizePolicy(sizePolicy3)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.chunkSizeLabel.sizePolicy().hasHeightForWidth())
+        self.chunkSizeLabel.setSizePolicy(sizePolicy4)
 
         self.horizontalLayout_4.addWidget(self.chunkSizeLabel)
 
@@ -382,8 +399,8 @@ class Ui_mainWindow(object):
 
         self.chunkSizeWarnLabel = QLabel(self.chunkSizeWidget)
         self.chunkSizeWarnLabel.setObjectName(u"chunkSizeWarnLabel")
-        sizePolicy3.setHeightForWidth(self.chunkSizeWarnLabel.sizePolicy().hasHeightForWidth())
-        self.chunkSizeWarnLabel.setSizePolicy(sizePolicy3)
+        sizePolicy4.setHeightForWidth(self.chunkSizeWarnLabel.sizePolicy().hasHeightForWidth())
+        self.chunkSizeWarnLabel.setSizePolicy(sizePolicy4)
 
         self.horizontalLayout_4.addWidget(self.chunkSizeWarnLabel)
 
@@ -472,6 +489,10 @@ class Ui_mainWindow(object):
 #if QT_CONFIG(tooltip)
         self.heightBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Resolution of the target device.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(tooltip)
+        self.preserveMarginLabel.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>After calculating the cropping boundaries, &quot;back up&quot; a specified percentage amount.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.preserveMarginLabel.setText(QCoreApplication.translate("mainWindow", u"Preserve Margin %", None))
         self.croppingPowerLabel.setText(QCoreApplication.translate("mainWindow", u"Cropping power:", None))
 #if QT_CONFIG(tooltip)
         self.croppingBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Disabled</span></p><p>Disabled</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Margins<br/></span>Margins</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Margins + page numbers<br/></span>Margins +page numbers</p></body></html>", None))

@@ -181,6 +181,7 @@ PROCESSING:
                         Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]
   --cp CROPPINGP, --croppingpower CROPPINGP
                         Set cropping power [Default=1.0]
+  --preservemargin      After calculating crop, "back up" a specified percentage amount [Default=0]
   --cm CROPPINGM, --croppingminimum CROPPINGM
                         Set cropping minimum area ratio [Default=0.0]
   --ipc INTERPANELCROP, --interpanelcrop INTERPANELCROP
