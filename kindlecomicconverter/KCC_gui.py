@@ -246,6 +246,7 @@ class WorkerThread(QThread):
         options.cropping = GUI.croppingBox.checkState().value
         if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
             options.croppingp = float(GUI.croppingPowerValue)
+            options.preservemargin = GUI.preserveMarginBox.value()
         options.interpanelcrop = GUI.interPanelCropBox.checkState().value
         if GUI.borderBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.white_borders = True
@@ -803,6 +804,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'gammaBox': GUI.gammaBox.checkState().value,
                                            'croppingBox': GUI.croppingBox.checkState().value,
                                            'croppingPowerSlider': float(self.croppingPowerValue) * 100,
+                                           'preserveMarginBox': self.preserveMarginBox.value(),
                                            'interPanelCropBox': GUI.interPanelCropBox.checkState().value,
                                            'upscaleBox': GUI.upscaleBox.checkState().value,
                                            'borderBox': GUI.borderBox.checkState().value,
@@ -1159,6 +1161,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if GUI.croppingPowerSlider.isEnabled():
                     GUI.croppingPowerSlider.setValue(int(self.options[option]))
                     self.changeCroppingPower(int(self.options[option]))
+                    GUI.preserveMarginBox.setValue(self.options.get('preserveMarginBox', 0))
             elif str(option) == "chunkSizeBox":
                 GUI.chunkSizeBox.setValue(int(self.options[option]))
             else:

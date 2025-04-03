@@ -390,6 +390,11 @@ class ComicPage:
             return Image.Resampling.LANCZOS
 
     def maybeCrop(self, box, minimum):
+        w, h = self.image.size
+        left, upper, right, lower = box
+        if self.opt.preservemargin:
+            ratio = 1 - self.opt.preservemargin / 100
+            box = left * ratio, upper * ratio, right + (w - right) * (1 - ratio), lower + (h - lower) * (1 - ratio)
         box_area = (box[2] - box[0]) * (box[3] - box[1])
         image_area = self.image.size[0] * self.image.size[1]
         if (box_area / image_area) >= minimum:

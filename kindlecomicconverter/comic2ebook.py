@@ -1050,6 +1050,8 @@ def makeParser():
                                     help="Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]")
     processing_options.add_argument("--cp", "--croppingpower", type=float, dest="croppingp", default="1.0",
                                     help="Set cropping power [Default=1.0]")
+    processing_options.add_argument("--preservemargin", type=int, dest="preservemargin", default="0",
+                                    help="After calculating crop, back up specified percentage amount. [Default=0]")
     processing_options.add_argument("--cm", "--croppingminimum", type=float, dest="croppingm", default="0.0",
                                     help="Set cropping minimum area ratio [Default=0.0]")
     processing_options.add_argument("--ipc", "--interpanelcrop", type=int, dest="interpanelcrop", default="0",
