@@ -1161,6 +1161,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if GUI.croppingPowerSlider.isEnabled():
                     GUI.croppingPowerSlider.setValue(int(self.options[option]))
                     self.changeCroppingPower(int(self.options[option]))
+                    GUI.preserveMarginBox.setValue(self.options.get('preserveMarginBox', 0))
             elif str(option) == "chunkSizeBox":
                 GUI.chunkSizeBox.setValue(int(self.options[option]))
             else:
