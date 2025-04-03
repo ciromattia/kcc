@@ -218,7 +218,7 @@ class Ui_mainWindow(object):
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.preserveMarginBox.sizePolicy().hasHeightForWidth())
         self.preserveMarginBox.setSizePolicy(sizePolicy2)
-        self.preserveMarginBox.setMaximum(100)
+        self.preserveMarginBox.setMaximum(99)
         self.preserveMarginBox.setSingleStep(5)
         self.preserveMarginBox.setValue(0)
 
