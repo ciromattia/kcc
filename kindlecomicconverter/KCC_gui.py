@@ -897,7 +897,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.editor = KCCGUI_MetaEditor()
         self.icons = Icons()
         self.settings = QSettings('ciromattia', 'kcc')
-        self.settings.clear()
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
