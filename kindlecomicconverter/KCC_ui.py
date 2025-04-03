@@ -219,6 +219,7 @@ class Ui_mainWindow(object):
         sizePolicy2.setHeightForWidth(self.preserveMarginBox.sizePolicy().hasHeightForWidth())
         self.preserveMarginBox.setSizePolicy(sizePolicy2)
         self.preserveMarginBox.setMaximum(100)
+        self.preserveMarginBox.setSingleStep(5)
         self.preserveMarginBox.setValue(0)
 
         self.gridLayout_5.addWidget(self.preserveMarginBox, 1, 1, 1, 1)
