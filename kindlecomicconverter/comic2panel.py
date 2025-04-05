@@ -181,7 +181,7 @@ def splitImage(work):
                         panelImg = imgOrg.crop((0, panelsProcessed[panel][0], widthImg, panelsProcessed[panel][1]))
                         newPage.paste(panelImg, (0, targetHeight))
                         targetHeight += panelsProcessed[panel][2]
-                    newPage.save(os.path.join(path, os.path.splitext(name)[0] + '-' + str(pageNumber) + '.png'), 'PNG')
+                    newPage.save(os.path.join(path, os.path.splitext(name)[0] + '-' + str(pageNumber).zfill(4) + '.png'), 'PNG')
                     pageNumber += 1
             os.remove(filePath)
     except Exception:
