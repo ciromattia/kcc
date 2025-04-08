@@ -94,7 +94,8 @@ class ProfileData:
         'KO': ("Kindle Oasis 2/3/Paperwhite 12/Colorsoft 12", (1264, 1680), Palette16, 1.8),
         'K11': ("Kindle 11", (1072, 1448), Palette16, 1.8),
         'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.8),
-        'KS': ("Kindle Scribe", (1860, 2480), Palette16, 1.8),
+        # kindle scribe conversion to mobi is limited in resolution by kindlegen, same with send to kindle and epub
+        'KS': ("Kindle Scribe", (1440, 1920), Palette16, 1.8),
     }
 
     ProfilesKindle = {
@@ -358,9 +359,6 @@ class ComicPage:
             self.image = self.image.filter(unsharpFilter)
 
     def resizeImage(self):
-        # kindle scribe conversion to mobi is limited in resolution by kindlegen, same with send to kindle and epub
-        if self.kindle_scribe_azw3:
-            self.size = (1440, 1920)
         ratio_device = float(self.size[1]) / float(self.size[0])
         ratio_image = float(self.image.size[1]) / float(self.image.size[0])
         method = self.resize_method()
