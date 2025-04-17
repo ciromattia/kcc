@@ -1133,8 +1133,9 @@ def checkOptions(options):
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K34' or options.profile == 'KDX':
         options.panelview = False
         options.hq = False
-    if options.iskindle:
+    if options.profile == 'KV' or options.profile in image.ProfileData.ProfilesKindlePDOC.keys():
         options.panelview = False
+        options.hq = False
     # Webtoon mode mandatory options
     if options.webtoon:
         options.panelview = False
