@@ -40,6 +40,7 @@ from tempfile import gettempdir
 from .shared import HTMLStripper, available_archive_tools, sanitizeTrace, walkLevel, subprocess_run
 from . import __version__
 from . import comic2ebook
+from . import image
 from . import metadata
 from . import kindle
 from . import KCC_ui
@@ -622,7 +623,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def togglequalityBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
         if value == 2:
-            if profile['Label'] in ['KV', 'KO']:
+            if profile['Label'] == 'KV' or profile['Label'] in image.ProfileData.ProfilesKindlePDOC.keys():
                 self.addMessage('This option is intended for older Kindle models.', 'warning')
                 self.addMessage('On this device, quality improvement will be negligible.', 'warning')
             GUI.upscaleBox.setEnabled(False)
@@ -951,28 +952,28 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
 
         self.profiles = {
-            "Kindle Oasis 9/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Oasis 9/10": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
                                  'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KO'},
-            "Kindle Oasis 8": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Oasis 8": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
                              'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KV'},
-            "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Voyage": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KV'},
             "Kindle Scribe": {
-                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS',
+                'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS',
             },
             "Kindle 11": {
-                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'K11',
+                'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'K11',
             },
             "Kindle PW 11": {
-                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW5',
+                'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW5',
             },
             "Kindle PW 12": {
-                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KO',
+                'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KO',
             },
             "Kindle CS 12": {
-                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': True, 'Label': 'KO',
+                'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': True, 'Label': 'KO',
             },
-            "Kindle PW 7/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle PW 7/10": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KV'},
             "Kindle PW 5/6": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KPW'},
