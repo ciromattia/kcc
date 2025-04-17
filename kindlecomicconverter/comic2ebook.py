@@ -938,6 +938,10 @@ def detectSuboptimalProcessing(tmppath, orgpath):
                     os.remove(os.path.join(root, name))
                 except OSError as e:
                     raise RuntimeError(f"{name}: {e}")
+    # remove empty nested folders
+    for root, dirs, files in os.walk(tmppath, False):
+        if not files and not dirs:
+            os.rmdir(root)
     if alreadyProcessed:
         print("WARNING: Source files are probably created by KCC. The second conversion will decrease quality.")
         if GUI:

@@ -289,7 +289,8 @@ class ComicPage:
             self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc'
         elif 'R' in mode:
             self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc-a'
-            self.rotated = True
+            if not options.norotate:
+                self.rotated = True
         elif 'S1' in mode:
             self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc-b'
         elif 'S2' in mode:
