@@ -119,6 +119,8 @@ def buildHTML(path, imgfile, imgfilepath):
                   "</head>\n",
                   "<body style=\"" + additionalStyle + "\">\n",
                   "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsizeframe) + "%;\">\n",
+                  # this display none div fixes formatting issues with virtual panel mode, for some reason
+                  '<div style="display:none;">.</div>\n',
                   "<img width=\"" + str(imgsizeframe[0]) + "\" height=\"" + str(imgsizeframe[1]) + "\" ",
                   "src=\"", "../" * backref, "Images/", postfix, imgfile, "\"/>\n</div>\n"])
     if options.iskindle and options.panelview:
@@ -1129,6 +1131,9 @@ def checkOptions(options):
         options.batchsplit = 1
     # Older Kindle models don't support Panel View.
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K34' or options.profile == 'KDX':
+        options.panelview = False
+        options.hq = False
+    if options.profile == 'KV' or options.profile in image.ProfileData.ProfilesKindlePDOC.keys():
         options.panelview = False
         options.hq = False
     # Webtoon mode mandatory options
