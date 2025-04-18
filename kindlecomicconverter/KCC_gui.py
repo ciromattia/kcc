@@ -469,8 +469,27 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if sys.platform.startswith('win'):
                 dname = dname.replace('/', '\\')
             self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
-            GUI.jobList.addItem(dname)
-            GUI.jobList.scrollToBottom()
+            
+            # If CTRL is pressed, add all subdirectories instead of main directory
+            if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ControlModifier:
+                subdirs = []
+                for item in os.listdir(dname):
+                    full_path = os.path.join(dname, item)
+                    if os.path.isdir(full_path):
+                        subdirs.append(full_path)
+                
+                if subdirs:
+                    for subdir in subdirs:
+                        GUI.jobList.addItem(subdir)
+                    GUI.jobList.scrollToBottom()
+                    # Add message showing how many subdirectories were selected
+                    self.addMessage(f'{len(subdirs)} subdirectories selected!', 'info')
+                else:
+                    self.addMessage('No subdirectories found in the selected folder.', 'info')
+            else:
+                # Normal behavior - add the selected directory
+                GUI.jobList.addItem(dname)
+                GUI.jobList.scrollToBottom()
 
     def selectFile(self):
         if self.needClean:

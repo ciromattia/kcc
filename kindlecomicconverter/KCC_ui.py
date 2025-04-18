@@ -458,7 +458,7 @@ class Ui_mainWindow(object):
         self.editorButton.setText(QCoreApplication.translate("mainWindow", u"Metadata Editor", None))
         self.wikiButton.setText(QCoreApplication.translate("mainWindow", u"Wiki", None))
 #if QT_CONFIG(tooltip)
-        self.directoryButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Add directory containing JPG, PNG or GIF files to queue.<br/><span style=\" font-weight:600;\">CBR, CBZ and CB7 files inside will not be processed!</span></p></body></html>", None))
+        self.directoryButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Add directory containing JPG, PNG or GIF files to queue.<br/><span style=\" font-weight:600;\">CBR, CBZ and CB7 files inside will not be processed!</span></p><p style='white-space:pre'><span style=\" font-weight:600;\">Hold CTRL and click to select all subdirectories at once!</span></p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.directoryButton.setText(QCoreApplication.translate("mainWindow", u"Add image folder", None))
 #if QT_CONFIG(tooltip)
