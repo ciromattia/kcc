@@ -15,6 +15,8 @@ Supported output formats include MOBI/AZW3, EPUB, KEPUB, and CBZ.
 
 ![image](https://github.com/user-attachments/assets/36ad2131-6677-4559-bd6f-314a90c27218)
 
+https://github.com/user-attachments/assets/ac6f3b4b-cce6-4e96-9cfb-ee9c08d66bdb
+
 YouTube tutorial (please subscribe): https://www.youtube.com/watch?v=IR2Fhcm9658
 
 ### A word of warning
