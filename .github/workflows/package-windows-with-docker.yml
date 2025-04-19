@@ -15,9 +15,9 @@ jobs:
         entry: [ kcc-c2e, kcc-c2p ]
         include:
           - entry: kcc-c2e
-            capital: KCC-c2e
+            capital: KCC_c2e
           - entry: kcc-c2p
-            capital: KCC-c2p
+            capital: KCC_c2p
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
