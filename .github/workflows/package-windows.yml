@@ -55,6 +55,7 @@ jobs:
          organization-id: '1dc1bad6-4a8c-4f85-af30-5c5d3d392ea6'
          project-slug: 'kcc'
          signing-policy-slug: 'release-signing'
+         artifact-configuration-slug: 'Kindle_Comic_Converter'
          github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
          wait-for-completion: true
          output-artifact-directory: 'dist/'
