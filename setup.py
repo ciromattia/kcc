@@ -41,7 +41,7 @@ class BuildBinaryCommand(setuptools.Command):
             os.system(f'appdmg kcc.json dist/kcc_macos_{platform.processor()}_{VERSION}.dmg')
             sys.exit(0)
         elif sys.platform == 'win32':
-            os.system(f'pyinstaller --clean --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n "Kindle Comic Converter {VERSION}" -w --noupx kcc.py')
+            os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n KCC_' + VERSION + ' -w --noupx kcc.py')
             sys.exit(0)
         elif sys.platform == 'linux':
             os.system(
