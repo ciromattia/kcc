@@ -13,6 +13,11 @@ jobs:
     strategy:
       matrix:
         entry: [ kcc-c2e, kcc-c2p ]
+        include:
+          - entry: kcc-c2e
+            capital: KCC-c2e
+          - entry: kcc-c2p
+            capital: KCC-c2p
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +30,7 @@ jobs:
       - name: rename binaries
         run: |   
           version_built=$(cat kindlecomicconverter/__init__.py | grep version | awk '{print $3}' | sed "s/[^.0-9b]//g")
-          mv dist/windows/${{ matrix.entry }}.exe dist/windows/${{ matrix.entry }}_${version_built}.exe 
+          mv dist/windows/${{ matrix.entry }}.exe dist/windows/${{ matrix.capital }}_${version_built}.exe 
 
       - name: upload-unsigned-artifact
         id: upload-unsigned-artifact
