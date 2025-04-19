@@ -16,7 +16,7 @@
 # OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
-from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
+from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings, QObject)
 from PySide6.QtGui import (QColor, QIcon, QPixmap, QDesktopServices)
 from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QApplication, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog)
 from PySide6.QtNetwork import (QLocalSocket, QLocalServer)
@@ -459,6 +459,17 @@ class SystemTrayIcon(QSystemTrayIcon):
             self.showMessage('Kindle Comic Converter', message, icon)
 
 
+class JobListEventFilter(QObject):
+    def __init__(self, placeholder):
+        super().__init__()
+        self.placeholder = placeholder
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.Type.Resize:
+            self.placeholder.setGeometry(obj.rect())
+        return super().eventFilter(obj, event)
+
+
 class KCCGUI(KCC_ui.Ui_mainWindow):
     def selectDir(self):
         if self.needClean:
@@ -469,27 +480,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if sys.platform.startswith('win'):
                 dname = dname.replace('/', '\\')
             self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
-            
-            # If CTRL is pressed, add all subdirectories instead of main directory
-            if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ControlModifier:
-                subdirs = []
-                for item in os.listdir(dname):
-                    full_path = os.path.join(dname, item)
-                    if os.path.isdir(full_path):
-                        subdirs.append(full_path)
-                
-                if subdirs:
-                    for subdir in subdirs:
-                        GUI.jobList.addItem(subdir)
-                    GUI.jobList.scrollToBottom()
-                    # Add message showing how many subdirectories were selected
-                    self.addMessage(f'{len(subdirs)} subdirectories selected!', 'info')
-                else:
-                    self.addMessage('No subdirectories found in the selected folder.', 'info')
-            else:
-                # Normal behavior - add the selected directory
-                GUI.jobList.addItem(dname)
-                GUI.jobList.scrollToBottom()
+            GUI.jobList.addItem(dname)
+            GUI.jobList.scrollToBottom()
+            self.updateEmptyState()
 
     def selectFile(self):
         if self.needClean:
@@ -508,6 +501,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.lastPath = os.path.abspath(os.path.join(fname, os.pardir))
                 GUI.jobList.addItem(fname)
                 GUI.jobList.scrollToBottom()
+        self.updateEmptyState()
 
     def selectFileMetaEditor(self):
         sname = ''
@@ -546,6 +540,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def clearJobs(self):
         GUI.jobList.clear()
+        self.updateEmptyState()
 
     def openWiki(self):
         # noinspection PyCallByClass
@@ -737,6 +732,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.jobList.addItem(item)
         GUI.jobList.setItemWidget(item, label)
         GUI.jobList.scrollToBottom()
+        self.updateEmptyState()
 
     def showDialog(self, message, kind):
         if kind == 'error':
@@ -864,11 +860,13 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if os.path.isdir(message):
                 GUI.jobList.addItem(message)
                 GUI.jobList.scrollToBottom()
+                self.updateEmptyState()
             elif os.path.isfile(message):
                 extension = os.path.splitext(message)
                 if extension[1].lower() in formats:
                     GUI.jobList.addItem(message)
                     GUI.jobList.scrollToBottom()
+                    self.updateEmptyState()
                 else:
                     self.addMessage('Unsupported file type for ' + message, 'error')
 
@@ -911,6 +909,16 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if startup:
                 self.display_kindlegen_missing()
 
+    def updateEmptyState(self):
+        if GUI.jobList.count() == 0:
+            # Show placeholder when list is empty
+            self.emptyPlaceholder.setParent(GUI.jobList.viewport())
+            self.emptyPlaceholder.setGeometry(GUI.jobList.viewport().rect())
+            self.emptyPlaceholder.show()
+        else:
+            # Hide placeholder when list has items
+            self.emptyPlaceholder.hide()
+
     def __init__(self, kccapp, kccwindow):
         global APP, MW, GUI
         APP = kccapp
@@ -926,6 +934,22 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
         self.windowSize = self.settings.value('windowSize', '0x0', type=str)
+        
+        # Create placeholder for empty job list with proper alignment
+        self.emptyPlaceholder = QLabel("Drag & Drop any folder here\n\nSupports JPG, PNG and GIF files")
+        self.emptyPlaceholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.emptyPlaceholder.setStyleSheet('color: #888; font: 12pt;')
+        
+        # Set up event filter for proper resize handling
+        self.jobListEventFilter = JobListEventFilter(self.emptyPlaceholder)
+        GUI.jobList.viewport().installEventFilter(self.jobListEventFilter)
+        
+        # Connect signals to update empty state
+        GUI.jobList.model().rowsInserted.connect(self.updateEmptyState)
+        GUI.jobList.model().rowsRemoved.connect(self.updateEmptyState)
+        
+        self.updateEmptyState()
+
         self.options = self.settings.value('options', {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100})
         self.worker = WorkerThread()
         self.versionCheck = VersionThread()
