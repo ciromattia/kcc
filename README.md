@@ -6,13 +6,13 @@
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc)
 
 **Kindle Comic Converter** optimizes comics and manga for eink readers like Kindle, Kobo, ReMarkable, and more. 
-Pages display in fullscreen without margins at the top and bottom. 
+Pages display in fullscreen without margins, with proper fixed layout support. 
 Its main feature is various optional image processing steps to look good on eink screens, 
 which have different requirements than normal LCD screens.
 It also does filesize optimization by downscaling to your specific device's screen resolution,
 which can improve performance on underpowered ereaders. 
 Supported input formats include folders/CBZ/CBR/PDF of JPG/PNG files and more.
-Supported output formats include MOBI/AZW3, EPUB, KEPUB, and CBZ.
+Supported output formats include virtual panel view MOBI/AZW3, EPUB, KEPUB, and CBZ.
 
 ![image](https://github.com/user-attachments/assets/36ad2131-6677-4559-bd6f-314a90c27218)
 
