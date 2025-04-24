@@ -70,6 +70,5 @@ jobs:
         prerelease: true
         generate_release_notes: true
         files: |
-          CHANGELOG.md
           LICENSE.txt
           *.AppImage*
