@@ -1,4 +1,4 @@
-<img src="https://github.com/user-attachments/assets/f269c380-ca7d-4029-8e76-37a57da12f3f" alt="Header Image" width="400">
+<img src="header.jpg" alt="Header Image" width="400">
 
 # KCC
 
