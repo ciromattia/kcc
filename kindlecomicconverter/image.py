@@ -368,16 +368,11 @@ class ComicPage:
         if self.opt.stretch:
             self.image = self.image.resize(self.size, method)
         elif method == Image.Resampling.BICUBIC and not self.opt.upscale:
-            if self.opt.format == 'CBZ' or self.opt.kfx:
-                borderw = int((self.size[0] - self.image.size[0]) / 2)
-                borderh = int((self.size[1] - self.image.size[1]) / 2)
-                self.image = ImageOps.expand(self.image, border=(borderw, borderh), fill=self.fill)
-                if self.image.size[0] != self.size[0] or self.image.size[1] != self.size[1]:
-                    self.image = ImageOps.fit(self.image, self.size, method=method)
+            pass
         else: # if image bigger than device resolution or smaller with upscaling
             if abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
-            elif self.opt.format == 'CBZ' or self.opt.kfx:
+            elif (self.opt.format == 'CBZ' or self.opt.kfx) and not self.opt.white_borders:
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
                 if self.kindle_scribe_azw3:
@@ -385,7 +380,7 @@ class ComicPage:
                 self.image = ImageOps.contain(self.image, self.size, method=method)
 
     def resize_method(self):
-        if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
+        if self.image.size[0] < self.size[0] and self.image.size[1] < self.size[1]:
             return Image.Resampling.BICUBIC
         else:
             return Image.Resampling.LANCZOS
