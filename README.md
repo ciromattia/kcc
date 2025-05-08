@@ -326,6 +326,12 @@ The app relies and includes the following scripts:
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
 ## SAMPLE FILES CREATED BY KCC
+
+https://www.mediafire.com/folder/ixh40veo6hrc5/kcc_samples
+
+Older links (dead):
+
+
 * [Kindle Oasis 2 / 3](http://kcc.iosphe.re/Samples/Ubunchu!-KO.mobi)
 * [Kindle Paperwhite 3 / 4 / Voyage / Oasis](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
 * [Kindle Paperwhite 1 / 2](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)
