@@ -1182,7 +1182,7 @@ def checkTools(source):
             sys.exit(1)
     if options.format == 'MOBI':
         try:
-            subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT)
+            subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, check=True)
         except FileNotFoundError:
             print('ERROR: KindleGen is missing!')
             sys.exit(1)
@@ -1345,7 +1345,7 @@ def makeMOBIWorker(item):
     try:
         if os.path.getsize(item) < 629145600:
             output = subprocess_run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
-                           stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+                           stdout=PIPE, stderr=STDOUT, encoding='UTF-8', check=True)
             for line in output.stdout.splitlines():
                 # ERROR: Generic error
                 if "Error(" in line:
