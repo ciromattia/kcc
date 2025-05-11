@@ -36,7 +36,7 @@ from uuid import uuid4
 from natsort import os_sort_keygen
 from slugify import slugify as slugify_ext
 from PIL import Image, ImageFile
-from subprocess import STDOUT, PIPE
+from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 
@@ -1346,26 +1346,27 @@ def makeMOBIWorker(item):
         if os.path.getsize(item) < 629145600:
             output = subprocess_run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
                            stdout=PIPE, stderr=STDOUT, encoding='UTF-8', check=True)
-            for line in output.stdout.splitlines():
-                # ERROR: Generic error
-                if "Error(" in line:
-                    kindlegenErrorCode = 1
-                    kindlegenError = line
-                # ERROR: EPUB too big
-                if ":E23026:" in line:
-                    kindlegenErrorCode = 23026
-                if kindlegenErrorCode > 0:
-                    break
-                if ":I1036: Mobi file built successfully" in line:
-                    break
         else:
             # ERROR: EPUB too big
             kindlegenErrorCode = 23026
         return [kindlegenErrorCode, kindlegenError, item]
-    except Exception as err:
+    except CalledProcessError as err:
+        for line in err.stdout.splitlines():
+            # ERROR: Generic error
+            if "Error(" in line:
+                kindlegenErrorCode = 1
+                kindlegenError = line
+            # ERROR: EPUB too big
+            if ":E23026:" in line:
+                kindlegenErrorCode = 23026
+            if kindlegenErrorCode > 0:
+                break
+            if ":I1036: Mobi file built successfully" in line:
+                break
         # ERROR: KCC unknown generic error
-        kindlegenErrorCode = 1
-        kindlegenError = format(err)
+        if kindlegenErrorCode == 0:
+            kindlegenErrorCode = 1
+            kindlegenError = err.stdout
         return [kindlegenErrorCode, kindlegenError, item]
 
 
