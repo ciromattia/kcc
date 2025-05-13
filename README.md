@@ -13,7 +13,7 @@ Its main feature is various optional image processing steps to look good on eink
 which have different requirements than normal LCD screens.
 It also does filesize optimization by downscaling to your specific device's screen resolution,
 which can improve performance on underpowered ereaders. 
-Supported input formats include folders/CBZ/CBR/PDF of JPG/PNG files and more.
+Supported input formats include folders and archives of JPG/PNG files and more.
 Supported output formats include virtual panel view MOBI/AZW3, EPUB, KEPUB, and CBZ.
 
 ![image](https://github.com/user-attachments/assets/36ad2131-6677-4559-bd6f-314a90c27218)
