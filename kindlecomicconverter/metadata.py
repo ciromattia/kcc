@@ -20,6 +20,7 @@ import os
 from xml.dom.minidom import parse, Document
 from tempfile import mkdtemp
 from shutil import rmtree
+from xml.sax.saxutils import unescape
 from . import comicarchive
 
 
@@ -52,19 +53,19 @@ class MetadataParser:
 
     def parseXML(self):
         if len(self.rawdata.getElementsByTagName('Series')) != 0:
-            self.data['Series'] = self.rawdata.getElementsByTagName('Series')[0].firstChild.nodeValue
+            self.data['Series'] = unescape(self.rawdata.getElementsByTagName('Series')[0].firstChild.nodeValue)
         if len(self.rawdata.getElementsByTagName('Volume')) != 0:
             self.data['Volume'] = self.rawdata.getElementsByTagName('Volume')[0].firstChild.nodeValue
         if len(self.rawdata.getElementsByTagName('Number')) != 0:
             self.data['Number'] = self.rawdata.getElementsByTagName('Number')[0].firstChild.nodeValue
         if len(self.rawdata.getElementsByTagName('Summary')) != 0:
-            self.data['Summary'] = self.rawdata.getElementsByTagName('Summary')[0].firstChild.nodeValue
+            self.data['Summary'] = unescape(self.rawdata.getElementsByTagName('Summary')[0].firstChild.nodeValue)
         if len(self.rawdata.getElementsByTagName('Title')) != 0:
-            self.data['Title'] = self.rawdata.getElementsByTagName('Title')[0].firstChild.nodeValue
+            self.data['Title'] = unescape(self.rawdata.getElementsByTagName('Title')[0].firstChild.nodeValue)
         for field in ['Writer', 'Penciller', 'Inker', 'Colorist']:
             if len(self.rawdata.getElementsByTagName(field)) != 0:
                 for person in self.rawdata.getElementsByTagName(field)[0].firstChild.nodeValue.split(', '):
-                    self.data[field + 's'].append(person)
+                    self.data[field + 's'].append(unescape(person))
             self.data[field + 's'] = list(set(self.data[field + 's']))
             self.data[field + 's'].sort()
         if len(self.rawdata.getElementsByTagName('Page')) != 0:

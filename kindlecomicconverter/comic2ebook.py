@@ -285,9 +285,9 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "<dc:identifier id=\"BookID\">urn:uuid:", options.uuid, "</dc:identifier>\n",
                   "<dc:contributor id=\"contributor\">KindleComicConverter-" + __version__ + "</dc:contributor>\n"])
     if len(options.summary) > 0:
-        f.writelines(["<dc:description>", options.summary, "</dc:description>\n"])
+        f.writelines(["<dc:description>", hescape(options.summary), "</dc:description>\n"])
     for author in options.authors:
-        f.writelines(["<dc:creator>", author, "</dc:creator>\n"])
+        f.writelines(["<dc:creator>", hescape(author), "</dc:creator>\n"])
     f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
                   "<meta name=\"cover\" content=\"cover\"/>\n"])
     if options.iskindle and options.profile != 'Custom':
@@ -743,7 +743,7 @@ def getComicInfo(path, originalpath):
             return
         if defaultTitle:
             if xml.data['Series']:
-                options.title = hescape(xml.data['Series'])
+                options.title = xml.data['Series']
             if xml.data['Volume']:
                 titleSuffix += ' V' + xml.data['Volume'].zfill(2)
             if xml.data['Number']:
@@ -753,7 +753,7 @@ def getComicInfo(path, originalpath):
             options.authors = []
             for field in ['Writers', 'Pencillers', 'Inkers', 'Colorists']:
                 for person in xml.data[field]:
-                    options.authors.append(hescape(person))
+                    options.authors.append(person)
             if len(options.authors) > 0:
                 options.authors = list(set(options.authors))
                 options.authors.sort()
@@ -762,7 +762,7 @@ def getComicInfo(path, originalpath):
         if xml.data['Bookmarks']:
             options.comicinfo_chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
-            options.summary = hescape(xml.data['Summary'])
+            options.summary = xml.data['Summary']
         os.remove(xmlPath)
 
 
