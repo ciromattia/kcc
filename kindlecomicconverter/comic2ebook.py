@@ -842,6 +842,11 @@ def chunk_directory(path):
     level = -1
     for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         for f in files:
+            # Windows MAX_LENGTH = 260 plus some buffer
+            if len(os.path.join(root, f)) > 180:
+                flattenTree(os.path.join(path, 'OEBPS', 'Images'))
+                level = 1
+                break               
             if getImageFileName(f):
                 newLevel = os.path.join(root, f).replace(os.path.join(path, 'OEBPS', 'Images'), '').count(os.sep)
                 if level != -1 and level != newLevel:
