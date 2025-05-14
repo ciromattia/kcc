@@ -1,3 +1,5 @@
+<img src="header.jpg" alt="Header Image" width="400">
+
 # KCC
 
 
@@ -6,12 +8,13 @@
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc)
 
 **Kindle Comic Converter** optimizes comics and manga for eink readers like Kindle, Kobo, ReMarkable, and more. 
+Pages display in fullscreen without margins, with proper fixed layout support. 
 Its main feature is various optional image processing steps to look good on eink screens, 
 which have different requirements than normal LCD screens.
 It also does filesize optimization by downscaling to your specific device's screen resolution,
 which can improve performance on underpowered ereaders. 
-Supported input formats include folders/CBZ/CBR/PDF of JPG/PNG files and more.
-Supported output formats include MOBI/AZW3, EPUB, KEPUB, and CBZ.
+Supported input formats include folders and archives of JPG/PNG files and more.
+Supported output formats include virtual panel view MOBI/AZW3, EPUB, KEPUB, and CBZ.
 
 ![image](https://github.com/user-attachments/assets/36ad2131-6677-4559-bd6f-314a90c27218)
 
@@ -323,6 +326,12 @@ The app relies and includes the following scripts:
  - Icon is by **Nikolay Verin** ([http://ncrow.deviantart.com/](http://ncrow.deviantart.com/)) and released under [CC BY-NC-SA 3.0](http://creativecommons.org/licenses/by-nc-sa/3.0/) License.
 
 ## SAMPLE FILES CREATED BY KCC
+
+https://www.mediafire.com/folder/ixh40veo6hrc5/kcc_samples
+
+Older links (dead):
+
+
 * [Kindle Oasis 2 / 3](http://kcc.iosphe.re/Samples/Ubunchu!-KO.mobi)
 * [Kindle Paperwhite 3 / 4 / Voyage / Oasis](http://kcc.iosphe.re/Samples/Ubunchu!-KV.mobi)
 * [Kindle Paperwhite 1 / 2](http://kcc.iosphe.re/Samples/Ubunchu!-KPW.mobi)

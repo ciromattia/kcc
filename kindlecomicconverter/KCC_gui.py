@@ -458,7 +458,6 @@ class SystemTrayIcon(QSystemTrayIcon):
         if self.supportsMessages() and not MW.isActiveWindow():
             self.showMessage('Kindle Comic Converter', message, icon)
 
-
 class JobListEventFilter(QObject):
     def __init__(self, placeholder):
         super().__init__()
@@ -468,7 +467,6 @@ class JobListEventFilter(QObject):
         if event.type() == QEvent.Type.Resize:
             self.placeholder.setGeometry(obj.rect())
         return super().eventFilter(obj, event)
-
 
 class KCCGUI(KCC_ui.Ui_mainWindow):
     def selectDir(self):
@@ -501,7 +499,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.lastPath = os.path.abspath(os.path.join(fname, os.pardir))
                 GUI.jobList.addItem(fname)
                 GUI.jobList.scrollToBottom()
-        self.updateEmptyState()
+            self.updateEmptyState()
 
     def selectFileMetaEditor(self):
         sname = ''
@@ -895,7 +893,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             except Exception:
                 pass
         try:
-            versionCheck = subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8')
+            versionCheck = subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8', check=True)
             self.kindleGen = True
             for line in versionCheck.stdout.splitlines():
                 if 'Amazon kindlegen' in line:
@@ -909,6 +907,21 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if startup:
                 self.display_kindlegen_missing()
 
+    def setupEmptyPlaceholder(self):
+        # Create a visually appealing empty placeholder
+        placeholderText = """
+        <html>
+        <body style="text-align: center; color: #888;">
+            <div style="font-size: 48px; margin-bottom: 10px;">📚</div>
+            <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">Drag & Drop Files Here</div>
+            <div style="font-size: 13px;">Supports folders (with JPG, PNG, or GIF files in them), CBZ, CBR, ZIP, RAR, 7Z, PDF files</div>
+        </body>
+        </html>
+        """
+        
+        self.emptyPlaceholder.setText(placeholderText)
+        self.emptyPlaceholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
     def updateEmptyState(self):
         if GUI.jobList.count() == 0:
             # Show placeholder when list is empty
@@ -934,22 +947,21 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
         self.windowSize = self.settings.value('windowSize', '0x0', type=str)
-        
+
         # Create placeholder for empty job list with proper alignment
-        self.emptyPlaceholder = QLabel("Drag & Drop any folder here\n\nSupports JPG, PNG and GIF files")
-        self.emptyPlaceholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.emptyPlaceholder.setStyleSheet('color: #888; font: 12pt;')
-        
+        self.emptyPlaceholder = QLabel()
+        self.setupEmptyPlaceholder()
+
         # Set up event filter for proper resize handling
         self.jobListEventFilter = JobListEventFilter(self.emptyPlaceholder)
         GUI.jobList.viewport().installEventFilter(self.jobListEventFilter)
-        
+
         # Connect signals to update empty state
         GUI.jobList.model().rowsInserted.connect(self.updateEmptyState)
         GUI.jobList.model().rowsRemoved.connect(self.updateEmptyState)
-        
-        self.updateEmptyState()
 
+        self.updateEmptyState()
+        
         self.options = self.settings.value('options', {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100})
         self.worker = WorkerThread()
         self.versionCheck = VersionThread()
@@ -1128,8 +1140,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         statusBarLabel.setOpenExternalLinks(True)
         GUI.statusBar.addPermanentWidget(statusBarLabel, 1)
 
-        self.addMessage('<b>Welcome!</b>', 'info')
-        self.addMessage('<b>Remember:</b> All options have additional information in tooltips.', 'info')
         if self.startNumber < 5:
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
