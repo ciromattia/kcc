@@ -77,6 +77,8 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 - Cannot connect Kindle Scribe or 2024+ Kindle to macOS
   - Use official MTP [Amazon USB File Transfer app](https://www.amazon.com/gp/help/customer/display.html/ref=hp_Connect_USB_MTP?nodeId=TCUBEdEkbIhK07ysFu)
     (no login required). Works much better than previously recommended Android File Transfer. Cannot run simutaneously with other transfer apps.
+- Huge margins / slow page turns?
+  - You likely modified the file during transfer using a 3rd party app. Try simply dragging and dropping the final mobi/kepub file into the Kindle documents folder via USB.
 
 ## PREREQUISITES
 
