@@ -256,7 +256,7 @@ Depending on your system [Python](https://www.python.org) may be called either `
 
 If you want to edit the code, a good code editor is [VS Code](https://code.visualstudio.com).
 
-If you want to edit the `.ui` files, use [Qt Creator](https://www.qt.io/download-qt-installer-oss), included in **Qt for desktop development**.
+If you want to edit the `.ui` files, use `pyside6-designer` which is included in the `pip install pyside6`.
 Then use the `gen_ui_files` scripts to autogenerate the python UI.
 
 An example PR adding a new checkbox is here: https://github.com/ciromattia/kcc/pull/785
