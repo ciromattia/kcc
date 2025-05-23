@@ -1370,7 +1370,7 @@ def makeMOBIWorker(item):
                 break
         # ERROR: KCC unknown generic error
         if kindlegenErrorCode == 0:
-            kindlegenErrorCode = 1
+            kindlegenErrorCode = err.returncode
             kindlegenError = err.stdout
         return [kindlegenErrorCode, kindlegenError, item]
 
