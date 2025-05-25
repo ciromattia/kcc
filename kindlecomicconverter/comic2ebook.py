@@ -517,7 +517,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
                     cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
                                         'cover' + getImageFileName(afile)[1])
                 except Exception as e:
-                    raise UserWarning(f"{afile}: {e.}")
+                    raise UserWarning(f"{afile}: {e}")
                 options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
                                                    tomenumber), options.uuid))
             if not chapter:
