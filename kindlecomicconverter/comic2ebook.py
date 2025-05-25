@@ -836,6 +836,10 @@ def sanitizePermissions(filetree):
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
+    for root, dirs, files in os.walk(filetree, False):
+        for name in files:
+            if name.startswith('._'):
+                os.remove(os.path.join(root, name))
 
 
 def chunk_directory(path):
@@ -940,7 +944,8 @@ def detectSuboptimalProcessing(tmppath, orgpath):
                         raise RuntimeError('Image file %s is corrupted. Error: %s' % (pathOrg, str(err)))
             else:
                 try:
-                    os.remove(os.path.join(root, name))
+                    if os.path.exists(os.path.join(root, name)):
+                        os.remove(os.path.join(root, name))
                 except OSError as e:
                     raise RuntimeError(f"{name}: {e}")
     # remove empty nested folders
