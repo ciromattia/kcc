@@ -579,6 +579,10 @@ def imgDirectoryProcessing(path):
         workerPool.join()
         img_processing_end = perf_counter()
         print(f"imgFileProcessing: {img_processing_end - img_processing_start} seconds")
+
+        # macOS 15 likes to add ._ files after multiprocessing
+        dot_clean(path)
+
         if GUI and not GUI.conversionAlive:
             rmtree(os.path.join(path, '..', '..'), True)
             raise UserWarning("Conversion interrupted.")
@@ -836,7 +840,11 @@ def sanitizePermissions(filetree):
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
-    for root, dirs, files in os.walk(filetree, False):
+    # clean dot from original file
+    dot_clean(filetree)
+
+def dot_clean(filetree):
+    for root, _, files in os.walk(filetree, topdown=False):
         for name in files:
             if name.startswith('._'):
                 os.remove(os.path.join(root, name))
