@@ -290,6 +290,8 @@ python setup.py build_binary
 
 ### macOS install from source
 
+If the system installed Python gives you issues, please install the latest Python from either brew or the official website.
+
 One time setup and running for the first time:
 ```
 python3 -m venv venv
