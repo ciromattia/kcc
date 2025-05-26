@@ -1156,7 +1156,6 @@ def checkOptions(options):
         options.hq = False
     if not options.hq and not options.autoscale:
         options.panelview = False
-        options.hq = False
     # Webtoon mode mandatory options
     if options.webtoon:
         options.panelview = False
