@@ -42,6 +42,7 @@ from . import __version__
 from . import comic2ebook
 from . import metadata
 from . import kindle
+from . import image
 from . import KCC_ui
 from . import KCC_ui_editor
 
@@ -624,9 +625,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def togglequalityBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
         if value == 2:
-            if profile['Label'] in ['KV', 'KO']:
+            if profile['Label'] == 'KV' or profile['Label'] in image.ProfileData.ProfilesKindlePDOC.keys():
                 self.addMessage('This option is intended for older Kindle models.', 'warning')
-                self.addMessage('On this device, quality improvement will be negligible.', 'warning')
+                self.addMessage('On this device, there will be conversion speed and quality issues.', 'warning')
+                self.addMessage('Use the Kindle Scribe profile if you truly want higher resolution.', 'warning')
             GUI.upscaleBox.setEnabled(False)
             GUI.upscaleBox.setChecked(True)
         else:
