@@ -40,9 +40,9 @@ from tempfile import gettempdir
 from .shared import HTMLStripper, available_archive_tools, sanitizeTrace, walkLevel, subprocess_run
 from . import __version__
 from . import comic2ebook
+from . import image
 from . import metadata
 from . import kindle
-from . import image
 from . import KCC_ui
 from . import KCC_ui_editor
 
