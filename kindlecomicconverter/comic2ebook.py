@@ -513,8 +513,11 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
             if cover is None:
-                cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
-                                     'cover' + getImageFileName(afile)[1])
+                try:
+                    cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
+                                        'cover' + getImageFileName(afile)[1])
+                except Exception as e:
+                    raise UserWarning(f"{afile}: {e}")
                 options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
                                                    tomenumber), options.uuid))
             if not chapter:
