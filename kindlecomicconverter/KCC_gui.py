@@ -628,7 +628,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if profile['Label'] == 'KV' or profile['Label'] in image.ProfileData.ProfilesKindlePDOC.keys():
                 self.addMessage('This option is intended for older Kindle models.', 'warning')
                 self.addMessage('On this device, there will be conversion speed and quality issues.', 'warning')
-                self.addMessage('Use the Kindle Scribe profile if you truly want higher resolution.', 'warning')
+                self.addMessage('Use the Kindle Scribe profile if you want higher resolution when zooming.', 'warning')
             GUI.upscaleBox.setEnabled(False)
             GUI.upscaleBox.setChecked(True)
         else:
