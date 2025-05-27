@@ -287,6 +287,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.disableProcessingBox, 5, 2, 1, 1)
 
+        self.metadataTitleBox = QCheckBox(self.optionWidget)
+        self.metadataTitleBox.setObjectName(u"metadataTitleBox")
+
+        self.gridLayout_2.addWidget(self.metadataTitleBox, 6, 0, 1, 1)
+
         self.maximizeStrips = QCheckBox(self.optionWidget)
         self.maximizeStrips.setObjectName(u"maximizeStrips")
 
@@ -433,7 +438,8 @@ class Ui_mainWindow(object):
         QWidget.setTabOrder(self.croppingBox, self.spreadShiftBox)
         QWidget.setTabOrder(self.spreadShiftBox, self.deleteBox)
         QWidget.setTabOrder(self.deleteBox, self.disableProcessingBox)
-        QWidget.setTabOrder(self.disableProcessingBox, self.chunkSizeBox)
+        QWidget.setTabOrder(self.disableProcessingBox, self.metadataTitleBox)
+        QWidget.setTabOrder(self.metadataTitleBox, self.chunkSizeBox)
         QWidget.setTabOrder(self.chunkSizeBox, self.noRotateBox)
         QWidget.setTabOrder(self.noRotateBox, self.interPanelCropBox)
         QWidget.setTabOrder(self.interPanelCropBox, self.reduceRainbowBox)
@@ -535,6 +541,10 @@ class Ui_mainWindow(object):
         self.disableProcessingBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Do not process any image, ignore profile and processing options.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.disableProcessingBox.setText(QCoreApplication.translate("mainWindow", u"Disable processing", None))
+#if QT_CONFIG(tooltip)
+        self.metadataTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Enable to write the file name using the title from the Metadata info.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.metadataTitleBox.setText(QCoreApplication.translate("mainWindow", u"Use Title from Metadata", None))
 #if QT_CONFIG(tooltip)
         self.maximizeStrips.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 1x4<br/></span>Keep format 1x4 panels strips.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - 2x2<br/></span>Turn 1x4 strips to 2x2 to maximize screen usage.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
