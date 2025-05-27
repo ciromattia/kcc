@@ -363,13 +363,13 @@ def buildOPF(dstdir, title, filelist, cover=None):
     page_spread_property_list = []
     for entry in reflist:
         if options.righttoleft:
-            if entry.endswith('-kcc-a'):
+            if entry.endswith("-kcc-a"):
                 page_spread_property_list.append("center")
                 pageside = "right"
-            elif entry.endswith('-kcc-b'):
+            elif entry.endswith("-kcc-b"):
                 page_spread_property_list.append("right")
                 pageside = "right"
-            elif entry.endswith('-kcc-c'):
+            elif entry.endswith("-kcc-c"):
                 page_spread_property_list.append("left")
                 pageside = "right"
             else:
@@ -379,13 +379,13 @@ def buildOPF(dstdir, title, filelist, cover=None):
                 else:
                     pageside = "right"
         else:
-            if entry.endswith('-kcc-a'):
+            if entry.endswith("-kcc-a"):
                 page_spread_property_list.append("center")
                 pageside = "left"
-            elif entry.endswith('-kcc-b'):
+            elif entry.endswith("-kcc-b"):
                 page_spread_property_list.append("left")
                 pageside = "left"
-            elif entry.endswith('-kcc-c'):
+            elif entry.endswith("-kcc-c"):
                 page_spread_property_list.append("right")
                 pageside = "left"
             else:
@@ -399,12 +399,12 @@ def buildOPF(dstdir, title, filelist, cover=None):
     spread_seen = False
     for i in range(len(reflist) -1, -1, -1):
         entry = reflist[i]
-        if not entry.endswith('-kcc'):
+        if not entry.endswith("-kcc"):
             spread_seen = True
             if options.righttoleft:
-                pageside = 'left'
+                pageside = "left"
             else:
-                pageside = 'right'   
+                pageside = "right"   
         elif spread_seen:
             page_spread_property_list[i] = pageside
             if pageside == "right":
