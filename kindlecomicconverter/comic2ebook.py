@@ -986,6 +986,8 @@ def createNewTome(parent):
 
 
 def slugify(value):
+    if options.format == 'CBZ':
+        return value
     value = slugify_ext(value, regex_pattern=r'[^-a-z0-9_\.]+').strip('.')
     value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
