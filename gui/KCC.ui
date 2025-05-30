@@ -292,7 +292,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Resolution of the target device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="maximum">
-          <number>2160</number>
+          <number>2400</number>
          </property>
         </widget>
        </item>

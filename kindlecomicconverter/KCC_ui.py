@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'KCC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -167,7 +167,7 @@ class Ui_mainWindow(object):
 
         self.widthBox = QSpinBox(self.customWidget)
         self.widthBox.setObjectName(u"widthBox")
-        self.widthBox.setMaximum(2160)
+        self.widthBox.setMaximum(2400)
 
         self.gridLayout_3.addWidget(self.widthBox, 0, 1, 1, 1)
 
