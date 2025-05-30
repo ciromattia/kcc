@@ -358,63 +358,63 @@ def buildOPF(dstdir, title, filelist, cover=None):
             pageside = "left"
         else:
             pageside = "right"
+    
+    # initial spread order forwards
+    page_spread_property_list = []
     for entry in reflist:
         if options.righttoleft:
             if entry.endswith("-kcc-a"):
-                f.write(
-                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                            pageSpreadProperty("center"))
-                )
+                page_spread_property_list.append("center")
                 pageside = "right"
             elif entry.endswith("-kcc-b"):
-                f.write(
-                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                            pageSpreadProperty("right"))
-                )
+                page_spread_property_list.append("right")
                 pageside = "right"
             elif entry.endswith("-kcc-c"):
-                f.write(
-                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                            pageSpreadProperty("left"))
-                )
+                page_spread_property_list.append("left")
                 pageside = "right"
             else:
-                f.write(
-                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                            pageSpreadProperty(pageside))
-                )
+                page_spread_property_list.append(pageside)
                 if pageside == "right":
                     pageside = "left"
                 else:
                     pageside = "right"
         else:
             if entry.endswith("-kcc-a"):
-                f.write(
-                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                            pageSpreadProperty("center"))
-                )
+                page_spread_property_list.append("center")
                 pageside = "left"
             elif entry.endswith("-kcc-b"):
-                f.write(
-                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                            pageSpreadProperty("left"))
-                )
+                page_spread_property_list.append("left")
                 pageside = "left"
             elif entry.endswith("-kcc-c"):
-                f.write(
-                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                            pageSpreadProperty("right"))
-                )
+                page_spread_property_list.append("right")
                 pageside = "left"
             else:
-                f.write(
-                    "<itemref idref=\"page_%s\" %s/>\n" % (entry,
-                                                            pageSpreadProperty(pageside))
-                )
+                page_spread_property_list.append(pageside)
                 if pageside == "right":
                     pageside = "left"
                 else:
                     pageside = "right"
+    
+    # fix spread orders backward
+    spread_seen = False
+    for i in range(len(reflist) -1, -1, -1):
+        entry = reflist[i]
+        if not entry.endswith("-kcc"):
+            spread_seen = True
+            if options.righttoleft:
+                pageside = "left"
+            else:
+                pageside = "right"   
+        elif spread_seen:
+            page_spread_property_list[i] = pageside
+            if pageside == "right":
+                pageside = "left"
+            else:
+                pageside = "right"
+
+    for entry, prop in zip(reflist, page_spread_property_list):
+        f.write(f'<itemref idref="page_{entry}" {pageSpreadProperty(prop)}/>\n')
+
     f.write("</spine>\n</package>\n")
     f.close()
     os.mkdir(os.path.join(dstdir, 'META-INF'))
