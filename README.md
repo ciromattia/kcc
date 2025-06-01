@@ -18,7 +18,8 @@ Its main feature is various optional image processing steps to look good on eink
 which have different requirements than normal LCD screens.
 Combining that with downscaling to your specific device's screen resolution
 can result in filesize reductions of hundreds of MB per volume with no visible quality loss on eink.
-This can also improve battery life and page turn speed on underpowered ereaders with small storage capacities.
+This can also improve battery life, page turn speed, and general performance 
+on underpowered ereaders with small storage capacities.
 
 KCC avoids many common formatting issues (some of which occur even on the Kindle Store), such as:
 1) incorrect black levels, which can make manga look very faded and hard to see on eink, which is already lower contrast than LCD.
