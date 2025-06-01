@@ -4,7 +4,7 @@
 
 [![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc)
-![Github All Releases](https://img.shields.io/github/downloads/ciromattia/kcc/total.svg)
+[![Github All Releases](https://img.shields.io/github/downloads/ciromattia/kcc/total.svg)]()
 
 
 **Kindle Comic Converter** optimizes comics and manga for eink readers like Kindle, Kobo, ReMarkable, and more. 
