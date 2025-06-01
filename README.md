@@ -7,14 +7,24 @@
 [![Github All Releases](https://img.shields.io/github/downloads/ciromattia/kcc/total.svg)](https://github.com/ciromattia/kcc/releases)
 
 
-**Kindle Comic Converter** optimizes comics and manga for eink readers like Kindle, Kobo, ReMarkable, and more. 
-Pages display in fullscreen without margins, with proper fixed layout support. 
+**Kindle Comic Converter** optimizes black & white comics and manga for E-ink ereaders 
+like Kindle, Kobo, ReMarkable, and more.
+Pages display in fullscreen without margins, 
+with proper fixed layout epub output support.
+Supported input formats include JPG/PNG/GIF/JP2/WEBP image files in folders, archives, or PDFs.
+Supported output formats include MOBI/AZW3, EPUB, KEPUB, and CBZ.
+
 Its main feature is various optional image processing steps to look good on eink screens, 
 which have different requirements than normal LCD screens.
-It also does filesize optimization by downscaling to your specific device's screen resolution,
-which can improve performance on underpowered ereaders. 
-Supported input formats include folders and archives of JPG/PNG files and more.
-Supported output formats include virtual panel view MOBI/AZW3, EPUB, KEPUB, and CBZ.
+Combining that with downscaling to your specific device's screen resolution
+can result in filesize reductions of hundreds of MB per volume with no visible quality loss on eink.
+This can also improve battery life and page turn speed on underpowered ereaders with small storage capacities.
+
+KCC avoids many common formatting issues (some of which occur even on the Kindle Store), such as:
+1) incorrect black levels, which can make manga look very faded and hard to see on eink, which is already lower contrast than LCD.
+2) unneccessary margins at the bottom of the screen due to screen resolution assumptions or reading progress bars
+3) incorrect page turn direction for manga that's read right to left
+4) unaligned two page spreads in landscape, where pages are shifted over by 1
 
 ![image](https://github.com/user-attachments/assets/36ad2131-6677-4559-bd6f-314a90c27218)
 
