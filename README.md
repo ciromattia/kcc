@@ -10,7 +10,7 @@
 **Kindle Comic Converter** optimizes black & white comics and manga for E-ink ereaders 
 like Kindle, Kobo, ReMarkable, and more.
 Pages display in fullscreen without margins, 
-with proper fixed layout epub output support.
+with proper fixed layout support.
 Supported input formats include JPG/PNG/GIF/JP2/WEBP image files in folders, archives, or PDFs.
 Supported output formats include MOBI/AZW3, EPUB, KEPUB, and CBZ.
 
