@@ -36,7 +36,7 @@ Sometimes there's a single page misaligned in landscape:
 
 ![IMG_1507-0005](https://github.com/user-attachments/assets/6d1f35fb-9e09-4dea-89ca-6fce9a514b79)
 
-which throws off the alignment off all further pages:
+which throws off the alignment off all further pages. The spine should have whitespace in the center, not on the edge.:
 
 
 ![IMG_1507-0006](https://github.com/user-attachments/assets/0bdcd391-7928-4725-bb2d-6145ba8da9f4)
