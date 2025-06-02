@@ -1,6 +1,6 @@
 Here are some formatting issues I've observed in some Kindle Store manga:
 
-1) Incorrect black levels:
+1) faded black levels causing unneccessarily low contrast, which is hard to see and can cause eyestrain.
 
 ![IMG_1507-0001](https://github.com/user-attachments/assets/3fd06257-f415-488e-b639-a619189caa4d)
 
