@@ -27,7 +27,16 @@ KCC avoids many common formatting issues (some of which occur [even on the Kindl
 3) incorrect page turn direction for manga that's read right to left
 4) unaligned two page spreads in landscape, where pages are shifted over by 1
 
+The GUI looks like this, built in Qt6, with my most commonly used settings:
+
 ![image](https://github.com/user-attachments/assets/36ad2131-6677-4559-bd6f-314a90c27218)
+
+Simply drag and drop your files/folders into the KCC window, 
+adjust your settings (hover over each option to see details in a tooltip), 
+and hit convert to create ereader optimized files.
+You can change the default output directory by holding `Shift` while clicking the convert button.
+Then just drag and drop the generated output files onto your device's documents folder via USB.
+If you are on macOS and use a 2022+ Kindle, you may need to use Amazon USB File Manager for Mac.
 
 YouTube tutorial (please subscribe): https://www.youtube.com/watch?v=IR2Fhcm9658
 
