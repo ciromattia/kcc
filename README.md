@@ -21,7 +21,7 @@ can result in filesize reductions of hundreds of MB per volume with no visible q
 This can also improve battery life, page turn speed, and general performance 
 on underpowered ereaders with small storage capacities.
 
-KCC avoids many common formatting issues (some of which occur [even on the Kindle Store](https://github.com/ciromattia/kcc/wiki/Bad-Formatting-Examples)), such as:
+KCC avoids many common formatting issues (some of which occur [even on the Kindle Store](https://github.com/ciromattia/kcc/wiki/Kindle-Store-bad-formatting)), such as:
 1) faded black levels causing unneccessarily low contrast, which is hard to see and can cause eyestrain.
 2) unneccessary margins at the bottom of the screen
 3) incorrect page turn direction for manga that's read right to left
