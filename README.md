@@ -24,8 +24,9 @@ on underpowered ereaders with small storage capacities.
 KCC avoids many common formatting issues (some of which occur [even on the Kindle Store](https://github.com/ciromattia/kcc/wiki/Kindle-Store-bad-formatting)), such as:
 1) faded black levels causing unneccessarily low contrast, which is hard to see and can cause eyestrain.
 2) unneccessary margins at the bottom of the screen
-3) incorrect page turn direction for manga that's read right to left
-4) unaligned two page spreads in landscape, where pages are shifted over by 1
+3) Not utilizing the full 1860x2480 resolution of the 10" Kindle Scribe (feature in progress)
+4) incorrect page turn direction for manga that's read right to left
+5) unaligned two page spreads in landscape, where pages are shifted over by 1
 
 The GUI looks like this, built in Qt6, with my most commonly used settings:
 
