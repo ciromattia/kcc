@@ -748,7 +748,9 @@ def getComicInfo(path, originalpath):
         except Exception:
             os.remove(xmlPath)
             return
-        if defaultTitle:
+        if options.metadataTitle:
+            options.title = xml.data['Title']
+        elif defaultTitle:
             if xml.data['Series']:
                 options.title = xml.data['Series']
             if xml.data['Volume']:
