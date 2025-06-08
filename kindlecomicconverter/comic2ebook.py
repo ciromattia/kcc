@@ -313,9 +313,10 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "media-type=\"application/x-dtbncx+xml\"/>\n",
                   "<item id=\"nav\" href=\"nav.xhtml\" ",
                   "properties=\"nav\" media-type=\"application/xhtml+xml\"/>\n"])
-    mt = 'image/jpeg'
-    f.write("<item id=\"cover\" href=\"Images/cover.jpg" + "\" media-type=\"" + mt +
-            "\" properties=\"cover-image\"/>\n")
+    if cover is not None:
+        mt = 'image/jpeg'
+        f.write("<item id=\"cover\" href=\"Images/cover.jpg" + "\" media-type=\"" + mt +
+                "\" properties=\"cover-image\"/>\n")
     reflist = []
     for path in filelist:
         folder = path[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\').replace("\\", "/")
