@@ -508,6 +508,8 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
+            if afile == 'cover.jpg':
+                continue
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), afile))
                 chapter = True
