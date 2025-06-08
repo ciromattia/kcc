@@ -123,7 +123,7 @@ def buildHTML(path, imgfile, imgfilepath, imgfile2=None):
                   # this display none div fixes formatting issues with virtual panel mode, for some reason
                   '<div style="display:none;">.</div>\n',
     ])
-    f.write(f'<img width="{imgsize[0]}" height="{imgsize[1]}" src="{"../" * backref}Images/{postfix}{imgfile}"/>\n')
+    f.write(f'<img width="{imgsize[0]}" height="{imgsize[1]}" src="{"../" * backref}Images/{postfix}{imgfile}"/>')
     if imgfile2:
         imgsize2 = Image.open(os.path.join(head, "Images", postfix, imgfile2)).size
         f.write(f'<img width="{imgsize2[0]}" height="{imgsize2[1]}" src="{"../" * backref}Images/{postfix}{imgfile2}"/>\n')
@@ -514,12 +514,22 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
+            pathlib_path = pathlib.Path(afile)
+            stem = pathlib_path.stem
+            suffix = pathlib_path.suffix
+            if stem.endswith('-bottom'):
+                continue
             if afile == 'cover.jpg':
                 continue
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), afile))
                 chapter = True
-            filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
+            bottom = f'{stem}-bottom{suffix}'
+            bottom_path = os.path.join(dirpath, bottom)
+            if os.path.exists(bottom_path):
+                filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile), bottom))
+            else:
+                filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
     build_html_end = perf_counter()
     print(f"buildHTML: {build_html_end - build_html_start} seconds")
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
@@ -1235,6 +1245,7 @@ def makeBook(source, qtgui=None):
         GUI.progressBarTick.emit('1')
     else:
         checkTools(source)
+    options.kindle_scribe_azw3 = options.profile == 'KS' and ('MOBI' in options.format or 'EPUB' in options.format)
     checkPre(source)
     print("Preparing source images...")
     path = getWorkFolder(source)

@@ -309,26 +309,35 @@ class ComicPage:
                 flags.append('Rotated')
             if self.fill != 'white':
                 flags.append('BlackBackground')
-            if self.opt.forcepng:
-                self.image.info["transparency"] = None
-                self.targetPath += '.png'
-                self.image.save(self.targetPath, 'PNG', optimize=1)
+            if self.opt.kindle_scribe_azw3 and self.image.size[1] > 1920:
+                w, h = self.image.size
+                path_with_ext = self.save_with_codec(self.image.crop((0, 0, w, 1920)), self.targetPath)
+                self.save_with_codec(self.image.crop((0, 1920, w, h)), self.targetPath + '-bottom')
             else:
-                self.targetPath += '.jpg'
-                if self.opt.mozjpeg:
-                    with io.BytesIO() as output:
-                        self.image.save(output, format="JPEG", optimize=1, quality=85)
-                        input_jpeg_bytes = output.getvalue()
-                        output_jpeg_bytes = mozjpeg_lossless_optimization.optimize(input_jpeg_bytes)
-                        with open(self.targetPath, "wb") as output_jpeg_file:
-                            output_jpeg_file.write(output_jpeg_bytes)
-                else:
-                    self.image.save(self.targetPath, 'JPEG', optimize=1, quality=85)
+                path_with_ext = self.save_with_codec(self.image, self.targetPath)
             if os.path.isfile(self.orgPath):
                 os.remove(self.orgPath)
-            return [Path(self.targetPath).name, flags]
+            return [Path(path_with_ext).name, flags]
         except IOError as err:
             raise RuntimeError('Cannot save image. ' + str(err))
+
+    def save_with_codec(self, image, targetPath):
+        if self.opt.forcepng:
+            image.info["transparency"] = None
+            targetPath += '.png'
+            image.save(targetPath, 'PNG', optimize=1)
+        else:
+            targetPath += '.jpg'
+            if self.opt.mozjpeg:
+                with io.BytesIO() as output:
+                    image.save(output, format="JPEG", optimize=1, quality=85)
+                    input_jpeg_bytes = output.getvalue()
+                    output_jpeg_bytes = mozjpeg_lossless_optimization.optimize(input_jpeg_bytes)
+                    with open(targetPath, "wb") as output_jpeg_file:
+                        output_jpeg_file.write(output_jpeg_bytes)
+            else:
+                image.save(targetPath, 'JPEG', optimize=1, quality=85)
+        return targetPath
 
     def autocontrastImage(self):
         gamma = self.opt.gamma
@@ -361,9 +370,6 @@ class ComicPage:
             self.image = self.image.filter(unsharpFilter)
 
     def resizeImage(self):
-        # kindle scribe conversion to mobi is limited in resolution by kindlegen, same with send to kindle and epub
-        if self.kindle_scribe_azw3:
-            self.size = (1440, 1920)
         ratio_device = float(self.size[1]) / float(self.size[0])
         ratio_image = float(self.image.size[1]) / float(self.image.size[0])
         method = self.resize_method()
@@ -377,8 +383,6 @@ class ComicPage:
             elif (self.opt.format == 'CBZ' or self.opt.kfx) and not self.opt.white_borders:
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
-                if self.kindle_scribe_azw3:
-                    self.size = (1860, 1920)
                 self.image = ImageOps.contain(self.image, self.size, method=method)
 
     def resize_method(self):
@@ -431,9 +435,8 @@ class Cover:
         self.crop_main_cover()
 
         size = list(self.options.profileData[1])
-        if self.options.profile == 'KS':
-            if 'MOBI' in self.options.format or 'EPUB' in self.options.format:
-                size[1] = min(size[1], 1920)
+        if self.options.kindle_scribe_azw3:
+            size[1] = min(size[1], 1920)
         self.image.thumbnail(tuple(size), Image.Resampling.LANCZOS)
 
     def crop_main_cover(self):
