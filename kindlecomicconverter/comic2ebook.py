@@ -791,7 +791,7 @@ def getPanelViewSize(deviceres, size):
 def sanitizeTree(filetree):
     chapterNames = {}
     page = 1
-    cover = None
+    cover_path = None
     for root, dirs, files in os.walk(filetree):
         dirs.sort(key=OS_SORT_KEY)
         files.sort(key=OS_SORT_KEY)
@@ -806,8 +806,8 @@ def sanitizeTree(filetree):
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
-            if not cover:
-                cover = newKey
+            if not cover_path:
+                cover_path = newKey
         for i, name in enumerate(dirs):
             tmpName = name
             slugified = slugify(name)
@@ -819,7 +819,7 @@ def sanitizeTree(filetree):
             if key != newKey:
                 os.replace(key, newKey)
                 dirs[i] = newKey
-    return chapterNames, cover
+    return chapterNames, cover_path
 
 
 def flattenTree(filetree):
