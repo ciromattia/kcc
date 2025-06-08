@@ -85,12 +85,14 @@ class ProfileData:
         'K2': ("Kindle 2", (600, 670), Palette15, 1.8),
         'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8),
         'K34': ("Kindle Keyboard/Touch", (600, 800), Palette16, 1.8),
-        'K578': ("Kindle", (600, 800), Palette16, 1.8),
+        'K57': ("Kindle 5/7", (600, 800), Palette16, 1.8),
         'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.8),
-        'KV': ("Kindle Paperwhite 3/4/Voyage/Oasis", (1072, 1448), Palette16, 1.8),
+        'KV': ("Kindle Voyage", (1072, 1448), Palette16, 1.8),
     }
 
     ProfilesKindlePDOC = {
+        'KPW34': ("Kindle Paperwhite 3/4/Oasis", (1072, 1448), Palette16, 1.8),
+        'K810': ("Kindle 8/10", (600, 800), Palette16, 1.8),
         'KO': ("Kindle Oasis 2/3/Paperwhite 12/Colorsoft 12", (1264, 1680), Palette16, 1.8),
         'K11': ("Kindle 11", (1072, 1448), Palette16, 1.8),
         'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.8),
@@ -458,7 +460,7 @@ class Cover:
             raise RuntimeError('Failed to save cover.')
 
     def saveToKindle(self, kindle, asin):
-        self.image = self.image.resize((300, 470), Image.Resampling.LANCZOS)
+        self.image = ImageOps.contain(self.image, (300, 470), Image.Resampling.LANCZOS)
         try:
             self.image.save(os.path.join(kindle.path.split('documents')[0], 'system', 'thumbnails',
                                          'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG', optimize=1, quality=85)
