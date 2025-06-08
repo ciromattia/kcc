@@ -980,7 +980,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             },
             "Kindle Paperwhite 7/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW34'},
-            "Kindle PW 5/6": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Paperwhite 5/6": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KPW'},
             "Kindle 4/5/7": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'ForceColor': False, 'Label': 'K57'},

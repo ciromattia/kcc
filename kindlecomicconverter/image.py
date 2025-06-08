@@ -454,7 +454,7 @@ class Cover:
             raise RuntimeError('Failed to save cover.')
 
     def saveToKindle(self, kindle, asin):
-        self.image = self.image.resize((300, 470), Image.Resampling.LANCZOS)
+        self.image = ImageOps.contain(self.image, (300, 470), Image.Resampling.LANCZOS)
         try:
             self.image.save(os.path.join(kindle.path.split('documents')[0], 'system', 'thumbnails',
                                          'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG', optimize=1, quality=85)
