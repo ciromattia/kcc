@@ -77,7 +77,7 @@ def main(argv=None):
     return 0
 
 
-def buildHTML(path, imgfile, imgfilepath):
+def buildHTML(path, imgfile, imgfilepath, imgfile2=None):
     key = pathlib.Path(imgfilepath).name
     filename = getImageFileName(imgfile)
     deviceres = options.profileData[1]
@@ -103,10 +103,11 @@ def buildHTML(path, imgfile, imgfilepath):
         os.makedirs(htmlpath)
     htmlfile = os.path.join(htmlpath, filename[0] + '.xhtml')
     imgsize = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
+    imgsizeframe = list(imgsize)
+    if imgfile2:
+        imgsizeframe[1] += Image.open(os.path.join(head, "Images", postfix, imgfile2)).size[1]
     if options.hq:
-        imgsizeframe = (int(imgsize[0] // 1.5), int(imgsize[1] // 1.5))
-    else:
-        imgsizeframe = imgsize
+        imgsizeframe = (int(imgsizeframe[0] // 1.5), int(imgsizeframe[1] // 1.5))
     f = open(htmlfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<!DOCTYPE html>\n",
@@ -115,14 +116,18 @@ def buildHTML(path, imgfile, imgfilepath):
                   "<title>", hescape(filename[0]), "</title>\n",
                   "<link href=\"", "../" * (backref - 1), "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
                   "<meta name=\"viewport\" "
-                  "content=\"width=" + str(imgsize[0]) + ", height=" + str(imgsize[1]) + "\"/>\n"
+                  "content=\"width=" + str(imgsizeframe[0]) + ", height=" + str(imgsizeframe[1]) + "\"/>\n"
                   "</head>\n",
                   "<body style=\"" + additionalStyle + "\">\n",
                   "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsizeframe) + "%;\">\n",
                   # this display none div fixes formatting issues with virtual panel mode, for some reason
                   '<div style="display:none;">.</div>\n',
-                  "<img width=\"" + str(imgsizeframe[0]) + "\" height=\"" + str(imgsizeframe[1]) + "\" ",
-                  "src=\"", "../" * backref, "Images/", postfix, imgfile, "\"/>\n</div>\n"])
+    ])
+    f.write(f'<img width="{imgsize[0]}" height="{imgsize[1]}" src="{"../" * backref}Images/{postfix}{imgfile}"/>\n')
+    if imgfile2:
+        imgsize2 = Image.open(os.path.join(head, "Images", postfix, imgfile2)).size
+        f.write(f'<img width="{imgsize2[0]}" height="{imgsize2[1]}" src="{"../" * backref}Images/{postfix}{imgfile2}"/>\n')
+    f.write("</div>\n")
     if options.iskindle and options.panelview:
         if options.autoscale:
             size = (getPanelViewResolution(imgsize, deviceres))
