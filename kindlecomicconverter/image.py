@@ -414,14 +414,9 @@ class ComicPage:
         self.image = crop_empty_inter_panel(self.image, direction, background_color=self.fill)
 
 class Cover:
-    def __init__(self, source, target, opt, tomeid):
+    def __init__(self, source, opt):
         self.options = opt
         self.source = source
-        self.target = target
-        if tomeid == 0:
-            self.tomeid = 1
-        else:
-            self.tomeid = tomeid
         self.image = Image.open(source)
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
@@ -433,6 +428,15 @@ class Cover:
         self.image = ImageOps.autocontrast(self.image)
         if not self.options.forcecolor:
             self.image = self.image.convert('L')
+        self.crop_main_cover()
+
+        size = list(self.options.profileData[1])
+        if self.options.profile == 'KS':
+            if 'MOBI' in self.options.format or 'EPUB' in self.options.format:
+                size[1] = min(size[1], 1920)
+        self.image.thumbnail(tuple(size), Image.Resampling.LANCZOS)
+
+    def crop_main_cover(self):
         w, h = self.image.size
         if w / h > 2:
             if self.options.righttoleft:
@@ -444,12 +448,14 @@ class Cover:
                 self.image = self.image.crop((0, 0, w/2 - w * 0.03, h))
             else:
                 self.image = self.image.crop((w/2 + w * 0.03, 0, w, h))
-        self.image.thumbnail(self.options.profileData[1], Image.Resampling.LANCZOS)
-        self.save()
 
-    def save(self):
+    def save_to_epub(self, target, tomeid):
+        if tomeid == 0:
+            self.tomeid = 1
+        else:
+            self.tomeid = tomeid
         try:
-            self.image.save(self.target, "JPEG", optimize=1, quality=85)
+            self.image.save(target, "JPEG", optimize=1, quality=85)
         except IOError:
             raise RuntimeError('Failed to save cover.')
 
