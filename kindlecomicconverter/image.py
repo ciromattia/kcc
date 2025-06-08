@@ -429,8 +429,9 @@ class Cover:
         self.crop_main_cover()
 
         size = list(self.options.profileData[1])
-        if (self.options.profile == 'KS') and (self.options.format in ('MOBI', 'EPUB')):
-            size[1] = min(size[1], 1920)
+        if self.options.profile == 'KS':
+            if 'MOBI' in self.options.format or 'EPUB' in self.options.format:
+                size[1] = min(size[1], 1920)
         self.image.thumbnail(tuple(size), Image.Resampling.LANCZOS)
 
     def crop_main_cover(self):
