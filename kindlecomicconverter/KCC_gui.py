@@ -967,18 +967,18 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'K11',
             },
-            "Kindle PW 11": {
+            "Kindle Paperwhite 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW5',
             },
-            "Kindle PW 12": {
+            "Kindle Paperwhite 12": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KO',
             },
-            "Kindle CS 12": {
+            "Kindle Colorsoft": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': True, 'Label': 'KO',
             },
-            "Kindle PW 7/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Paperwhite 7/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KV'},
-            "Kindle PW 5/6": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Paperwhite 5/6": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KPW'},
             "Kindle 4/5/7/8/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                        'DefaultUpscale': False, 'ForceColor': False, 'Label': 'K578'},
@@ -1036,10 +1036,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                       'Label': 'OTHER'},
         }
         profilesGUI = [
-            "Kindle CS 12",
-            "Kindle PW 12",
+            "Kindle Colorsoft",
+            "Kindle Paperwhite 12",
             "Kindle Scribe",
-            "Kindle PW 11",
+            "Kindle Paperwhite 11",
             "Kindle 11",
             "Kindle Oasis 9/10",
             "Separator",
@@ -1058,9 +1058,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Other",
             "Separator",
             "Kindle Oasis 8",
-            "Kindle PW 7/10",
+            "Kindle Paperwhite 7/10",
             "Kindle Voyage",
-            "Kindle PW 5/6",
+            "Kindle Paperwhite 5/6",
             "Kindle 4/5/7/8/10",
             "Kindle Touch",
             "Kindle Keyboard",
