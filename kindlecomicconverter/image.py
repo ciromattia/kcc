@@ -449,7 +449,7 @@ class Cover:
             else:
                 self.image = self.image.crop((w/2 + w * 0.03, 0, w, h))
 
-    def save(self, target, tomeid):
+    def save_to_epub(self, target, tomeid):
         if tomeid == 0:
             self.tomeid = 1
         else:

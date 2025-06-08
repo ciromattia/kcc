@@ -503,7 +503,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover):
                       "}\n"])
     f.close()
     build_html_start = perf_counter()
-    cover.save(os.path.join(path, 'OEBPS', 'Images', 'cover.jpg'), tomenumber)
+    cover.save_to_epub(os.path.join(path, 'OEBPS', 'Images', 'cover.jpg'), tomenumber)
     options.covers.append((cover, options.uuid))
     for dirpath, dirnames, filenames in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
