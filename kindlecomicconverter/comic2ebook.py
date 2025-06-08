@@ -313,14 +313,9 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "media-type=\"application/x-dtbncx+xml\"/>\n",
                   "<item id=\"nav\" href=\"nav.xhtml\" ",
                   "properties=\"nav\" media-type=\"application/xhtml+xml\"/>\n"])
-    if cover is not None:
-        filename = getImageFileName(cover.replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\'))
-        if '.png' == filename[1]:
-            mt = 'image/png'
-        else:
-            mt = 'image/jpeg'
-        f.write("<item id=\"cover\" href=\"Images/cover" + filename[1] + "\" media-type=\"" + mt +
-                "\" properties=\"cover-image\"/>\n")
+    mt = 'image/jpeg'
+    f.write("<item id=\"cover\" href=\"Images/cover.jpg" + "\" media-type=\"" + mt +
+            "\" properties=\"cover-image\"/>\n")
     reflist = []
     for path in filelist:
         folder = path[0].replace(os.path.join(dstdir, 'OEBPS'), '').lstrip('/').lstrip('\\\\').replace("\\", "/")
@@ -427,10 +422,9 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "</container>"])
     f.close()
 
-def buildEPUB(path, chapternames, tomenumber, ischunked):
+def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover):
     filelist = []
     chapterlist = []
-    cover = None
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
     f = open(os.path.join(path, 'OEBPS', 'Text', 'style.css'), 'w', encoding='UTF-8')
     f.writelines(["@page {\n",
@@ -508,18 +502,12 @@ def buildEPUB(path, chapternames, tomenumber, ischunked):
                       "}\n"])
     f.close()
     build_html_start = perf_counter()
+    cover.save(os.path.join(path, 'OEBPS', 'Images', 'cover.jpg'), tomenumber)
+    options.covers.append((cover, options.uuid))
     for dirpath, dirnames, filenames in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
-            if cover is None:
-                try:
-                    cover = os.path.join(os.path.join(path, 'OEBPS', 'Images'),
-                                        'cover' + getImageFileName(afile)[1])
-                except Exception as e:
-                    raise UserWarning(f"{afile}: {e}")
-                options.covers.append((image.Cover(os.path.join(dirpath, afile), cover, options,
-                                                   tomenumber), options.uuid))
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), afile))
                 chapter = True
@@ -801,6 +789,7 @@ def getPanelViewSize(deviceres, size):
 def sanitizeTree(filetree):
     chapterNames = {}
     page = 1
+    cover = None
     for root, dirs, files in os.walk(filetree):
         dirs.sort(key=OS_SORT_KEY)
         files.sort(key=OS_SORT_KEY)
@@ -815,6 +804,8 @@ def sanitizeTree(filetree):
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
+            if not cover:
+                cover = newKey
         for i, name in enumerate(dirs):
             tmpName = name
             slugified = slugify(name)
@@ -826,7 +817,7 @@ def sanitizeTree(filetree):
             if key != newKey:
                 os.replace(key, newKey)
                 dirs[i] = newKey
-    return chapterNames
+    return chapterNames, cover
 
 
 def flattenTree(filetree):
@@ -1242,7 +1233,9 @@ def makeBook(source, qtgui=None):
     print("Checking images...")
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
-    chapterNames = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    cover = image.Cover(cover_path, options)
+
     if options.webtoon:
         y = image.ProfileData.Profiles[options.profile][1][1]
         comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
@@ -1288,10 +1281,10 @@ def makeBook(source, qtgui=None):
         else:
             print("Creating EPUB file...")
             if len(tomes) > 1:
-                buildEPUB(tome, chapterNames, tomeNumber, True)
+                buildEPUB(tome, chapterNames, tomeNumber, True, cover)
                 filepath.append(getOutputFilename(source, options.output, '.epub', ' ' + str(tomeNumber)))
             else:
-                buildEPUB(tome, chapterNames, tomeNumber, False)
+                buildEPUB(tome, chapterNames, tomeNumber, False, cover)
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
             makeZIP(tome + '_comic', tome, True)
         copyfile(tome + '_comic.zip', filepath[-1])
