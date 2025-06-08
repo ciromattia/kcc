@@ -625,7 +625,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def togglequalityBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
         if value == 2:
-            if profile['Label'] == 'KV' or profile['Label'] in image.ProfileData.ProfilesKindlePDOC.keys():
+            if profile['Label'] not in ('K57', 'KPW', 'K810') :
                 self.addMessage('This option is intended for older Kindle models.', 'warning')
                 self.addMessage('On this device, there will be conversion speed and quality issues.', 'warning')
                 self.addMessage('Use the Kindle Scribe profile if you want higher resolution when zooming.', 'warning')
@@ -957,8 +957,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.profiles = {
             "Kindle Oasis 9/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                                  'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KO'},
+            "Kindle 8/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                       'DefaultUpscale': False, 'ForceColor': False, 'Label': 'K810'},
             "Kindle Oasis 8": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                             'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KV'},
+                             'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW34'},
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KV'},
             "Kindle Scribe": {
@@ -977,11 +979,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': True, 'Label': 'KO',
             },
             "Kindle Paperwhite 7/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                              'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KV'},
+                              'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW34'},
             "Kindle Paperwhite 5/6": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KPW'},
-            "Kindle 4/5/7/8/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
-                       'DefaultUpscale': False, 'ForceColor': False, 'Label': 'K578'},
+            "Kindle 4/5/7": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
+                       'DefaultUpscale': False, 'ForceColor': False, 'Label': 'K57'},
             "Kindle DX": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 2,
                               'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KDX'},
             "Kobo Mini/Touch": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
@@ -1057,11 +1059,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Separator",
             "Other",
             "Separator",
+            "Kindle 8/10",
             "Kindle Oasis 8",
             "Kindle Paperwhite 7/10",
             "Kindle Voyage",
             "Kindle Paperwhite 5/6",
-            "Kindle 4/5/7/8/10",
+            "Kindle 4/5/7",
             "Kindle Touch",
             "Kindle Keyboard",
             "Kindle DX",
