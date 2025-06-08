@@ -590,6 +590,16 @@
          </property>
         </widget>
        </item>
+       <item row="6" column="0">
+        <widget class="QCheckBox" name="fileFusionBox">
+         <property name="toolTip">
+          <string>Combines all selected files into a single file. (Helpful for combining chapters into volumes)</string>
+         </property>
+         <property name="text">
+          <string>File Fusion</string>
+         </property>
+        </widget>
+       </item>
        <item row="2" column="1">
         <widget class="QCheckBox" name="upscaleBox">
          <property name="toolTip">
