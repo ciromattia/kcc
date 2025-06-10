@@ -1394,7 +1394,8 @@ def makeFusion(sources, qtgui=None):
 
         end = perf_counter()
         print(f"makefusion: {end - start} seconds")
-        print("Combined File: "+ os.path.join(os.path.dirname(sources[0]), "Combined_comic.cbz"))
+        filepath = os.path.join(os.path.dirname(sources[0]), "Combined_comic.cbz")
+        print("Combined File: "+ filepath)
         sources.clear()
         
         return filepath
