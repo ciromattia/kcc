@@ -561,7 +561,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.spreadShiftBox.setText(QCoreApplication.translate("mainWindow", u"Spread shift", None))
 #if QT_CONFIG(tooltip)
-        self.fileFusionBox.setToolTip(QCoreApplication.translate("mainWindow", u"Combines all selected files into a single file. (Helpful for combining chapters into volumes)", None))
+        self.fileFusionBox.setToolTip(QCoreApplication.translate("mainWindow", u"Combines all selected files into a single file. (Helpful for combining chapters into volumes. Only CBZ)", None))
 #endif // QT_CONFIG(tooltip)
         self.fileFusionBox.setText(QCoreApplication.translate("mainWindow", u"File Fusion", None))
 #if QT_CONFIG(tooltip)
