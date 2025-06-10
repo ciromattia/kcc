@@ -290,6 +290,7 @@ class WorkerThread(QThread):
             if GUI.jobList.item(i).icon().isNull():
                 currentJobs.append(str(GUI.jobList.item(i).text()))
         GUI.jobList.clear()
+        finishedBooks = comic2ebook.finishedBooks
         for job in currentJobs:
             sleep(0.5)
             if not self.conversionAlive:
@@ -308,6 +309,8 @@ class WorkerThread(QThread):
             try:
                 comic2ebook.options = comic2ebook.checkOptions(copy(options))
                 outputPath = comic2ebook.makeBook(job, self)
+                for asource in outputPath:
+                    finishedBooks.append(asource)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
                 if not self.conversionAlive:
@@ -435,6 +438,16 @@ class WorkerThread(QThread):
                                 move(item, GUI.targetDirectory)
                             except Exception:
                                 pass
+        if options.filefusion:
+            MW.addMessage.emit('Attempting file fusion', 'info', False)
+            try:
+                fusionOutput = comic2ebook.makeFusion(finishedBooks)
+                MW.addMessage.emit('Created fusion at ' + fusionOutput, 'info', False)
+            except Exception:
+                MW.addMessage.emit('Fusion Failed ' + Exception, 'error', True)
+                pass
+            
+
         GUI.progress.content = ''
         GUI.progress.stop()
         MW.hideProgressBar.emit()

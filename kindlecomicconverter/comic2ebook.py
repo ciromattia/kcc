@@ -1349,6 +1349,7 @@ def makeFusion(sources, qtgui=None):
     filepath = []
     GUI = qtgui
     if options.format == 'CBZ':
+        print("Running Fusion on CBZ Files")
         start = perf_counter()
         pageTracker : int = 0
         combinePath : str = os.path.join(os.path.dirname(sources[0]), "combinationTemp")
