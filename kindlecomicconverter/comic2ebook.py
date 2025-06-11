@@ -1242,6 +1242,71 @@ def checkPre(source):
         raise UserWarning("Target directory is not writable.")
 
 
+def makeFusion(sources, qtgui=None):
+    filepath = []
+    GUI = qtgui
+    start = perf_counter()
+    pageTracker : int = 0
+    combinePath : str = os.path.join(os.path.dirname(sources[0]), "combinationTemp")
+    os.mkdir(combinePath)
+    print("Running Fusion")
+        
+    for source in sources:
+        print(f"Processing {source}...")
+        
+        checkPre(source)
+        print("Checking images...")
+        path : str = getWorkFolder(source)
+        filepath.append(path)
+        pathfinder = (os.path.join(path, "OEBPS", "Images"))
+        print(pathfinder)
+        images = sorted(os.listdir(pathfinder))
+        for image in images:
+            pageTracker += 1
+            ext = os.path.splitext(image)[1]
+            target_path = os.path.join(combinePath, f"{pageTracker}{ext}")
+            os.rename(os.path.join(pathfinder, image), target_path)
+
+        
+    #Ouput
+    sanitizeTree(combinePath)
+    if options.format == 'CBZ':
+        print("Creating CBZ file...")
+        for paths in filepath:
+            if os.path.isfile(paths):
+                os.remove(paths)
+            elif os.path.isdir(paths):
+                rmtree(paths)
+        filepath = makeZIP('Combined_comic', combinePath)
+        move('Combined_comic.zip', os.path.join(os.path.dirname(sources[0]), "Combined_comic.cbz"))
+        try:
+            os.remove('Combined_comic.zip')
+        except FileNotFoundError:
+            pass
+        rmtree(combinePath)
+    elif options.format == 'MOBI':
+        pass
+    elif options.format == 'EPUB':
+        #Change cover path to first page of EPUB
+        print("Creating EPUB file...")
+        for paths in filepath:
+            if os.path.isfile(paths):
+                os.remove(paths)
+            elif os.path.isdir(paths):
+                rmtree(paths)
+        buildEPUB(os.path.join(combinePath, "OEBPS", "Images"))
+        filepath.append(getOutputFilename(source, options.output, '.epub', ''))
+        makeZIP('Combined_comic', combinePath)
+
+    end = perf_counter()
+    print(f"makefusion: {end - start} seconds")
+    filepath = os.path.join(os.path.dirname(sources[0]), "Combined_comic.cbz")
+    print("Combined File: "+ filepath)
+    sources.clear()
+    
+    return filepath
+
+
 def makeBook(source, qtgui=None):
     start = perf_counter()
     global GUI
