@@ -1076,6 +1076,8 @@ def makeParser():
                                      "2: Consider every subdirectory as separate volume [Default=0]")
     output_options.add_argument("--spreadshift", action="store_true", dest="spreadshift", default=False,
                                 help="Shift first page to opposite side in landscape for spread alignment")
+    output_options.add_argument("--filefusion", action="store_true", dest="filefusion", default=False,
+                                help="Combines all selected files into a single file. (Helpful for combining chapters into volumes)")
     output_options.add_argument("--norotate", action="store_true", dest="norotate", default=False,
                                 help="Do not rotate double page spreads in spread splitter option.")
 
@@ -1270,33 +1272,20 @@ def makeFusion(sources, qtgui=None):
         
     #Ouput
     sanitizeTree(combinePath)
-    if options.format == 'CBZ':
-        print("Creating CBZ file...")
-        for paths in filepath:
-            if os.path.isfile(paths):
-                os.remove(paths)
-            elif os.path.isdir(paths):
-                rmtree(paths)
-        filepath = makeZIP('Combined_comic', combinePath)
-        move('Combined_comic.zip', os.path.join(os.path.dirname(sources[0]), "Combined_comic.cbz"))
-        try:
-            os.remove('Combined_comic.zip')
-        except FileNotFoundError:
-            pass
-        rmtree(combinePath)
-    elif options.format == 'MOBI':
+    print("Creating CBZ file...")
+    for paths in filepath:
+        if os.path.isfile(paths):
+            os.remove(paths)
+        elif os.path.isdir(paths):
+            rmtree(paths)
+    filepath = makeZIP('Combined_comic', combinePath)
+    move('Combined_comic.zip', os.path.join(os.path.dirname(sources[0]), "Combined_comic.cbz"))
+    try:
+        os.remove('Combined_comic.zip')
+    except FileNotFoundError:
         pass
-    elif options.format == 'EPUB':
-        #Change cover path to first page of EPUB
-        print("Creating EPUB file...")
-        for paths in filepath:
-            if os.path.isfile(paths):
-                os.remove(paths)
-            elif os.path.isdir(paths):
-                rmtree(paths)
-        buildEPUB(os.path.join(combinePath, "OEBPS", "Images"))
-        filepath.append(getOutputFilename(source, options.output, '.epub', ''))
-        makeZIP('Combined_comic', combinePath)
+    rmtree(combinePath)
+
 
     end = perf_counter()
     print(f"makefusion: {end - start} seconds")
