@@ -1380,7 +1380,9 @@ def makeMOBIWorker(item):
             if kindlegenErrorCode > 0:
                 break
             if ":I1036: Mobi file built successfully" in line:
-                break
+                return [0, '', item]
+            if ":I1037: Mobi file built with WARNINGS!" in line:
+                return [0, '', item]
         # ERROR: KCC unknown generic error
         if kindlegenErrorCode == 0:
             kindlegenErrorCode = err.returncode
