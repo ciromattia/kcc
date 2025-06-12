@@ -312,13 +312,13 @@ class ComicPage:
                 flags.append('BlackBackground')
             if self.opt.kindle_scribe_azw3 and self.image.size[1] > 1920:
                 w, h = self.image.size
-                path_with_ext = self.save_with_codec(self.image.crop((0, 0, w, 1920)), self.targetPathStart + '-above' + self.targetPathEnd)
+                targetPath = self.save_with_codec(self.image.crop((0, 0, w, 1920)), self.targetPathStart + '-above' + self.targetPathEnd)
                 self.save_with_codec(self.image.crop((0, 1920, w, h)), self.targetPathStart + '-below' + self.targetPathEnd)
             else:
-                path_with_ext = self.save_with_codec(self.image, self.targetPathStart + self.targetPathEnd)
+                targetPath = self.save_with_codec(self.image, self.targetPathStart + self.targetPathEnd)
             if os.path.isfile(self.orgPath):
                 os.remove(self.orgPath)
-            return [Path(path_with_ext).name, flags]
+            return [Path(targetPath).name, flags]
         except IOError as err:
             raise RuntimeError('Cannot save image. ' + str(err))
 
