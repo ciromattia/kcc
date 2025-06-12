@@ -514,17 +514,14 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover):
         chapter = False
         dirnames, filenames = walkSort(dirnames, filenames)
         for afile in filenames:
-            pathlib_path = pathlib.Path(afile)
-            stem = pathlib_path.stem
-            suffix = pathlib_path.suffix
-            if stem.endswith('-bottom'):
+            if 'below' in afile:
                 continue
-            if afile == 'cover.jpg':
+            if 'cover.jpg' == afile:
                 continue
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), afile))
                 chapter = True
-            bottom = f'{stem}-bottom{suffix}'
+            bottom = afile.replace('above', 'below')
             bottom_path = os.path.join(dirpath, bottom)
             if os.path.exists(bottom_path):
                 filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile), bottom))

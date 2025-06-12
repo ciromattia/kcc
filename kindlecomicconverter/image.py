@@ -286,16 +286,17 @@ class ComicPage:
         self.fill = fill
         self.rotated = False
         self.orgPath = os.path.join(path[0], path[1])
+        self.targetPathStart = os.path.join(path[0], os.path.splitext(path[1])[0])
         if 'N' in mode:
-            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc'
+            self.targetPathEnd = '-kcc'
         elif 'R' in mode:
-            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc-a'
+            self.targetPathEnd = '-kcc-a'
             if not options.norotate:
                 self.rotated = True
         elif 'S1' in mode:
-            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc-b'
+            self.targetPathEnd = '-kcc-b'
         elif 'S2' in mode:
-            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc-c'
+            self.targetPathEnd = '-kcc-c'
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
@@ -311,10 +312,10 @@ class ComicPage:
                 flags.append('BlackBackground')
             if self.opt.kindle_scribe_azw3 and self.image.size[1] > 1920:
                 w, h = self.image.size
-                path_with_ext = self.save_with_codec(self.image.crop((0, 0, w, 1920)), self.targetPath)
-                self.save_with_codec(self.image.crop((0, 1920, w, h)), self.targetPath + '-bottom')
+                path_with_ext = self.save_with_codec(self.image.crop((0, 0, w, 1920)), self.targetPathStart + '-above' + self.targetPathEnd)
+                self.save_with_codec(self.image.crop((0, 1920, w, h)), self.targetPathStart + '-below' + self.targetPathEnd)
             else:
-                path_with_ext = self.save_with_codec(self.image, self.targetPath)
+                path_with_ext = self.save_with_codec(self.image, self.targetPathStart + self.targetPathEnd)
             if os.path.isfile(self.orgPath):
                 os.remove(self.orgPath)
             return [Path(path_with_ext).name, flags]
