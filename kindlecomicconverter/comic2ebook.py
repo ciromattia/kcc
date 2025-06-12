@@ -127,7 +127,7 @@ def buildHTML(path, imgfile, imgfilepath, imgfile2=None):
     ])
     f.write(f'<img width="{imgsize[0]}" height="{imgsize[1]}" src="{"../" * backref}Images/{postfix}{imgfile}"/>')
     if imgfile2:
-        f.write(f'<img width="{imgsize2[0]}" height="{imgsize2[1]}" src="{"../" * backref}Images/{postfix}{imgfile2}"/>\n')
+        f.write(f'<img width="{imgsize2[0]}" height="{imgsize2[1]}" src="{"../" * backref}Images/{postfix}{imgfile2}"/>')
     f.write("\n</div>\n")
     if options.iskindle and options.panelview:
         if options.autoscale:
