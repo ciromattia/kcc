@@ -338,6 +338,11 @@ def buildOPF(dstdir, title, filelist, cover=None):
             mt = 'image/jpeg'
         f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
                 mt + "\"/>\n")
+        bottom = path[1].replace('above', 'below')
+        bottom_path = os.path.join(path[0], bottom)
+        if os.path.exists(bottom_path):
+            uniqueid = uniqueid.replace('above', 'below')
+            f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + bottom + "\" media-type=\"" + mt + "\"/>\n")
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
 
 
