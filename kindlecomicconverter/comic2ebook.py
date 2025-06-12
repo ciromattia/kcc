@@ -104,8 +104,10 @@ def buildHTML(path, imgfile, imgfilepath, imgfile2=None):
     htmlfile = os.path.join(htmlpath, filename[0] + '.xhtml')
     imgsize = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
     imgsizeframe = list(imgsize)
+    imgsize2 = (0, 0)
     if imgfile2:
-        imgsizeframe[1] += Image.open(os.path.join(head, "Images", postfix, imgfile2)).size[1]
+        imgsize2 = Image.open(os.path.join(head, "Images", postfix, imgfile2)).size
+    imgsizeframe[1] += imgsize2[1]
     if options.hq:
         imgsizeframe = (int(imgsizeframe[0] // 1.5), int(imgsizeframe[1] // 1.5))
     f = open(htmlfile, "w", encoding='UTF-8')
@@ -125,9 +127,8 @@ def buildHTML(path, imgfile, imgfilepath, imgfile2=None):
     ])
     f.write(f'<img width="{imgsize[0]}" height="{imgsize[1]}" src="{"../" * backref}Images/{postfix}{imgfile}"/>')
     if imgfile2:
-        imgsize2 = Image.open(os.path.join(head, "Images", postfix, imgfile2)).size
         f.write(f'<img width="{imgsize2[0]}" height="{imgsize2[1]}" src="{"../" * backref}Images/{postfix}{imgfile2}"/>\n')
-    f.write("</div>\n")
+    f.write("\n</div>\n")
     if options.iskindle and options.panelview:
         if options.autoscale:
             size = (getPanelViewResolution(imgsize, deviceres))
