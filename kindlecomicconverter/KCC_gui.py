@@ -269,6 +269,8 @@ class WorkerThread(QThread):
             options.spreadshift = True
         if GUI.fileFusionBox.isChecked():
             options.filefusion = True
+        else:
+            options.filefusion = False
         if GUI.noRotateBox.isChecked():
             options.norotate = True
         if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:

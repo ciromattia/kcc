@@ -1076,8 +1076,6 @@ def makeParser():
                                      "2: Consider every subdirectory as separate volume [Default=0]")
     output_options.add_argument("--spreadshift", action="store_true", dest="spreadshift", default=False,
                                 help="Shift first page to opposite side in landscape for spread alignment")
-    output_options.add_argument("--filefusion", action="store_true", dest="filefusion", default=False,
-                                help="Combines all selected files into a single file. (Helpful for combining chapters into volumes)")
     output_options.add_argument("--norotate", action="store_true", dest="norotate", default=False,
                                 help="Do not rotate double page spreads in spread splitter option.")
 
@@ -1249,7 +1247,7 @@ def makeFusion(sources, qtgui=None):
     GUI = qtgui
     start = perf_counter()
     pageTracker : int = 0
-    combinePath : str = os.path.join(os.path.dirname(sources[0]), "combinationTemp")
+    combinePath : str = os.path.join(os.path.dirname(sources[0]), (os.path.splitext(sources[0])[0] + "_fused" + os.path.splitext(sources[0])[1]))
     os.mkdir(combinePath)
     print("Running Fusion")
         
@@ -1272,28 +1270,18 @@ def makeFusion(sources, qtgui=None):
         
     #Ouput
     sanitizeTree(combinePath)
-    print("Creating CBZ file...")
     for paths in filepath:
         if os.path.isfile(paths):
             os.remove(paths)
         elif os.path.isdir(paths):
             rmtree(paths)
-    filepath = makeZIP('Combined_comic', combinePath)
-    move('Combined_comic.zip', os.path.join(os.path.dirname(sources[0]), "Combined_comic.cbz"))
-    try:
-        os.remove('Combined_comic.zip')
-    except FileNotFoundError:
-        pass
-    rmtree(combinePath)
-
 
     end = perf_counter()
     print(f"makefusion: {end - start} seconds")
-    filepath = os.path.join(os.path.dirname(sources[0]), "Combined_comic.cbz")
-    print("Combined File: "+ filepath)
+    print("Combined File: "+ combinePath)
     sources.clear()
     
-    return filepath
+    return combinePath
 
 
 def makeBook(source, qtgui=None):
