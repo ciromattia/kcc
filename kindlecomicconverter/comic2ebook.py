@@ -338,9 +338,8 @@ def buildOPF(dstdir, title, filelist, cover=None):
             mt = 'image/jpeg'
         f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
                 mt + "\"/>\n")
-        bottom = path[1].replace('above', 'below')
-        bottom_path = os.path.join(path[0], bottom)
-        if os.path.exists(bottom_path):
+        if 'above' in path[1]:
+            bottom = path[1].replace('above', 'below')
             uniqueid = uniqueid.replace('above', 'below')
             f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + bottom + "\" media-type=\"" + mt + "\"/>\n")
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
@@ -527,9 +526,8 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover):
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), afile))
                 chapter = True
-            bottom = afile.replace('above', 'below')
-            bottom_path = os.path.join(dirpath, bottom)
-            if os.path.exists(bottom_path):
+            if 'above' in afile:
+                bottom = afile.replace('above', 'below')
                 filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile), bottom))
             else:
                 filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
