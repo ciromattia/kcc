@@ -77,7 +77,7 @@ def main(argv=None):
     return 0
 
 
-def buildHTML(path, imgfile, imgfilepath):
+def buildHTML(path, imgfile, imgfilepath, imgfile2=None):
     key = pathlib.Path(imgfilepath).name
     filename = getImageFileName(imgfile)
     deviceres = options.profileData[1]
@@ -103,10 +103,13 @@ def buildHTML(path, imgfile, imgfilepath):
         os.makedirs(htmlpath)
     htmlfile = os.path.join(htmlpath, filename[0] + '.xhtml')
     imgsize = Image.open(os.path.join(head, "Images", postfix, imgfile)).size
+    imgsizeframe = list(imgsize)
+    imgsize2 = (0, 0)
+    if imgfile2:
+        imgsize2 = Image.open(os.path.join(head, "Images", postfix, imgfile2)).size
+    imgsizeframe[1] += imgsize2[1]
     if options.hq:
-        imgsizeframe = (int(imgsize[0] // 1.5), int(imgsize[1] // 1.5))
-    else:
-        imgsizeframe = imgsize
+        imgsizeframe = (int(imgsizeframe[0] // 1.5), int(imgsizeframe[1] // 1.5))
     f = open(htmlfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<!DOCTYPE html>\n",
@@ -115,14 +118,17 @@ def buildHTML(path, imgfile, imgfilepath):
                   "<title>", hescape(filename[0]), "</title>\n",
                   "<link href=\"", "../" * (backref - 1), "style.css\" type=\"text/css\" rel=\"stylesheet\"/>\n",
                   "<meta name=\"viewport\" "
-                  "content=\"width=" + str(imgsize[0]) + ", height=" + str(imgsize[1]) + "\"/>\n"
+                  "content=\"width=" + str(imgsizeframe[0]) + ", height=" + str(imgsizeframe[1]) + "\"/>\n"
                   "</head>\n",
                   "<body style=\"" + additionalStyle + "\">\n",
                   "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsizeframe) + "%;\">\n",
                   # this display none div fixes formatting issues with virtual panel mode, for some reason
                   '<div style="display:none;">.</div>\n',
-                  "<img width=\"" + str(imgsizeframe[0]) + "\" height=\"" + str(imgsizeframe[1]) + "\" ",
-                  "src=\"", "../" * backref, "Images/", postfix, imgfile, "\"/>\n</div>\n"])
+    ])
+    f.write(f'<img width="{imgsize[0]}" height="{imgsize[1]}" src="{"../" * backref}Images/{postfix}{imgfile}"/>')
+    if imgfile2:
+        f.write(f'<img width="{imgsize2[0]}" height="{imgsize2[1]}" src="{"../" * backref}Images/{postfix}{imgfile2}"/>')
+    f.write("\n</div>\n")
     if options.iskindle and options.panelview:
         if options.autoscale:
             size = (getPanelViewResolution(imgsize, deviceres))
@@ -332,6 +338,10 @@ def buildOPF(dstdir, title, filelist, cover=None):
             mt = 'image/jpeg'
         f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + path[1] + "\" media-type=\"" +
                 mt + "\"/>\n")
+        if 'above' in path[1]:
+            bottom = path[1].replace('above', 'below')
+            uniqueid = uniqueid.replace('above', 'below')
+            f.write("<item id=\"img_" + str(uniqueid) + "\" href=\"" + folder + "/" + bottom + "\" media-type=\"" + mt + "\"/>\n")
     f.write("<item id=\"css\" href=\"Text/style.css\" media-type=\"text/css\"/>\n")
 
 
@@ -511,10 +521,16 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, len
         for afile in filenames:
             if afile == 'cover.jpg':
                 continue
+            if 'below' in afile:
+                continue
             if not chapter:
                 chapterlist.append((dirpath.replace('Images', 'Text'), afile))
                 chapter = True
-            filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
+            if 'above' in afile:
+                bottom = afile.replace('above', 'below')
+                filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile), bottom))
+            else:
+                filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
     build_html_end = perf_counter()
     print(f"buildHTML: {build_html_end - build_html_start} seconds")
     # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
@@ -898,8 +914,12 @@ def chunk_process(path, mode, parent):
     if mode < 3:
         for root, dirs, files in walkLevel(path, 0):
             for name in files if mode == 1 else dirs:
-                if mode == 1:
-                    size = os.path.getsize(os.path.join(root, name))
+                size = 0
+                if mode == 1: 
+                    if 'below' not in name:
+                        size = os.path.getsize(os.path.join(root, name))
+                        if 'above' in name:
+                            size += os.path.getsize(os.path.join(root, name.replace('above', 'below')))
                 else:
                     size = getDirectorySize(os.path.join(root, name))
                 if currentSize + size > targetSize:
@@ -1230,6 +1250,7 @@ def makeBook(source, qtgui=None):
         GUI.progressBarTick.emit('1')
     else:
         checkTools(source)
+    options.kindle_scribe_azw3 = options.profile == 'KS' and ('MOBI' in options.format or 'EPUB' in options.format)
     checkPre(source)
     print("Preparing source images...")
     path = getWorkFolder(source)
