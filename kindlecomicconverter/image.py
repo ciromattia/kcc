@@ -22,7 +22,7 @@ import io
 import os
 from pathlib import Path
 import mozjpeg_lossless_optimization
-from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
+from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter, ImageDraw
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
 
@@ -453,13 +453,24 @@ class Cover:
             else:
                 self.image = self.image.crop((w/2 + w * 0.03, 0, w, h))
 
-    def save_to_epub(self, target, tomeid):
-        if tomeid == 0:
-            self.tomeid = 1
-        else:
-            self.tomeid = tomeid
+    def save_to_epub(self, target, tomeid, len_tomes=0):
         try:
-            self.image.save(target, "JPEG", optimize=1, quality=85)
+            if tomeid == 0:
+                self.image.save(target, "JPEG", optimize=1, quality=85)
+            else:
+                copy = self.image.copy()
+                draw = ImageDraw.Draw(copy)
+                w, h = copy.size
+                draw.text(
+                    xy=(w/2, h * .85),
+                    text=f'{tomeid}/{len_tomes}',
+                    anchor='ms',
+                    font_size=h//7,
+                    fill=255,
+                    stroke_fill=0,
+                    stroke_width=25
+                )
+                copy.save(target, "JPEG", optimize=1, quality=85)
         except IOError:
             raise RuntimeError('Failed to save cover.')
 

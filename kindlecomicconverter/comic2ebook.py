@@ -433,7 +433,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "</container>"])
     f.close()
 
-def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover):
+def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, len_tomes=0):
     filelist = []
     chapterlist = []
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
@@ -513,7 +513,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover):
                       "}\n"])
     f.close()
     build_html_start = perf_counter()
-    cover.save_to_epub(os.path.join(path, 'OEBPS', 'Images', 'cover.jpg'), tomenumber)
+    cover.save_to_epub(os.path.join(path, 'OEBPS', 'Images', 'cover.jpg'), tomenumber, len_tomes)
     options.covers.append((cover, options.uuid))
     for dirpath, dirnames, filenames in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         chapter = False
@@ -1301,7 +1301,7 @@ def makeBook(source, qtgui=None):
         else:
             print("Creating EPUB file...")
             if len(tomes) > 1:
-                buildEPUB(tome, chapterNames, tomeNumber, True, cover)
+                buildEPUB(tome, chapterNames, tomeNumber, True, cover, len(tomes))
                 filepath.append(getOutputFilename(source, options.output, '.epub', ' ' + str(tomeNumber)))
             else:
                 buildEPUB(tome, chapterNames, tomeNumber, False, cover)
@@ -1397,7 +1397,9 @@ def makeMOBIWorker(item):
             if kindlegenErrorCode > 0:
                 break
             if ":I1036: Mobi file built successfully" in line:
-                break
+                return [0, '', item]
+            if ":I1037: Mobi file built with WARNINGS!" in line:
+                return [0, '', item]
         # ERROR: KCC unknown generic error
         if kindlegenErrorCode == 0:
             kindlegenErrorCode = err.returncode
