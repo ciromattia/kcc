@@ -294,6 +294,9 @@ Do not use `git merge` to merge master from upstream,
 use the "Sync fork" button on your fork on GitHub in your branch 
 to avoid weird looking merges in pull requests.
 
+When making changes, be aware of how your change might affect file splitting/chunking
+or chapter alignment.
+
 ### Windows install from source
 
 One time setup and running for the first time:
