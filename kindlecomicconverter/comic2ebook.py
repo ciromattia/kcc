@@ -914,8 +914,12 @@ def chunk_process(path, mode, parent):
     if mode < 3:
         for root, dirs, files in walkLevel(path, 0):
             for name in files if mode == 1 else dirs:
-                if mode == 1:
-                    size = os.path.getsize(os.path.join(root, name))
+                size = 0
+                if mode == 1: 
+                    if 'below' not in name:
+                        size = os.path.getsize(os.path.join(root, name))
+                        if 'above' in name:
+                            size += os.path.getsize(os.path.join(root, name.replace('above', 'below')))
                 else:
                     size = getDirectorySize(os.path.join(root, name))
                 if currentSize + size > targetSize:
