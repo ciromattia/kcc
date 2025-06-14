@@ -561,7 +561,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.spreadShiftBox.setText(QCoreApplication.translate("mainWindow", u"Spread shift", None))
 #if QT_CONFIG(tooltip)
-        self.fileFusionBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Combines all selected files into a single file. (Helpful for combining chapters into volumes.)<br/><br/>Fusion cannot select folders individually. You must select folder containing folders.</p></body></html>", None))
+        self.fileFusionBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Combines all selected files into a single file. (Helpful for combining chapters into volumes.)</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.fileFusionBox.setText(QCoreApplication.translate("mainWindow", u"File Fusion", None))
 #if QT_CONFIG(tooltip)
