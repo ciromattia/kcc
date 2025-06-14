@@ -1242,15 +1242,12 @@ def checkPre(source):
         raise UserWarning("Target directory is not writable.")
 
 
-def makeFusion(sources, qtgui=None):
+def makeFusion(sources):
     filepath = []
-    GUI = qtgui
     start = perf_counter()
-    pageTracker : int = 0
-    combinePath : str = os.path.join(os.path.dirname(sources[0]), (os.path.splitext(sources[0])[0] + "_fused" + os.path.splitext(sources[0])[1]))
-    os.mkdir(combinePath)
+    combinePath : str = mkdtemp(prefix=(os.path.splitext(os.path.basename(sources[0])))[0] + "_fused_",dir=os.path.dirname(sources[0]))
     print("Running Fusion")
-        
+
     for source in sources:
         print(f"Processing {source}...")
         
@@ -1262,10 +1259,9 @@ def makeFusion(sources, qtgui=None):
         print(pathfinder)
         images = sorted(os.listdir(pathfinder))
         for image in images:
-            pageTracker += 1
-            ext = os.path.splitext(image)[1]
-            target_path = os.path.join(combinePath, f"{pageTracker}{ext}")
-            os.rename(os.path.join(pathfinder, image), target_path)
+            target_path = os.path.join(combinePath, os.path.splitext(os.path.basename(source))[0], image)
+            os.renames(os.path.join(pathfinder, image), target_path)
+
 
         
     #Ouput
