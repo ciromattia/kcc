@@ -1242,6 +1242,50 @@ def checkPre(source):
         raise UserWarning("Target directory is not writable.")
 
 
+def makeFusion(sources):
+    filepath = []
+    start = perf_counter()
+    if len(sources) > 1 and os.path.isdir(sources[0]):
+        combinePath : str = mkdtemp(prefix=(os.path.basename(sources[0]) + "_fused_"),dir=os.path.dirname(sources[0]))
+    else:
+        combinePath : str = mkdtemp(prefix=(os.path.splitext(os.path.basename(sources[0]))[0] + "_fused_"),dir=os.path.dirname(sources[0]))
+    print("Running Fusion")
+
+    for source in sources:
+        print(f"Processing {source}...")
+        
+        checkPre(source)
+        print("Checking images...")
+        path : str = getWorkFolder(source)
+        filepath.append(path)
+        pathfinder = (os.path.join(path, "OEBPS", "Images"))
+        print(pathfinder)
+        images = sorted(os.listdir(pathfinder))
+        for image in images:
+            if os.path.splitext(source) == ".cbz":
+                target_path = os.path.join(combinePath, os.path.splitext(os.path.basename(source))[0], image)
+            else:
+                target_path = os.path.join(combinePath, os.path.basename(source), image)
+            os.renames(os.path.join(pathfinder, image), target_path)
+
+
+        
+    #Ouput
+    sanitizeTree(combinePath)
+    for paths in filepath:
+        if os.path.isfile(paths):
+            os.remove(paths)
+        elif os.path.isdir(paths):
+            rmtree(paths)
+
+    end = perf_counter()
+    print(f"makefusion: {end - start} seconds")
+    print("Combined File: "+ combinePath)
+    sources.clear()
+    
+    return combinePath
+
+
 def makeBook(source, qtgui=None):
     start = perf_counter()
     global GUI
