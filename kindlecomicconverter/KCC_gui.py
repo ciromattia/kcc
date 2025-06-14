@@ -302,8 +302,9 @@ class WorkerThread(QThread):
                 currentJobs.clear()
                 currentJobs.append(comic2ebook.makeFusion(bookDir))
                 MW.addMessage.emit('Created fusion at ' + currentJobs[0], 'info', False)
-            except Exception:
-                MW.addMessage.emit('Fusion Failed ' + str(Exception), 'error', True)
+            except Exception as e:
+                print('Fusion Failed ' + str(e))
+                MW.addMessage.emit('Fusion Failed ' + str(e), 'error', True)
                 pass
         for job in currentJobs:
             sleep(0.5)
