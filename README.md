@@ -11,7 +11,7 @@
 like Kindle, Kobo, ReMarkable, and more.
 Pages display in fullscreen without margins, 
 with proper fixed layout support.
-Supported input formats include JPG/PNG/GIF/JP2/WEBP image files in folders, archives, or PDFs.
+Supported input formats include JPG/PNG/GIF image files in folders, archives, or PDFs.
 Supported output formats include MOBI/AZW3, EPUB, KEPUB, and CBZ.
 
 If your source are super high resolution DRM-free PDFs from Kodansha/Humble Bundle/Fanatical, 
