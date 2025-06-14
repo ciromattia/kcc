@@ -1245,7 +1245,10 @@ def checkPre(source):
 def makeFusion(sources):
     filepath = []
     start = perf_counter()
-    combinePath : str = mkdtemp(prefix=(os.path.splitext(os.path.basename(sources[0])))[0] + "_fused_",dir=os.path.dirname(sources[0]))
+    if len(sources) > 1 and os.path.isdir(sources[0]):
+        combinePath : str = mkdtemp(prefix=(os.path.basename(sources[0]) + "_fused_"),dir=os.path.dirname(sources[0]))
+    else:
+        combinePath : str = mkdtemp(prefix=(os.path.splitext(os.path.basename(sources[0]))[0] + "_fused_"),dir=os.path.dirname(sources[0]))
     print("Running Fusion")
 
     for source in sources:
@@ -1259,7 +1262,10 @@ def makeFusion(sources):
         print(pathfinder)
         images = sorted(os.listdir(pathfinder))
         for image in images:
-            target_path = os.path.join(combinePath, os.path.splitext(os.path.basename(source))[0], image)
+            if os.path.splitext(source) == ".cbz":
+                target_path = os.path.join(combinePath, os.path.splitext(os.path.basename(source))[0], image)
+            else:
+                target_path = os.path.join(combinePath, os.path.basename(source), image)
             os.renames(os.path.join(pathfinder, image), target_path)
 
 
