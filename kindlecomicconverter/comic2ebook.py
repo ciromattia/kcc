@@ -28,6 +28,7 @@ from copy import copy
 from glob import glob, escape
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
+from typing import List
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree, copyfile
@@ -36,6 +37,7 @@ from uuid import uuid4
 from natsort import os_sort_keygen
 from slugify import slugify as slugify_ext
 from PIL import Image, ImageFile
+from pathlib import Path
 from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
@@ -1242,48 +1244,30 @@ def checkPre(source):
         raise UserWarning("Target directory is not writable.")
 
 
-def makeFusion(sources):
-    filepath = []
+def makeFusion(sources: List[str]):
+    if len(sources) < 2:
+        raise UserWarning('Fusion requires at least 2 sources.')
     start = perf_counter()
-    if len(sources) > 1 and os.path.isdir(sources[0]):
-        combinePath : str = mkdtemp(prefix=(os.path.basename(sources[0]) + "_fused_"),dir=os.path.dirname(sources[0]))
-    else:
-        combinePath : str = mkdtemp(prefix=(os.path.splitext(os.path.basename(sources[0]))[0] + "_fused_"),dir=os.path.dirname(sources[0]))
+    first_path = Path(sources[0])
+    fusion_path = first_path.parent.joinpath(first_path.stem + ' [fused]')
     print("Running Fusion")
 
     for source in sources:
         print(f"Processing {source}...")
-        
         checkPre(source)
         print("Checking images...")
-        path : str = getWorkFolder(source)
-        filepath.append(path)
-        pathfinder = (os.path.join(path, "OEBPS", "Images"))
-        print(pathfinder)
-        images = sorted(os.listdir(pathfinder))
-        for image in images:
-            if os.path.splitext(source) == ".cbz":
-                target_path = os.path.join(combinePath, os.path.splitext(os.path.basename(source))[0], image)
-            else:
-                target_path = os.path.join(combinePath, os.path.basename(source), image)
-            os.renames(os.path.join(pathfinder, image), target_path)
-
-
-        
-    #Ouput
-    sanitizeTree(combinePath)
-    for paths in filepath:
-        if os.path.isfile(paths):
-            os.remove(paths)
-        elif os.path.isdir(paths):
-            rmtree(paths)
+        path = getWorkFolder(source)
+        pathfinder = os.path.join(path, "OEBPS", "Images")
+        sanitizeTree(pathfinder)
+        # TODO: remove flattenTree when subchapters are supported
+        flattenTree(pathfinder)
+        os.renames(pathfinder, fusion_path.joinpath(Path(source).stem))
 
     end = perf_counter()
     print(f"makefusion: {end - start} seconds")
-    print("Combined File: "+ combinePath)
-    sources.clear()
+    print("Combined File: "+ str(fusion_path))
     
-    return combinePath
+    return str(fusion_path)
 
 
 def makeBook(source, qtgui=None):

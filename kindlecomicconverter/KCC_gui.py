@@ -303,9 +303,8 @@ class WorkerThread(QThread):
                 currentJobs.append(comic2ebook.makeFusion(bookDir))
                 MW.addMessage.emit('Created fusion at ' + currentJobs[0], 'info', False)
             except Exception as e:
-                print('Fusion Failed ' + str(e))
-                MW.addMessage.emit('Fusion Failed ' + str(e), 'error', True)
-                pass
+                print('Fusion Failed. ' + str(e))
+                MW.addMessage.emit('Fusion Failed. ' + str(e), 'error', True)
         for job in currentJobs:
             sleep(0.5)
             if not self.conversionAlive:
@@ -452,11 +451,11 @@ class WorkerThread(QThread):
                             except Exception:
                                 pass
         if options.filefusion:
-            for paths in currentJobs:
-                if os.path.isfile(paths):
-                    os.remove(paths)
-                elif os.path.isdir(paths):
-                    rmtree(paths)
+            for path in currentJobs:
+                if os.path.isfile(path):
+                    os.remove(path)
+                elif os.path.isdir(path):
+                    rmtree(path)
         GUI.progress.content = ''
         GUI.progress.stop()
         MW.hideProgressBar.emit()
