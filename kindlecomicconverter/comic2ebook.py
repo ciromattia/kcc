@@ -1249,7 +1249,10 @@ def makeFusion(sources: List[str]):
         raise UserWarning('Fusion requires at least 2 sources.')
     start = perf_counter()
     first_path = Path(sources[0])
-    fusion_path = first_path.parent.joinpath(first_path.stem + ' [fused]')
+    if first_path.is_file():
+        fusion_path = first_path.parent.joinpath(first_path.stem + ' [fused]')
+    else:
+        fusion_path = first_path.parent.joinpath(first_path.name + ' [fused]')
     print("Running Fusion")
 
     for source in sources:
@@ -1261,7 +1264,12 @@ def makeFusion(sources: List[str]):
         sanitizeTree(pathfinder)
         # TODO: remove flattenTree when subchapters are supported
         flattenTree(pathfinder)
-        os.renames(pathfinder, fusion_path.joinpath(Path(source).stem))
+        source_path = Path(source)
+        if source_path.is_file():
+            os.renames(pathfinder, fusion_path.joinpath(source_path.stem))
+        else:
+            os.renames(pathfinder, fusion_path.joinpath(source_path.name))
+        
 
     end = perf_counter()
     print(f"makefusion: {end - start} seconds")
