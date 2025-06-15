@@ -28,6 +28,7 @@ from copy import copy
 from glob import glob, escape
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
+from typing import List
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree, copyfile
@@ -36,6 +37,7 @@ from uuid import uuid4
 from natsort import os_sort_keygen
 from slugify import slugify as slugify_ext
 from PIL import Image, ImageFile
+from pathlib import Path
 from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
@@ -1240,6 +1242,40 @@ def checkPre(source):
             pass
     except Exception:
         raise UserWarning("Target directory is not writable.")
+
+
+def makeFusion(sources: List[str]):
+    if len(sources) < 2:
+        raise UserWarning('Fusion requires at least 2 sources. Did you forget to uncheck fusion?')
+    start = perf_counter()
+    first_path = Path(sources[0])
+    if first_path.is_file():
+        fusion_path = first_path.parent.joinpath(first_path.stem + ' [fused]')
+    else:
+        fusion_path = first_path.parent.joinpath(first_path.name + ' [fused]')
+    print("Running Fusion")
+
+    for source in sources:
+        print(f"Processing {source}...")
+        checkPre(source)
+        print("Checking images...")
+        path = getWorkFolder(source)
+        pathfinder = os.path.join(path, "OEBPS", "Images")
+        sanitizeTree(pathfinder)
+        # TODO: remove flattenTree when subchapters are supported
+        flattenTree(pathfinder)
+        source_path = Path(source)
+        if source_path.is_file():
+            os.renames(pathfinder, fusion_path.joinpath(source_path.stem))
+        else:
+            os.renames(pathfinder, fusion_path.joinpath(source_path.name))
+        
+
+    end = perf_counter()
+    print(f"makefusion: {end - start} seconds")
+    print("Combined File: "+ str(fusion_path))
+    
+    return str(fusion_path)
 
 
 def makeBook(source, qtgui=None):

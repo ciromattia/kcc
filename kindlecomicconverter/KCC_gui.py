@@ -267,6 +267,10 @@ class WorkerThread(QThread):
             options.delete = True
         if GUI.spreadShiftBox.isChecked():
             options.spreadshift = True
+        if GUI.fileFusionBox.isChecked():
+            options.filefusion = True
+        else:
+            options.filefusion = False
         if GUI.noRotateBox.isChecked():
             options.norotate = True
         if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:
@@ -288,6 +292,19 @@ class WorkerThread(QThread):
             if GUI.jobList.item(i).icon().isNull():
                 currentJobs.append(str(GUI.jobList.item(i).text()))
         GUI.jobList.clear()
+        if options.filefusion:
+            bookDir = []
+            MW.addMessage.emit('Attempting file fusion', 'info', False)
+            for job in currentJobs:
+                bookDir.append(job)
+            try:
+                comic2ebook.options = comic2ebook.checkOptions(copy(options))
+                currentJobs.clear()
+                currentJobs.append(comic2ebook.makeFusion(bookDir))
+                MW.addMessage.emit('Created fusion at ' + currentJobs[0], 'info', False)
+            except Exception as e:
+                print('Fusion Failed. ' + str(e))
+                MW.addMessage.emit('Fusion Failed. ' + str(e), 'error', True)
         for job in currentJobs:
             sleep(0.5)
             if not self.conversionAlive:
@@ -433,6 +450,12 @@ class WorkerThread(QThread):
                                 move(item, GUI.targetDirectory)
                             except Exception:
                                 pass
+        if options.filefusion:
+            for path in currentJobs:
+                if os.path.isfile(path):
+                    os.remove(path)
+                elif os.path.isdir(path):
+                    rmtree(path)
         GUI.progress.content = ''
         GUI.progress.stop()
         MW.hideProgressBar.emit()
@@ -825,6 +848,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'heightBox': GUI.heightBox.value(),
                                            'deleteBox': GUI.deleteBox.checkState().value,
                                            'spreadShiftBox': GUI.spreadShiftBox.checkState().value,
+                                           'fileFusionBox': GUI.fileFusionBox.checkState().value,
                                            'noRotateBox': GUI.noRotateBox.checkState().value,
                                            'maximizeStrips': GUI.maximizeStrips.checkState().value,
                                            'gammaSlider': float(self.gammaValue) * 100,
