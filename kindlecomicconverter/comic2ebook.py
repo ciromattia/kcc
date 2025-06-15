@@ -1246,7 +1246,7 @@ def checkPre(source):
 
 def makeFusion(sources: List[str]):
     if len(sources) < 2:
-        raise UserWarning('Fusion requires at least 2 sources.')
+        raise UserWarning('Fusion requires at least 2 sources. Did you forget to uncheck fusion?')
     start = perf_counter()
     first_path = Path(sources[0])
     if first_path.is_file():
