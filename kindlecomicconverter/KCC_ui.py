@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'KCC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -167,7 +167,7 @@ class Ui_mainWindow(object):
 
         self.widthBox = QSpinBox(self.customWidget)
         self.widthBox.setObjectName(u"widthBox")
-        self.widthBox.setMaximum(2160)
+        self.widthBox.setMaximum(2400)
 
         self.gridLayout_3.addWidget(self.widthBox, 0, 1, 1, 1)
 
@@ -324,6 +324,11 @@ class Ui_mainWindow(object):
         self.spreadShiftBox.setObjectName(u"spreadShiftBox")
 
         self.gridLayout_2.addWidget(self.spreadShiftBox, 5, 0, 1, 1)
+
+        self.fileFusionBox = QCheckBox(self.optionWidget)
+        self.fileFusionBox.setObjectName(u"fileFusionBox")
+
+        self.gridLayout_2.addWidget(self.fileFusionBox, 6, 0, 1, 1)
 
         self.upscaleBox = QCheckBox(self.optionWidget)
         self.upscaleBox.setObjectName(u"upscaleBox")
@@ -565,6 +570,10 @@ class Ui_mainWindow(object):
         self.spreadShiftBox.setToolTip(QCoreApplication.translate("mainWindow", u"Shift first page to opposite side in landscape for two page spread alignment", None))
 #endif // QT_CONFIG(tooltip)
         self.spreadShiftBox.setText(QCoreApplication.translate("mainWindow", u"Spread shift", None))
+#if QT_CONFIG(tooltip)
+        self.fileFusionBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Combines all selected files into a single file. (Helpful for combining chapters into volumes.)</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.fileFusionBox.setText(QCoreApplication.translate("mainWindow", u"File Fusion", None))
 #if QT_CONFIG(tooltip)
         self.upscaleBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

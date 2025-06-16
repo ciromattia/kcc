@@ -22,7 +22,7 @@ import io
 import os
 from pathlib import Path
 import mozjpeg_lossless_optimization
-from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter
+from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter, ImageDraw
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
 
@@ -85,12 +85,14 @@ class ProfileData:
         'K2': ("Kindle 2", (600, 670), Palette15, 1.8),
         'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8),
         'K34': ("Kindle Keyboard/Touch", (600, 800), Palette16, 1.8),
-        'K578': ("Kindle", (600, 800), Palette16, 1.8),
+        'K57': ("Kindle 5/7", (600, 800), Palette16, 1.8),
         'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.8),
-        'KV': ("Kindle Paperwhite 3/4/Voyage/Oasis", (1072, 1448), Palette16, 1.8),
+        'KV': ("Kindle Voyage", (1072, 1448), Palette16, 1.8),
     }
 
     ProfilesKindlePDOC = {
+        'KPW34': ("Kindle Paperwhite 3/4/Oasis", (1072, 1448), Palette16, 1.8),
+        'K810': ("Kindle 8/10", (600, 800), Palette16, 1.8),
         'KO': ("Kindle Oasis 2/3/Paperwhite 12/Colorsoft 12", (1264, 1680), Palette16, 1.8),
         'K11': ("Kindle 11", (1072, 1448), Palette16, 1.8),
         'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.8),
@@ -284,16 +286,17 @@ class ComicPage:
         self.fill = fill
         self.rotated = False
         self.orgPath = os.path.join(path[0], path[1])
+        self.targetPathStart = os.path.join(path[0], os.path.splitext(path[1])[0])
         if 'N' in mode:
-            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc'
+            self.targetPathOrder = '-kcc-x'
         elif 'R' in mode:
-            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc-a'
+            self.targetPathOrder = '-kcc-a'
             if not options.norotate:
                 self.rotated = True
         elif 'S1' in mode:
-            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc-b'
+            self.targetPathOrder = '-kcc-b'
         elif 'S2' in mode:
-            self.targetPath = os.path.join(path[0], os.path.splitext(path[1])[0]) + '-kcc-c'
+            self.targetPathOrder = '-kcc-c'
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
@@ -307,26 +310,37 @@ class ComicPage:
                 flags.append('Rotated')
             if self.fill != 'white':
                 flags.append('BlackBackground')
-            if self.opt.forcepng:
-                self.image.info["transparency"] = None
-                self.targetPath += '.png'
-                self.image.save(self.targetPath, 'PNG', optimize=1)
+            if self.opt.kindle_scribe_azw3 and self.image.size[1] > 1920:
+                w, h = self.image.size
+                targetPath = self.save_with_codec(self.image.crop((0, 0, w, 1920)), self.targetPathStart + self.targetPathOrder + '-above')
+                self.save_with_codec(self.image.crop((0, 1920, w, h)), self.targetPathStart + self.targetPathOrder + '-below')
+            elif self.opt.kindle_scribe_azw3:
+                targetPath = self.save_with_codec(self.image, self.targetPathStart + self.targetPathOrder + '-whole')
             else:
-                self.targetPath += '.jpg'
-                if self.opt.mozjpeg:
-                    with io.BytesIO() as output:
-                        self.image.save(output, format="JPEG", optimize=1, quality=85)
-                        input_jpeg_bytes = output.getvalue()
-                        output_jpeg_bytes = mozjpeg_lossless_optimization.optimize(input_jpeg_bytes)
-                        with open(self.targetPath, "wb") as output_jpeg_file:
-                            output_jpeg_file.write(output_jpeg_bytes)
-                else:
-                    self.image.save(self.targetPath, 'JPEG', optimize=1, quality=85)
+                targetPath = self.save_with_codec(self.image, self.targetPathStart + self.targetPathOrder)
             if os.path.isfile(self.orgPath):
                 os.remove(self.orgPath)
-            return [Path(self.targetPath).name, flags]
+            return [Path(targetPath).name, flags]
         except IOError as err:
             raise RuntimeError('Cannot save image. ' + str(err))
+
+    def save_with_codec(self, image, targetPath):
+        if self.opt.forcepng:
+            image.info["transparency"] = None
+            targetPath += '.png'
+            image.save(targetPath, 'PNG', optimize=1)
+        else:
+            targetPath += '.jpg'
+            if self.opt.mozjpeg:
+                with io.BytesIO() as output:
+                    image.save(output, format="JPEG", optimize=1, quality=85)
+                    input_jpeg_bytes = output.getvalue()
+                    output_jpeg_bytes = mozjpeg_lossless_optimization.optimize(input_jpeg_bytes)
+                    with open(targetPath, "wb") as output_jpeg_file:
+                        output_jpeg_file.write(output_jpeg_bytes)
+            else:
+                image.save(targetPath, 'JPEG', optimize=1, quality=85)
+        return targetPath
 
     def autocontrastImage(self):
         gamma = self.opt.gamma
@@ -359,9 +373,6 @@ class ComicPage:
             self.image = self.image.filter(unsharpFilter)
 
     def resizeImage(self):
-        # kindle scribe conversion to mobi is limited in resolution by kindlegen, same with send to kindle and epub
-        if self.kindle_scribe_azw3:
-            self.size = (1440, 1920)
         ratio_device = float(self.size[1]) / float(self.size[0])
         ratio_image = float(self.image.size[1]) / float(self.image.size[0])
         method = self.resize_method()
@@ -375,8 +386,6 @@ class ComicPage:
             elif (self.opt.format == 'CBZ' or self.opt.kfx) and not self.opt.white_borders:
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
-                if self.kindle_scribe_azw3:
-                    self.size = (1860, 1920)
                 self.image = ImageOps.contain(self.image, self.size, method=method)
 
     def resize_method(self):
@@ -412,14 +421,9 @@ class ComicPage:
         self.image = crop_empty_inter_panel(self.image, direction, background_color=self.fill)
 
 class Cover:
-    def __init__(self, source, target, opt, tomeid):
+    def __init__(self, source, opt):
         self.options = opt
         self.source = source
-        self.target = target
-        if tomeid == 0:
-            self.tomeid = 1
-        else:
-            self.tomeid = tomeid
         self.image = Image.open(source)
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
@@ -431,6 +435,14 @@ class Cover:
         self.image = ImageOps.autocontrast(self.image)
         if not self.options.forcecolor:
             self.image = self.image.convert('L')
+        self.crop_main_cover()
+
+        size = list(self.options.profileData[1])
+        if self.options.kindle_scribe_azw3:
+            size[1] = min(size[1], 1920)
+        self.image.thumbnail(tuple(size), Image.Resampling.LANCZOS)
+
+    def crop_main_cover(self):
         w, h = self.image.size
         if w / h > 2:
             if self.options.righttoleft:
@@ -442,17 +454,30 @@ class Cover:
                 self.image = self.image.crop((0, 0, w/2 - w * 0.03, h))
             else:
                 self.image = self.image.crop((w/2 + w * 0.03, 0, w, h))
-        self.image.thumbnail(self.options.profileData[1], Image.Resampling.LANCZOS)
-        self.save()
 
-    def save(self):
+    def save_to_epub(self, target, tomeid, len_tomes=0):
         try:
-            self.image.save(self.target, "JPEG", optimize=1, quality=85)
+            if tomeid == 0:
+                self.image.save(target, "JPEG", optimize=1, quality=85)
+            else:
+                copy = self.image.copy()
+                draw = ImageDraw.Draw(copy)
+                w, h = copy.size
+                draw.text(
+                    xy=(w/2, h * .85),
+                    text=f'{tomeid}/{len_tomes}',
+                    anchor='ms',
+                    font_size=h//7,
+                    fill=255,
+                    stroke_fill=0,
+                    stroke_width=25
+                )
+                copy.save(target, "JPEG", optimize=1, quality=85)
         except IOError:
             raise RuntimeError('Failed to save cover.')
 
     def saveToKindle(self, kindle, asin):
-        self.image = self.image.resize((300, 470), Image.Resampling.LANCZOS)
+        self.image = ImageOps.contain(self.image, (300, 470), Image.Resampling.LANCZOS)
         try:
             self.image.save(os.path.join(kindle.path.split('documents')[0], 'system', 'thumbnails',
                                          'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG', optimize=1, quality=85)
