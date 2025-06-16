@@ -288,15 +288,15 @@ class ComicPage:
         self.orgPath = os.path.join(path[0], path[1])
         self.targetPathStart = os.path.join(path[0], os.path.splitext(path[1])[0])
         if 'N' in mode:
-            self.targetPathEnd = '-kcc'
+            self.targetPathOrder = '-kcc-x'
         elif 'R' in mode:
-            self.targetPathEnd = '-kcc-a'
+            self.targetPathOrder = '-kcc-a'
             if not options.norotate:
                 self.rotated = True
         elif 'S1' in mode:
-            self.targetPathEnd = '-kcc-b'
+            self.targetPathOrder = '-kcc-b'
         elif 'S2' in mode:
-            self.targetPathEnd = '-kcc-c'
+            self.targetPathOrder = '-kcc-c'
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
@@ -312,10 +312,12 @@ class ComicPage:
                 flags.append('BlackBackground')
             if self.opt.kindle_scribe_azw3 and self.image.size[1] > 1920:
                 w, h = self.image.size
-                targetPath = self.save_with_codec(self.image.crop((0, 0, w, 1920)), self.targetPathStart + '-above' + self.targetPathEnd)
-                self.save_with_codec(self.image.crop((0, 1920, w, h)), self.targetPathStart + '-below' + self.targetPathEnd)
+                targetPath = self.save_with_codec(self.image.crop((0, 0, w, 1920)), self.targetPathStart + self.targetPathOrder + '-above')
+                self.save_with_codec(self.image.crop((0, 1920, w, h)), self.targetPathStart + self.targetPathOrder + '-below')
+            elif self.opt.kindle_scribe_azw3:
+                targetPath = self.save_with_codec(self.image, self.targetPathStart + self.targetPathOrder + '-whole')
             else:
-                targetPath = self.save_with_codec(self.image, self.targetPathStart + self.targetPathEnd)
+                targetPath = self.save_with_codec(self.image, self.targetPathStart + self.targetPathOrder)
             if os.path.isfile(self.orgPath):
                 os.remove(self.orgPath)
             return [Path(targetPath).name, flags]

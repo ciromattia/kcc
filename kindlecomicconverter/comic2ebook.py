@@ -371,13 +371,13 @@ def buildOPF(dstdir, title, filelist, cover=None):
     page_spread_property_list = []
     for entry in reflist:
         if options.righttoleft:
-            if entry.endswith("-kcc-a"):
+            if "-kcc-a" in entry:
                 page_spread_property_list.append("center")
                 pageside = "right"
-            elif entry.endswith("-kcc-b"):
+            elif "-kcc-b" in entry:
                 page_spread_property_list.append("right")
                 pageside = "right"
-            elif entry.endswith("-kcc-c"):
+            elif "-kcc-c" in entry:
                 page_spread_property_list.append("left")
                 pageside = "right"
             else:
@@ -387,13 +387,13 @@ def buildOPF(dstdir, title, filelist, cover=None):
                 else:
                     pageside = "right"
         else:
-            if entry.endswith("-kcc-a"):
+            if "-kcc-a" in entry:
                 page_spread_property_list.append("center")
                 pageside = "left"
-            elif entry.endswith("-kcc-b"):
+            elif "-kcc-b" in entry:
                 page_spread_property_list.append("left")
                 pageside = "left"
-            elif entry.endswith("-kcc-c"):
+            elif "-kcc-c" in entry:
                 page_spread_property_list.append("right")
                 pageside = "left"
             else:
@@ -407,7 +407,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
     spread_seen = False
     for i in range(len(reflist) -1, -1, -1):
         entry = reflist[i]
-        if not entry.endswith("-kcc"):
+        if "-kcc-x" not in entry:
             spread_seen = True
             if options.righttoleft:
                 pageside = "left"
@@ -951,7 +951,7 @@ def detectSuboptimalProcessing(tmppath, orgpath):
     for root, _, files in os.walk(tmppath, False):
         for name in files:
             if getImageFileName(name) is not None:
-                if not alreadyProcessed and getImageFileName(name)[0].endswith('-kcc'):
+                if not alreadyProcessed and  '-kcc' in getImageFileName(name)[0]:
                     alreadyProcessed = True
                 path = os.path.join(root, name)
                 pathOrg = orgpath + path.split('OEBPS' + os.path.sep + 'Images')[1]
