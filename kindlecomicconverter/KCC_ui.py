@@ -518,7 +518,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.webtoonBox.setText(QCoreApplication.translate("mainWindow", u"Webtoon mode", None))
 #if QT_CONFIG(tooltip)
-        self.rotateBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Split<br/></span>Double page spreads will be cut into two separate pages.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Rotate and split<br/></span>Double page spreads will be displayed twice. First split and then rotated. </p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate<br/></span>Double page spreads will be rotated.</p></body></html>", None))
+        self.rotateBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Split<br/></span>Double page spreads will be cut into two separate pages.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Split and rotate<br/></span>Double page spreads will be displayed twice. First split and then rotated. </p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate<br/></span>Double page spreads will be rotated.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.rotateBox.setText(QCoreApplication.translate("mainWindow", u"Spread splitter", None))
 #if QT_CONFIG(tooltip)
