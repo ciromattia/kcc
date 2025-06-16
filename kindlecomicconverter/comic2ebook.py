@@ -371,7 +371,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
     page_spread_property_list = []
     for entry in reflist:
         if options.righttoleft:
-            if "-kcc-a" in entry:
+            if "-kcc-a" in entry or "-kcc-d" in entry:
                 page_spread_property_list.append("center")
                 pageside = "right"
             elif "-kcc-b" in entry:
@@ -387,7 +387,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                 else:
                     pageside = "right"
         else:
-            if "-kcc-a" in entry:
+            if "-kcc-a" in entry or "-kcc-d" in entry:
                 page_spread_property_list.append("center")
                 pageside = "left"
             elif "-kcc-b" in entry:
