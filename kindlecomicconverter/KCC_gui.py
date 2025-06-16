@@ -264,7 +264,7 @@ class WorkerThread(QThread):
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
         if GUI.comicinfoTitleBox.isChecked():
-            options.comicinfoTitle = True
+            options.comicinfotitle = True
         if GUI.deleteBox.isChecked():
             options.delete = True
         if GUI.spreadShiftBox.isChecked():
