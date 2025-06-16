@@ -1120,6 +1120,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Remember:</b> All options have additional information in tooltips.', 'info')
+        self.addMessage('<b>Important:</b> You can drag image folders or comic files/archives into this window to convert.', 'info')
         if self.startNumber < 5:
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
