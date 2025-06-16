@@ -351,10 +351,10 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.chunkSizeCheckBox, 7, 1, 1, 1)
 
-        self.metadataTitleBox = QCheckBox(self.optionWidget)
-        self.metadataTitleBox.setObjectName(u"metadataTitleBox")
+        self.comicinfoTitleBox = QCheckBox(self.optionWidget)
+        self.comicinfoTitleBox.setObjectName(u"comicinfoTitleBox")
 
-        self.gridLayout_2.addWidget(self.metadataTitleBox, 7, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.comicinfoTitleBox, 7, 0, 1, 1)
 
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
@@ -590,9 +590,9 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.chunkSizeCheckBox.setText(QCoreApplication.translate("mainWindow", u"Chunk size", None))
 #if QT_CONFIG(tooltip)
-        self.metadataTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"Write filename from ComicInfo Title.", None))
+        self.comicinfoTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"Write filename from ComicInfo Title.", None))
 #endif // QT_CONFIG(tooltip)
-        self.metadataTitleBox.setText(QCoreApplication.translate("mainWindow", u"ComicInfo Title", None))
+        self.comicinfoTitleBox.setText(QCoreApplication.translate("mainWindow", u"ComicInfo Title", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
 #if QT_CONFIG(tooltip)
         self.chunkSizeWidget.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Warning: chunk size greater than default may cause<br/>performance/battery issues, especially on older devices.</p></body></html>", None))

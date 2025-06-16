@@ -234,6 +234,7 @@ OUTPUT SETTINGS:
                         Output generated file to specified directory or file
   -t TITLE, --title TITLE
                         Comic title [Default=filename or directory name]
+  --comicinfotitle      Write filename from ComicInfo Title
   -a AUTHOR, --author AUTHOR
                         Author name [Default=KCC]
   -f FORMAT, --format FORMAT

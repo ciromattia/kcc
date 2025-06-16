@@ -1068,6 +1068,8 @@ def makeParser():
                                 help="Output generated file to specified directory or file")
     output_options.add_argument("-t", "--title", action="store", dest="title", default="defaulttitle",
                                 help="Comic title [Default=filename or directory name]")
+    output_options.add_argument("--comicinfotitle", action="store_true", dest="comicinfoTitle", default=False,
+                                help="Write filename from ComicInfo Title")
     output_options.add_argument("-a", "--author", action="store", dest="author", default="defaultauthor",
                                 help="Author name [Default=KCC]")
     output_options.add_argument("-f", "--format", action="store", dest="format", default="Auto",

@@ -654,7 +654,7 @@
         </widget>
        </item>
        <item row="7" column="0">
-        <widget class="QCheckBox" name="metadataTitleBox">
+        <widget class="QCheckBox" name="comicinfoTitleBox">
          <property name="toolTip">
           <string>Write filename from ComicInfo Title.</string>
          </property>
