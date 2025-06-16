@@ -429,7 +429,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Enable right-to-left reading.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Manga mode</string>
+          <string>Right-to-left mode</string>
          </property>
         </widget>
        </item>
