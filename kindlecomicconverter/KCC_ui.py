@@ -590,7 +590,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.chunkSizeCheckBox.setText(QCoreApplication.translate("mainWindow", u"Chunk size", None))
 #if QT_CONFIG(tooltip)
-        self.comicinfoTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"Write filename from ComicInfo Title.", None))
+        self.comicinfoTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"Write Title from ComicInfo.xml", None))
 #endif // QT_CONFIG(tooltip)
         self.comicinfoTitleBox.setText(QCoreApplication.translate("mainWindow", u"ComicInfo Title", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))

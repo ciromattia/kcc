@@ -656,7 +656,7 @@
        <item row="7" column="0">
         <widget class="QCheckBox" name="comicinfoTitleBox">
          <property name="toolTip">
-          <string>Write filename from ComicInfo Title.</string>
+          <string>Write Title from ComicInfo.xml</string>
          </property>
          <property name="text">
           <string>ComicInfo Title</string>
