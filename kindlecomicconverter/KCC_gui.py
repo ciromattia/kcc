@@ -1119,7 +1119,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.statusBar.addPermanentWidget(statusBarLabel, 1)
 
         self.addMessage('<b>Welcome!</b>', 'info')
-        self.addMessage('<b>Remember:</b> All options have additional information in tooltips.', 'info')
+        self.addMessage('<b>Tip:</b> Hover mouse over options to see additional information in tooltips.', 'info')
         self.addMessage('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.', 'info')
         self.addMessage('<b>Tip:</b> Shift clicking the Convert button lets you select a custom output directory', 'info')
         if self.startNumber < 5:
