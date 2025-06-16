@@ -757,7 +757,9 @@ def getComicInfo(path, originalpath):
         except Exception:
             os.remove(xmlPath)
             return
-        if defaultTitle:
+        if options.comicinfotitle:
+            options.title = xml.data['Title']
+        elif defaultTitle:
             if xml.data['Series']:
                 options.title = xml.data['Series']
             if xml.data['Volume']:
@@ -1066,6 +1068,8 @@ def makeParser():
                                 help="Output generated file to specified directory or file")
     output_options.add_argument("-t", "--title", action="store", dest="title", default="defaulttitle",
                                 help="Comic title [Default=filename or directory name]")
+    output_options.add_argument("--comicinfotitle", action="store_true", dest="comicinfotitle", default=False,
+                                help="Write Title from ComicInfo.xml")
     output_options.add_argument("-a", "--author", action="store", dest="author", default="defaultauthor",
                                 help="Author name [Default=KCC]")
     output_options.add_argument("-f", "--format", action="store", dest="format", default="Auto",

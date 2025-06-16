@@ -351,6 +351,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.chunkSizeCheckBox, 7, 1, 1, 1)
 
+        self.comicinfoTitleBox = QCheckBox(self.optionWidget)
+        self.comicinfoTitleBox.setObjectName(u"comicinfoTitleBox")
+
+        self.gridLayout_2.addWidget(self.comicinfoTitleBox, 7, 0, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -584,6 +589,10 @@ class Ui_mainWindow(object):
         self.chunkSizeCheckBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:700; text-decoration: underline;\">Unchecked<br/></span>Maximal output file size is 100 MB for Webtoon, 400 MB for others before split occurs.</p><p><span style=\" font-weight:700; text-decoration: underline;\">Checked</span><br/>Output file size specified in &quot;Chunk size MB&quot; before split occurs.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.chunkSizeCheckBox.setText(QCoreApplication.translate("mainWindow", u"Chunk size", None))
+#if QT_CONFIG(tooltip)
+        self.comicinfoTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"Write Title from ComicInfo.xml", None))
+#endif // QT_CONFIG(tooltip)
+        self.comicinfoTitleBox.setText(QCoreApplication.translate("mainWindow", u"ComicInfo Title", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
 #if QT_CONFIG(tooltip)
         self.chunkSizeWidget.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Warning: chunk size greater than default may cause<br/>performance/battery issues, especially on older devices.</p></body></html>", None))
