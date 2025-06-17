@@ -68,6 +68,13 @@ If you find **KCC** valuable you can consider donating to the authors:
 
   [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q41BW8HS)
 
+## Commissions
+
+This section is subject to change:
+
+Email (for commisions and inquiries): `kindle.comic.converter` gmail
+
+
 ## Sponsors
 
 - Free code signing on Windows provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/)
