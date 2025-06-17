@@ -75,6 +75,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="kofiButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
          <property name="text">
           <string>Support me on Ko-fi</string>
          </property>

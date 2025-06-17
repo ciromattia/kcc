@@ -60,6 +60,7 @@ class Ui_mainWindow(object):
 
         self.kofiButton = QPushButton(self.toolWidget)
         self.kofiButton.setObjectName(u"kofiButton")
+        self.kofiButton.setMinimumSize(QSize(0, 30))
         icon2 = QIcon()
         icon2.addFile(u":/Other/icons/kofi_symbol.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.kofiButton.setIcon(icon2)
