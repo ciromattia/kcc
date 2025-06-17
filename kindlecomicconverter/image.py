@@ -354,14 +354,8 @@ class ComicPage:
             self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma)))
 
     def quantizeImage(self):
-        colors = len(self.palette) // 3
-        if colors < 256:
-            self.palette += self.palette[:3] * (256 - colors)
         palImg = Image.new('P', (1, 1))
         palImg.putpalette(self.palette)
-        self.image = self.image.convert('L')
-        self.image = self.image.convert('RGB')
-        # Quantize is deprecated but new function call it internally anyway...
         self.image = self.image.quantize(palette=palImg)
 
     def optimizeForDisplay(self, reducerainbow):
