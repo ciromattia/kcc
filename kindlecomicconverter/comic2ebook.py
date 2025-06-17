@@ -127,10 +127,10 @@ def buildHTML(path, imgfile, imgfilepath, imgfile2=None):
                   # this display none div fixes formatting issues with virtual panel mode, for some reason
                   '<div style="display:none;">.</div>\n',
     ])
-    f.write(f'<img width="{imgsize[0]}" height="{imgsize[1]}" src="{"../" * backref}Images/{postfix}{imgfile}"/>')
+    f.write(f'<img width="{imgsize[0]}" height="{imgsize[1]}" src="{"../" * backref}Images/{postfix}{imgfile}"/>\n')
     if imgfile2:
-        f.write(f'<img width="{imgsize2[0]}" height="{imgsize2[1]}" src="{"../" * backref}Images/{postfix}{imgfile2}"/>')
-    f.write("\n</div>\n")
+        f.write(f'<img width="{imgsize2[0]}" height="{imgsize2[1]}" src="{"../" * backref}Images/{postfix}{imgfile2}"/>\n')
+    f.write("</div>\n")
     if options.iskindle and options.panelview:
         if options.autoscale:
             size = (getPanelViewResolution(imgsize, deviceres))
@@ -447,7 +447,11 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, len
                   "display: block;\n",
                   "margin: 0;\n",
                   "padding: 0;\n",
-                  "}\n"])
+                  "}\n",
+                  "img {\n",
+                  "display: block;\n",
+                  "}\n",
+                  ])
     if options.iskindle and options.panelview:
         f.writelines(["#PV {\n",
                       "position: absolute;\n",
