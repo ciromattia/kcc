@@ -488,16 +488,13 @@ class SystemTrayIcon(QSystemTrayIcon):
 
 class KCCGUI(KCC_ui.Ui_mainWindow):
     def selectDir(self):
-        if self.needClean:
-            self.needClean = False
-            GUI.jobList.clear()
-        dname = QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
+        dname = QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
         if dname != '':
             if sys.platform.startswith('win'):
                 dname = dname.replace('/', '\\')
-            self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
-            GUI.jobList.addItem(dname)
-            GUI.jobList.scrollToBottom()
+            GUI.targetDirectory = dname
+        else:
+            GUI.targetDirectory = ''
 
     def selectFile(self):
         if self.needClean:
@@ -782,13 +779,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.worker.sync()
         else:
             if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier:
-                dname = QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
-                if dname != '':
-                    if sys.platform.startswith('win'):
-                        dname = dname.replace('/', '\\')
-                    GUI.targetDirectory = dname
-                else:
-                    GUI.targetDirectory = ''
+                self.selectDir()
+            elif GUI.enableDirectory.isChecked():
+                pass
             else:
                 GUI.targetDirectory = ''
             self.progress.start()
@@ -856,6 +849,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'deleteBox': GUI.deleteBox.checkState().value,
                                            'spreadShiftBox': GUI.spreadShiftBox.checkState().value,
                                            'fileFusionBox': GUI.fileFusionBox.checkState().value,
+                                           'enableDirectoryBox': GUI.enableDirectory.checkState.value,
                                            'noRotateBox': GUI.noRotateBox.checkState().value,
                                            'maximizeStrips': GUI.maximizeStrips.checkState().value,
                                            'gammaSlider': float(self.gammaValue) * 100,
@@ -1133,7 +1127,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Tip:</b> Hover mouse over options to see additional information in tooltips.', 'info')
         self.addMessage('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.', 'info')
-        self.addMessage('<b>Tip:</b> Shift clicking the Convert button lets you select a custom output directory', 'info')
+        self.addMessage('<b>Tip:</b> Shift clicking the Convert button lets you select a custom output directory for this list', 'info')
         if self.startNumber < 5:
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',

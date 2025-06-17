@@ -26,7 +26,7 @@ class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         if not mainWindow.objectName():
             mainWindow.setObjectName(u"mainWindow")
-        mainWindow.resize(519, 572)
+        mainWindow.resize(500, 554)
         icon = QIcon()
         icon.addFile(u":/Icon/icons/comic2ebook.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         mainWindow.setWindowIcon(icon)
@@ -141,11 +141,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_4.addWidget(self.clearButton, 0, 2, 1, 1)
 
-        self.directoryButton.raise_()
+        self.directoryButton1.raise_()
         self.clearButton.raise_()
-        self.fileButton.raise_()
-        self.deviceBox.raise_()
-        self.convertButton.raise_()
+        self.fileButton1.raise_()
+        self.deviceBox1.raise_()
+        self.convertButton1.raise_()
         self.formatBox.raise_()
 
         self.gridLayout.addWidget(self.buttonWidget, 3, 0, 1, 2)
@@ -158,6 +158,15 @@ class Ui_mainWindow(object):
         self.progressBar.setAlignment(Qt.AlignmentFlag.AlignJustify|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout.addWidget(self.progressBar, 1, 0, 1, 2)
+
+        self.jobList1 = QListWidget(self.centralWidget)
+        self.jobList1.setObjectName(u"jobList1")
+        self.jobList1.setStyleSheet(u"")
+        self.jobList1.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.jobList1.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.jobList1.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
+
+        self.gridLayout.addWidget(self.jobList1, 2, 0, 1, 2)
 
         self.customWidget = QWidget(self.centralWidget)
         self.customWidget.setObjectName(u"customWidget")
@@ -391,6 +400,35 @@ class Ui_mainWindow(object):
 
         self.gridLayout.addWidget(self.gammaWidget, 7, 0, 1, 2)
 
+        self.toolWidget1 = QWidget(self.centralWidget)
+        self.toolWidget1.setObjectName(u"toolWidget1")
+        self.horizontalLayout1 = QHBoxLayout(self.toolWidget1)
+        self.horizontalLayout1.setObjectName(u"horizontalLayout1")
+        self.horizontalLayout1.setContentsMargins(0, 0, 0, 0)
+        self.editorButton1 = QPushButton(self.toolWidget1)
+        self.editorButton1.setObjectName(u"editorButton1")
+        self.editorButton1.setMinimumSize(QSize(0, 30))
+        self.editorButton1.setIcon(icon1)
+
+        self.horizontalLayout1.addWidget(self.editorButton1)
+
+        self.kofiButton1 = QPushButton(self.toolWidget1)
+        self.kofiButton1.setObjectName(u"kofiButton1")
+        self.kofiButton1.setIcon(icon2)
+        self.kofiButton1.setIconSize(QSize(19, 16))
+
+        self.horizontalLayout1.addWidget(self.kofiButton1)
+
+        self.wikiButton1 = QPushButton(self.toolWidget1)
+        self.wikiButton1.setObjectName(u"wikiButton1")
+        self.wikiButton1.setMinimumSize(QSize(0, 30))
+        self.wikiButton1.setIcon(icon3)
+
+        self.horizontalLayout1.addWidget(self.wikiButton1)
+
+
+        self.gridLayout.addWidget(self.toolWidget1, 0, 0, 1, 2)
+
         self.chunkSizeWidget = QWidget(self.centralWidget)
         self.chunkSizeWidget.setObjectName(u"chunkSizeWidget")
         sizePolicy3.setHeightForWidth(self.chunkSizeWidget.sizePolicy().hasHeightForWidth())
@@ -428,16 +466,81 @@ class Ui_mainWindow(object):
 
         self.gridLayout.addWidget(self.chunkSizeWidget, 6, 0, 1, 1)
 
+        self.buttonWidget1 = QWidget(self.centralWidget)
+        self.buttonWidget1.setObjectName(u"buttonWidget1")
+        sizePolicy.setHeightForWidth(self.buttonWidget1.sizePolicy().hasHeightForWidth())
+        self.buttonWidget1.setSizePolicy(sizePolicy)
+        self.buttonWidget1.setContextMenuPolicy(Qt.ContextMenuPolicy.DefaultContextMenu)
+        self.gridLayout_41 = QGridLayout(self.buttonWidget1)
+        self.gridLayout_41.setObjectName(u"gridLayout_41")
+        self.gridLayout_41.setContentsMargins(0, 0, 0, 0)
+        self.convertButton1 = QPushButton(self.buttonWidget1)
+        self.convertButton1.setObjectName(u"convertButton1")
+        self.convertButton1.setMinimumSize(QSize(0, 30))
+        self.convertButton1.setFont(font)
+        self.convertButton1.setIcon(icon6)
+
+        self.gridLayout_41.addWidget(self.convertButton1, 1, 3, 1, 1)
+
+        self.formatBox1 = QComboBox(self.buttonWidget1)
+        self.formatBox1.setObjectName(u"formatBox1")
+        self.formatBox1.setMinimumSize(QSize(0, 28))
+
+        self.gridLayout_41.addWidget(self.formatBox1, 1, 4, 1, 2)
+
+        self.clearButton1 = QPushButton(self.buttonWidget1)
+        self.clearButton1.setObjectName(u"clearButton1")
+        self.clearButton1.setMinimumSize(QSize(0, 30))
+        self.clearButton1.setIcon(icon7)
+
+        self.gridLayout_41.addWidget(self.clearButton1, 0, 3, 1, 1)
+
+        self.deviceBox1 = QComboBox(self.buttonWidget1)
+        self.deviceBox1.setObjectName(u"deviceBox1")
+        self.deviceBox1.setMinimumSize(QSize(0, 28))
+
+        self.gridLayout_41.addWidget(self.deviceBox1, 1, 1, 1, 1)
+
+        self.fileButton1 = QPushButton(self.buttonWidget1)
+        self.fileButton1.setObjectName(u"fileButton1")
+        self.fileButton1.setMinimumSize(QSize(0, 30))
+        self.fileButton1.setIcon(icon5)
+
+        self.gridLayout_41.addWidget(self.fileButton1, 0, 1, 1, 1)
+
+        self.directoryButton1 = QPushButton(self.buttonWidget1)
+        self.directoryButton1.setObjectName(u"directoryButton1")
+        self.directoryButton1.setMinimumSize(QSize(0, 30))
+        self.directoryButton1.setIcon(icon4)
+
+        self.gridLayout_41.addWidget(self.directoryButton1, 0, 5, 1, 1)
+
+        self.enableDirectory = QCheckBox(self.buttonWidget1)
+        self.enableDirectory.setObjectName(u"enableDirectory")
+        sizePolicy2.setHeightForWidth(self.enableDirectory.sizePolicy().hasHeightForWidth())
+        self.enableDirectory.setSizePolicy(sizePolicy2)
+        self.enableDirectory.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
+
+        self.gridLayout_41.addWidget(self.enableDirectory, 0, 4, 1, 1)
+
+        self.clearButton.raise_()
+        self.deviceBox1.raise_()
+        self.convertButton1.raise_()
+        self.formatBox.raise_()
+        self.directoryButton1.raise_()
+        self.fileButton1.raise_()
+        self.enableDirectory.raise_()
+
+        self.gridLayout.addWidget(self.buttonWidget1, 3, 0, 1, 2)
+
         mainWindow.setCentralWidget(self.centralWidget)
         self.statusBar = QStatusBar(mainWindow)
         self.statusBar.setObjectName(u"statusBar")
         self.statusBar.setSizeGripEnabled(False)
         mainWindow.setStatusBar(self.statusBar)
-        QWidget.setTabOrder(self.convertButton, self.clearButton)
-        QWidget.setTabOrder(self.clearButton, self.directoryButton)
-        QWidget.setTabOrder(self.directoryButton, self.fileButton)
-        QWidget.setTabOrder(self.fileButton, self.deviceBox)
-        QWidget.setTabOrder(self.deviceBox, self.formatBox)
+        QWidget.setTabOrder(self.convertButton1, self.clearButton)
+        QWidget.setTabOrder(self.clearButton, self.deviceBox1)
+        QWidget.setTabOrder(self.deviceBox1, self.formatBox)
         QWidget.setTabOrder(self.formatBox, self.mangaBox)
         QWidget.setTabOrder(self.mangaBox, self.rotateBox)
         QWidget.setTabOrder(self.rotateBox, self.qualityBox)
@@ -459,10 +562,10 @@ class Ui_mainWindow(object):
         QWidget.setTabOrder(self.interPanelCropBox, self.reduceRainbowBox)
         QWidget.setTabOrder(self.reduceRainbowBox, self.heightBox)
         QWidget.setTabOrder(self.heightBox, self.croppingPowerSlider)
-        QWidget.setTabOrder(self.croppingPowerSlider, self.editorButton)
-        QWidget.setTabOrder(self.editorButton, self.wikiButton)
-        QWidget.setTabOrder(self.wikiButton, self.jobList)
-        QWidget.setTabOrder(self.jobList, self.gammaSlider)
+        QWidget.setTabOrder(self.croppingPowerSlider, self.editorButton1)
+        QWidget.setTabOrder(self.editorButton1, self.wikiButton1)
+        QWidget.setTabOrder(self.wikiButton1, self.jobList1)
+        QWidget.setTabOrder(self.jobList1, self.gammaSlider)
         QWidget.setTabOrder(self.gammaSlider, self.widthBox)
 
         self.retranslateUi(mainWindow)
@@ -606,9 +709,38 @@ class Ui_mainWindow(object):
         self.comicinfoTitleBox.setText(QCoreApplication.translate("mainWindow", u"ComicInfo Title", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
 #if QT_CONFIG(tooltip)
+        self.editorButton1.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Shift+Click to edit directory.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.editorButton1.setText(QCoreApplication.translate("mainWindow", u"Metadata Editor", None))
+        self.kofiButton1.setText(QCoreApplication.translate("mainWindow", u"Support me on Ko-fi", None))
+        self.wikiButton1.setText(QCoreApplication.translate("mainWindow", u"Wiki", None))
+#if QT_CONFIG(tooltip)
         self.chunkSizeWidget.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Warning: chunk size greater than default may cause<br/>performance/battery issues, especially on older devices.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.chunkSizeLabel.setText(QCoreApplication.translate("mainWindow", u"Chunk size MB:", None))
         self.chunkSizeWarnLabel.setText(QCoreApplication.translate("mainWindow", u"Greater than default may cause performance issues on older ereaders.", None))
+#if QT_CONFIG(tooltip)
+        self.convertButton1.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><pre style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Shift+Click to select the output directory for this list.</pre></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.convertButton1.setText(QCoreApplication.translate("mainWindow", u"Convert", None))
+#if QT_CONFIG(tooltip)
+        self.formatBox1.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Output format.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.clearButton1.setText(QCoreApplication.translate("mainWindow", u"Clear list", None))
+#if QT_CONFIG(tooltip)
+        self.deviceBox1.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Target device.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(tooltip)
+        self.fileButton1.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Add CBR, CBZ, CB7 or PDF file to queue.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.fileButton1.setText(QCoreApplication.translate("mainWindow", u"Add file(s)", None))
+#if QT_CONFIG(tooltip)
+        self.directoryButton1.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><pre style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Courier New';\">Use this to select an output directory that will be used during this session. </span></pre></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.directoryButton1.setText(QCoreApplication.translate("mainWindow", u"Output Directory", None))
+#if QT_CONFIG(tooltip)
+        self.enableDirectory.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Click to enable custom directory.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.enableDirectory.setText("")
     # retranslateUi
 
