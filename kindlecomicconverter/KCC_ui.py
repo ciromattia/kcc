@@ -58,12 +58,21 @@ class Ui_mainWindow(object):
 
         self.horizontalLayout.addWidget(self.editorButton)
 
+        self.kofiButton = QPushButton(self.toolWidget)
+        self.kofiButton.setObjectName(u"kofiButton")
+        icon2 = QIcon()
+        icon2.addFile(u":/Other/icons/kofi_symbol.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.kofiButton.setIcon(icon2)
+        self.kofiButton.setIconSize(QSize(19, 16))
+
+        self.horizontalLayout.addWidget(self.kofiButton)
+
         self.wikiButton = QPushButton(self.toolWidget)
         self.wikiButton.setObjectName(u"wikiButton")
         self.wikiButton.setMinimumSize(QSize(0, 30))
-        icon2 = QIcon()
-        icon2.addFile(u":/Other/icons/wiki.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.wikiButton.setIcon(icon2)
+        icon3 = QIcon()
+        icon3.addFile(u":/Other/icons/wiki.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.wikiButton.setIcon(icon3)
 
         self.horizontalLayout.addWidget(self.wikiButton)
 
@@ -83,18 +92,18 @@ class Ui_mainWindow(object):
         self.directoryButton = QPushButton(self.buttonWidget)
         self.directoryButton.setObjectName(u"directoryButton")
         self.directoryButton.setMinimumSize(QSize(0, 30))
-        icon3 = QIcon()
-        icon3.addFile(u":/Other/icons/folder_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.directoryButton.setIcon(icon3)
+        icon4 = QIcon()
+        icon4.addFile(u":/Other/icons/folder_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.directoryButton.setIcon(icon4)
 
         self.gridLayout_4.addWidget(self.directoryButton, 0, 0, 1, 1)
 
         self.fileButton = QPushButton(self.buttonWidget)
         self.fileButton.setObjectName(u"fileButton")
         self.fileButton.setMinimumSize(QSize(0, 30))
-        icon4 = QIcon()
-        icon4.addFile(u":/Other/icons/document_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.fileButton.setIcon(icon4)
+        icon5 = QIcon()
+        icon5.addFile(u":/Other/icons/document_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.fileButton.setIcon(icon5)
 
         self.gridLayout_4.addWidget(self.fileButton, 0, 3, 1, 1)
 
@@ -116,18 +125,18 @@ class Ui_mainWindow(object):
         font = QFont()
         font.setBold(True)
         self.convertButton.setFont(font)
-        icon5 = QIcon()
-        icon5.addFile(u":/Other/icons/convert.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.convertButton.setIcon(icon5)
+        icon6 = QIcon()
+        icon6.addFile(u":/Other/icons/convert.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.convertButton.setIcon(icon6)
 
         self.gridLayout_4.addWidget(self.convertButton, 1, 2, 1, 1)
 
         self.clearButton = QPushButton(self.buttonWidget)
         self.clearButton.setObjectName(u"clearButton")
         self.clearButton.setMinimumSize(QSize(0, 30))
-        icon6 = QIcon()
-        icon6.addFile(u":/Other/icons/clear.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.clearButton.setIcon(icon6)
+        icon7 = QIcon()
+        icon7.addFile(u":/Other/icons/clear.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.clearButton.setIcon(icon7)
 
         self.gridLayout_4.addWidget(self.clearButton, 0, 2, 1, 1)
 
@@ -466,6 +475,7 @@ class Ui_mainWindow(object):
         self.editorButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Shift+Click to edit directory.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.editorButton.setText(QCoreApplication.translate("mainWindow", u"Metadata Editor", None))
+        self.kofiButton.setText(QCoreApplication.translate("mainWindow", u"Support me on Ko-fi", None))
         self.wikiButton.setText(QCoreApplication.translate("mainWindow", u"Wiki", None))
 #if QT_CONFIG(tooltip)
         self.directoryButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Add directory containing JPG, PNG or GIF files to queue.<br/><span style=\" font-weight:600;\">CBR, CBZ and CB7 files inside will not be processed!</span></p></body></html>", None))

@@ -559,6 +559,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         # noinspection PyCallByClass
         QDesktopServices.openUrl(QUrl('https://github.com/ciromattia/kcc/wiki'))
 
+    def openKofi(self):
+        # noinspection PyCallByClass
+        QDesktopServices.openUrl(QUrl('https://ko-fi.com/eink_dude'))
+
     def modeChange(self, mode):
         if mode == 1:
             self.currentMode = 1
@@ -1110,10 +1114,18 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kobo Mini/Touch",
         ]
 
-        statusBarLabel = QLabel('<b><a href="https://kcc.iosphe.re/">HOMEPAGE</a> - <a href="https://github.'
-                                          'com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations">DO'
-                                          'NATE</a> - <a href="http://www.mobileread.com/forums/showthread.php?t=207461'
-                                          '">FORUM</a></b>')
+        link_dict = {
+            'README': "https://github.com/ciromattia/kcc?tab=readme-ov-file#kcc",
+            'FAQ': "https://github.com/ciromattia/kcc/blob/master/README.md#faq",
+            'YOUTUBE': "https://youtu.be/IR2Fhcm9658?si=Z-2zzLaUFjmaEbrj",
+            'COMMISSIONS': "https://github.com/ciromattia/kcc?tab=readme-ov-file#commissions",
+            'DONATE': "https://github.com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations",
+            'FORUM': "http://www.mobileread.com/forums/showthread.php?t=207461",
+            'DISCORD': "https://discord.com/invite/qj7wpnUHav",
+        }
+
+        link_html_list = [f'<a href="{v}">{k}</a>' for k, v in link_dict.items()]
+        statusBarLabel = QLabel(f'<b>{" - ".join(link_html_list)}</b>')
         statusBarLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         statusBarLabel.setOpenExternalLinks(True)
         GUI.statusBar.addPermanentWidget(statusBarLabel, 1)
@@ -1140,6 +1152,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.fileButton.clicked.connect(self.selectFile)
         GUI.editorButton.clicked.connect(self.selectFileMetaEditor)
         GUI.wikiButton.clicked.connect(self.openWiki)
+        GUI.kofiButton.clicked.connect(self.openKofi)
         GUI.convertButton.clicked.connect(self.convertStart)
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)
