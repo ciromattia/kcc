@@ -74,6 +74,23 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="kofiButton">
+         <property name="text">
+          <string>Support me on Ko-fi</string>
+         </property>
+         <property name="icon">
+          <iconset resource="KCC.qrc">
+           <normaloff>:/Other/icons/kofi_symbol.png</normaloff>:/Other/icons/kofi_symbol.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>19</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="wikiButton">
          <property name="minimumSize">
           <size>
