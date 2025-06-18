@@ -325,8 +325,12 @@ class ComicPage:
     def save_with_codec(self, image, targetPath):
         if self.opt.forcepng:
             image.info["transparency"] = None
-            targetPath += '.png'
-            image.save(targetPath, 'PNG', optimize=1)
+            if self.opt.format == 'MOBI':
+                targetPath += '.gif'
+                image.save(targetPath, 'GIF', optimize=1, interlace=False)
+            else:
+                targetPath += '.png'
+                image.save(targetPath, 'PNG', optimize=1)
         else:
             targetPath += '.jpg'
             if self.opt.mozjpeg:
