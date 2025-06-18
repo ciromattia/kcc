@@ -304,8 +304,6 @@ class ComicPage:
     def saveToDir(self):
         try:
             flags = []
-            if not self.opt.forcecolor and not self.opt.forcepng:
-                self.image = self.image.convert('L')
             if self.rotated:
                 flags.append('Rotated')
             if self.fill != 'white':
@@ -352,6 +350,12 @@ class ComicPage:
             self.image = ImageOps.autocontrast(self.image)
         else:
             self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma)))
+
+    def convertToGrayscaleOrQuantize(self):
+        if self.opt.forcepng:
+            self.quantizeImage()
+        else:
+            self.image = self.image.convert('L')
 
     def quantizeImage(self):
         palImg = Image.new('P', (1, 1))
