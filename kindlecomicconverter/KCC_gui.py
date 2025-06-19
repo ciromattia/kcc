@@ -849,7 +849,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'deleteBox': GUI.deleteBox.checkState().value,
                                            'spreadShiftBox': GUI.spreadShiftBox.checkState().value,
                                            'fileFusionBox': GUI.fileFusionBox.checkState().value,
-                                           'enableDirectoryBox': GUI.enableDirectory.checkState.value,
+                                           'enableDirectoryBox': GUI.enableDirectory.checkState().value,
                                            'noRotateBox': GUI.noRotateBox.checkState().value,
                                            'maximizeStrips': GUI.maximizeStrips.checkState().value,
                                            'gammaSlider': float(self.gammaValue) * 100,
