@@ -351,11 +351,8 @@ class ComicPage:
         else:
             self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma)))
 
-    def convertToGrayscaleOrQuantize(self):
-        if self.opt.forcepng:
-            self.quantizeImage()
-        else:
-            self.image = self.image.convert('L')
+    def convertToGrayscale(self):
+        self.image = self.image.convert('L')
 
     def quantizeImage(self):
         palImg = Image.new('P', (1, 1))
