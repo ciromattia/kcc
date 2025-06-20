@@ -32,7 +32,7 @@ from typing import List
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree, copyfile
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 from uuid import uuid4
 from natsort import os_sort_keygen
 from slugify import slugify as slugify_ext
@@ -41,12 +41,13 @@ from pathlib import Path
 from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
+import pymupdf
+import numpy as np
 
 from .shared import available_archive_tools, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
 from . import comic2panel
 from . import image
 from . import comicarchive
-from . import pdfjpgextract
 from . import dualmetafix
 from . import metadata
 from . import kindle
@@ -650,6 +651,81 @@ def imgFileProcessing(work):
         return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
 
+def mupdf_pdf_render_page(args):
+    afile, page_num, output_path, target_height  = args
+    try:
+        doc = pymupdf.open(afile)
+        page = doc.load_page(page_num)
+        zoom = target_height / page.rect.height
+        mat = pymupdf.Matrix(zoom, zoom)
+        pix = page.get_pixmap(matrix=mat, colorspace='RGB', alpha=False)
+        pix.save(output_path)
+        doc.close()
+        return f"Rendered page {page_num+1}: {output_path}"
+    except Exception as e:
+        raise UserWarning(f"Error rendering page {page_num + 1}: {e}")
+
+
+def mupdf_pdf_extract_page_image(args):
+    # For pages with single image (and no text). Otherwise it's recommended to use mupdf_render_page()
+    afile, page_num, output_path, _ = args
+    try:
+        doc = pymupdf.open(afile)
+        page = doc.load_page(page_num)
+        image_list = page.get_images(full=True)
+        if len(image_list) > 1:
+            raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
+        if not image_list:
+            width, height = int(page.rect.width), int(page.rect.height)
+            black_page = Image.new("RGB", (width, height), "white")
+            black_page.save(output_path)
+            return f"Saved blank page {page_num+1}: {output_path}"
+        xref = image_list[0][0]
+        pix = pymupdf.Pixmap(doc, xref)
+        if pix.colorspace is None:
+            # It's a stencil mask (grayscale image with inverted colors)
+            mask_array = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width)
+            inverted = 255 - mask_array
+            img = Image.fromarray(inverted, mode="L")
+            img.save(output_path)
+            return f"Exported stencil mask page {page_num+1}: {output_path}"
+        if pix.colorspace.name.startswith("Colorspace(CS_GRAY)"):
+            # Make sure that an image is just grayscale and not smth like "Colorspace(CS_GRAY) - Separation(DeviceCMYK,Black)"
+            pix = pymupdf.Pixmap(pymupdf.csGRAY, pix)
+        else:
+            pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
+        if pix.alpha: 
+            pix = pymupdf.Pixmap(pix, alpha=0)
+        pix.save(output_path)
+        doc.close()
+        return f"Exported page {page_num+1}: {output_path}"
+    except Exception as e:
+        raise UserWarning(f"Error exporting page {page_num + 1}: {e}")
+
+
+def mupdf_pdf_process_pages_parallel(afile, output_dir, target_height):
+    doc = pymupdf.open(afile)
+    npages = doc.page_count
+    render = False
+    for page in doc:
+        page_text = page.get_text().strip()
+        if page_text != "":
+            render = True
+            break
+        if len(page.get_images(full=True)) > 1:
+            render = True
+            break
+    doc.close()
+    args_list = [(afile, i, os.path.join(output_dir, f"page_{i + 1}.png"), target_height) for i in range(npages)]
+    try:
+        with Pool(processes=cpu_count()-1) as pool:
+            results = pool.map(
+                mupdf_pdf_render_page if render else mupdf_pdf_extract_page_image, args_list
+            )
+    except Exception as e:
+        raise UserWarning(f"Error while processing PDF pages: {e}")
+
+
 def getWorkFolder(afile):
     if os.path.isdir(afile):
         if disk_usage(gettempdir())[2] < getDirectorySize(afile) * 2.5:
@@ -668,13 +744,19 @@ def getWorkFolder(afile):
         if disk_usage(gettempdir())[2] < os.path.getsize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
         if afile.lower().endswith('.pdf'):
-            pdf = pdfjpgextract.PdfJpgExtract(afile)
-            path, njpg = pdf.extract()
-            workdir = path
+            workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
+            path = workdir
             sanitizePermissions(path)
-            if njpg == 0:
+            target_height = options.profileData[1][1]
+            if options.cropping == 1:
+                target_height = target_height + target_height*0.20 #Account for possible margin at the top and bottom
+            elif options.cropping == 2:
+                target_height = target_height + target_height*0.25 #Account for possible margin at the top and bottom with page number
+            try:
+                mupdf_pdf_process_pages_parallel(afile, workdir, target_height)
+            except Exception as e:
                 rmtree(path, True)
-                raise UserWarning("Failed to extract images from PDF file.")
+                raise UserWarning(f"Failed to extract images from PDF file. {e}")
         else:
             workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
             try:
