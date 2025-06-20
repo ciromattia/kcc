@@ -642,8 +642,12 @@ def imgFileProcessing(work):
             img.autocontrastImage()
             img.resizeImage()
             img.optimizeForDisplay(opt.reducerainbow)
-            if not opt.forcecolor or (opt.forcecolor and not workImg.color):
-                img.convertToGrayscaleOrQuantize()
+            if opt.forcecolor and workImg.color:
+                pass
+            elif opt.forcepng:
+                img.quantizeImage()
+            else:
+                img.convertToGrayscale()
             output.append(img.saveToDir())
         return output
     except Exception:
