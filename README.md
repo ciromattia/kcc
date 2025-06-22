@@ -101,6 +101,8 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 ## FAQ
 - All options have additional information in tooltips if you hover over the option.
 - To get the converted book onto your Kindle/Kobo, just drag and drop the mobi/kepub into the documents folder on your Kindle/Kobo via USB
+- Colors inverted?
+  - Disable Kindle dark mode
 - Cannot connect Kindle Scribe or 2024+ Kindle to macOS
   - Use official MTP [Amazon USB File Transfer app](https://www.amazon.com/gp/help/customer/display.html/ref=hp_Connect_USB_MTP?nodeId=TCUBEdEkbIhK07ysFu)
     (no login required). Works much better than previously recommended Android File Transfer. Cannot run simutaneously with other transfer apps.
