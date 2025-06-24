@@ -499,7 +499,7 @@ class Ui_mainWindow(object):
 #if QT_CONFIG(tooltip)
         self.directoryButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Use this to select an output directory that will be used during this session.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.directoryButton.setText(QCoreApplication.translate("mainWindow", u"Output Directory", None))
+        self.directoryButton.setText(QCoreApplication.translate("mainWindow", u"Default Output Folder", None))
 #if QT_CONFIG(tooltip)
         self.enableDirectory.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Click to enable custom directory.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

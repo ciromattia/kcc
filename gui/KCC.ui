@@ -224,7 +224,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use this to select an output directory that will be used during this session.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Output Directory</string>
+          <string>Default Output Folder</string>
          </property>
          <property name="icon">
           <iconset resource="KCC.qrc">

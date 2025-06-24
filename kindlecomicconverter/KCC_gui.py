@@ -780,6 +780,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         else:
             if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier:
                 self.selectDir()
+                if not self.targetDirectory:
+                    return
             elif GUI.enableDirectory.isChecked():
                 pass
             else:
