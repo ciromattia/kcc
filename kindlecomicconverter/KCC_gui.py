@@ -487,17 +487,22 @@ class SystemTrayIcon(QSystemTrayIcon):
 
 
 class KCCGUI(KCC_ui.Ui_mainWindow):
-    def selectDir(self):
-        if self.needClean:
-            self.needClean = False
-            GUI.jobList.clear()
-        dname = QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
+    def selectDefaultOutputFolder(self):
+        dname = QFileDialog.getExistingDirectory(MW, 'Select default output folder', self.defaultOutputFolder)
         if dname != '':
             if sys.platform.startswith('win'):
                 dname = dname.replace('/', '\\')
-            self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
-            GUI.jobList.addItem(dname)
-            GUI.jobList.scrollToBottom()
+            GUI.defaultOutputFolder = dname
+
+    def selectOutputFolder(self):
+        dname = QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
+        if dname != '':
+            if sys.platform.startswith('win'):
+                dname = dname.replace('/', '\\')
+            GUI.targetDirectory = dname
+        else:
+            GUI.targetDirectory = ''
+        return GUI.targetDirectory
 
     def selectFile(self):
         if self.needClean:
@@ -585,7 +590,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.editorButton.setEnabled(status)
         GUI.wikiButton.setEnabled(status)
         GUI.deviceBox.setEnabled(status)
-        GUI.directoryButton.setEnabled(status)
+        GUI.defaultOutputFolderButton.setEnabled(status)
         GUI.clearButton.setEnabled(status)
         GUI.fileButton.setEnabled(status)
         GUI.formatBox.setEnabled(status)
@@ -782,13 +787,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.worker.sync()
         else:
             if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier:
-                dname = QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
-                if dname != '':
-                    if sys.platform.startswith('win'):
-                        dname = dname.replace('/', '\\')
-                    GUI.targetDirectory = dname
-                else:
-                    GUI.targetDirectory = ''
+                if not self.selectOutputFolder():
+                    return
+            elif GUI.defaultOutputFolderBox.isChecked():
+                self.targetDirectory = self.defaultOutputFolder
             else:
                 GUI.targetDirectory = ''
             self.progress.start()
@@ -830,6 +832,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             event.ignore()
         self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
+        self.settings.setValue('defaultOutputFolder', self.defaultOutputFolder)
         self.settings.setValue('lastDevice', GUI.deviceBox.currentIndex())
         self.settings.setValue('currentFormat', GUI.formatBox.currentIndex())
         self.settings.setValue('startNumber', self.startNumber + 1)
@@ -856,6 +859,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'deleteBox': GUI.deleteBox.checkState().value,
                                            'spreadShiftBox': GUI.spreadShiftBox.checkState().value,
                                            'fileFusionBox': GUI.fileFusionBox.checkState().value,
+                                           'defaultOutputFolderBox': GUI.defaultOutputFolderBox.checkState().value,
                                            'noRotateBox': GUI.noRotateBox.checkState().value,
                                            'maximizeStrips': GUI.maximizeStrips.checkState().value,
                                            'gammaSlider': float(self.gammaValue) * 100,
@@ -937,6 +941,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings = QSettings('ciromattia', 'kcc')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
+        self.defaultOutputFolder = str(self.settings.value('defaultOutputFolder', '', type=str))
+        if not os.path.exists(self.defaultOutputFolder):
+            self.defaultOutputFolder = ''
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
@@ -965,7 +972,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if self.windowSize == '0x0':
                 MW.resize(500, 500)
         elif sys.platform.startswith('darwin'):
-            for element in ['editorButton', 'wikiButton', 'directoryButton', 'clearButton', 'fileButton', 'deviceBox',
+            for element in ['editorButton', 'wikiButton', 'defaultOutputFolderButton', 'clearButton', 'fileButton', 'deviceBox',
                             'convertButton', 'formatBox']:
                 getattr(GUI, element).setMinimumSize(QSize(0, 0))
             GUI.gridLayout.setContentsMargins(-1, -1, -1, -1)
@@ -1133,7 +1140,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Tip:</b> Hover mouse over options to see additional information in tooltips.', 'info')
         self.addMessage('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.', 'info')
-        self.addMessage('<b>Tip:</b> Shift clicking the Convert button lets you select a custom output directory', 'info')
+        self.addMessage('<b>Tip:</b> Shift clicking the Convert button lets you select a custom output directory for this list', 'info')
         if self.startNumber < 5:
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
@@ -1147,7 +1154,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
-        GUI.directoryButton.clicked.connect(self.selectDir)
+        GUI.defaultOutputFolderButton.clicked.connect(self.selectDefaultOutputFolder)
         GUI.clearButton.clicked.connect(self.clearJobs)
         GUI.fileButton.clicked.connect(self.selectFile)
         GUI.editorButton.clicked.connect(self.selectFileMetaEditor)
