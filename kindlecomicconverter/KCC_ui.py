@@ -142,6 +142,7 @@ class Ui_mainWindow(object):
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.defaultOutputFolderBox.sizePolicy().hasHeightForWidth())
         self.defaultOutputFolderBox.setSizePolicy(sizePolicy1)
+        self.defaultOutputFolderBox.setTristate(True)
 
         self.gridLayout_4.addWidget(self.defaultOutputFolderBox, 0, 4, 1, 1)
 
@@ -499,11 +500,11 @@ class Ui_mainWindow(object):
 #if QT_CONFIG(tooltip)
         self.defaultOutputFolderButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Use this to select the default output directory.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.defaultOutputFolderButton.setText(QCoreApplication.translate("mainWindow", u"Default Output Folder", None))
+        self.defaultOutputFolderButton.setText("")
 #if QT_CONFIG(tooltip)
-        self.defaultOutputFolderBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Click to enable custom directory.</p></body></html>", None))
+        self.defaultOutputFolderBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - next to source<br/></span>Place output files next to source files</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - folder next to source<br/></span>Place output files in a folder next to source files</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Custom<br/></span>Place output files in custom directory specified by right button</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.defaultOutputFolderBox.setText("")
+        self.defaultOutputFolderBox.setText(QCoreApplication.translate("mainWindow", u"Output Folder", None))
 #if QT_CONFIG(tooltip)
         self.formatBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Output format.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
