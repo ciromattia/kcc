@@ -487,6 +487,13 @@ class SystemTrayIcon(QSystemTrayIcon):
 
 
 class KCCGUI(KCC_ui.Ui_mainWindow):
+    def selectDefaultOutputFolder(self):
+        dname = QFileDialog.getExistingDirectory(MW, 'Select default output folder', self.defaultOutputFolder)
+        if dname != '':
+            if sys.platform.startswith('win'):
+                dname = dname.replace('/', '\\')
+            GUI.defaultOutputFolder = dname
+
     def selectDir(self):
         dname = QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
         if dname != '':
@@ -582,7 +589,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.editorButton.setEnabled(status)
         GUI.wikiButton.setEnabled(status)
         GUI.deviceBox.setEnabled(status)
-        GUI.directoryButton.setEnabled(status)
+        GUI.defaultOutputFolderButton.setEnabled(status)
         GUI.clearButton.setEnabled(status)
         GUI.fileButton.setEnabled(status)
         GUI.formatBox.setEnabled(status)
@@ -782,8 +789,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.selectDir()
                 if not self.targetDirectory:
                     return
-            elif GUI.enableDirectory.isChecked():
-                pass
+            elif GUI.defaultOutputFolderBox.isChecked():
+                self.targetDirectory = self.defaultOutputFolder
             else:
                 GUI.targetDirectory = ''
             self.progress.start()
@@ -825,6 +832,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             event.ignore()
         self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
+        self.settings.setValue('defaultOutputFolder', self.defaultOutputFolder)
         self.settings.setValue('lastDevice', GUI.deviceBox.currentIndex())
         self.settings.setValue('currentFormat', GUI.formatBox.currentIndex())
         self.settings.setValue('startNumber', self.startNumber + 1)
@@ -851,7 +859,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'deleteBox': GUI.deleteBox.checkState().value,
                                            'spreadShiftBox': GUI.spreadShiftBox.checkState().value,
                                            'fileFusionBox': GUI.fileFusionBox.checkState().value,
-                                           'enableDirectoryBox': GUI.enableDirectory.checkState().value,
+                                           'defaultOutputFolderBox': GUI.defaultOutputFolderBox.checkState().value,
                                            'noRotateBox': GUI.noRotateBox.checkState().value,
                                            'maximizeStrips': GUI.maximizeStrips.checkState().value,
                                            'gammaSlider': float(self.gammaValue) * 100,
@@ -933,6 +941,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings = QSettings('ciromattia', 'kcc')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
+        self.defaultOutputFolder = str(self.settings.value('defaultOutputFolder', '', type=str))
+        if not os.path.exists(self.defaultOutputFolder):
+            self.defaultOutputFolder = ''
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
@@ -961,7 +972,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if self.windowSize == '0x0':
                 MW.resize(500, 500)
         elif sys.platform.startswith('darwin'):
-            for element in ['editorButton', 'wikiButton', 'directoryButton', 'clearButton', 'fileButton', 'deviceBox',
+            for element in ['editorButton', 'wikiButton', 'defaultOutputFolderButton', 'clearButton', 'fileButton', 'deviceBox',
                             'convertButton', 'formatBox']:
                 getattr(GUI, element).setMinimumSize(QSize(0, 0))
             GUI.gridLayout.setContentsMargins(-1, -1, -1, -1)
@@ -1143,7 +1154,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
-        GUI.directoryButton.clicked.connect(self.selectDir)
+        GUI.defaultOutputFolderButton.clicked.connect(self.selectDefaultOutputFolder)
         GUI.clearButton.clicked.connect(self.clearJobs)
         GUI.fileButton.clicked.connect(self.selectFile)
         GUI.editorButton.clicked.connect(self.selectFileMetaEditor)

@@ -213,7 +213,7 @@
         </widget>
        </item>
        <item row="0" column="5">
-        <widget class="QPushButton" name="directoryButton">
+        <widget class="QPushButton" name="defaultOutputFolderButton">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -221,7 +221,7 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use this to select an output directory that will be used during this session.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use this to select the default output directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Default Output Folder</string>
@@ -233,7 +233,7 @@
         </widget>
        </item>
        <item row="0" column="4">
-        <widget class="QCheckBox" name="enableDirectory">
+        <widget class="QCheckBox" name="defaultOutputFolderBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -266,9 +266,9 @@
       <zorder>deviceBox</zorder>
       <zorder>convertButton</zorder>
       <zorder>formatBox</zorder>
-      <zorder>directoryButton</zorder>
+      <zorder>defaultOutputFolderButton</zorder>
       <zorder>fileButton</zorder>
-      <zorder>enableDirectory</zorder>
+      <zorder>defaultOutputFolderBox</zorder>
      </widget>
     </item>
     <item row="1" column="0" colspan="2">
