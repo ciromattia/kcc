@@ -494,7 +494,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 dname = dname.replace('/', '\\')
             GUI.defaultOutputFolder = dname
 
-    def selectDir(self):
+    def selectOutputFolder(self):
         dname = QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
         if dname != '':
             if sys.platform.startswith('win'):
@@ -502,6 +502,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.targetDirectory = dname
         else:
             GUI.targetDirectory = ''
+        return GUI.targetDirectory
 
     def selectFile(self):
         if self.needClean:
@@ -786,8 +787,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.worker.sync()
         else:
             if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier:
-                self.selectDir()
-                if not self.targetDirectory:
+                if not self.selectOutputFolder():
                     return
             elif GUI.defaultOutputFolderBox.isChecked():
                 self.targetDirectory = self.defaultOutputFolder
