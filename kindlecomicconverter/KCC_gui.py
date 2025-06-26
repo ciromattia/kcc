@@ -16,6 +16,7 @@
 # OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
+
 import itertools
 from pathlib import Path
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
@@ -814,6 +815,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.addMessage('No files selected! Please choose files to convert.', 'error')
                 self.needClean = True
                 return
+            if GUI.defaultOutputFolderBox.checkState() == Qt.CheckState.PartiallyChecked:
+                parent = Path(self.jobList.item(0).text()).parent
+                target_path = parent.joinpath(f"{parent.name}")
+                if not target_path.exists():
+                    target_path.mkdir()
+                self.targetDirectory = str(target_path)
             if self.currentMode > 2 and (GUI.widthBox.value() == 0 or GUI.heightBox.value() == 0):
                 GUI.jobList.clear()
                 self.addMessage('Target resolution is not set!', 'error')
@@ -1153,7 +1160,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Tip:</b> Hover mouse over options to see additional information in tooltips.', 'info')
         self.addMessage('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.', 'info')
-        self.addMessage('<b>Tip:</b> Shift clicking the Convert button lets you select a custom output directory for this list', 'info')
         if self.startNumber < 5:
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
