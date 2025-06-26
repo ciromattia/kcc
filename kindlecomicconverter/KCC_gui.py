@@ -799,7 +799,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.worker.sync()
         else:
             if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier:
-                pass
+                if not self.selectOutputFolder():
+                    return
             elif GUI.defaultOutputFolderBox.isChecked():
                 self.targetDirectory = self.defaultOutputFolder
             else:
