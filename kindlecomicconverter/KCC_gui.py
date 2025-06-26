@@ -490,14 +490,14 @@ class SystemTrayIcon(QSystemTrayIcon):
 class KCCGUI(KCC_ui.Ui_mainWindow):
     def selectDefaultOutputFolder(self):
         dname = QFileDialog.getExistingDirectory(MW, 'Select default output folder', self.defaultOutputFolder)
-        if self.directory_on_kindle(dname):
+        if self.is_directory_on_kindle(dname):
             return
         if dname != '':
             if sys.platform.startswith('win'):
                 dname = dname.replace('/', '\\')
             GUI.defaultOutputFolder = dname
 
-    def directory_on_kindle(self, dname):
+    def is_directory_on_kindle(self, dname):
         path = Path(dname)
         for parent in itertools.chain([path], path.parents):
             if parent.name == 'documents' and parent.parent.joinpath('system').joinpath('thumbnails').is_dir():
@@ -506,7 +506,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def selectOutputFolder(self):
         dname = QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
-        if self.directory_on_kindle(dname):
+        if self.is_directory_on_kindle(dname):
             return
         if dname != '':
             if sys.platform.startswith('win'):
