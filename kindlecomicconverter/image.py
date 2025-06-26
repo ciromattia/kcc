@@ -359,6 +359,8 @@ class ComicPage:
         self.image = self.image.convert('L')
 
     def quantizeImage(self):
+        if self.color:
+            self.image = self.image.convert("L").convert("RGB")
         palImg = Image.new('P', (1, 1))
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
