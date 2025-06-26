@@ -16,6 +16,7 @@
 # OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
+import itertools
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
 from PySide6.QtGui import (QColor, QIcon, QPixmap, QDesktopServices)
 from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QApplication, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog)
@@ -489,13 +490,24 @@ class SystemTrayIcon(QSystemTrayIcon):
 class KCCGUI(KCC_ui.Ui_mainWindow):
     def selectDefaultOutputFolder(self):
         dname = QFileDialog.getExistingDirectory(MW, 'Select default output folder', self.defaultOutputFolder)
+        if self.directory_on_kindle(dname):
+            return
         if dname != '':
             if sys.platform.startswith('win'):
                 dname = dname.replace('/', '\\')
             GUI.defaultOutputFolder = dname
 
+    def directory_on_kindle(self, dname):
+        path = Path(dname)
+        for parent in itertools.chain([path], path.parents):
+            if parent.name == 'documents' and parent.parent.joinpath('system').joinpath('thumbnails').is_dir():
+                self.addMessage("Cannot select Kindle as output directory", 'error')
+                return True
+
     def selectOutputFolder(self):
         dname = QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
+        if self.directory_on_kindle(dname):
+            return
         if dname != '':
             if sys.platform.startswith('win'):
                 dname = dname.replace('/', '\\')
@@ -787,8 +799,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.worker.sync()
         else:
             if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier:
-                if not self.selectOutputFolder():
-                    return
+                pass
             elif GUI.defaultOutputFolderBox.isChecked():
                 self.targetDirectory = self.defaultOutputFolder
             else:
