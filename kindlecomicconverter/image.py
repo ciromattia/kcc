@@ -21,6 +21,7 @@
 import io
 import os
 from pathlib import Path
+import numpy as np
 import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter, ImageDraw
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
@@ -146,11 +147,11 @@ class ComicPageParser:
 
         # Detect corruption in source image, let caller catch any exceptions triggered.
         srcImgPath = os.path.join(source[0], source[1])
-        self.image = Image.open(srcImgPath)
-        self.image.verify()
-        self.image = Image.open(srcImgPath).convert('RGB')
+        Image.open(srcImgPath).verify()
 
+        self.image = Image.open(srcImgPath)
         self.color = self.colorCheck()
+        self.image = self.image.convert('RGB')
         self.fill = self.fillCheck()
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
@@ -214,26 +215,22 @@ class ComicPageParser:
             self.payload.append(['N', self.source, self.image, self.color, self.fill])
 
     def colorCheck(self):
+        if self.image.mode in ("L", "1"):
+            return False
         if self.opt.webtoon:
             return True
-        else:
-            img = self.image.copy()
-            bands = img.getbands()
-            if bands == ('R', 'G', 'B') or bands == ('R', 'G', 'B', 'A'):
-                thumb = img.resize((40, 40))
-                SSE, bias = 0, [0, 0, 0]
-                bias = ImageStat.Stat(thumb).mean[:3]
-                bias = [b - sum(bias) / 3 for b in bias]
-                for pixel in thumb.getdata():
-                    mu = sum(pixel) / 3
-                    SSE += sum((pixel[i] - mu - bias[i]) * (pixel[i] - mu - bias[i]) for i in [0, 1, 2])
-                MSE = float(SSE) / (40 * 40)
-                if MSE > 22:
-                    return True
-                else:
-                    return False
-            else:
-                return False
+        self.image = self.image.convert("RGB")
+        thumb = self.image.resize((40, 40))
+        arr = np.array(thumb, dtype=np.int16)
+        # Bias adjustment
+        mean_per_channel = arr.mean(axis=(0, 1))
+        overall_mean = mean_per_channel.mean()
+        bias = mean_per_channel - overall_mean 
+        arr_unbiased = arr - bias
+        
+        mean_pixel = arr_unbiased.mean(axis=2)
+        diff = np.abs(arr_unbiased - mean_pixel[:, :, None])
+        return np.any(diff > 6)
 
     def fillCheck(self):
         if self.opt.bordersColor:
