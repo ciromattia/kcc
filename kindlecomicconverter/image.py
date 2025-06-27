@@ -359,7 +359,10 @@ class ComicPage:
         self.image = self.image.convert('L')
 
     def quantizeImage(self):
+        # remove all color pixels from image, since colorCheck() has some tolerance
+        # quantize with a small number of color pixels in a mostly b/w image can have unexpected results
         self.image = self.image.convert("L").convert("RGB")
+
         palImg = Image.new('P', (1, 1))
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
