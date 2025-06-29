@@ -30,7 +30,7 @@ import sys
 from urllib.parse import unquote
 from time import sleep
 from shutil import move, rmtree
-from subprocess import STDOUT, PIPE
+from subprocess import STDOUT, PIPE, CalledProcessError
 
 import requests
 from xml.sax.saxutils import escape
@@ -945,7 +945,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                         self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
                                         ' is outdated! MOBI conversion might fail.', 'warning')
                     break
-        except FileNotFoundError:
+        except (FileNotFoundError, CalledProcessError):
             self.kindleGen = False
             if startup:
                 self.display_kindlegen_missing()
