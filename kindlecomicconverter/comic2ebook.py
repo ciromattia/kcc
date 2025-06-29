@@ -1238,7 +1238,7 @@ def checkTools(source):
     if options.format == 'MOBI':
         try:
             subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, check=True)
-        except FileNotFoundError:
+        except (FileNotFoundError, CalledProcessError):
             print('ERROR: KindleGen is missing!')
             sys.exit(1)
 
