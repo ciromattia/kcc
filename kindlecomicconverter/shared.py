@@ -20,7 +20,6 @@
 
 from functools import lru_cache
 import os
-from hashlib import md5
 from html.parser import HTMLParser
 import subprocess
 from packaging.version import Version
@@ -140,7 +139,7 @@ def available_archive_tools():
         try:
             subprocess_run([tool], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             available.append(tool)
-        except FileNotFoundError:
+        except (FileNotFoundError, subprocess.CalledProcessError):
             pass
     
     return available
