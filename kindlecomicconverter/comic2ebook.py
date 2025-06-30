@@ -647,7 +647,7 @@ def imgFileProcessing(work):
             img.autocontrastImage()
             img.resizeImage()
             img.optimizeForDisplay(opt.reducerainbow)
-            if opt.forcecolor and workImg.color:
+            if opt.forcecolor and img.color:
                 pass
             elif opt.forcepng:
                 img.quantizeImage()
