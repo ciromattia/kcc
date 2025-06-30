@@ -20,7 +20,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import io
 import os
+import numpy as np
 from pathlib import Path
+from functools import cached_property
 import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter, ImageDraw
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
@@ -146,11 +148,9 @@ class ComicPageParser:
 
         # Detect corruption in source image, let caller catch any exceptions triggered.
         srcImgPath = os.path.join(source[0], source[1])
+        Image.open(srcImgPath).verify()
         self.image = Image.open(srcImgPath)
-        self.image.verify()
-        self.image = Image.open(srcImgPath).convert('RGB')
 
-        self.color = self.colorCheck()
         self.fill = self.fillCheck()
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
@@ -181,13 +181,13 @@ class ComicPageParser:
             new_image = Image.new("RGB", (int(width / 2), int(height*2)))
             new_image.paste(pageone, (0, 0))
             new_image.paste(pagetwo, (0, height))
-            self.payload.append(['N', self.source, new_image, self.color, self.fill])
+            self.payload.append(['N', self.source, new_image, self.fill])
         elif (width > height) != (dstwidth > dstheight) and width <= dstheight and height <= dstwidth \
                 and not self.opt.webtoon and self.opt.splitter == 1:
             spread = self.image
             if not self.opt.norotate:
                 spread = spread.rotate(90, Image.Resampling.BICUBIC, True)
-            self.payload.append(['R', self.source, spread, self.color, self.fill])
+            self.payload.append(['R', self.source, spread, self.fill])
         elif (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:
             if self.opt.splitter != 1:
                 if width > height:
@@ -202,38 +202,15 @@ class ComicPageParser:
                 else:
                     pageone = self.image.crop(leftbox)
                     pagetwo = self.image.crop(rightbox)
-                self.payload.append(['S1', self.source, pageone, self.color, self.fill])
-                self.payload.append(['S2', self.source, pagetwo, self.color, self.fill])
+                self.payload.append(['S1', self.source, pageone, self.fill])
+                self.payload.append(['S2', self.source, pagetwo, self.fill])
             if self.opt.splitter > 0:
                 spread = self.image
                 if not self.opt.norotate:
                     spread = spread.rotate(90, Image.Resampling.BICUBIC, True)
-                self.payload.append(['R', self.source, spread,
-                                    self.color, self.fill])
+                self.payload.append(['R', self.source, spread, self.fill])
         else:
-            self.payload.append(['N', self.source, self.image, self.color, self.fill])
-
-    def colorCheck(self):
-        if self.opt.webtoon:
-            return True
-        else:
-            img = self.image.copy()
-            bands = img.getbands()
-            if bands == ('R', 'G', 'B') or bands == ('R', 'G', 'B', 'A'):
-                thumb = img.resize((40, 40))
-                SSE, bias = 0, [0, 0, 0]
-                bias = ImageStat.Stat(thumb).mean[:3]
-                bias = [b - sum(bias) / 3 for b in bias]
-                for pixel in thumb.getdata():
-                    mu = sum(pixel) / 3
-                    SSE += sum((pixel[i] - mu - bias[i]) * (pixel[i] - mu - bias[i]) for i in [0, 1, 2])
-                MSE = float(SSE) / (40 * 40)
-                if MSE > 22:
-                    return True
-                else:
-                    return False
-            else:
-                return False
+            self.payload.append(['N', self.source, self.image, self.fill])
 
     def fillCheck(self):
         if self.opt.bordersColor:
@@ -275,14 +252,14 @@ class ComicPageParser:
 
 
 class ComicPage:
-    def __init__(self, options, mode, path, image, color, fill):
+    def __init__(self, options, mode, path, image, fill):
         self.opt = options
         _, self.size, self.palette, self.gamma = self.opt.profileData
         if self.opt.hq:
             self.size = (int(self.size[0] * 1.5), int(self.size[1] * 1.5))
         self.kindle_scribe_azw3 = (options.profile == 'KS') and (options.format in ('MOBI', 'EPUB'))
-        self.image = image
-        self.color = color
+        self.original_color_mode = image.mode
+        self.image = image.convert("RGB")
         self.fill = fill
         self.rotated = False
         self.orgPath = os.path.join(path[0], path[1])
@@ -301,6 +278,26 @@ class ComicPage:
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
 
+    @cached_property
+    def color(self):
+        if self.original_color_mode in ("L", "1"):
+            return False
+        img = self.image.convert("YCbCr")
+        _, cb, cr = img.split()
+
+        cb_hist = np.array(cb.histogram())
+        cr_hist = np.array(cr.histogram())
+        cb_nonzero = np.where(cb_hist > 0)[0]
+        cr_nonzero = np.where(cr_hist > 0)[0]
+        cb_spread = cb_nonzero[-1] - cb_nonzero[0] if len(cb_nonzero) else 0
+        cr_spread = cr_nonzero[-1] - cr_nonzero[0] if len(cr_nonzero) else 0
+
+        SPREAD_THRESHOLD=20
+        if cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
+            return False
+        else:
+            return True
+        
     def saveToDir(self):
         try:
             flags = []
