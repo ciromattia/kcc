@@ -285,10 +285,10 @@ class ComicPage:
         img = self.image.convert("YCbCr")
         _, cb, cr = img.split()
 
-        cb_hist = np.array(cb.histogram())
-        cr_hist = np.array(cr.histogram())
-        cb_nonzero = np.where(cb_hist > 0)[0]
-        cr_nonzero = np.where(cr_hist > 0)[0]
+        cb_hist = cb.histogram()
+        cr_hist = cr.histogram()
+        cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
+        cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
         cb_spread = cb_nonzero[-1] - cb_nonzero[0] if len(cb_nonzero) else 0
         cr_spread = cr_nonzero[-1] - cr_nonzero[0] if len(cr_nonzero) else 0
 
