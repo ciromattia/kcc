@@ -8,7 +8,7 @@ RUN echo "I'm building for $TARGETOS/$TARGETARCH/$TARGETVARIANT"
 COPY requirements.txt /opt/kcc/
 ENV PATH="/opt/venv/bin:$PATH"
 RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get -yq upgrade && \
-    apt-get install -y libpng-dev libjpeg-dev p7zip-full unrar-free libgl1 && \
+    apt-get install -y libpng-dev libjpeg-dev 7zip unrar-free libgl1 && \
     python -m pip install --upgrade pip && \
     python -m venv /opt/venv && \
     python -m pip install -r /opt/kcc/requirements.txt
@@ -55,7 +55,7 @@ RUN set -x && \
     KEPT_PACKAGES+=(locales-all) && \
     KEPT_PACKAGES+=(libfreetype6) && \
     KEPT_PACKAGES+=(libfontconfig1) && \
-    KEPT_PACKAGES+=(p7zip-full) && \
+    KEPT_PACKAGES+=(7zip) && \
     KEPT_PACKAGES+=(python3) && \
     KEPT_PACKAGES+=(python3-pip) && \
     KEPT_PACKAGES+=(unrar-free) && \
@@ -113,7 +113,7 @@ RUN set -x && \
     KEPT_PACKAGES+=(locales-all) && \
     KEPT_PACKAGES+=(libfreetype6) && \
     KEPT_PACKAGES+=(libfontconfig1) && \
-    KEPT_PACKAGES+=(p7zip-full) && \
+    KEPT_PACKAGES+=(7zip) && \
     KEPT_PACKAGES+=(python3) && \
     KEPT_PACKAGES+=(python3-pip) && \
     KEPT_PACKAGES+=(unrar-free) && \
@@ -158,7 +158,7 @@ LABEL org.opencontainers.image.title="Kindle Comic Converter"
 ENV PATH="/opt/venv/bin:$PATH"
 WORKDIR /app
 RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && apt-get -yq upgrade && \
-    apt-get install -y p7zip-full unrar-free  && \
+    apt-get install -y 7zip unrar-free  && \
     ln -s /app/kindlegen /bin/kindlegen && \
     echo docker-base-20241116 > /IMAGE_VERSION
 

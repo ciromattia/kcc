@@ -34,7 +34,7 @@ jobs:
     - name: Install python dependencies
       run: |
         sudo apt-get update 
-        sudo apt-get install -y libpng-dev libjpeg-dev p7zip-full p7zip-rar python3-pip squashfs-tools libfuse2 libxcb-cursor0
+        sudo apt-get install -y libpng-dev libjpeg-dev 7zip python3-pip squashfs-tools libfuse2 libxcb-cursor0
         python -m pip install --upgrade pip setuptools wheel certifi pyinstaller --no-binary pyinstaller 
         python -m pip install -r requirements.txt
     - name: build binary
