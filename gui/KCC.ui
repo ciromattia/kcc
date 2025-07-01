@@ -23,7 +23,7 @@
      <number>5</number>
     </property>
     <item row="2" column="0" colspan="2">
-     <widget class="QListWidget" name="jobList">
+     <widget class="JobListWidget" name="jobList">
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -866,4 +866,11 @@
   <include location="KCC.qrc"/>
  </resources>
  <connections/>
+ <customwidgets>
+  <customwidget>
+   <class>JobListWidget</class>
+   <extends>QListWidget</extends>
+   <header>kindlecomicconverter.custom_widgets</header>
+  </customwidget>
+ </customwidgets>
 </ui>
