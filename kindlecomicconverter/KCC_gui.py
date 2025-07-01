@@ -40,10 +40,10 @@ from packaging.version import Version
 from raven import Client
 from tempfile import gettempdir
 
-from .shared import HTMLStripper, available_archive_tools, sanitizeTrace, walkLevel, subprocess_run
+from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
+from .comicarchive import SEVENZIP, available_archive_tools
 from . import __version__
 from . import comic2ebook
-from . import image
 from . import metadata
 from . import kindle
 from . import KCC_ui
@@ -1166,7 +1166,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                             'info')
         
         self.tar = 'tar' in available_archive_tools()
-        self.sevenzip = '7z' in available_archive_tools()
+        self.sevenzip = SEVENZIP in available_archive_tools()
         if not any([self.tar, self.sevenzip]):
             self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
                             ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')

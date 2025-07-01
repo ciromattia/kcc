@@ -18,7 +18,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-from functools import cached_property
+from functools import cached_property, lru_cache
 import os
 import platform
 import distro
@@ -28,6 +28,7 @@ from xml.parsers.expat import ExpatError
 from .shared import subprocess_run
 
 EXTRACTION_ERROR = 'Failed to extract archive. Try extracting file outside of KCC.'
+SEVENZIP = '7z' if os.name == 'nt' else '7zz'
 
 
 class ComicArchive:
@@ -39,7 +40,7 @@ class ComicArchive:
     @cached_property
     def type(self):    
         extraction_commands = [
-            ['7z', 'l', '-y', '-p1', self.filepath],
+            [SEVENZIP, 'l', '-y', '-p1', self.filepath],
         ]
 
         if distro.id() == 'fedora' or distro.like() == 'fedora':
@@ -68,7 +69,7 @@ class ComicArchive:
 
         extraction_commands = [
             ['tar', '--exclude', '__MACOSX', '--exclude', '.DS_Store', '--exclude', 'thumbs.db', '--exclude', 'Thumbs.db', '-xf', self.filepath, '-C', targetdir],
-            ['7z', 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
+            [SEVENZIP, 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
         ]
 
         if platform.system() == 'Darwin':
@@ -100,13 +101,13 @@ class ComicArchive:
     def addFile(self, sourcefile):
         if self.type in ['RAR', 'RAR5']:
             raise NotImplementedError
-        process = subprocess_run(['7z', 'a', '-y', self.filepath, sourcefile],
+        process = subprocess_run([SEVENZIP, 'a', '-y', self.filepath, sourcefile],
                         stdout=PIPE, stderr=STDOUT)
         if process.returncode != 0:
             raise OSError('Failed to add the file.')
 
     def extractMetadata(self):
-        process = subprocess_run(['7z', 'x', '-y', '-so', self.filepath, 'ComicInfo.xml'],
+        process = subprocess_run([SEVENZIP, 'x', '-y', '-so', self.filepath, 'ComicInfo.xml'],
                         stdout=PIPE, stderr=STDOUT)
         if process.returncode != 0:
             raise OSError(EXTRACTION_ERROR)
@@ -114,3 +115,16 @@ class ComicArchive:
             return parseString(process.stdout)
         except ExpatError:
             return None
+
+@lru_cache
+def available_archive_tools():
+    available = []
+
+    for tool in ['tar', SEVENZIP, 'unar', 'unrar']:
+        try:
+            subprocess_run([tool], stdout=PIPE, stderr=STDOUT)
+            available.append(tool)
+        except (FileNotFoundError, CalledProcessError):
+            pass
+    
+    return available

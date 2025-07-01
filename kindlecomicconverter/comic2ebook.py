@@ -42,7 +42,8 @@ from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 
-from .shared import available_archive_tools, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
+from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
+from .comicarchive import SEVENZIP, available_archive_tools
 from . import comic2panel
 from . import image
 from . import comicarchive
@@ -1027,12 +1028,12 @@ def slugify(value):
 def makeZIP(zipfilename, basedir, isepub=False):
     start = perf_counter()
     zipfilename = os.path.abspath(zipfilename) + '.zip'
-    if '7z' in available_archive_tools():
+    if SEVENZIP in available_archive_tools():
         if isepub:
             mimetypeFile = open(os.path.join(basedir, 'mimetype'), 'w')
             mimetypeFile.write('application/epub+zip')
             mimetypeFile.close()
-        subprocess_run(['7z', 'a', '-tzip', zipfilename, os.path.join(basedir, "*")], capture_output=True, check=True)
+        subprocess_run([SEVENZIP, 'a', '-tzip', zipfilename, os.path.join(basedir, "*")], capture_output=True, check=True)
     else:
         zipOutput = ZipFile(zipfilename, 'w', ZIP_DEFLATED)
         if isepub:
@@ -1232,7 +1233,7 @@ def checkTools(source):
     source = source.upper()
     if source.endswith('.CB7') or source.endswith('.7Z') or source.endswith('.RAR') or source.endswith('.CBR') or \
             source.endswith('.ZIP') or source.endswith('.CBZ'):
-        if '7z' not in available_archive_tools():
+        if SEVENZIP not in available_archive_tools():
             print('ERROR: 7z is missing!')
             sys.exit(1)
     if options.format == 'MOBI':
