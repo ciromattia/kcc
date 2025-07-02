@@ -823,6 +823,19 @@ def getPanelViewSize(deviceres, size):
     return str(int(x)), str(int(y))
 
 
+def removeNonImages(filetree):
+    for root, dirs, files in os.walk(filetree):
+        for name in files:
+            _, ext = getImageFileName(name)
+            if ext not in ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.jp2'):
+                if os.path.exists(os.path.join(root, name)):
+                    os.remove(os.path.join(root, name))
+    # remove empty nested folders
+    for root, dirs, files in os.walk(filetree, False):
+        if not files and not dirs:
+            os.rmdir(root)
+
+
 def sanitizeTree(filetree):
     chapterNames = {}
     page = 1
@@ -831,13 +844,13 @@ def sanitizeTree(filetree):
         dirs.sort(key=OS_SORT_KEY)
         files.sort(key=OS_SORT_KEY)
         for name in files:
-            splitname = os.path.splitext(name)
+            _, ext = getImageFileName(name)
 
             # 9999 page limit
             slugified = f'kcc-{page:04}'
             page += 1
 
-            newKey = os.path.join(root, slugified + splitname[1])
+            newKey = os.path.join(root, slugified + ext)
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
@@ -991,10 +1004,6 @@ def detectSuboptimalProcessing(tmppath, orgpath):
                         os.remove(os.path.join(root, name))
                 except OSError as e:
                     raise RuntimeError(f"{name}: {e}")
-    # remove empty nested folders
-    for root, dirs, files in os.walk(tmppath, False):
-        if not files and not dirs:
-            os.rmdir(root)
     if alreadyProcessed:
         print("WARNING: Source files are probably created by KCC. The second conversion will decrease quality.")
         if GUI:
@@ -1310,6 +1319,7 @@ def makeBook(source, qtgui=None):
     path = getWorkFolder(source)
     print("Checking images...")
     getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
+    removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
     chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
     cover = image.Cover(cover_path, options)
