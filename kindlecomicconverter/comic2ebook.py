@@ -1024,10 +1024,12 @@ def createNewTome(parent):
 def slugify(value, is_natural_sorted):
     if options.format == 'CBZ' and is_natural_sorted:
         return value
-    # convert all unicode to ascii via slugify
-    value = slugify_ext(value, regex_pattern=r'[^-a-z0-9_\.]+').strip('.')
-    # pad zeros to numbers
-    value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
+    if options.format != 'CBZ':
+        # convert all unicode to ascii via slugify
+        value = slugify_ext(value, regex_pattern=r'[^-a-z0-9_\.]+').strip('.')
+    if not is_natural_sorted:
+        # pad zeros to numbers
+        value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
 
 
