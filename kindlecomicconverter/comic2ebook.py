@@ -691,16 +691,6 @@ def getWorkFolder(afile):
                 cbx = comicarchive.ComicArchive(afile)
                 path = cbx.extract(workdir)
                 sanitizePermissions(path)
-                tdir = os.listdir(workdir)
-                if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
-                    tdir.remove('ComicInfo.xml')
-                    if os.path.isdir(os.path.join(workdir, tdir[0])):
-                        os.replace(
-                            os.path.join(workdir, 'ComicInfo.xml'),
-                            os.path.join(workdir, tdir[0], 'ComicInfo.xml')
-                        )
-                if len(tdir) == 1 and os.path.isdir(os.path.join(workdir, tdir[0])):
-                    path = os.path.join(workdir, tdir[0])           
             except OSError as e:
                 rmtree(workdir, True)
                 raise UserWarning(e)
@@ -824,6 +814,9 @@ def getPanelViewSize(deviceres, size):
 
 
 def removeNonImages(filetree):
+    # clean dot from original file
+    dot_clean(filetree)
+
     for root, dirs, files in os.walk(filetree):
         for name in files:
             _, ext = getImageFileName(name)
@@ -884,8 +877,7 @@ def sanitizePermissions(filetree):
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
-    # clean dot from original file
-    dot_clean(filetree)
+
 
 def dot_clean(filetree):
     for root, _, files in os.walk(filetree, topdown=False):
