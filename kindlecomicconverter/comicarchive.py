@@ -28,7 +28,7 @@ from xml.parsers.expat import ExpatError
 from .shared import subprocess_run
 
 EXTRACTION_ERROR = 'Failed to extract archive. Try extracting file outside of KCC.'
-SEVENZIP = '7z' if os.name == 'nt' else '7zz'
+SEVENZIP = '7zz' if platform.system() == 'Darwin' else '7z'
 
 
 class ComicArchive:
