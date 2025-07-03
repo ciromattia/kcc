@@ -34,7 +34,7 @@ from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree, copyfile
 from multiprocessing import Pool
 from uuid import uuid4
-from natsort import os_sort_keygen
+from natsort import os_sort_keygen, os_sorted
 from slugify import slugify as slugify_ext
 from PIL import Image, ImageFile
 from pathlib import Path
@@ -834,24 +834,27 @@ def sanitizeTree(filetree):
     page = 1
     cover_path = None
     for root, dirs, files in os.walk(filetree):
-        dirs.sort(key=OS_SORT_KEY)
         files.sort(key=OS_SORT_KEY)
         for name in files:
             _, ext = getImageFileName(name)
 
             # 9999 page limit
-            slugified = f'kcc-{page:04}'
+            unique_name = f'kcc-{page:04}'
             page += 1
 
-            newKey = os.path.join(root, slugified + ext)
+            newKey = os.path.join(root, unique_name + ext)
             key = os.path.join(root, name)
             if key != newKey:
                 os.replace(key, newKey)
             if not cover_path:
                 cover_path = newKey
+        is_natural_sorted = False
+        if os_sorted(dirs) == sorted(dirs):
+            is_natural_sorted = True
+        dirs.sort(key=OS_SORT_KEY)
         for i, name in enumerate(dirs):
             tmpName = name
-            slugified = slugify(name)
+            slugified = slugify(name, is_natural_sorted)
             while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
                 slugified += "A"
             chapterNames[slugified] = tmpName
@@ -1018,11 +1021,15 @@ def createNewTome(parent):
     return tomePath, tomePathRoot
 
 
-def slugify(value):
-    if options.format == 'CBZ':
+def slugify(value, is_natural_sorted):
+    if options.format == 'CBZ' and is_natural_sorted:
         return value
-    value = slugify_ext(value, regex_pattern=r'[^-a-z0-9_\.]+').strip('.')
-    value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
+    if options.format != 'CBZ':
+        # convert all unicode to ascii via slugify
+        value = slugify_ext(value, regex_pattern=r'[^-a-z0-9_\.]+').strip('.')
+    if not is_natural_sorted:
+        # pad zeros to numbers
+        value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
 
 
