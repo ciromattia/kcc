@@ -849,8 +849,7 @@ def sanitizeTree(filetree):
             if not cover_path:
                 cover_path = newKey
         is_natural_sorted = False
-        os_sorted_dirs = os_sorted(dirs)
-        if os_sorted_dirs == sorted(dirs):
+        if os_sorted(dirs) == sorted(dirs):
             is_natural_sorted = True
         dirs.sort(key=OS_SORT_KEY)
         for i, name in enumerate(dirs):
