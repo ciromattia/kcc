@@ -852,7 +852,8 @@ def sanitizeTree(filetree):
         os_sorted_dirs = os_sorted(dirs)
         if os_sorted_dirs == sorted(dirs):
             is_natural_sorted = True
-        for i, name in enumerate(os_sorted_dirs):
+        dirs.sort(key=OS_SORT_KEY)
+        for i, name in enumerate(dirs):
             tmpName = name
             slugified = slugify(name, is_natural_sorted)
             while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
