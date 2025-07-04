@@ -301,6 +301,8 @@ Then use the `gen_ui_files` scripts to autogenerate the python UI.
 
 An example PR adding a new checkbox is here: https://github.com/ciromattia/kcc/pull/785
 
+video of adding a new checkbox: https://youtu.be/g3I8DU74C7g
+
 Do not use `git merge` to merge master from upstream, 
 use the "Sync fork" button on your fork on GitHub in your branch 
 to avoid weird looking merges in pull requests.
