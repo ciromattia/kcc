@@ -278,6 +278,8 @@ class WorkerThread(QThread):
             options.filefusion = False
         if GUI.noRotateBox.isChecked():
             options.norotate = True
+        if GUI.rotateFirstBox.isChecked():
+            options.rotatefirst = True
         if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.forcepng = True
         elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
@@ -881,6 +883,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'fileFusionBox': GUI.fileFusionBox.checkState().value,
                                            'defaultOutputFolderBox': GUI.defaultOutputFolderBox.checkState().value,
                                            'noRotateBox': GUI.noRotateBox.checkState().value,
+                                           'rotateFirstBox': GUI.rotateFirstBox.checkState().value,
                                            'maximizeStrips': GUI.maximizeStrips.checkState().value,
                                            'gammaSlider': float(self.gammaValue) * 100,
                                            'chunkSizeCheckBox': GUI.chunkSizeCheckBox.checkState().value,

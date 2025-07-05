@@ -267,7 +267,7 @@ class ComicPage:
         if 'N' in mode:
             self.targetPathOrder = '-kcc-x'
         elif 'R' in mode:
-            self.targetPathOrder = '-kcc-d'
+            self.targetPathOrder = '-kcc-a' if options.rotatefirst else '-kcc-d'
             if not options.norotate:
                 self.rotated = True
         elif 'S1' in mode:

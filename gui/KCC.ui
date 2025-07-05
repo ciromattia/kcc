@@ -453,13 +453,13 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <item row="4" column="2">
-        <widget class="QCheckBox" name="croppingBox">
+       <item row="6" column="2">
+        <widget class="QCheckBox" name="interPanelCropBox">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Disabled&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Disabled&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - Margins&lt;br/&gt;&lt;/span&gt;Margins&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Margins + page numbers&lt;br/&gt;&lt;/span&gt;Margins +page numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Disabled&lt;br/&gt;&lt;/span&gt;Disabled&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - Horizontal&lt;br/&gt;&lt;/span&gt;Crop empty horizontal lines.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Both&lt;br/&gt;&lt;/span&gt;Crop empty horizontal and vertical lines.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Cropping mode</string>
+          <string>Inter-panel crop</string>
          </property>
          <property name="tristate">
           <bool>true</bool>
@@ -476,6 +476,41 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="0">
+        <widget class="QLineEdit" name="authorEdit">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::FocusPolicy::ClickFocus</enum>
+         </property>
+         <property name="toolTip">
+          <string>Default Author is KCC</string>
+         </property>
+         <property name="placeholderText">
+          <string>Default Author</string>
+         </property>
+         <property name="clearButtonEnabled">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QCheckBox" name="croppingBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Disabled&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Disabled&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - Margins&lt;br/&gt;&lt;/span&gt;Margins&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Margins + page numbers&lt;br/&gt;&lt;/span&gt;Margins +page numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Cropping mode</string>
+         </property>
+         <property name="tristate">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
        <item row="2" column="0">
         <widget class="QCheckBox" name="webtoonBox">
          <property name="toolTip">
@@ -483,6 +518,155 @@
          </property>
          <property name="text">
           <string>Webtoon mode</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QCheckBox" name="colorBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Disable conversion to grayscale.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Color mode</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QCheckBox" name="deleteBox">
+         <property name="toolTip">
+          <string>Delete input file(s) or directory. It's not recoverable!</string>
+         </property>
+         <property name="text">
+          <string>Delete input</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QCheckBox" name="comicinfoTitleBox">
+         <property name="toolTip">
+          <string>Write Title from ComicInfo.xml</string>
+         </property>
+         <property name="text">
+          <string>ComicInfo Title</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QCheckBox" name="qualityBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - 4 panels&lt;br/&gt;&lt;/span&gt;Zoom each corner separately.&lt;/p&gt;&lt;p style='white-space:pre'&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - 2 panels&lt;br/&gt;&lt;/span&gt;Zoom only the top and bottom of the page.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - 4 high-quality panels&lt;br/&gt;&lt;/span&gt;Zoom each corner separately. Try to increase the quality of magnification. Check wiki for more details.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Panel View 4/2/HQ</string>
+         </property>
+         <property name="tristate">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QCheckBox" name="reduceRainbowBox">
+         <property name="toolTip">
+          <string>Reduce rainbow effect on color eink by slightly blurring images</string>
+         </property>
+         <property name="text">
+          <string>Rainbow blur</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QCheckBox" name="noRotateBox">
+         <property name="toolTip">
+          <string>Do not rotate double page spreads in spread splitter option.</string>
+         </property>
+         <property name="text">
+          <string>No rotate</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QCheckBox" name="fileFusionBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Combines all selected files into a single file. (Helpful for combining chapters into volumes.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>File Fusion</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QCheckBox" name="gammaBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Disable automatic gamma correction.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Custom gamma</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QCheckBox" name="mozJpegBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - JPEG&lt;br/&gt;&lt;/span&gt;Use JPEG files&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - force PNG&lt;br/&gt;&lt;/span&gt;Create PNG files instead JPEG&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - mozJpeg&lt;br/&gt;&lt;/span&gt;10-20% smaller JPEG file, with the same image quality, but processing time multiplied by 2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>JPEG/PNG/mozJpeg</string>
+         </property>
+         <property name="tristate">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QCheckBox" name="disableProcessingBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Do not process any image, ignore profile and processing options.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Disable processing</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QCheckBox" name="chunkSizeCheckBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Unchecked&lt;br/&gt;&lt;/span&gt;Maximal output file size is 100 MB for Webtoon, 400 MB for others before split occurs.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Checked&lt;/span&gt;&lt;br/&gt;Output file size specified in &amp;quot;Chunk size MB&amp;quot; before split occurs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Chunk size</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QCheckBox" name="spreadShiftBox">
+         <property name="toolTip">
+          <string>Shift first page to opposite side in landscape for two page spread alignment</string>
+         </property>
+         <property name="text">
+          <string>Spread shift</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="upscaleBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Nothing&lt;br/&gt;&lt;/span&gt;Images smaller than device resolution will not be resized.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - Stretching&lt;br/&gt;&lt;/span&gt;Images smaller than device resolution will be resized. Aspect ratio will be not preserved.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Upscaling&lt;br/&gt;&lt;/span&gt;Images smaller than device resolution will be resized. Aspect ratio will be preserved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Stretch/Upscale</string>
+         </property>
+         <property name="tristate">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QCheckBox" name="outputSplit">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Automatic mode&lt;br/&gt;&lt;/span&gt;The output will be split automatically.&lt;/p&gt;&lt;p style='white-space:pre'&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Volume mode&lt;br/&gt;&lt;/span&gt;Every subdirectory will be considered as a separate volume.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Output split</string>
          </property>
         </widget>
        </item>
@@ -512,62 +696,6 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
-        <widget class="QCheckBox" name="gammaBox">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Disable automatic gamma correction.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>Custom gamma</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="2">
-        <widget class="QCheckBox" name="interPanelCropBox">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Disabled&lt;br/&gt;&lt;/span&gt;Disabled&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - Horizontal&lt;br/&gt;&lt;/span&gt;Crop empty horizontal lines.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Both&lt;br/&gt;&lt;/span&gt;Crop empty horizontal and vertical lines.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>Inter-panel crop</string>
-         </property>
-         <property name="tristate">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QCheckBox" name="colorBox">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Disable conversion to grayscale.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>Color mode</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QCheckBox" name="qualityBox">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - 4 panels&lt;br/&gt;&lt;/span&gt;Zoom each corner separately.&lt;/p&gt;&lt;p style='white-space:pre'&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - 2 panels&lt;br/&gt;&lt;/span&gt;Zoom only the top and bottom of the page.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - 4 high-quality panels&lt;br/&gt;&lt;/span&gt;Zoom each corner separately. Try to increase the quality of magnification. Check wiki for more details.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>Panel View 4/2/HQ</string>
-         </property>
-         <property name="tristate">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="2">
-        <widget class="QCheckBox" name="disableProcessingBox">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Do not process any image, ignore profile and processing options.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>Disable processing</string>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="1">
         <widget class="QCheckBox" name="maximizeStrips">
          <property name="toolTip">
@@ -578,131 +706,13 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLineEdit" name="authorEdit">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="focusPolicy">
-          <enum>Qt::FocusPolicy::ClickFocus</enum>
-         </property>
+       <item row="8" column="1">
+        <widget class="QCheckBox" name="rotateFirstBox">
          <property name="toolTip">
-          <string>Default Author is KCC</string>
-         </property>
-         <property name="placeholderText">
-          <string>Default Author</string>
-         </property>
-         <property name="clearButtonEnabled">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <widget class="QCheckBox" name="deleteBox">
-         <property name="toolTip">
-          <string>Delete input file(s) or directory. It's not recoverable!</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When the spread splitter option is partially checked,&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Rotate Last&lt;br/&gt;&lt;/span&gt;Put the rotated 2 page spread after the split spreads.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Rotate First&lt;br/&gt;&lt;/span&gt;Put the rotated 2 page spread before the split spreads.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Delete input</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QCheckBox" name="mozJpegBox">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - JPEG&lt;br/&gt;&lt;/span&gt;Use JPEG files&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - force PNG&lt;br/&gt;&lt;/span&gt;Create PNG files instead JPEG&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - mozJpeg&lt;br/&gt;&lt;/span&gt;10-20% smaller JPEG file, with the same image quality, but processing time multiplied by 2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>JPEG/PNG/mozJpeg</string>
-         </property>
-         <property name="tristate">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QCheckBox" name="spreadShiftBox">
-         <property name="toolTip">
-          <string>Shift first page to opposite side in landscape for two page spread alignment</string>
-         </property>
-         <property name="text">
-          <string>Spread shift</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QCheckBox" name="fileFusionBox">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Combines all selected files into a single file. (Helpful for combining chapters into volumes.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>File Fusion</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QCheckBox" name="upscaleBox">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Nothing&lt;br/&gt;&lt;/span&gt;Images smaller than device resolution will not be resized.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - Stretching&lt;br/&gt;&lt;/span&gt;Images smaller than device resolution will be resized. Aspect ratio will be not preserved.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Upscaling&lt;br/&gt;&lt;/span&gt;Images smaller than device resolution will be resized. Aspect ratio will be preserved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>Stretch/Upscale</string>
-         </property>
-         <property name="tristate">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QCheckBox" name="outputSplit">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Automatic mode&lt;br/&gt;&lt;/span&gt;The output will be split automatically.&lt;/p&gt;&lt;p style='white-space:pre'&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Volume mode&lt;br/&gt;&lt;/span&gt;Every subdirectory will be considered as a separate volume.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>Output split</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <widget class="QCheckBox" name="noRotateBox">
-         <property name="toolTip">
-          <string>Do not rotate double page spreads in spread splitter option.</string>
-         </property>
-         <property name="text">
-          <string>No rotate</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="2">
-        <widget class="QCheckBox" name="reduceRainbowBox">
-         <property name="toolTip">
-          <string>Reduce rainbow effect on color eink by slightly blurring images</string>
-         </property>
-         <property name="text">
-          <string>Rainbow blur</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QCheckBox" name="chunkSizeCheckBox">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Unchecked&lt;br/&gt;&lt;/span&gt;Maximal output file size is 100 MB for Webtoon, 400 MB for others before split occurs.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700; text-decoration: underline;&quot;&gt;Checked&lt;/span&gt;&lt;br/&gt;Output file size specified in &amp;quot;Chunk size MB&amp;quot; before split occurs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>Chunk size</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QCheckBox" name="comicinfoTitleBox">
-         <property name="toolTip">
-          <string>Write Title from ComicInfo.xml</string>
-         </property>
-         <property name="text">
-          <string>ComicInfo Title</string>
+          <string>Rotate First</string>
          </property>
         </widget>
        </item>
