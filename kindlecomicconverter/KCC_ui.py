@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'KCC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -17,9 +17,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComboBox,
     QGridLayout, QHBoxLayout, QLabel, QLineEdit,
-    QListWidget, QListWidgetItem, QMainWindow, QProgressBar,
-    QPushButton, QSizePolicy, QSlider, QSpinBox,
-    QStatusBar, QWidget)
+    QListWidgetItem, QMainWindow, QProgressBar, QPushButton,
+    QSizePolicy, QSlider, QSpinBox, QStatusBar,
+    QWidget)
+
+from kindlecomicconverter.custom_widgets import JobListWidget
 from . import KCC_rc
 
 class Ui_mainWindow(object):
@@ -35,7 +37,7 @@ class Ui_mainWindow(object):
         self.gridLayout = QGridLayout(self.centralWidget)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setContentsMargins(-1, -1, -1, 5)
-        self.jobList = QListWidget(self.centralWidget)
+        self.jobList = JobListWidget(self.centralWidget)
         self.jobList.setObjectName(u"jobList")
         self.jobList.setStyleSheet(u"")
         self.jobList.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
