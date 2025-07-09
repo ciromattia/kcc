@@ -820,7 +820,7 @@ def removeNonImages(filetree):
     for root, dirs, files in os.walk(filetree):
         for name in files:
             _, ext = getImageFileName(name)
-            if ext not in ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.jp2'):
+            if ext not in ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.jp2', '.avif'):
                 if os.path.exists(os.path.join(root, name)):
                     os.remove(os.path.join(root, name))
     # remove empty nested folders
