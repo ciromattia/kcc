@@ -75,7 +75,7 @@ setuptools.setup(
     packages=['kindlecomicconverter'],
     install_requires=[
         'pyside6>=6.5.1',
-        'Pillow>=5.2.0',
+        'Pillow>=11.3.0',
         'psutil>=5.9.5',
         'python-slugify>=1.2.1,<9.0.0',
         'raven>=6.0.0',
@@ -83,7 +83,7 @@ setuptools.setup(
         'mozjpeg-lossless-optimization>=1.1.2',
         'natsort>=8.4.0',
         'distro',
-        'numpy>=1.22.4,<2.0.0'
+        'numpy>=1.22.4'
     ],
     classifiers=[],
     zip_safe=False,

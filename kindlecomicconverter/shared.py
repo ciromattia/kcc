@@ -116,10 +116,10 @@ def dependencyCheck(level):
             missing.append('python-slugify 1.2.1+')
     try:
         from PIL import __version__ as pillowVersion
-        if Version('5.2.0') > Version(pillowVersion):
-            missing.append('Pillow 5.2.0+')
+        if Version('11.3.0') > Version(pillowVersion):
+            missing.append('Pillow 11.3.0+')
     except ImportError:
-        missing.append('Pillow 5.2.0+')
+        missing.append('Pillow 11.3.0+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         sys.exit(1)
