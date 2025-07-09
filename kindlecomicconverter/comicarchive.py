@@ -87,7 +87,7 @@ class ComicArchive:
         for cmd in extraction_commands:
             try:
                 subprocess_run(cmd, capture_output=True, check=True)
-                return targetdir
+                return os.path.join(targetdir, os.listdir(targetdir)[0])       
             except FileNotFoundError:
                 missing.append(cmd[0])
             except CalledProcessError:
