@@ -341,16 +341,21 @@ class ComicPage:
                 image.save(targetPath, 'JPEG', optimize=1, quality=85)
         return targetPath
 
-    def autocontrastImage(self):
+    def gammaCorrectImage(self):
         gamma = self.opt.gamma
         if gamma < 0.1:
             gamma = self.gamma
             if self.gamma != 1.0 and self.color:
                 gamma = 1.0
         if gamma == 1.0:
-            self.image = ImageOps.autocontrast(self.image)
+            pass
         else:
-            self.image = ImageOps.autocontrast(Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma)))
+            self.image = Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma))
+
+    def autocontrastImage(self):
+        # autocontrast on non grayscale images has unexpected results 
+        # since it autocontrasts each color channel separately
+        self.image = ImageOps.autocontrast(self.image)
 
     def convertToGrayscale(self):
         self.image = self.image.convert('L')
@@ -358,7 +363,7 @@ class ComicPage:
     def quantizeImage(self):
         # remove all color pixels from image, since colorCheck() has some tolerance
         # quantize with a small number of color pixels in a mostly b/w image can have unexpected results
-        self.image = self.image.convert("L").convert("RGB")
+        self.image = self.image.convert("RGB")
 
         palImg = Image.new('P', (1, 1))
         palImg.putpalette(self.palette)
