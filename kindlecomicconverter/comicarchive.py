@@ -74,7 +74,7 @@ class ComicArchive:
 
         if platform.system() == 'Darwin':
             extraction_commands.append(
-                ['unar', self.filepath, '-f', '-o', targetdir]
+                ['unar', self.filepath, '-D', '-f', '-o', targetdir]
             )
 
         extraction_commands.reverse()
@@ -87,7 +87,7 @@ class ComicArchive:
         for cmd in extraction_commands:
             try:
                 subprocess_run(cmd, capture_output=True, check=True)
-                return os.path.join(targetdir, os.listdir(targetdir)[0])       
+                return targetdir     
             except FileNotFoundError:
                 missing.append(cmd[0])
             except CalledProcessError:
