@@ -692,6 +692,19 @@ def getWorkFolder(afile):
                 cbx = comicarchive.ComicArchive(afile)
                 path = cbx.extract(workdir)
                 sanitizePermissions(path)
+
+                dot_clean(path)
+                tdir = os.listdir(workdir)
+                if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
+                    tdir.remove('ComicInfo.xml')
+                    if os.path.isdir(os.path.join(workdir, tdir[0])):
+                        os.replace(
+                            os.path.join(workdir, 'ComicInfo.xml'),
+                            os.path.join(workdir, tdir[0], 'ComicInfo.xml')
+                        )
+                if len(tdir) == 1 and os.path.isdir(os.path.join(workdir, tdir[0])):
+                    path = os.path.join(workdir, tdir[0])
+ 
             except OSError as e:
                 rmtree(workdir, True)
                 raise UserWarning(e)
