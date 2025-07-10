@@ -101,6 +101,8 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 ## FAQ
 - All options have additional information in tooltips if you hover over the option.
 - To get the converted book onto your Kindle/Kobo, just drag and drop the mobi/kepub into the documents folder on your Kindle/Kobo via USB
+- Right to left mode not working?
+  - RTL mode only affects splitting order for CBZ output. Your cbz reader itself sets the page turn direction.
 - Colors inverted?
   - Disable Kindle dark mode
 - Cannot connect Kindle Scribe or 2024+ Kindle to macOS
