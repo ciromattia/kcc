@@ -353,9 +353,7 @@ class ComicPage:
             self.image = Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma))
 
     def autocontrastImage(self):
-        # autocontrast on non grayscale images has unexpected results 
-        # since it autocontrasts each color channel separately
-        self.image = ImageOps.autocontrast(self.image)
+        self.image = ImageOps.autocontrast(self.image, preserve_tone=True)
 
     def convertToGrayscale(self):
         self.image = self.image.convert('L')
