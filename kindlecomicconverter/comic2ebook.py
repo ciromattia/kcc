@@ -693,7 +693,6 @@ def getWorkFolder(afile):
                 path = cbx.extract(workdir)
                 sanitizePermissions(path)
 
-                dot_clean(path)
                 tdir = os.listdir(workdir)
                 if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
                     tdir.remove('ComicInfo.xml')
@@ -894,6 +893,7 @@ def sanitizePermissions(filetree):
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
+    dot_clean(filetree)
 
 
 def dot_clean(filetree):
