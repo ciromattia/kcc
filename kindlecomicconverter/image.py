@@ -368,12 +368,9 @@ class ComicPage:
         self.image = self.image.quantize(palette=palImg)
 
     def optimizeForDisplay(self, reducerainbow):
-        # Reduce rainbow artifacts for grayscale images by breaking up dither patterns that cause Moire interference with color filter array
+        # Reduce rainbow artifacts for grayscale images by removing spectral frequencies that cause Moire interference with color filter array
         if reducerainbow and not self.color:
-            unsharpFilter = ImageFilter.UnsharpMask(radius=1, percent=100)
-            self.image = self.image.filter(unsharpFilter)
-            self.image = self.image.filter(ImageFilter.BoxBlur(1.0))
-            self.image = self.image.filter(unsharpFilter)
+            self.image = erase_rainbow_artifacts(self.image)
 
     def resizeImage(self):
         ratio_device = float(self.size[1]) / float(self.size[0])
