@@ -15,7 +15,7 @@ def fourier_transform_image(img):
     return fft_result
      
 def attenuate_diagonal_frequencies(fft_spectrum, freq_threshold=0.3, target_angle=135, 
-                                     angle_tolerance=15, attenuation_factor=0.1):
+                                     angle_tolerance=10, attenuation_factor=0.25):
     """
     Attenuates specific frequencies in the Fourier domain (optimized version for rfft2).
     
@@ -61,16 +61,18 @@ def attenuate_diagonal_frequencies(fft_spectrum, freq_threshold=0.3, target_angl
     # Convert to degrees and normalize in a single operation
     angles_deg = np.rad2deg(angles_rad) % 360
     
-    # Optimize angular condition
-    # For rfft2, we only process angles in the positive half-plane of X
-    # So we only calculate the main angle, not its opposite
+    # Calculation of complementary angle
     target_angle_2 = (target_angle + 180) % 360
+    
+    # Calulation of perpendicular angles (for better final rendering)
+    target_angle_3 = (target_angle + 90) % 360
+    target_angle_4 = (target_angle_3 + 180) % 360
     
     # Create angular conditions in a vectorized way
     angle_condition = np.zeros_like(angles_deg, dtype=bool)
     
     # Process both angles simultaneously
-    for angle in [target_angle, target_angle_2]:
+    for angle in [target_angle, target_angle_2, target_angle_3, target_angle_4]:
         min_angle = (angle - angle_tolerance) % 360
         max_angle = (angle + angle_tolerance) % 360
         
