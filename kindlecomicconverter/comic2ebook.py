@@ -639,21 +639,27 @@ def imgFileProcessing(work):
         workImg = image.ComicPageParser((dirpath, afile), opt)
         for i in workImg.payload:
             img = image.ComicPage(opt, *i)
-            is_output_grayscale = not opt.forcecolor or not img.color
-            if is_output_grayscale:
-                img.convertToGrayscale()
+
             if opt.cropping == 2 and not opt.webtoon:
                 img.cropPageNumber(opt.croppingp, opt.croppingm)
             if opt.cropping == 1 and not opt.webtoon:
                 img.cropMargin(opt.croppingp, opt.croppingm)
             if opt.interpanelcrop > 0:
                 img.cropInterPanelEmptySections("horizontal" if opt.interpanelcrop == 1 else "both")
+
             img.gammaCorrectImage()
+
             img.autocontrastImage()
             img.resizeImage()
             img.optimizeForDisplay(opt.reducerainbow)
-            if is_output_grayscale and opt.forcepng:
+
+            if opt.forcecolor and img.color:
+                pass
+            elif opt.forcepng:
+                img.convertToGrayscale()
                 img.quantizeImage()
+            else:
+                img.convertToGrayscale()
             output.append(img.saveToDir())
         return output
     except Exception:
