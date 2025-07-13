@@ -354,6 +354,7 @@ class ComicPage:
 
     def autocontrastImage(self):
         if True and not self.color:
+            self.convertToGrayscale()
             h = self.image.histogram()
             most_common_dark_pixel_count = max(h[:64])
             black_point = h.index(most_common_dark_pixel_count)
