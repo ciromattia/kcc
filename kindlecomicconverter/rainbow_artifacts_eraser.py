@@ -63,12 +63,16 @@ def attenuate_diagonal_frequencies(fft_spectrum, freq_threshold=0.30, target_ang
     
     # Calculation of complementary angle
     target_angle_2 = (target_angle + 180) % 360
+
+    # Calulation of perpendicular angles (CFA is sometimes orientated at 135°, sometimes at 45°)
+    target_angle_3 = (target_angle + 90) % 360
+    target_angle_4 = (target_angle_3 + 180) % 360
     
     # Create angular conditions in a vectorized way
     angle_condition = np.zeros_like(angles_deg, dtype=bool)
     
     # Process both angles simultaneously
-    for angle in [target_angle, target_angle_2]:
+    for angle in [target_angle, target_angle_2, target_angle_3, target_angle_4]:
         min_angle = (angle - angle_tolerance) % 360
         max_angle = (angle + angle_tolerance) % 360
         
