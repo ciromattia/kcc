@@ -32,7 +32,7 @@ from typing import List
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
 from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree, copyfile
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 from uuid import uuid4
 from natsort import os_sort_keygen, os_sorted
 from slugify import slugify as slugify_ext
@@ -43,6 +43,16 @@ from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 
 from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
+# helper for buildPDF multiprocessing (must be top-level for pickling)
+def _process_pdf_image(img_path):
+    try:
+        img = Image.open(img_path)
+        if img.mode not in ('RGB', 'L'):
+            img = img.convert('RGB')
+        return img.copy()
+    except Exception as e:
+        print(f"Warning: Could not process image {img_path}: {e}")
+        return None
 from .comicarchive import SEVENZIP, available_archive_tools
 from . import comic2panel
 from . import image
@@ -587,41 +597,20 @@ def buildPDF(path, title, cover=None):
     """
     from PIL import Image
     
-    pdf_images = []
     images_path = os.path.join(path, "OEBPS", "Images")
-    
     # Collect all image files
     image_files = []
-    # use walkLevel to traverse and sort image directories
     for dirpath, _, filenames in walkLevel(images_path):
         for afilename in filenames:
             if afilename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
                 image_files.append(os.path.join(dirpath, afilename))
-    
     if not image_files:
         raise UserWarning("No images found for PDF creation.")
-    
-    print(f"Processing {len(image_files)} images for PDF...")
-    
-    # Process images for PDF
-    for img_path in image_files:
-        try:
-            with Image.open(img_path) as img:
-                # Convert to RGB if necessary (PDF requires RGB)
-                if img.mode not in ('RGB', 'L'):
-                    img = img.convert('RGB')
-                
-                # For grayscale images, convert to RGB but keep grayscale appearance
-                if img.mode == 'L':
-                    img = img.convert('RGB')
-                
-                # Create a copy to avoid issues with file handles
-                pdf_img = img.copy()
-                pdf_images.append(pdf_img)
-                
-        except Exception as e:
-            print(f"Warning: Could not process image {img_path}: {e}")
-            continue
+
+    # Parallel process images for PDF to speed up conversion
+    print(f"Processing {len(image_files)} images for PDF using {cpu_count()} cores...")
+    with Pool(processes=cpu_count()) as pool:
+        pdf_images = [img for img in pool.map(_process_pdf_image, image_files) if img]
     
     if not pdf_images:
         raise UserWarning("No valid images could be processed for PDF creation.")
@@ -1510,6 +1499,11 @@ def makeBook(source, qtgui=None):
 
     end = perf_counter()
     print(f"makeBook: {end - start} seconds")
+    # Clean up temporary workspace
+    try:
+        rmtree(path, True)
+    except Exception:
+        pass
     return filepath
 
 

@@ -324,6 +324,9 @@ class WorkerThread(QThread):
             if gui_current_format == 'CBZ':
                 MW.addMessage.emit('Creating CBZ files', 'info', False)
                 GUI.progress.content = 'Creating CBZ files'
+            elif gui_current_format == 'PDF':
+                MW.addMessage.emit('Creating PDF files', 'info', False)
+                GUI.progress.content = 'Creating PDF files'
             else:
                 MW.addMessage.emit('Creating EPUB files', 'info', False)
                 GUI.progress.content = 'Creating EPUB files'
@@ -368,6 +371,8 @@ class WorkerThread(QThread):
                 GUI.progress.content = ''
                 if gui_current_format == 'CBZ':
                     MW.addMessage.emit('Creating CBZ files... <b>Done!</b>', 'info', True)
+                elif gui_current_format == 'PDF':
+                    MW.addMessage.emit('Creating PDF files... <b>Done!</b>', 'info', True)
                 else:
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
                 if 'MOBI' in gui_current_format:
