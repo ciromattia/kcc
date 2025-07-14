@@ -580,6 +580,54 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, len
     buildOPF(path, options.title, filelist, cover)
 
 
+def buildPDF(path, title, cover=None):
+    """
+    Build a PDF file from processed comic images.
+    Images are combined into a single PDF optimized for e-readers.
+    """
+    from PIL import Image
+    
+    pdf_images = []
+    images_path = os.path.join(path, "OEBPS", "Images")
+    
+    # Collect all image files
+    image_files = []
+    for dirpath, _, filenames in walkSort(images_path):
+        for afilename in filenames:
+            if afilename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+                image_files.append(os.path.join(dirpath, afilename))
+    
+    if not image_files:
+        raise UserWarning("No images found for PDF creation.")
+    
+    print(f"Processing {len(image_files)} images for PDF...")
+    
+    # Process images for PDF
+    for img_path in image_files:
+        try:
+            with Image.open(img_path) as img:
+                # Convert to RGB if necessary (PDF requires RGB)
+                if img.mode not in ('RGB', 'L'):
+                    img = img.convert('RGB')
+                
+                # For grayscale images, convert to RGB but keep grayscale appearance
+                if img.mode == 'L':
+                    img = img.convert('RGB')
+                
+                # Create a copy to avoid issues with file handles
+                pdf_img = img.copy()
+                pdf_images.append(pdf_img)
+                
+        except Exception as e:
+            print(f"Warning: Could not process image {img_path}: {e}")
+            continue
+    
+    if not pdf_images:
+        raise UserWarning("No valid images could be processed for PDF creation.")
+    
+    return pdf_images
+
+
 def imgDirectoryProcessing(path):
     global workerPool, workerOutput
     workerPool = Pool(maxtasksperchild=100)
@@ -1114,7 +1162,7 @@ def makeParser():
     output_options.add_argument("-a", "--author", action="store", dest="author", default="defaultauthor",
                                 help="Author name [Default=KCC]")
     output_options.add_argument("-f", "--format", action="store", dest="format", default="Auto",
-                                help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB) "
+                                help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB, PDF) "
                                      "[Default=Auto]")
     output_options.add_argument("--nokepub", action="store_true", dest="noKepub", default=False,
                                 help="If format is EPUB, output file with '.epub' extension rather than '.kepub.epub'")
@@ -1204,6 +1252,8 @@ def checkOptions(options):
             options.format = 'CBZ'
         elif options.profile in image.ProfileData.ProfilesKindle.keys():
             options.format = 'MOBI'
+        elif options.profile in image.ProfileData.ProfilesRemarkable.keys():
+            options.format = 'PDF'
         else:
             options.format = 'EPUB'
     if options.profile in image.ProfileData.ProfilesKindle.keys():
@@ -1367,6 +1417,8 @@ def makeBook(source, qtgui=None):
     if GUI:
         if options.format == 'CBZ':
             GUI.progressBarTick.emit('Compressing CBZ files')
+        elif options.format == 'PDF':
+            GUI.progressBarTick.emit('Creating PDF files')
         else:
             GUI.progressBarTick.emit('Compressing EPUB files')
         GUI.progressBarTick.emit(str(len(tomes) + 1))
@@ -1388,6 +1440,23 @@ def makeBook(source, qtgui=None):
             else:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
             makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
+        elif options.format == 'PDF':
+            print("Creating PDF file...")
+            if len(tomes) > 1:
+                filepath.append(getOutputFilename(source, options.output, '.pdf', ' ' + str(tomeNumber)))
+            else:
+                filepath.append(getOutputFilename(source, options.output, '.pdf', ''))
+            # Build PDF from images
+            pdf_images = buildPDF(tome, options.title, cover)
+            # Save PDF file
+            if pdf_images:
+                pdf_images[0].save(
+                    filepath[-1], 
+                    "PDF", 
+                    resolution=100.0, 
+                    save_all=True, 
+                    append_images=pdf_images[1:] if len(pdf_images) > 1 else []
+                )
         else:
             print("Creating EPUB file...")
             if len(tomes) > 1:
@@ -1397,9 +1466,12 @@ def makeBook(source, qtgui=None):
                 buildEPUB(tome, chapterNames, tomeNumber, False, cover)
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
             makeZIP(tome + '_comic', tome, True)
-        copyfile(tome + '_comic.zip', filepath[-1])
+        # Copy files to final destination (PDF files are already saved directly)
+        if options.format != 'PDF':
+            copyfile(tome + '_comic.zip', filepath[-1])
         try:
-            os.remove(tome + '_comic.zip')
+            if options.format != 'PDF':
+                os.remove(tome + '_comic.zip')
         except FileNotFoundError:
             # newly temporary created file is not found. It might have been already deleted
             pass
