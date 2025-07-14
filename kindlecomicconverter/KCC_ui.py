@@ -630,7 +630,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.mozJpegBox.setText(QCoreApplication.translate("mainWindow", u"JPEG/PNG/mozJpeg", None))
 #if QT_CONFIG(tooltip)
-        self.autoLevelBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Set the most common dark pixel value to be the black point for leveling on a page by page basis.</p><p>Skipped for any images that were originally color.</p><p>Useful for very gray faded content. Reccomended to use with Custom Gamma = 1.0 (Disabled).</p></body></html>", None))
+        self.autoLevelBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Set the most common dark pixel value to be the black point for leveling on a page by page basis.</p><p>Skipped for any images that were originally color.</p><p>Use only if default autocontrast still results in very gray faded blacks. </p><p>Reccomended to use with Custom Gamma = 1.0 (Disabled).</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.autoLevelBox.setText(QCoreApplication.translate("mainWindow", u"Aggressive Black Point", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))

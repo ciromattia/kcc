@@ -719,7 +719,7 @@
        <item row="8" column="2">
         <widget class="QCheckBox" name="autoLevelBox">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the most common dark pixel value to be the black point for leveling on a page by page basis.&lt;/p&gt;&lt;p&gt;Skipped for any images that were originally color.&lt;/p&gt;&lt;p&gt;Useful for very gray faded content. Reccomended to use with Custom Gamma = 1.0 (Disabled).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the most common dark pixel value to be the black point for leveling on a page by page basis.&lt;/p&gt;&lt;p&gt;Skipped for any images that were originally color.&lt;/p&gt;&lt;p&gt;Use only if default autocontrast still results in very gray faded blacks. &lt;/p&gt;&lt;p&gt;Reccomended to use with Custom Gamma = 1.0 (Disabled).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Aggressive Black Point</string>
