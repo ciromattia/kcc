@@ -224,6 +224,7 @@ PROCESSING:
                         Double page parsing mode. 0: Split 1: Rotate 2: Both [Default=0]
   -g GAMMA, --gamma GAMMA
                         Apply gamma correction to linearize the image [Default=Auto]
+  --autolevel           Set most common dark pixel value to be black point for leveling.
   -c CROPPING, --cropping CROPPING
                         Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]
   --cp CROPPINGP, --croppingpower CROPPINGP
