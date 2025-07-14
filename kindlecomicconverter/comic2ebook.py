@@ -1138,6 +1138,8 @@ def makeParser():
                                     help="Double page parsing mode. 0: Split 1: Rotate 2: Both [Default=0]")
     processing_options.add_argument("-g", "--gamma", type=float, dest="gamma", default="0.0",
                                     help="Apply gamma correction to linearize the image [Default=Auto]")
+    output_options.add_argument("--autolevel", action="store_true", dest="autolevel", default=False,
+                                help="Set most common dark pixel value to be black point for leveling.")
     processing_options.add_argument("-c", "--cropping", type=int, dest="cropping", default="2",
                                     help="Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]")
     processing_options.add_argument("--cp", "--croppingpower", type=float, dest="croppingp", default="1.0",
