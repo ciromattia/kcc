@@ -592,7 +592,8 @@ def buildPDF(path, title, cover=None):
     
     # Collect all image files
     image_files = []
-    for dirpath, _, filenames in walkSort(images_path):
+    # use walkLevel to traverse and sort image directories
+    for dirpath, _, filenames in walkLevel(images_path):
         for afilename in filenames:
             if afilename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
                 image_files.append(os.path.join(dirpath, afilename))
