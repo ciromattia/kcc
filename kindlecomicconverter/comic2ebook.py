@@ -667,61 +667,116 @@ def imgFileProcessing(work):
         return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
 
-def mupdf_pdf_render_page(args):
-    afile, page_num, output_path, target_height  = args
+def render_page(vector):
+    """Render a page range of a document.
+
+    Notes:
+        The PyMuPDF document cannot be part of the argument, because that
+        cannot be pickled. So we are being passed in just its filename.
+        This is no performance issue, because we are a separate process and
+        need to open the document anyway.
+        Any page-specific function can be processed here - rendering is just
+        an example - text extraction might be another.
+        The work must however be self-contained: no inter-process communication
+        or synchronization is possible with this design.
+        Care must also be taken with which parameters are contained in the
+        argument, because it will be passed in via pickling by the Pool class.
+        So any large objects will increase the overall duration.
+    Args:
+        vector: a list containing required parameters.
+    """
+    # recreate the arguments
+    idx = vector[0]  # this is the segment number we have to process
+    cpu = vector[1]  # number of CPUs
+    filename = vector[2]  # document filename
+    output_dir = vector[3]
+    target_height = vector[4]
     try:
-        doc = pymupdf.open(afile)
-        page = doc.load_page(page_num)
-        zoom = target_height / page.rect.height
-        mat = pymupdf.Matrix(zoom, zoom)
-        pix = page.get_pixmap(matrix=mat, colorspace='RGB', alpha=False)
-        pix.save(output_path)
-        doc.close()
-        return f"Rendered page {page_num+1}: {output_path}"
+        with pymupdf.open(filename) as doc:  # open the document
+            num_pages = doc.page_count  # get number of pages
+
+            # pages per segment: make sure that cpu * seg_size >= num_pages!
+            seg_size = int(num_pages / cpu + 1)
+            seg_from = idx * seg_size  # our first page number
+            seg_to = min(seg_from + seg_size, num_pages)  # last page number
+
+            for i in range(seg_from, seg_to):  # work through our page segment
+                page = doc[i]
+                mat = target_height / page.rect.height
+                pix = page.get_pixmap(matrix=mat, colorspace='RGB', alpha=False)
+                pix.save(os.path.join(output_dir, "p-%i.png" % i))
+            print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
     except Exception as e:
-        raise UserWarning(f"Error rendering page {page_num + 1}: {e}")
+        raise UserWarning(f"Error rendering {filename}: {e}")
 
 
-def mupdf_pdf_extract_page_image(args):
-    # For pages with single image (and no text). Otherwise it's recommended to use mupdf_render_page()
-    afile, page_num, output_path, _ = args
+def extract_page(vector):
+    """For pages with single image (and no text). Otherwise it's recommended to use render_page()
+
+    Notes:
+        The PyMuPDF document cannot be part of the argument, because that
+        cannot be pickled. So we are being passed in just its filename.
+        This is no performance issue, because we are a separate process and
+        need to open the document anyway.
+        Any page-specific function can be processed here - rendering is just
+        an example - text extraction might be another.
+        The work must however be self-contained: no inter-process communication
+        or synchronization is possible with this design.
+        Care must also be taken with which parameters are contained in the
+        argument, because it will be passed in via pickling by the Pool class.
+        So any large objects will increase the overall duration.
+    Args:
+        vector: a list containing required parameters.
+    """
+    # recreate the arguments
+    idx = vector[0]  # this is the segment number we have to process
+    cpu = vector[1]  # number of CPUs
+    filename = vector[2]  # document filename
+    output_dir = vector[3]
+
     try:
-        doc = pymupdf.open(afile)
-        page = doc.load_page(page_num)
-        image_list = page.get_images(full=True)
-        if len(image_list) > 1:
-            raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
-        if not image_list:
-            width, height = int(page.rect.width), int(page.rect.height)
-            black_page = Image.new("RGB", (width, height), "white")
-            black_page.save(output_path)
-            return f"Saved blank page {page_num+1}: {output_path}"
-        xref = image_list[0][0]
-        pix = pymupdf.Pixmap(doc, xref)
-        if pix.colorspace is None:
-            # It's a stencil mask (grayscale image with inverted colors)
-            mask_array = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width)
-            inverted = 255 - mask_array
-            img = Image.fromarray(inverted, mode="L")
-            img.save(output_path)
-            return f"Exported stencil mask page {page_num+1}: {output_path}"
-        if pix.colorspace.name.startswith("Colorspace(CS_GRAY)"):
-            # Make sure that an image is just grayscale and not smth like "Colorspace(CS_GRAY) - Separation(DeviceCMYK,Black)"
-            pix = pymupdf.Pixmap(pymupdf.csGRAY, pix)
-        else:
-            pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
-        if pix.alpha: 
-            pix = pymupdf.Pixmap(pix, alpha=0)
-        pix.save(output_path)
-        doc.close()
-        return f"Exported page {page_num+1}: {output_path}"
+        with pymupdf.open(filename) as doc: # open the document
+            num_pages = doc.page_count  # get number of pages
+
+            # pages per segment: make sure that cpu * seg_size >= num_pages!
+            seg_size = int(num_pages / cpu + 1)
+            seg_from = idx * seg_size  # our first page number
+            seg_to = min(seg_from + seg_size, num_pages)  # last page number
+
+            for i in range(seg_from, seg_to):  # work through our page segment
+                output_path = os.path.join(output_dir, "p-%i.png" % i)
+                try:
+                    page = doc.load_page(i)
+                    image_list = page.get_images(full=True)
+                    if len(image_list) > 1:
+                        raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
+                    if not image_list:
+                        width, height = int(page.rect.width), int(page.rect.height)
+                        black_page = Image.new("RGB", (width, height), "white")
+                        black_page.save(output_path)
+                    xref = image_list[0][0]
+                    pix = pymupdf.Pixmap(doc, xref)
+                    if pix.colorspace is None:
+                        # It's a stencil mask (grayscale image with inverted colors)
+                        mask_array = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width)
+                        inverted = 255 - mask_array
+                        img = Image.fromarray(inverted, mode="L")
+                        img.save(output_path)
+                    if pix.colorspace.name.startswith("Colorspace(CS_GRAY)"):
+                        # Make sure that an image is just grayscale and not smth like "Colorspace(CS_GRAY) - Separation(DeviceCMYK,Black)"
+                        pix = pymupdf.Pixmap(pymupdf.csGRAY, pix)
+                    else:
+                        pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
+                    if pix.alpha: 
+                        pix = pymupdf.Pixmap(pix, alpha=0)
+                    pix.save(output_path)
+            print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
     except Exception as e:
-        raise UserWarning(f"Error exporting page {page_num + 1}: {e}")
+        raise UserWarning(f"Error exporting {filename}: {e}")
 
 
-def mupdf_pdf_process_pages_parallel(afile, output_dir, target_height):
-    doc = pymupdf.open(afile)
-    npages = doc.page_count
+def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
+    doc = pymupdf.open(filename)
     render = False
     for page in doc:
         page_text = page.get_text().strip()
@@ -732,11 +787,17 @@ def mupdf_pdf_process_pages_parallel(afile, output_dir, target_height):
             render = True
             break
     doc.close()
-    args_list = [(afile, i, os.path.join(output_dir, f"page_{i + 1}.png"), target_height) for i in range(npages)]
+
+    cpu = cpu_count()
+
+    # make vectors of arguments for the processes
+    vectors = [(i, cpu, filename, output_dir, target_height) for i in range(cpu)]
+    print("Starting %i processes for '%s'." % (cpu, filename))
+
     try:
         with Pool(processes=cpu_count()-1) as pool:
             results = pool.map(
-                mupdf_pdf_render_page if render else mupdf_pdf_extract_page_image, args_list
+                render_page if render else extract_page, vectors
             )
     except Exception as e:
         raise UserWarning(f"Error while processing PDF pages: {e}")
