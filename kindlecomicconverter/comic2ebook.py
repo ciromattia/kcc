@@ -752,8 +752,8 @@ def extract_page(vector):
                         raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
                     if not image_list:
                         width, height = int(page.rect.width), int(page.rect.height)
-                        black_page = Image.new("RGB", (width, height), "white")
-                        black_page.save(output_path)
+                        blank_page = Image.new("RGB", (width, height), "white")
+                        blank_page.save(output_path)
                     xref = image_list[0][0]
                     pix = pymupdf.Pixmap(doc, xref)
                     if pix.colorspace is None:
