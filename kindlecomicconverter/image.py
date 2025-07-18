@@ -355,6 +355,18 @@ class ComicPage:
             self.image = Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma))
 
     def autocontrastImage(self):
+        if self.opt.autolevel and not self.color:
+            self.convertToGrayscale()
+            h = self.image.histogram()
+            most_common_dark_pixel_count = max(h[:64])
+            black_point = h.index(most_common_dark_pixel_count)
+            bp = black_point
+            self.image = self.image.point(lambda p: p if p > bp else bp)
+
+        # don't autocontrast grayscale pages that were originally color
+        if not self.opt.forcecolor and self.color:
+            return
+
         self.image = ImageOps.autocontrast(self.image, preserve_tone=True)
 
     def convertToGrayscale(self):

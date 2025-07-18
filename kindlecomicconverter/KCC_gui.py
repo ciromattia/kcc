@@ -247,6 +247,8 @@ class WorkerThread(QThread):
             options.upscale = True
         if GUI.gammaBox.isChecked() and float(GUI.gammaValue) > 0.09:
             options.gamma = float(GUI.gammaValue)
+        if GUI.autoLevelBox.isChecked():
+            options.autolevel = True
         options.cropping = GUI.croppingBox.checkState().value
         if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
             options.croppingp = float(GUI.croppingPowerValue)
@@ -863,6 +865,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'rotateBox': GUI.rotateBox.checkState().value,
                                            'qualityBox': GUI.qualityBox.checkState().value,
                                            'gammaBox': GUI.gammaBox.checkState().value,
+                                           'autoLevelBox': GUI.autoLevelBox.checkState().value,
                                            'croppingBox': GUI.croppingBox.checkState().value,
                                            'croppingPowerSlider': float(self.croppingPowerValue) * 100,
                                            'preserveMarginBox': self.preserveMarginBox.value(),
