@@ -258,7 +258,7 @@ OUTPUT SETTINGS:
   --spreadshift         Shift first page to opposite side in landscape for two page spread alignment
   --norotate            Do not rotate double page spreads in spread splitter option.
   --rotatefirst         Put rotated spread first in spread splitter option.
-  --reducerainbow       Reduce rainbow effect on color eink by slightly blurring images
+  --eraserainbow       Erase rainbow effect on color eink screen by attenuating interfering frequencies
 
 CUSTOM PROFILE:
   --customwidth CUSTOMWIDTH
