@@ -16,6 +16,9 @@
 # OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
+
+import itertools
+from pathlib import Path
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
 from PySide6.QtGui import (QColor, QIcon, QPixmap, QDesktopServices)
 from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QApplication, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog)
@@ -27,7 +30,7 @@ import sys
 from urllib.parse import unquote
 from time import sleep
 from shutil import move, rmtree
-from subprocess import STDOUT, PIPE
+from subprocess import STDOUT, PIPE, CalledProcessError
 
 import requests
 from xml.sax.saxutils import escape
@@ -37,10 +40,10 @@ from packaging.version import Version
 from raven import Client
 from tempfile import gettempdir
 
-from .shared import HTMLStripper, available_archive_tools, sanitizeTrace, walkLevel, subprocess_run
+from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
+from .comicarchive import SEVENZIP, available_archive_tools
 from . import __version__
 from . import comic2ebook
-from . import image
 from . import metadata
 from . import kindle
 from . import KCC_ui
@@ -244,6 +247,8 @@ class WorkerThread(QThread):
             options.upscale = True
         if GUI.gammaBox.isChecked() and float(GUI.gammaValue) > 0.09:
             options.gamma = float(GUI.gammaValue)
+        if GUI.autoLevelBox.isChecked():
+            options.autolevel = True
         options.cropping = GUI.croppingBox.checkState().value
         if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
             options.croppingp = float(GUI.croppingPowerValue)
@@ -257,8 +262,8 @@ class WorkerThread(QThread):
             options.batchsplit = 2
         if GUI.colorBox.isChecked():
             options.forcecolor = True
-        if GUI.reduceRainbowBox.isChecked():
-            options.reducerainbow = True
+        if GUI.eraseRainbowBox.isChecked():
+            options.eraserainbow = True
         if GUI.maximizeStrips.isChecked():
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
@@ -275,6 +280,8 @@ class WorkerThread(QThread):
             options.filefusion = False
         if GUI.noRotateBox.isChecked():
             options.norotate = True
+        if GUI.rotateFirstBox.isChecked():
+            options.rotatefirst = True
         if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.forcepng = True
         elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
@@ -487,17 +494,33 @@ class SystemTrayIcon(QSystemTrayIcon):
 
 
 class KCCGUI(KCC_ui.Ui_mainWindow):
-    def selectDir(self):
-        if self.needClean:
-            self.needClean = False
-            GUI.jobList.clear()
-        dname = QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
+    def selectDefaultOutputFolder(self):
+        dname = QFileDialog.getExistingDirectory(MW, 'Select default output folder', self.defaultOutputFolder)
+        if self.is_directory_on_kindle(dname):
+            return
         if dname != '':
             if sys.platform.startswith('win'):
                 dname = dname.replace('/', '\\')
-            self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
-            GUI.jobList.addItem(dname)
-            GUI.jobList.scrollToBottom()
+            GUI.defaultOutputFolder = dname
+
+    def is_directory_on_kindle(self, dname):
+        path = Path(dname)
+        for parent in itertools.chain([path], path.parents):
+            if parent.name == 'documents' and parent.parent.joinpath('system').joinpath('thumbnails').is_dir():
+                self.addMessage("Cannot select Kindle as output directory", 'error')
+                return True
+
+    def selectOutputFolder(self):
+        dname = QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
+        if self.is_directory_on_kindle(dname):
+            return
+        if dname != '':
+            if sys.platform.startswith('win'):
+                dname = dname.replace('/', '\\')
+            GUI.targetDirectory = dname
+        else:
+            GUI.targetDirectory = ''
+        return GUI.targetDirectory
 
     def selectFile(self):
         if self.needClean:
@@ -585,7 +608,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.editorButton.setEnabled(status)
         GUI.wikiButton.setEnabled(status)
         GUI.deviceBox.setEnabled(status)
-        GUI.directoryButton.setEnabled(status)
+        GUI.defaultOutputFolderButton.setEnabled(status)
         GUI.clearButton.setEnabled(status)
         GUI.fileButton.setEnabled(status)
         GUI.formatBox.setEnabled(status)
@@ -782,13 +805,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.worker.sync()
         else:
             if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier:
-                dname = QFileDialog.getExistingDirectory(MW, 'Select output directory', self.lastPath)
-                if dname != '':
-                    if sys.platform.startswith('win'):
-                        dname = dname.replace('/', '\\')
-                    GUI.targetDirectory = dname
-                else:
-                    GUI.targetDirectory = ''
+                if not self.selectOutputFolder():
+                    return
+            elif GUI.defaultOutputFolderBox.isChecked():
+                self.targetDirectory = self.defaultOutputFolder
             else:
                 GUI.targetDirectory = ''
             self.progress.start()
@@ -799,6 +819,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.addMessage('No files selected! Please choose files to convert.', 'error')
                 self.needClean = True
                 return
+            if GUI.defaultOutputFolderBox.checkState() == Qt.CheckState.PartiallyChecked:
+                parent = Path(self.jobList.item(0).text()).parent
+                target_path = parent.joinpath(f"{parent.name}")
+                if not target_path.exists():
+                    target_path.mkdir()
+                self.targetDirectory = str(target_path)
             if self.currentMode > 2 and (GUI.widthBox.value() == 0 or GUI.heightBox.value() == 0):
                 GUI.jobList.clear()
                 self.addMessage('Target resolution is not set!', 'error')
@@ -830,6 +856,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             event.ignore()
         self.settings.setValue('settingsVersion', __version__)
         self.settings.setValue('lastPath', self.lastPath)
+        self.settings.setValue('defaultOutputFolder', self.defaultOutputFolder)
         self.settings.setValue('lastDevice', GUI.deviceBox.currentIndex())
         self.settings.setValue('currentFormat', GUI.formatBox.currentIndex())
         self.settings.setValue('startNumber', self.startNumber + 1)
@@ -838,6 +865,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'rotateBox': GUI.rotateBox.checkState().value,
                                            'qualityBox': GUI.qualityBox.checkState().value,
                                            'gammaBox': GUI.gammaBox.checkState().value,
+                                           'autoLevelBox': GUI.autoLevelBox.checkState().value,
                                            'croppingBox': GUI.croppingBox.checkState().value,
                                            'croppingPowerSlider': float(self.croppingPowerValue) * 100,
                                            'preserveMarginBox': self.preserveMarginBox.value(),
@@ -847,7 +875,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'webtoonBox': GUI.webtoonBox.checkState().value,
                                            'outputSplit': GUI.outputSplit.checkState().value,
                                            'colorBox': GUI.colorBox.checkState().value,
-                                           'reduceRainbowBox': GUI.reduceRainbowBox.checkState().value,
+                                           'eraseRainbowBox': GUI.eraseRainbowBox.checkState().value,
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState().value,
                                            'comicinfoTitleBox': GUI.comicinfoTitleBox.checkState().value,
                                            'mozJpegBox': GUI.mozJpegBox.checkState().value,
@@ -856,7 +884,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'deleteBox': GUI.deleteBox.checkState().value,
                                            'spreadShiftBox': GUI.spreadShiftBox.checkState().value,
                                            'fileFusionBox': GUI.fileFusionBox.checkState().value,
+                                           'defaultOutputFolderBox': GUI.defaultOutputFolderBox.checkState().value,
                                            'noRotateBox': GUI.noRotateBox.checkState().value,
+                                           'rotateFirstBox': GUI.rotateFirstBox.checkState().value,
                                            'maximizeStrips': GUI.maximizeStrips.checkState().value,
                                            'gammaSlider': float(self.gammaValue) * 100,
                                            'chunkSizeCheckBox': GUI.chunkSizeCheckBox.checkState().value,
@@ -921,7 +951,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                         self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
                                         ' is outdated! MOBI conversion might fail.', 'warning')
                     break
-        except FileNotFoundError:
+        except (FileNotFoundError, CalledProcessError):
             self.kindleGen = False
             if startup:
                 self.display_kindlegen_missing()
@@ -937,6 +967,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings = QSettings('ciromattia', 'kcc')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
+        self.defaultOutputFolder = str(self.settings.value('defaultOutputFolder', '', type=str))
+        if not os.path.exists(self.defaultOutputFolder):
+            self.defaultOutputFolder = ''
         self.lastDevice = self.settings.value('lastDevice', 0, type=int)
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
@@ -965,7 +998,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if self.windowSize == '0x0':
                 MW.resize(500, 500)
         elif sys.platform.startswith('darwin'):
-            for element in ['editorButton', 'wikiButton', 'directoryButton', 'clearButton', 'fileButton', 'deviceBox',
+            for element in ['editorButton', 'wikiButton', 'defaultOutputFolderButton', 'clearButton', 'fileButton', 'deviceBox',
                             'convertButton', 'formatBox']:
                 getattr(GUI, element).setMinimumSize(QSize(0, 0))
             GUI.gridLayout.setContentsMargins(-1, -1, -1, -1)
@@ -1133,21 +1166,20 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Tip:</b> Hover mouse over options to see additional information in tooltips.', 'info')
         self.addMessage('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.', 'info')
-        self.addMessage('<b>Tip:</b> Shift clicking the Convert button lets you select a custom output directory', 'info')
         if self.startNumber < 5:
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
         
         self.tar = 'tar' in available_archive_tools()
-        self.sevenzip = '7z' in available_archive_tools()
+        self.sevenzip = SEVENZIP in available_archive_tools()
         if not any([self.tar, self.sevenzip]):
             self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
                             ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
         self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
-        GUI.directoryButton.clicked.connect(self.selectDir)
+        GUI.defaultOutputFolderButton.clicked.connect(self.selectDefaultOutputFolder)
         GUI.clearButton.clicked.connect(self.clearJobs)
         GUI.fileButton.clicked.connect(self.selectFile)
         GUI.editorButton.clicked.connect(self.selectFileMetaEditor)

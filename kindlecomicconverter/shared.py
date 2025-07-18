@@ -18,9 +18,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
-from functools import lru_cache
 import os
-from hashlib import md5
 from html.parser import HTMLParser
 import subprocess
 from packaging.version import Version
@@ -50,12 +48,6 @@ class HTMLStripper(HTMLParser):
 def getImageFileName(imgfile):
     name, ext = os.path.splitext(imgfile)
     ext = ext.lower()
-    if (name.startswith('.') and len(name) == 1):
-        return None
-    if name.startswith('._'):
-        return None
-    if ext not in ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.jp2', '.j2k', '.jpx']:
-        return None
     return [name, ext]
 
 
@@ -124,26 +116,13 @@ def dependencyCheck(level):
             missing.append('python-slugify 1.2.1+')
     try:
         from PIL import __version__ as pillowVersion
-        if Version('5.2.0') > Version(pillowVersion):
-            missing.append('Pillow 5.2.0+')
+        if Version('11.3.0') > Version(pillowVersion):
+            missing.append('Pillow 11.3.0+')
     except ImportError:
-        missing.append('Pillow 5.2.0+')
+        missing.append('Pillow 11.3.0+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         sys.exit(1)
-
-@lru_cache
-def available_archive_tools():
-    available = []
-
-    for tool in ['tar', '7z', 'unar', 'unrar']:
-        try:
-            subprocess_run([tool], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            available.append(tool)
-        except FileNotFoundError:
-            pass
-    
-    return available
 
 def subprocess_run(command, **kwargs):
     if (os.name == 'nt'):
