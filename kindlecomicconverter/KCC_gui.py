@@ -263,7 +263,7 @@ class WorkerThread(QThread):
         if GUI.colorBox.isChecked():
             options.forcecolor = True
         if GUI.eraseRainbowBox.isChecked():
-            options.eraseRainbow = True
+            options.eraserainbow = True
         if GUI.maximizeStrips.isChecked():
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
