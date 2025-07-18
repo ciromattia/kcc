@@ -99,6 +99,11 @@ On Mac, right click open to get past the security warning.
 For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
 
 ## FAQ
+- Should I use Calibre?
+  - No. Calibre doesn't properly supported fixed layout EPUB/MOBI, so modifying KCC output in Calibre will break the formatting.
+    On 7th gen and later Kindles running firmware 5.16.3+, you can get cover thumbnails simply by USB dropping into documents folder.
+    On 6th gen and older, you can get cover thumbnails by keeping Kindle plugged in during conversion.
+    If you are careful to not modify the file however, you can still use Calibre, but direct USB dropping is reccomended.
 - All options have additional information in tooltips if you hover over the option.
 - To get the converted book onto your Kindle/Kobo, just drag and drop the mobi/kepub into the documents folder on your Kindle/Kobo via USB
 - Right to left mode not working?
