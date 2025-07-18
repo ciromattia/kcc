@@ -262,8 +262,8 @@ class WorkerThread(QThread):
             options.batchsplit = 2
         if GUI.colorBox.isChecked():
             options.forcecolor = True
-        if GUI.reduceRainbowBox.isChecked():
-            options.reducerainbow = True
+        if GUI.eraseRainbowBox.isChecked():
+            options.eraseRainbow = True
         if GUI.maximizeStrips.isChecked():
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
@@ -875,7 +875,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'webtoonBox': GUI.webtoonBox.checkState().value,
                                            'outputSplit': GUI.outputSplit.checkState().value,
                                            'colorBox': GUI.colorBox.checkState().value,
-                                           'reduceRainbowBox': GUI.reduceRainbowBox.checkState().value,
+                                           'eraseRainbowBox': GUI.eraseRainbowBox.checkState().value,
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState().value,
                                            'comicinfoTitleBox': GUI.comicinfoTitleBox.checkState().value,
                                            'mozJpegBox': GUI.mozJpegBox.checkState().value,
