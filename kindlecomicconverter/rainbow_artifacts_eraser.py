@@ -15,7 +15,7 @@ def fourier_transform_image(img):
     return fft_result
      
 def attenuate_diagonal_frequencies(fft_spectrum, freq_threshold=0.30, target_angle=135, 
-                                     angle_tolerance=10, attenuation_factor=0.15):
+                                     angle_tolerance=10, attenuation_factor=0.10):
     """
     Attenuates specific frequencies in the Fourier domain (optimized version for rfft2).
     
@@ -31,13 +31,18 @@ def attenuate_diagonal_frequencies(fft_spectrum, freq_threshold=0.30, target_ang
     """
     
     # Get dimensions of the rfft2 result
-    height, width_rfft = fft_spectrum.shape
+    if fft_spectrum.ndim == 2:
+        height, width_rfft = fft_spectrum.shape
+    else:  # 3D array (color channels)
+        height, width_rfft = fft_spectrum.shape[:2]
+    
     # For rfft2, the original width is (width_rfft - 1) * 2
     width_original = (width_rfft - 1) * 2
     
     # Create frequency grids for rfft2 format
     freq_y = np.fft.fftfreq(height, d=1.0)
     freq_x = np.fft.rfftfreq(width_original, d=1.0)  # Use rfftfreq for the X dimension
+    
     
     # Use broadcasting to create grids without meshgrid (more efficient)
     freq_y_grid = freq_y.reshape(-1, 1)  # Column
@@ -63,8 +68,8 @@ def attenuate_diagonal_frequencies(fft_spectrum, freq_threshold=0.30, target_ang
     
     # Calculation of complementary angle
     target_angle_2 = (target_angle + 180) % 360
-
-    # Calulation of perpendicular angles (CFA is sometimes orientated at 135°, sometimes at 45°)
+    
+    # Calulation of perpendicular angles (135° + 45° to maximize compatibility until we know for sure which angle configure for each device)
     target_angle_3 = (target_angle + 90) % 360
     target_angle_4 = (target_angle_3 + 180) % 360
     
@@ -87,23 +92,29 @@ def attenuate_diagonal_frequencies(fft_spectrum, freq_threshold=0.30, target_ang
     # Apply attenuation directly (avoid creating a full mask)
     if attenuation_factor == 0:
         # Special case: complete suppression
-        fft_spectrum[combined_condition] = 0
+        if fft_spectrum.ndim == 2:
+            fft_spectrum[combined_condition] = 0
+        else:  # 3D array
+            fft_spectrum[combined_condition, :] = 0
         return fft_spectrum
     elif attenuation_factor == 1:
         # Special case: no attenuation
         return fft_spectrum
     else:
         # General case: partial attenuation
-        fft_spectrum[combined_condition] *= attenuation_factor
+        if fft_spectrum.ndim == 2:
+            fft_spectrum[combined_condition] *= attenuation_factor
+        else:  # 3D array
+            fft_spectrum[combined_condition, :] *= attenuation_factor
         return fft_spectrum
     
-def inverse_fourier_transform_image(fft_spectrum):
+def inverse_fourier_transform_image(fft_spectrum, is_color):
     """
     Performs an optimized inverse Fourier transform to reconstruct a PIL image.
     
     Args:
         fft_spectrum: Fourier transform result (complex array from rfft2)
-        original_shape: Original image shape (height, width) for proper cropping
+        is_color: Boolean indicating if the image is to be treated as color
     
     Returns:
         PIL.Image: Reconstructed image
@@ -116,12 +127,114 @@ def inverse_fourier_transform_image(fft_spectrum):
     img_reconstructed = img_reconstructed.astype(np.uint8)
     
     # Convert to PIL image
-    pil_image = Image.fromarray(img_reconstructed, mode='L')
+    if is_color and img_reconstructed.ndim == 3:
+        pil_image = Image.fromarray(img_reconstructed, mode='RGB')
+    else:
+        pil_image = Image.fromarray(img_reconstructed, mode='L')
     
     return pil_image
+
+def rgb_to_yuv(rgb_array):
+    """
+    Convert RGB to YUV color space.
+    Y = luminance, U and V = chrominance
+    """
+    # Coefficients for RGB to YUV conversion
+    rgb_to_yuv_matrix = np.array([
+        [0.299, 0.587, 0.114],      # Y
+        [-0.14713, -0.28886, 0.436],  # U
+        [0.615, -0.51499, -0.10001]   # V
+    ])
     
-def erase_rainbow_artifacts(img):
-    fft_spectrum = fourier_transform_image(img)
-    clean_spectrum = attenuate_diagonal_frequencies(fft_spectrum)    
-    clean_image = inverse_fourier_transform_image(clean_spectrum)
+    # Reshape for matrix multiplication
+    original_shape = rgb_array.shape
+    rgb_flat = rgb_array.reshape(-1, 3)
+    
+    # Apply transformation
+    yuv_flat = rgb_flat @ rgb_to_yuv_matrix.T
+    
+    # Reshape back
+    yuv_array = yuv_flat.reshape(original_shape)
+    
+    return yuv_array
+
+def yuv_to_rgb(yuv_array):
+    """
+    Convert YUV to RGB color space.
+    """
+    # Coefficients for YUV to RGB conversion
+    yuv_to_rgb_matrix = np.array([
+        [1.0, 0.0, 1.13983],         # R
+        [1.0, -0.39465, -0.58060],   # G
+        [1.0, 2.03211, 0.0]          # B
+    ])
+    
+    # Reshape for matrix multiplication
+    original_shape = yuv_array.shape
+    yuv_flat = yuv_array.reshape(-1, 3)
+    
+    # Apply transformation
+    rgb_flat = yuv_flat @ yuv_to_rgb_matrix.T
+    
+    # Reshape back
+    rgb_array = rgb_flat.reshape(original_shape)
+    
+    return rgb_array
+
+def erase_rainbow_artifacts(img, is_color):
+    """
+    Remove rainbow artifacts from grayscale or color images.
+    
+    Args:
+        img: PIL Image (grayscale or RGB)
+        is_color: Boolean indicating if the image is to be treated as color
+    
+    Returns:
+        PIL.Image: Cleaned image
+    """
+    # Auto-detect color mode if not specified
+    if is_color is None:
+        color = img.mode in ('RGB', 'RGBA', 'L') and len(np.array(img).shape) == 3
+    
+    if is_color and img.mode in ('RGB', 'RGBA'):
+        # Convert to RGB if needed
+        if img.mode == 'RGBA':
+            img = img.convert('RGB')
+        
+        # Convert to numpy array
+        img_array = np.array(img, dtype=np.float32)
+        
+        # Convert to YUV color space
+        yuv_array = rgb_to_yuv(img_array)
+        
+        # Extract luminance channel (Y)
+        luminance = yuv_array[:, :, 0]
+        
+        # Process only the luminance channel
+        fft_spectrum = fourier_transform_image(luminance)
+        clean_spectrum = attenuate_diagonal_frequencies(fft_spectrum)
+        clean_luminance = np.fft.irfft2(clean_spectrum)
+        
+        # Normalize and clip luminance
+        clean_luminance = np.clip(clean_luminance, 0, 255)
+        
+        # Replace luminance in YUV array
+        yuv_array[:, :, 0] = clean_luminance
+        
+        # Convert back to RGB
+        rgb_array = yuv_to_rgb(yuv_array)
+        rgb_array = np.clip(rgb_array, 0, 255).astype(np.uint8)
+        
+        # Convert back to PIL image
+        clean_image = Image.fromarray(rgb_array, mode='RGB')
+        
+    else:
+        # Grayscale processing (original behavior)
+        if img.mode != 'L':
+            img = img.convert('L')
+        
+        fft_spectrum = fourier_transform_image(img)
+        clean_spectrum = attenuate_diagonal_frequencies(fft_spectrum)
+        clean_image = inverse_fourier_transform_image(clean_spectrum, is_color)
+    
     return clean_image

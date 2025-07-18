@@ -639,7 +639,7 @@ def imgFileProcessing(work):
         workImg = image.ComicPageParser((dirpath, afile), opt)
         for i in workImg.payload:
             img = image.ComicPage(opt, *i)
-
+            is_color = (opt.forcecolor and img.color)
             if opt.cropping == 2 and not opt.webtoon:
                 img.cropPageNumber(opt.croppingp, opt.croppingm)
             if opt.cropping == 1 and not opt.webtoon:
@@ -651,9 +651,9 @@ def imgFileProcessing(work):
 
             img.autocontrastImage()
             img.resizeImage()
-            img.optimizeForDisplay(opt.reducerainbow)
+            img.optimizeForDisplay(opt.eraserainbow, is_color)
 
-            if opt.forcecolor and img.color:
+            if is_color:
                 pass
             elif opt.forcepng:
                 img.convertToGrayscale()
@@ -1156,8 +1156,8 @@ def makeParser():
                                     help="Disable autodetection and force white borders")
     processing_options.add_argument("--forcecolor", action="store_true", dest="forcecolor", default=False,
                                     help="Don't convert images to grayscale")
-    output_options.add_argument("--reducerainbow", action="store_true", dest="reducerainbow", default=False,
-                                help="Reduce rainbow effect on color eink by slightly blurring images.")
+    output_options.add_argument("--eraserainbow", action="store_true", dest="eraserainbow", default=False,
+                                help="Erase rainbow effect on color eink screen by attenuating interfering frequencies")
     processing_options.add_argument("--forcepng", action="store_true", dest="forcepng", default=False,
                                     help="Create PNG files instead JPEG")
     processing_options.add_argument("--mozjpeg", action="store_true", dest="mozjpeg", default=False,
