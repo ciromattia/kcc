@@ -776,17 +776,16 @@ def extract_page(vector):
 
 
 def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
-    doc = pymupdf.open(filename)
     render = False
-    for page in doc:
-        page_text = page.get_text().strip()
-        if page_text != "":
-            render = True
-            break
-        if len(page.get_images()) > 1:
-            render = True
-            break
-    doc.close()
+    with pymupdf.open(filename) as doc:
+        for page in doc:
+            page_text = page.get_text().strip()
+            if page_text != "":
+                render = True
+                break
+            if len(page.get_images()) > 1:
+                render = True
+                break
 
     cpu = cpu_count()
 
