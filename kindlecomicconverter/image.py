@@ -25,6 +25,8 @@ from pathlib import Path
 from functools import cached_property
 import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter, ImageDraw
+
+from .rainbow_artifacts_eraser import erase_rainbow_artifacts
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
 
@@ -379,13 +381,10 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def optimizeForDisplay(self, reducerainbow):
-        # Reduce rainbow artifacts for grayscale images by breaking up dither patterns that cause Moire interference with color filter array
-        if reducerainbow and not self.color:
-            unsharpFilter = ImageFilter.UnsharpMask(radius=1, percent=100)
-            self.image = self.image.filter(unsharpFilter)
-            self.image = self.image.filter(ImageFilter.BoxBlur(1.0))
-            self.image = self.image.filter(unsharpFilter)
+    def optimizeForDisplay(self, eraserainbow, is_color):
+        # Erase rainbow artifacts for grayscale and color images by removing spectral frequencies that cause Moire interference with color filter array
+        if eraserainbow:
+            self.image = erase_rainbow_artifacts(self.image, is_color)
 
     def resizeImage(self):
         ratio_device = float(self.size[1]) / float(self.size[0])

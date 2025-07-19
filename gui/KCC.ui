@@ -542,12 +542,12 @@
         </widget>
        </item>
        <item row="7" column="2">
-        <widget class="QCheckBox" name="reduceRainbowBox">
+        <widget class="QCheckBox" name="eraseRainbowBox">
          <property name="toolTip">
-          <string>Reduce rainbow effect on color eink by slightly blurring images</string>
+          <string>Erase rainbow effect on color eink screen by attenuating interfering frequencies</string>
          </property>
          <property name="text">
-          <string>Rainbow blur</string>
+          <string>Rainbow eraser</string>
          </property>
         </widget>
        </item>
@@ -873,7 +873,7 @@
   <tabstop>chunkSizeBox</tabstop>
   <tabstop>noRotateBox</tabstop>
   <tabstop>interPanelCropBox</tabstop>
-  <tabstop>reduceRainbowBox</tabstop>
+  <tabstop>eraseRainbowBox</tabstop>
   <tabstop>heightBox</tabstop>
   <tabstop>croppingPowerSlider</tabstop>
   <tabstop>editorButton</tabstop>
