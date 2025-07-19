@@ -745,31 +745,30 @@ def extract_page(vector):
 
             for i in range(seg_from, seg_to):  # work through our page segment
                 output_path = os.path.join(output_dir, "p-%i.png" % i)
-                try:
-                    page = doc.load_page(i)
-                    image_list = page.get_images(full=True)
-                    if len(image_list) > 1:
-                        raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
-                    if not image_list:
-                        width, height = int(page.rect.width), int(page.rect.height)
-                        blank_page = Image.new("RGB", (width, height), "white")
-                        blank_page.save(output_path)
-                    xref = image_list[0][0]
-                    pix = pymupdf.Pixmap(doc, xref)
-                    if pix.colorspace is None:
-                        # It's a stencil mask (grayscale image with inverted colors)
-                        mask_array = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width)
-                        inverted = 255 - mask_array
-                        img = Image.fromarray(inverted, mode="L")
-                        img.save(output_path)
-                    if pix.colorspace.name.startswith("Colorspace(CS_GRAY)"):
-                        # Make sure that an image is just grayscale and not smth like "Colorspace(CS_GRAY) - Separation(DeviceCMYK,Black)"
-                        pix = pymupdf.Pixmap(pymupdf.csGRAY, pix)
-                    else:
-                        pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
-                    if pix.alpha: 
-                        pix = pymupdf.Pixmap(pix, alpha=0)
-                    pix.save(output_path)
+                page = doc.load_page(i)
+                image_list = page.get_images()
+                if len(image_list) > 1:
+                    raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
+                if not image_list:
+                    width, height = int(page.rect.width), int(page.rect.height)
+                    blank_page = Image.new("RGB", (width, height), "white")
+                    blank_page.save(output_path)
+                xref = image_list[0][0]
+                pix = pymupdf.Pixmap(doc, xref)
+                if pix.colorspace is None:
+                    # It's a stencil mask (grayscale image with inverted colors)
+                    mask_array = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width)
+                    inverted = 255 - mask_array
+                    img = Image.fromarray(inverted, mode="L")
+                    img.save(output_path)
+                if pix.colorspace.name.startswith("Colorspace(CS_GRAY)"):
+                    # Make sure that an image is just grayscale and not smth like "Colorspace(CS_GRAY) - Separation(DeviceCMYK,Black)"
+                    pix = pymupdf.Pixmap(pymupdf.csGRAY, pix)
+                else:
+                    pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
+                if pix.alpha: 
+                    pix = pymupdf.Pixmap(pix, alpha=0)
+                pix.save(output_path)
             print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
     except Exception as e:
         raise UserWarning(f"Error exporting {filename}: {e}")
@@ -783,7 +782,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
         if page_text != "":
             render = True
             break
-        if len(page.get_images(full=True)) > 1:
+        if len(page.get_images()) > 1:
             render = True
             break
     doc.close()
