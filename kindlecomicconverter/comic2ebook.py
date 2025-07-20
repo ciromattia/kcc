@@ -794,7 +794,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
     print("Starting %i processes for '%s'." % (cpu, filename))
 
     try:
-        with Pool(processes=cpu_count()-1) as pool:
+        with Pool() as pool:
             results = pool.map(
                 render_page if render else extract_page, vectors
             )
