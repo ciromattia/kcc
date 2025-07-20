@@ -213,7 +213,7 @@ def erase_rainbow_artifacts(img, is_color):
         # Process only the luminance channel
         fft_spectrum = fourier_transform_image(luminance)
         clean_spectrum = attenuate_diagonal_frequencies(fft_spectrum)
-        clean_luminance = np.fft.irfft2(clean_spectrum)
+        clean_luminance = np.fft.irfft2(clean_spectrum, s=luminance.shape)
         
         # Normalize and clip luminance
         clean_luminance = np.clip(clean_luminance, 0, 255)
