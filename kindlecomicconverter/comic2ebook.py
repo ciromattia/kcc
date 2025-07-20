@@ -691,25 +691,23 @@ def render_page(vector):
     filename = vector[2]  # document filename
     output_dir = vector[3]
     target_height = vector[4]
-    try:
-        with pymupdf.open(filename) as doc:  # open the document
-            num_pages = doc.page_count  # get number of pages
+    with pymupdf.open(filename) as doc:  # open the document
+        num_pages = doc.page_count  # get number of pages
 
-            # pages per segment: make sure that cpu * seg_size >= num_pages!
-            seg_size = int(num_pages / cpu + 1)
-            seg_from = idx * seg_size  # our first page number
-            seg_to = min(seg_from + seg_size, num_pages)  # last page number
+        # pages per segment: make sure that cpu * seg_size >= num_pages!
+        seg_size = int(num_pages / cpu + 1)
+        seg_from = idx * seg_size  # our first page number
+        seg_to = min(seg_from + seg_size, num_pages)  # last page number
 
-            for i in range(seg_from, seg_to):  # work through our page segment
-                page = doc[i]
-                zoom = target_height / page.rect.height
-                mat = pymupdf.Matrix(zoom, zoom)
-                # TODO: decide colorspace earlier so later color check is cheaper.
-                pix = page.get_pixmap(matrix=mat, colorspace='RGB', alpha=False)
-                pix.save(os.path.join(output_dir, "p-%i.png" % i))
-            print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
-    except Exception as e:
-        raise UserWarning(f"Error rendering {filename}: {e}")
+        for i in range(seg_from, seg_to):  # work through our page segment
+            page = doc[i]
+            zoom = target_height / page.rect.height
+            mat = pymupdf.Matrix(zoom, zoom)
+            # TODO: decide colorspace earlier so later color check is cheaper.
+            pix = page.get_pixmap(matrix=mat, colorspace='RGB', alpha=False)
+            pix.save(os.path.join(output_dir, "p-%i.png" % i))
+        print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
+
 
 
 def extract_page(vector):
@@ -736,44 +734,43 @@ def extract_page(vector):
     filename = vector[2]  # document filename
     output_dir = vector[3]
 
-    try:
-        with pymupdf.open(filename) as doc: # open the document
-            num_pages = doc.page_count  # get number of pages
 
-            # pages per segment: make sure that cpu * seg_size >= num_pages!
-            seg_size = int(num_pages / cpu + 1)
-            seg_from = idx * seg_size  # our first page number
-            seg_to = min(seg_from + seg_size, num_pages)  # last page number
+    with pymupdf.open(filename) as doc: # open the document
+        num_pages = doc.page_count  # get number of pages
 
-            for i in range(seg_from, seg_to):  # work through our page segment
-                output_path = os.path.join(output_dir, "p-%i.png" % i)
-                page = doc.load_page(i)
-                image_list = page.get_images()
-                if len(image_list) > 1:
-                    raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
-                if not image_list:
-                    width, height = int(page.rect.width), int(page.rect.height)
-                    blank_page = Image.new("RGB", (width, height), "white")
-                    blank_page.save(output_path)
-                xref = image_list[0][0]
-                pix = pymupdf.Pixmap(doc, xref)
-                if pix.colorspace is None:
-                    # It's a stencil mask (grayscale image with inverted colors)
-                    mask_array = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width)
-                    inverted = 255 - mask_array
-                    img = Image.fromarray(inverted, mode="L")
-                    img.save(output_path)
-                if pix.colorspace.name.startswith("Colorspace(CS_GRAY)"):
-                    # Make sure that an image is just grayscale and not smth like "Colorspace(CS_GRAY) - Separation(DeviceCMYK,Black)"
-                    pix = pymupdf.Pixmap(pymupdf.csGRAY, pix)
-                else:
-                    pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
-                if pix.alpha: 
-                    pix = pymupdf.Pixmap(pix, alpha=0)
-                pix.save(output_path)
-            print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
-    except Exception as e:
-        raise UserWarning(f"Error exporting {filename}: {e}")
+        # pages per segment: make sure that cpu * seg_size >= num_pages!
+        seg_size = int(num_pages / cpu + 1)
+        seg_from = idx * seg_size  # our first page number
+        seg_to = min(seg_from + seg_size, num_pages)  # last page number
+
+        for i in range(seg_from, seg_to):  # work through our page segment
+            output_path = os.path.join(output_dir, "p-%i.png" % i)
+            page = doc.load_page(i)
+            image_list = page.get_images()
+            if len(image_list) > 1:
+                raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
+            if not image_list:
+                width, height = int(page.rect.width), int(page.rect.height)
+                blank_page = Image.new("RGB", (width, height), "white")
+                blank_page.save(output_path)
+            xref = image_list[0][0]
+            pix = pymupdf.Pixmap(doc, xref)
+            if pix.colorspace is None:
+                # It's a stencil mask (grayscale image with inverted colors)
+                mask_array = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width)
+                inverted = 255 - mask_array
+                img = Image.fromarray(inverted, mode="L")
+                img.save(output_path)
+            if pix.colorspace.name.startswith("Colorspace(CS_GRAY)"):
+                # Make sure that an image is just grayscale and not smth like "Colorspace(CS_GRAY) - Separation(DeviceCMYK,Black)"
+                pix = pymupdf.Pixmap(pymupdf.csGRAY, pix)
+            else:
+                pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
+            if pix.alpha: 
+                pix = pymupdf.Pixmap(pix, alpha=0)
+            pix.save(output_path)
+        print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
+
 
 
 def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
@@ -794,16 +791,15 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
     vectors = [(i, cpu, filename, output_dir, target_height) for i in range(cpu)]
     print("Starting %i processes for '%s'." % (cpu, filename))
 
-    try:
-        start = perf_counter()
-        with Pool() as pool:
-            results = pool.map(
-                render_page if render else extract_page, vectors
-            )
-        end = perf_counter()
-        print(f"MuPDF: {end - start} sec")
-    except Exception as e:
-        raise UserWarning(f"Error while processing PDF pages: {e}")
+
+    start = perf_counter()
+    with Pool() as pool:
+        results = pool.map(
+            render_page if render else extract_page, vectors
+        )
+    end = perf_counter()
+    print(f"MuPDF: {end - start} sec")
+
 
 
 def getWorkFolder(afile):
