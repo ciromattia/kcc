@@ -981,6 +981,9 @@ def removeNonImages(filetree):
     for root, dirs, files in os.walk(filetree, False):
         if not files and not dirs:
             os.rmdir(root)
+    
+    if not os.listdir(Path(filetree).parent):
+        raise UserWarning('No images detected, nested archives are not supported.')
 
 
 def sanitizeTree(filetree):
