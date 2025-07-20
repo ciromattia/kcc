@@ -702,7 +702,8 @@ def render_page(vector):
 
             for i in range(seg_from, seg_to):  # work through our page segment
                 page = doc[i]
-                mat = target_height / page.rect.height
+                zoom = target_height / page.rect.height
+                mat = pymupdf.Matrix(zoom, zoom)
                 # TODO: decide colorspace earlier so later color check is cheaper.
                 pix = page.get_pixmap(matrix=mat, colorspace='RGB', alpha=False)
                 pix.save(os.path.join(output_dir, "p-%i.png" % i))
