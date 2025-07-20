@@ -754,21 +754,15 @@ def extract_page(vector):
                 blank_page = Image.new("RGB", (width, height), "white")
                 blank_page.save(output_path)
             xref = image_list[0][0]
-            pix = pymupdf.Pixmap(doc, xref)
-            if pix.colorspace is None:
-                # It's a stencil mask (grayscale image with inverted colors)
-                mask_array = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width)
-                inverted = 255 - mask_array
-                img = Image.fromarray(inverted, mode="L")
-                img.save(output_path)
-            if pix.colorspace.name.startswith("Colorspace(CS_GRAY)"):
-                # Make sure that an image is just grayscale and not smth like "Colorspace(CS_GRAY) - Separation(DeviceCMYK,Black)"
-                pix = pymupdf.Pixmap(pymupdf.csGRAY, pix)
-            else:
+            d = doc.extract_image(xref)
+            if d['cs-name'] == 'DeviceCMYK':
+                pix = pymupdf.Pixmap(doc, xref)
                 pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
-            if pix.alpha: 
-                pix = pymupdf.Pixmap(pix, alpha=0)
-            pix.save(output_path)
+                pix.save(output_path)
+                
+            else:
+                with open(Path(output_path).with_suffix('.' + d['ext']), "wb") as imgout:
+                    imgout.write(d["image"])
         print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
 
 
