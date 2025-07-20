@@ -108,7 +108,7 @@ def attenuate_diagonal_frequencies(fft_spectrum, freq_threshold=0.30, target_ang
             fft_spectrum[combined_condition, :] *= attenuation_factor
         return fft_spectrum
     
-def inverse_fourier_transform_image(fft_spectrum, is_color):
+def inverse_fourier_transform_image(fft_spectrum, is_color, original_shape=None):
     """
     Performs an optimized inverse Fourier transform to reconstruct a PIL image.
     
@@ -119,8 +119,11 @@ def inverse_fourier_transform_image(fft_spectrum, is_color):
     Returns:
         PIL.Image: Reconstructed image
     """    
-    # Perform inverse Fourier transform       
-    img_reconstructed = np.fft.irfft2(fft_spectrum)
+    # Perform inverse Fourier transform with original shape if provided
+    if original_shape is not None:
+        img_reconstructed = np.fft.irfft2(fft_spectrum, s=original_shape)
+    else:
+        img_reconstructed = np.fft.irfft2(fft_spectrum)
     
     # Normalize values between 0 and 255
     img_reconstructed = np.clip(img_reconstructed, 0, 255)
@@ -232,9 +235,12 @@ def erase_rainbow_artifacts(img, is_color):
         # Grayscale processing (original behavior)
         if img.mode != 'L':
             img = img.convert('L')
-        
+
+        # Get original image dimensions
+        original_shape = (img.height, img.width)
+
         fft_spectrum = fourier_transform_image(img)
         clean_spectrum = attenuate_diagonal_frequencies(fft_spectrum)
-        clean_image = inverse_fourier_transform_image(clean_spectrum, is_color)
+        clean_image = inverse_fourier_transform_image(clean_spectrum, is_color, original_shape)
     
     return clean_image
