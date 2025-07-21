@@ -14,8 +14,8 @@ with proper fixed layout support.
 Supported input formats include JPG/PNG/GIF image files in folders, archives, or PDFs.
 Supported output formats include MOBI/AZW3, EPUB, KEPUB, and CBZ.
 
-If your source are super high resolution DRM-free PDFs from Kodansha/Humble Bundle/Fanatical, 
-you'll need to first [convert the PDFs to CBZ](https://github.com/ciromattia/kcc/issues/680) for use in KCC.
+The absolute highest quality source files are print quality DRM-free PDFs from Kodansha/Humble Bundle/Fanatical,
+which can be directly converted by KCC in v9+.
 
 Its main feature is various optional image processing steps to look good on eink screens, 
 which have different requirements than normal LCD screens.
