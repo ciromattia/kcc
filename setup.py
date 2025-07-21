@@ -83,7 +83,8 @@ setuptools.setup(
         'mozjpeg-lossless-optimization>=1.1.2',
         'natsort>=8.4.0',
         'distro',
-        'numpy>=1.22.4'
+        'numpy>=1.22.4',
+        'PyMuPDF>=1.26.1',
     ],
     classifiers=[],
     zip_safe=False,

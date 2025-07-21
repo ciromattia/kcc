@@ -120,6 +120,12 @@ def dependencyCheck(level):
             missing.append('Pillow 11.3.0+')
     except ImportError:
         missing.append('Pillow 11.3.0+')
+    try:
+        from pymupdf import __version__ as pymupdfVersion
+        if Version('1.26.1') > Version(pymupdfVersion):
+            missing.append('PyMuPDF 1.26.1+')
+    except ImportError:
+        missing.append('PyMuPDF 1.26.1+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         sys.exit(1)
