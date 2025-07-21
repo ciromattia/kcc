@@ -15,7 +15,7 @@ Supported input formats include JPG/PNG/GIF image files in folders, archives, or
 Supported output formats include MOBI/AZW3, EPUB, KEPUB, and CBZ.
 
 The absolute highest quality source files are print quality DRM-free PDFs from Kodansha/Humble Bundle/Fanatical,
-which can be directly converted by KCC in v9+.
+which can be directly converted by KCC in v9+. Be sure to check the spread shift option!
 
 Its main feature is various optional image processing steps to look good on eink screens, 
 which have different requirements than normal LCD screens.
@@ -121,7 +121,6 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 - [Flatpak mobi conversion stuck](https://github.com/ciromattia/kcc/wiki/Installation#linux)
 - Image too dark?
   - The default gamma correction of 1.8 makes the image darker, and is useful for faded/gray artwork/text. Disable by setting gamma = 1.0
-- [Better PDF support (Humble Bundle, Fanatical, etc)](https://github.com/ciromattia/kcc/issues/680)
 - Huge margins / slow page turns?
   - You likely modified the file during transfer using a 3rd party app. Try simply dragging and dropping the final mobi/kepub file into the Kindle documents folder via USB.
 
