@@ -94,7 +94,7 @@ The `c2e` and `c2p` versions are command line tools for power users.
 
 On Windows 11, you may need to run in compatibility mode for an older Windows version.
 
-On Mac, right click open to get past the security warning.
+On Mac, right click open to get past the security warning. macOS 12 Monterey or later is required, you can use https://dortania.github.io/OpenCore-Legacy-Patcher/ to get a newer macOS on unsupported hardware.
 
 For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
 
