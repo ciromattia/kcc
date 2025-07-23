@@ -538,7 +538,7 @@ class Ui_mainWindow(object):
         self.preserveMarginLabel.setText(QCoreApplication.translate("mainWindow", u"Preserve Margin %", None))
         self.croppingPowerLabel.setText(QCoreApplication.translate("mainWindow", u"Cropping power:", None))
 #if QT_CONFIG(tooltip)
-        self.gammaBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Disable automatic gamma correction.</p></body></html>", None))
+        self.gammaBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Set a custom gamma correction for nonlinear darkening.</p><p>1.0 is default (disabled).<br/><br/>Values &lt; 1.0 make the image brighter.<br/><br/>Values &gt; 1.0 make the image darker. The legacy default in KCC 8 and earlier was 1.8.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.gammaBox.setText(QCoreApplication.translate("mainWindow", u"Custom gamma", None))
 #if QT_CONFIG(tooltip)
