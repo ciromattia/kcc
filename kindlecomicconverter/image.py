@@ -429,6 +429,10 @@ class ComicPage:
         bbox = get_bbox_crop_margin(self.image, power, self.fill)
         
         if bbox:
+            w, h = self.image.size
+            left, upper, right, lower = bbox
+            # don't crop more than 10% of image
+            bbox = (min(0.1*w, left), min(0.1*h, upper), max(0.9*w, right), max(0.9*h, lower))
             self.maybeCrop(bbox, minimum)
 
     def cropInterPanelEmptySections(self, direction):

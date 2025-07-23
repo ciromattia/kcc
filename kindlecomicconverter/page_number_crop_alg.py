@@ -141,6 +141,15 @@ def get_bbox_crop_margin(img, power=1, background_color='white'):
     '''
     threshold = threshold_from_power(power)
     bw_img = img.point(lambda p: 255 if p <= threshold else 0)
+    
+    # ignore pixels near the edges
+    w, h = bw_img.size
+    for box in [(0, 0, w, int(0.02 * h)), (0, int(0.98 * h), w, h), (0, 0, int(0.02 * w), h), (int(0.98 * w), 0, w, h)]:
+        edge = bw_img.crop(box)
+        h = edge.histogram()
+        imperfections = h[255] / (edge.height * edge.width)
+        if imperfections > 0 and imperfections < .02:
+            bw_img.paste(im=0, box=box)
 
     return bw_img.getbbox()
 
