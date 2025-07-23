@@ -409,3 +409,6 @@ Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).
 ## COPYRIGHT
 Copyright (c) 2012-2025 Ciro Mattia Gonano, Paweł Jastrzębski, Darodi and Alex Xu.
 **KCC** is released under ISC LICENSE; see [LICENSE.txt](./LICENSE.txt) for further details.
+
+## Verification
+Impact-Site-Verification: ffe48fc7-4f0c-40fd-bd2e-59f4d7205180
