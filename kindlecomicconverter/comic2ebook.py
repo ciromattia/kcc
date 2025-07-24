@@ -126,9 +126,10 @@ def buildHTML(path, imgfile, imgfilepath, imgfile2=None):
                   "</head>\n",
                   "<body style=\"" + additionalStyle + "\">\n",
                   "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsizeframe) + "%;\">\n",
-                  # this display none div fixes formatting issues with virtual panel mode, for some reason
-                  '<div style="display:none;">.</div>\n',
     ])
+    if options.iskindle:
+        # this display none div fixes formatting issues with virtual panel mode, for some reason
+        f.write('<div style="display:none;">.</div>\n')
     f.write(f'<img width="{imgsize[0]}" height="{imgsize[1]}" src="{"../" * backref}Images/{postfix}{imgfile}"/>\n')
     if imgfile2:
         f.write(f'<img width="{imgsize2[0]}" height="{imgsize2[1]}" src="{"../" * backref}Images/{postfix}{imgfile2}"/>\n')
