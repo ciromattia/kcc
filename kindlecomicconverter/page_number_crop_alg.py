@@ -144,7 +144,13 @@ def get_bbox_crop_margin(img, power=1, background_color='white'):
     
     # ignore pixels near the edges
     w, h = bw_img.size
-    for box in [(0, 0, w, int(0.02 * h)), (0, int(0.98 * h), w, h), (0, 0, int(0.02 * w), h), (int(0.98 * w), 0, w, h)]:
+    edge_bbox = [
+        (0, 0, w, int(0.02 * h)),
+        (0, int(0.98 * h), w, h),
+        (0, 0, int(0.02 * w), h),
+        (int(0.98 * w), 0, w, h)
+    ]
+    for box in edge_bbox:
         edge = bw_img.crop(box)
         h = edge.histogram()
         imperfections = h[255] / (edge.height * edge.width)
