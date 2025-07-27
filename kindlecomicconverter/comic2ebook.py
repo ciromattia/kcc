@@ -1498,7 +1498,7 @@ def makeBook(source, qtgui=None):
         imgDirectoryProcessing(os.path.join(path, "OEBPS", "Images"))
     if GUI:
         GUI.progressBarTick.emit('1')
-    if options.batchsplit > 0:
+    if options.batchsplit > 0 or options.targetsize:
         tomes = chunk_directory(path)
     else:
         tomes = [path]
