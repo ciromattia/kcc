@@ -53,6 +53,7 @@ def get_bbox_crop_margin_page_number(img, power=1, background_color='white'):
     threshold = threshold_from_power(power)
     bw_img = img.point(lambda p: 255 if p <= threshold else 0)
     bw_bbox = bw_img.getbbox()
+    ignore_pixels_near_edge(bw_img)
     if not bw_bbox: # bbox cannot be found in case that the entire resulted image is black.
         return None
     
@@ -142,7 +143,11 @@ def get_bbox_crop_margin(img, power=1, background_color='white'):
     threshold = threshold_from_power(power)
     bw_img = img.point(lambda p: 255 if p <= threshold else 0)
     
-    # ignore pixels near the edges
+    ignore_pixels_near_edge(bw_img)
+
+    return bw_img.getbbox()
+
+def ignore_pixels_near_edge(bw_img):
     w, h = bw_img.size
     edge_bbox = [
         (0, 0, w, int(0.02 * h)),
@@ -156,8 +161,6 @@ def get_bbox_crop_margin(img, power=1, background_color='white'):
         imperfections = h[255] / (edge.height * edge.width)
         if imperfections > 0 and imperfections < .02:
             bw_img.paste(im=0, box=box)
-
-    return bw_img.getbbox()
 
 
 def box_intersect(box1, box2, max_dist):
