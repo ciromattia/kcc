@@ -456,7 +456,7 @@
        <item row="2" column="2">
         <widget class="QCheckBox" name="gammaBox">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Disable automatic gamma correction.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set a custom gamma correction for nonlinear darkening.&lt;/p&gt;&lt;p&gt;1.0 is default (disabled).&lt;br/&gt;&lt;br/&gt;Values &amp;lt; 1.0 make the image brighter.&lt;br/&gt;&lt;br/&gt;Values &amp;gt; 1.0 make the image darker. The legacy default in KCC 8 and earlier was 1.8.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Custom gamma</string>
