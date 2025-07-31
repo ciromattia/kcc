@@ -41,10 +41,22 @@ from pathlib import Path
 from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
+import io
 import pymupdf
 import numpy as np
 
+
 from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
+# helper for buildPDF multiprocessing (must be top-level for pickling)
+def _process_pdf_image(img_path):
+     try:
+         img = Image.open(img_path)
+         if img.mode not in ('RGB', 'L'):
+             img = img.convert('RGB')
+         return img.copy()
+     except Exception as e:
+         print(f"Warning: Could not process image {img_path}: {e}")
+         return None
 from .comicarchive import SEVENZIP, available_archive_tools
 from . import comic2panel
 from . import image
@@ -580,6 +592,69 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, len
     buildNCX(path, options.title, chapterlist, chapternames)
     buildNAV(path, options.title, chapterlist, chapternames)
     buildOPF(path, options.title, filelist, cover)
+
+
+def buildPDF(path, title, cover=None, output_file=None):
+    """
+    Build a PDF file from processed comic images.
+    Images are combined into a single PDF optimized for e-readers.
+    """
+    import io
+    import gc
+    
+    # prepare image list
+    images_path = os.path.join(path, "OEBPS", "Images")
+    image_files = [os.path.join(d, f) for d, _, files in walkLevel(images_path)
+                   for f in files if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp'))]
+    if not image_files:
+        raise UserWarning("No images found for PDF creation.")
+
+    # sort image files to ensure correct order
+    image_files.sort()
+    
+    # open empty PDF
+    doc = pymupdf.open()
+    
+    # Calculate optimal chunksize based on image count and available cores
+    num_cores = cpu_count()
+    num_images = len(image_files)
+    # Optimal chunksize balances overhead vs parallelism
+    optimal_chunksize = max(1, min(10, num_images // (num_cores * 2)))
+    
+    with Pool(processes=num_cores) as pool:
+        # Process images in parallel but maintain order
+        processed_images = pool.map(_process_pdf_image, image_files, chunksize=optimal_chunksize)
+        
+        # Stream images to PDF
+        for i, img in enumerate(processed_images):
+            if not img:
+                continue
+            
+            w, h = img.size
+            page = doc.new_page(width=w, height=h)
+            
+            with io.BytesIO() as buf:
+                if getattr(options, 'forcepng', False):
+                    img.save(buf, format="PNG", optimize=True)
+                else:
+                    img.save(buf, format="JPEG", quality=90, optimize=True)
+                page.insert_image(page.rect, stream=buf.getvalue())
+            
+            # Explicit cleanup for large images
+            del img
+            
+            # Periodic garbage collection for large comic books to prevent running out of memory
+            if (i + 1) % 50 == 0:
+                gc.collect()
+
+    # determine output filename if not provided
+    if output_file is None:
+        output_file = getOutputFilename(path, None, '.pdf', '')
+    
+    # Save with optimizations for smaller file size
+    doc.save(output_file, deflate=True, garbage=4, clean=True)
+    doc.close()
+    return output_file
 
 
 def imgDirectoryProcessing(path):
@@ -1144,6 +1219,7 @@ def detectSuboptimalProcessing(tmppath, orgpath):
                 try:
                     img = Image.open(path)
                     imageNumber += 1
+                    # count images smaller than device resolution
                     if options.profileData[1][0] > img.size[0] and options.profileData[1][1] > img.size[1]:
                         imageSmaller += 1
                 except Exception as err:
@@ -1191,7 +1267,6 @@ def slugify(value, is_natural_sorted):
         value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
 
-
 def makeZIP(zipfilename, basedir, isepub=False):
     start = perf_counter()
     zipfilename = os.path.abspath(zipfilename) + '.zip'
@@ -1215,7 +1290,6 @@ def makeZIP(zipfilename, basedir, isepub=False):
     end = perf_counter()
     print(f"makeZIP time: {end - start} seconds")
     return zipfilename
-
 
 def makeParser():
     psr = ArgumentParser(prog="kcc-c2e", usage="kcc-c2e [options] [input]", add_help=False)
@@ -1254,7 +1328,7 @@ def makeParser():
     output_options.add_argument("-a", "--author", action="store", dest="author", default="defaultauthor",
                                 help="Author name [Default=KCC]")
     output_options.add_argument("-f", "--format", action="store", dest="format", default="Auto",
-                                help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB) "
+                                help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB, PDF) "
                                      "[Default=Auto]")
     output_options.add_argument("--nokepub", action="store_true", dest="noKepub", default=False,
                                 help="If format is EPUB, output file with '.epub' extension rather than '.kepub.epub'")
@@ -1344,6 +1418,8 @@ def checkOptions(options):
             options.format = 'CBZ'
         elif options.profile in image.ProfileData.ProfilesKindle.keys():
             options.format = 'MOBI'
+        elif options.profile in image.ProfileData.ProfilesRemarkable.keys():
+            options.format = 'PDF'
         else:
             options.format = 'EPUB'
     if options.profile in image.ProfileData.ProfilesKindle.keys():
@@ -1507,6 +1583,8 @@ def makeBook(source, qtgui=None):
     if GUI:
         if options.format == 'CBZ':
             GUI.progressBarTick.emit('Compressing CBZ files')
+        elif options.format == 'PDF':
+            GUI.progressBarTick.emit('Creating PDF files')
         else:
             GUI.progressBarTick.emit('Compressing EPUB files')
         GUI.progressBarTick.emit(str(len(tomes) + 1))
@@ -1528,6 +1606,14 @@ def makeBook(source, qtgui=None):
             else:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
             makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
+        elif options.format == 'PDF':
+            print("Creating PDF file with PyMuPDF...")
+            # determine output filename based on source and tome count
+            suffix = (' ' + str(tomeNumber)) if len(tomes) > 1 else ''
+            output_file = getOutputFilename(source, options.output, '.pdf', suffix)
+            # use optimized buildPDF logic with streaming and compression
+            output_pdf = buildPDF(tome, options.title, GUI, output_file)
+            filepath.append(output_pdf)
         else:
             print("Creating EPUB file...")
             if len(tomes) > 1:
@@ -1537,9 +1623,12 @@ def makeBook(source, qtgui=None):
                 buildEPUB(tome, chapterNames, tomeNumber, False, cover)
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
             makeZIP(tome + '_comic', tome, True)
-        copyfile(tome + '_comic.zip', filepath[-1])
+        # Copy files to final destination (PDF files are already saved directly)
+        if options.format != 'PDF':
+            copyfile(tome + '_comic.zip', filepath[-1])
         try:
-            os.remove(tome + '_comic.zip')
+            if options.format != 'PDF':
+                os.remove(tome + '_comic.zip')
         except FileNotFoundError:
             # newly temporary created file is not found. It might have been already deleted
             pass
@@ -1577,6 +1666,11 @@ def makeBook(source, qtgui=None):
 
     end = perf_counter()
     print(f"makeBook: {end - start} seconds")
+    # Clean up temporary workspace
+    try:
+        rmtree(path, True)
+    except Exception:
+        pass
     return filepath
 
 
@@ -1656,3 +1750,4 @@ def makeMOBI(work, qtgui=None):
     makeMOBIWorkerPool.close()
     makeMOBIWorkerPool.join()
     return makeMOBIWorkerOutput
+
