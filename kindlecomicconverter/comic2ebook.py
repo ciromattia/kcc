@@ -44,7 +44,7 @@ from html import escape as hescape
 import pymupdf
 import numpy as np
 
-from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
+from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean
 from .comicarchive import SEVENZIP, available_archive_tools
 from . import comic2panel
 from . import image
@@ -1039,13 +1039,6 @@ def sanitizePermissions(filetree):
         for name in dirs:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD | S_IEXEC)
     dot_clean(filetree)
-
-
-def dot_clean(filetree):
-    for root, _, files in os.walk(filetree, topdown=False):
-        for name in files:
-            if name.startswith('._'):
-                os.remove(os.path.join(root, name))
 
 
 def chunk_directory(path):
