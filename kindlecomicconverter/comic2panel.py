@@ -277,7 +277,7 @@ def main(argv=None, qtgui=None):
                         raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0][0],
                                            splitWorkerOutput[0][1])
                     if args.inPlace:
-                        rmtree(sourceDir)
+                        rmtree(sourceDir, True)
                         move(targetDir, sourceDir)
                 else:
                     rmtree(targetDir, True)

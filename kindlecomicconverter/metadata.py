@@ -123,4 +123,4 @@ class MetadataParser:
                 cbx.addFile(tmpXML)
             except OSError as e:
                 raise UserWarning(e)
-            rmtree(workdir)
+            rmtree(workdir, True)
