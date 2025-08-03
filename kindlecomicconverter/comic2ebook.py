@@ -1573,7 +1573,7 @@ def makeBook(source, qtgui=None):
         if os.path.isfile(source):
             os.remove(source)
         elif os.path.isdir(source):
-            rmtree(source)
+            rmtree(source, True)
 
     end = perf_counter()
     print(f"makeBook: {end - start} seconds")

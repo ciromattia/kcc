@@ -464,7 +464,7 @@ class WorkerThread(QThread):
                 if os.path.isfile(path):
                     os.remove(path)
                 elif os.path.isdir(path):
-                    rmtree(path)
+                    rmtree(path, True)
         GUI.progress.content = ''
         GUI.progress.stop()
         MW.hideProgressBar.emit()
