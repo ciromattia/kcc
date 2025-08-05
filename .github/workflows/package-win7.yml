@@ -40,7 +40,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements-win7.txt
           pip install certifi pyinstaller --no-binary pyinstaller
-          gen_ui_files.bat
+          .\gen_ui_files.bat
       - name: build binary
         run: |
           python setup.py build_binary
