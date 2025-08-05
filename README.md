@@ -14,7 +14,7 @@ with proper fixed layout support.
 Supported input formats include JPG/PNG/GIF image files in folders, archives, or PDFs.
 Supported output formats include MOBI/AZW3, EPUB, KEPUB, and CBZ.
 
-The absolute highest quality source files are print quality DRM-free PDFs from Kodansha/Humble Bundle/Fanatical,
+The absolute highest quality source files are print quality DRM-free PDFs from Kodansha/[Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical,
 which can be directly converted by KCC in v9+. Be sure to check the spread shift option!
 
 Its main feature is various optional image processing steps to look good on eink screens, 
