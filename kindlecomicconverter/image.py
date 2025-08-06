@@ -383,7 +383,7 @@ class ComicPage:
 
     def optimizeForDisplay(self, eraserainbow, is_color):
         # Erase rainbow artifacts for grayscale and color images by removing spectral frequencies that cause Moire interference with color filter array
-        if eraserainbow:
+        if eraserainbow and all(dim > 1 for dim in self.image.size):
             self.image = erase_rainbow_artifacts(self.image, is_color)
 
     def resizeImage(self):
