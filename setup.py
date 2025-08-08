@@ -79,6 +79,7 @@ setuptools.setup(
     install_requires=[
         'pyside6>=6.5.1',
         'Pillow>=11.3.0',
+        'PyMuPDF>=1.18.0',
         'psutil>=5.9.5',
         'python-slugify>=1.2.1,<9.0.0',
         'raven>=6.0.0',

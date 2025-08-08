@@ -12,7 +12,11 @@ like Kindle, Kobo, ReMarkable, and more.
 Pages display in fullscreen without margins, 
 with proper fixed layout support.
 Supported input formats include JPG/PNG/GIF image files in folders, archives, or PDFs.
-Supported output formats include MOBI/AZW3, EPUB, KEPUB, and CBZ.
+Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
+
+**NEW**: PDF output is now supported for direct conversion to reMarkable devices! 
+When using a reMarkable profile (Rmk1, Rmk2, RmkPP), the format automatically defaults to PDF 
+for optimal compatibility with your device's native PDF reader.
 
 The absolute highest quality source files are print quality DRM-free PDFs from Kodansha/[Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical,
 which can be directly converted by KCC in v9+. Be sure to check the spread shift option!
@@ -256,7 +260,7 @@ OUTPUT SETTINGS:
   -a AUTHOR, --author AUTHOR
                         Author name [Default=KCC]
   -f FORMAT, --format FORMAT
-                        Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB) [Default=Auto]
+                        Output format (Available options: Auto, MOBI, EPUB, CBZ, PDF, KFX, MOBI+EPUB) [Default=Auto]
   --nokepub             If format is EPUB, output file with '.epub' extension rather than '.kepub.epub'
   -b BATCHSPLIT, --batchsplit BATCHSPLIT
                         Split output into multiple files. 0: Don't split 1: Automatic mode 2: Consider every subdirectory as separate volume [Default=0]
