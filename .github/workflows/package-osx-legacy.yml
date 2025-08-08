@@ -1,0 +1,66 @@
+name: build KCC for osx legacy
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*"
+
+    # Don't trigger if it's just a documentation update
+    paths-ignore:
+      - '**.md'
+      - '**.MD'
+      - '**.yml'
+      - '**.sh'
+      - 'docs/**'
+      - 'Dockerfile'
+      - 'LICENSE'
+      - '.gitattributes'
+      - '.gitignore'
+      - '.dockerignore'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ macos-13 ]
+    runs-on: ${{ matrix.os }}
+    env:
+      # We need the official Python, because the GA ones only support newer macOS versions
+      # The deployment target is picked up by the Python build tools automatically
+      PYTHON_VERSION: 3.11.9
+      MACOSX_DEPLOYMENT_TARGET: '10.13'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get Python
+        run: curl https://www.python.org/ftp/python/3.11.9/python-3.11.9-macos11.pkg -o "python.pkg"
+      - name: Install Python
+        run: |
+          sudo installer -pkg python.pkg -target /
+      - name: Install Python dependencies
+        run: |
+          python3 --version
+          pip3 install --upgrade pip setuptools wheel pyinstaller certifi
+          pip3 install --upgrade -r requirements-osx-legacy.txt
+          ./gen_ui_files.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16
+      - run: npm install -g appdmg
+      - name: build binary
+        run: |
+          python3 setup.py build_binary
+      - name: upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: osx-build-${{ runner.arch }}
+          path: dist/*.dmg
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          prerelease: true
+          generate_release_notes: true
+          files: |
+            LICENSE.txt
+            dist/*.dmg

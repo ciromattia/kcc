@@ -262,8 +262,8 @@ class WorkerThread(QThread):
             options.batchsplit = 2
         if GUI.colorBox.isChecked():
             options.forcecolor = True
-        if GUI.reduceRainbowBox.isChecked():
-            options.reducerainbow = True
+        if GUI.eraseRainbowBox.isChecked():
+            options.eraserainbow = True
         if GUI.maximizeStrips.isChecked():
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
@@ -469,7 +469,7 @@ class WorkerThread(QThread):
                 if os.path.isfile(path):
                     os.remove(path)
                 elif os.path.isdir(path):
-                    rmtree(path)
+                    rmtree(path, True)
         GUI.progress.content = ''
         GUI.progress.stop()
         MW.hideProgressBar.emit()
@@ -880,7 +880,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'webtoonBox': GUI.webtoonBox.checkState().value,
                                            'outputSplit': GUI.outputSplit.checkState().value,
                                            'colorBox': GUI.colorBox.checkState().value,
-                                           'reduceRainbowBox': GUI.reduceRainbowBox.checkState().value,
+                                           'eraseRainbowBox': GUI.eraseRainbowBox.checkState().value,
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState().value,
                                            'comicinfoTitleBox': GUI.comicinfoTitleBox.checkState().value,
                                            'mozJpegBox': GUI.mozJpegBox.checkState().value,

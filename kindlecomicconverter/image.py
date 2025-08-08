@@ -25,6 +25,8 @@ from pathlib import Path
 from functools import cached_property
 import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter, ImageDraw
+
+from .rainbow_artifacts_eraser import erase_rainbow_artifacts
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
 
@@ -379,13 +381,10 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def optimizeForDisplay(self, reducerainbow):
-        # Reduce rainbow artifacts for grayscale images by breaking up dither patterns that cause Moire interference with color filter array
-        if reducerainbow and not self.color:
-            unsharpFilter = ImageFilter.UnsharpMask(radius=1, percent=100)
-            self.image = self.image.filter(unsharpFilter)
-            self.image = self.image.filter(ImageFilter.BoxBlur(1.0))
-            self.image = self.image.filter(unsharpFilter)
+    def optimizeForDisplay(self, eraserainbow, is_color):
+        # Erase rainbow artifacts for grayscale and color images by removing spectral frequencies that cause Moire interference with color filter array
+        if eraserainbow:
+            self.image = erase_rainbow_artifacts(self.image, is_color)
 
     def resizeImage(self):
         ratio_device = float(self.size[1]) / float(self.size[0])
@@ -424,12 +423,20 @@ class ComicPage:
         bbox = get_bbox_crop_margin_page_number(self.image, power, self.fill)
         
         if bbox:
+            w, h = self.image.size
+            left, upper, right, lower = bbox
+            # don't crop more than 10% of image
+            bbox = (min(0.1*w, left), min(0.1*h, upper), max(0.9*w, right), max(0.9*h, lower))
             self.maybeCrop(bbox, minimum)
 
     def cropMargin(self, power, minimum):
         bbox = get_bbox_crop_margin(self.image, power, self.fill)
         
         if bbox:
+            w, h = self.image.size
+            left, upper, right, lower = bbox
+            # don't crop more than 10% of image
+            bbox = (min(0.1*w, left), min(0.1*h, upper), max(0.9*w, right), max(0.9*h, lower))
             self.maybeCrop(bbox, minimum)
 
     def cropInterPanelEmptySections(self, direction):
@@ -464,7 +471,7 @@ class Cover:
                 self.image = self.image.crop((w/6, 0, w/2 - w * 0.02, h))
             else:
                 self.image = self.image.crop((w/2 + w * 0.02, 0, 5/6 * w, h))
-        elif w / h > 1.3:
+        elif w / h > 1.34:
             if self.options.righttoleft:
                 self.image = self.image.crop((0, 0, w/2 - w * 0.03, h))
             else:

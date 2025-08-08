@@ -41,15 +41,14 @@ from pathlib import Path
 from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
-import io
 import pymupdf
+import numpy as np
 
-from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
+from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean
 from .comicarchive import SEVENZIP, available_archive_tools
 from . import comic2panel
 from . import image
 from . import comicarchive
-from . import pdfjpgextract
 from . import dualmetafix
 from . import metadata
 from . import kindle
@@ -127,9 +126,10 @@ def buildHTML(path, imgfile, imgfilepath, imgfile2=None):
                   "</head>\n",
                   "<body style=\"" + additionalStyle + "\">\n",
                   "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsizeframe) + "%;\">\n",
-                  # this display none div fixes formatting issues with virtual panel mode, for some reason
-                  '<div style="display:none;">.</div>\n',
     ])
+    if options.iskindle:
+        # this display none div fixes formatting issues with virtual panel mode, for some reason
+        f.write('<div style="display:none;">.</div>\n')
     f.write(f'<img width="{imgsize[0]}" height="{imgsize[1]}" src="{"../" * backref}Images/{postfix}{imgfile}"/>\n')
     if imgfile2:
         f.write(f'<img width="{imgsize2[0]}" height="{imgsize2[1]}" src="{"../" * backref}Images/{postfix}{imgfile2}"/>\n')
@@ -675,7 +675,7 @@ def imgFileProcessing(work):
         workImg = image.ComicPageParser((dirpath, afile), opt)
         for i in workImg.payload:
             img = image.ComicPage(opt, *i)
-
+            is_color = (opt.forcecolor and img.color)
             if opt.cropping == 2 and not opt.webtoon:
                 img.cropPageNumber(opt.croppingp, opt.croppingm)
             if opt.cropping == 1 and not opt.webtoon:
@@ -687,9 +687,9 @@ def imgFileProcessing(work):
 
             img.autocontrastImage()
             img.resizeImage()
-            img.optimizeForDisplay(opt.reducerainbow)
+            img.optimizeForDisplay(opt.eraserainbow, is_color)
 
-            if opt.forcecolor and img.color:
+            if is_color:
                 pass
             elif opt.forcepng:
                 img.convertToGrayscale()
@@ -701,6 +701,135 @@ def imgFileProcessing(work):
         return output
     except Exception:
         return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
+
+
+def render_page(vector):
+    """Render a page range of a document.
+
+    Notes:
+        The PyMuPDF document cannot be part of the argument, because that
+        cannot be pickled. So we are being passed in just its filename.
+        This is no performance issue, because we are a separate process and
+        need to open the document anyway.
+        Any page-specific function can be processed here - rendering is just
+        an example - text extraction might be another.
+        The work must however be self-contained: no inter-process communication
+        or synchronization is possible with this design.
+        Care must also be taken with which parameters are contained in the
+        argument, because it will be passed in via pickling by the Pool class.
+        So any large objects will increase the overall duration.
+    Args:
+        vector: a list containing required parameters.
+    """
+    # recreate the arguments
+    idx = vector[0]  # this is the segment number we have to process
+    cpu = vector[1]  # number of CPUs
+    filename = vector[2]  # document filename
+    output_dir = vector[3]
+    target_height = vector[4]
+    with pymupdf.open(filename) as doc:  # open the document
+        num_pages = doc.page_count  # get number of pages
+
+        # pages per segment: make sure that cpu * seg_size >= num_pages!
+        seg_size = int(num_pages / cpu + 1)
+        seg_from = idx * seg_size  # our first page number
+        seg_to = min(seg_from + seg_size, num_pages)  # last page number
+
+        for i in range(seg_from, seg_to):  # work through our page segment
+            page = doc[i]
+            zoom = target_height / page.rect.height
+            mat = pymupdf.Matrix(zoom, zoom)
+            # TODO: decide colorspace earlier so later color check is cheaper.
+            pix = page.get_pixmap(matrix=mat, colorspace='RGB', alpha=False)
+            pix.save(os.path.join(output_dir, "p-%i.png" % i))
+        print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
+
+
+
+def extract_page(vector):
+    """For pages with single image (and no text). Otherwise it's recommended to use render_page()
+
+    Notes:
+        The PyMuPDF document cannot be part of the argument, because that
+        cannot be pickled. So we are being passed in just its filename.
+        This is no performance issue, because we are a separate process and
+        need to open the document anyway.
+        Any page-specific function can be processed here - rendering is just
+        an example - text extraction might be another.
+        The work must however be self-contained: no inter-process communication
+        or synchronization is possible with this design.
+        Care must also be taken with which parameters are contained in the
+        argument, because it will be passed in via pickling by the Pool class.
+        So any large objects will increase the overall duration.
+    Args:
+        vector: a list containing required parameters.
+    """
+    # recreate the arguments
+    idx = vector[0]  # this is the segment number we have to process
+    cpu = vector[1]  # number of CPUs
+    filename = vector[2]  # document filename
+    output_dir = vector[3]
+
+
+    with pymupdf.open(filename) as doc: # open the document
+        num_pages = doc.page_count  # get number of pages
+
+        # pages per segment: make sure that cpu * seg_size >= num_pages!
+        seg_size = int(num_pages / cpu + 1)
+        seg_from = idx * seg_size  # our first page number
+        seg_to = min(seg_from + seg_size, num_pages)  # last page number
+
+        for i in range(seg_from, seg_to):  # work through our page segment
+            output_path = os.path.join(output_dir, "p-%i.png" % i)
+            page = doc.load_page(i)
+            image_list = page.get_images()
+            if len(image_list) > 1:
+                raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
+            if not image_list:
+                width, height = int(page.rect.width), int(page.rect.height)
+                blank_page = Image.new("RGB", (width, height), "white")
+                blank_page.save(output_path)
+            xref = image_list[0][0]
+            d = doc.extract_image(xref)
+            if d['cs-name'] == 'DeviceCMYK':
+                pix = pymupdf.Pixmap(doc, xref)
+                pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
+                pix.save(output_path)
+                
+            else:
+                with open(Path(output_path).with_suffix('.' + d['ext']), "wb") as imgout:
+                    imgout.write(d["image"])
+        print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
+
+
+
+def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
+    render = False
+    with pymupdf.open(filename) as doc:
+        for page in doc:
+            page_text = page.get_text().strip()
+            if page_text != "":
+                render = True
+                break
+            if len(page.get_images()) > 1:
+                render = True
+                break
+
+    cpu = cpu_count()
+
+    # make vectors of arguments for the processes
+    vectors = [(i, cpu, filename, output_dir, target_height) for i in range(cpu)]
+    print("Starting %i processes for '%s'." % (cpu, filename))
+
+
+    start = perf_counter()
+    with Pool() as pool:
+        results = pool.map(
+            render_page if render else extract_page, vectors
+        )
+    end = perf_counter()
+    print(f"MuPDF: {end - start} sec")
+
 
 
 def getWorkFolder(afile):
@@ -721,13 +850,19 @@ def getWorkFolder(afile):
         if disk_usage(gettempdir())[2] < os.path.getsize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
         if afile.lower().endswith('.pdf'):
-            pdf = pdfjpgextract.PdfJpgExtract(afile)
-            path, njpg = pdf.extract()
-            workdir = path
+            workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
+            path = workdir
             sanitizePermissions(path)
-            if njpg == 0:
+            target_height = options.profileData[1][1]
+            if options.cropping == 1:
+                target_height = target_height + target_height*0.20 #Account for possible margin at the top and bottom
+            elif options.cropping == 2:
+                target_height = target_height + target_height*0.25 #Account for possible margin at the top and bottom with page number
+            try:
+                mupdf_pdf_process_pages_parallel(afile, workdir, target_height)
+            except Exception as e:
                 rmtree(path, True)
-                raise UserWarning("Failed to extract images from PDF file.")
+                raise UserWarning(f"Failed to extract images from PDF file. {e}")
         else:
             workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
             try:
@@ -882,6 +1017,9 @@ def removeNonImages(filetree):
     for root, dirs, files in os.walk(filetree, False):
         if not files and not dirs:
             os.rmdir(root)
+    
+    if not os.listdir(Path(filetree).parent):
+        raise UserWarning('No images detected, nested archives are not supported.')
 
 
 def sanitizeTree(filetree):
@@ -938,19 +1076,12 @@ def sanitizePermissions(filetree):
     dot_clean(filetree)
 
 
-def dot_clean(filetree):
-    for root, _, files in os.walk(filetree, topdown=False):
-        for name in files:
-            if name.startswith('._'):
-                os.remove(os.path.join(root, name))
-
-
 def chunk_directory(path):
     level = -1
     for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
         for f in files:
-            # Windows MAX_LENGTH = 260 plus some buffer
-            if len(os.path.join(root, f)) > 180:
+            # Windows MAX_LEN = 260 plus some buffer
+            if os.name == 'nt' and len(os.path.join(root, f)) > 180:
                 flattenTree(os.path.join(path, 'OEBPS', 'Images'))
                 level = 1
                 break               
@@ -1192,8 +1323,8 @@ def makeParser():
                                     help="Disable autodetection and force white borders")
     processing_options.add_argument("--forcecolor", action="store_true", dest="forcecolor", default=False,
                                     help="Don't convert images to grayscale")
-    output_options.add_argument("--reducerainbow", action="store_true", dest="reducerainbow", default=False,
-                                help="Reduce rainbow effect on color eink by slightly blurring images.")
+    output_options.add_argument("--eraserainbow", action="store_true", dest="eraserainbow", default=False,
+                                help="Erase rainbow effect on color eink screen by attenuating interfering frequencies")
     processing_options.add_argument("--forcepng", action="store_true", dest="forcepng", default=False,
                                     help="Create PNG files instead JPEG")
     processing_options.add_argument("--mozjpeg", action="store_true", dest="mozjpeg", default=False,
@@ -1396,7 +1527,7 @@ def makeBook(source, qtgui=None):
         imgDirectoryProcessing(os.path.join(path, "OEBPS", "Images"))
     if GUI:
         GUI.progressBarTick.emit('1')
-    if options.batchsplit > 0:
+    if options.batchsplit > 0 or options.targetsize:
         tomes = chunk_directory(path)
     else:
         tomes = [path]
@@ -1484,7 +1615,7 @@ def makeBook(source, qtgui=None):
         if os.path.isfile(source):
             os.remove(source)
         elif os.path.isdir(source):
-            rmtree(source)
+            rmtree(source, True)
 
     end = perf_counter()
     print(f"makeBook: {end - start} seconds")

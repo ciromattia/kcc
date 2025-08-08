@@ -295,10 +295,10 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.rotateFirstBox, 8, 1, 1, 1)
 
-        self.reduceRainbowBox = QCheckBox(self.optionWidget)
-        self.reduceRainbowBox.setObjectName(u"reduceRainbowBox")
+        self.eraseRainbowBox = QCheckBox(self.optionWidget)
+        self.eraseRainbowBox.setObjectName(u"eraseRainbowBox")
 
-        self.gridLayout_2.addWidget(self.reduceRainbowBox, 7, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.eraseRainbowBox, 7, 2, 1, 1)
 
         self.chunkSizeCheckBox = QCheckBox(self.optionWidget)
         self.chunkSizeCheckBox.setObjectName(u"chunkSizeCheckBox")
@@ -473,8 +473,8 @@ class Ui_mainWindow(object):
         QWidget.setTabOrder(self.disableProcessingBox, self.chunkSizeBox)
         QWidget.setTabOrder(self.chunkSizeBox, self.noRotateBox)
         QWidget.setTabOrder(self.noRotateBox, self.interPanelCropBox)
-        QWidget.setTabOrder(self.interPanelCropBox, self.reduceRainbowBox)
-        QWidget.setTabOrder(self.reduceRainbowBox, self.heightBox)
+        QWidget.setTabOrder(self.interPanelCropBox, self.eraseRainbowBox)
+        QWidget.setTabOrder(self.eraseRainbowBox, self.heightBox)
         QWidget.setTabOrder(self.heightBox, self.croppingPowerSlider)
         QWidget.setTabOrder(self.croppingPowerSlider, self.editorButton)
         QWidget.setTabOrder(self.editorButton, self.wikiButton)
@@ -566,9 +566,9 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.rotateFirstBox.setText(QCoreApplication.translate("mainWindow", u"Rotate First", None))
 #if QT_CONFIG(tooltip)
-        self.reduceRainbowBox.setToolTip(QCoreApplication.translate("mainWindow", u"Reduce rainbow effect on color eink by slightly blurring images", None))
+        self.eraseRainbowBox.setToolTip(QCoreApplication.translate("mainWindow", u"Erase rainbow effect on color eink screen by attenuating interfering frequencies", None))
 #endif // QT_CONFIG(tooltip)
-        self.reduceRainbowBox.setText(QCoreApplication.translate("mainWindow", u"Rainbow blur", None))
+        self.eraseRainbowBox.setText(QCoreApplication.translate("mainWindow", u"Rainbow eraser", None))
 #if QT_CONFIG(tooltip)
         self.chunkSizeCheckBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:700; text-decoration: underline;\">Unchecked<br/></span>Maximal output file size is 100 MB for Webtoon, 400 MB for others before split occurs.</p><p><span style=\" font-weight:700; text-decoration: underline;\">Checked</span><br/>Output file size specified in &quot;Chunk size MB&quot; before split occurs.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

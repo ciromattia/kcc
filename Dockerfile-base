@@ -126,7 +126,7 @@ RUN set -x && \
     # Install required python modules
     python -m pip install --upgrade pip && \
     python -m venv /opt/venv && \
-    python -m pip install --upgrade pillow psutil requests python-slugify raven packaging mozjpeg-lossless-optimization natsort distro numpy
+    python -m pip install --upgrade pillow psutil requests python-slugify raven packaging mozjpeg-lossless-optimization natsort distro numpy pymupdf
 
 
 ######################################################################################

@@ -24,7 +24,7 @@ from argparse import ArgumentParser
 from shutil import rmtree, copytree, move
 from multiprocessing import Pool
 from PIL import Image, ImageChops, ImageOps, ImageDraw
-from .shared import getImageFileName, walkLevel, walkSort, sanitizeTrace
+from .shared import dot_clean, getImageFileName, walkLevel, walkSort, sanitizeTrace
 
 
 def mergeDirectoryTick(output):
@@ -44,6 +44,7 @@ def mergeDirectory(work):
         imagesValid = []
         sizes = []
         targetHeight = 0
+        dot_clean(directory)
         for root, _, files in walkLevel(directory, 0):
             for name in files:
                 if getImageFileName(name) is not None:
@@ -253,6 +254,7 @@ def main(argv=None, qtgui=None):
                         raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0][0],
                                            mergeWorkerOutput[0][1])
                 print("Splitting images...")
+                dot_clean(targetDir)
                 for root, _, files in os.walk(targetDir, False):
                     for name in files:
                         if getImageFileName(name) is not None:
@@ -277,7 +279,7 @@ def main(argv=None, qtgui=None):
                         raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0][0],
                                            splitWorkerOutput[0][1])
                     if args.inPlace:
-                        rmtree(sourceDir)
+                        rmtree(sourceDir, True)
                         move(targetDir, sourceDir)
                 else:
                     rmtree(targetDir, True)

@@ -45,6 +45,14 @@ class HTMLStripper(HTMLParser):
         pass
 
 
+def dot_clean(filetree):
+    for root, _, files in os.walk(filetree, topdown=False):
+        for name in files:
+            if name.startswith('._') or name == '.DS_Store':
+                if os.path.exists(os.path.join(root, name)):
+                    os.remove(os.path.join(root, name))
+
+
 def getImageFileName(imgfile):
     name, ext = os.path.splitext(imgfile)
     ext = ext.lower()
@@ -120,6 +128,12 @@ def dependencyCheck(level):
             missing.append('Pillow 11.3.0+')
     except ImportError:
         missing.append('Pillow 11.3.0+')
+    try:
+        from pymupdf import __version__ as pymupdfVersion
+        if Version('1.26.1') > Version(pymupdfVersion):
+            missing.append('PyMuPDF 1.26.1+')
+    except ImportError:
+        missing.append('PyMuPDF 1.26.1+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         sys.exit(1)

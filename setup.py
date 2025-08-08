@@ -38,7 +38,10 @@ class BuildBinaryCommand(setuptools.Command):
         if sys.platform == 'darwin':
             os.system('pyinstaller --hidden-import=_cffi_backend -y -D -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
             # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
-            os.system(f'appdmg kcc.json dist/kcc_macos_{platform.processor()}_{VERSION}.dmg')
+            if os.getenv('MACOSX_DEPLOYMENT_TARGET') == '10.13':
+                os.system(f'appdmg kcc.json dist/kcc_osx_10_13_legacy_{VERSION}.dmg')
+            else:
+                os.system(f'appdmg kcc.json dist/kcc_macos_{platform.processor()}_{VERSION}.dmg')
             sys.exit(0)
         elif sys.platform == 'win32':
             os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n KCC_' + VERSION + ' -w --noupx kcc.py')
@@ -84,7 +87,8 @@ setuptools.setup(
         'mozjpeg-lossless-optimization>=1.1.2',
         'natsort>=8.4.0',
         'distro',
-        'numpy>=1.22.4'
+        'numpy>=1.22.4',
+        'PyMuPDF>=1.26.1',
     ],
     classifiers=[],
     zip_safe=False,
