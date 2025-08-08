@@ -45,16 +45,6 @@ import io
 import pymupdf
 
 from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run
-# helper for buildPDF multiprocessing (must be top-level for pickling)
-def _process_pdf_image(img_path):
-     try:
-         img = Image.open(img_path)
-         if img.mode not in ('RGB', 'L'):
-             img = img.convert('RGB')
-         return img.copy()
-     except Exception as e:
-         print(f"Warning: Could not process image {img_path}: {e}")
-         return None
 from .comicarchive import SEVENZIP, available_archive_tools
 from . import comic2panel
 from . import image
@@ -597,53 +587,24 @@ def buildPDF(path, title, cover=None, output_file=None):
     Build a PDF file from processed comic images.
     Images are combined into a single PDF optimized for e-readers.
     """
-    import io
-    import gc
-    
     # prepare image list
     images_path = os.path.join(path, "OEBPS", "Images")
-    image_files = [os.path.join(d, f) for d, _, files in walkLevel(images_path)
-                   for f in files if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp'))]
+    image_files = [os.path.join(d, f) for d, _, files in walkLevel(images_path) for f in files]
     if not image_files:
         raise UserWarning("No images found for PDF creation.")
 
     # sort image files to ensure correct order
-    image_files.sort()
+    image_files.sort(key=OS_SORT_KEY)
     
     # open empty PDF
     doc = pymupdf.open()
     
-    # Calculate optimal chunksize based on image count and available cores
-    num_cores = cpu_count()
-    num_images = len(image_files)
-    # Optimal chunksize balances overhead vs parallelism
-    optimal_chunksize = max(1, min(10, num_images // (num_cores * 2)))
-    
-    with Pool(processes=num_cores) as pool:
-        # Process images in parallel but maintain order
-        processed_images = pool.map(_process_pdf_image, image_files, chunksize=optimal_chunksize)
-        
-        # Stream images to PDF
-        for i, img in enumerate(processed_images):
-            if not img:
-                continue
-            
-            w, h = img.size
-            page = doc.new_page(width=w, height=h)
-            
-            with io.BytesIO() as buf:
-                if getattr(options, 'forcepng', False):
-                    img.save(buf, format="PNG", optimize=True)
-                else:
-                    img.save(buf, format="JPEG", quality=90, optimize=True)
-                page.insert_image(page.rect, stream=buf.getvalue())
-            
-            # Explicit cleanup for large images
-            del img
-            
-            # Periodic garbage collection for large comic books to prevent running out of memory
-            if (i + 1) % 50 == 0:
-                gc.collect()
+    # Stream images to PDF
+    for img_file in image_files:
+        img = Image.open(img_file)
+        w, h = img.size
+        page = doc.new_page(width=w, height=h)
+        page.insert_image(page.rect, filename=img_file)
 
     # determine output filename if not provided
     if output_file is None:
@@ -732,7 +693,8 @@ def imgFileProcessing(work):
                 pass
             elif opt.forcepng:
                 img.convertToGrayscale()
-                img.quantizeImage()
+                if opt.format != 'PDF':
+                    img.quantizeImage()
             else:
                 img.convertToGrayscale()
             output.append(img.saveToDir())
