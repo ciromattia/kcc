@@ -1573,12 +1573,11 @@ def makeBook(source, qtgui=None):
         # Copy files to final destination (PDF files are already saved directly)
         if options.format != 'PDF':
             copyfile(tome + '_comic.zip', filepath[-1])
-        try:
-            if options.format != 'PDF':
+            try:
                 os.remove(tome + '_comic.zip')
-        except FileNotFoundError:
-            # newly temporary created file is not found. It might have been already deleted
-            pass
+            except FileNotFoundError:
+                # newly temporary created file is not found. It might have been already deleted
+                pass
         rmtree(tome, True)
         if GUI:
             GUI.progressBarTick.emit('tick')
