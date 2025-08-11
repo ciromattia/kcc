@@ -1559,7 +1559,7 @@ def makeBook(source, qtgui=None):
             suffix = (' ' + str(tomeNumber)) if len(tomes) > 1 else ''
             output_file = getOutputFilename(source, options.output, '.pdf', suffix)
             # use optimized buildPDF logic with streaming and compression
-            output_pdf = buildPDF(tome, options.title, GUI, output_file)
+            output_pdf = buildPDF(tome, options.title, None, output_file)
             filepath.append(output_pdf)
         else:
             print("Creating EPUB file...")
@@ -1618,6 +1618,7 @@ def makeBook(source, qtgui=None):
         rmtree(path, True)
     except Exception:
         pass
+    print(filepath)
     return filepath
 
 
