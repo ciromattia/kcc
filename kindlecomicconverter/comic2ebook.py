@@ -42,7 +42,6 @@ from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 import pymupdf
-import numpy as np
 
 from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean
 from .comicarchive import SEVENZIP, available_archive_tools
@@ -597,22 +596,20 @@ def buildPDF(path, title, cover=None, output_file=None):
     image_files.sort(key=OS_SORT_KEY)
     
     # open empty PDF
-    doc = pymupdf.open()
-    
-    # Stream images to PDF
-    for img_file in image_files:
-        img = Image.open(img_file)
-        w, h = img.size
-        page = doc.new_page(width=w, height=h)
-        page.insert_image(page.rect, filename=img_file)
+    with pymupdf.open() as doc:
+        # Stream images to PDF
+        for img_file in image_files:
+            img = Image.open(img_file)
+            w, h = img.size
+            page = doc.new_page(width=w, height=h)
+            page.insert_image(page.rect, filename=img_file)
 
-    # determine output filename if not provided
-    if output_file is None:
-        output_file = getOutputFilename(path, None, '.pdf', '')
-    
-    # Save with optimizations for smaller file size
-    doc.save(output_file, deflate=True, garbage=4, clean=True)
-    doc.close()
+        # determine output filename if not provided
+        if output_file is None:
+            output_file = getOutputFilename(path, None, '.pdf', '')
+        
+        # Save with optimizations for smaller file size
+        doc.save(output_file, deflate=True, garbage=4, clean=True)
     return output_file
 
 
