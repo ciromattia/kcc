@@ -595,11 +595,9 @@ def buildPDF(path, title, cover=None, output_file=None):
             files.sort(key=OS_SORT_KEY)
             dirs.sort(key=OS_SORT_KEY)
             for file in files:
-                img_file = os.path.join(root, file)
-                img = Image.open(img_file)
-                w, h = img.size
+                w, h = Image.open(os.path.join(root, file)).size
                 page = doc.new_page(width=w, height=h)
-                page.insert_image(page.rect, filename=img_file)
+                page.insert_image(page.rect, filename=os.path.join(root, file))
 
         # determine output filename if not provided
         if output_file is None:
