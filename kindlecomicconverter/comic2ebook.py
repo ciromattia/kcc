@@ -586,23 +586,19 @@ def buildPDF(path, title, cover=None, output_file=None):
     Build a PDF file from processed comic images.
     Images are combined into a single PDF optimized for e-readers.
     """
-    # prepare image list
-    images_path = os.path.join(path, "OEBPS", "Images")
-    image_files = [os.path.join(d, f) for d, _, files in walkLevel(images_path) for f in files]
-    if not image_files:
-        raise UserWarning("No images found for PDF creation.")
-
-    # sort image files to ensure correct order
-    image_files.sort(key=OS_SORT_KEY)
-    
+    start = perf_counter()
     # open empty PDF
     with pymupdf.open() as doc:
         # Stream images to PDF
-        for img_file in image_files:
-            img = Image.open(img_file)
-            w, h = img.size
-            page = doc.new_page(width=w, height=h)
-            page.insert_image(page.rect, filename=img_file)
+        for root, dirs, files in os.walk(os.path.join(path, "OEBPS", "Images")):
+            files.sort(key=OS_SORT_KEY)
+            dirs.sort(key=OS_SORT_KEY)
+            for file in files:
+                img_file = os.path.join(root, file)
+                img = Image.open(img_file)
+                w, h = img.size
+                page = doc.new_page(width=w, height=h)
+                page.insert_image(page.rect, filename=img_file)
 
         # determine output filename if not provided
         if output_file is None:
@@ -610,6 +606,8 @@ def buildPDF(path, title, cover=None, output_file=None):
         
         # Save with optimizations for smaller file size
         doc.save(output_file, deflate=True, garbage=4, clean=True)
+    end = perf_counter()
+    print(f"MuPDF output: {end-start} sec")
     return output_file
 
 
