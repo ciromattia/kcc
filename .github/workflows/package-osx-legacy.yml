@@ -29,7 +29,8 @@ jobs:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       PYTHON_VERSION: 3.11.9
-      MACOSX_DEPLOYMENT_TARGET: '10.13'
+      MACOSX_DEPLOYMENT_TARGET: '10.10'
+      PYINSTALLER_COMPILE_BOOTLOADER: 1
     steps:
       - uses: actions/checkout@v4
       - name: Get Python
