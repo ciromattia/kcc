@@ -1617,7 +1617,6 @@ def makeBook(source, qtgui=None):
         rmtree(path, True)
     except Exception:
         pass
-    print(filepath)
     return filepath
 
 
