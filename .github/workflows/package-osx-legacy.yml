@@ -31,7 +31,7 @@ jobs:
       PYTHON_VERSION: 3.11.9
       MACOSX_DEPLOYMENT_TARGET: '10.13'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Get Python
         run: curl https://www.python.org/ftp/python/3.11.9/python-3.11.9-macos11.pkg -o "python.pkg"
       - name: Install Python
