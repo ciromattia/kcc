@@ -98,10 +98,10 @@ def dependencyCheck(level):
     if level > 2:
         try:
             from PySide6.QtCore import qVersion as qtVersion
-            if Version('6.1.3') > Version(qtVersion()):
-                missing.append('PySide 6.1.3+')
+            if Version('6.0.0') > Version(qtVersion()):
+                missing.append('PySide 6.0.0')
         except ImportError:
-            missing.append('PySide 6.5.1+')
+            missing.append('PySide 6.0.0+')
         try:
             import raven
         except ImportError:
