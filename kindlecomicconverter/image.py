@@ -383,7 +383,7 @@ class ComicPage:
 
     def optimizeForDisplay(self, eraserainbow, is_color):
         # Erase rainbow artifacts for grayscale and color images by removing spectral frequencies that cause Moire interference with color filter array
-        if eraserainbow:
+        if eraserainbow and all(dim > 1 for dim in self.image.size):
             self.image = erase_rainbow_artifacts(self.image, is_color)
 
     def resizeImage(self):
@@ -397,7 +397,7 @@ class ComicPage:
         else: # if image bigger than device resolution or smaller with upscaling
             if abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
-            elif (self.opt.format == 'CBZ' or self.opt.kfx) and not self.opt.white_borders:
+            elif (self.opt.format in ('CBZ', 'PDF') or self.opt.kfx) and not self.opt.white_borders:
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
                 self.image = ImageOps.contain(self.image, self.size, method=method)

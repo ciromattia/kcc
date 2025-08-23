@@ -582,6 +582,34 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, len
     buildOPF(path, options.title, filelist, cover)
 
 
+def buildPDF(path, title, cover=None, output_file=None):
+    """
+    Build a PDF file from processed comic images.
+    Images are combined into a single PDF optimized for e-readers.
+    """
+    start = perf_counter()
+    # open empty PDF
+    with pymupdf.open() as doc:
+        # Stream images to PDF
+        for root, dirs, files in os.walk(os.path.join(path, "OEBPS", "Images")):
+            files.sort(key=OS_SORT_KEY)
+            dirs.sort(key=OS_SORT_KEY)
+            for file in files:
+                w, h = Image.open(os.path.join(root, file)).size
+                page = doc.new_page(width=w, height=h)
+                page.insert_image(page.rect, filename=os.path.join(root, file))
+
+        # determine output filename if not provided
+        if output_file is None:
+            output_file = getOutputFilename(path, None, '.pdf', '')
+        
+        # Save with optimizations for smaller file size
+        doc.save(output_file, deflate=True, garbage=4, clean=True)
+    end = perf_counter()
+    print(f"MuPDF output: {end-start} sec")
+    return output_file
+
+
 def imgDirectoryProcessing(path):
     global workerPool, workerOutput
     workerPool = Pool(maxtasksperchild=100)
@@ -659,7 +687,8 @@ def imgFileProcessing(work):
                 pass
             elif opt.forcepng:
                 img.convertToGrayscale()
-                img.quantizeImage()
+                if opt.format != 'PDF':
+                    img.quantizeImage()
             else:
                 img.convertToGrayscale()
             output.append(img.saveToDir())
@@ -1137,6 +1166,7 @@ def detectSuboptimalProcessing(tmppath, orgpath):
                 try:
                     img = Image.open(path)
                     imageNumber += 1
+                    # count images smaller than device resolution
                     if options.profileData[1][0] > img.size[0] and options.profileData[1][1] > img.size[1]:
                         imageSmaller += 1
                 except Exception as err:
@@ -1184,7 +1214,6 @@ def slugify(value, is_natural_sorted):
         value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
 
-
 def makeZIP(zipfilename, basedir, isepub=False):
     start = perf_counter()
     zipfilename = os.path.abspath(zipfilename) + '.zip'
@@ -1208,7 +1237,6 @@ def makeZIP(zipfilename, basedir, isepub=False):
     end = perf_counter()
     print(f"makeZIP time: {end - start} seconds")
     return zipfilename
-
 
 def makeParser():
     psr = ArgumentParser(prog="kcc-c2e", usage="kcc-c2e [options] [input]", add_help=False)
@@ -1247,7 +1275,7 @@ def makeParser():
     output_options.add_argument("-a", "--author", action="store", dest="author", default="defaultauthor",
                                 help="Author name [Default=KCC]")
     output_options.add_argument("-f", "--format", action="store", dest="format", default="Auto",
-                                help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB) "
+                                help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB, PDF) "
                                      "[Default=Auto]")
     output_options.add_argument("--nokepub", action="store_true", dest="noKepub", default=False,
                                 help="If format is EPUB, output file with '.epub' extension rather than '.kepub.epub'")
@@ -1337,6 +1365,8 @@ def checkOptions(options):
             options.format = 'CBZ'
         elif options.profile in image.ProfileData.ProfilesKindle.keys():
             options.format = 'MOBI'
+        elif options.profile in image.ProfileData.ProfilesRemarkable.keys():
+            options.format = 'PDF'
         else:
             options.format = 'EPUB'
     if options.profile in image.ProfileData.ProfilesKindle.keys():
@@ -1500,6 +1530,8 @@ def makeBook(source, qtgui=None):
     if GUI:
         if options.format == 'CBZ':
             GUI.progressBarTick.emit('Compressing CBZ files')
+        elif options.format == 'PDF':
+            GUI.progressBarTick.emit('Creating PDF files')
         else:
             GUI.progressBarTick.emit('Compressing EPUB files')
         GUI.progressBarTick.emit(str(len(tomes) + 1))
@@ -1521,6 +1553,14 @@ def makeBook(source, qtgui=None):
             else:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
             makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
+        elif options.format == 'PDF':
+            print("Creating PDF file with PyMuPDF...")
+            # determine output filename based on source and tome count
+            suffix = (' ' + str(tomeNumber)) if len(tomes) > 1 else ''
+            output_file = getOutputFilename(source, options.output, '.pdf', suffix)
+            # use optimized buildPDF logic with streaming and compression
+            output_pdf = buildPDF(tome, options.title, None, output_file)
+            filepath.append(output_pdf)
         else:
             print("Creating EPUB file...")
             if len(tomes) > 1:
@@ -1530,12 +1570,14 @@ def makeBook(source, qtgui=None):
                 buildEPUB(tome, chapterNames, tomeNumber, False, cover)
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
             makeZIP(tome + '_comic', tome, True)
-        copyfile(tome + '_comic.zip', filepath[-1])
-        try:
-            os.remove(tome + '_comic.zip')
-        except FileNotFoundError:
-            # newly temporary created file is not found. It might have been already deleted
-            pass
+        # Copy files to final destination (PDF files are already saved directly)
+        if options.format != 'PDF':
+            copyfile(tome + '_comic.zip', filepath[-1])
+            try:
+                os.remove(tome + '_comic.zip')
+            except FileNotFoundError:
+                # newly temporary created file is not found. It might have been already deleted
+                pass
         rmtree(tome, True)
         if GUI:
             GUI.progressBarTick.emit('tick')
@@ -1570,6 +1612,11 @@ def makeBook(source, qtgui=None):
 
     end = perf_counter()
     print(f"makeBook: {end - start} seconds")
+    # Clean up temporary workspace
+    try:
+        rmtree(path, True)
+    except Exception:
+        pass
     return filepath
 
 
@@ -1649,3 +1696,4 @@ def makeMOBI(work, qtgui=None):
     makeMOBIWorkerPool.close()
     makeMOBIWorkerPool.join()
     return makeMOBIWorkerOutput
+
