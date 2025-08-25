@@ -157,17 +157,18 @@ class VersionThread(QThread):
 
     def run(self):
         try:
-            json_parser = requests.get("https://api.github.com/repos/ciromattia/kcc/releases/latest").json()
+            if getattr(sys, 'frozen', False):
+                json_parser = requests.get("https://api.github.com/repos/ciromattia/kcc/releases/latest").json()
 
-            html_url = json_parser["html_url"]
-            latest_version = json_parser["tag_name"]
-            latest_version = re.sub(r'^v', "", latest_version)
+                html_url = json_parser["html_url"]
+                latest_version = json_parser["tag_name"]
+                latest_version = re.sub(r'^v', "", latest_version)
 
-            if ("b" not in __version__ and Version(latest_version) > Version(__version__)) \
-                    or ("b" in __version__
-                        and Version(latest_version) >= Version(re.sub(r'b.*', '', __version__))):
-                MW.addMessage.emit('<a href="' + html_url + '"><b>The new version is available!</b></a>', 'warning',
-                                   False)
+                if ("b" not in __version__ and Version(latest_version) > Version(__version__)) \
+                        or ("b" in __version__
+                            and Version(latest_version) >= Version(re.sub(r'b.*', '', __version__))):
+                    MW.addMessage.emit('<a href="' + html_url + '"><b>The new version is available!</b></a>', 'warning',
+                                    False)
         except Exception:
             pass
         
