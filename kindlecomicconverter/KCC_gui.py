@@ -17,6 +17,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 # PERFORMANCE OF THIS SOFTWARE.
 
+from datetime import datetime, timezone
 import itertools
 from pathlib import Path
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
@@ -124,7 +125,7 @@ class Icons:
         self.EPUBFormat = QIcon()
         self.EPUBFormat.addPixmap(QPixmap(":/Formats/icons/EPUB.png"), QIcon.Mode.Normal, QIcon.State.Off)
         self.KFXFormat = QIcon()
-        self.KFXFormat.addPixmap(QPixmap(":/Formats/icons/KFX.png"), QIcon.Normal, QIcon.Off)
+        self.KFXFormat.addPixmap(QPixmap(":/Formats/icons/KFX.png"), QIcon.Mode.Normal, QIcon.State.Off)
 
         self.info = QIcon()
         self.info.addPixmap(QPixmap(":/Status/icons/info.png"), QIcon.Mode.Normal, QIcon.State.Off)
@@ -135,6 +136,12 @@ class Icons:
 
         self.programIcon = QIcon()
         self.programIcon.addPixmap(QPixmap(":/Icon/icons/comic2ebook.png"), QIcon.Mode.Normal, QIcon.State.Off)
+
+        self.kofi = QIcon()
+        self.kofi.addPixmap(QPixmap(":/Brand/icons/kofi_symbol.png"), QIcon.Mode.Normal, QIcon.State.Off)
+        
+        self.humble = QIcon()
+        self.humble.addPixmap(QPixmap(":/Brand/icons/Humble_H-Red.png"), QIcon.Mode.Normal, QIcon.State.Off)
 
 
 class VersionThread(QThread):
@@ -162,7 +169,36 @@ class VersionThread(QThread):
                 MW.addMessage.emit('<a href="' + html_url + '"><b>The new version is available!</b></a>', 'warning',
                                    False)
         except Exception:
-            return
+            pass
+        
+        try:
+            announcements = requests.get('https://api.github.com/repos/axu2/buy-digital-manga/contents/links.json',
+                                       headers={
+                                           'Accept': 'application/vnd.github.raw+json',
+                                           'X-GitHub-Api-Version': '2022-11-28'}).json()
+            for category, payloads in announcements.items():
+                for payload in payloads:
+                    expiration = datetime.fromisoformat(payload['expiration'])
+                    if expiration < datetime.now(timezone.utc):
+                        continue
+                    delta = expiration - datetime.now(timezone.utc)
+                    time_left = f"{delta.days} day(s) left"
+                    icon = 'info'
+                    if category == 'humbleBundles':
+                        icon = 'humble'
+                    if category == 'kofi':
+                        icon = 'kofi'
+                    message = f"<b>{payload.get('name')}</b>"
+                    if payload.get('link'):
+                        message = f'<a href="{payload.get('link')}"><b>{payload.get('name')}</b></a>'
+                    if payload.get('showDeadline'):
+                        message += f': {time_left}'
+                    if category == 'humbleBundles':
+                        message += ' [referral]'
+                    MW.addMessage.emit(message, icon , False)
+        except Exception as e:
+            print(e)
+
 
     def setAnswer(self, dialoganswer):
         self.answer = dialoganswer
@@ -1169,7 +1205,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         statusBarLabel.setOpenExternalLinks(True)
         GUI.statusBar.addPermanentWidget(statusBarLabel, 1)
 
-        self.addMessage('<b>Welcome!</b>', 'info')
         self.addMessage('<b>Tip:</b> Hover mouse over options to see additional information in tooltips.', 'info')
         self.addMessage('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.', 'info')
         if self.startNumber < 5:

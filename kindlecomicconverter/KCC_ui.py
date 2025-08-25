@@ -37,6 +37,7 @@ class Ui_mainWindow(object):
         self.gridLayout.setContentsMargins(-1, -1, -1, 5)
         self.jobList = QListWidget(self.centralWidget)
         self.jobList.setObjectName(u"jobList")
+        self.jobList.setMinimumSize(QSize(0, 150))
         self.jobList.setStyleSheet(u"")
         self.jobList.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.jobList.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
@@ -62,7 +63,7 @@ class Ui_mainWindow(object):
         self.kofiButton.setObjectName(u"kofiButton")
         self.kofiButton.setMinimumSize(QSize(0, 30))
         icon2 = QIcon()
-        icon2.addFile(u":/Other/icons/kofi_symbol.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon2.addFile(u":/Brand/icons/kofi_symbol.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.kofiButton.setIcon(icon2)
         self.kofiButton.setIconSize(QSize(19, 16))
 
