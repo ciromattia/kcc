@@ -157,6 +157,7 @@ class VersionThread(QThread):
 
     def run(self):
         try:
+            # unauthenticated API requests limit is 60 req/hour
             if getattr(sys, 'frozen', False):
                 json_parser = requests.get("https://api.github.com/repos/ciromattia/kcc/releases/latest").json()
 
