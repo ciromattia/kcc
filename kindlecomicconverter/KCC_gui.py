@@ -172,7 +172,7 @@ class VersionThread(QThread):
             pass
         
         try:
-            announcements = requests.get('https://api.github.com/repos/axu2/buy-digital-manga/contents/links.json',
+            announcements = requests.get('https://api.github.com/repos/axu2/kcc-messages/contents/links.json',
                                        headers={
                                            'Accept': 'application/vnd.github.raw+json',
                                            'X-GitHub-Api-Version': '2022-11-28'}).json()
