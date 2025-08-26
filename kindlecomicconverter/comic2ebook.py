@@ -590,6 +590,7 @@ def buildPDF(path, title, cover=None, output_file=None):
     start = perf_counter()
     # open empty PDF
     with pymupdf.open() as doc:
+        doc.set_metadata({'title': title, 'author': options.authors[0]})
         # Stream images to PDF
         for root, dirs, files in os.walk(os.path.join(path, "OEBPS", "Images")):
             files.sort(key=OS_SORT_KEY)
@@ -920,7 +921,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
     return filename
 
 
-def getComicInfo(path, originalpath):
+def getMetadata(path, originalpath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.comicinfo_chapters = []
     options.summary = ''
@@ -939,6 +940,7 @@ def getComicInfo(path, originalpath):
     else:
         defaultAuthor = False
         options.authors = [options.author]
+
     if os.path.exists(xmlPath):
         try:
             xml = metadata.MetadataParser(xmlPath)
@@ -970,6 +972,13 @@ def getComicInfo(path, originalpath):
         if xml.data['Summary']:
             options.summary = xml.data['Summary']
         os.remove(xmlPath)
+
+    if originalpath.lower().endswith('.pdf'):
+        with pymupdf.open(originalpath) as doc:
+            if options.metadatatitle and doc.metadata['title']:
+                options.title = doc.metadata['title']
+            if defaultAuthor and doc.metadata['author']:
+                options.authors = [doc.metadata['author']]
 
 
 def getDirectorySize(start_path='.'):
@@ -1503,7 +1512,7 @@ def makeBook(source, qtgui=None):
     print("Preparing source images...")
     path = getWorkFolder(source)
     print("Checking images...")
-    getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
+    getMetadata(os.path.join(path, "OEBPS", "Images"), source)
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
     chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
