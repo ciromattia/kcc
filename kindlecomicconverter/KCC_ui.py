@@ -546,7 +546,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.mangaBox.setText(QCoreApplication.translate("mainWindow", u"Right-to-left mode", None))
 #if QT_CONFIG(tooltip)
-        self.borderBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Autodetection<br/></span>The color of margins fill will be detected automatically.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - White<br/></span>Margins will be filled with white color.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Black<br/></span>Margins will be filled with black color.</p></body></html>", None))
+        self.borderBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Autodetection<br/></span>The color of margins fill will be detected automatically.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - White<br/></span>Margins will be untouched.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Black<br/></span>Margins will be filled with black color.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.borderBox.setText(QCoreApplication.translate("mainWindow", u"W/B margins", None))
 #if QT_CONFIG(tooltip)
