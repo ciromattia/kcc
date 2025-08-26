@@ -316,10 +316,10 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.outputSplit, 3, 1, 1, 1)
 
-        self.comicinfoTitleBox = QCheckBox(self.optionWidget)
-        self.comicinfoTitleBox.setObjectName(u"comicinfoTitleBox")
+        self.metadataTitleBox = QCheckBox(self.optionWidget)
+        self.metadataTitleBox.setObjectName(u"metadataTitleBox")
 
-        self.gridLayout_2.addWidget(self.comicinfoTitleBox, 7, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.metadataTitleBox, 7, 0, 1, 1)
 
         self.qualityBox = QCheckBox(self.optionWidget)
         self.qualityBox.setObjectName(u"qualityBox")
@@ -582,9 +582,9 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.outputSplit.setText(QCoreApplication.translate("mainWindow", u"Output split", None))
 #if QT_CONFIG(tooltip)
-        self.comicinfoTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"Write Title from ComicInfo.xml", None))
+        self.metadataTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Write Title from ComicInfo.xml or other embedded metadata.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.comicinfoTitleBox.setText(QCoreApplication.translate("mainWindow", u"ComicInfo Title", None))
+        self.metadataTitleBox.setText(QCoreApplication.translate("mainWindow", u"Metadata Title", None))
 #if QT_CONFIG(tooltip)
         self.qualityBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 4 panels<br/></span>Zoom each corner separately.</p><p style='white-space:pre'><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - 2 panels<br/></span>Zoom only the top and bottom of the page.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - 4 high-quality panels<br/></span>Zoom each corner separately. Try to increase the quality of magnification. Check wiki for more details.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
