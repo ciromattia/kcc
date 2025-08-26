@@ -585,12 +585,12 @@
         </widget>
        </item>
        <item row="7" column="0">
-        <widget class="QCheckBox" name="comicinfoTitleBox">
+        <widget class="QCheckBox" name="metadataTitleBox">
          <property name="toolTip">
-          <string>Write Title from ComicInfo.xml</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Write Title from ComicInfo.xml or other embedded metadata.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>ComicInfo Title</string>
+          <string>Metadata Title</string>
          </property>
         </widget>
        </item>
