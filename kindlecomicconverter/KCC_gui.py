@@ -276,8 +276,8 @@ class WorkerThread(QThread):
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
-        if GUI.comicinfoTitleBox.isChecked():
-            options.comicinfotitle = True
+        if GUI.metadataTitleBox.isChecked():
+            options.metadatatitle = True
         if GUI.deleteBox.isChecked():
             options.delete = True
         if GUI.spreadShiftBox.isChecked():
@@ -890,7 +890,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'colorBox': GUI.colorBox.checkState(),
                                            'eraseRainbowBox': GUI.eraseRainbowBox.checkState(),
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState(),
-                                           'comicinfoTitleBox': GUI.comicinfoTitleBox.checkState(),
+                                           'metadataTitleBox': GUI.metadataTitleBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),

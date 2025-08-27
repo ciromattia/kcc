@@ -476,7 +476,7 @@
        <item row="3" column="0">
         <widget class="QCheckBox" name="borderBox">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Autodetection&lt;br/&gt;&lt;/span&gt;The color of margins fill will be detected automatically.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - White&lt;br/&gt;&lt;/span&gt;Margins will be filled with white color.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Black&lt;br/&gt;&lt;/span&gt;Margins will be filled with black color.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Autodetection&lt;br/&gt;&lt;/span&gt;The color of margins fill will be detected automatically.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - White&lt;br/&gt;&lt;/span&gt;Margins will be untouched.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Black&lt;br/&gt;&lt;/span&gt;Margins will be filled with black color.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>W/B margins</string>
@@ -585,12 +585,12 @@
         </widget>
        </item>
        <item row="7" column="0">
-        <widget class="QCheckBox" name="comicinfoTitleBox">
+        <widget class="QCheckBox" name="metadataTitleBox">
          <property name="toolTip">
-          <string>Write Title from ComicInfo.xml</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Write Title from ComicInfo.xml or other embedded metadata.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>ComicInfo Title</string>
+          <string>Metadata Title</string>
          </property>
         </widget>
        </item>

@@ -591,6 +591,7 @@ def buildPDF(path, title, cover=None, output_file=None):
     start = perf_counter()
     # open empty PDF
     with pymupdf.open() as doc:
+        doc.set_metadata({'title': title, 'author': options.authors[0]})
         # Stream images to PDF
         for root, dirs, files in os.walk(os.path.join(path, "OEBPS", "Images")):
             files.sort(key=OS_SORT_KEY)
@@ -921,7 +922,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
     return filename
 
 
-def getComicInfo(path, originalpath):
+def getMetadata(path, originalpath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.comicinfo_chapters = []
     options.summary = ''
@@ -940,13 +941,14 @@ def getComicInfo(path, originalpath):
     else:
         defaultAuthor = False
         options.authors = [options.author]
+
     if os.path.exists(xmlPath):
         try:
             xml = metadata.MetadataParser(xmlPath)
         except Exception:
             os.remove(xmlPath)
             return
-        if options.comicinfotitle:
+        if options.metadatatitle:
             options.title = xml.data['Title']
         elif defaultTitle:
             if xml.data['Series']:
@@ -971,6 +973,13 @@ def getComicInfo(path, originalpath):
         if xml.data['Summary']:
             options.summary = xml.data['Summary']
         os.remove(xmlPath)
+
+    if originalpath.lower().endswith('.pdf'):
+        with pymupdf.open(originalpath) as doc:
+            if options.metadatatitle and doc.metadata['title']:
+                options.title = doc.metadata['title']
+            if defaultAuthor and doc.metadata['author']:
+                options.authors = [doc.metadata['author']]
 
 
 def getDirectorySize(start_path='.'):
@@ -1271,8 +1280,8 @@ def makeParser():
                                 help="Output generated file to specified directory or file")
     output_options.add_argument("-t", "--title", action="store", dest="title", default="defaulttitle",
                                 help="Comic title [Default=filename or directory name]")
-    output_options.add_argument("--comicinfotitle", action="store_true", dest="comicinfotitle", default=False,
-                                help="Write Title from ComicInfo.xml")
+    output_options.add_argument("--metadatatitle", action="store_true", dest="metadatatitle", default=False,
+                                help="Write Title from ComicInfo.xml or other embedded metadata")
     output_options.add_argument("-a", "--author", action="store", dest="author", default="defaultauthor",
                                 help="Author name [Default=KCC]")
     output_options.add_argument("-f", "--format", action="store", dest="format", default="Auto",
@@ -1504,7 +1513,7 @@ def makeBook(source, qtgui=None):
     print("Preparing source images...")
     path = getWorkFolder(source)
     print("Checking images...")
-    getComicInfo(os.path.join(path, "OEBPS", "Images"), source)
+    getMetadata(os.path.join(path, "OEBPS", "Images"), source)
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
     chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
