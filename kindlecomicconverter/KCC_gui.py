@@ -249,11 +249,19 @@ class WorkerThread(QThread):
             options.gamma = float(GUI.gammaValue)
         if GUI.autoLevelBox.isChecked():
             options.autolevel = True
-        options.cropping = GUI.croppingBox.checkState().value
+        if GUI.croppingBox.isChecked():
+            if GUI.croppingBox.checkState() == Qt.CheckState.PartiallyChecked:
+                options.cropping = 1
+            else:
+                options.cropping = 2
         if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
             options.croppingp = float(GUI.croppingPowerValue)
             options.preservemargin = GUI.preserveMarginBox.value()
-        options.interpanelcrop = GUI.interPanelCropBox.checkState().value
+        if GUI.interPanelCropBox.isChecked():
+            if GUI.interPanelCropBox.checkState() == Qt.CheckState.PartiallyChecked:
+                options.interpanelcrop = 1
+            else:
+                options.interpanelcrop = 2
         if GUI.borderBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.white_borders = True
         elif GUI.borderBox.checkState() == Qt.CheckState.Checked:
@@ -866,35 +874,35 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings.setValue('currentFormat', GUI.formatBox.currentIndex())
         self.settings.setValue('startNumber', self.startNumber + 1)
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
-        self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState().value,
-                                           'rotateBox': GUI.rotateBox.checkState().value,
-                                           'qualityBox': GUI.qualityBox.checkState().value,
-                                           'gammaBox': GUI.gammaBox.checkState().value,
-                                           'autoLevelBox': GUI.autoLevelBox.checkState().value,
-                                           'croppingBox': GUI.croppingBox.checkState().value,
+        self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
+                                           'rotateBox': GUI.rotateBox.checkState(),
+                                           'qualityBox': GUI.qualityBox.checkState(),
+                                           'gammaBox': GUI.gammaBox.checkState(),
+                                           'autoLevelBox': GUI.autoLevelBox.checkState(),
+                                           'croppingBox': GUI.croppingBox.checkState(),
                                            'croppingPowerSlider': float(self.croppingPowerValue) * 100,
                                            'preserveMarginBox': self.preserveMarginBox.value(),
-                                           'interPanelCropBox': GUI.interPanelCropBox.checkState().value,
-                                           'upscaleBox': GUI.upscaleBox.checkState().value,
-                                           'borderBox': GUI.borderBox.checkState().value,
-                                           'webtoonBox': GUI.webtoonBox.checkState().value,
-                                           'outputSplit': GUI.outputSplit.checkState().value,
-                                           'colorBox': GUI.colorBox.checkState().value,
-                                           'eraseRainbowBox': GUI.eraseRainbowBox.checkState().value,
-                                           'disableProcessingBox': GUI.disableProcessingBox.checkState().value,
-                                           'metadataTitleBox': GUI.metadataTitleBox.checkState().value,
-                                           'mozJpegBox': GUI.mozJpegBox.checkState().value,
+                                           'interPanelCropBox': GUI.interPanelCropBox.checkState(),
+                                           'upscaleBox': GUI.upscaleBox.checkState(),
+                                           'borderBox': GUI.borderBox.checkState(),
+                                           'webtoonBox': GUI.webtoonBox.checkState(),
+                                           'outputSplit': GUI.outputSplit.checkState(),
+                                           'colorBox': GUI.colorBox.checkState(),
+                                           'eraseRainbowBox': GUI.eraseRainbowBox.checkState(),
+                                           'disableProcessingBox': GUI.disableProcessingBox.checkState(),
+                                           'metadataTitleBox': GUI.metadataTitleBox.checkState(),
+                                           'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
-                                           'deleteBox': GUI.deleteBox.checkState().value,
-                                           'spreadShiftBox': GUI.spreadShiftBox.checkState().value,
-                                           'fileFusionBox': GUI.fileFusionBox.checkState().value,
-                                           'defaultOutputFolderBox': GUI.defaultOutputFolderBox.checkState().value,
-                                           'noRotateBox': GUI.noRotateBox.checkState().value,
-                                           'rotateFirstBox': GUI.rotateFirstBox.checkState().value,
-                                           'maximizeStrips': GUI.maximizeStrips.checkState().value,
+                                           'deleteBox': GUI.deleteBox.checkState(),
+                                           'spreadShiftBox': GUI.spreadShiftBox.checkState(),
+                                           'fileFusionBox': GUI.fileFusionBox.checkState(),
+                                           'defaultOutputFolderBox': GUI.defaultOutputFolderBox.checkState(),
+                                           'noRotateBox': GUI.noRotateBox.checkState(),
+                                           'rotateFirstBox': GUI.rotateFirstBox.checkState(),
+                                           'maximizeStrips': GUI.maximizeStrips.checkState(),
                                            'gammaSlider': float(self.gammaValue) * 100,
-                                           'chunkSizeCheckBox': GUI.chunkSizeCheckBox.checkState().value,
+                                           'chunkSizeCheckBox': GUI.chunkSizeCheckBox.checkState(),
                                            'chunkSizeBox': GUI.chunkSizeBox.value()})
         self.settings.sync()
         self.tray.hide()
@@ -969,7 +977,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.setupUi(MW)
         self.editor = KCCGUI_MetaEditor()
         self.icons = Icons()
-        self.settings = QSettings('ciromattia', 'kcc')
+        self.settings = QSettings('ciromattia', 'kcc9')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.defaultOutputFolder = str(self.settings.value('defaultOutputFolder', '', type=str))
@@ -979,7 +987,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
         self.windowSize = self.settings.value('windowSize', '0x0', type=str)
-        self.options = self.settings.value('options', {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100})
+        default_options = {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100}
+        try:
+            self.options = self.settings.value('options', default_options)
+        except Exception:
+            self.options = default_options
         self.worker = WorkerThread()
         self.versionCheck = VersionThread()
         self.progress = ProgressThread()

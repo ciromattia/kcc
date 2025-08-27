@@ -45,7 +45,10 @@ class BuildBinaryCommand(setuptools.Command):
                 os.system(f'appdmg kcc.json dist/kcc_macos_{platform.processor()}_{VERSION}.dmg')
             sys.exit(0)
         elif sys.platform == 'win32':
-            os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n KCC_' + VERSION + ' -w --noupx kcc.py')
+            if os.getenv('WINDOWS_7'):
+                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_win7_' + VERSION + ' -w --noupx kcc.py')
+            else:
+                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n KCC_' + VERSION + ' -w --noupx kcc.py')
             sys.exit(0)
         elif sys.platform == 'linux':
             os.system(
@@ -78,8 +81,8 @@ setuptools.setup(
     },
     packages=['kindlecomicconverter'],
     install_requires=[
-        'pyside6>=6.5.1',
-        'Pillow>=11.3.0',
+        'pyside6>=6.0.0',
+        'Pillow>=9.3.0',
         'PyMuPDF>=1.18.0',
         'psutil>=5.9.5',
         'python-slugify>=1.2.1,<9.0.0',
@@ -89,7 +92,7 @@ setuptools.setup(
         'natsort>=8.4.0',
         'distro',
         'numpy>=1.22.4',
-        'PyMuPDF>=1.26.1',
+        'PyMuPDF>=1.16.1',
     ],
     classifiers=[],
     zip_safe=False,
