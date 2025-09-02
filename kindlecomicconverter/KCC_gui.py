@@ -254,6 +254,8 @@ class WorkerThread(QThread):
                 options.cropping = 1
             else:
                 options.cropping = 2
+        else:
+            options.cropping = 0
         if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
             options.croppingp = float(GUI.croppingPowerValue)
             options.preservemargin = GUI.preserveMarginBox.value()
@@ -262,6 +264,8 @@ class WorkerThread(QThread):
                 options.interpanelcrop = 1
             else:
                 options.interpanelcrop = 2
+        else:
+            options.interpanelcrop = 0
         if GUI.borderBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.white_borders = True
         elif GUI.borderBox.checkState() == Qt.CheckState.Checked:
