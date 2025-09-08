@@ -18,6 +18,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
+import io
 import os
 import pathlib
 import re
@@ -34,6 +35,9 @@ from tempfile import mkdtemp, gettempdir, TemporaryFile
 from shutil import move, copytree, rmtree, copyfile
 from multiprocessing import Pool, cpu_count
 from uuid import uuid4
+import ebooklib
+from ebooklib import epub
+from lxml import html
 from natsort import os_sort_keygen, os_sorted
 from slugify import slugify as slugify_ext
 from PIL import Image, ImageFile
@@ -859,6 +863,26 @@ def getWorkFolder(afile):
             except Exception as e:
                 rmtree(path, True)
                 raise UserWarning(f"Failed to extract images from PDF file. {e}")
+        elif afile.endswith('.epub'):
+            workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
+            path = workdir
+            book = epub.read_epub(afile)
+            i = 1
+            for doc in book.get_items_of_type(ebooklib.ITEM_DOCUMENT):
+                root = html.fromstring(doc.get_content())
+                img_tags = root.xpath('.//img|.//image')
+                for element in img_tags:
+                    img_path = element.attrib.get('src') or element.attrib.get('xlink:href')
+                    while img_path.startswith('../'):
+                        img_path = img_path[3:]
+                    img = book.get_item_with_href(img_path)
+                    if img:
+                        with io.BytesIO(img.content) as b:
+                            pillowImage = Image.open(b)
+                            _, ext = os.path.splitext(img_path)
+                            pillowImage.save(os.path.join(workdir, f"{i}{ext}"))
+                            i += 1
+        
         else:
             workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
             try:

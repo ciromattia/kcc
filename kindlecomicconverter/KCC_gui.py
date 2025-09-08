@@ -545,7 +545,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.jobList.clear()
         if self.tar or self.sevenzip:
             fnames = QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                            'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf);;All (*.*)')
+                                                            'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.epub *.pdf);;All (*.*)')
         else:
             fnames = QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
                                                             'Comic (*.pdf);;All (*.*)')
@@ -922,7 +922,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 GUI.jobList.clear()
             formats = ['.pdf']
             if self.tar or self.sevenzip:
-                formats.extend(['.cb7', '.7z', '.cbz', '.zip', '.cbr', '.rar'])
+                formats.extend(['.cb7', '.7z', '.cbz', '.zip', '.epub', '.cbr', '.rar'])
             if os.path.isdir(message):
                 GUI.jobList.addItem(message)
                 GUI.jobList.scrollToBottom()
