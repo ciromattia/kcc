@@ -1520,8 +1520,8 @@ def makeBook(source, qtgui=None):
     cover = image.Cover(cover_path, options)
 
     if options.webtoon:
-        y = image.ProfileData.Profiles[options.profile][1][1]
-        comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
+        x, y = image.ProfileData.Profiles[options.profile][1]
+        comic2panel.main(['-y ' + str(y), '-x' + str(x), '-i', '-m', path], qtgui)
     if options.noprocessing:
         print("Do not process image, ignore any profile or processing option")
     else:

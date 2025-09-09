@@ -100,91 +100,23 @@ def splitImage(work):
         filePath = os.path.join(path, name)
         Image.warnings.simplefilter('error', Image.DecompressionBombWarning)
         Image.MAX_IMAGE_PIXELS = 1000000000
-        imgOrg = Image.open(filePath).convert('RGB')
-        imgProcess = Image.open(filePath).convert('1')
-        widthImg, heightImg = imgOrg.size
-        if heightImg > opt.height:
-            if opt.debug:
-                drawImg = Image.open(filePath).convert(mode='RGBA')
-                draw = ImageDraw.Draw(drawImg)
+        imgOrg = Image.open(filePath)
+        w, h = imgOrg.size
 
-            # Find panels
-            yWork = 0
-            panelDetected = False
-            panels = []
-            while yWork < heightImg:
-                tmpImg = imgProcess.crop((4, yWork, widthImg-4, yWork + 4))
-                solid = detectSolid(tmpImg)
-                if not solid and not panelDetected:
-                    panelDetected = True
-                    panelY1 = yWork - 2
-                if heightImg - yWork <= 5:
-                    if not solid and panelDetected:
-                        panelY2 = heightImg
-                        panelDetected = False
-                        panels.append((panelY1, panelY2, panelY2 - panelY1))
-                if solid and panelDetected:
-                    panelDetected = False
-                    panelY2 = yWork + 6
-                    panels.append((panelY1, panelY2, panelY2 - panelY1))
-                yWork += 5
+        device_width = opt.width
+        device_height = opt.height
+        overlap_ratio = 13/16
 
-            # Split too big panels
-            panelsProcessed = []
-            for panel in panels:
-                if panel[2] <= opt.height * 1.5:
-                    panelsProcessed.append(panel)
-                elif panel[2] < opt.height * 2:
-                    diff = panel[2] - opt.height
-                    panelsProcessed.append((panel[0], panel[1] - diff, opt.height))
-                    panelsProcessed.append((panel[1] - opt.height, panel[1], opt.height))
-                else:
-                    parts = round(panel[2] / opt.height)
-                    diff = panel[2] // parts
-                    for x in range(0, parts):
-                        panelsProcessed.append((panel[0] + (x * diff), panel[1] - ((parts - x - 1) * diff), diff))
+        target_width = min(w, int(device_width * 6/10))
+        if target_width != w:
+            imgOrg = ImageOps.contain(imgOrg, (target_width, h))
+        _, target_height = imgOrg.size
 
-            if opt.debug:
-                for panel in panelsProcessed:
-                    draw.rectangle(((0, panel[0]), (widthImg, panel[1])), (0, 255, 0, 128), (0, 0, 255, 255))
-                debugImage = Image.alpha_composite(imgOrg.convert(mode='RGBA'), drawImg)
-                debugImage.save(os.path.join(path, os.path.splitext(name)[0] + '-debug.png'), 'PNG')
+        for i in range(0, target_height, int(device_height * overlap_ratio)):
+            newPage = imgOrg.crop((0, i, target_width, i + device_height))
+            newPage.save(os.path.join(path, os.path.splitext(name)[0] + '-' + str(i).zfill(8) + '.png'), 'PNG')
 
-            # Create virtual pages
-            pages = []
-            currentPage = []
-            pageLeft = opt.height
-            panelNumber = 0
-            for panel in panelsProcessed:
-                if pageLeft - panel[2] > 0:
-                    pageLeft -= panel[2]
-                    currentPage.append(panelNumber)
-                    panelNumber += 1
-                else:
-                    if len(currentPage) > 0:
-                        pages.append(currentPage)
-                    pageLeft = opt.height - panel[2]
-                    currentPage = [panelNumber]
-                    panelNumber += 1
-            if len(currentPage) > 0:
-                pages.append(currentPage)
-
-            # Create pages
-            pageNumber = 1
-            for page in pages:
-                pageHeight = 0
-                targetHeight = 0
-                for panel in page:
-                    pageHeight += panelsProcessed[panel][2]
-                if pageHeight > 15:
-                    newPage = Image.new('RGB', (widthImg, pageHeight))
-                    for panel in page:
-                        panelImg = imgOrg.crop((0, panelsProcessed[panel][0], widthImg, panelsProcessed[panel][1]))
-                        newPage.paste(panelImg, (0, targetHeight))
-                        targetHeight += panelsProcessed[panel][2]
-                    newPage.save(os.path.join(path, os.path.splitext(name)[0] + '-' + str(pageNumber).zfill(4) + '.png'), 'PNG')
-                    pageNumber += 1
-            os.remove(filePath)
+        os.remove(filePath)
     except Exception:
         return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
@@ -201,6 +133,8 @@ def main(argv=None, qtgui=None):
                                    " with spaces.")
     main_options.add_argument("-y", "--height", type=int, dest="height", default=0,
                               help="Height of the target device screen")
+    main_options.add_argument("-x", "--width", type=int, dest="width", default=0,
+                              help="Width of the target device screen")
     main_options.add_argument("-i", "--in-place", action="store_true", dest="inPlace", default=False,
                               help="Overwrite source directory")
     main_options.add_argument("-m", "--merge", action="store_true", dest="merge", default=False,
