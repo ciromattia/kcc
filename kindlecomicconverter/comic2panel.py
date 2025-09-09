@@ -107,13 +107,11 @@ def splitImage(work):
         device_height = opt.height
         overlap_ratio = 13/16
 
-        target_width = min(w, int(device_width * 6/10))
+        target_width = 1072
         if target_width != w:
-            imgOrg = ImageOps.contain(imgOrg, (target_width, h))
+            imgOrg = ImageOps.scale(imgOrg, target_width/w)
         _, target_height = imgOrg.size
-        virtual_device_width = int(target_width * 10/6)
-        virtual_device_height = int(device_height / device_width * virtual_device_width)
-
+        virtual_device_height = device_height
         for i in range(0, target_height, int(virtual_device_height * overlap_ratio)):
             newPage = imgOrg.crop((0, i, target_width, i + virtual_device_height))
             newPage.save(os.path.join(path, os.path.splitext(name)[0] + '-' + str(i).zfill(8) + '.png'), 'PNG')

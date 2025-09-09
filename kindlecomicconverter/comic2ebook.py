@@ -1402,6 +1402,8 @@ def checkOptions(options):
         options.righttoleft = False
         options.upscale = True
         options.hq = False
+        options.white_borders = True
+        options.bordersColor = 'white'
     # Disable all Kindle features for other e-readers
     if options.profile == 'OTHER':
         options.panelview = False
