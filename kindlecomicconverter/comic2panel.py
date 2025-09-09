@@ -111,9 +111,11 @@ def splitImage(work):
         if target_width != w:
             imgOrg = ImageOps.contain(imgOrg, (target_width, h))
         _, target_height = imgOrg.size
+        virtual_device_width = int(target_width * 10/6)
+        virtual_device_height = int(device_height / device_width * virtual_device_width)
 
-        for i in range(0, target_height, int(device_height * overlap_ratio)):
-            newPage = imgOrg.crop((0, i, target_width, i + device_height))
+        for i in range(0, target_height, int(virtual_device_height * overlap_ratio)):
+            newPage = imgOrg.crop((0, i, target_width, i + virtual_device_height))
             newPage.save(os.path.join(path, os.path.splitext(name)[0] + '-' + str(i).zfill(8) + '.png'), 'PNG')
 
         os.remove(filePath)
