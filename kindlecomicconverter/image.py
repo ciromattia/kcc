@@ -294,7 +294,7 @@ class ComicPage:
         cb_spread = cb_nonzero[-1] - cb_nonzero[0] if len(cb_nonzero) else 0
         cr_spread = cr_nonzero[-1] - cr_nonzero[0] if len(cr_nonzero) else 0
 
-        SPREAD_THRESHOLD = 50
+        SPREAD_THRESHOLD=20
         if cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
             return False
         else:
