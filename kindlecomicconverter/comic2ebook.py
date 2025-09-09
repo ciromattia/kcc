@@ -1402,6 +1402,8 @@ def checkOptions(options):
         options.righttoleft = False
         options.upscale = True
         options.hq = False
+        options.white_borders = True
+        options.bordersColor = 'white'
     # Disable all Kindle features for other e-readers
     if options.profile == 'OTHER':
         options.panelview = False
@@ -1520,8 +1522,8 @@ def makeBook(source, qtgui=None):
     cover = image.Cover(cover_path, options)
 
     if options.webtoon:
-        y = image.ProfileData.Profiles[options.profile][1][1]
-        comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
+        x, y = image.ProfileData.Profiles[options.profile][1]
+        comic2panel.main(['-y ' + str(y), '-x' + str(x), '-i', '-m', path], qtgui)
     if options.noprocessing:
         print("Do not process image, ignore any profile or processing option")
     else:
