@@ -278,7 +278,7 @@ def buildNAV(dstdir, title, chapters, chapternames):
     f.close()
 
 
-def buildOPF(dstdir, title, filelist, cover=None):
+def buildOPF(dstdir, title, filelist, originalpath, cover=None):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
     deviceres = options.profileData[1]
     if options.righttoleft:
@@ -366,6 +366,11 @@ def buildOPF(dstdir, title, filelist, cover=None):
     else:
         f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
         pageside = "left"
+    if originalpath.lower().endswith('.pdf'):
+        if pageside == "right":
+            pageside = "left"
+        else:
+            pageside = "right"       
     if options.spreadshift:
         if pageside == "right":
             pageside = "left"
@@ -440,7 +445,7 @@ def buildOPF(dstdir, title, filelist, cover=None):
                   "</container>"])
     f.close()
 
-def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, len_tomes=0):
+def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, originalpath, len_tomes=0):
     filelist = []
     chapterlist = []
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
@@ -580,7 +585,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, len
             chapternames[filename] = aChapter[1]
     buildNCX(path, options.title, chapterlist, chapternames)
     buildNAV(path, options.title, chapterlist, chapternames)
-    buildOPF(path, options.title, filelist, cover)
+    buildOPF(path, options.title, filelist, originalpath, cover)
 
 
 def buildPDF(path, title, cover=None, output_file=None):
@@ -1574,10 +1579,10 @@ def makeBook(source, qtgui=None):
         else:
             print("Creating EPUB file...")
             if len(tomes) > 1:
-                buildEPUB(tome, chapterNames, tomeNumber, True, cover, len(tomes))
+                buildEPUB(tome, chapterNames, tomeNumber, True, cover, source, len(tomes))
                 filepath.append(getOutputFilename(source, options.output, '.epub', ' ' + str(tomeNumber)))
             else:
-                buildEPUB(tome, chapterNames, tomeNumber, False, cover)
+                buildEPUB(tome, chapterNames, tomeNumber, False, cover, source)
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
             makeZIP(tome + '_comic', tome, True)
         # Copy files to final destination (PDF files are already saved directly)
