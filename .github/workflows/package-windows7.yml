@@ -1,6 +1,6 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: build KCC for windows
+name: build KCC for windows 7
 
 on:
   workflow_dispatch:
@@ -23,21 +23,24 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
+    env:
+      WINDOWS_7: 1
     steps:
       - uses: actions/checkout@v5
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: 3.8
           cache: 'pip'
       - name: Install dependencies
         env:
           PYINSTALLER_COMPILE_BOOTLOADER: 1
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install -r requirements.txt
+          pip install -r requirements-win7.txt
           pip install certifi pyinstaller --no-binary pyinstaller
+          .\gen_ui_files.bat
       - name: build binary
         run: |
           python setup.py build_binary
@@ -47,17 +50,6 @@ jobs:
         with:
           name: windows-build
           path: dist/*.exe
-      - id: optional_step_id
-        uses: signpath/github-action-submit-signing-request@v1.3
-        if: ${{ github.repository == 'ciromattia/kcc' }}
-        with:
-         api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
-         organization-id: '1dc1bad6-4a8c-4f85-af30-5c5d3d392ea6'
-         project-slug: 'kcc'
-         signing-policy-slug: 'release-signing'
-         github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
-         wait-for-completion: true
-         output-artifact-directory: 'dist/'
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')

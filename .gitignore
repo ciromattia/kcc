@@ -8,6 +8,8 @@ dist/
 build/
 KindleComicConverter*.egg-info/
 .idea/
+win7
+osx10.11
 /venv/
 /kindlegen*
 /kcc.bat

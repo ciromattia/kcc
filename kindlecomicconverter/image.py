@@ -495,9 +495,6 @@ class Cover:
                     stroke_width=25
                 )
                 copy.save(target, "JPEG", optimize=1, quality=85)
-            dot_cover = Path(target).with_stem('._' + Path(target).stem)
-            if os.path.exists(dot_cover):
-                os.remove(dot_cover)
         except IOError:
             raise RuntimeError('Failed to save cover.')
 

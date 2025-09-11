@@ -20,7 +20,7 @@ jobs:
             capital: KCC_c2p
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Package Application
         uses: JackMcKew/pyinstaller-action-windows@main

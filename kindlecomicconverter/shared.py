@@ -98,10 +98,10 @@ def dependencyCheck(level):
     if level > 2:
         try:
             from PySide6.QtCore import qVersion as qtVersion
-            if Version('6.5.1') > Version(qtVersion()):
-                missing.append('PySide 6.5.1+')
+            if Version('6.0.0') > Version(qtVersion()):
+                missing.append('PySide 6.0.0')
         except ImportError:
-            missing.append('PySide 6.5.1+')
+            missing.append('PySide 6.0.0+')
         try:
             import raven
         except ImportError:
@@ -124,16 +124,16 @@ def dependencyCheck(level):
             missing.append('python-slugify 1.2.1+')
     try:
         from PIL import __version__ as pillowVersion
-        if Version('11.3.0') > Version(pillowVersion):
-            missing.append('Pillow 11.3.0+')
+        if Version('8.3.0') > Version(pillowVersion):
+            missing.append('Pillow 8.3.0+')
     except ImportError:
-        missing.append('Pillow 11.3.0+')
+        missing.append('Pillow 8.3.0+')
     try:
         from pymupdf import __version__ as pymupdfVersion
-        if Version('1.26.1') > Version(pymupdfVersion):
-            missing.append('PyMuPDF 1.26.1+')
+        if Version('1.16.1') > Version(pymupdfVersion):
+            missing.append('PyMuPDF 1.16.1+')
     except ImportError:
-        missing.append('PyMuPDF 1.26.1+')
+        missing.append('PyMuPDF 1.16.1+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
         sys.exit(1)
