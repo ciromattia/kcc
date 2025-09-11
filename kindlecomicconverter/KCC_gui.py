@@ -143,6 +143,9 @@ class Icons:
         self.humble = QIcon()
         self.humble.addPixmap(QPixmap(":/Brand/icons/Humble_H-Red.png"), QIcon.Mode.Normal, QIcon.State.Off)
 
+        self.bindle = QIcon()
+        self.bindle.addPixmap(QPixmap(":/Brand/icons/Bindle_Red.png"), QIcon.Mode.Normal, QIcon.State.Off)
+
 
 class VersionThread(QThread):
     def __init__(self):
@@ -187,12 +190,12 @@ class VersionThread(QThread):
                     time_left = f"{delta.days} day(s) left"
                     icon = 'info'
                     if category == 'humbleBundles':
-                        icon = 'humble'
+                        icon = 'bindle'
                     if category == 'kofi':
                         icon = 'kofi'
                     message = f"<b>{payload.get('name')}</b>"
                     if payload.get('link'):
-                        message = f'<a href="{payload.get('link')}"><b>{payload.get('name')}</b></a>'
+                        message = '<a href="{}"><b>{}</b></a>'.format(payload.get('link'), payload.get('name'))
                     if payload.get('showDeadline'):
                         message += f': {time_left}'
                     if category == 'humbleBundles':

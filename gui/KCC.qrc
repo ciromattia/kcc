@@ -31,5 +31,6 @@
   <qresource prefix="Brand">
     <file>../icons/kofi_symbol.png</file>
     <file>../icons/Humble_H-Red.png</file>
+    <file>../icons/Bindle_Red.png</file>
   </qresource>
 </RCC>
