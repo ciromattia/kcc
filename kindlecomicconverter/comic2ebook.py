@@ -785,16 +785,16 @@ def extract_page(vector):
                 width, height = int(page.rect.width), int(page.rect.height)
                 blank_page = Image.new("RGB", (width, height), "white")
                 blank_page.save(output_path)
-            xref = image_list[0][0]
-            d = doc.extract_image(xref)
-            if d['cs-name'] == 'DeviceCMYK':
-                pix = pymupdf.Pixmap(doc, xref)
-                pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
-                pix.save(output_path)
-                
             else:
-                with open(Path(output_path).with_suffix('.' + d['ext']), "wb") as imgout:
-                    imgout.write(d["image"])
+                xref = image_list[0][0]
+                d = doc.extract_image(xref)
+                if d['cs-name'] == 'DeviceCMYK':
+                    pix = pymupdf.Pixmap(doc, xref)
+                    pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
+                    pix.save(output_path)
+                else:
+                    with open(Path(output_path).with_suffix('.' + d['ext']), "wb") as imgout:
+                        imgout.write(d["image"])
         print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
 
 
@@ -810,6 +810,11 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
             if len(page.get_images()) > 1:
                 render = True
                 break
+            if len(page.get_images()) == 1:
+                image = page.get_images()[0]
+                if not image[5] or image[8] == 'CCITTFaxDecode':
+                    render = True
+                    break
 
     cpu = cpu_count()
 
