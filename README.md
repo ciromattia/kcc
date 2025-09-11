@@ -19,7 +19,7 @@ When using a reMarkable profile (Rmk1, Rmk2, RmkPP), the format automatically de
 for optimal compatibility with your device's native PDF reader.
 
 The absolute highest quality source files are print quality DRM-free PDFs from Kodansha/[Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical,
-which can be directly converted by KCC. Be sure to check the spread shift option!
+which can be directly converted by KCC.
 
 Its main feature is various optional image processing steps to look good on eink screens, 
 which have different requirements than normal LCD screens.
