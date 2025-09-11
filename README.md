@@ -406,7 +406,7 @@ Older links (dead):
 
 ## PRIVACY
 **KCC** is initiating internet connections in two cases:
-* During startup - Version check.
+* During startup - Version check and announcement check.
 * When error occurs - Automatic reporting on Windows and macOS.
 
 ## KNOWN ISSUES

@@ -24,6 +24,12 @@
     </property>
     <item row="2" column="0" colspan="2">
      <widget class="QListWidget" name="jobList">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>150</height>
+       </size>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -86,7 +92,7 @@
          </property>
          <property name="icon">
           <iconset resource="KCC.qrc">
-           <normaloff>:/Other/icons/kofi_symbol.png</normaloff>:/Other/icons/kofi_symbol.png</iconset>
+           <normaloff>:/Brand/icons/kofi_symbol.png</normaloff>:/Other/icons/kofi_symbol.png</iconset>
          </property>
          <property name="iconSize">
           <size>
