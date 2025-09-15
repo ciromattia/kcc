@@ -92,7 +92,7 @@ Click on **Assets** of the latest release.
 You probably want either
 - `KCC_*.*.*.exe` (Windows)
 - `kcc_macos_arm_*.*.*.dmg` (recent Mac with Apple Silicon M1 chip or later)
-- `kcc_macos_i386_*.*.*.dmg` (older Mac with Intel chip)
+- `kcc_macos_i386_*.*.*.dmg` (older Mac with Intel chip macOS 12+)
 
 The `c2e` and `c2p` versions are command line tools for power users.
 
