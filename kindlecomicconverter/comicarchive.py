@@ -36,21 +36,22 @@ class ComicArchive:
         self.filepath = filepath
         if not os.path.isfile(self.filepath):
             raise OSError('File not found.')
+        self.dirname, self.basename = os.path.split(filepath)
 
     @cached_property
     def type(self):    
         extraction_commands = [
-            [SEVENZIP, 'l', '-y', '-p1', self.filepath],
+            [SEVENZIP, 'l', '-y', '-p1', self.basename],
         ]
 
         if distro.id() == 'fedora' or distro.like() == 'fedora':
             extraction_commands.append(
-                ['unrar', 'l', '-y', '-p1', self.filepath],
+                ['unrar', 'l', '-y', '-p1', self.basename],
             )
 
         for cmd in extraction_commands:
             try:
-                process = subprocess_run(cmd, capture_output=True, check=True)
+                process = subprocess_run(cmd, capture_output=True, check=True, cwd=self.dirname)
                 for line in process.stdout.splitlines():
                     if b'Type =' in line:
                         return line.rstrip().decode().split(' = ')[1].upper()
@@ -68,25 +69,25 @@ class ComicArchive:
         missing = []
 
         extraction_commands = [
-            ['tar', '--exclude', '__MACOSX', '--exclude', '.DS_Store', '--exclude', 'thumbs.db', '--exclude', 'Thumbs.db', '-xf', self.filepath, '-C', targetdir],
-            [SEVENZIP, 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.filepath],
+            ['tar', '--exclude', '__MACOSX', '--exclude', '.DS_Store', '--exclude', 'thumbs.db', '--exclude', 'Thumbs.db', '-xf', self.basename, '-C', targetdir],
+            [SEVENZIP, 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.basename],
         ]
 
         if platform.system() == 'Darwin':
             extraction_commands.append(
-                ['unar', self.filepath, '-D', '-f', '-o', targetdir]
+                ['unar', self.basename, '-D', '-f', '-o', targetdir]
             )
 
         extraction_commands.reverse()
 
         if distro.id() == 'fedora' or distro.like() == 'fedora':
             extraction_commands.append(
-                ['unrar', 'x', '-y', '-x__MACOSX', '-x.DS_Store', '-xthumbs.db', '-xThumbs.db', self.filepath, targetdir]
+                ['unrar', 'x', '-y', '-x__MACOSX', '-x.DS_Store', '-xthumbs.db', '-xThumbs.db', self.basename, targetdir]
             )
         
         for cmd in extraction_commands:
             try:
-                subprocess_run(cmd, capture_output=True, check=True)
+                subprocess_run(cmd, capture_output=True, check=True, cwd=self.dirname)
                 return targetdir     
             except FileNotFoundError:
                 missing.append(cmd[0])
@@ -101,14 +102,14 @@ class ComicArchive:
     def addFile(self, sourcefile):
         if self.type in ['RAR', 'RAR5']:
             raise NotImplementedError
-        process = subprocess_run([SEVENZIP, 'a', '-y', self.filepath, sourcefile],
-                        stdout=PIPE, stderr=STDOUT)
+        process = subprocess_run([SEVENZIP, 'a', '-y', self.basename, sourcefile],
+                        stdout=PIPE, stderr=STDOUT, cwd=self.dirname)
         if process.returncode != 0:
             raise OSError('Failed to add the file.')
 
     def extractMetadata(self):
-        process = subprocess_run([SEVENZIP, 'x', '-y', '-so', self.filepath, 'ComicInfo.xml'],
-                        stdout=PIPE, stderr=STDOUT)
+        process = subprocess_run([SEVENZIP, 'x', '-y', '-so', self.basename, 'ComicInfo.xml'],
+                        stdout=PIPE, stderr=STDOUT, cwd=self.dirname)
         if process.returncode != 0:
             raise OSError(EXTRACTION_ERROR)
         try:
