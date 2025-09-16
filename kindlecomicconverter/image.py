@@ -289,16 +289,56 @@ class ComicPage:
 
         cb_hist = cb.histogram()
         cr_hist = cr.histogram()
+
+        for h in cb_hist, cr_hist:
+            # cut off pixels from both ends of the histogram
+            cutoff = (.1, .1)
+            # get number of pixels
+            n = sum(h)
+            # remove cutoff% pixels from the low end
+            cut = int(n * cutoff[0] // 100)
+            for lo in range(256):
+                if cut > h[lo]:
+                    cut = cut - h[lo]
+                    h[lo] = 0
+                else:
+                    h[lo] -= cut
+                    cut = 0
+                if cut <= 0:
+                    break
+            # remove cutoff% samples from the high end
+            cut = int(n * cutoff[1] // 100)
+            for hi in range(255, -1, -1):
+                if cut > h[hi]:
+                    cut = cut - h[hi]
+                    h[hi] = 0
+                else:
+                    h[hi] -= cut
+                    cut = 0
+                if cut <= 0:
+                    break
+
         cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
         cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
-        cb_spread = cb_nonzero[-1] - cb_nonzero[0] if len(cb_nonzero) else 0
-        cr_spread = cr_nonzero[-1] - cr_nonzero[0] if len(cr_nonzero) else 0
+        cb_spread = cb_nonzero[-1] - cb_nonzero[0]
+        cr_spread = cr_nonzero[-1] - cr_nonzero[0]
 
-        SPREAD_THRESHOLD=20
+        # bias adjustment
+        SPREAD_THRESHOLD = 5
         if cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
             return False
-        else:
+        
+        DIFF_THRESHOLD = 10
+        if cb_nonzero[0] < 128 - DIFF_THRESHOLD:
             return True
+        elif cb_nonzero[-1] > 128 + DIFF_THRESHOLD:
+            return True
+        elif cr_nonzero[0] < 128 - DIFF_THRESHOLD:
+            return True
+        elif cr_nonzero[-1] > 128 + DIFF_THRESHOLD:
+            return True
+        else:
+            return False
         
     def saveToDir(self):
         try:
