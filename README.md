@@ -94,13 +94,11 @@ You probably want either
 - `kcc_macos_arm_*.*.*.dmg` (recent Mac with Apple Silicon M1 chip or later)
 - `kcc_macos_i386_*.*.*.dmg` (older Mac with Intel chip macOS 12+)
 
+There are also legacy macOS 10.14+ and Windows 7 experimental versions available.
+
 The `c2e` and `c2p` versions are command line tools for power users.
 
-On Windows 11, you may need to run in compatibility mode for an older Windows version.
-
 On Mac, right click open to get past the security warning.
-
-There are also legacy macOS 10.14+ and Windows 7 versions available.
 
 For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
 
