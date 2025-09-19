@@ -151,7 +151,8 @@ class ComicPageParser:
         # Detect corruption in source image, let caller catch any exceptions triggered.
         srcImgPath = os.path.join(source[0], source[1])
         Image.open(srcImgPath).verify()
-        self.image = Image.open(srcImgPath)
+        with Image.open(srcImgPath) as im:
+            self.image = im.copy()
 
         self.fill = self.fillCheck()
         # backwards compatibility for Pillow >9.1.0
