@@ -890,6 +890,8 @@ def getWorkFolder(afile):
                         manifest_dict[manifest_item.attrib.get('id')] = manifest_item.attrib.get('href')
                     ordered_image_paths = []
                     for spine_item in spine:
+                        if spine_item not in manifest_dict:
+                            continue
                         page_path = os.path.join(os.path.dirname(opf_path), manifest_dict[spine_item])
                         page = ET.parse(page_path)
                         imgs = page.findall(r'.//{*}img') + page.findall(r'.//{*}image')
