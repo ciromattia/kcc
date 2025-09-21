@@ -22,6 +22,7 @@ import os
 import pathlib
 import re
 import sys
+import xml.etree.ElementTree as ET
 from argparse import ArgumentParser
 from time import perf_counter, strftime, gmtime
 from copy import copy
@@ -42,7 +43,7 @@ from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 import pymupdf
-import numpy as np
+
 
 from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean
 from .comicarchive import SEVENZIP, available_archive_tools
@@ -876,16 +877,54 @@ def getWorkFolder(afile):
                 path = cbx.extract(workdir)
                 sanitizePermissions(path)
 
-                tdir = os.listdir(workdir)
-                if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
-                    tdir.remove('ComicInfo.xml')
-                    if os.path.isdir(os.path.join(workdir, tdir[0])):
-                        os.replace(
-                            os.path.join(workdir, 'ComicInfo.xml'),
-                            os.path.join(workdir, tdir[0], 'ComicInfo.xml')
-                        )
-                if len(tdir) == 1 and os.path.isdir(os.path.join(workdir, tdir[0])):
-                    path = os.path.join(workdir, tdir[0])
+                if afile.lower().endswith('.epub'):
+                    container = ET.parse(os.path.join(path, 'META-INF', 'container.xml'))
+                    opf_path = container.find(r'.//{*}rootfile').attrib['full-path']
+                    opf_path = os.path.join(path, opf_path)
+                    opf = ET.parse(opf_path)
+                    spine = []
+                    for spine_item in opf.findall(r'.//{*}itemref'):
+                        spine.append(spine_item.attrib.get('idref'))
+                    manifest_dict = {}
+                    for manifest_item in opf.findall(".//*[@media-type='application/xhtml+xml']"):
+                        manifest_dict[manifest_item.attrib.get('id')] = manifest_item.attrib.get('href')
+                    ordered_image_paths = []
+                    for spine_item in spine:
+                        if spine_item not in manifest_dict:
+                            continue
+                        page_path = os.path.join(os.path.dirname(opf_path), manifest_dict[spine_item])
+                        page = ET.parse(page_path)
+                        imgs = page.findall(r'.//{*}img') + page.findall(r'.//{*}image')
+                        img_path = None
+                        for img in imgs:
+                            for key in img.attrib:
+                                if 'src' in key or 'href' in key:
+                                    img_path = img.attrib[key]
+                                    if img_path.startswith('..'):
+                                        img_path = os.path.join(os.path.dirname(opf_path), os.path.dirname(manifest_dict[spine_item]), img_path)
+                                    else:
+                                        img_path = os.path.join(os.path.dirname(opf_path), os.path.dirname(manifest_dict[spine_item]), img_path)
+                                    break
+                        # TODO empty image
+                        if img_path:
+                            ordered_image_paths.append(img_path)
+                    path = mkdtemp('', 'KCC-', os.path.dirname(afile))
+                    for i, img_path in enumerate(ordered_image_paths):
+                        _, ext = os.path.splitext(img_path)
+                        new_path = os.path.join(path, f"{i}{ext}")
+                        os.rename(img_path, new_path)
+                    rmtree(workdir, True)
+                else:
+                    tdir = os.listdir(workdir)
+                    if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
+                        tdir.remove('ComicInfo.xml')
+                        if os.path.isdir(os.path.join(workdir, tdir[0])):
+                            os.replace(
+                                os.path.join(workdir, 'ComicInfo.xml'),
+                                os.path.join(workdir, tdir[0], 'ComicInfo.xml')
+                            )
+                    if len(tdir) == 1 and os.path.isdir(os.path.join(workdir, tdir[0])):
+                        path = os.path.join(workdir, tdir[0])
  
             except OSError as e:
                 rmtree(workdir, True)
