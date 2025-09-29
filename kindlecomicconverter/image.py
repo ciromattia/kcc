@@ -130,6 +130,7 @@ class ProfileData:
         'Rmk1': ("reMarkable 1", (1404, 1872), Palette16, 1.8),
         'Rmk2': ("reMarkable 2", (1404, 1872), Palette16, 1.8),
         'RmkPP': ("reMarkable Paper Pro", (1620, 2160), Palette16, 1.8),
+        'RmkPPMove': ("reMarkable Paper Pro Move", (954, 1696), Palette16, 1.8),
     }
 
     Profiles = {
