@@ -1161,6 +1161,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                              'Label': 'Rmk2'},
             "reMarkable Paper Pro": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': True, 'ForceColor': True,
                              'Label': 'RmkPP'},
+            "reMarkable Paper Pro Move": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': True, 'ForceColor': True,
+                             'Label': 'RmkPPMove'},
             "Other": {'PVOptions': False, 'ForceExpert': True, 'DefaultFormat': 1, 'DefaultUpscale': False, 'ForceColor': False,
                       'Label': 'OTHER'},
         }
@@ -1183,6 +1185,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "reMarkable 1",
             "reMarkable 2",
             "reMarkable Paper Pro",
+            "reMarkable Paper Pro Move",
             "Separator",
             "Other",
             "Separator",
