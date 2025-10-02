@@ -46,7 +46,7 @@ class BuildBinaryCommand(setuptools.Command):
             sys.exit(0)
         elif sys.platform == 'win32':
             if os.getenv('WINDOWS_7'):
-                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_win7_' + VERSION + ' -w --noupx kcc.py')
+                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_win7_legacy_' + VERSION + ' -w --noupx kcc.py')
             else:
                 os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n KCC_' + VERSION + ' -w --noupx kcc.py')
             sys.exit(0)
