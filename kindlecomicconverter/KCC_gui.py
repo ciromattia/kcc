@@ -1348,15 +1348,16 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
             self.editorWidget.setEnabled(True)
             self.okButton.setEnabled(True)
             self.statusLabel.setText('Separate authors with a comma.')
-        for field in (self.seriesLine, self.volumeLine, self.numberLine):
+        for field in (self.seriesLine, self.volumeLine, self.numberLine, self.titleLine):
             field.setText(self.parser.data[field.objectName().capitalize()[:-4]])
         for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
             field.setText(', '.join(self.parser.data[field.objectName().capitalize()[:-4] + 's']))
-        if self.seriesLine.text() == '':
-            if file.endswith('.xml'):
-                self.seriesLine.setText(file.split('\\')[-2])
-            else:
-                self.seriesLine.setText(file.split('\\')[-1].split('/')[-1].split('.')[0])
+        for field in (self.seriesLine, self.titleLine):
+            if field.text() == '':
+                if file.endswith('.xml'):
+                    field.setText(file.split('\\')[-2])
+                else:
+                    field.setText(file.split('\\')[-1].split('/')[-1].split('.')[0])
 
     def saveData(self):
         for field in (self.volumeLine, self.numberLine):
@@ -1366,7 +1367,8 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
                 self.statusLabel.setText(field.objectName().capitalize()[:-4] + ' field must be a number.')
                 break
         else:
-            self.parser.data['Series'] = self.cleanData(self.seriesLine.text())
+            for field in (self.seriesLine, self.titleLine):
+                self.parser.data[field.objectName().capitalize()[:-4]] = self.cleanData(field.text())
             for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
                 values = self.cleanData(field.text()).split(',')
                 tmpData = []
