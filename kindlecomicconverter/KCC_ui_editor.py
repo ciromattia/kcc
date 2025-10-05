@@ -171,7 +171,7 @@ class Ui_editorDialog(object):
         self.label_5.setText(QCoreApplication.translate("editorDialog", u"Penciller:", None))
         self.label_6.setText(QCoreApplication.translate("editorDialog", u"Inker:", None))
         self.label_7.setText(QCoreApplication.translate("editorDialog", u"Colorist:", None))
-        self.label_8.setText(QCoreApplication.translate("editorDialog", u"Title", None))
+        self.label_8.setText(QCoreApplication.translate("editorDialog", u"Title:", None))
         self.statusLabel.setText("")
         self.okButton.setText(QCoreApplication.translate("editorDialog", u"Save", None))
         self.cancelButton.setText(QCoreApplication.translate("editorDialog", u"Cancel", None))
