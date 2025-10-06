@@ -604,8 +604,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             dname = QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
             if dname != '':
                 sname = os.path.join(dname, 'ComicInfo.xml')
-                if sys.platform.startswith('win'):
-                    sname = sname.replace('/', '\\')
                 self.lastPath = os.path.abspath(sname)
         else:
             if self.sevenzip:
@@ -617,10 +615,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
                 ' to enable metadata editing.', 'warning')
             if fname[0] != '':
-                if sys.platform.startswith('win'):
-                    sname = fname[0].replace('/', '\\')
-                else:
-                    sname = fname[0]
+                sname = fname[0]
                 self.lastPath = os.path.abspath(os.path.join(sname, os.pardir))
         if sname != '':
             try:
@@ -1354,10 +1349,11 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
             field.setText(', '.join(self.parser.data[field.objectName().capitalize()[:-4] + 's']))
         for field in (self.seriesLine, self.titleLine):
             if field.text() == '':
+                path = Path(file)
                 if file.endswith('.xml'):
-                    field.setText(file.split('\\')[-2])
+                    field.setText(path.parent.name)
                 else:
-                    field.setText(file.split('\\')[-1].split('/')[-1].split('.')[0])
+                    field.setText(path.stem)
 
     def saveData(self):
         for field in (self.volumeLine, self.numberLine):
