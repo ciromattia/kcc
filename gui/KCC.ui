@@ -593,10 +593,13 @@
        <item row="7" column="0">
         <widget class="QCheckBox" name="metadataTitleBox">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Write Title from ComicInfo.xml or other embedded metadata.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Don't use metadata Title&lt;br/&gt;&lt;/span&gt;Write default title.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - Add metadata Title to the default schema&lt;br/&gt;&lt;/span&gt;Write default title with Title from ComicInfo.xml or other embedded metadata.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Use metadata Title only&lt;br/&gt;&lt;/span&gt;Write Title from ComicInfo.xml or other embedded metadata.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Metadata Title</string>
+         </property>
+         <property name="tristate">
+          <bool>true</bool>
          </property>
         </widget>
        </item>

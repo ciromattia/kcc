@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'KCC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -319,6 +319,7 @@ class Ui_mainWindow(object):
 
         self.metadataTitleBox = QCheckBox(self.optionWidget)
         self.metadataTitleBox.setObjectName(u"metadataTitleBox")
+        self.metadataTitleBox.setTristate(True)
 
         self.gridLayout_2.addWidget(self.metadataTitleBox, 7, 0, 1, 1)
 
@@ -583,7 +584,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.outputSplit.setText(QCoreApplication.translate("mainWindow", u"Output split", None))
 #if QT_CONFIG(tooltip)
-        self.metadataTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Write Title from ComicInfo.xml or other embedded metadata.</p></body></html>", None))
+        self.metadataTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Don't use metadata Title<br/></span>Write default title.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Add metadata Title to the default schema<br/></span>Write default title with Title from ComicInfo.xml or other embedded metadata.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Use metadata Title only<br/></span>Write Title from ComicInfo.xml or other embedded metadata.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.metadataTitleBox.setText(QCoreApplication.translate("mainWindow", u"Metadata Title", None))
 #if QT_CONFIG(tooltip)

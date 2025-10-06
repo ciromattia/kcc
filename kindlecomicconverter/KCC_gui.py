@@ -321,8 +321,10 @@ class WorkerThread(QThread):
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
-        if GUI.metadataTitleBox.isChecked():
-            options.metadatatitle = True
+        if GUI.metadataTitleBox.checkState() == Qt.CheckState.PartiallyChecked:
+            options.metadatatitle = 1
+        elif GUI.metadataTitleBox.checkState() == Qt.CheckState.Checked:
+            options.metadatatitle = 2
         if GUI.deleteBox.isChecked():
             options.delete = True
         if GUI.spreadShiftBox.isChecked():
