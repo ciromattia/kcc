@@ -553,11 +553,11 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, ori
                 filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
     build_html_end = perf_counter()
     print(f"buildHTML: {build_html_end - build_html_start} seconds")
-    # Overwrite chapternames if tree is flat and ComicInfo.xml has bookmarks
+    # Overwrite chapternames if ComicInfo.xml has bookmarks
     if ischunked:
        options.comicinfo_chapters = []
-    
-    if not chapternames and options.comicinfo_chapters:
+
+    if options.comicinfo_chapters:
         chapterlist = []
 
         global_diff = 0
@@ -964,7 +964,7 @@ def getMetadata(path, originalpath):
             if xml.data['Series']:
                 options.title = xml.data['Series']
             if xml.data['Volume']:
-                titleSuffix += ' V' + xml.data['Volume'].zfill(2)
+                titleSuffix += ' Vol. ' + xml.data['Volume'].zfill(2)
             if xml.data['Number']:
                 titleSuffix += ' #' + xml.data['Number'].zfill(3)
             options.title += titleSuffix
