@@ -112,7 +112,7 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 - Blank pages?
   - May happen when using PNG with Kindle Scribe or any format with a Kindle Colorsoft. Solve by using JPG with Kindle Scribe or buying a Kobo Colour.
 - What output format should I use?
-  - MOBI for Kindles. CBZ for Kindle DX. CBZ for Koreader. KEPUB for Kobo.
+  - MOBI for Kindles. CBZ for Kindle DX. CBZ for Koreader. KEPUB for Kobo. PDF for ReMarkable.
 - All options have additional information in tooltips if you hover over the option.
 - To get the converted book onto your Kindle/Kobo, just drag and drop the mobi/kepub into the documents folder on your Kindle/Kobo via USB
 - Right to left mode not working?
