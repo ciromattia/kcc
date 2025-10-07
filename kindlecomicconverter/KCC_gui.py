@@ -371,6 +371,11 @@ class WorkerThread(QThread):
             except Exception as e:
                 print('Fusion Failed. ' + str(e))
                 MW.addMessage.emit('Fusion Failed. ' + str(e), 'error', True)
+        elif len(currentJobs) > 1 and options.title != 'defaulttitle':
+            currentJobs.clear()
+            error_message = 'Process Failed. Custom title can\'t be set when processing more than 1 source.\nDid you forget to check fusion?'
+            print(error_message)
+            MW.addMessage.emit(error_message, 'error', True)
         for job in currentJobs:
             sleep(0.5)
             if not self.conversionAlive:
@@ -750,6 +755,13 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def toggletitleEdit(self, value):
         if value:
             self.metadataTitleBox.setChecked(False)
+
+    def togglefileFusionBox(self, value):
+        if value:
+            GUI.metadataTitleBox.setChecked(False)
+            GUI.metadataTitleBox.setEnabled(False)
+        else:
+            GUI.metadataTitleBox.setEnabled(True)
 
     def togglemetadataTitleBox(self, value):
         if value:
@@ -1268,6 +1280,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.deviceBox.activated.connect(self.changeDevice)
         GUI.formatBox.activated.connect(self.changeFormat)
         GUI.titleEdit.textChanged.connect(self.toggletitleEdit)
+        GUI.fileFusionBox.stateChanged.connect(self.togglefileFusionBox)
         GUI.metadataTitleBox.stateChanged.connect(self.togglemetadataTitleBox)
         MW.progressBarTick.connect(self.updateProgressbar)
         MW.modeConvert.connect(self.modeConvert)
