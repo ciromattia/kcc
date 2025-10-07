@@ -109,6 +109,8 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
     On 7th gen and later Kindles running firmware 5.15.1+, you can get cover thumbnails simply by USB dropping into documents folder.
     On 6th gen and older, you can get cover thumbnails by keeping Kindle plugged in during conversion.
     If you are careful to not modify the file however, you can still use Calibre, but direct USB dropping is reccomended.
+- Blank pages?
+  - May happen when using PNG with Kindle Scribe or any format with a Kindle Colorsoft. Solve by using JPG with Kindle Scribe or buying a Kobo Colour.
 - What output format should I use?
   - MOBI for Kindles. CBZ for Kindle DX. CBZ for Koreader. KEPUB for Kobo.
 - All options have additional information in tooltips if you hover over the option.
