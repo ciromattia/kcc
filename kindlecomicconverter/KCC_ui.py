@@ -289,7 +289,16 @@ class Ui_mainWindow(object):
         self.authorEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self.authorEdit.setClearButtonEnabled(False)
 
-        self.gridLayout_2.addWidget(self.authorEdit, 0, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.authorEdit, 0, 1, 1, 1)
+
+        self.titleEdit = QLineEdit(self.optionWidget)
+        self.titleEdit.setObjectName(u"titleEdit")
+        sizePolicy3.setHeightForWidth(self.titleEdit.sizePolicy().hasHeightForWidth())
+        self.titleEdit.setSizePolicy(sizePolicy3)
+        self.titleEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.titleEdit.setClearButtonEnabled(False)
+
+        self.gridLayout_2.addWidget(self.titleEdit, 0, 0, 1, 1)
 
         self.rotateFirstBox = QCheckBox(self.optionWidget)
         self.rotateFirstBox.setObjectName(u"rotateFirstBox")
@@ -563,6 +572,10 @@ class Ui_mainWindow(object):
         self.authorEdit.setToolTip(QCoreApplication.translate("mainWindow", u"Default Author is KCC", None))
 #endif // QT_CONFIG(tooltip)
         self.authorEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Author", None))
+#if QT_CONFIG(tooltip)
+        self.titleEdit.setToolTip(QCoreApplication.translate("mainWindow", u"Default Title is based on filename, directory name or metadata", None))
+#endif // QT_CONFIG(tooltip)
+        self.titleEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Title", None))
 #if QT_CONFIG(tooltip)
         self.rotateFirstBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>When the spread splitter option is partially checked,</p><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Rotate Last<br/></span>Put the rotated 2 page spread after the split spreads.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate First<br/></span>Put the rotated 2 page spread before the split spreads.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
