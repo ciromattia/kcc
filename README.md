@@ -11,7 +11,7 @@
 like Kindle, Kobo, ReMarkable, and more.
 Pages display in fullscreen without margins, 
 with proper fixed layout support.
-Supported input formats include JPG/PNG/GIF image files in folders, archives, or PDFs.
+Supported input formats include JPG/PNG image files in folders, archives, or PDFs.
 Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
 
 **NEW**: PDF output is now supported for direct conversion to reMarkable devices! 
