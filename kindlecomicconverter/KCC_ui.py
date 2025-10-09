@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'KCC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -289,7 +289,16 @@ class Ui_mainWindow(object):
         self.authorEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self.authorEdit.setClearButtonEnabled(False)
 
-        self.gridLayout_2.addWidget(self.authorEdit, 0, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.authorEdit, 0, 1, 1, 1)
+
+        self.titleEdit = QLineEdit(self.optionWidget)
+        self.titleEdit.setObjectName(u"titleEdit")
+        sizePolicy3.setHeightForWidth(self.titleEdit.sizePolicy().hasHeightForWidth())
+        self.titleEdit.setSizePolicy(sizePolicy3)
+        self.titleEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.titleEdit.setClearButtonEnabled(False)
+
+        self.gridLayout_2.addWidget(self.titleEdit, 0, 0, 1, 1)
 
         self.rotateFirstBox = QCheckBox(self.optionWidget)
         self.rotateFirstBox.setObjectName(u"rotateFirstBox")
@@ -319,6 +328,7 @@ class Ui_mainWindow(object):
 
         self.metadataTitleBox = QCheckBox(self.optionWidget)
         self.metadataTitleBox.setObjectName(u"metadataTitleBox")
+        self.metadataTitleBox.setTristate(True)
 
         self.gridLayout_2.addWidget(self.metadataTitleBox, 7, 0, 1, 1)
 
@@ -563,6 +573,10 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.authorEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Author", None))
 #if QT_CONFIG(tooltip)
+        self.titleEdit.setToolTip(QCoreApplication.translate("mainWindow", u"Default Title is based on filename, directory name or metadata", None))
+#endif // QT_CONFIG(tooltip)
+        self.titleEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Title", None))
+#if QT_CONFIG(tooltip)
         self.rotateFirstBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>When the spread splitter option is partially checked,</p><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Rotate Last<br/></span>Put the rotated 2 page spread after the split spreads.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate First<br/></span>Put the rotated 2 page spread before the split spreads.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.rotateFirstBox.setText(QCoreApplication.translate("mainWindow", u"Rotate First", None))
@@ -583,7 +597,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.outputSplit.setText(QCoreApplication.translate("mainWindow", u"Output split", None))
 #if QT_CONFIG(tooltip)
-        self.metadataTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Write Title from ComicInfo.xml or other embedded metadata.</p></body></html>", None))
+        self.metadataTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Don't use metadata Title<br/></span>Write default title.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Add metadata Title to the default schema<br/></span>Write default title with Title from ComicInfo.xml or other embedded metadata.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Use metadata Title only<br/></span>Write Title from ComicInfo.xml or other embedded metadata.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.metadataTitleBox.setText(QCoreApplication.translate("mainWindow", u"Metadata Title", None))
 #if QT_CONFIG(tooltip)

@@ -958,7 +958,7 @@ def getMetadata(path, originalpath):
         except Exception:
             os.remove(xmlPath)
             return
-        if options.metadatatitle:
+        if options.metadatatitle == 2:
             options.title = xml.data['Title']
         elif defaultTitle:
             if xml.data['Series']:
@@ -967,6 +967,8 @@ def getMetadata(path, originalpath):
                 titleSuffix += ' Vol. ' + xml.data['Volume'].zfill(2)
             if xml.data['Number']:
                 titleSuffix += ' #' + xml.data['Number'].zfill(3)
+            if options.metadatatitle == 1 and xml.data['Title']:
+                titleSuffix += ': ' + xml.data['Title']
             options.title += titleSuffix
         if defaultAuthor:    
             options.authors = []
@@ -1290,8 +1292,9 @@ def makeParser():
                                 help="Output generated file to specified directory or file")
     output_options.add_argument("-t", "--title", action="store", dest="title", default="defaulttitle",
                                 help="Comic title [Default=filename or directory name]")
-    output_options.add_argument("--metadatatitle", action="store_true", dest="metadatatitle", default=False,
-                                help="Write Title from ComicInfo.xml or other embedded metadata")
+    output_options.add_argument("--metadatatitle", type=int, dest="metadatatitle", default=0,
+                                help="Write title using ComicInfo.xml or other embedded metadata. 1: Combine Title with default schema "
+                                     "2: Use Title only")
     output_options.add_argument("-a", "--author", action="store", dest="author", default="defaultauthor",
                                 help="Author name [Default=KCC]")
     output_options.add_argument("-f", "--format", action="store", dest="format", default="Auto",

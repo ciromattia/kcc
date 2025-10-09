@@ -259,7 +259,7 @@ OUTPUT SETTINGS:
                         Output generated file to specified directory or file
   -t TITLE, --title TITLE
                         Comic title [Default=filename or directory name]
-  --metadatatitle      Write title from ComicInfo.xml or other embedded metadata
+  --metadatatitle       Write title using ComicInfo.xml or other embedded metadata. 0: Don't use Title from metadata 1: Combine Title with default schema 2: Use Title only [Default=0]
   -a AUTHOR, --author AUTHOR
                         Author name [Default=KCC]
   -f FORMAT, --format FORMAT

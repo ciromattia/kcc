@@ -321,8 +321,10 @@ class WorkerThread(QThread):
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
-        if GUI.metadataTitleBox.isChecked():
-            options.metadatatitle = True
+        if GUI.metadataTitleBox.checkState() == Qt.CheckState.PartiallyChecked:
+            options.metadatatitle = 1
+        elif GUI.metadataTitleBox.checkState() == Qt.CheckState.Checked:
+            options.metadatatitle = 2
         if GUI.deleteBox.isChecked():
             options.delete = True
         if GUI.spreadShiftBox.isChecked():
@@ -344,6 +346,8 @@ class WorkerThread(QThread):
             options.customheight = str(GUI.heightBox.value())
         if GUI.targetDirectory != '':
             options.output = GUI.targetDirectory
+        if GUI.titleEdit.text():
+            options.title = str(GUI.titleEdit.text())
         if GUI.authorEdit.text():
             options.author = str(GUI.authorEdit.text())
         if GUI.chunkSizeCheckBox.isChecked():
@@ -367,6 +371,11 @@ class WorkerThread(QThread):
             except Exception as e:
                 print('Fusion Failed. ' + str(e))
                 MW.addMessage.emit('Fusion Failed. ' + str(e), 'error', True)
+        elif len(currentJobs) > 1 and options.title != 'defaulttitle':
+            currentJobs.clear()
+            error_message = 'Process Failed. Custom title can\'t be set when processing more than 1 source.\nDid you forget to check fusion?'
+            print(error_message)
+            MW.addMessage.emit(error_message, 'error', True)
         for job in currentJobs:
             sleep(0.5)
             if not self.conversionAlive:
@@ -742,6 +751,21 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     
     def togglechunkSizeCheckBox(self, value):
         GUI.chunkSizeWidget.setVisible(value)
+
+    def toggletitleEdit(self, value):
+        if value:
+            self.metadataTitleBox.setChecked(False)
+
+    def togglefileFusionBox(self, value):
+        if value:
+            GUI.metadataTitleBox.setChecked(False)
+            GUI.metadataTitleBox.setEnabled(False)
+        else:
+            GUI.metadataTitleBox.setEnabled(True)
+
+    def togglemetadataTitleBox(self, value):
+        if value:
+            GUI.titleEdit.setText(None)
 
     def changeGamma(self, value):
         valueRaw = int(5 * round(float(value) / 5))
@@ -1255,6 +1279,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.chunkSizeCheckBox.stateChanged.connect(self.togglechunkSizeCheckBox)
         GUI.deviceBox.activated.connect(self.changeDevice)
         GUI.formatBox.activated.connect(self.changeFormat)
+        GUI.titleEdit.textChanged.connect(self.toggletitleEdit)
+        GUI.fileFusionBox.stateChanged.connect(self.togglefileFusionBox)
+        GUI.metadataTitleBox.stateChanged.connect(self.togglemetadataTitleBox)
         MW.progressBarTick.connect(self.updateProgressbar)
         MW.modeConvert.connect(self.modeConvert)
         MW.addMessage.connect(self.addMessage)
