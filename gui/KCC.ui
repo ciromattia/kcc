@@ -30,6 +30,9 @@
         <height>150</height>
        </size>
       </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Double click on source to open it in metadata editor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
