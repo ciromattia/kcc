@@ -229,7 +229,7 @@ MAIN:
                         the maximal size of output file in MB. [Default=100MB for webtoon and 400MB for others]
 
 PROCESSING:
-  -n, --noprocessing    Do not modify image and ignore any profil or processing option
+  -n, --noprocessing    Do not modify image and ignore any profile or processing option
   -u, --upscale         Resize images smaller than device's resolution
   -s, --stretch         Stretch images to device's resolution
   -r SPLITTER, --splitter SPLITTER
