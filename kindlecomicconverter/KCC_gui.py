@@ -22,7 +22,7 @@ import itertools
 from pathlib import Path
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
 from PySide6.QtGui import (QColor, QIcon, QPixmap, QDesktopServices)
-from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QApplication, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog)
+from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog)
 from PySide6.QtNetwork import (QLocalSocket, QLocalServer)
 
 import os
@@ -607,26 +607,26 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 GUI.jobList.addItem(fname)
                 GUI.jobList.scrollToBottom()
 
-    def selectFileMetaEditor(self):
-        sname = ''
-        if QApplication.keyboardModifiers() == Qt.ShiftModifier:
-            dname = QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
-            if dname != '':
-                sname = os.path.join(dname, 'ComicInfo.xml')
-                self.lastPath = os.path.abspath(sname)
-        else:
-            if self.sevenzip:
-                fname = QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
-                                                              'Comic (*.cbz *.cbr *.cb7)')
+    def selectFileMetaEditor(self, sname):
+        if not sname:
+            if QApplication.keyboardModifiers() == Qt.ShiftModifier:
+                dname = QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
+                if dname != '':
+                    sname = os.path.join(dname, 'ComicInfo.xml')
+                    self.lastPath = os.path.dirname(sname)
             else:
-                fname = ['']
-                self.showDialog("Editor is disabled due to a lack of 7z.", 'error')
-                self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
-                ' to enable metadata editing.', 'warning')
-            if fname[0] != '':
-                sname = fname[0]
-                self.lastPath = os.path.abspath(os.path.join(sname, os.pardir))
-        if sname != '':
+                if self.sevenzip:
+                    fname = QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
+                                                                  'Comic (*.cbz *.cbr *.cb7)')
+                else:
+                    fname = ['']
+                    self.showDialog("Editor is disabled due to a lack of 7z.", 'error')
+                    self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
+                    ' to enable metadata editing.', 'warning')
+                if fname[0] != '':
+                    sname = fname[0]
+                    self.lastPath = os.path.abspath(os.path.join(sname, os.pardir))
+        if sname:
             try:
                 self.editor.loadData(sname)
             except Exception as err:
@@ -766,6 +766,13 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def togglemetadataTitleBox(self, value):
         if value:
             GUI.titleEdit.setText(None)
+
+    def editSourceMetadata(self, item):
+        if item.icon().isNull():
+            sname = item.text()
+            if os.path.isdir(sname):
+                sname = os.path.join(sname, "ComicInfo.xml")
+            self.selectFileMetaEditor(sname)
 
     def changeGamma(self, value):
         valueRaw = int(5 * round(float(value) / 5))
@@ -1282,6 +1289,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.titleEdit.textChanged.connect(self.toggletitleEdit)
         GUI.fileFusionBox.stateChanged.connect(self.togglefileFusionBox)
         GUI.metadataTitleBox.stateChanged.connect(self.togglemetadataTitleBox)
+        GUI.jobList.itemDoubleClicked.connect(self.editSourceMetadata)
         MW.progressBarTick.connect(self.updateProgressbar)
         MW.modeConvert.connect(self.modeConvert)
         MW.addMessage.connect(self.addMessage)

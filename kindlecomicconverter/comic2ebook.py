@@ -1313,7 +1313,7 @@ def makeParser():
                                 help="Put rotated 2 page spread first in spread splitter option.")
 
     processing_options.add_argument("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
-                                    help="Do not modify image and ignore any profil or processing option")
+                                    help="Do not modify image and ignore any profile or processing option")
     processing_options.add_argument("-u", "--upscale", action="store_true", dest="upscale", default=False,
                                     help="Resize images smaller than device's resolution")
     processing_options.add_argument("-s", "--stretch", action="store_true", dest="stretch", default=False,
