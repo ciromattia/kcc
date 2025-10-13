@@ -52,6 +52,7 @@ def mergeDirectory(work):
                     images.append([os.path.join(root, name), i.size[0], i.size[1]])
                     sizes.append(i.size[0])
         if len(images) > 0:
+            # TODO: hard-coding 1072 is not compatible with low PPI devices
             targetWidth = min(max(set(sizes), key=sizes.count), 1072)
             for i in images:
                 targetHeight += i[2]
