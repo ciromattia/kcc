@@ -52,7 +52,7 @@ def mergeDirectory(work):
                     images.append([os.path.join(root, name), i.size[0], i.size[1]])
                     sizes.append(i.size[0])
         if len(images) > 0:
-            targetWidth = max(set(sizes), key=sizes.count)
+            targetWidth = min(max(set(sizes), key=sizes.count), 1072)
             for i in images:
                 targetHeight += i[2]
                 imagesValid.append(i[0])
@@ -64,10 +64,9 @@ def mergeDirectory(work):
             y = 0
             for i in imagesValid:
                 img = Image.open(i).convert('RGB')
-                if img.size[0] < targetWidth or img.size[0] > targetWidth:
-                    widthPercent = (targetWidth / float(img.size[0]))
-                    heightSize = int((float(img.size[1]) * float(widthPercent)))
-                    img = ImageOps.fit(img, (targetWidth, heightSize), method=Image.BICUBIC, centering=(0.5, 0.5))
+                w = img.size[0]
+                if targetWidth != w:
+                    img = ImageOps.scale(img, targetWidth/w)
                 result.paste(img, (0, y))
                 y += img.size[1]
                 os.remove(i)
