@@ -377,12 +377,14 @@ class WorkerThread(QThread):
             print(error_message)
             MW.addMessage.emit(error_message, 'error', True)
         for job in currentJobs:
+            current_job_count = currentJobs.index(job) + 1
+            job_progress_number = f'[{current_job_count}/{len(currentJobs)}] '
             sleep(0.5)
             if not self.conversionAlive:
                 self.clean()
                 return
             self.errors = False
-            MW.addMessage.emit('<b>Source:</b> ' + job, 'info', False)
+            MW.addMessage.emit(f'<b>{job_progress_number}Source:</b> ' + job, 'info', False)
             if gui_current_format == 'CBZ':
                 MW.addMessage.emit('Creating CBZ files', 'info', False)
                 GUI.progress.content = 'Creating CBZ files'
@@ -396,7 +398,7 @@ class WorkerThread(QThread):
             jobargv.append(job)
             try:
                 comic2ebook.options = comic2ebook.checkOptions(copy(options))
-                outputPath = comic2ebook.makeBook(job, self)
+                outputPath = comic2ebook.makeBook(job, self, job_progress_number)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
                 if not self.conversionAlive:
@@ -438,7 +440,7 @@ class WorkerThread(QThread):
                 else:
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
                 if 'MOBI' in gui_current_format:
-                    MW.progressBarTick.emit('Creating MOBI files')
+                    MW.progressBarTick.emit(f'{job_progress_number}Creating MOBI files')
                     MW.progressBarTick.emit(str(len(outputPath) * 2 + 1))
                     MW.progressBarTick.emit('tick')
                     MW.addMessage.emit('Creating MOBI files', 'info', False)

@@ -445,7 +445,7 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
                   "</container>"])
     f.close()
 
-def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, originalpath, len_tomes=0):
+def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, originalpath, job_progress='', len_tomes=0):
     filelist = []
     chapterlist = []
     os.mkdir(os.path.join(path, 'OEBPS', 'Text'))
@@ -552,7 +552,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, ori
             else:
                 filelist.append(buildHTML(dirpath, afile, os.path.join(dirpath, afile)))
     build_html_end = perf_counter()
-    print(f"buildHTML: {build_html_end - build_html_start} seconds")
+    print(f"{job_progress}buildHTML: {build_html_end - build_html_start} seconds")
     # Overwrite chapternames if ComicInfo.xml has bookmarks
     if ischunked:
        options.comicinfo_chapters = []
@@ -588,7 +588,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, ori
     buildOPF(path, options.title, filelist, originalpath, cover)
 
 
-def buildPDF(path, title, cover=None, output_file=None):
+def buildPDF(path, title, job_progress='', cover=None, output_file=None):
     """
     Build a PDF file from processed comic images.
     Images are combined into a single PDF optimized for e-readers.
@@ -613,11 +613,11 @@ def buildPDF(path, title, cover=None, output_file=None):
         # Save with optimizations for smaller file size
         doc.save(output_file, deflate=True, garbage=4, clean=True)
     end = perf_counter()
-    print(f"MuPDF output: {end-start} sec")
+    print(f"{job_progress}MuPDF output: {end-start} sec")
     return output_file
 
 
-def imgDirectoryProcessing(path):
+def imgDirectoryProcessing(path, job_progress=''):
     global workerPool, workerOutput
     workerPool = Pool(maxtasksperchild=100)
     workerOutput = []
@@ -637,7 +637,7 @@ def imgDirectoryProcessing(path):
         workerPool.close()
         workerPool.join()
         img_processing_end = perf_counter()
-        print(f"imgFileProcessing: {img_processing_end - img_processing_start} seconds")
+        print(f"{job_progress}imgFileProcessing: {img_processing_end - img_processing_start} seconds")
 
         # macOS 15 likes to add ._ files after multiprocessing
         dot_clean(path)
@@ -1236,7 +1236,7 @@ def slugify(value, is_natural_sorted):
         value = sub(r'0*([0-9]{4,})', r'\1', sub(r'([0-9]+)', r'0000\1', value, count=2))
     return value
 
-def makeZIP(zipfilename, basedir, isepub=False):
+def makeZIP(zipfilename, basedir, job_progress='', isepub=False):
     start = perf_counter()
     zipfilename = os.path.abspath(zipfilename) + '.zip'
     if SEVENZIP in available_archive_tools():
@@ -1257,7 +1257,7 @@ def makeZIP(zipfilename, basedir, isepub=False):
                     zipOutput.write(path, aPath)
         zipOutput.close()
     end = perf_counter()
-    print(f"makeZIP time: {end - start} seconds")
+    print(f"{job_progress}makeZIP time: {end - start} seconds")
     return zipfilename
 
 def makeParser():
@@ -1513,7 +1513,7 @@ def makeFusion(sources: List[str]):
     return str(fusion_path)
 
 
-def makeBook(source, qtgui=None):
+def makeBook(source, qtgui=None, job_progress=''):
     start = perf_counter()
     global GUI
     GUI = qtgui
@@ -1523,9 +1523,9 @@ def makeBook(source, qtgui=None):
         checkTools(source)
     options.kindle_scribe_azw3 = options.profile == 'KS' and ('MOBI' in options.format or 'EPUB' in options.format)
     checkPre(source)
-    print("Preparing source images...")
+    print(f"{job_progress}Preparing source images...")
     path = getWorkFolder(source)
-    print("Checking images...")
+    print(f"{job_progress}Checking images...")
     getMetadata(os.path.join(path, "OEBPS", "Images"), source)
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
@@ -1534,14 +1534,14 @@ def makeBook(source, qtgui=None):
 
     if options.webtoon:
         y = image.ProfileData.Profiles[options.profile][1][1]
-        comic2panel.main(['-y ' + str(y), '-i', '-m', path], qtgui)
+        comic2panel.main(['-y ' + str(y), '-i', '-m', path], job_progress, qtgui)
     if options.noprocessing:
-        print("Do not process image, ignore any profile or processing option")
+        print(f"{job_progress}Do not process image, ignore any profile or processing option")
     else:
-        print("Processing images...")
+        print(f"{job_progress}Processing images...")
         if GUI:
-            GUI.progressBarTick.emit('Processing images')
-        imgDirectoryProcessing(os.path.join(path, "OEBPS", "Images"))
+            GUI.progressBarTick.emit(f'{job_progress}Processing images')
+        imgDirectoryProcessing(os.path.join(path, "OEBPS", "Images"), job_progress)
     if GUI:
         GUI.progressBarTick.emit('1')
     if options.batchsplit > 0 or options.targetsize:
@@ -1552,11 +1552,11 @@ def makeBook(source, qtgui=None):
     tomeNumber = 0
     if GUI:
         if options.format == 'CBZ':
-            GUI.progressBarTick.emit('Compressing CBZ files')
+            GUI.progressBarTick.emit(f'{job_progress}Compressing CBZ files')
         elif options.format == 'PDF':
-            GUI.progressBarTick.emit('Creating PDF files')
+            GUI.progressBarTick.emit(f'{job_progress}Creating PDF files')
         else:
-            GUI.progressBarTick.emit('Compressing EPUB files')
+            GUI.progressBarTick.emit(f'{job_progress}Compressing EPUB files')
         GUI.progressBarTick.emit(str(len(tomes) + 1))
         GUI.progressBarTick.emit('tick')
     options.baseTitle = options.title
@@ -1570,29 +1570,29 @@ def makeBook(source, qtgui=None):
             tomeNumber += 1
             options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
         if options.format == 'CBZ':
-            print("Creating CBZ file...")
+            print(f"{job_progress}Creating CBZ file...")
             if len(tomes) > 1:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ' ' + str(tomeNumber)))
             else:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
-            makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"))
+            makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"), job_progress)
         elif options.format == 'PDF':
-            print("Creating PDF file with PyMuPDF...")
+            print(f"{job_progress}Creating PDF file with PyMuPDF...")
             # determine output filename based on source and tome count
             suffix = (' ' + str(tomeNumber)) if len(tomes) > 1 else ''
             output_file = getOutputFilename(source, options.output, '.pdf', suffix)
             # use optimized buildPDF logic with streaming and compression
-            output_pdf = buildPDF(tome, options.title, None, output_file)
+            output_pdf = buildPDF(tome, options.title, job_progress, None, output_file)
             filepath.append(output_pdf)
         else:
-            print("Creating EPUB file...")
+            print(f"{job_progress}Creating EPUB file...")
             if len(tomes) > 1:
-                buildEPUB(tome, chapterNames, tomeNumber, True, cover, source, len(tomes))
+                buildEPUB(tome, chapterNames, tomeNumber, True, cover, source, job_progress, len(tomes))
                 filepath.append(getOutputFilename(source, options.output, '.epub', ' ' + str(tomeNumber)))
             else:
-                buildEPUB(tome, chapterNames, tomeNumber, False, cover, source)
+                buildEPUB(tome, chapterNames, tomeNumber, False, cover, source, job_progress)
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
-            makeZIP(tome + '_comic', tome, True)
+            makeZIP(tome + '_comic', tome, job_progress, True)
         # Copy files to final destination (PDF files are already saved directly)
         if options.format != 'PDF':
             copyfile(tome + '_comic.zip', filepath[-1])
@@ -1605,23 +1605,23 @@ def makeBook(source, qtgui=None):
         if GUI:
             GUI.progressBarTick.emit('tick')
     if not GUI and options.format == 'MOBI':
-        print("Creating MOBI files...")
+        print(f"{job_progress}Creating MOBI files...")
         work = []
         for i in filepath:
             work.append([i])
         output = makeMOBI(work, GUI)
         for errors in output:
             if errors[0] != 0:
-                print('Error: KindleGen failed to create MOBI!')
+                print(f"{job_progress}Error: KindleGen failed to create MOBI!")
                 print(errors)
                 return filepath
         k = kindle.Kindle(options.profile)
         if k.path and k.coverSupport:
-            print("Kindle detected. Uploading covers...")
+            print(f"{job_progress}Kindle detected. Uploading covers...")
         for i in filepath:
             output = makeMOBIFix(i, options.covers[filepath.index(i)][1])
             if not output[0]:
-                print('Error: Failed to tweak KindleGen output!')
+                print(f'{job_progress}Error: Failed to tweak KindleGen output!')
                 return filepath
             else:
                 os.remove(i.replace('.epub', '.mobi') + '_toclean')
@@ -1634,7 +1634,7 @@ def makeBook(source, qtgui=None):
             rmtree(source, True)
 
     end = perf_counter()
-    print(f"makeBook: {end - start} seconds")
+    print(f"{job_progress}makeBook: {end - start} seconds")
     # Clean up temporary workspace
     try:
         rmtree(path, True)
