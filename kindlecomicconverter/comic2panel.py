@@ -286,7 +286,7 @@ def main(argv=None, qtgui=None):
                         move(targetDir, sourceDir)
                 else:
                     rmtree(targetDir, True)
-                    raise UserWarning("Source directory is empty.")
+                    raise UserWarning("C2P: Source directory is empty.")
             else:
                 raise UserWarning("Provided input is not a directory.")
     else:
