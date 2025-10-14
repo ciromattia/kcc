@@ -271,6 +271,7 @@ def main(argv=None, qtgui=None):
                         splitWorkerPool.apply_async(func=splitImage, args=(i, ), callback=splitImageTick)
                     splitWorkerPool.close()
                     splitWorkerPool.join()
+                    dot_clean(targetDir)
                     if GUI and not GUI.conversionAlive:
                         rmtree(targetDir, True)
                         raise UserWarning("Conversion interrupted.")
