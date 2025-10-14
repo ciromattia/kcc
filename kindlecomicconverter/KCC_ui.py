@@ -190,7 +190,7 @@ class Ui_mainWindow(object):
 
         self.widthBox = QSpinBox(self.customWidget)
         self.widthBox.setObjectName(u"widthBox")
-        self.widthBox.setMaximum(2400)
+        self.widthBox.setMaximum(3200)
 
         self.gridLayout_3.addWidget(self.widthBox, 0, 1, 1, 1)
 
@@ -203,7 +203,7 @@ class Ui_mainWindow(object):
 
         self.heightBox = QSpinBox(self.customWidget)
         self.heightBox.setObjectName(u"heightBox")
-        self.heightBox.setMaximum(3840)
+        self.heightBox.setMaximum(5120)
 
         self.gridLayout_3.addWidget(self.heightBox, 0, 3, 1, 1)
 
