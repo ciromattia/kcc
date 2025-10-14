@@ -650,7 +650,7 @@ def imgDirectoryProcessing(path):
             raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0][0], workerOutput[0][1])
     else:
         rmtree(os.path.join(path, '..', '..'), True)
-        raise UserWarning("Source directory is empty.")
+        raise UserWarning("C2E: Source directory is empty.")
 
 
 def imgFileProcessingTick(output):
