@@ -23,7 +23,9 @@ import sys
 from argparse import ArgumentParser
 from shutil import rmtree, copytree, move
 from multiprocessing import Pool
+from time import perf_counter
 from PIL import Image, ImageChops, ImageOps, ImageDraw, ImageFilter
+from PIL.Image import Dither
 from .shared import dot_clean, getImageFileName, walkLevel, walkSort, sanitizeTrace
 
 
@@ -101,9 +103,16 @@ def splitImage(work):
         Image.warnings.simplefilter('error', Image.DecompressionBombWarning)
         Image.MAX_IMAGE_PIXELS = 1000000000
         imgOrg = Image.open(filePath).convert('RGB')
-        # I experimented with setting dither=None, but got very poor results
-        # The default dither is good
-        imgProcess = Image.open(filePath).filter(ImageFilter.FIND_EDGES).convert('1')
+        start = perf_counter()
+        imgEdges = Image.open(filePath).convert('L').filter(ImageFilter.FIND_EDGES)
+        end = perf_counter()
+        print(f"webtoon: imgEdges {end - start} sec")
+        start = perf_counter()
+        # the threshold of 8 is conservative. 0-6 are definitely not edges
+        imgProcess = imgEdges.point(lambda p: 255 if p > 8 else 0).convert('1', dither=Dither.NONE)
+        end = perf_counter()
+        print(f"webtoon: imgProcess {end - start} sec")
+
         widthImg, heightImg = imgOrg.size
         if heightImg > opt.height:
             if opt.debug:
