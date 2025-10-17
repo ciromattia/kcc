@@ -21,7 +21,7 @@
 import os
 import sys
 from argparse import ArgumentParser
-from shutil import rmtree, copytree, move
+from shutil import rmtree
 from multiprocessing import Pool
 from time import perf_counter
 from PIL import Image, ImageChops, ImageOps, ImageDraw, ImageFilter
@@ -233,7 +233,7 @@ def main(argv=None, qtgui=None):
             targetDir = sourceDir + "-Splitted"
             if os.path.isdir(sourceDir):
                 rmtree(targetDir, True)
-                copytree(sourceDir, targetDir)
+                os.renames(sourceDir, targetDir)
                 work = []
                 pagenumber = 1
                 splitWorkerOutput = []
@@ -291,8 +291,7 @@ def main(argv=None, qtgui=None):
                         raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0][0],
                                            splitWorkerOutput[0][1])
                     if args.inPlace:
-                        rmtree(sourceDir, True)
-                        move(targetDir, sourceDir)
+                        os.renames(targetDir, sourceDir)
                 else:
                     rmtree(targetDir, True)
                     raise UserWarning("C2P: Source directory is empty.")
