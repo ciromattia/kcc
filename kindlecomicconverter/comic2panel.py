@@ -145,13 +145,14 @@ def splitImage(work):
             # Split too big panels
             panelsProcessed = []
             for panel in panels:
-                if panel[2] <= opt.height * 1.5:
+                if panel[2] <= opt.height * 1.6:
                     panelsProcessed.append(panel)
-                elif panel[2] < opt.height * 2:
+                elif panel[2] <= opt.height * 2:
                     diff = panel[2] - opt.height
                     panelsProcessed.append((panel[0], panel[1] - diff, opt.height))
                     panelsProcessed.append((panel[1] - opt.height, panel[1], opt.height))
                 else:
+                    # TODO: add overlap, maximum overlap that wouldn't add a new page
                     parts = round(panel[2] / opt.height)
                     diff = panel[2] // parts
                     for x in range(0, parts):
