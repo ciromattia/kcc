@@ -102,6 +102,7 @@ def splitImage(work):
         Image.warnings.simplefilter('error', Image.DecompressionBombWarning)
         Image.MAX_IMAGE_PIXELS = 1000000000
         imgOrg = Image.open(filePath).convert('RGB')
+        # I experimented with custom vertical edge kernel [-1, 2, -1] but got poor results
         imgEdges = Image.open(filePath).convert('L').filter(ImageFilter.FIND_EDGES)
         # threshold of 8 is too high. 5 is too low.
         imgProcess = imgEdges.point(lambda p: 255 if p > 6 else 0).convert('1', dither=Dither.NONE)
@@ -116,23 +117,30 @@ def splitImage(work):
             yWork = 0
             panelDetected = False
             panels = []
+            # check git history for how these constant values changed
+            h_pad = int(widthImg / 20)
+            v_pad = int(widthImg / 80)
+            if v_pad % 2:
+                v_pad += 1
             while yWork < heightImg:
-                edge = int(widthImg * .05)
-                tmpImg = imgProcess.crop((edge, yWork, widthImg-edge, yWork + 4))
+                tmpImg = imgProcess.crop((h_pad, yWork, widthImg - h_pad, yWork + v_pad))
                 solid = detectSolid(tmpImg)
                 if not solid and not panelDetected:
                     panelDetected = True
-                    panelY1 = yWork - 2
-                if heightImg - yWork <= 5:
+                    panelY1 = yWork
+                if heightImg - yWork <= (v_pad // 2):
                     if not solid and panelDetected:
                         panelY2 = heightImg
                         panelDetected = False
                         panels.append((panelY1, panelY2, panelY2 - panelY1))
                 if solid and panelDetected:
                     panelDetected = False
-                    panelY2 = yWork + 6
+                    panelY2 = yWork
+                    # skip short panel at start
+                    if not panels and panelY2 - panelY1 < v_pad * 2:
+                        continue
                     panels.append((panelY1, panelY2, panelY2 - panelY1))
-                yWork += 5
+                yWork += v_pad // 2
 
             # Split too big panels
             panelsProcessed = []
