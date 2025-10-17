@@ -103,8 +103,8 @@ def splitImage(work):
         Image.MAX_IMAGE_PIXELS = 1000000000
         imgOrg = Image.open(filePath).convert('RGB')
         imgEdges = Image.open(filePath).convert('L').filter(ImageFilter.FIND_EDGES)
-        # the threshold of 8 is conservative. 0-6 are definitely not edges
-        imgProcess = imgEdges.point(lambda p: 255 if p > 8 else 0).convert('1', dither=Dither.NONE)
+        # threshold of 8 is too high. 5 is too low.
+        imgProcess = imgEdges.point(lambda p: 255 if p > 6 else 0).convert('1', dither=Dither.NONE)
 
         widthImg, heightImg = imgOrg.size
         if heightImg > opt.height:
@@ -117,7 +117,8 @@ def splitImage(work):
             panelDetected = False
             panels = []
             while yWork < heightImg:
-                tmpImg = imgProcess.crop((4, yWork, widthImg-4, yWork + 4))
+                edge = int(widthImg * .05)
+                tmpImg = imgProcess.crop((edge, yWork, widthImg-edge, yWork + 4))
                 solid = detectSolid(tmpImg)
                 if not solid and not panelDetected:
                     panelDetected = True
