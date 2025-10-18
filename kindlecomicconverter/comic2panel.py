@@ -142,6 +142,13 @@ def splitImage(work):
                     panels.append((panelY1, panelY2, panelY2 - panelY1))
                 yWork += v_pad // 2
 
+            virtual_width = min((1072, opt.width, widthImg))
+            if opt.width > 1072:
+                virtual_height = int(opt.height/1072*virtual_width)
+            else:
+                virtual_height = int(opt.height/opt.width*virtual_width)
+            opt.height = virtual_height
+
             # Split too big panels
             panelsProcessed = []
             for panel in panels:
@@ -215,6 +222,8 @@ def main(argv=None, qtgui=None):
                                    " with spaces.")
     main_options.add_argument("-y", "--height", type=int, dest="height", default=0,
                               help="Height of the target device screen")
+    main_options.add_argument("-x", "--width", type=int, dest="width", default=0,
+                              help="Width of the target device screen")
     main_options.add_argument("-i", "--in-place", action="store_true", dest="inPlace", default=False,
                               help="Overwrite source directory")
     main_options.add_argument("-m", "--merge", action="store_true", dest="merge", default=False,
