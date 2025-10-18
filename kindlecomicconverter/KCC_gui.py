@@ -723,18 +723,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.mangaBox.setChecked(False)
             GUI.rotateBox.setEnabled(False)
             GUI.rotateBox.setChecked(False)
-            GUI.upscaleBox.setEnabled(False)
-            GUI.upscaleBox.setChecked(True)
-            GUI.chunkSizeCheckBox.setEnabled(False)
-            GUI.chunkSizeCheckBox.setChecked(False)
         else:
             profile = GUI.profiles[str(GUI.deviceBox.currentText())]
             if profile['PVOptions']:
                 GUI.qualityBox.setEnabled(True)
             GUI.mangaBox.setEnabled(True)
             GUI.rotateBox.setEnabled(True)
-            GUI.upscaleBox.setEnabled(True)
-            GUI.chunkSizeCheckBox.setEnabled(True)
 
     def togglequalityBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
@@ -801,8 +795,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.modeChange(1)
         GUI.colorBox.setChecked(profile['ForceColor'])
         self.changeFormat()
-        GUI.gammaSlider.setValue(0)
-        self.changeGamma(0)
         if not GUI.webtoonBox.isChecked():
             GUI.qualityBox.setEnabled(profile['PVOptions'])
         GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
