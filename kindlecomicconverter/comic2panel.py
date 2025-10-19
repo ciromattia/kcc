@@ -177,8 +177,8 @@ def splitImage(work):
             pages = []
             currentPage = []
             # 1.25 way too high, 1.1 too high, 1.05 slightly too high(?), optimized for 2 page landscape reading
-            max_height = virtual_height * 1.00
-            pageLeft = max_height
+            # opt.height = max_height = virtual_height * 1.00
+            pageLeft = opt.height
             panelNumber = 0
             for panel in panelsProcessed:
                 if pageLeft - panel[2] > 0:
@@ -188,7 +188,7 @@ def splitImage(work):
                 else:
                     if len(currentPage) > 0:
                         pages.append(currentPage)
-                    pageLeft = max_height - panel[2]
+                    pageLeft = opt.height - panel[2]
                     currentPage = [panelNumber]
                     panelNumber += 1
             if len(currentPage) > 0:
