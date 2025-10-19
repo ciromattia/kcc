@@ -816,7 +816,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if profile['Label'] == 'KS':
             GUI.upscaleBox.setDisabled(True)
         else:
-            GUI.upscaleBox.setEnabled(True)
+            if not GUI.webtoonBox.isChecked():
+                GUI.upscaleBox.setEnabled(True)
         if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
         if str(GUI.deviceBox.currentText()) == 'Other':
