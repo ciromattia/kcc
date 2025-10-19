@@ -18,6 +18,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
+import math
 import os
 import sys
 from argparse import ArgumentParser
@@ -137,35 +138,51 @@ def splitImage(work):
                     panelDetected = False
                     panelY2 = yWork
                     # skip short panel at start
-                    if not panels and panelY2 - panelY1 < v_pad * 2:
+                    if panelY1 < v_pad * 2 and panelY2 - panelY1 < v_pad * 2:
                         continue
                     panels.append((panelY1, panelY2, panelY2 - panelY1))
                 yWork += v_pad // 2
 
+            max_width = 1072
+            virtual_width = min((max_width, opt.width, widthImg))
+            if opt.width > max_width:
+                virtual_height = int(opt.height/max_width*virtual_width)
+            else:
+                virtual_height = int(opt.height/opt.width*virtual_width)
+            opt.height = virtual_height
+
             # Split too big panels
             panelsProcessed = []
             for panel in panels:
+                # 1.52 too high
                 if panel[2] <= opt.height * 1.5:
                     panelsProcessed.append(panel)
-                elif panel[2] < opt.height * 2:
+                elif panel[2] <= opt.height * 2:
                     diff = panel[2] - opt.height
                     panelsProcessed.append((panel[0], panel[1] - diff, opt.height))
                     panelsProcessed.append((panel[1] - opt.height, panel[1], opt.height))
                 else:
-                    parts = round(panel[2] / opt.height)
+                    # split super long panels with overlap
+                    parts = math.ceil(panel[2] / opt.height)
                     diff = panel[2] // parts
-                    for x in range(0, parts):
-                        panelsProcessed.append((panel[0] + (x * diff), panel[1] - ((parts - x - 1) * diff), diff))
+                    panelsProcessed.append((panel[0], panel[0] + opt.height, opt.height))
+                    for x in range(1, parts - 1):
+                        start = panel[0] + (x * diff)
+                        panelsProcessed.append((start, start + opt.height, opt.height))
+                    panelsProcessed.append((panel[1] - opt.height, panel[1], opt.height))
 
             if opt.debug:
                 for panel in panelsProcessed:
                     draw.rectangle(((0, panel[0]), (widthImg, panel[1])), (0, 255, 0, 128), (0, 0, 255, 255))
                 debugImage = Image.alpha_composite(imgOrg.convert(mode='RGBA'), drawImg)
+                # debugImage.show()
                 debugImage.save(os.path.join(path, os.path.splitext(name)[0] + '-debug.png'), 'PNG')
 
             # Create virtual pages
             pages = []
             currentPage = []
+            # TODO: 1.25 way too high, 1.1 too high, 1.05 slightly too high(?), optimized for 2 page landscape reading
+            # opt.height = max_height = virtual_height * 1.00
             pageLeft = opt.height
             panelNumber = 0
             for panel in panelsProcessed:
@@ -214,6 +231,8 @@ def main(argv=None, qtgui=None):
                                    " with spaces.")
     main_options.add_argument("-y", "--height", type=int, dest="height", default=0,
                               help="Height of the target device screen")
+    main_options.add_argument("-x", "--width", type=int, dest="width", default=0,
+                              help="Width of the target device screen")
     main_options.add_argument("-i", "--in-place", action="store_true", dest="inPlace", default=False,
                               help="Overwrite source directory")
     main_options.add_argument("-m", "--merge", action="store_true", dest="merge", default=False,

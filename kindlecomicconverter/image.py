@@ -397,6 +397,8 @@ class ComicPage:
             self.image = Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma))
 
     def autocontrastImage(self):
+        if self.opt.webtoon:
+            return
         if self.opt.autolevel and not self.color:
             self.convertToGrayscale()
             h = self.image.histogram()

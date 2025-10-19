@@ -719,22 +719,31 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if value:
             GUI.qualityBox.setEnabled(False)
             GUI.qualityBox.setChecked(False)
-            GUI.mangaBox.setEnabled(False)
-            GUI.mangaBox.setChecked(False)
             GUI.rotateBox.setEnabled(False)
             GUI.rotateBox.setChecked(False)
+            GUI.borderBox.setEnabled(False)
+            GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
             GUI.upscaleBox.setEnabled(False)
-            GUI.upscaleBox.setChecked(True)
-            GUI.chunkSizeCheckBox.setEnabled(False)
-            GUI.chunkSizeCheckBox.setChecked(False)
+            GUI.upscaleBox.setChecked(False)
+            GUI.croppingBox.setEnabled(False)
+            GUI.croppingBox.setChecked(False)
+            GUI.interPanelCropBox.setEnabled(False)
+            GUI.interPanelCropBox.setChecked(False)
+            GUI.autoLevelBox.setEnabled(False)
+            GUI.autoLevelBox.setChecked(False)
         else:
             profile = GUI.profiles[str(GUI.deviceBox.currentText())]
             if profile['PVOptions']:
                 GUI.qualityBox.setEnabled(True)
-            GUI.mangaBox.setEnabled(True)
             GUI.rotateBox.setEnabled(True)
-            GUI.upscaleBox.setEnabled(True)
-            GUI.chunkSizeCheckBox.setEnabled(True)
+            GUI.borderBox.setEnabled(True)
+            profile = GUI.profiles[str(GUI.deviceBox.currentText())]
+            if profile['Label'] != 'KS':
+                GUI.upscaleBox.setEnabled(True)
+            GUI.croppingBox.setEnabled(True)
+            GUI.interPanelCropBox.setEnabled(True)
+            GUI.autoLevelBox.setEnabled(True)
+
 
     def togglequalityBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
@@ -801,15 +810,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.modeChange(1)
         GUI.colorBox.setChecked(profile['ForceColor'])
         self.changeFormat()
-        GUI.gammaSlider.setValue(0)
-        self.changeGamma(0)
         if not GUI.webtoonBox.isChecked():
             GUI.qualityBox.setEnabled(profile['PVOptions'])
         GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
         if profile['Label'] == 'KS':
             GUI.upscaleBox.setDisabled(True)
         else:
-            GUI.upscaleBox.setEnabled(True)
+            if not GUI.webtoonBox.isChecked():
+                GUI.upscaleBox.setEnabled(True)
         if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
         if str(GUI.deviceBox.currentText()) == 'Other':
