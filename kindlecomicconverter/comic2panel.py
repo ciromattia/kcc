@@ -176,7 +176,7 @@ def splitImage(work):
             # Create virtual pages
             pages = []
             currentPage = []
-            # 1.25 way too high, 1.1 too high, 1.05 slightly too high(?), optimized for 2 page landscape reading
+            # TODO: 1.25 way too high, 1.1 too high, 1.05 slightly too high(?), optimized for 2 page landscape reading
             # opt.height = max_height = virtual_height * 1.00
             pageLeft = opt.height
             panelNumber = 0
