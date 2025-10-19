@@ -42,7 +42,6 @@ from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 import pymupdf
-import numpy as np
 
 from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean
 from .comicarchive import SEVENZIP, available_archive_tools
