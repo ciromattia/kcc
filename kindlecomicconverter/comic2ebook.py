@@ -298,8 +298,9 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
         f.writelines(["<dc:description>", hescape(options.summary), "</dc:description>\n"])
     for author in options.authors:
         f.writelines(["<dc:creator>", hescape(author), "</dc:creator>\n"])
-    f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
-                  "<meta name=\"cover\" content=\"cover\"/>\n"])
+    f.write("<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n")
+    if cover:
+        f.write("<meta name=\"cover\" content=\"cover\"/>\n")
     if options.iskindle and options.profile != 'Custom':
         f.writelines(["<meta name=\"fixed-layout\" content=\"true\"/>\n",
                       "<meta name=\"original-resolution\" content=\"",
@@ -531,7 +532,8 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, ori
                       "}\n"])
     f.close()
     build_html_start = perf_counter()
-    cover.save_to_epub(os.path.join(path, 'OEBPS', 'Images', 'cover.jpg'), tomenumber, len_tomes)
+    if cover:
+        cover.save_to_epub(os.path.join(path, 'OEBPS', 'Images', 'cover.jpg'), tomenumber, len_tomes)
     dot_clean(path)
     options.covers.append((cover, options.uuid))
     for dirpath, dirnames, filenames in os.walk(os.path.join(path, 'OEBPS', 'Images')):
@@ -1531,7 +1533,9 @@ def makeBook(source, qtgui=None):
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
     chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
-    cover = image.Cover(cover_path, options)
+    cover = None
+    if not options.webtoon:
+        cover = image.Cover(cover_path, options)
 
     if options.webtoon:
         x, y = image.ProfileData.Profiles[options.profile][1]
@@ -1626,7 +1630,7 @@ def makeBook(source, qtgui=None):
                 return filepath
             else:
                 os.remove(i.replace('.epub', '.mobi') + '_toclean')
-            if k.path and k.coverSupport:
+            if cover and k.path and k.coverSupport:
                 options.covers[filepath.index(i)][0].saveToKindle(k, options.covers[filepath.index(i)][1])
     if options.delete:
         if os.path.isfile(source):

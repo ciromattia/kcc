@@ -488,8 +488,10 @@ class WorkerThread(QThread):
                             k = kindle.Kindle(options.profile)
                             if k.path and k.coverSupport:
                                 for item in outputPath:
-                                    comic2ebook.options.covers[outputPath.index(item)][0].saveToKindle(
-                                        k, comic2ebook.options.covers[outputPath.index(item)][1])
+                                    cover = comic2ebook.options.covers[outputPath.index(item)][0]
+                                    if cover:
+                                        cover.saveToKindle(
+                                            k, comic2ebook.options.covers[outputPath.index(item)][1])
                                 MW.addMessage.emit('Kindle detected. Uploading covers... <b>Done!</b>', 'info', False)
                         else:
                             GUI.progress.content = ''
