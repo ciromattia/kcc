@@ -137,14 +137,15 @@ def splitImage(work):
                     panelDetected = False
                     panelY2 = yWork
                     # skip short panel at start
-                    if not panels and panelY2 - panelY1 < v_pad * 2:
+                    if panelY1 < v_pad * 2 and panelY2 - panelY1 < v_pad * 2:
                         continue
                     panels.append((panelY1, panelY2, panelY2 - panelY1))
                 yWork += v_pad // 2
 
-            virtual_width = min((1072, opt.width, widthImg))
-            if opt.width > 1072:
-                virtual_height = int(opt.height/1072*virtual_width)
+            max_width = 1072
+            virtual_width = min((max_width, opt.width, widthImg))
+            if opt.width > max_width:
+                virtual_height = int(opt.height/max_width*virtual_width)
             else:
                 virtual_height = int(opt.height/opt.width*virtual_width)
             opt.height = virtual_height
@@ -152,7 +153,8 @@ def splitImage(work):
             # Split too big panels
             panelsProcessed = []
             for panel in panels:
-                if panel[2] <= opt.height * 1.6:
+                # 1.52 too high
+                if panel[2] <= opt.height * 1.5:
                     panelsProcessed.append(panel)
                 elif panel[2] <= opt.height * 2:
                     diff = panel[2] - opt.height
@@ -174,7 +176,9 @@ def splitImage(work):
             # Create virtual pages
             pages = []
             currentPage = []
-            pageLeft = opt.height
+            # 1.25 too high
+            max_height = virtual_height * 1.2
+            pageLeft = max_height
             panelNumber = 0
             for panel in panelsProcessed:
                 if pageLeft - panel[2] > 0:
@@ -184,7 +188,7 @@ def splitImage(work):
                 else:
                     if len(currentPage) > 0:
                         pages.append(currentPage)
-                    pageLeft = opt.height - panel[2]
+                    pageLeft = max_height - panel[2]
                     currentPage = [panelNumber]
                     panelNumber += 1
             if len(currentPage) > 0:
