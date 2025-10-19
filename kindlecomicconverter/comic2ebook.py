@@ -1413,7 +1413,10 @@ def checkOptions(options):
     if options.webtoon:
         options.panelview = False
         options.righttoleft = False
+        options.upscale = False
         options.hq = False
+        options.white_borders = True
+        options.bordersColor = 'white'
     # Disable all Kindle features for other e-readers
     if options.profile == 'OTHER':
         options.panelview = False
