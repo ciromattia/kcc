@@ -18,6 +18,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
+import math
 import os
 import sys
 from argparse import ArgumentParser
@@ -161,16 +162,20 @@ def splitImage(work):
                     panelsProcessed.append((panel[0], panel[1] - diff, opt.height))
                     panelsProcessed.append((panel[1] - opt.height, panel[1], opt.height))
                 else:
-                    # TODO: add overlap, maximum overlap that wouldn't add a new page
-                    parts = round(panel[2] / opt.height)
+                    # split super long panels with overlap
+                    parts = math.ceil(panel[2] / opt.height)
                     diff = panel[2] // parts
-                    for x in range(0, parts):
-                        panelsProcessed.append((panel[0] + (x * diff), panel[1] - ((parts - x - 1) * diff), diff))
+                    panelsProcessed.append((panel[0], panel[0] + opt.height, opt.height))
+                    for x in range(1, parts - 1):
+                        start = panel[0] + (x * diff)
+                        panelsProcessed.append((start, start + opt.height, opt.height))
+                    panelsProcessed.append((panel[1] - opt.height, panel[1], opt.height))
 
             if opt.debug:
                 for panel in panelsProcessed:
                     draw.rectangle(((0, panel[0]), (widthImg, panel[1])), (0, 255, 0, 128), (0, 0, 255, 255))
                 debugImage = Image.alpha_composite(imgOrg.convert(mode='RGBA'), drawImg)
+                # debugImage.show()
                 debugImage.save(os.path.join(path, os.path.splitext(name)[0] + '-debug.png'), 'PNG')
 
             # Create virtual pages
