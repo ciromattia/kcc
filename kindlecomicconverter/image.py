@@ -25,6 +25,8 @@ from pathlib import Path
 from functools import cached_property
 import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter, ImageDraw
+
+from .rainbow_artifacts_eraser import erase_rainbow_artifacts
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
 
@@ -128,6 +130,7 @@ class ProfileData:
         'Rmk1': ("reMarkable 1", (1404, 1872), Palette16, 1.0),
         'Rmk2': ("reMarkable 2", (1404, 1872), Palette16, 1.0),
         'RmkPP': ("reMarkable Paper Pro", (1620, 2160), Palette16, 1.0),
+        'RmkPPMove': ("reMarkable Paper Pro Move", (954, 1696), Palette16, 1.0),
     }
 
     Profiles = {
@@ -149,7 +152,8 @@ class ComicPageParser:
         # Detect corruption in source image, let caller catch any exceptions triggered.
         srcImgPath = os.path.join(source[0], source[1])
         Image.open(srcImgPath).verify()
-        self.image = Image.open(srcImgPath)
+        with Image.open(srcImgPath) as im:
+            self.image = im.copy()
 
         self.fill = self.fillCheck()
         # backwards compatibility for Pillow >9.1.0
@@ -287,16 +291,56 @@ class ComicPage:
 
         cb_hist = cb.histogram()
         cr_hist = cr.histogram()
+
+        for h in cb_hist, cr_hist:
+            # cut off pixels from both ends of the histogram
+            cutoff = (.1, .1)
+            # get number of pixels
+            n = sum(h)
+            # remove cutoff% pixels from the low end
+            cut = int(n * cutoff[0] // 100)
+            for lo in range(256):
+                if cut > h[lo]:
+                    cut = cut - h[lo]
+                    h[lo] = 0
+                else:
+                    h[lo] -= cut
+                    cut = 0
+                if cut <= 0:
+                    break
+            # remove cutoff% samples from the high end
+            cut = int(n * cutoff[1] // 100)
+            for hi in range(255, -1, -1):
+                if cut > h[hi]:
+                    cut = cut - h[hi]
+                    h[hi] = 0
+                else:
+                    h[hi] -= cut
+                    cut = 0
+                if cut <= 0:
+                    break
+
         cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
         cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
-        cb_spread = cb_nonzero[-1] - cb_nonzero[0] if len(cb_nonzero) else 0
-        cr_spread = cr_nonzero[-1] - cr_nonzero[0] if len(cr_nonzero) else 0
+        cb_spread = cb_nonzero[-1] - cb_nonzero[0]
+        cr_spread = cr_nonzero[-1] - cr_nonzero[0]
 
-        SPREAD_THRESHOLD=20
+        # bias adjustment
+        SPREAD_THRESHOLD = 5
         if cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
             return False
-        else:
+        
+        DIFF_THRESHOLD = 10
+        if cb_nonzero[0] < 128 - DIFF_THRESHOLD:
             return True
+        elif cb_nonzero[-1] > 128 + DIFF_THRESHOLD:
+            return True
+        elif cr_nonzero[0] < 128 - DIFF_THRESHOLD:
+            return True
+        elif cr_nonzero[-1] > 128 + DIFF_THRESHOLD:
+            return True
+        else:
+            return False
         
     def saveToDir(self):
         try:
@@ -353,6 +397,8 @@ class ComicPage:
             self.image = Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma))
 
     def autocontrastImage(self):
+        if self.opt.webtoon:
+            return
         if self.opt.autolevel and not self.color:
             self.convertToGrayscale()
             h = self.image.histogram()
@@ -379,13 +425,10 @@ class ComicPage:
         palImg.putpalette(self.palette)
         self.image = self.image.quantize(palette=palImg)
 
-    def optimizeForDisplay(self, reducerainbow):
-        # Reduce rainbow artifacts for grayscale images by breaking up dither patterns that cause Moire interference with color filter array
-        if reducerainbow and not self.color:
-            unsharpFilter = ImageFilter.UnsharpMask(radius=1, percent=100)
-            self.image = self.image.filter(unsharpFilter)
-            self.image = self.image.filter(ImageFilter.BoxBlur(1.0))
-            self.image = self.image.filter(unsharpFilter)
+    def optimizeForDisplay(self, eraserainbow, is_color):
+        # Erase rainbow artifacts for grayscale and color images by removing spectral frequencies that cause Moire interference with color filter array
+        if eraserainbow and all(dim > 1 for dim in self.image.size):
+            self.image = erase_rainbow_artifacts(self.image, is_color)
 
     def resizeImage(self):
         ratio_device = float(self.size[1]) / float(self.size[0])
@@ -398,7 +441,7 @@ class ComicPage:
         else: # if image bigger than device resolution or smaller with upscaling
             if abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
-            elif (self.opt.format == 'CBZ' or self.opt.kfx) and not self.opt.white_borders:
+            elif (self.opt.format in ('CBZ', 'PDF') or self.opt.kfx) and not self.opt.white_borders:
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
                 self.image = ImageOps.contain(self.image, self.size, method=method)
@@ -424,12 +467,20 @@ class ComicPage:
         bbox = get_bbox_crop_margin_page_number(self.image, power, self.fill)
         
         if bbox:
+            w, h = self.image.size
+            left, upper, right, lower = bbox
+            # don't crop more than 10% of image
+            bbox = (min(0.1*w, left), min(0.1*h, upper), max(0.9*w, right), max(0.9*h, lower))
             self.maybeCrop(bbox, minimum)
 
     def cropMargin(self, power, minimum):
         bbox = get_bbox_crop_margin(self.image, power, self.fill)
         
         if bbox:
+            w, h = self.image.size
+            left, upper, right, lower = bbox
+            # don't crop more than 10% of image
+            bbox = (min(0.1*w, left), min(0.1*h, upper), max(0.9*w, right), max(0.9*h, lower))
             self.maybeCrop(bbox, minimum)
 
     def cropInterPanelEmptySections(self, direction):
@@ -464,7 +515,7 @@ class Cover:
                 self.image = self.image.crop((w/6, 0, w/2 - w * 0.02, h))
             else:
                 self.image = self.image.crop((w/2 + w * 0.02, 0, 5/6 * w, h))
-        elif w / h > 1.3:
+        elif w / h > 1.34:
             if self.options.righttoleft:
                 self.image = self.image.crop((0, 0, w/2 - w * 0.03, h))
             else:
@@ -488,9 +539,6 @@ class Cover:
                     stroke_width=25
                 )
                 copy.save(target, "JPEG", optimize=1, quality=85)
-            dot_cover = Path(target).with_stem('._' + Path(target).stem)
-            if os.path.exists(dot_cover):
-                os.remove(dot_cover)
         except IOError:
             raise RuntimeError('Failed to save cover.')
 

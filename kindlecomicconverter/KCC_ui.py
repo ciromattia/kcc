@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'KCC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -37,6 +37,7 @@ class Ui_mainWindow(object):
         self.gridLayout.setContentsMargins(-1, -1, -1, 5)
         self.jobList = QListWidget(self.centralWidget)
         self.jobList.setObjectName(u"jobList")
+        self.jobList.setMinimumSize(QSize(0, 150))
         self.jobList.setStyleSheet(u"")
         self.jobList.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.jobList.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
@@ -62,7 +63,7 @@ class Ui_mainWindow(object):
         self.kofiButton.setObjectName(u"kofiButton")
         self.kofiButton.setMinimumSize(QSize(0, 30))
         icon2 = QIcon()
-        icon2.addFile(u":/Other/icons/kofi_symbol.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon2.addFile(u":/Brand/icons/kofi_symbol.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.kofiButton.setIcon(icon2)
         self.kofiButton.setIconSize(QSize(19, 16))
 
@@ -189,7 +190,7 @@ class Ui_mainWindow(object):
 
         self.widthBox = QSpinBox(self.customWidget)
         self.widthBox.setObjectName(u"widthBox")
-        self.widthBox.setMaximum(2400)
+        self.widthBox.setMaximum(3200)
 
         self.gridLayout_3.addWidget(self.widthBox, 0, 1, 1, 1)
 
@@ -202,7 +203,7 @@ class Ui_mainWindow(object):
 
         self.heightBox = QSpinBox(self.customWidget)
         self.heightBox.setObjectName(u"heightBox")
-        self.heightBox.setMaximum(3840)
+        self.heightBox.setMaximum(5120)
 
         self.gridLayout_3.addWidget(self.heightBox, 0, 3, 1, 1)
 
@@ -288,17 +289,26 @@ class Ui_mainWindow(object):
         self.authorEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
         self.authorEdit.setClearButtonEnabled(False)
 
-        self.gridLayout_2.addWidget(self.authorEdit, 0, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.authorEdit, 0, 1, 1, 1)
+
+        self.titleEdit = QLineEdit(self.optionWidget)
+        self.titleEdit.setObjectName(u"titleEdit")
+        sizePolicy3.setHeightForWidth(self.titleEdit.sizePolicy().hasHeightForWidth())
+        self.titleEdit.setSizePolicy(sizePolicy3)
+        self.titleEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.titleEdit.setClearButtonEnabled(False)
+
+        self.gridLayout_2.addWidget(self.titleEdit, 0, 0, 1, 1)
 
         self.rotateFirstBox = QCheckBox(self.optionWidget)
         self.rotateFirstBox.setObjectName(u"rotateFirstBox")
 
         self.gridLayout_2.addWidget(self.rotateFirstBox, 8, 1, 1, 1)
 
-        self.reduceRainbowBox = QCheckBox(self.optionWidget)
-        self.reduceRainbowBox.setObjectName(u"reduceRainbowBox")
+        self.eraseRainbowBox = QCheckBox(self.optionWidget)
+        self.eraseRainbowBox.setObjectName(u"eraseRainbowBox")
 
-        self.gridLayout_2.addWidget(self.reduceRainbowBox, 7, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.eraseRainbowBox, 7, 2, 1, 1)
 
         self.chunkSizeCheckBox = QCheckBox(self.optionWidget)
         self.chunkSizeCheckBox.setObjectName(u"chunkSizeCheckBox")
@@ -316,10 +326,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.outputSplit, 3, 1, 1, 1)
 
-        self.comicinfoTitleBox = QCheckBox(self.optionWidget)
-        self.comicinfoTitleBox.setObjectName(u"comicinfoTitleBox")
+        self.metadataTitleBox = QCheckBox(self.optionWidget)
+        self.metadataTitleBox.setObjectName(u"metadataTitleBox")
+        self.metadataTitleBox.setTristate(True)
 
-        self.gridLayout_2.addWidget(self.comicinfoTitleBox, 7, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.metadataTitleBox, 7, 0, 1, 1)
 
         self.qualityBox = QCheckBox(self.optionWidget)
         self.qualityBox.setObjectName(u"qualityBox")
@@ -473,8 +484,8 @@ class Ui_mainWindow(object):
         QWidget.setTabOrder(self.disableProcessingBox, self.chunkSizeBox)
         QWidget.setTabOrder(self.chunkSizeBox, self.noRotateBox)
         QWidget.setTabOrder(self.noRotateBox, self.interPanelCropBox)
-        QWidget.setTabOrder(self.interPanelCropBox, self.reduceRainbowBox)
-        QWidget.setTabOrder(self.reduceRainbowBox, self.heightBox)
+        QWidget.setTabOrder(self.interPanelCropBox, self.eraseRainbowBox)
+        QWidget.setTabOrder(self.eraseRainbowBox, self.heightBox)
         QWidget.setTabOrder(self.heightBox, self.croppingPowerSlider)
         QWidget.setTabOrder(self.croppingPowerSlider, self.editorButton)
         QWidget.setTabOrder(self.editorButton, self.wikiButton)
@@ -489,6 +500,9 @@ class Ui_mainWindow(object):
 
     def retranslateUi(self, mainWindow):
         mainWindow.setWindowTitle(QCoreApplication.translate("mainWindow", u"Kindle Comic Converter", None))
+#if QT_CONFIG(tooltip)
+        self.jobList.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Double click on source to open metadata editor.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
         self.editorButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Shift+Click to edit directory.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
@@ -546,7 +560,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.mangaBox.setText(QCoreApplication.translate("mainWindow", u"Right-to-left mode", None))
 #if QT_CONFIG(tooltip)
-        self.borderBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Autodetection<br/></span>The color of margins fill will be detected automatically.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - White<br/></span>Margins will be filled with white color.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Black<br/></span>Margins will be filled with black color.</p></body></html>", None))
+        self.borderBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Autodetection<br/></span>The color of margins fill will be detected automatically.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - White<br/></span>Margins will be untouched.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Black<br/></span>Margins will be filled with black color.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.borderBox.setText(QCoreApplication.translate("mainWindow", u"W/B margins", None))
 #if QT_CONFIG(tooltip)
@@ -562,13 +576,17 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.authorEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Author", None))
 #if QT_CONFIG(tooltip)
+        self.titleEdit.setToolTip(QCoreApplication.translate("mainWindow", u"Default Title is based on filename, directory name or metadata", None))
+#endif // QT_CONFIG(tooltip)
+        self.titleEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Title", None))
+#if QT_CONFIG(tooltip)
         self.rotateFirstBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>When the spread splitter option is partially checked,</p><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Rotate Last<br/></span>Put the rotated 2 page spread after the split spreads.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate First<br/></span>Put the rotated 2 page spread before the split spreads.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.rotateFirstBox.setText(QCoreApplication.translate("mainWindow", u"Rotate First", None))
 #if QT_CONFIG(tooltip)
-        self.reduceRainbowBox.setToolTip(QCoreApplication.translate("mainWindow", u"Reduce rainbow effect on color eink by slightly blurring images", None))
+        self.eraseRainbowBox.setToolTip(QCoreApplication.translate("mainWindow", u"Erase rainbow effect on color eink screen by attenuating interfering frequencies", None))
 #endif // QT_CONFIG(tooltip)
-        self.reduceRainbowBox.setText(QCoreApplication.translate("mainWindow", u"Rainbow blur", None))
+        self.eraseRainbowBox.setText(QCoreApplication.translate("mainWindow", u"Rainbow eraser", None))
 #if QT_CONFIG(tooltip)
         self.chunkSizeCheckBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:700; text-decoration: underline;\">Unchecked<br/></span>Maximal output file size is 100 MB for Webtoon, 400 MB for others before split occurs.</p><p><span style=\" font-weight:700; text-decoration: underline;\">Checked</span><br/>Output file size specified in &quot;Chunk size MB&quot; before split occurs.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
@@ -582,9 +600,9 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.outputSplit.setText(QCoreApplication.translate("mainWindow", u"Output split", None))
 #if QT_CONFIG(tooltip)
-        self.comicinfoTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"Write Title from ComicInfo.xml", None))
+        self.metadataTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Don't use metadata Title<br/></span>Write default title.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Add metadata Title to the default schema<br/></span>Write default title with Title from ComicInfo.xml or other embedded metadata.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Use metadata Title only<br/></span>Write Title from ComicInfo.xml or other embedded metadata.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.comicinfoTitleBox.setText(QCoreApplication.translate("mainWindow", u"ComicInfo Title", None))
+        self.metadataTitleBox.setText(QCoreApplication.translate("mainWindow", u"Metadata Title", None))
 #if QT_CONFIG(tooltip)
         self.qualityBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 4 panels<br/></span>Zoom each corner separately.</p><p style='white-space:pre'><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - 2 panels<br/></span>Zoom only the top and bottom of the page.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - 4 high-quality panels<br/></span>Zoom each corner separately. Try to increase the quality of magnification. Check wiki for more details.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
@@ -630,7 +648,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.mozJpegBox.setText(QCoreApplication.translate("mainWindow", u"JPEG/PNG/mozJpeg", None))
 #if QT_CONFIG(tooltip)
-        self.autoLevelBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Set the most common dark pixel value to be the black point for leveling on a page by page basis.</p><p>Skipped for any images that were originally color.</p><p>Useful for very gray faded content. Reccomended to use with Custom Gamma = 1.0 (Disabled).</p></body></html>", None))
+        self.autoLevelBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Set the most common dark pixel value to be the black point for leveling on a page by page basis.</p><p>Skipped for any images that were originally color.</p><p>Use only if default autocontrast still results in very gray faded blacks. </p><p>Reccomended to use with Custom Gamma = 1.0 (Disabled).</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.autoLevelBox.setText(QCoreApplication.translate("mainWindow", u"Aggressive Black Point", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))

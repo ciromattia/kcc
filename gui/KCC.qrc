@@ -27,6 +27,10 @@
     <file>../icons/convert.png</file>
     <file>../icons/document_new.png</file>
     <file>../icons/folder_new.png</file>
+  </qresource>
+  <qresource prefix="Brand">
     <file>../icons/kofi_symbol.png</file>
+    <file>../icons/Humble_H-Red.png</file>
+    <file>../icons/Bindle_Red.png</file>
   </qresource>
 </RCC>

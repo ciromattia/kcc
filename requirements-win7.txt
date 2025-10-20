@@ -1,5 +1,5 @@
-PySide6<6.10
-Pillow>=11.3.0
+PySide6==6.1.3
+Pillow>=9
 psutil>=5.9.5
 requests>=2.31.0
 python-slugify>=1.2.1
@@ -8,5 +8,5 @@ packaging>=23.2
 mozjpeg-lossless-optimization>=1.2.0
 natsort>=8.4.0
 distro>=1.8.0
-numpy>=1.22.4
-PyMuPDF>=1.18.0
+numpy==1.23.0
+PyMuPDF>=1.16

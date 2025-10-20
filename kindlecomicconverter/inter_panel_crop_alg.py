@@ -19,10 +19,10 @@ def crop_empty_inter_panel(img, direction: Literal["horizontal", "vertical", "bo
     img_temp = img
     
     if img.mode != 'L':
-        img_temp = ImageOps.grayscale(img)
+        img_temp = ImageOps.grayscale(img_temp)
         
     if background_color != 'white':
-        img_temp = ImageOps.invert(img)
+        img_temp = ImageOps.invert(img_temp)
         
     img_mat = np.array(img)
     

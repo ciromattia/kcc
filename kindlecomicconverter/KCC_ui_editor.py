@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'MetaEditor.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -60,52 +60,62 @@ class Ui_editorDialog(object):
         self.label_3 = QLabel(self.editorWidget)
         self.label_3.setObjectName(u"label_3")
 
-        self.gridLayout.addWidget(self.label_3, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_3, 3, 0, 1, 1)
 
         self.numberLine = QLineEdit(self.editorWidget)
         self.numberLine.setObjectName(u"numberLine")
 
-        self.gridLayout.addWidget(self.numberLine, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.numberLine, 3, 1, 1, 1)
 
         self.label_4 = QLabel(self.editorWidget)
         self.label_4.setObjectName(u"label_4")
 
-        self.gridLayout.addWidget(self.label_4, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_4, 4, 0, 1, 1)
 
         self.writerLine = QLineEdit(self.editorWidget)
         self.writerLine.setObjectName(u"writerLine")
 
-        self.gridLayout.addWidget(self.writerLine, 3, 1, 1, 1)
+        self.gridLayout.addWidget(self.writerLine, 4, 1, 1, 1)
 
         self.label_5 = QLabel(self.editorWidget)
         self.label_5.setObjectName(u"label_5")
 
-        self.gridLayout.addWidget(self.label_5, 4, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_5, 5, 0, 1, 1)
 
         self.pencillerLine = QLineEdit(self.editorWidget)
         self.pencillerLine.setObjectName(u"pencillerLine")
 
-        self.gridLayout.addWidget(self.pencillerLine, 4, 1, 1, 1)
+        self.gridLayout.addWidget(self.pencillerLine, 5, 1, 1, 1)
 
         self.label_6 = QLabel(self.editorWidget)
         self.label_6.setObjectName(u"label_6")
 
-        self.gridLayout.addWidget(self.label_6, 5, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_6, 6, 0, 1, 1)
 
         self.inkerLine = QLineEdit(self.editorWidget)
         self.inkerLine.setObjectName(u"inkerLine")
 
-        self.gridLayout.addWidget(self.inkerLine, 5, 1, 1, 1)
+        self.gridLayout.addWidget(self.inkerLine, 6, 1, 1, 1)
 
         self.label_7 = QLabel(self.editorWidget)
         self.label_7.setObjectName(u"label_7")
 
-        self.gridLayout.addWidget(self.label_7, 6, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_7, 7, 0, 1, 1)
 
         self.coloristLine = QLineEdit(self.editorWidget)
         self.coloristLine.setObjectName(u"coloristLine")
 
-        self.gridLayout.addWidget(self.coloristLine, 6, 1, 1, 1)
+        self.gridLayout.addWidget(self.coloristLine, 7, 1, 1, 1)
+
+        self.label_8 = QLabel(self.editorWidget)
+        self.label_8.setObjectName(u"label_8")
+
+        self.gridLayout.addWidget(self.label_8, 2, 0, 1, 1)
+
+        self.titleLine = QLineEdit(self.editorWidget)
+        self.titleLine.setObjectName(u"titleLine")
+
+        self.gridLayout.addWidget(self.titleLine, 2, 1, 1, 1)
 
 
         self.verticalLayout.addWidget(self.editorWidget)
@@ -161,6 +171,7 @@ class Ui_editorDialog(object):
         self.label_5.setText(QCoreApplication.translate("editorDialog", u"Penciller:", None))
         self.label_6.setText(QCoreApplication.translate("editorDialog", u"Inker:", None))
         self.label_7.setText(QCoreApplication.translate("editorDialog", u"Colorist:", None))
+        self.label_8.setText(QCoreApplication.translate("editorDialog", u"Title:", None))
         self.statusLabel.setText("")
         self.okButton.setText(QCoreApplication.translate("editorDialog", u"Save", None))
         self.cancelButton.setText(QCoreApplication.translate("editorDialog", u"Cancel", None))
