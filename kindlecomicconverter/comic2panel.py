@@ -105,8 +105,8 @@ def splitImage(work):
         imgOrg = Image.open(filePath).convert('RGB')
         # I experimented with custom vertical edge kernel [-1, 2, -1] but got poor results
         imgEdges = Image.open(filePath).convert('L').filter(ImageFilter.FIND_EDGES)
-        # threshold of 8 is too high. 5 is too low.
-        imgProcess = imgEdges.point(lambda p: 255 if p > 6 else 0).convert('1', dither=Dither.NONE)
+        # threshold of 8 is too high. 5 is too low. 6 is OK but 7 is better
+        imgProcess = imgEdges.point(lambda p: 255 if p > 7 else 0).convert('1', dither=Dither.NONE)
 
         widthImg, heightImg = imgOrg.size
         if heightImg > opt.height:
@@ -120,7 +120,7 @@ def splitImage(work):
             panels = []
             # check git history for how these constant values changed
             h_pad = int(widthImg / 20)
-            v_pad = int(widthImg / 80)
+            v_pad = int(widthImg / 20)
             if v_pad % 2:
                 v_pad += 1
             while yWork < heightImg:
