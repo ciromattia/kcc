@@ -284,6 +284,8 @@ class ComicPage:
 
     @cached_property
     def color(self):
+        if self.original_color_mode in ("L", "1"):
+            return False
         if self.calculate_color():
             return True
         return False
@@ -321,8 +323,6 @@ class ComicPage:
         return cb_hist, cr_hist
 
     def calculate_color(self):
-        if self.original_color_mode in ("L", "1"):
-            return False
         img = self.image.convert("YCbCr")
         _, cb, cr = img.split()
 
