@@ -95,7 +95,7 @@
          </property>
          <property name="icon">
           <iconset resource="KCC.qrc">
-           <normaloff>:/Brand/icons/kofi_symbol.png</normaloff>:/Other/icons/kofi_symbol.png</iconset>
+           <normaloff>:/Brand/icons/kofi_symbol.png</normaloff>:/Brand/icons/kofi_symbol.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -465,7 +465,7 @@
        <item row="2" column="2">
         <widget class="QCheckBox" name="gammaBox">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Disable automatic gamma correction.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set a custom gamma correction.&lt;/p&gt;&lt;p&gt;1.0 is default (disabled).&lt;br/&gt;&amp;lt; 1.0 makes the image brighter.&lt;br/&gt;&amp;gt; 1.0 makes the image darker. &lt;/p&gt;&lt;p&gt;1.8 was the default in KCC 9.1.0 and earlier.&lt;/p&gt;&lt;p&gt;Use if you want to make midtones darker.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Custom gamma</string>
@@ -756,7 +756,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the most common dark pixel value to be the black point for leveling on a page by page basis.&lt;/p&gt;&lt;p&gt;Skipped for any images that were originally color.&lt;/p&gt;&lt;p&gt;Use only if default autocontrast still results in very gray faded blacks. &lt;/p&gt;&lt;p&gt;Reccomended to use with Custom Gamma = 1.0 (Disabled).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Aggressive Black Point</string>
+          <string>Extreme Black Point</string>
          </property>
         </widget>
        </item>
