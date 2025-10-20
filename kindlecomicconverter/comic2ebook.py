@@ -742,6 +742,7 @@ def render_page(vector):
             zoom = target_height / page.rect.height
             mat = pymupdf.Matrix(zoom, zoom)
             # TODO: decide colorspace earlier so later color check is cheaper.
+            # This is actually pretty hard when you have to deal with color vector text
             pix = page.get_pixmap(matrix=mat, colorspace='RGB', alpha=False)
             pix.save(os.path.join(output_dir, "p-%i.png" % i))
         print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
