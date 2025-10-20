@@ -43,7 +43,7 @@ jobs:
           pip3 install --upgrade pip setuptools wheel pyinstaller certifi
           pip3 install --upgrade -r requirements-osx-legacy.txt
           ./gen_ui_files.sh
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: 16
       - run: npm install -g appdmg
