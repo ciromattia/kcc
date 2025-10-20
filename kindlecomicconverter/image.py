@@ -287,6 +287,38 @@ class ComicPage:
         if self.calculate_color():
             return True
         return False
+    
+    # cut off pixels from both ends of the histogram to remove jpg compression artifacts
+    def histograms_cutoff(self, cb, cr, cutoff=(2, 2)):
+        cb_hist = cb.histogram()
+        cr_hist = cr.histogram()
+
+        for h in cb_hist, cr_hist:
+            # get number of pixels
+            n = sum(h)
+            # remove cutoff% pixels from the low end
+            cut = int(n * cutoff[0] // 100)
+            for lo in range(256):
+                if cut > h[lo]:
+                    cut = cut - h[lo]
+                    h[lo] = 0
+                else:
+                    h[lo] -= cut
+                    cut = 0
+                if cut <= 0:
+                    break
+            # remove cutoff% samples from the high end
+            cut = int(n * cutoff[1] // 100)
+            for hi in range(255, -1, -1):
+                if cut > h[hi]:
+                    cut = cut - h[hi]
+                    h[hi] = 0
+                else:
+                    h[hi] -= cut
+                    cut = 0
+                if cut <= 0:
+                    break
+        return cb_hist, cr_hist
 
     def calculate_color(self):
         if self.original_color_mode in ("L", "1"):
@@ -294,102 +326,9 @@ class ComicPage:
         img = self.image.convert("YCbCr")
         _, cb, cr = img.split()
 
-        cb_hist = cb.histogram()
-        cr_hist = cr.histogram()
-
-        for h in cb_hist, cr_hist:
-            # cut off pixels from both ends of the histogram
-            cutoff = (.1, .1)
-            # get number of pixels
-            n = sum(h)
-            # remove cutoff% pixels from the low end
-            cut = int(n * cutoff[0] // 100)
-            for lo in range(256):
-                if cut > h[lo]:
-                    cut = cut - h[lo]
-                    h[lo] = 0
-                else:
-                    h[lo] -= cut
-                    cut = 0
-                if cut <= 0:
-                    break
-            # remove cutoff% samples from the high end
-            cut = int(n * cutoff[1] // 100)
-            for hi in range(255, -1, -1):
-                if cut > h[hi]:
-                    cut = cut - h[hi]
-                    h[hi] = 0
-                else:
-                    h[hi] -= cut
-                    cut = 0
-                if cut <= 0:
-                    break
-
-        cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
-        cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
-        cb_spread = cb_nonzero[-1] - cb_nonzero[0]
-        cr_spread = cr_nonzero[-1] - cr_nonzero[0]     
-
-        # print((cb_nonzero[0], cb_nonzero[-1]))
-        # print((cr_nonzero[0], cr_nonzero[-1]))
-
-        # print(cb_hist)
-        # print(cr_hist)
-        # print((cb_nonzero[0], cb_nonzero[-1]))
-        # print((cr_nonzero[0], cr_nonzero[-1]))
-        # print()
-
-        # bias adjustment
-        SPREAD_THRESHOLD = 5
-        if not self.opt.forcecolor and cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
-            # print(cb_hist)
-            # print(cr_hist)
-            return False
-        
-        # check for large amount of extreme colors
-        DIFF_THRESHOLD = 10
-        if any([
-            cb_nonzero[0] <= 128 - DIFF_THRESHOLD, 
-            cr_nonzero[0] <= 128 - DIFF_THRESHOLD, 
-            cb_nonzero[-1] >= 128 + DIFF_THRESHOLD, 
-            cr_nonzero[-1] >= 128 + DIFF_THRESHOLD,
-        ]):
-            # self.image.show()
-            # print((cb_nonzero[0], cb_nonzero[-1]))
-            # print((cr_nonzero[0], cr_nonzero[-1]))
-            
-            return True
-
-        cb_hist = cb.histogram()
-        cr_hist = cr.histogram()
-
-        for h in cb_hist, cr_hist:
-            # cut off pixels from both ends of the histogram
-            cutoff = (1, 1)
-            # get number of pixels
-            n = sum(h)
-            # remove cutoff% pixels from the low end
-            cut = int(n * cutoff[0] // 100)
-            for lo in range(256):
-                if cut > h[lo]:
-                    cut = cut - h[lo]
-                    h[lo] = 0
-                else:
-                    h[lo] -= cut
-                    cut = 0
-                if cut <= 0:
-                    break
-            # remove cutoff% samples from the high end
-            cut = int(n * cutoff[1] // 100)
-            for hi in range(255, -1, -1):
-                if cut > h[hi]:
-                    cut = cut - h[hi]
-                    h[hi] = 0
-                else:
-                    h[hi] -= cut
-                    cut = 0
-                if cut <= 0:
-                    break        
+        # get rid of some jpg compression
+        cutoff = (.1, .1)
+        cb_hist, cr_hist = self.histograms_cutoff(cb, cr, cutoff)
 
         cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
         cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
@@ -399,30 +338,42 @@ class ComicPage:
         # bias adjustment
         SPREAD_THRESHOLD = 5
         if not self.opt.forcecolor and cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
-            # print(cb_hist)
-            # print(cr_hist)
             return False
-
-        DIFF_THRESHOLD = 8
+        
+        # check for large amount of extreme colors
+        DIFF_THRESHOLD = 12
         if any([
             cb_nonzero[0] <= 128 - DIFF_THRESHOLD, 
             cr_nonzero[0] <= 128 - DIFF_THRESHOLD, 
             cb_nonzero[-1] >= 128 + DIFF_THRESHOLD, 
             cr_nonzero[-1] >= 128 + DIFF_THRESHOLD,
         ]):
-            # self.image.show()
-            # print((cb_nonzero[0], cb_nonzero[-1]))
-            # print((cr_nonzero[0], cr_nonzero[-1]))
+            return True
+
+        # get ride of most jpg compression
+        cutoff = (2, 2)
+        cb_hist, cr_hist = self.histograms_cutoff(cb, cr, cutoff)    
+
+        cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
+        cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
+        cb_spread = cb_nonzero[-1] - cb_nonzero[0]
+        cr_spread = cr_nonzero[-1] - cr_nonzero[0]
+
+        # bias adjustment
+        SPREAD_THRESHOLD = 5
+        if not self.opt.forcecolor and cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
+            return False
+
+        # check for any amount of mild colors still remaining
+        DIFF_THRESHOLD = 6
+        if any([
+            cb_nonzero[0] <= 128 - DIFF_THRESHOLD, 
+            cr_nonzero[0] <= 128 - DIFF_THRESHOLD, 
+            cb_nonzero[-1] >= 128 + DIFF_THRESHOLD, 
+            cr_nonzero[-1] >= 128 + DIFF_THRESHOLD,
+        ]):
             return True
         else:
-            # 122-134
-            # if any([cb_nonzero[0]==122, cr_nonzero[0] == 122]):
-            #     self.image.show()
-            #     print(cb_hist)
-            #     print(cr_hist)
-            # print((cb_nonzero[0], cb_nonzero[-1]))
-            # print((cr_nonzero[0], cr_nonzero[-1]))
-            # print()
             return False
         
     def saveToDir(self):
