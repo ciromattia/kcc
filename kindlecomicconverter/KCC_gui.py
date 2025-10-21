@@ -719,6 +719,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def togglewebtoonBox(self, value):
         if value:
+            self.addMessage('You can choose a taller device profile to get taller cuts in webtoon mode.', 'info')
             GUI.qualityBox.setEnabled(False)
             GUI.qualityBox.setChecked(False)
             GUI.rotateBox.setEnabled(False)
