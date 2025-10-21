@@ -286,6 +286,8 @@ class ComicPage:
     def color(self):
         if self.original_color_mode in ("L", "1"):
             return False
+        if self.opt.webtoon:
+            return True
         if self.calculate_color():
             return True
         return False
