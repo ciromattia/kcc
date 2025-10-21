@@ -116,6 +116,8 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
   - MOBI for Kindles. CBZ for Kindle DX. CBZ for Koreader. KEPUB for Kobo. PDF for ReMarkable.
 - All options have additional information in tooltips if you hover over the option.
 - To get the converted book onto your Kindle/Kobo, just drag and drop the mobi/kepub into the documents folder on your Kindle/Kobo via USB
+- Kindle panel view not working?
+  - Virtual panel view is enabled in Aa menu on your Kindle, not in KCC as of 7.4
 - Right to left mode not working?
   - RTL mode only affects splitting order for CBZ output. Your cbz reader itself sets the page turn direction.
 - Colors inverted?
