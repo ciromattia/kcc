@@ -759,7 +759,17 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         else:
             GUI.upscaleBox.setEnabled(True)
             GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
-    
+
+    def toggleImageFormatBox(self, value):
+        profile = GUI.profiles[str(GUI.deviceBox.currentText())]
+        if value == 1:
+            if profile['Label'] == 'KS':
+                current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
+                for bad_format in ('MOBI', 'EPUB'):
+                    if bad_format in current_format:
+                        self.addMessage('Scribe PNG MOBI/EPUB has a lot of problems like blank pages/sections. Use JPG instead.', 'warning')
+                        break
+
     def togglechunkSizeCheckBox(self, value):
         GUI.chunkSizeWidget.setVisible(value)
 
@@ -1293,6 +1303,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.croppingPowerSlider.valueChanged.connect(self.changeCroppingPower)
         GUI.webtoonBox.stateChanged.connect(self.togglewebtoonBox)
         GUI.qualityBox.stateChanged.connect(self.togglequalityBox)
+        GUI.mozJpegBox.stateChanged.connect(self.toggleImageFormatBox)
         GUI.chunkSizeCheckBox.stateChanged.connect(self.togglechunkSizeCheckBox)
         GUI.deviceBox.activated.connect(self.changeDevice)
         GUI.formatBox.activated.connect(self.changeFormat)
