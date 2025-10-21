@@ -831,6 +831,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         else:
             if not GUI.webtoonBox.isChecked():
                 GUI.upscaleBox.setEnabled(True)
+        if profile['Label'] == 'KCS':
+            current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
+            for bad_format in ('MOBI', 'EPUB'):
+                if bad_format in current_format:
+                    self.addMessage('Colorsoft MOBI/EPUB can have blank pages. Just go back a few pages, exit, and reenter book.', 'info')
+                    break
         if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
         if str(GUI.deviceBox.currentText()) == 'Other':
@@ -1150,7 +1156,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KO',
             },
             "Kindle Colorsoft": {
-                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': True, 'Label': 'KO',
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': True, 'Label': 'KCS',
             },
             "Kindle Paperwhite 7/10": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW34'},
