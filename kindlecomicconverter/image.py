@@ -293,6 +293,7 @@ class ComicPage:
         return False
     
     # cut off pixels from both ends of the histogram to remove jpg compression artifacts
+    # for better accuracy, you could split the image in half and analyze each half separately
     def histograms_cutoff(self, cb, cr, cutoff=(2, 2)):
         cb_hist = cb.histogram()
         cr_hist = cr.histogram()
