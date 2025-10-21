@@ -329,7 +329,7 @@ class ComicPage:
         _, cb, cr = img.split()
 
         # get rid of some jpg compression
-        cutoff = (.1, .1)
+        cutoff = (.2, .2)
         cb_hist, cr_hist = self.histograms_cutoff(cb, cr, cutoff)
 
         cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
@@ -343,7 +343,8 @@ class ComicPage:
             return False
         
         # check for large amount of extreme colors
-        DIFF_THRESHOLD = 12
+        # 11 if too high. 10 is barely enough. If needed make it magnitude of both
+        DIFF_THRESHOLD = 10
         if any([
             cb_nonzero[0] <= 128 - DIFF_THRESHOLD, 
             cr_nonzero[0] <= 128 - DIFF_THRESHOLD, 
