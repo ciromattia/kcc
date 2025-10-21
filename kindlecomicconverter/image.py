@@ -263,6 +263,7 @@ class ComicPage:
             self.size = (int(self.size[0] * 1.5), int(self.size[1] * 1.5))
         self.kindle_scribe_azw3 = (options.profile == 'KS') and (options.format in ('MOBI', 'EPUB'))
         self.original_color_mode = image.mode
+        # TODO: color check earlier
         self.image = image.convert("RGB")
         self.fill = fill
         self.rotated = False
@@ -435,19 +436,38 @@ class ComicPage:
     def autocontrastImage(self):
         if self.opt.webtoon:
             return
-        if self.opt.autolevel and not self.color:
-            self.convertToGrayscale()
-            h = self.image.histogram()
-            most_common_dark_pixel_count = max(h[:64])
-            black_point = h.index(most_common_dark_pixel_count)
-            bp = black_point
-            self.image = self.image.point(lambda p: p if p > bp else bp)
-
-        # don't autocontrast grayscale pages that were originally color
-        if not self.opt.forcecolor and self.color:
+        if self.opt.noautocontrast:
+            return
+        if self.color and not self.opt.colorautocontrast:
             return
 
+        # if image is extremely low contrast, that was probably intentional
+        extrema = self.image.convert('L').getextrema()
+        if extrema[1] - extrema[0] < (255 - 32 * 3):
+            return
+
+        if self.opt.autolevel:
+            self.autolevelImage()
+
         self.image = ImageOps.autocontrast(self.image, preserve_tone=True)
+
+    def autolevelImage(self):
+        img = self.image
+        if self.color:
+            img = self.image.convert("YCbCr")
+            y, cb, cr = img.split()
+            img = y
+        else:
+            img = img.convert('L')
+        h = img.histogram()
+        most_common_dark_pixel_count = max(h[:64])
+        black_point = h.index(most_common_dark_pixel_count)
+        bp = black_point
+        img = img.point(lambda p: p if p > bp else bp)
+        if self.color:
+            self.image = Image.merge(mode='YCbCr', bands=[img, cb, cr]).convert('RGB')
+        else:
+            self.image = img
 
     def convertToGrayscale(self):
         self.image = self.image.convert('L')
