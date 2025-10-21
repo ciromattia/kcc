@@ -89,7 +89,6 @@ jobs:
           prerelease: true
           generate_release_notes: true
           files: |
-            LICENSE.txt
             dist/*.dmg
       - name: Clean up keychain and provisioning profile
 #        TODO signing
