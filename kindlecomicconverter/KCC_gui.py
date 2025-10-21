@@ -723,6 +723,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             self.addMessage('Try reading webtoon panels side by side in landscape!', 'info')
             GUI.qualityBox.setEnabled(False)
             GUI.qualityBox.setChecked(False)
+            GUI.mangaBox.setEnabled(False)
+            GUI.mangaBox.setChecked(False)
             GUI.rotateBox.setEnabled(False)
             GUI.rotateBox.setChecked(False)
             GUI.borderBox.setEnabled(False)
@@ -739,6 +741,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             profile = GUI.profiles[str(GUI.deviceBox.currentText())]
             if profile['PVOptions']:
                 GUI.qualityBox.setEnabled(True)
+            GUI.mangaBox.setEnabled(True)
             GUI.rotateBox.setEnabled(True)
             GUI.borderBox.setEnabled(True)
             profile = GUI.profiles[str(GUI.deviceBox.currentText())]
