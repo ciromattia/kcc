@@ -189,7 +189,9 @@ class VersionThread(QThread):
                     delta = expiration - datetime.now(timezone.utc)
                     time_left = f"{delta.days} day(s) left"
                     icon = 'info'
-                    if category == 'humbleBundles':
+                    if category == 'humbleMangaBundles':
+                        icon = 'humble'
+                    if category == 'humbleComicBundles':
                         icon = 'bindle'
                     if category == 'kofi':
                         icon = 'kofi'
