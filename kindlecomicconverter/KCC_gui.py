@@ -292,6 +292,10 @@ class WorkerThread(QThread):
             options.gamma = float(GUI.gammaValue)
         if GUI.autoLevelBox.isChecked():
             options.autolevel = True
+        if GUI.autocontrastBox.checkState() == Qt.CheckState.PartiallyChecked:
+            options.noautocontrast = True
+        elif GUI.autocontrastBox.checkState() == Qt.CheckState.Checked:
+            options.colorautocontrast = True
         if GUI.croppingBox.isChecked():
             if GUI.croppingBox.checkState() == Qt.CheckState.PartiallyChecked:
                 options.cropping = 1
@@ -739,6 +743,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.interPanelCropBox.setChecked(False)
             GUI.autoLevelBox.setEnabled(False)
             GUI.autoLevelBox.setChecked(False)
+            GUI.autocontrastBox.setEnabled(False)
+            GUI.autocontrastBox.setChecked(False)
         else:
             profile = GUI.profiles[str(GUI.deviceBox.currentText())]
             if profile['PVOptions']:
@@ -752,6 +758,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.croppingBox.setEnabled(True)
             GUI.interPanelCropBox.setEnabled(True)
             GUI.autoLevelBox.setEnabled(True)
+            GUI.autocontrastBox.setEnabled(True)
+            GUI.autocontrastBox.setChecked(True)
 
 
     def togglequalityBox(self, value):
@@ -983,6 +991,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'qualityBox': GUI.qualityBox.checkState(),
                                            'gammaBox': GUI.gammaBox.checkState(),
                                            'autoLevelBox': GUI.autoLevelBox.checkState(),
+                                           'autocontrastBox': GUI.autocontrastBox.checkState(),
                                            'croppingBox': GUI.croppingBox.checkState(),
                                            'croppingPowerSlider': float(self.croppingPowerValue) * 100,
                                            'preserveMarginBox': self.preserveMarginBox.value(),

@@ -237,6 +237,8 @@ PROCESSING:
   -g GAMMA, --gamma GAMMA
                         Apply gamma correction to linearize the image [Default=Auto]
   --autolevel           Set most common dark pixel value to be black point for leveling.
+  --noautocontrast      Disable autocontrast
+  --colorautocontrast   Force autocontrast for all pages. Skipped when near blacks and whites don't exist
   -c CROPPING, --cropping CROPPING
                         Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]
   --cp CROPPINGP, --croppingpower CROPPINGP

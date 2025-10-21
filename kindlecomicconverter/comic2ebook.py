@@ -1326,6 +1326,10 @@ def makeParser():
                                     help="Apply gamma correction to linearize the image [Default=Auto]")
     output_options.add_argument("--autolevel", action="store_true", dest="autolevel", default=False,
                                 help="Set most common dark pixel value to be black point for leveling.")
+    output_options.add_argument("--noautocontrast", action="store_true", dest="noautocontrast", default=False,
+                                help="Disable autocontrast.")
+    output_options.add_argument("--colorautocontrast", action="store_true", dest="colorautocontrast", default=False,
+                                help="Autocontrast color pages too. Skipped for pages without near blacks or whites.")
     processing_options.add_argument("-c", "--cropping", type=int, dest="cropping", default="2",
                                     help="Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]")
     processing_options.add_argument("--cp", "--croppingpower", type=float, dest="croppingp", default="1.0",
