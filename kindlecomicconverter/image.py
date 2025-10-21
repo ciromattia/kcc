@@ -286,15 +286,18 @@ class ComicPage:
     def color(self):
         if self.original_color_mode in ("L", "1"):
             return False
-        img = self.image.convert("YCbCr")
-        _, cb, cr = img.split()
-
+        if self.opt.webtoon:
+            return True
+        if self.calculate_color():
+            return True
+        return False
+    
+    # cut off pixels from both ends of the histogram to remove jpg compression artifacts
+    def histograms_cutoff(self, cb, cr, cutoff=(2, 2)):
         cb_hist = cb.histogram()
         cr_hist = cr.histogram()
 
         for h in cb_hist, cr_hist:
-            # cut off pixels from both ends of the histogram
-            cutoff = (.1, .1)
             # get number of pixels
             n = sum(h)
             # remove cutoff% pixels from the low end
@@ -319,6 +322,15 @@ class ComicPage:
                     cut = 0
                 if cut <= 0:
                     break
+        return cb_hist, cr_hist
+
+    def calculate_color(self):
+        img = self.image.convert("YCbCr")
+        _, cb, cr = img.split()
+
+        # get rid of some jpg compression
+        cutoff = (.1, .1)
+        cb_hist, cr_hist = self.histograms_cutoff(cb, cr, cutoff)
 
         cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
         cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
@@ -327,17 +339,41 @@ class ComicPage:
 
         # bias adjustment
         SPREAD_THRESHOLD = 5
-        if cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
+        if not self.opt.forcecolor and cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
             return False
         
-        DIFF_THRESHOLD = 10
-        if cb_nonzero[0] < 128 - DIFF_THRESHOLD:
+        # check for large amount of extreme colors
+        DIFF_THRESHOLD = 12
+        if any([
+            cb_nonzero[0] <= 128 - DIFF_THRESHOLD, 
+            cr_nonzero[0] <= 128 - DIFF_THRESHOLD, 
+            cb_nonzero[-1] >= 128 + DIFF_THRESHOLD, 
+            cr_nonzero[-1] >= 128 + DIFF_THRESHOLD,
+        ]):
             return True
-        elif cb_nonzero[-1] > 128 + DIFF_THRESHOLD:
-            return True
-        elif cr_nonzero[0] < 128 - DIFF_THRESHOLD:
-            return True
-        elif cr_nonzero[-1] > 128 + DIFF_THRESHOLD:
+
+        # get ride of most jpg compression
+        cutoff = (2, 2)
+        cb_hist, cr_hist = self.histograms_cutoff(cb, cr, cutoff)    
+
+        cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
+        cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
+        cb_spread = cb_nonzero[-1] - cb_nonzero[0]
+        cr_spread = cr_nonzero[-1] - cr_nonzero[0]
+
+        # bias adjustment
+        SPREAD_THRESHOLD = 5
+        if not self.opt.forcecolor and cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
+            return False
+
+        # check for any amount of mild colors still remaining
+        DIFF_THRESHOLD = 6
+        if any([
+            cb_nonzero[0] <= 128 - DIFF_THRESHOLD, 
+            cr_nonzero[0] <= 128 - DIFF_THRESHOLD, 
+            cb_nonzero[-1] >= 128 + DIFF_THRESHOLD, 
+            cr_nonzero[-1] >= 128 + DIFF_THRESHOLD,
+        ]):
             return True
         else:
             return False
