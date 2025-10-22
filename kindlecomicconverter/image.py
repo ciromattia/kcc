@@ -24,13 +24,14 @@ import numpy as np
 from pathlib import Path
 from functools import cached_property
 import mozjpeg_lossless_optimization
-from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter, ImageDraw
+from PIL import Image, ImageOps, ImageFile, ImageChops, ImageDraw
 
 from .rainbow_artifacts_eraser import erase_rainbow_artifacts
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
 
 AUTO_CROP_THRESHOLD = 0.015
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class ProfileData:
