@@ -24,9 +24,11 @@ import sys
 from argparse import ArgumentParser
 from shutil import rmtree
 from multiprocessing import Pool
-from PIL import Image, ImageChops, ImageOps, ImageDraw, ImageFilter
+from PIL import Image, ImageChops, ImageOps, ImageDraw, ImageFilter, ImageFile
 from PIL.Image import Dither
 from .shared import dot_clean, getImageFileName, walkLevel, walkSort, sanitizeTrace
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 def mergeDirectoryTick(output):
