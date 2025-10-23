@@ -8,6 +8,8 @@ Install as Python package:
 
 Create EXE/APP:
     python3 setup.py build_binary
+    python3 setup.py build_c2e
+    python3 setup.py build_c2p
 """
 
 import os
@@ -59,7 +61,7 @@ class BuildBinaryCommand(setuptools.Command):
 
 # noinspection PyUnresolvedReferences
 class BuildC2ECommand(setuptools.Command):
-    description = 'build binary release'
+    description = 'build binary c2e release'
     user_options = []
 
     def initialize_options(self):
@@ -72,7 +74,7 @@ class BuildC2ECommand(setuptools.Command):
     def run(self):
         VERSION = __version__
         if sys.platform == 'darwin':
-            os.system('pyinstaller --hidden-import=_cffi_backend -y -D -i icons/comic2ebook.icns -n "KCC-C2E" -c -s kcc-c2e.py')
+            os.system('pyinstaller --hidden-import=_cffi_backend -y -D -i icons/comic2ebook.icns -n "KCC C2E" -c -s kcc-c2e.py')
             # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
             sys.exit(0)
         elif sys.platform == 'win32':
@@ -91,7 +93,7 @@ class BuildC2ECommand(setuptools.Command):
 
 # noinspection PyUnresolvedReferences
 class BuildC2PCommand(setuptools.Command):
-    description = 'build binary release'
+    description = 'build binary c2p release'
     user_options = []
 
     def initialize_options(self):
