@@ -72,23 +72,18 @@ class BuildC2ECommand(setuptools.Command):
     def run(self):
         VERSION = __version__
         if sys.platform == 'darwin':
-            os.system('pyinstaller --hidden-import=_cffi_backend -y -D -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc-c2e.py')
+            os.system('pyinstaller --hidden-import=_cffi_backend -y -D -i icons/comic2ebook.icns -n "KCC-C2E" -c -s kcc-c2e.py')
             # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
-            min_os = os.getenv('MACOSX_DEPLOYMENT_TARGET')
-            if min_os:
-                os.system(f'appdmg kcc.json dist/kcc_osx_{min_os.replace(".", "_")}_legacy_{VERSION}.dmg')
-            else:
-                os.system(f'appdmg kcc.json dist/kcc_macos_{platform.processor()}_{VERSION}.dmg')
             sys.exit(0)
         elif sys.platform == 'win32':
             if os.getenv('WINDOWS_7'):
-                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_win7_legacy_' + VERSION + ' -w --noupx kcc-c2e.py')
+                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2e_win7_legacy_' + VERSION + ' -c --noupx kcc-c2e.py')
             else:
-                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n KCC_' + VERSION + ' -w --noupx kcc-c2e.py')
+                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2e_' + VERSION + ' -c --noupx kcc-c2e.py')
             sys.exit(0)
         elif sys.platform == 'linux':
             os.system(
-                'pyinstaller --hidden-import=_cffi_backend --hidden-import=queue -y -F -i icons/comic2ebook.ico -n kcc_linux_' + VERSION + ' kcc-c2e.py')
+                'pyinstaller --hidden-import=_cffi_backend --hidden-import=queue -y -F -i icons/comic2ebook.ico -n kcc_c2e_linux_' + VERSION + ' kcc-c2e.py')
             sys.exit(0)
         else:
             sys.exit(0)
@@ -109,23 +104,18 @@ class BuildC2PCommand(setuptools.Command):
     def run(self):
         VERSION = __version__
         if sys.platform == 'darwin':
-            os.system('pyinstaller --hidden-import=_cffi_backend -y -n "KCC C2E" -c -s kcc-c2p.py')
+            os.system('pyinstaller --hidden-import=_cffi_backend -y -n "KCC C2P" -c -s kcc-c2p.py')
             # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
-            min_os = os.getenv('MACOSX_DEPLOYMENT_TARGET')
-            if min_os:
-                os.system(f'appdmg kcc.json dist/kcc_osx_{min_os.replace(".", "_")}_legacy_{VERSION}.dmg')
-            else:
-                os.system(f'appdmg kcc.json dist/kcc_macos_{platform.processor()}_{VERSION}.dmg')
             sys.exit(0)
         elif sys.platform == 'win32':
             if os.getenv('WINDOWS_7'):
-                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_win7_legacy_' + VERSION + ' -w --noupx kcc-c2p.py')
+                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2p_win7_legacy_' + VERSION + ' -c --noupx kcc-c2p.py')
             else:
-                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n KCC_C2E_' + VERSION + ' -w --noupx kcc-c2p.py')
+                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n KCC_C2P_' + VERSION + ' -c --noupx kcc-c2p.py')
             sys.exit(0)
         elif sys.platform == 'linux':
             os.system(
-                'pyinstaller --hidden-import=_cffi_backend --hidden-import=queue -y -F -i icons/comic2ebook.ico -n kcc_linux_' + VERSION + ' kcc-c2p.py')
+                'pyinstaller --hidden-import=_cffi_backend --hidden-import=queue -y -F -i icons/comic2ebook.ico -n kcc_c2p_linux_' + VERSION + ' kcc-c2p.py')
             sys.exit(0)
         else:
             sys.exit(0)
