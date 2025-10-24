@@ -342,6 +342,7 @@ class ComicPage:
         cr_spread = cr_nonzero[-1] - cr_nonzero[0]
 
         # bias adjustment
+        # TODO: if both sides are both above or both below 128, that's tinted
         SPREAD_THRESHOLD = 5
         if not self.opt.forcecolor and cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
             return False
@@ -358,7 +359,7 @@ class ComicPage:
             return True
 
         # get ride of most jpg compression
-        cutoff = (2, 2)
+        cutoff = (3, 3)
         cb_hist, cr_hist = self.histograms_cutoff(cb, cr, cutoff)    
 
         cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
@@ -371,8 +372,8 @@ class ComicPage:
         if not self.opt.forcecolor and cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
             return False
 
-        # check for any amount of mild colors still remaining
-        DIFF_THRESHOLD = 6
+        # check for any amount of mild colors still remaining, 3 is barely enough, 2 is too high
+        DIFF_THRESHOLD = 3
         if any([
             cb_nonzero[0] <= 128 - DIFF_THRESHOLD, 
             cr_nonzero[0] <= 128 - DIFF_THRESHOLD, 
