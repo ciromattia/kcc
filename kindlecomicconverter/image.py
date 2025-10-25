@@ -342,9 +342,16 @@ class ComicPage:
         cr_spread = cr_nonzero[-1] - cr_nonzero[0]
 
         # bias adjustment
-        # TODO: if both sides are both above or both below 128, that's tinted
         SPREAD_THRESHOLD = 5
-        if not self.opt.forcecolor and cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
+        if self.opt.forcecolor:
+            if any([
+                cb_nonzero[0] > 128,
+                cr_nonzero[0] > 128,
+                cb_nonzero[-1] < 128,
+                cr_nonzero[-1] < 128,
+            ]):
+                return True
+        elif cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
             return False
         
         # check for large amount of extreme colors
@@ -369,7 +376,15 @@ class ComicPage:
 
         # bias adjustment
         SPREAD_THRESHOLD = 5
-        if not self.opt.forcecolor and cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
+        if self.opt.forcecolor:
+            if any([
+                cb_nonzero[0] > 128,
+                cr_nonzero[0] > 128,
+                cb_nonzero[-1] < 128,
+                cr_nonzero[-1] < 128,
+            ]):
+                return True
+        elif cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
             return False
 
         # check for any amount of mild colors still remaining, 3 is barely enough, 2 is too high
