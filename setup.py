@@ -113,7 +113,7 @@ class BuildC2PCommand(setuptools.Command):
             if os.getenv('WINDOWS_7'):
                 os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2p_win7_legacy_' + VERSION + ' -c --noupx kcc-c2p.py')
             else:
-                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n KCC_C2P_' + VERSION + ' -c --noupx kcc-c2p.py')
+                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2p_' + VERSION + ' -c --noupx kcc-c2p.py')
             sys.exit(0)
         elif sys.platform == 'linux':
             os.system(
