@@ -366,6 +366,7 @@ class ComicPage:
         cb_hist_original = cb.histogram()
         cr_hist_original = cr.histogram()
 
+        # you can increase 22 but don't touch 10 and 3 thresholds
         for cutoff, diff_threshold in [((0, 0), 22), ((.2, .2), 10), ((3, 3), 3)]:
             done, decision = self.color_precision(cb_hist_original, cr_hist_original, cutoff, diff_threshold)
             if done:
