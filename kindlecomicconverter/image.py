@@ -336,8 +336,8 @@ class ComicPage:
         cb_spread = cb_nonzero[-1] - cb_nonzero[0]
         cr_spread = cr_nonzero[-1] - cr_nonzero[0]
 
-        # bias adjustment
-        SPREAD_THRESHOLD = 5
+        # bias adjustment, don't go lower than 7
+        SPREAD_THRESHOLD = 7
         if self.opt.forcecolor:
             if any([
                 cb_nonzero[0] > 128,
@@ -366,8 +366,8 @@ class ComicPage:
         cb_hist_original = cb.histogram()
         cr_hist_original = cr.histogram()
 
-        # you can increase 22 but don't touch 10 and 3 thresholds
-        for cutoff, diff_threshold in [((0, 0), 22), ((.2, .2), 10), ((3, 3), 3)]:
+        # you can increase 22 but don't increase 10. 4 maybe can go higher
+        for cutoff, diff_threshold in [((0, 0), 22), ((.2, .2), 10), ((3, 3), 4)]:
             done, decision = self.color_precision(cb_hist_original, cr_hist_original, cutoff, diff_threshold)
             if done:
                 return decision
