@@ -422,7 +422,7 @@ class ComicPage:
 
     def save_with_codec(self, image, targetPath):
         if self.opt.forcepng:
-            image.info["transparency"] = None
+            image.info.pop('transparency', None)
             if self.opt.iskindle and ('MOBI' in self.opt.format or 'EPUB' in self.opt.format):
                 targetPath += '.gif'
                 image.save(targetPath, 'GIF', optimize=1, interlace=False)
