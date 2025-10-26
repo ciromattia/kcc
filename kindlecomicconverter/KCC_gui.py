@@ -522,7 +522,7 @@ class WorkerThread(QThread):
                         if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':
                             MW.showDialog.emit("KindleGen error:\n\n" + self.kindlegenErrorCode[1], 'error')
                         if self.kindlegenErrorCode[0] == 23026:
-                            MW.addMessage.emit('Created EPUB file was too big.', 'error', False)
+                            MW.addMessage.emit('Created EPUB file was too big. Weird file structure?', 'error', False)
                             MW.addMessage.emit('EPUB file: ' + str(epubSize) + 'MB. Supported size: ~350MB.', 'error',
                                                False)
                         if self.kindlegenErrorCode[0] == 3221226505:
