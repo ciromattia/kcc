@@ -297,9 +297,9 @@ class ComicPage:
     
     # cut off pixels from both ends of the histogram to remove jpg compression artifacts
     # for better accuracy, you could split the image in half and analyze each half separately
-    def histograms_cutoff(self, cb, cr, cutoff=(2, 2)):
-        cb_hist = cb.histogram()
-        cr_hist = cr.histogram()
+    def histograms_cutoff(self, cb_hist, cr_hist, cutoff=(2, 2)):
+        if cutoff == (0, 0):
+            return cb_hist, cr_hist
 
         for h in cb_hist, cr_hist:
             # get number of pixels
@@ -328,76 +328,49 @@ class ComicPage:
                     break
         return cb_hist, cr_hist
 
+    def color_precision(self, cb_hist_original, cr_hist_original, cutoff, diff_threshold):
+        cb_hist, cr_hist = self.histograms_cutoff(cb_hist_original.copy(), cr_hist_original.copy(), cutoff)
+
+        cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
+        cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
+        cb_spread = cb_nonzero[-1] - cb_nonzero[0]
+        cr_spread = cr_nonzero[-1] - cr_nonzero[0]
+
+        # bias adjustment
+        SPREAD_THRESHOLD = 5
+        if self.opt.forcecolor:
+            if any([
+                cb_nonzero[0] > 128,
+                cr_nonzero[0] > 128,
+                cb_nonzero[-1] < 128,
+                cr_nonzero[-1] < 128,
+            ]):
+                return True, True
+        elif cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
+            return True, False
+
+        DIFF_THRESHOLD = diff_threshold
+        if any([
+            cb_nonzero[0] <= 128 - DIFF_THRESHOLD, 
+            cr_nonzero[0] <= 128 - DIFF_THRESHOLD, 
+            cb_nonzero[-1] >= 128 + DIFF_THRESHOLD, 
+            cr_nonzero[-1] >= 128 + DIFF_THRESHOLD,
+        ]):
+            return True, True
+        
+        return False, None
+
     def calculate_color(self):
         img = self.image.convert("YCbCr")
         _, cb, cr = img.split()
+        cb_hist_original = cb.histogram()
+        cr_hist_original = cr.histogram()
 
-        # get rid of some jpg compression
-        cutoff = (.2, .2)
-        cb_hist, cr_hist = self.histograms_cutoff(cb, cr, cutoff)
-
-        cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
-        cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
-        cb_spread = cb_nonzero[-1] - cb_nonzero[0]
-        cr_spread = cr_nonzero[-1] - cr_nonzero[0]
-
-        # bias adjustment
-        SPREAD_THRESHOLD = 5
-        if self.opt.forcecolor:
-            if any([
-                cb_nonzero[0] > 128,
-                cr_nonzero[0] > 128,
-                cb_nonzero[-1] < 128,
-                cr_nonzero[-1] < 128,
-            ]):
-                return True
-        elif cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
-            return False
-        
-        # check for large amount of extreme colors
-        # 11 if too high. 10 is barely enough. If needed make it magnitude of both
-        DIFF_THRESHOLD = 10
-        if any([
-            cb_nonzero[0] <= 128 - DIFF_THRESHOLD, 
-            cr_nonzero[0] <= 128 - DIFF_THRESHOLD, 
-            cb_nonzero[-1] >= 128 + DIFF_THRESHOLD, 
-            cr_nonzero[-1] >= 128 + DIFF_THRESHOLD,
-        ]):
-            return True
-
-        # get ride of most jpg compression
-        cutoff = (3, 3)
-        cb_hist, cr_hist = self.histograms_cutoff(cb, cr, cutoff)    
-
-        cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
-        cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
-        cb_spread = cb_nonzero[-1] - cb_nonzero[0]
-        cr_spread = cr_nonzero[-1] - cr_nonzero[0]
-
-        # bias adjustment
-        SPREAD_THRESHOLD = 5
-        if self.opt.forcecolor:
-            if any([
-                cb_nonzero[0] > 128,
-                cr_nonzero[0] > 128,
-                cb_nonzero[-1] < 128,
-                cr_nonzero[-1] < 128,
-            ]):
-                return True
-        elif cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
-            return False
-
-        # check for any amount of mild colors still remaining, 3 is barely enough, 2 is too high
-        DIFF_THRESHOLD = 3
-        if any([
-            cb_nonzero[0] <= 128 - DIFF_THRESHOLD, 
-            cr_nonzero[0] <= 128 - DIFF_THRESHOLD, 
-            cb_nonzero[-1] >= 128 + DIFF_THRESHOLD, 
-            cr_nonzero[-1] >= 128 + DIFF_THRESHOLD,
-        ]):
-            return True
-        else:
-            return False
+        for cutoff, diff_threshold in [((0, 0), 22), ((.2, .2), 10), ((3, 3), 3)]:
+            done, decision = self.color_precision(cb_hist_original, cr_hist_original, cutoff, diff_threshold)
+            if done:
+                return decision
+        return False
         
     def saveToDir(self):
         try:
