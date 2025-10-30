@@ -548,7 +548,7 @@ class Cover:
 
     def process(self):
         self.image = self.image.convert('RGB')
-        self.image = ImageOps.autocontrast(self.image)
+        self.image = ImageOps.autocontrast(self.image, preserve_tone=True)
         if not self.options.forcecolor:
             self.image = self.image.convert('L')
         self.crop_main_cover()
