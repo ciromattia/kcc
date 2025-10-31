@@ -480,9 +480,12 @@ class ComicPage:
             self.image = erase_rainbow_artifacts(self.image, is_color)
 
     def resizeImage(self):
-        if self.targetPathOrder in ('-kcc-a', '-kcc-d') and self.opt.norotate:
+        if self.opt.norotate and self.targetPathOrder in ('-kcc-a', '-kcc-d'):
+            # TODO: Kindle Scribe case
             if self.opt.kindle_azw3 and any(dim > 1920 for dim in self.image.size):
                 self.image = ImageOps.contain(self.image, (1920, 1920), Image.Resampling.LANCZOS)
+            else:
+                self.image = ImageOps.contain(self.image, (self.size[0] * 2, self.size[1], Image.Resampling.LANCZOS))
             return
         
         ratio_device = float(self.size[1]) / float(self.size[0])
