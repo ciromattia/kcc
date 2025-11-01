@@ -71,12 +71,23 @@ def main(argv=None):
     if len(sources) == 0:
         print('No matching files found.')
         return 1
+    if options.filefusion:
+        fusion_path = makeFusion(list(sources))
+        sources.clear()
+        sources.add(fusion_path)
     for source in sources:
         source = source.rstrip('\\').rstrip('/')
         options = copy(args)
         options = checkOptions(options)
         print('Working on ' + source + '...')
         makeBook(source)
+
+    if options.filefusion:
+        for path in sources:
+            if os.path.isfile(path):
+                os.remove(path)
+            elif os.path.isdir(path):
+                rmtree(path, True)
     return 0
 
 
@@ -1330,6 +1341,8 @@ def makeParser():
                                 help="Disable autocontrast.")
     output_options.add_argument("--colorautocontrast", action="store_true", dest="colorautocontrast", default=False,
                                 help="Autocontrast color pages too. Skipped for pages without near blacks or whites.")
+    output_options.add_argument("--filefusion", action="store_true", dest="filefusion", default=False,
+                                help="Combines all input files into a single file.")
     processing_options.add_argument("-c", "--cropping", type=int, dest="cropping", default="2",
                                     help="Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]")
     processing_options.add_argument("--cp", "--croppingpower", type=float, dest="croppingp", default="1.0",
