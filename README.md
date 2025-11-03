@@ -274,6 +274,7 @@ OUTPUT SETTINGS:
   --spreadshift         Shift first page to opposite side in landscape for two page spread alignment
   --norotate            Do not rotate double page spreads in spread splitter option.
   --rotatefirst         Put rotated spread first in spread splitter option.
+  --filefusion          Combines all input files into a single file.
   --eraserainbow       Erase rainbow effect on color eink screen by attenuating interfering frequencies
 
 CUSTOM PROFILE:
