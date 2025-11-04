@@ -63,7 +63,7 @@ def mergeDirectory(work):
             # Silently drop directories that contain too many images
             # 131072 = GIMP_MAX_IMAGE_SIZE / 4
             if targetHeight > 131072 * 3:
-                raise RuntimeError(f'Image too tall at {targetHeight} pixels.')
+                raise RuntimeError(f'Image too tall at {targetHeight} pixels. {targetWidth} pixels wide. Try using separate chapter folders or file fusion.')
             result = Image.new('RGB', (targetWidth, targetHeight))
             y = 0
             for i in imagesValid:
