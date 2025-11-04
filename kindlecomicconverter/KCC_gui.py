@@ -876,6 +876,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.chunkSizeCheckBox.setChecked(False)
         elif not GUI.webtoonBox.isChecked():
             GUI.chunkSizeCheckBox.setEnabled(True)
+        if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'PDF') and not GUI.webtoonBox.isChecked():
+            self.addMessage("Partially check W/B Margins if you don't want KCC to extend the image margins.", 'info')   
 
     def stripTags(self, html):
         s = HTMLStripper()
