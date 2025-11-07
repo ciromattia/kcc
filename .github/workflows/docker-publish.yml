@@ -15,7 +15,6 @@ on:
       - 'LICENSE'
       - '.gitattributes'
       - '.gitignore'
-      - '.dockerignore'
 
 
 jobs:

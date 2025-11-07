@@ -1,19 +1,58 @@
-# Select final stage based on TARGETARCH ARG
-FROM ghcr.io/ciromattia/kcc:docker-base-20241116
-LABEL com.kcc.name="Kindle Comic Converter"
-LABEL com.kcc.author="Ciro Mattia Gonano, Paweł Jastrzębski and Darodi"
-LABEL org.opencontainers.image.description='Kindle Comic Converter'
-LABEL org.opencontainers.image.documentation='https://github.com/ciromattia/kcc'
-LABEL org.opencontainers.image.source='https://github.com/ciromattia/kcc'
-LABEL org.opencontainers.image.authors='darodi'
-LABEL org.opencontainers.image.url='https://github.com/ciromattia/kcc'
-LABEL org.opencontainers.image.documentation='https://github.com/ciromattia/kcc'
-LABEL org.opencontainers.image.vendor='ciromattia'
-LABEL org.opencontainers.image.licenses='ISC'
-LABEL org.opencontainers.image.title="Kindle Comic Converter"
+# STAGE 1: BUILDER
+# Contains all build tools and dev dependencies, will be discarded
+FROM python:3.13-slim-bullseye AS builder
 
-COPY . /opt/kcc
-RUN cat /opt/kcc/kindlecomicconverter/__init__.py | grep version | awk '{print $3}' | sed "s/'//g" > /IMAGE_VERSION
+ARG TARGETARCH
 
-ENTRYPOINT ["/opt/kcc/kcc-c2e.py"]
+# Install system dependencies
+RUN set -x && \
+    BUILD_DEPS="build-essential cmake libpng-dev libjpeg-dev libfreetype6-dev libfontconfig1-dev libssl-dev libxft-dev make python3-dev" && \
+    RUNTIME_DEPS="p7zip-full unrar-free libgl1" && \
+    DEBIAN_FRONTEND=noninteractive apt-get update -y && \
+    apt-get install -y --no-install-recommends ${BUILD_DEPS} ${RUNTIME_DEPS}
+
+# Install Python dependencies using virtual environment
+COPY requirements-docker.txt .
+RUN \
+    set -x && \
+    python -m venv /opt/venv && \
+    . /opt/venv/bin/activate && \
+    pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements-docker.txt
+
+COPY . /opt/kcc/
+
+# STAGE 2: FINAL
+# Clean, small and secure image with only runtime dependencies
+FROM python:3.13-slim-bullseye
+
+# Install runtime dependencies only
+RUN \
+    set -x && \
+    DEBIAN_FRONTEND=noninteractive apt-get update -y && \
+    apt-get install -y --no-install-recommends p7zip-full unrar-free libgl1 && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy artifacts from builder
+COPY --from=builder /opt/venv /opt/venv
+COPY --from=builder /opt/kcc /opt/kcc
+
+WORKDIR /opt/kcc
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Setup executable and version file
+RUN \
+    chmod +x /opt/kcc/entrypoint.sh && \
+    ln -s /opt/kcc/kcc-c2e.py /usr/local/bin/c2e && \
+    ln -s /opt/kcc/kcc-c2p.py /usr/local/bin/c2p && \
+    ln -s /opt/kcc/entrypoint.sh /usr/local/bin/entrypoint && \
+    cat /opt/kcc/kindlecomicconverter/__init__.py | grep version | awk '{print $3}' | sed "s/'//g" > /IMAGE_VERSION
+
+LABEL com.kcc.name="Kindle Comic Converter" \
+    com.kcc.author="Ciro Mattia Gonano, Paweł Jastrzębski and Darodi" \
+    org.opencontainers.image.description='Kindle Comic Converter' \
+    org.opencontainers.image.source='https://github.com/ciromattia/kcc' \
+    org.opencontainers.image.title="Kindle Comic Converter"
+
+ENTRYPOINT ["entrypoint"]
 CMD ["-h"]
