@@ -1,25 +1,16 @@
-name: Docker
+name: Build and Publish Base Docker Image
 
 on:
   workflow_dispatch:
   push:
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
-    
-    # Don't trigger if it's just a documentation update or a base image update
-    paths-ignore:
-      - '**.md'
-      - '**.MD'
-      - '**.yml'
-      - 'docs/**'
-      - 'LICENSE'
-      - '.gitattributes'
-      - '.gitignore'
-      - 'requirements-docker.txt'
-      - 'Dockerfile-base'
+    tags:
+      - "v*.*.*"
+    paths:
+      - "requirements-docker.txt"
+      - "Dockerfile-base"
 
 jobs:
-  build_and_publish_image:
+  build_and_publish_base_image:
     runs-on: ubuntu-latest
     steps:
       - name: Login to GitHub Container Registry
@@ -47,7 +38,7 @@ jobs:
           file: ./Dockerfile-base
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/kcc:${{ steps.tag_name.outputs.TAG }}
-            ghcr.io/${{ github.repository_owner }}/kcc:latest
+            ghcr.io/${{ github.repository_owner }}/kcc:base-${{ steps.tag_name.outputs.TAG }}
+            ghcr.io/${{ github.repository_owner }}/kcc:base-latest
           cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache,mode=max
