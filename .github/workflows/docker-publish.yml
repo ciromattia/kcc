@@ -43,8 +43,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
-          context: .
-          file: ./Dockerfile-base
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/kcc:${{ steps.tag_name.outputs.TAG }}
