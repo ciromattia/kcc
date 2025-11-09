@@ -1,34 +1,45 @@
-name: Docker base
+name: Build and Publish Base Docker Image
 
 on:
   workflow_dispatch:
   push:
-    tags: [ 'docker-base-*' ]
-    
-    # Don't trigger if it's just a documentation update
-    paths-ignore:
-      - '**.md'
-      - '**.MD'
-      - '**.yml'
-      - 'docs/**'
-      - 'LICENSE'
-      - '.gitattributes'
-      - '.gitignore'
-      - '.dockerignore'
+    branches:
+      - master
 
+    paths:
+      - 'requirements-docker.txt'
+      - 'Dockerfile-base'
 
 jobs:
-  build_and_push:
-    uses: sdr-enthusiasts/common-github-workflows/.github/workflows/build_and_push_image.yml@main
-    with:
-      docker_build_file: ./Dockerfile-base
-      platform_linux_arm32v7_enabled: true
-      platform_linux_arm64v8_enabled: true
-      platform_linux_amd64_enabled: true
-      push_enabled: true
-      build_nohealthcheck: false
-      ghcr_repo_owner: ${{ github.repository_owner }}
-      ghcr_repo: ${{ github.repository }}
-      build_latest: false
-    secrets:
-      ghcr_token: ${{ secrets.GITHUB_TOKEN }}
+  build_and_publish_base_image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set Release Date
+        id: release_date
+        run: |
+          echo "release_date=$(date --rfc-3339=date)" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          file: Dockerfile-base
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kcc:base-latest
+            ghcr.io/${{ github.repository_owner }}/kcc:base-${{ steps.release_date.outputs.release_date }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache,mode=max
