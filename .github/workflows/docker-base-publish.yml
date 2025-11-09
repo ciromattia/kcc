@@ -3,11 +3,12 @@ name: Build and Publish Base Docker Image
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "v*.*.*"
+    tags: 
+      - 'v*.*.*'
+
     paths:
-      - "requirements-docker.txt"
-      - "Dockerfile-base"
+      - 'requirements-docker.txt'
+      - 'Dockerfile-base'
 
 jobs:
   build_and_publish_base_image:
@@ -39,5 +40,37 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository_owner }}/kcc:base-${{ steps.tag_name.outputs.TAG }}
             ghcr.io/${{ github.repository_owner }}/kcc:base-latest
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache,mode=max
+
+  build_and_publish_image:
+    needs: build_and_publish_base_image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract tag name
+        id: tag_name
+        run: echo "TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kcc:${{ steps.tag_name.outputs.TAG }}
+            ghcr.io/${{ github.repository_owner }}/kcc:latest
           cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache,mode=max

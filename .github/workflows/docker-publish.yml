@@ -1,10 +1,10 @@
-name: Docker
+name: Build and publish final image
 
 on:
   workflow_dispatch:
   push:
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    tags: 
+      - 'v*.*.*'
     
     # Don't trigger if it's just a documentation update or a base image update
     paths-ignore:
