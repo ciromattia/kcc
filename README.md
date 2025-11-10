@@ -26,7 +26,7 @@ which have different requirements than normal LCD screens.
 Combining that with downscaling to your specific device's screen resolution
 can result in filesize reductions of hundreds of MB per volume with no visible quality loss on eink.
 This can also improve battery life, page turn speed, and general performance 
-on underpowered ereaders with small storage capacities.
+on underpowered ereaders with small memory and storage capacities.
 
 KCC avoids many common formatting issues (some of which occur [even on the Kindle Store](https://github.com/ciromattia/kcc/wiki/Kindle-Store-bad-formatting)), such as:
 1) faded black levels causing unneccessarily low contrast, which is hard to see and can cause eyestrain.
