@@ -43,7 +43,7 @@ from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 import pymupdf
 
-from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean
+from .shared import IMAGE_TYPES, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean
 from .comicarchive import SEVENZIP, available_archive_tools
 from . import comic2panel
 from . import image
@@ -1039,7 +1039,7 @@ def removeNonImages(filetree):
     for root, dirs, files in os.walk(filetree):
         for name in files:
             _, ext = getImageFileName(name)
-            if ext not in ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.jp2', '.avif'):
+            if ext not in IMAGE_TYPES:
                 if os.path.exists(os.path.join(root, name)):
                     os.remove(os.path.join(root, name))
     # remove empty nested folders
