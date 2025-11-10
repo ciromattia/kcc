@@ -1,4 +1,4 @@
-name: Build and publish final image
+name: Build and Publish Docker Image
 
 on:
   workflow_dispatch:
@@ -15,11 +15,68 @@ on:
       - 'LICENSE'
       - '.gitattributes'
       - '.gitignore'
-      - 'requirements-docker.txt'
-      - 'Dockerfile-base'
 
 jobs:
+  # Detect if base image files have changed
+  detect_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      base_files_changed: ${{ steps.changed-files.outputs.any_changed }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            requirements-docker.txt
+            Dockerfile-base
+
+  build_and_publish_base_image:
+    needs: detect_changes
+    if: needs.detect_changes.outputs.base_files_changed == 'true'
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set Release Date
+        id: release_date
+        run: |
+          echo "release_date=$(date --rfc-3339=date)" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          file: Dockerfile-base
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/kcc:base-latest
+            ghcr.io/${{ github.repository_owner }}/kcc:base-${{ steps.release_date.outputs.release_date }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache,mode=max
+
   build_and_publish_image:
+    # This job always runs, but waits for the base image in case it has to be rebuilt
+    needs: build_and_publish_base_image
+    if: always()
+
     runs-on: ubuntu-latest
     steps:
       - name: Login to GitHub Container Registry
@@ -47,5 +104,3 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:final-cache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:final-cache,mode=max
