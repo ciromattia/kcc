@@ -30,7 +30,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v41
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
         with:
           files: |
             requirements-docker.txt
@@ -69,13 +69,15 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository_owner }}/kcc:base-latest
             ghcr.io/${{ github.repository_owner }}/kcc:base-${{ steps.release_date.outputs.release_date }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache
+          cache-from: |
+            type=registry,ref=ghcr.io/ciromattia/kcc:base-cache
+            type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:base-cache,mode=max
 
   build_and_publish_image:
     # This job always runs, but waits for the base image in case it has to be rebuilt
+    if: ${{ always() }}
     needs: build_and_publish_base_image
-    if: always()
 
     runs-on: ubuntu-latest
     steps:
