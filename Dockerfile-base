@@ -39,6 +39,11 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 LABEL com.kcc.name="Kindle Comic Converter" \
     com.kcc.author="Ciro Mattia Gonano, Paweł Jastrzębski and Darodi" \
-    org.opencontainers.image.description='Kindle Comic Converter Base Image' \
+    org.opencontainers.image.title="Kindle Comic Converter" \
+    org.opencontainers.image.description='Kindle Comic Converter base image' \
+    org.opencontainers.image.documentation='https://github.com/ciromattia/kcc' \
     org.opencontainers.image.source='https://github.com/ciromattia/kcc' \
-    org.opencontainers.image.title="Kindle Comic Converter Base Image"
+    org.opencontainers.image.authors='Darodi and José Cerezo' \
+    org.opencontainers.image.url='https://github.com/ciromattia/kcc' \
+    org.opencontainers.image.vendor='ciromattia' \
+    org.opencontainers.image.licenses='ISC'
