@@ -1,6 +1,42 @@
-FROM ghcr.io/ciromattia/kcc:base-latest
+# STAGE 1: BUILDER
+# Contains all build tools and dev dependencies, will be discarded
+FROM python:3.13-slim-bullseye AS builder
 
+ARG TARGETARCH
+
+# Install system dependencies
+RUN set -x && \
+    BUILD_DEPS="build-essential cmake libffi-dev libfreetype6-dev libfontconfig1-dev libpng-dev libjpeg-dev libssl-dev libxft-dev make python3-dev python3-setuptools python3-wheel" && \
+    RUNTIME_DEPS="bash ca-certificates chrpath locales locales-all libfreetype6 libfontconfig1 p7zip-full python3 python3-pip unrar-free libgl1" && \
+    DEBIAN_FRONTEND=noninteractive apt-get update -y && \
+    apt-get install -y --no-install-recommends ${BUILD_DEPS} ${RUNTIME_DEPS}
+
+# Install Python dependencies using virtual environment
+COPY requirements-docker.txt .
+RUN \
+    set -x && \
+    python -m venv /opt/venv && \
+    . /opt/venv/bin/activate && \
+    pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements-docker.txt
+
+# STAGE 2: FINAL
+# Clean, small and secure image with only runtime dependencies
+FROM python:3.13-slim-bullseye
+
+# Install runtime dependencies only
+RUN \
+    set -x && \
+    DEBIAN_FRONTEND=noninteractive apt-get update -y && \
+    apt-get install -y --no-install-recommends p7zip-full unrar-free && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy artifacts from builder
+COPY --from=builder /opt/venv /opt/venv
 COPY . /opt/kcc/
+
+WORKDIR /opt/kcc
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Setup executable and version file
 RUN \
