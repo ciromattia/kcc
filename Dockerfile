@@ -1,44 +1,41 @@
-# STAGE 1: INSTALL NUMPY AND PYMUPDF
-# Installs the packages that take the longest to build, to improve cache
-FROM python:3.13-slim-bullseye AS installer
-
-ARG TARGETARCH
-
-# Install system dependencies
-RUN set -x && \
-    BUILD_DEPS="build-essential cmake libffi-dev libfreetype6-dev libfontconfig1-dev libpng-dev libjpeg-dev libssl-dev libxft-dev make python3-dev python3-setuptools python3-wheel" && \
-    RUNTIME_DEPS="bash ca-certificates chrpath locales locales-all libfreetype6 libfontconfig1 p7zip-full python3 python3-pip unrar-free libgl1" && \
-    DEBIAN_FRONTEND=noninteractive apt-get update -y && \
-    apt-get install -y --no-install-recommends ${BUILD_DEPS} ${RUNTIME_DEPS}
-
-RUN \
-    set -x && \
-    python -m venv /opt/venv && \
-    . /opt/venv/bin/activate && \
-    pip install --upgrade pip && \
-    pip install --no-cache-dir numpy==2.3.4 PyMuPDF==1.26.6
-
-# STAGE 2: BUILDER
+# STAGE 1: BUILDER
 # Contains all build tools and dev dependencies, will be discarded
 FROM python:3.13-slim-bullseye AS builder
 
 # Install system dependencies
 RUN set -x && \
     BUILD_DEPS="build-essential cmake libffi-dev libfreetype6-dev libfontconfig1-dev libpng-dev libjpeg-dev libssl-dev libxft-dev make python3-dev python3-setuptools python3-wheel" && \
-    RUNTIME_DEPS="bash ca-certificates chrpath locales locales-all libfreetype6 libfontconfig1 p7zip-full python3 python3-pip unrar-free libgl1" && \
+    RUNTIME_DEPS="bash ca-certificates chrpath locales locales-all libfreetype6 libfontconfig1 p7zip-full python3 python3-pip libgl1" && \
     DEBIAN_FRONTEND=noninteractive apt-get update -y && \
     apt-get install -y --no-install-recommends ${BUILD_DEPS} ${RUNTIME_DEPS}
 
 # Install Python dependencies using virtual environment
 COPY requirements-docker.txt .
-COPY --from=installer /opt/venv /opt/venv
+
+RUN \
+    set -x && \
+    python -m venv /opt/venv && \
+    . /opt/venv/bin/activate && \
+    pip install --upgrade pip
+
+# Install numpy first, as it is unlikely to change and takes too long to compile
 RUN \
     set -x && \
     . /opt/venv/bin/activate && \
-    pip install --upgrade pip && \
+    pip install --no-cache-dir numpy==2.3.4
+
+# Install PyMuPDF separately, as it is likely to change but still takes too long to compile
+RUN \
+    set -x && \
+    . /opt/venv/bin/activate && \
+    pip install --no-cache-dir PyMuPDF==1.26.6
+
+RUN \
+    set -x && \
+    . /opt/venv/bin/activate && \
     pip install --no-cache-dir -r requirements-docker.txt
 
-# STAGE 3: FINAL
+# STAGE 2: FINAL
 # Clean, small and secure image with only runtime dependencies
 FROM python:3.13-slim-bullseye
 
@@ -46,7 +43,7 @@ FROM python:3.13-slim-bullseye
 RUN \
     set -x && \
     DEBIAN_FRONTEND=noninteractive apt-get update -y && \
-    apt-get install -y --no-install-recommends p7zip-full unrar-free && \
+    apt-get install -y --no-install-recommends p7zip-full && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy artifacts from builder
