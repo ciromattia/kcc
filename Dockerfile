@@ -1,6 +1,6 @@
-# STAGE 1: BUILDER
-# Contains all build tools and dev dependencies, will be discarded
-FROM python:3.13-slim-bullseye AS builder
+# STAGE 1: INSTALL NUMPY AND PYMUPDF
+# Installs the packages that take the longest to build, to improve cache
+FROM python:3.13-slim-bullseye AS installer
 
 ARG TARGETARCH
 
@@ -11,16 +11,34 @@ RUN set -x && \
     DEBIAN_FRONTEND=noninteractive apt-get update -y && \
     apt-get install -y --no-install-recommends ${BUILD_DEPS} ${RUNTIME_DEPS}
 
-# Install Python dependencies using virtual environment
-COPY requirements-docker.txt .
 RUN \
     set -x && \
     python -m venv /opt/venv && \
     . /opt/venv/bin/activate && \
     pip install --upgrade pip && \
+    pip install --no-cache-dir numpy==2.3.4 PyMuPDF==1.26.6
+
+# STAGE 2: BUILDER
+# Contains all build tools and dev dependencies, will be discarded
+FROM python:3.13-slim-bullseye AS builder
+
+# Install system dependencies
+RUN set -x && \
+    BUILD_DEPS="build-essential cmake libffi-dev libfreetype6-dev libfontconfig1-dev libpng-dev libjpeg-dev libssl-dev libxft-dev make python3-dev python3-setuptools python3-wheel" && \
+    RUNTIME_DEPS="bash ca-certificates chrpath locales locales-all libfreetype6 libfontconfig1 p7zip-full python3 python3-pip unrar-free libgl1" && \
+    DEBIAN_FRONTEND=noninteractive apt-get update -y && \
+    apt-get install -y --no-install-recommends ${BUILD_DEPS} ${RUNTIME_DEPS}
+
+# Install Python dependencies using virtual environment
+COPY requirements-docker.txt .
+COPY --from=installer /opt/venv /opt/venv
+RUN \
+    set -x && \
+    . /opt/venv/bin/activate && \
+    pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements-docker.txt
 
-# STAGE 2: FINAL
+# STAGE 3: FINAL
 # Clean, small and secure image with only runtime dependencies
 FROM python:3.13-slim-bullseye
 
@@ -49,7 +67,7 @@ RUN \
 LABEL com.kcc.name="Kindle Comic Converter" \
     com.kcc.author="Ciro Mattia Gonano, Paweł Jastrzębski and Darodi" \
     org.opencontainers.image.title="Kindle Comic Converter" \
-    org.opencontainers.image.description='Kindle Comic Converter base image' \
+    org.opencontainers.image.description='Kindle Comic Converter' \
     org.opencontainers.image.documentation='https://github.com/ciromattia/kcc' \
     org.opencontainers.image.source='https://github.com/ciromattia/kcc' \
     org.opencontainers.image.authors='Darodi and José Cerezo' \
