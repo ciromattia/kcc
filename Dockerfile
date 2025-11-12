@@ -59,6 +59,7 @@ RUN \
     ln -s /opt/kcc/kcc-c2e.py /usr/local/bin/c2e && \
     ln -s /opt/kcc/kcc-c2p.py /usr/local/bin/c2p && \
     ln -s /opt/kcc/entrypoint.sh /usr/local/bin/entrypoint && \
+    ln -s /opt/kcc/kindlegen/kindlegen /usr/local/bin/kindlegen && \
     cat /opt/kcc/kindlecomicconverter/__init__.py | grep version | awk '{print $3}' | sed "s/'//g" > /IMAGE_VERSION
 
 LABEL com.kcc.name="Kindle Comic Converter" \
