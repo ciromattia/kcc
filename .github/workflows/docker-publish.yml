@@ -1,10 +1,10 @@
-name: Docker
+name: Build and Publish Docker Image
 
 on:
   workflow_dispatch:
   push:
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    tags: 
+      - 'v*.*.*'
     
     # Don't trigger if it's just a documentation update
     paths-ignore:
@@ -15,19 +15,49 @@ on:
       - 'LICENSE'
       - '.gitattributes'
       - '.gitignore'
-      - '.dockerignore'
-
 
 jobs:
-  build_and_push:
-    uses: sdr-enthusiasts/common-github-workflows/.github/workflows/build_and_push_image.yml@main
-    with:
-      platform_linux_arm32v7_enabled: true
-      platform_linux_arm64v8_enabled: true
-      platform_linux_amd64_enabled: true
-      push_enabled: true
-      build_nohealthcheck: false
-      ghcr_repo_owner: ${{ github.repository_owner }}
-      ghcr_repo: ${{ github.repository }}
-    secrets:
-      ghcr_token: ${{ secrets.GITHUB_TOKEN }}
+  build_and_publish_base_image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set Release Date
+        id: release_date
+        run: |
+          echo "release_date=$(date --rfc-3339=date)" >> $GITHUB_OUTPUT
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/kcc
+          # Always creates the "latest" tag
+          flavor: |
+            latest=true
+          tags: |
+            type=ref,event=tag
+            type=raw,value=${{ steps.release_date.outputs.release_date }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+          cache-from: |
+            type=registry,ref=ghcr.io/ciromattia/kcc:cache
+            type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:cache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/kcc:cache,mode=max
