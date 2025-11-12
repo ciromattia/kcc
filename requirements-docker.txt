@@ -6,5 +6,6 @@ packaging>=23.2
 mozjpeg-lossless-optimization>=1.2.0
 natsort>=8.4.0
 distro>=1.8.0
-numpy==2.3.4
-PyMuPDF==1.26.6
+# Below requirements are compiled in Dockefile
+# numpy==2.3.4
+# PyMuPDF==1.26.6

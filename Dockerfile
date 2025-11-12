@@ -9,9 +9,6 @@ RUN set -x && \
     DEBIAN_FRONTEND=noninteractive apt-get update -y && \
     apt-get install -y --no-install-recommends ${BUILD_DEPS} ${RUNTIME_DEPS}
 
-# Install Python dependencies using virtual environment
-COPY requirements-docker.txt .
-
 RUN \
     set -x && \
     python -m venv /opt/venv && \
@@ -29,6 +26,9 @@ RUN \
     set -x && \
     . /opt/venv/bin/activate && \
     pip install --no-cache-dir PyMuPDF==1.26.6
+
+# Install Python dependencies using virtual environment
+COPY requirements-docker.txt .
 
 RUN \
     set -x && \
