@@ -53,7 +53,7 @@ jobs:
           python setup.py ${{ matrix.command }}
       - name: upload-unsigned-artifact
         id: upload-unsigned-artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: windows-build-${{ matrix.entry }}
           path: dist/*.exe
