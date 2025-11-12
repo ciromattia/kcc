@@ -27,6 +27,9 @@ import sys
 from traceback import format_tb
 
 
+IMAGE_TYPES = ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.jp2', '.avif')
+
+
 class HTMLStripper(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
