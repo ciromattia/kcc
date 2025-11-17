@@ -920,13 +920,18 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
         else:
             ext = '.kepub.epub'
     if wantedname is not None:
+        wanted_root, wanted_ext = os.path.splitext(wantedname)
         if wantedname.endswith(ext):
             filename = os.path.abspath(wantedname)
-        elif os.path.isdir(srcpath):
-            filename = os.path.join(os.path.abspath(options.output), os.path.basename(srcpath) + ext)
+        # output directory
+        elif not wanted_ext:
+            abs_path = os.path.abspath(options.output)
+            if not os.path.exists(abs_path):
+                os.mkdir(abs_path)
+            filename = os.path.join(os.path.abspath(options.output), Path(srcpath).stem + ext)
+        # output file
         else:
-            filename = os.path.join(os.path.abspath(options.output),
-                                    os.path.basename(os.path.splitext(srcpath)[0]) + ext)
+            filename = os.path.abspath(wanted_root) + ext
     elif os.path.isdir(srcpath):
         filename = srcpath + tomenumber + ext
     else:
