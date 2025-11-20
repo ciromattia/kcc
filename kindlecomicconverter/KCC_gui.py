@@ -1027,7 +1027,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         MW.activateWindow()
         if type(message) is bytes:
             message = message.decode('UTF-8')
-        if not self.conversionAlive and message != 'ARISE':
+        if not self.conversionAlive and message != 'ARISE' and not GUI.jobList.findItems(message, Qt.MatchFlag.MatchExactly):
             if self.needClean:
                 self.needClean = False
                 GUI.jobList.clear()
@@ -1058,6 +1058,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if message[-1] == '/':
                     message = message[:-1]
             self.handleMessage(message)
+        GUI.jobList.sortItems()
 
     def forceShutdown(self):
         self.saveSettings(None)
