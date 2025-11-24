@@ -221,7 +221,7 @@ def splitImage(work):
         return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
 
-def main(argv=None, qtgui=None):
+def main(argv=None, job_progress='', qtgui=None):
     global args, GUI, splitWorkerPool, splitWorkerOutput, mergeWorkerPool, mergeWorkerOutput
     parser = ArgumentParser(prog="kcc-c2p", usage="kcc-c2p [options] [input]", add_help=False)
 
@@ -262,7 +262,7 @@ def main(argv=None, qtgui=None):
                 splitWorkerOutput = []
                 splitWorkerPool = Pool(maxtasksperchild=10)
                 if args.merge:
-                    print("Merging images...")
+                    print(f"{job_progress}Merging images...")
                     directoryNumer = 1
                     mergeWork = []
                     mergeWorkerOutput = []
@@ -274,7 +274,7 @@ def main(argv=None, qtgui=None):
                             directoryNumer += 1
                             mergeWork.append([os.path.join(root, directory)])
                     if GUI:
-                        GUI.progressBarTick.emit('Combining images')
+                        GUI.progressBarTick.emit(f'{job_progress}Combining images')
                         GUI.progressBarTick.emit(str(directoryNumer))
                     for i in mergeWork:
                         mergeWorkerPool.apply_async(func=mergeDirectory, args=(i, ), callback=mergeDirectoryTick)
@@ -287,7 +287,7 @@ def main(argv=None, qtgui=None):
                         rmtree(targetDir, True)
                         raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0][0],
                                            mergeWorkerOutput[0][1])
-                print("Splitting images...")
+                print(f"{job_progress}Splitting images...")
                 dot_clean(targetDir)
                 for root, _, files in os.walk(targetDir, False):
                     for name in files:
@@ -297,7 +297,7 @@ def main(argv=None, qtgui=None):
                         else:
                             os.remove(os.path.join(root, name))
                 if GUI:
-                    GUI.progressBarTick.emit('Splitting images')
+                    GUI.progressBarTick.emit(f'{job_progress}Splitting images')
                     GUI.progressBarTick.emit(str(pagenumber))
                     GUI.progressBarTick.emit('tick')
                 if len(work) > 0:
