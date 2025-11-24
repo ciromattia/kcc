@@ -23,6 +23,16 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        entry: [ kcc, kcc-c2e, kcc-c2p ]
+        include:
+          - entry: kcc
+            command: build_binary
+          - entry: kcc-c2e
+            command: build_c2e
+          - entry: kcc-c2p
+            command: build_c2p
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v5
@@ -40,12 +50,12 @@ jobs:
           pip install certifi pyinstaller --no-binary pyinstaller
       - name: build binary
         run: |
-          python setup.py build_binary
+          python setup.py ${{ matrix.command }}
       - name: upload-unsigned-artifact
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-build
+          name: windows-build-${{ matrix.entry }}
           path: dist/*.exe
       - id: optional_step_id
         uses: signpath/github-action-submit-signing-request@v1.3
@@ -65,5 +75,4 @@ jobs:
           prerelease: true
           generate_release_notes: true
           files: |
-            LICENSE.txt
             dist/*.exe

@@ -26,7 +26,7 @@ which have different requirements than normal LCD screens.
 Combining that with downscaling to your specific device's screen resolution
 can result in filesize reductions of hundreds of MB per volume with no visible quality loss on eink.
 This can also improve battery life, page turn speed, and general performance 
-on underpowered ereaders with small storage capacities.
+on underpowered ereaders with small memory and storage capacities.
 
 KCC avoids many common formatting issues (some of which occur [even on the Kindle Store](https://github.com/ciromattia/kcc/wiki/Kindle-Store-bad-formatting)), such as:
 1) faded black levels causing unneccessarily low contrast, which is hard to see and can cause eyestrain.
@@ -104,7 +104,7 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 
 ## FAQ
 - Should I use Calibre?
-  - No. Calibre doesn't properly support fixed layout EPUB/MOBI, so modifying KCC output (even just metadata!) in Calibre will break the formatting.
+  - No. Calibre doesn't properly support fixed layout EPUB/MOBI, so modifying KCC output (even just metadata!) in Calibre can break the formatting.
     Viewing KCC output in Calibre will also not work properly.
     On 7th gen and later Kindles running firmware 5.15.1+, you can get cover thumbnails simply by USB dropping into documents folder.
     On 6th gen and older, you can get cover thumbnails by keeping Kindle plugged in during conversion.
@@ -116,6 +116,8 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
   - MOBI for Kindles. CBZ for Kindle DX. CBZ for Koreader. KEPUB for Kobo. PDF for ReMarkable.
 - All options have additional information in tooltips if you hover over the option.
 - To get the converted book onto your Kindle/Kobo, just drag and drop the mobi/kepub into the documents folder on your Kindle/Kobo via USB
+- Kindle panel view not working?
+  - Virtual panel view is enabled in Aa menu on your Kindle, not in KCC as of 7.4
 - Right to left mode not working?
   - RTL mode only affects splitting order for CBZ output. Your cbz reader itself sets the page turn direction.
 - Colors inverted?
@@ -237,6 +239,8 @@ PROCESSING:
   -g GAMMA, --gamma GAMMA
                         Apply gamma correction to linearize the image [Default=Auto]
   --autolevel           Set most common dark pixel value to be black point for leveling.
+  --noautocontrast      Disable autocontrast
+  --colorautocontrast   Force autocontrast for all pages. Skipped when near blacks and whites don't exist
   -c CROPPING, --cropping CROPPING
                         Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]
   --cp CROPPINGP, --croppingpower CROPPINGP
@@ -270,6 +274,7 @@ OUTPUT SETTINGS:
   --spreadshift         Shift first page to opposite side in landscape for two page spread alignment
   --norotate            Do not rotate double page spreads in spread splitter option.
   --rotatefirst         Put rotated spread first in spread splitter option.
+  --filefusion          Combines all input files into a single file.
   --eraserainbow       Erase rainbow effect on color eink screen by attenuating interfering frequencies
 
 CUSTOM PROFILE:

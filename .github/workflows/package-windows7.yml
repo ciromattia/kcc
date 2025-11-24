@@ -48,7 +48,7 @@ jobs:
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-build
+          name: windows7-build
           path: dist/*.exe
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -57,5 +57,4 @@ jobs:
           prerelease: true
           generate_release_notes: true
           files: |
-            LICENSE.txt
             dist/*.exe

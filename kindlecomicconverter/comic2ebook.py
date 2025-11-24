@@ -42,9 +42,8 @@ from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 import pymupdf
-import numpy as np
 
-from .shared import getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean
+from .shared import IMAGE_TYPES, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean
 from .comicarchive import SEVENZIP, available_archive_tools
 from . import comic2panel
 from . import image
@@ -72,12 +71,23 @@ def main(argv=None):
     if len(sources) == 0:
         print('No matching files found.')
         return 1
+    if options.filefusion:
+        fusion_path = makeFusion(list(sources))
+        sources.clear()
+        sources.add(fusion_path)
     for source in sources:
         source = source.rstrip('\\').rstrip('/')
         options = copy(args)
         options = checkOptions(options)
         print('Working on ' + source + '...')
         makeBook(source)
+
+    if options.filefusion:
+        for path in sources:
+            if os.path.isfile(path):
+                os.remove(path)
+            elif os.path.isdir(path):
+                rmtree(path, True)
     return 0
 
 
@@ -299,8 +309,9 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
         f.writelines(["<dc:description>", hescape(options.summary), "</dc:description>\n"])
     for author in options.authors:
         f.writelines(["<dc:creator>", hescape(author), "</dc:creator>\n"])
-    f.writelines(["<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n",
-                  "<meta name=\"cover\" content=\"cover\"/>\n"])
+    f.write("<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n")
+    if cover:
+        f.write("<meta name=\"cover\" content=\"cover\"/>\n")
     if options.iskindle and options.profile != 'Custom':
         f.writelines(["<meta name=\"fixed-layout\" content=\"true\"/>\n",
                       "<meta name=\"original-resolution\" content=\"",
@@ -532,7 +543,8 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, ori
                       "}\n"])
     f.close()
     build_html_start = perf_counter()
-    cover.save_to_epub(os.path.join(path, 'OEBPS', 'Images', 'cover.jpg'), tomenumber, len_tomes)
+    if cover:
+        cover.save_to_epub(os.path.join(path, 'OEBPS', 'Images', 'cover.jpg'), tomenumber, len_tomes)
     dot_clean(path)
     options.covers.append((cover, options.uuid))
     for dirpath, dirnames, filenames in os.walk(os.path.join(path, 'OEBPS', 'Images')):
@@ -650,7 +662,7 @@ def imgDirectoryProcessing(path, job_progress=''):
             raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0][0], workerOutput[0][1])
     else:
         rmtree(os.path.join(path, '..', '..'), True)
-        raise UserWarning("Source directory is empty.")
+        raise UserWarning("C2E: Source directory is empty.")
 
 
 def imgFileProcessingTick(output):
@@ -741,6 +753,7 @@ def render_page(vector):
             zoom = target_height / page.rect.height
             mat = pymupdf.Matrix(zoom, zoom)
             # TODO: decide colorspace earlier so later color check is cheaper.
+            # This is actually pretty hard when you have to deal with color vector text
             pix = page.get_pixmap(matrix=mat, colorspace='RGB', alpha=False)
             pix.save(os.path.join(output_dir, "p-%i.png" % i))
         print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
@@ -907,13 +920,18 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
         else:
             ext = '.kepub.epub'
     if wantedname is not None:
+        wanted_root, wanted_ext = os.path.splitext(wantedname)
         if wantedname.endswith(ext):
             filename = os.path.abspath(wantedname)
-        elif os.path.isdir(srcpath):
-            filename = os.path.join(os.path.abspath(options.output), os.path.basename(srcpath) + ext)
+        # output directory
+        elif not wanted_ext:
+            abs_path = os.path.abspath(options.output)
+            if not os.path.exists(abs_path):
+                os.mkdir(abs_path)
+            filename = os.path.join(os.path.abspath(options.output), Path(srcpath).stem + ext)
+        # output file
         else:
-            filename = os.path.join(os.path.abspath(options.output),
-                                    os.path.basename(os.path.splitext(srcpath)[0]) + ext)
+            filename = os.path.abspath(wanted_root) + ext
     elif os.path.isdir(srcpath):
         filename = srcpath + tomenumber + ext
     else:
@@ -1026,7 +1044,7 @@ def removeNonImages(filetree):
     for root, dirs, files in os.walk(filetree):
         for name in files:
             _, ext = getImageFileName(name)
-            if ext not in ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.jp2', '.avif'):
+            if ext not in IMAGE_TYPES:
                 if os.path.exists(os.path.join(root, name)):
                     os.remove(os.path.join(root, name))
     # remove empty nested folders
@@ -1324,6 +1342,12 @@ def makeParser():
                                     help="Apply gamma correction to linearize the image [Default=Auto]")
     output_options.add_argument("--autolevel", action="store_true", dest="autolevel", default=False,
                                 help="Set most common dark pixel value to be black point for leveling.")
+    output_options.add_argument("--noautocontrast", action="store_true", dest="noautocontrast", default=False,
+                                help="Disable autocontrast.")
+    output_options.add_argument("--colorautocontrast", action="store_true", dest="colorautocontrast", default=False,
+                                help="Autocontrast color pages too. Skipped for pages without near blacks or whites.")
+    output_options.add_argument("--filefusion", action="store_true", dest="filefusion", default=False,
+                                help="Combines all input files into a single file.")
     processing_options.add_argument("-c", "--cropping", type=int, dest="cropping", default="2",
                                     help="Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]")
     processing_options.add_argument("--cp", "--croppingpower", type=float, dest="croppingp", default="1.0",
@@ -1413,8 +1437,10 @@ def checkOptions(options):
     if options.webtoon:
         options.panelview = False
         options.righttoleft = False
-        options.upscale = True
+        options.upscale = False
         options.hq = False
+        options.white_borders = True
+        options.bordersColor = 'white'
     # Disable all Kindle features for other e-readers
     if options.profile == 'OTHER':
         options.panelview = False
@@ -1530,11 +1556,13 @@ def makeBook(source, qtgui=None, job_progress=''):
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
     chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
-    cover = image.Cover(cover_path, options)
+    cover = None
+    if not options.webtoon:
+        cover = image.Cover(cover_path, options)
 
     if options.webtoon:
-        y = image.ProfileData.Profiles[options.profile][1][1]
-        comic2panel.main(['-y ' + str(y), '-i', '-m', path], job_progress, qtgui)
+        x, y = image.ProfileData.Profiles[options.profile][1]
+        comic2panel.main(['-y ' + str(y), '-x' + str(x), '-i', '-m', path], job_progress, qtgui)
     if options.noprocessing:
         print(f"{job_progress}Do not process image, ignore any profile or processing option")
     else:
@@ -1625,7 +1653,7 @@ def makeBook(source, qtgui=None, job_progress=''):
                 return filepath
             else:
                 os.remove(i.replace('.epub', '.mobi') + '_toclean')
-            if k.path and k.coverSupport:
+            if cover and k.path and k.coverSupport:
                 options.covers[filepath.index(i)][0].saveToKindle(k, options.covers[filepath.index(i)][1])
     if options.delete:
         if os.path.isfile(source):

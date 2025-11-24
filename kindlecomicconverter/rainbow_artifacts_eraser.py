@@ -1,5 +1,8 @@
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFile
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
        
 def fourier_transform_image(img):
     """
