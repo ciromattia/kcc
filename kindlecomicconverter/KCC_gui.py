@@ -376,9 +376,8 @@ class WorkerThread(QThread):
             error_message = 'Process Failed. Custom title can\'t be set when processing more than 1 source.\nDid you forget to check fusion?'
             print(error_message)
             MW.addMessage.emit(error_message, 'error', True)
-        for job in currentJobs:
-            current_job_count = currentJobs.index(job) + 1
-            job_progress_number = f'[{current_job_count}/{len(currentJobs)}] '
+        for i, job in enumerate(currentJobs, start=1):
+            job_progress_number = f'[{i}/{len(currentJobs)}] '
             sleep(0.5)
             if not self.conversionAlive:
                 self.clean()
