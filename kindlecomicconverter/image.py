@@ -263,7 +263,6 @@ class ComicPage:
         _, self.size, self.palette, self.gamma = self.opt.profileData
         if self.opt.hq:
             self.size = (int(self.size[0] * 1.5), int(self.size[1] * 1.5))
-        self.kindle_scribe_azw3 = (options.profile == 'KS') and (options.format in ('MOBI', 'EPUB'))
         self.original_color_mode = image.mode
         # TODO: color check earlier
         self.image = image.convert("RGB")
@@ -481,6 +480,14 @@ class ComicPage:
             self.image = erase_rainbow_artifacts(self.image, is_color)
 
     def resizeImage(self):
+        if self.opt.norotate and self.targetPathOrder in ('-kcc-a', '-kcc-d') and not self.opt.kindle_scribe_azw3:
+            # TODO: Kindle Scribe case
+            if self.opt.kindle_azw3 and any(dim > 1920 for dim in self.image.size):
+                self.image = ImageOps.contain(self.image, (1920, 1920), Image.Resampling.LANCZOS)
+            elif self.image.size[0] > self.size[0] * 2 or self.image.size[1] > self.size[1]:
+                self.image = ImageOps.contain(self.image, (self.size[0] * 2, self.size[1], Image.Resampling.LANCZOS))
+            return
+        
         ratio_device = float(self.size[1]) / float(self.size[0])
         ratio_image = float(self.image.size[1]) / float(self.image.size[0])
         method = self.resize_method()
