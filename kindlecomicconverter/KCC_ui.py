@@ -513,7 +513,7 @@ class Ui_mainWindow(object):
 #if QT_CONFIG(tooltip)
         self.mangaBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Enable right-to-left reading.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.mangaBox.setText(QCoreApplication.translate("mainWindow", u"Right-to-left mode", None))
+        self.mangaBox.setText(QCoreApplication.translate("mainWindow", u"Right-to-left (manga)", None))
 #if QT_CONFIG(tooltip)
         self.webtoonBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Enable special parsing mode for Korean Webtoons.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

@@ -65,7 +65,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Enable right-to-left reading.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Right-to-left mode</string>
+          <string>Right-to-left (manga)</string>
          </property>
         </widget>
        </item>
