@@ -870,6 +870,9 @@ def getWorkFolder(afile):
             raise UserWarning("Not enough disk space to perform conversion.")
         if afile.lower().endswith('.pdf'):
             workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
+            fullPath = os.path.join(workdir, 'OEBPS', 'Images')
+            if not os.path.exists(fullPath):
+                os.makedirs(fullPath)
             path = workdir
             sanitizePermissions(path)
             target_height = options.profileData[1][1]
@@ -878,36 +881,38 @@ def getWorkFolder(afile):
             elif options.cropping == 2:
                 target_height = target_height + target_height*0.25 #Account for possible margin at the top and bottom with page number
             try:
-                mupdf_pdf_process_pages_parallel(afile, workdir, target_height)
+                mupdf_pdf_process_pages_parallel(afile, fullPath, target_height)
             except Exception as e:
                 rmtree(path, True)
                 raise UserWarning(f"Failed to extract images from PDF file. {e}")
+            return workdir
         else:
             workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
+            fullPath = os.path.join(workdir, 'OEBPS', 'Images')
+            if not os.path.exists(fullPath):
+                os.makedirs(fullPath)
             try:
                 cbx = comicarchive.ComicArchive(afile)
-                path = cbx.extract(workdir)
+                path = cbx.extract(fullPath)
                 sanitizePermissions(path)
 
-                tdir = os.listdir(workdir)
+                tdir = os.listdir(fullPath)
                 if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
                     tdir.remove('ComicInfo.xml')
-                    if os.path.isdir(os.path.join(workdir, tdir[0])):
+                    if os.path.isdir(os.path.join(fullPath, tdir[0])):
                         os.replace(
-                            os.path.join(workdir, 'ComicInfo.xml'),
-                            os.path.join(workdir, tdir[0], 'ComicInfo.xml')
+                            os.path.join(fullPath, 'ComicInfo.xml'),
+                            os.path.join(fullPath, tdir[0], 'ComicInfo.xml')
                         )
-                if len(tdir) == 1 and os.path.isdir(os.path.join(workdir, tdir[0])):
-                    path = os.path.join(workdir, tdir[0])
+                if len(tdir) == 1 and os.path.isdir(os.path.join(fullPath, tdir[0])):
+                    path = os.path.join(fullPath, tdir[0])
+                return workdir
  
             except OSError as e:
                 rmtree(workdir, True)
                 raise UserWarning(e)
     else:
         raise UserWarning("Failed to open source file/directory.")
-    newpath = mkdtemp('', 'KCC-', os.path.dirname(afile))
-    os.renames(path, os.path.join(newpath, 'OEBPS', 'Images'))
-    return newpath
 
 
 def getOutputFilename(srcpath, wantedname, ext, tomenumber):
