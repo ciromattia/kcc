@@ -192,6 +192,18 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>seriesLine</tabstop>
+  <tabstop>volumeLine</tabstop>
+  <tabstop>titleLine</tabstop>
+  <tabstop>numberLine</tabstop>
+  <tabstop>writerLine</tabstop>
+  <tabstop>pencillerLine</tabstop>
+  <tabstop>inkerLine</tabstop>
+  <tabstop>coloristLine</tabstop>
+  <tabstop>okButton</tabstop>
+  <tabstop>cancelButton</tabstop>
+ </tabstops>
  <resources>
   <include location="KCC.qrc"/>
  </resources>

@@ -156,6 +156,15 @@ class Ui_editorDialog(object):
 
         self.verticalLayout.addWidget(self.optionWidget)
 
+        QWidget.setTabOrder(self.seriesLine, self.volumeLine)
+        QWidget.setTabOrder(self.volumeLine, self.titleLine)
+        QWidget.setTabOrder(self.titleLine, self.numberLine)
+        QWidget.setTabOrder(self.numberLine, self.writerLine)
+        QWidget.setTabOrder(self.writerLine, self.pencillerLine)
+        QWidget.setTabOrder(self.pencillerLine, self.inkerLine)
+        QWidget.setTabOrder(self.inkerLine, self.coloristLine)
+        QWidget.setTabOrder(self.coloristLine, self.okButton)
+        QWidget.setTabOrder(self.okButton, self.cancelButton)
 
         self.retranslateUi(editorDialog)
 
