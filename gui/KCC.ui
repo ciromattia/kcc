@@ -898,36 +898,47 @@
   </widget>
  </widget>
  <tabstops>
-  <tabstop>convertButton</tabstop>
+  <tabstop>jobList</tabstop>
+  <tabstop>fileButton</tabstop>
   <tabstop>clearButton</tabstop>
+  <tabstop>defaultOutputFolderButton</tabstop>
+  <tabstop>defaultOutputFolderBox</tabstop>
   <tabstop>deviceBox</tabstop>
+  <tabstop>widthBox</tabstop>
+  <tabstop>heightBox</tabstop>
   <tabstop>formatBox</tabstop>
+  <tabstop>convertButton</tabstop>
   <tabstop>mangaBox</tabstop>
   <tabstop>rotateBox</tabstop>
   <tabstop>qualityBox</tabstop>
   <tabstop>webtoonBox</tabstop>
   <tabstop>upscaleBox</tabstop>
   <tabstop>gammaBox</tabstop>
+  <tabstop>gammaSlider</tabstop>
   <tabstop>borderBox</tabstop>
   <tabstop>outputSplit</tabstop>
   <tabstop>colorBox</tabstop>
   <tabstop>mozJpegBox</tabstop>
   <tabstop>maximizeStrips</tabstop>
   <tabstop>croppingBox</tabstop>
+  <tabstop>croppingPowerSlider</tabstop>
+  <tabstop>preserveMarginBox</tabstop>
   <tabstop>spreadShiftBox</tabstop>
   <tabstop>deleteBox</tabstop>
   <tabstop>disableProcessingBox</tabstop>
-  <tabstop>chunkSizeBox</tabstop>
+  <tabstop>fileFusionBox</tabstop>
   <tabstop>noRotateBox</tabstop>
   <tabstop>interPanelCropBox</tabstop>
+  <tabstop>metadataTitleBox</tabstop>
+  <tabstop>chunkSizeCheckBox</tabstop>
+  <tabstop>chunkSizeBox</tabstop>
   <tabstop>eraseRainbowBox</tabstop>
-  <tabstop>heightBox</tabstop>
-  <tabstop>croppingPowerSlider</tabstop>
+  <tabstop>rotateFirstBox</tabstop>
+  <tabstop>autoLevelBox</tabstop>
+  <tabstop>autocontrastBox</tabstop>
   <tabstop>editorButton</tabstop>
+  <tabstop>kofiButton</tabstop>
   <tabstop>wikiButton</tabstop>
-  <tabstop>jobList</tabstop>
-  <tabstop>gammaSlider</tabstop>
-  <tabstop>widthBox</tabstop>
  </tabstops>
  <resources>
   <include location="KCC.qrc"/>
