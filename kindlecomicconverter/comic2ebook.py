@@ -928,15 +928,14 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
         wanted_root, wanted_ext = os.path.splitext(wantedname)
         if wantedname.endswith(ext):
             filename = os.path.abspath(wantedname)
+        elif wanted_ext == '.mobi' and ext == '.epub':
+            filename = os.path.abspath(wanted_root + ext)
         # output directory
-        elif not wanted_ext:
+        else:
             abs_path = os.path.abspath(options.output)
             if not os.path.exists(abs_path):
                 os.mkdir(abs_path)
             filename = os.path.join(os.path.abspath(options.output), Path(srcpath).stem + ext)
-        # output file
-        else:
-            filename = os.path.abspath(wanted_root) + ext
     elif os.path.isdir(srcpath):
         filename = srcpath + tomenumber + ext
     else:
