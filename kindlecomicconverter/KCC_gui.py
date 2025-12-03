@@ -22,7 +22,7 @@ import itertools
 from pathlib import Path
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
 from PySide6.QtGui import (QColor, QIcon, QPixmap, QDesktopServices)
-from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog)
+from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QCheckBox)
 from PySide6.QtNetwork import (QLocalSocket, QLocalServer)
 
 import os
@@ -1422,12 +1422,19 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         self.files = files if isinstance(files, list) else [files]
         self.bulkMode = len(self.files) > 1
         
+        # Sort files by name for consistent volume assignment
+        self.files.sort()
+        
         if self.bulkMode:
             firstFile = self.files[0]
             self.parser = metadata.MetadataParser(firstFile)
             self.editorWidget.setEnabled(True)
             self.okButton.setEnabled(True)
             self.statusLabel.setText(f'Editing {len(self.files)} files.')
+            
+            # Show bulk volume checkbox
+            self.bulkVolumeCheck.setVisible(True)
+            self.bulkVolumeCheck.setChecked(False)
             
             for field in (self.volumeLine, self.numberLine, self.titleLine):
                 field.setEnabled(False)
@@ -1446,6 +1453,9 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         else:
             file = self.files[0]
             self.parser = metadata.MetadataParser(file)
+            
+            # Hide bulk volume checkbox in single file mode
+            self.bulkVolumeCheck.setVisible(False)
             
             for field in (self.volumeLine, self.numberLine, self.titleLine, self.seriesLine,
                           self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
@@ -1486,7 +1496,16 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
                 if tmpData:
                     bulkData[fieldName] = tmpData
             
-            if not bulkData:
+            # Handle bulk volume editing
+            volumes = None
+            if self.bulkVolumeCheck.isChecked():
+                volumeText = self.volumeLine.text()
+                volumes, error = self.parseVolumeInput(volumeText, len(self.files))
+                if error:
+                    self.statusLabel.setText(error)
+                    return
+            
+            if not bulkData and volumes is None:
                 self.statusLabel.setText('No changes to apply.')
                 return
             
@@ -1506,6 +1525,9 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
                         continue
                     for key, value in bulkData.items():
                         parser.data[key] = value
+                    # Set volume if bulk volume editing is enabled
+                    if volumes is not None:
+                        parser.data['Volume'] = str(volumes[i - 1])
                     parser.saveXML()
                 except Exception as err:
                     errors.append(f'{os.path.basename(file)}: {str(err)}')
@@ -1548,6 +1570,60 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
     def cleanData(self, s):
         return escape(s.strip())
 
+    def parseVolumeInput(self, text, fileCount):
+        """Parse volume input and return list of volume numbers.
+        Supports: single number (5), range (5-10), comma list (1,3,5)
+        Returns (volumes_list, error_message) tuple.
+        """
+        text = text.strip()
+        if not text:
+            return None, None
+        
+        volumes = []
+        
+        # Check if it's a range (e.g., "5-10")
+        if '-' in text and ',' not in text:
+            parts = text.split('-')
+            if len(parts) == 2:
+                try:
+                    start = int(parts[0].strip())
+                    end = int(parts[1].strip())
+                    if start <= end:
+                        volumes = list(range(start, end + 1))
+                    else:
+                        return None, 'Invalid range: start > end'
+                except ValueError:
+                    return None, 'Invalid range format'
+        # Check if it's a comma-separated list (e.g., "1,3,5")
+        elif ',' in text:
+            try:
+                volumes = [int(v.strip()) for v in text.split(',') if v.strip()]
+            except ValueError:
+                return None, 'Invalid list format'
+        # Single number - generate sequence starting from that number
+        else:
+            try:
+                start = int(text)
+                volumes = list(range(start, start + fileCount))
+            except ValueError:
+                return None, 'Invalid number'
+        
+        # Validate count
+        if volumes and len(volumes) != fileCount:
+            return None, f'Volume count ({len(volumes)}) ≠ file count ({fileCount})'
+        
+        return volumes, None
+    
+    def toggleBulkVolume(self, checked):
+        """Toggle volume field enabled state based on checkbox."""
+        self.volumeLine.setEnabled(checked)
+        if checked:
+            self.volumeLine.setText('')
+            self.volumeLine.setPlaceholderText('e.g., 5 or 1-10 or 1,3,5')
+        else:
+            self.volumeLine.setText('')
+            self.volumeLine.setPlaceholderText('(multiple files)')
+
     def __init__(self):
         self.ui = QDialog()
         self.parser = None
@@ -1555,6 +1631,26 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         self.bulkMode = False
         self.setupUi(self.ui)
         self.ui.setWindowFlags(self.ui.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint)
+        
+        # Create bulk volume editing widgets
+        self.bulkVolumeCheck = QCheckBox()
+        self.bulkVolumeCheck.setToolTip(
+            '<b>Bulk Volume Editing</b><br>'
+            'Check this box to assign volume numbers to multiple files.<br><br>'
+            '<b>Input formats:</b><br>'
+            '<code>5</code> → sequence starting from 5 (5, 6, 7...)<br>'
+            '<code>1-10</code> → range from 1 to 10<br>'
+            '<code>1, 3, 5</code> → specific values<br><br>'
+            '<i>Note: Files are sorted alphabetically before assignment.</i>'
+        )
+        self.bulkVolumeCheck.stateChanged.connect(self.toggleBulkVolume)
+        
+        # Add widget to the grid layout at row 1 (Volume row), column 2
+        self.gridLayout.addWidget(self.bulkVolumeCheck, 1, 2, 1, 1)
+        
+        # Hide by default (only shown in bulk mode)
+        self.bulkVolumeCheck.setVisible(False)
+        
         self.okButton.clicked.connect(self.saveData)
         self.cancelButton.clicked.connect(self.ui.close)
         if sys.platform.startswith('linux'):
