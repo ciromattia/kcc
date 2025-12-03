@@ -935,7 +935,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
             abs_path = os.path.abspath(options.output)
             if not os.path.exists(abs_path):
                 os.mkdir(abs_path)
-            filename = os.path.join(os.path.abspath(options.output), Path(srcpath).stem + ext)
+            filename = os.path.join(os.path.abspath(options.output), Path(srcpath).stem + tomenumber + ext)
     elif os.path.isdir(srcpath):
         filename = srcpath + tomenumber + ext
     else:
