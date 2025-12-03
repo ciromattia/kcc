@@ -149,7 +149,7 @@ setuptools.setup(
     packages=['kindlecomicconverter'],
     install_requires=[
         'PySide6>=6.0.0',
-        'Pillow>=9.3.0,
+        'Pillow>=9.3.0',
         'psutil>=5.9.5',
         'requests>=2.31.0',
         'python-slugify>=1.2.1,<9.0.0',
