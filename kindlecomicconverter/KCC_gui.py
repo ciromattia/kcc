@@ -617,27 +617,30 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 GUI.jobList.scrollToBottom()
 
     def selectFileMetaEditor(self, sname):
+        files = []
         if not sname:
             if QApplication.keyboardModifiers() == Qt.ShiftModifier:
                 dname = QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
                 if dname != '':
-                    sname = os.path.join(dname, 'ComicInfo.xml')
-                    self.lastPath = os.path.dirname(sname)
+                    files = [os.path.join(dname, 'ComicInfo.xml')]
+                    self.lastPath = os.path.dirname(files[0])
             else:
                 if self.sevenzip:
-                    fname = QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
-                                                                  'Comic (*.cbz *.cbr *.cb7)')
+                    fnames = QFileDialog.getOpenFileNames(MW, 'Select file(s)', self.lastPath,
+                                                          'Comic (*.cbz *.cbr *.cb7)')
+                    files = fnames[0]
+                    if files:
+                        self.lastPath = os.path.abspath(os.path.join(files[0], os.pardir))
                 else:
-                    fname = ['']
                     self.showDialog("Editor is disabled due to a lack of 7z.", 'error')
                     self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
                     ' to enable metadata editing.', 'warning')
-                if fname[0] != '':
-                    sname = fname[0]
-                    self.lastPath = os.path.abspath(os.path.join(sname, os.pardir))
-        if sname:
+        else:
+            files = [sname]
+        
+        if files:
             try:
-                self.editor.loadData(sname)
+                self.editor.loadData(files)
             except Exception as err:
                 _, _, traceback = sys.exc_info()
                 GUI.sentry.captureException()
@@ -1415,53 +1418,132 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
 
 class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
-    def loadData(self, file):
-        self.parser = metadata.MetadataParser(file)
-        if self.parser.format in ['RAR', 'RAR5']:
-            self.editorWidget.setEnabled(False)
-            self.okButton.setEnabled(False)
-            self.statusLabel.setText('CBR metadata are read-only.')
-        else:
+    def loadData(self, files):
+        self.files = files if isinstance(files, list) else [files]
+        self.bulkMode = len(self.files) > 1
+        
+        if self.bulkMode:
+            firstFile = self.files[0]
+            self.parser = metadata.MetadataParser(firstFile)
             self.editorWidget.setEnabled(True)
             self.okButton.setEnabled(True)
-            self.statusLabel.setText('Separate authors with a comma.')
-        for field in (self.seriesLine, self.volumeLine, self.numberLine, self.titleLine):
-            field.setText(self.parser.data[field.objectName().capitalize()[:-4]])
-        for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
-            field.setText(', '.join(self.parser.data[field.objectName().capitalize()[:-4] + 's']))
-        for field in (self.seriesLine, self.titleLine):
-            if field.text() == '':
-                path = Path(file)
-                if file.endswith('.xml'):
-                    field.setText(path.parent.name)
-                else:
-                    field.setText(path.stem)
+            self.statusLabel.setText(f'Editing {len(self.files)} files.')
+            
+            for field in (self.volumeLine, self.numberLine, self.titleLine):
+                field.setEnabled(False)
+                field.setText('')
+                field.setPlaceholderText('(multiple files)')
+            
+            for field in (self.seriesLine,):
+                field.setEnabled(True)
+                field.setPlaceholderText('')
+                field.setText(self.parser.data[field.objectName().capitalize()[:-4]])
+            
+            for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
+                field.setEnabled(True)
+                field.setPlaceholderText('')
+                field.setText(', '.join(self.parser.data[field.objectName().capitalize()[:-4] + 's']))
+        else:
+            file = self.files[0]
+            self.parser = metadata.MetadataParser(file)
+            
+            for field in (self.volumeLine, self.numberLine, self.titleLine, self.seriesLine,
+                          self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
+                field.setEnabled(True)
+                field.setPlaceholderText('')
+            
+            if self.parser.format in ['RAR', 'RAR5']:
+                self.editorWidget.setEnabled(False)
+                self.okButton.setEnabled(False)
+                self.statusLabel.setText('CBR metadata are read-only.')
+            else:
+                self.editorWidget.setEnabled(True)
+                self.okButton.setEnabled(True)
+                self.statusLabel.setText('Separate authors with a comma.')
+            
+            for field in (self.seriesLine, self.volumeLine, self.numberLine, self.titleLine):
+                field.setText(self.parser.data[field.objectName().capitalize()[:-4]])
+            for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
+                field.setText(', '.join(self.parser.data[field.objectName().capitalize()[:-4] + 's']))
+            for field in (self.seriesLine, self.titleLine):
+                if field.text() == '':
+                    path = Path(file)
+                    if file.endswith('.xml'):
+                        field.setText(path.parent.name)
+                    else:
+                        field.setText(path.stem)
 
     def saveData(self):
-        for field in (self.volumeLine, self.numberLine):
-            if field.text().isnumeric() or self.cleanData(field.text()) == '':
-                self.parser.data[field.objectName().capitalize()[:-4]] = self.cleanData(field.text())
-            else:
-                self.statusLabel.setText(field.objectName().capitalize()[:-4] + ' field must be a number.')
-                break
-        else:
-            for field in (self.seriesLine, self.titleLine):
-                self.parser.data[field.objectName().capitalize()[:-4]] = self.cleanData(field.text())
+        if self.bulkMode:
+            bulkData = {}
+            if self.cleanData(self.seriesLine.text()):
+                bulkData['Series'] = self.cleanData(self.seriesLine.text())
+            
             for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
+                fieldName = field.objectName().capitalize()[:-4] + 's'
                 values = self.cleanData(field.text()).split(',')
-                tmpData = []
-                for value in values:
-                    if self.cleanData(value) != '':
-                        tmpData.append(self.cleanData(value))
-                self.parser.data[field.objectName().capitalize()[:-4] + 's'] = tmpData
-            try:
-                self.parser.saveXML()
-            except Exception as err:
-                _, _, traceback = sys.exc_info()
-                GUI.sentry.captureException()
-                GUI.showDialog("Failed to save metadata!\n\n%s\n\nTraceback:\n%s"
-                               % (str(err), sanitizeTrace(traceback)), 'error')
+                tmpData = [self.cleanData(v) for v in values if self.cleanData(v)]
+                if tmpData:
+                    bulkData[fieldName] = tmpData
+            
+            if not bulkData:
+                self.statusLabel.setText('No changes to apply.')
+                return
+            
+            errors = []
+            total = len(self.files)
+            self.okButton.setEnabled(False)
+            self.cancelButton.setEnabled(False)
+            
+            for i, file in enumerate(self.files, 1):
+                self.statusLabel.setText(f'Processing {i}/{total}: {os.path.basename(file)}')
+                QApplication.processEvents()
+                
+                try:
+                    parser = metadata.MetadataParser(file)
+                    if parser.format in ['RAR', 'RAR5']:
+                        errors.append(f'{os.path.basename(file)}: CBR is read-only')
+                        continue
+                    for key, value in bulkData.items():
+                        parser.data[key] = value
+                    parser.saveXML()
+                except Exception as err:
+                    errors.append(f'{os.path.basename(file)}: {str(err)}')
+            
+            self.okButton.setEnabled(True)
+            self.cancelButton.setEnabled(True)
+            
+            if errors:
+                GUI.showDialog("Some files failed to save:\n\n" + "\n".join(errors[:10]) + 
+                              (f"\n...and {len(errors) - 10} more" if len(errors) > 10 else ""), 'error')
+            else:
+                self.statusLabel.setText(f'Successfully updated {total} files.')
             self.ui.close()
+        else:
+            for field in (self.volumeLine, self.numberLine):
+                if field.text().isnumeric() or self.cleanData(field.text()) == '':
+                    self.parser.data[field.objectName().capitalize()[:-4]] = self.cleanData(field.text())
+                else:
+                    self.statusLabel.setText(field.objectName().capitalize()[:-4] + ' field must be a number.')
+                    break
+            else:
+                for field in (self.seriesLine, self.titleLine):
+                    self.parser.data[field.objectName().capitalize()[:-4]] = self.cleanData(field.text())
+                for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
+                    values = self.cleanData(field.text()).split(',')
+                    tmpData = []
+                    for value in values:
+                        if self.cleanData(value) != '':
+                            tmpData.append(self.cleanData(value))
+                    self.parser.data[field.objectName().capitalize()[:-4] + 's'] = tmpData
+                try:
+                    self.parser.saveXML()
+                except Exception as err:
+                    _, _, traceback = sys.exc_info()
+                    GUI.sentry.captureException()
+                    GUI.showDialog("Failed to save metadata!\n\n%s\n\nTraceback:\n%s"
+                                   % (str(err), sanitizeTrace(traceback)), 'error')
+                self.ui.close()
 
     def cleanData(self, s):
         return escape(s.strip())
@@ -1469,6 +1551,8 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
     def __init__(self):
         self.ui = QDialog()
         self.parser = None
+        self.files = []
+        self.bulkMode = False
         self.setupUi(self.ui)
         self.ui.setWindowFlags(self.ui.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint)
         self.okButton.clicked.connect(self.saveData)
