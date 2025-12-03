@@ -916,6 +916,7 @@ def getWorkFolder(afile):
 
 
 def getOutputFilename(srcpath, wantedname, ext, tomenumber):
+    source_path = Path(srcpath)
     if srcpath[-1] == os.path.sep:
         srcpath = srcpath[:-1]
     if 'Ko' in options.profile and options.format == 'EPUB':
@@ -935,14 +936,19 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
             abs_path = os.path.abspath(options.output)
             if not os.path.exists(abs_path):
                 os.mkdir(abs_path)
-            filename = os.path.join(os.path.abspath(options.output), Path(srcpath).stem + tomenumber + ext)
+            if source_path.is_file():
+                filename = os.path.join(os.path.abspath(options.output), source_path.stem + tomenumber + ext)
+            else:
+                filename = os.path.join(os.path.abspath(options.output), source_path.name + tomenumber + ext)
     elif os.path.isdir(srcpath):
         filename = srcpath + tomenumber + ext
     else:
         if 'Ko' in options.profile and options.format == 'EPUB':
-            src = pathlib.Path(srcpath)
-            name = re.sub(r'\W+', '_', src.stem) + tomenumber + ext
-            filename = src.with_name(name)
+            if source_path.is_file():
+                name = re.sub(r'\W+', '_', source_path.stem) + tomenumber + ext
+            else:
+                name = re.sub(r'\W+', '_', source_path.name) + tomenumber + ext
+            filename = source_path.with_name(name)
         else:
             filename = os.path.splitext(srcpath)[0] + tomenumber + ext
     if os.path.isfile(filename):
