@@ -22,7 +22,7 @@ import itertools
 from pathlib import Path
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
 from PySide6.QtGui import (QColor, QIcon, QPixmap, QDesktopServices)
-from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QCheckBox)
+from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog)
 from PySide6.QtNetwork import (QLocalSocket, QLocalServer)
 
 import os
@@ -1632,24 +1632,7 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         self.setupUi(self.ui)
         self.ui.setWindowFlags(self.ui.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint)
         
-        # Create bulk volume editing widgets
-        self.bulkVolumeCheck = QCheckBox()
-        self.bulkVolumeCheck.setToolTip(
-            '<b>Bulk Volume Editing</b><br>'
-            'Check this box to assign volume numbers to multiple files.<br><br>'
-            '<b>Input formats:</b><br>'
-            '<code>5</code> → sequence starting from 5 (5, 6, 7...)<br>'
-            '<code>1-10</code> → range from 1 to 10<br>'
-            '<code>1, 3, 5</code> → specific values<br><br>'
-            '<i>Note: Files are sorted alphabetically before assignment.</i>'
-        )
         self.bulkVolumeCheck.stateChanged.connect(self.toggleBulkVolume)
-        
-        # Add widget to the grid layout at row 1 (Volume row), column 2
-        self.gridLayout.addWidget(self.bulkVolumeCheck, 1, 2, 1, 1)
-        
-        # Hide by default (only shown in bulk mode)
-        self.bulkVolumeCheck.setVisible(False)
         
         self.okButton.clicked.connect(self.saveData)
         self.cancelButton.clicked.connect(self.ui.close)
