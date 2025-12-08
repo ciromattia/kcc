@@ -8,6 +8,8 @@ Install as Python package:
 
 Create EXE/APP:
     python3 setup.py build_binary
+    python3 setup.py build_c2e
+    python3 setup.py build_c2p
 """
 
 import os
@@ -57,10 +59,75 @@ class BuildBinaryCommand(setuptools.Command):
         else:
             sys.exit(0)
 
+# noinspection PyUnresolvedReferences
+class BuildC2ECommand(setuptools.Command):
+    description = 'build binary c2e release'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    # noinspection PyShadowingNames
+    def run(self):
+        VERSION = __version__
+        if sys.platform == 'darwin':
+            os.system('pyinstaller --hidden-import=_cffi_backend -y -D -i icons/comic2ebook.icns -n "KCC C2E" -c -s kcc-c2e.py')
+            # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
+            sys.exit(0)
+        elif sys.platform == 'win32':
+            if os.getenv('WINDOWS_7'):
+                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2e_win7_legacy_' + VERSION + ' -c --noupx kcc-c2e.py')
+            else:
+                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2e_' + VERSION + ' -c --noupx kcc-c2e.py')
+            sys.exit(0)
+        elif sys.platform == 'linux':
+            os.system(
+                'pyinstaller --hidden-import=_cffi_backend --hidden-import=queue -y -F -i icons/comic2ebook.ico -n kcc_c2e_linux_' + VERSION + ' kcc-c2e.py')
+            sys.exit(0)
+        else:
+            sys.exit(0)
+
+
+# noinspection PyUnresolvedReferences
+class BuildC2PCommand(setuptools.Command):
+    description = 'build binary c2p release'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    # noinspection PyShadowingNames
+    def run(self):
+        VERSION = __version__
+        if sys.platform == 'darwin':
+            os.system('pyinstaller --hidden-import=_cffi_backend -y -n "KCC C2P" -c -s kcc-c2p.py')
+            # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
+            sys.exit(0)
+        elif sys.platform == 'win32':
+            if os.getenv('WINDOWS_7'):
+                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2p_win7_legacy_' + VERSION + ' -c --noupx kcc-c2p.py')
+            else:
+                os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2p_' + VERSION + ' -c --noupx kcc-c2p.py')
+            sys.exit(0)
+        elif sys.platform == 'linux':
+            os.system(
+                'pyinstaller --hidden-import=_cffi_backend --hidden-import=queue -y -F -i icons/comic2ebook.ico -n kcc_c2p_linux_' + VERSION + ' kcc-c2p.py')
+            sys.exit(0)
+        else:
+            sys.exit(0)
+
 
 setuptools.setup(
     cmdclass={
         'build_binary': BuildBinaryCommand,
+        'build_c2e': BuildC2ECommand,
+        'build_c2p': BuildC2PCommand,
     },
     name=NAME,
     version=VERSION,
@@ -81,16 +148,15 @@ setuptools.setup(
     },
     packages=['kindlecomicconverter'],
     install_requires=[
-        'pyside6>=6.0.0',
+        'PySide6>=6.0.0',
         'Pillow>=9.3.0',
-        'PyMuPDF>=1.18.0',
         'psutil>=5.9.5',
+        'requests>=2.31.0',
         'python-slugify>=1.2.1,<9.0.0',
         'raven>=6.0.0',
-        'requests>=2.31.0',
-        'mozjpeg-lossless-optimization>=1.1.2',
+        'mozjpeg-lossless-optimization>=1.2.0',
         'natsort>=8.4.0',
-        'distro',
+        'distro>=1.8.0',
         'numpy>=1.22.4',
         'PyMuPDF>=1.16.1',
     ],

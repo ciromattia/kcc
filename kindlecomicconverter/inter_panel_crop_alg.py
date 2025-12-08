@@ -1,7 +1,9 @@
-from PIL import Image, ImageFilter, ImageOps
+from PIL import Image, ImageFilter, ImageOps, ImageFile
 import numpy as np
 from typing import Literal
 from .common_crop import threshold_from_power, group_close_values
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 '''

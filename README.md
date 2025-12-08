@@ -11,7 +11,7 @@
 like Kindle, Kobo, ReMarkable, and more.
 Pages display in fullscreen without margins, 
 with proper fixed layout support.
-Supported input formats include JPG/PNG/GIF image files in folders, archives, or PDFs.
+Supported input formats include JPG/PNG image files in folders, archives, or PDFs.
 Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
 
 **NEW**: PDF output is now supported for direct conversion to reMarkable devices! 
@@ -26,7 +26,7 @@ which have different requirements than normal LCD screens.
 Combining that with downscaling to your specific device's screen resolution
 can result in filesize reductions of hundreds of MB per volume with no visible quality loss on eink.
 This can also improve battery life, page turn speed, and general performance 
-on underpowered ereaders with small storage capacities.
+on underpowered ereaders with small memory and storage capacities.
 
 KCC avoids many common formatting issues (some of which occur [even on the Kindle Store](https://github.com/ciromattia/kcc/wiki/Kindle-Store-bad-formatting)), such as:
 1) faded black levels causing unneccessarily low contrast, which is hard to see and can cause eyestrain.
@@ -104,15 +104,20 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 
 ## FAQ
 - Should I use Calibre?
-  - No. Calibre doesn't properly support fixed layout EPUB/MOBI, so modifying KCC output in Calibre will break the formatting.
+  - No. Calibre doesn't properly support fixed layout EPUB/MOBI, so modifying KCC output (even just metadata!) in Calibre can break the formatting.
     Viewing KCC output in Calibre will also not work properly.
     On 7th gen and later Kindles running firmware 5.15.1+, you can get cover thumbnails simply by USB dropping into documents folder.
     On 6th gen and older, you can get cover thumbnails by keeping Kindle plugged in during conversion.
     If you are careful to not modify the file however, you can still use Calibre, but direct USB dropping is reccomended.
+- Blank pages?
+  - May happen when [using PNG with Kindle Scribe](https://github.com/ciromattia/kcc/issues/665) or [any format with a Kindle Colorsoft](https://github.com/ciromattia/kcc/issues/768). Solve by using JPG with Kindle Scribe or buying a Kobo Colour. Happens more often when turning pages really fast.
+    Going back a few pages and exiting and re-entering book should fix it temporarily.
 - What output format should I use?
-  - MOBI for Kindles. CBZ for Kindle DX. CBZ for Koreader. KEPUB for Kobo.
+  - MOBI for Kindles. CBZ for Kindle DX. CBZ for Koreader. KEPUB for Kobo. PDF for ReMarkable.
 - All options have additional information in tooltips if you hover over the option.
 - To get the converted book onto your Kindle/Kobo, just drag and drop the mobi/kepub into the documents folder on your Kindle/Kobo via USB
+- Kindle panel view not working?
+  - Virtual panel view is enabled in Aa menu on your Kindle, not in KCC as of 7.4
 - Right to left mode not working?
   - RTL mode only affects splitting order for CBZ output. Your cbz reader itself sets the page turn direction.
 - Colors inverted?
@@ -226,7 +231,7 @@ MAIN:
                         the maximal size of output file in MB. [Default=100MB for webtoon and 400MB for others]
 
 PROCESSING:
-  -n, --noprocessing    Do not modify image and ignore any profil or processing option
+  -n, --noprocessing    Do not modify image and ignore any profile or processing option
   -u, --upscale         Resize images smaller than device's resolution
   -s, --stretch         Stretch images to device's resolution
   -r SPLITTER, --splitter SPLITTER
@@ -234,6 +239,8 @@ PROCESSING:
   -g GAMMA, --gamma GAMMA
                         Apply gamma correction to linearize the image [Default=Auto]
   --autolevel           Set most common dark pixel value to be black point for leveling.
+  --noautocontrast      Disable autocontrast
+  --colorautocontrast   Force autocontrast for all pages. Skipped when near blacks and whites don't exist
   -c CROPPING, --cropping CROPPING
                         Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]
   --cp CROPPINGP, --croppingpower CROPPINGP
@@ -256,7 +263,7 @@ OUTPUT SETTINGS:
                         Output generated file to specified directory or file
   -t TITLE, --title TITLE
                         Comic title [Default=filename or directory name]
-  --metadatatitle      Write title from ComicInfo.xml or other embedded metadata
+  --metadatatitle       Write title using ComicInfo.xml or other embedded metadata. 0: Don't use Title from metadata 1: Combine Title with default schema 2: Use Title only [Default=0]
   -a AUTHOR, --author AUTHOR
                         Author name [Default=KCC]
   -f FORMAT, --format FORMAT
@@ -267,6 +274,7 @@ OUTPUT SETTINGS:
   --spreadshift         Shift first page to opposite side in landscape for two page spread alignment
   --norotate            Do not rotate double page spreads in spread splitter option.
   --rotatefirst         Put rotated spread first in spread splitter option.
+  --filefusion          Combines all input files into a single file.
   --eraserainbow       Erase rainbow effect on color eink screen by attenuating interfering frequencies
 
 CUSTOM PROFILE:
@@ -310,6 +318,7 @@ Depending on your system [Python](https://www.python.org) may be called either `
 If you want to edit the code, a good code editor is [VS Code](https://code.visualstudio.com).
 
 If you want to edit the `.ui` files, use `pyside6-designer` which is included in the `pip install pyside6`.
+If new objects have been added, verify that correct tab order has been applied by using [Tab Order Editing Mode](https://doc.qt.io/qt-6/designer-tab-order.html).
 Then use the `gen_ui_files` scripts to autogenerate the python UI.
 
 An example PR adding a new checkbox is here: https://github.com/ciromattia/kcc/pull/785

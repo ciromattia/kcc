@@ -24,13 +24,14 @@ import numpy as np
 from pathlib import Path
 from functools import cached_property
 import mozjpeg_lossless_optimization
-from PIL import Image, ImageOps, ImageStat, ImageChops, ImageFilter, ImageDraw
+from PIL import Image, ImageOps, ImageFile, ImageChops, ImageDraw
 
 from .rainbow_artifacts_eraser import erase_rainbow_artifacts
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
 
 AUTO_CROP_THRESHOLD = 0.015
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class ProfileData:
@@ -85,22 +86,23 @@ class ProfileData:
     ]
 
     ProfilesKindleEBOK = {
-        'K1': ("Kindle 1", (600, 670), Palette4, 1.8),
-        'K2': ("Kindle 2", (600, 670), Palette15, 1.8),
-        'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8),
-        'K34': ("Kindle Keyboard/Touch", (600, 800), Palette16, 1.8),
-        'K57': ("Kindle 5/7", (600, 800), Palette16, 1.8),
-        'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.8),
-        'KV': ("Kindle Voyage", (1072, 1448), Palette16, 1.8),
     }
 
     ProfilesKindlePDOC = {
-        'KPW34': ("Kindle Paperwhite 3/4/Oasis", (1072, 1448), Palette16, 1.8),
-        'K810': ("Kindle 8/10", (600, 800), Palette16, 1.8),
-        'KO': ("Kindle Oasis 2/3/Paperwhite 12/Colorsoft 12", (1264, 1680), Palette16, 1.8),
-        'K11': ("Kindle 11", (1072, 1448), Palette16, 1.8),
-        'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.8),
-        'KS': ("Kindle Scribe", (1860, 2480), Palette16, 1.8),
+        'K1': ("Kindle 1", (600, 670), Palette4, 1.0),
+        'K2': ("Kindle 2", (600, 670), Palette15, 1.0),
+        'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.0),
+        'K34': ("Kindle Keyboard/Touch", (600, 800), Palette16, 1.0),
+        'K57': ("Kindle 5/7", (600, 800), Palette16, 1.0),
+        'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.0),
+        'KV': ("Kindle Voyage", (1072, 1448), Palette16, 1.0),
+        'KPW34': ("Kindle Paperwhite 3/4/Oasis", (1072, 1448), Palette16, 1.0),
+        'K810': ("Kindle 8/10", (600, 800), Palette16, 1.0),
+        'KO': ("Kindle Oasis 2/3/Paperwhite 12", (1264, 1680), Palette16, 1.0),
+        'K11': ("Kindle 11", (1072, 1448), Palette16, 1.0),
+        'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.0),
+        'KS': ("Kindle Scribe", (1860, 2480), Palette16, 1.0),
+        'KCS': ("Kindle Colorsoft", (1264, 1680), Palette16, 1.0),
     }
 
     ProfilesKindle = {
@@ -109,35 +111,35 @@ class ProfileData:
     }
 
     ProfilesKobo = {
-        'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8),
-        'KoG': ("Kobo Glo", (768, 1024), Palette16, 1.8),
-        'KoGHD': ("Kobo Glo HD", (1072, 1448), Palette16, 1.8),
-        'KoA': ("Kobo Aura", (758, 1024), Palette16, 1.8),
-        'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.8),
-        'KoAH2O': ("Kobo Aura H2O", (1080, 1430), Palette16, 1.8),
-        'KoAO': ("Kobo Aura ONE", (1404, 1872), Palette16, 1.8),
-        'KoN': ("Kobo Nia", (758, 1024), Palette16, 1.8),
-        'KoC': ("Kobo Clara HD/Kobo Clara 2E", (1072, 1448), Palette16, 1.8),
-        'KoCC': ("Kobo Clara Colour", (1072, 1448), Palette16, 1.8),
-        'KoL': ("Kobo Libra H2O/Kobo Libra 2", (1264, 1680), Palette16, 1.8),
-        'KoLC': ("Kobo Libra Colour", (1264, 1680), Palette16, 1.8),
-        'KoF': ("Kobo Forma", (1440, 1920), Palette16, 1.8),
-        'KoS': ("Kobo Sage", (1440, 1920), Palette16, 1.8),
-        'KoE': ("Kobo Elipsa", (1404, 1872), Palette16, 1.8),
+        'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.0),
+        'KoG': ("Kobo Glo", (768, 1024), Palette16, 1.0),
+        'KoGHD': ("Kobo Glo HD", (1072, 1448), Palette16, 1.0),
+        'KoA': ("Kobo Aura", (758, 1024), Palette16, 1.0),
+        'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.0),
+        'KoAH2O': ("Kobo Aura H2O", (1080, 1430), Palette16, 1.0),
+        'KoAO': ("Kobo Aura ONE", (1404, 1872), Palette16, 1.0),
+        'KoN': ("Kobo Nia", (758, 1024), Palette16, 1.0),
+        'KoC': ("Kobo Clara HD/Kobo Clara 2E", (1072, 1448), Palette16, 1.0),
+        'KoCC': ("Kobo Clara Colour", (1072, 1448), Palette16, 1.0),
+        'KoL': ("Kobo Libra H2O/Kobo Libra 2", (1264, 1680), Palette16, 1.0),
+        'KoLC': ("Kobo Libra Colour", (1264, 1680), Palette16, 1.0),
+        'KoF': ("Kobo Forma", (1440, 1920), Palette16, 1.0),
+        'KoS': ("Kobo Sage", (1440, 1920), Palette16, 1.0),
+        'KoE': ("Kobo Elipsa", (1404, 1872), Palette16, 1.0),
     }
 
     ProfilesRemarkable = {
-        'Rmk1': ("reMarkable 1", (1404, 1872), Palette16, 1.8),
-        'Rmk2': ("reMarkable 2", (1404, 1872), Palette16, 1.8),
-        'RmkPP': ("reMarkable Paper Pro", (1620, 2160), Palette16, 1.8),
-        'RmkPPMove': ("reMarkable Paper Pro Move", (954, 1696), Palette16, 1.8),
+        'Rmk1': ("reMarkable 1", (1404, 1872), Palette16, 1.0),
+        'Rmk2': ("reMarkable 2", (1404, 1872), Palette16, 1.0),
+        'RmkPP': ("reMarkable Paper Pro", (1620, 2160), Palette16, 1.0),
+        'RmkPPMove': ("reMarkable Paper Pro Move", (954, 1696), Palette16, 1.0),
     }
 
     Profiles = {
         **ProfilesKindle,
         **ProfilesKobo,
         **ProfilesRemarkable,
-        'OTHER': ("Other", (0, 0), Palette16, 1.8),
+        'OTHER': ("Other", (0, 0), Palette16, 1.0),
     }
 
 
@@ -261,8 +263,8 @@ class ComicPage:
         _, self.size, self.palette, self.gamma = self.opt.profileData
         if self.opt.hq:
             self.size = (int(self.size[0] * 1.5), int(self.size[1] * 1.5))
-        self.kindle_scribe_azw3 = (options.profile == 'KS') and (options.format in ('MOBI', 'EPUB'))
         self.original_color_mode = image.mode
+        # TODO: color check earlier
         self.image = image.convert("RGB")
         self.fill = fill
         self.rotated = False
@@ -286,15 +288,19 @@ class ComicPage:
     def color(self):
         if self.original_color_mode in ("L", "1"):
             return False
-        img = self.image.convert("YCbCr")
-        _, cb, cr = img.split()
-
-        cb_hist = cb.histogram()
-        cr_hist = cr.histogram()
+        if self.opt.webtoon:
+            return True
+        if self.calculate_color():
+            return True
+        return False
+    
+    # cut off pixels from both ends of the histogram to remove jpg compression artifacts
+    # for better accuracy, you could split the image in half and analyze each half separately
+    def histograms_cutoff(self, cb_hist, cr_hist, cutoff=(2, 2)):
+        if cutoff == (0, 0):
+            return cb_hist, cr_hist
 
         for h in cb_hist, cr_hist:
-            # cut off pixels from both ends of the histogram
-            cutoff = (.1, .1)
             # get number of pixels
             n = sum(h)
             # remove cutoff% pixels from the low end
@@ -319,28 +325,52 @@ class ComicPage:
                     cut = 0
                 if cut <= 0:
                     break
+        return cb_hist, cr_hist
+
+    def color_precision(self, cb_hist_original, cr_hist_original, cutoff, diff_threshold):
+        cb_hist, cr_hist = self.histograms_cutoff(cb_hist_original.copy(), cr_hist_original.copy(), cutoff)
 
         cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
         cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
         cb_spread = cb_nonzero[-1] - cb_nonzero[0]
         cr_spread = cr_nonzero[-1] - cr_nonzero[0]
 
-        # bias adjustment
-        SPREAD_THRESHOLD = 5
-        if cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
-            return False
+        # bias adjustment, don't go lower than 7
+        SPREAD_THRESHOLD = 7
+        if self.opt.forcecolor:
+            if any([
+                cb_nonzero[0] > 128,
+                cr_nonzero[0] > 128,
+                cb_nonzero[-1] < 128,
+                cr_nonzero[-1] < 128,
+            ]):
+                return True, True
+        elif cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
+            return True, False
+
+        DIFF_THRESHOLD = diff_threshold
+        if any([
+            cb_nonzero[0] <= 128 - DIFF_THRESHOLD, 
+            cr_nonzero[0] <= 128 - DIFF_THRESHOLD, 
+            cb_nonzero[-1] >= 128 + DIFF_THRESHOLD, 
+            cr_nonzero[-1] >= 128 + DIFF_THRESHOLD,
+        ]):
+            return True, True
         
-        DIFF_THRESHOLD = 10
-        if cb_nonzero[0] < 128 - DIFF_THRESHOLD:
-            return True
-        elif cb_nonzero[-1] > 128 + DIFF_THRESHOLD:
-            return True
-        elif cr_nonzero[0] < 128 - DIFF_THRESHOLD:
-            return True
-        elif cr_nonzero[-1] > 128 + DIFF_THRESHOLD:
-            return True
-        else:
-            return False
+        return False, None
+
+    def calculate_color(self):
+        img = self.image.convert("YCbCr")
+        _, cb, cr = img.split()
+        cb_hist_original = cb.histogram()
+        cr_hist_original = cr.histogram()
+
+        # you can increase 22 but don't increase 10. 4 maybe can go higher
+        for cutoff, diff_threshold in [((0, 0), 22), ((.2, .2), 10), ((3, 3), 4)]:
+            done, decision = self.color_precision(cb_hist_original, cr_hist_original, cutoff, diff_threshold)
+            if done:
+                return decision
+        return False
         
     def saveToDir(self):
         try:
@@ -365,7 +395,7 @@ class ComicPage:
 
     def save_with_codec(self, image, targetPath):
         if self.opt.forcepng:
-            image.info["transparency"] = None
+            image.info.pop('transparency', None)
             if self.opt.iskindle and ('MOBI' in self.opt.format or 'EPUB' in self.opt.format):
                 targetPath += '.gif'
                 image.save(targetPath, 'GIF', optimize=1, interlace=False)
@@ -397,19 +427,40 @@ class ComicPage:
             self.image = Image.eval(self.image, lambda a: int(255 * (a / 255.) ** gamma))
 
     def autocontrastImage(self):
-        if self.opt.autolevel and not self.color:
-            self.convertToGrayscale()
-            h = self.image.histogram()
-            most_common_dark_pixel_count = max(h[:64])
-            black_point = h.index(most_common_dark_pixel_count)
-            bp = black_point
-            self.image = self.image.point(lambda p: p if p > bp else bp)
-
-        # don't autocontrast grayscale pages that were originally color
-        if not self.opt.forcecolor and self.color:
+        if self.opt.webtoon:
+            return
+        if self.opt.noautocontrast:
+            return
+        if self.color and not self.opt.colorautocontrast:
             return
 
+        # if image is extremely low contrast, that was probably intentional
+        extrema = self.image.convert('L').getextrema()
+        if extrema[1] - extrema[0] < (255 - 32 * 3):
+            return
+
+        if self.opt.autolevel:
+            self.autolevelImage()
+
         self.image = ImageOps.autocontrast(self.image, preserve_tone=True)
+
+    def autolevelImage(self):
+        img = self.image
+        if self.color:
+            img = self.image.convert("YCbCr")
+            y, cb, cr = img.split()
+            img = y
+        else:
+            img = img.convert('L')
+        h = img.histogram()
+        most_common_dark_pixel_count = max(h[:64])
+        black_point = h.index(most_common_dark_pixel_count)
+        bp = black_point
+        img = img.point(lambda p: p if p > bp else bp)
+        if self.color:
+            self.image = Image.merge(mode='YCbCr', bands=[img, cb, cr]).convert('RGB')
+        else:
+            self.image = img
 
     def convertToGrayscale(self):
         self.image = self.image.convert('L')
@@ -429,6 +480,14 @@ class ComicPage:
             self.image = erase_rainbow_artifacts(self.image, is_color)
 
     def resizeImage(self):
+        if self.opt.norotate and self.targetPathOrder in ('-kcc-a', '-kcc-d') and not self.opt.kindle_scribe_azw3:
+            # TODO: Kindle Scribe case
+            if self.opt.kindle_azw3 and any(dim > 1920 for dim in self.image.size):
+                self.image = ImageOps.contain(self.image, (1920, 1920), Image.Resampling.LANCZOS)
+            elif self.image.size[0] > self.size[0] * 2 or self.image.size[1] > self.size[1]:
+                self.image = ImageOps.contain(self.image, (self.size[0] * 2, self.size[1], Image.Resampling.LANCZOS))
+            return
+        
         ratio_device = float(self.size[1]) / float(self.size[0])
         ratio_image = float(self.image.size[1]) / float(self.image.size[0])
         method = self.resize_method()
@@ -496,7 +555,7 @@ class Cover:
 
     def process(self):
         self.image = self.image.convert('RGB')
-        self.image = ImageOps.autocontrast(self.image)
+        self.image = ImageOps.autocontrast(self.image, preserve_tone=True)
         if not self.options.forcecolor:
             self.image = self.image.convert('L')
         self.crop_main_cover()

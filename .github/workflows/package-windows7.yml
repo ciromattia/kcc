@@ -27,7 +27,7 @@ jobs:
     env:
       WINDOWS_7: 1
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -46,9 +46,9 @@ jobs:
           python setup.py build_binary
       - name: upload-unsigned-artifact
         id: upload-unsigned-artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
-          name: windows-build
+          name: windows7-build
           path: dist/*.exe
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -57,5 +57,4 @@ jobs:
           prerelease: true
           generate_release_notes: true
           files: |
-            LICENSE.txt
             dist/*.exe

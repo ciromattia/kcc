@@ -18,13 +18,17 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
+import math
 import os
 import sys
 from argparse import ArgumentParser
-from shutil import rmtree, copytree, move
+from shutil import rmtree
 from multiprocessing import Pool
-from PIL import Image, ImageChops, ImageOps, ImageDraw
+from PIL import Image, ImageChops, ImageOps, ImageDraw, ImageFilter, ImageFile
+from PIL.Image import Dither
 from .shared import dot_clean, getImageFileName, walkLevel, walkSort, sanitizeTrace
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 def mergeDirectoryTick(output):
@@ -58,8 +62,8 @@ def mergeDirectory(work):
                 imagesValid.append(i[0])
             # Silently drop directories that contain too many images
             # 131072 = GIMP_MAX_IMAGE_SIZE / 4
-            if targetHeight > 131072:
-                return None
+            if targetHeight > 131072 * 3:
+                raise RuntimeError(f'Image too tall at {targetHeight} pixels. {targetWidth} pixels wide. Try using separate chapter folders or file fusion.')
             result = Image.new('RGB', (targetWidth, targetHeight))
             y = 0
             for i in imagesValid:
@@ -101,7 +105,11 @@ def splitImage(work):
         Image.warnings.simplefilter('error', Image.DecompressionBombWarning)
         Image.MAX_IMAGE_PIXELS = 1000000000
         imgOrg = Image.open(filePath).convert('RGB')
-        imgProcess = Image.open(filePath).convert('1')
+        # I experimented with custom vertical edge kernel [-1, 2, -1] but got poor results
+        imgEdges = Image.open(filePath).convert('L').filter(ImageFilter.FIND_EDGES)
+        # threshold of 8 is too high. 5 is too low.
+        imgProcess = imgEdges.point(lambda p: 255 if p > 6 else 0).convert('1', dither=Dither.NONE)
+
         widthImg, heightImg = imgOrg.size
         if heightImg > opt.height:
             if opt.debug:
@@ -112,47 +120,71 @@ def splitImage(work):
             yWork = 0
             panelDetected = False
             panels = []
+            # check git history for how these constant values changed
+            h_pad = int(widthImg / 20)
+            v_pad = int(widthImg / 80)
+            if v_pad % 2:
+                v_pad += 1
             while yWork < heightImg:
-                tmpImg = imgProcess.crop((4, yWork, widthImg-4, yWork + 4))
+                tmpImg = imgProcess.crop((h_pad, yWork, widthImg - h_pad, yWork + v_pad))
                 solid = detectSolid(tmpImg)
                 if not solid and not panelDetected:
                     panelDetected = True
-                    panelY1 = yWork - 2
-                if heightImg - yWork <= 5:
+                    panelY1 = yWork
+                if heightImg - yWork <= (v_pad // 2):
                     if not solid and panelDetected:
                         panelY2 = heightImg
                         panelDetected = False
                         panels.append((panelY1, panelY2, panelY2 - panelY1))
                 if solid and panelDetected:
                     panelDetected = False
-                    panelY2 = yWork + 6
+                    panelY2 = yWork
+                    # skip short panel at start
+                    if panelY1 < v_pad * 2 and panelY2 - panelY1 < v_pad * 2:
+                        continue
                     panels.append((panelY1, panelY2, panelY2 - panelY1))
-                yWork += 5
+                yWork += v_pad // 2
+
+            max_width = 1072
+            virtual_width = min((max_width, opt.width, widthImg))
+            if opt.width > max_width:
+                virtual_height = int(opt.height/max_width*virtual_width)
+            else:
+                virtual_height = int(opt.height/opt.width*virtual_width)
+            opt.height = virtual_height
 
             # Split too big panels
             panelsProcessed = []
             for panel in panels:
+                # 1.52 too high
                 if panel[2] <= opt.height * 1.5:
                     panelsProcessed.append(panel)
-                elif panel[2] < opt.height * 2:
+                elif panel[2] <= opt.height * 2:
                     diff = panel[2] - opt.height
                     panelsProcessed.append((panel[0], panel[1] - diff, opt.height))
                     panelsProcessed.append((panel[1] - opt.height, panel[1], opt.height))
                 else:
-                    parts = round(panel[2] / opt.height)
+                    # split super long panels with overlap
+                    parts = math.ceil(panel[2] / opt.height)
                     diff = panel[2] // parts
-                    for x in range(0, parts):
-                        panelsProcessed.append((panel[0] + (x * diff), panel[1] - ((parts - x - 1) * diff), diff))
+                    panelsProcessed.append((panel[0], panel[0] + opt.height, opt.height))
+                    for x in range(1, parts - 1):
+                        start = panel[0] + (x * diff)
+                        panelsProcessed.append((start, start + opt.height, opt.height))
+                    panelsProcessed.append((panel[1] - opt.height, panel[1], opt.height))
 
             if opt.debug:
                 for panel in panelsProcessed:
                     draw.rectangle(((0, panel[0]), (widthImg, panel[1])), (0, 255, 0, 128), (0, 0, 255, 255))
                 debugImage = Image.alpha_composite(imgOrg.convert(mode='RGBA'), drawImg)
+                # debugImage.show()
                 debugImage.save(os.path.join(path, os.path.splitext(name)[0] + '-debug.png'), 'PNG')
 
             # Create virtual pages
             pages = []
             currentPage = []
+            # TODO: 1.25 way too high, 1.1 too high, 1.05 slightly too high(?), optimized for 2 page landscape reading
+            # opt.height = max_height = virtual_height * 1.00
             pageLeft = opt.height
             panelNumber = 0
             for panel in panelsProcessed:
@@ -189,7 +221,7 @@ def splitImage(work):
         return str(sys.exc_info()[1]), sanitizeTrace(sys.exc_info()[2])
 
 
-def main(argv=None, qtgui=None):
+def main(argv=None, job_progress='', qtgui=None):
     global args, GUI, splitWorkerPool, splitWorkerOutput, mergeWorkerPool, mergeWorkerOutput
     parser = ArgumentParser(prog="kcc-c2p", usage="kcc-c2p [options] [input]", add_help=False)
 
@@ -201,6 +233,8 @@ def main(argv=None, qtgui=None):
                                    " with spaces.")
     main_options.add_argument("-y", "--height", type=int, dest="height", default=0,
                               help="Height of the target device screen")
+    main_options.add_argument("-x", "--width", type=int, dest="width", default=0,
+                              help="Width of the target device screen")
     main_options.add_argument("-i", "--in-place", action="store_true", dest="inPlace", default=False,
                               help="Overwrite source directory")
     main_options.add_argument("-m", "--merge", action="store_true", dest="merge", default=False,
@@ -222,13 +256,13 @@ def main(argv=None, qtgui=None):
             targetDir = sourceDir + "-Splitted"
             if os.path.isdir(sourceDir):
                 rmtree(targetDir, True)
-                copytree(sourceDir, targetDir)
+                os.renames(sourceDir, targetDir)
                 work = []
                 pagenumber = 1
                 splitWorkerOutput = []
                 splitWorkerPool = Pool(maxtasksperchild=10)
                 if args.merge:
-                    print("Merging images...")
+                    print(f"{job_progress}Merging images...")
                     directoryNumer = 1
                     mergeWork = []
                     mergeWorkerOutput = []
@@ -240,7 +274,7 @@ def main(argv=None, qtgui=None):
                             directoryNumer += 1
                             mergeWork.append([os.path.join(root, directory)])
                     if GUI:
-                        GUI.progressBarTick.emit('Combining images')
+                        GUI.progressBarTick.emit(f'{job_progress}Combining images')
                         GUI.progressBarTick.emit(str(directoryNumer))
                     for i in mergeWork:
                         mergeWorkerPool.apply_async(func=mergeDirectory, args=(i, ), callback=mergeDirectoryTick)
@@ -253,7 +287,7 @@ def main(argv=None, qtgui=None):
                         rmtree(targetDir, True)
                         raise RuntimeError("One of workers crashed. Cause: " + mergeWorkerOutput[0][0],
                                            mergeWorkerOutput[0][1])
-                print("Splitting images...")
+                print(f"{job_progress}Splitting images...")
                 dot_clean(targetDir)
                 for root, _, files in os.walk(targetDir, False):
                     for name in files:
@@ -263,7 +297,7 @@ def main(argv=None, qtgui=None):
                         else:
                             os.remove(os.path.join(root, name))
                 if GUI:
-                    GUI.progressBarTick.emit('Splitting images')
+                    GUI.progressBarTick.emit(f'{job_progress}Splitting images')
                     GUI.progressBarTick.emit(str(pagenumber))
                     GUI.progressBarTick.emit('tick')
                 if len(work) > 0:
@@ -271,6 +305,7 @@ def main(argv=None, qtgui=None):
                         splitWorkerPool.apply_async(func=splitImage, args=(i, ), callback=splitImageTick)
                     splitWorkerPool.close()
                     splitWorkerPool.join()
+                    dot_clean(targetDir)
                     if GUI and not GUI.conversionAlive:
                         rmtree(targetDir, True)
                         raise UserWarning("Conversion interrupted.")
@@ -279,11 +314,10 @@ def main(argv=None, qtgui=None):
                         raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0][0],
                                            splitWorkerOutput[0][1])
                     if args.inPlace:
-                        rmtree(sourceDir, True)
-                        move(targetDir, sourceDir)
+                        os.renames(targetDir, sourceDir)
                 else:
                     rmtree(targetDir, True)
-                    raise UserWarning("Source directory is empty.")
+                    raise UserWarning("C2P: Source directory is empty.")
             else:
                 raise UserWarning("Provided input is not a directory.")
     else:

@@ -31,7 +31,7 @@ jobs:
       PYTHON_VERSION: 3.11.9
       MACOSX_DEPLOYMENT_TARGET: '10.14'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Get Python
         run: curl https://www.python.org/ftp/python/3.11.9/python-3.11.9-macos11.pkg -o "python.pkg"
       - name: Install Python
@@ -43,7 +43,7 @@ jobs:
           pip3 install --upgrade pip setuptools wheel pyinstaller certifi
           pip3 install --upgrade -r requirements-osx-legacy.txt
           ./gen_ui_files.sh
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: 16
       - run: npm install -g appdmg
@@ -51,7 +51,7 @@ jobs:
         run: |
           python3 setup.py build_binary
       - name: upload build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: osx-build-${{ runner.arch }}
           path: dist/*.dmg
