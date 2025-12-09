@@ -23,7 +23,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ macos-13 ]
+        os: [ macos-15-intel ]
     runs-on: ${{ matrix.os }}
     env:
       # We need the official Python, because the GA ones only support newer macOS versions
