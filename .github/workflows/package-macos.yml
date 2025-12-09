@@ -28,7 +28,7 @@ jobs:
         os: [ macos-15-intel, macos-14 ]
     runs-on: ${{ matrix.os }}
     env:
-      MACOSX_DEPLOYMENT_TARGET: '12.0'
+      MACOSX_DEPLOYMENT_TARGET: '14.0'
     steps:
       - uses: actions/checkout@v6
       - name: Set up Python
