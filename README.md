@@ -7,7 +7,7 @@
 [![Github All Releases](https://img.shields.io/github/downloads/ciromattia/kcc/total.svg)](https://github.com/ciromattia/kcc/releases)
 
 
-**Kindle Comic Converter** optimizes black & white or color comics and manga for E-ink ereaders 
+**Kindle Comic Converter** optimizes black & white (or color) comics and manga for E-ink ereaders 
 like Kindle, Kobo, ReMarkable, and more.
 Pages display in fullscreen without margins, 
 with proper fixed layout support.
