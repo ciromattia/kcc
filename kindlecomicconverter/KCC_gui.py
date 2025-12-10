@@ -22,7 +22,7 @@ import itertools
 from pathlib import Path
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
 from PySide6.QtGui import (QColor, QIcon, QPixmap, QDesktopServices)
-from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog)
+from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QAbstractItemView, QListView, QTreeView)
 from PySide6.QtNetwork import (QLocalSocket, QLocalServer)
 
 import os
@@ -620,10 +620,25 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         files = []
         if not sname:
             if QApplication.keyboardModifiers() == Qt.ShiftModifier:
-                dname = QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
-                if dname != '':
-                    files = [os.path.join(dname, 'ComicInfo.xml')]
-                    self.lastPath = os.path.dirname(files[0])
+                # Multi-directory selection for bulk editing ComicInfo.xml
+                dialog = QFileDialog(MW, 'Select volume directories', self.lastPath)
+                dialog.setFileMode(QFileDialog.FileMode.Directory)
+                dialog.setOption(QFileDialog.Option.ShowDirsOnly, True)
+                dialog.setOption(QFileDialog.Option.DontUseNativeDialog, True)
+                
+                # Enable multi-selection in the dialog (may not work with native dialog on all platforms)
+                file_view = dialog.findChild(QListView, 'listView')
+                if file_view:
+                    file_view.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
+                file_tree = dialog.findChild(QTreeView)
+                if file_tree:
+                    file_tree.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
+                
+                if dialog.exec():
+                    selected_dirs = dialog.selectedFiles()
+                    if selected_dirs:
+                        files = [os.path.join(d, 'ComicInfo.xml') for d in selected_dirs]
+                        self.lastPath = os.path.dirname(selected_dirs[0])
             else:
                 if self.sevenzip:
                     fnames = QFileDialog.getOpenFileNames(MW, 'Select file(s)', self.lastPath,
