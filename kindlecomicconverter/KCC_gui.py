@@ -1599,32 +1599,40 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         # Check if it's a range (e.g., "5-10")
         if '-' in text and ',' not in text:
             parts = text.split('-')
-            if len(parts) == 2:
-                try:
-                    start = int(parts[0].strip())
-                    end = int(parts[1].strip())
-                    if start <= end:
-                        volumes = list(range(start, end + 1))
-                    else:
-                        return None, 'Invalid range: start > end'
-                except ValueError:
-                    return None, 'Invalid range format'
+            if len(parts) != 2 or not parts[0].strip() or not parts[1].strip():
+                return None, 'Invalid range format (use start-end)'
+            try:
+                start = int(parts[0].strip())
+                end = int(parts[1].strip())
+                if start < 0 or end < 0:
+                    return None, 'Volume numbers must be positive'
+                if start > end:
+                    return None, 'Invalid range: start > end'
+                volumes = list(range(start, end + 1))
+            except ValueError:
+                return None, 'Invalid range format'
         # Check if it's a comma-separated list (e.g., "1,3,5")
         elif ',' in text:
             try:
                 volumes = [int(v.strip()) for v in text.split(',') if v.strip()]
+                if any(v < 0 for v in volumes):
+                    return None, 'Volume numbers must be positive'
             except ValueError:
                 return None, 'Invalid list format'
         # Single number - generate sequence starting from that number
         else:
             try:
                 start = int(text)
+                if start < 0:
+                    return None, 'Volume number must be positive'
                 volumes = list(range(start, start + fileCount))
             except ValueError:
                 return None, 'Invalid number'
         
         # Validate count
-        if volumes and len(volumes) != fileCount:
+        if not volumes:
+            return None, 'No valid volume numbers parsed'
+        if len(volumes) != fileCount:
             return None, f'Volume count ({len(volumes)}) ≠ file count ({fileCount})'
         
         return volumes, None
