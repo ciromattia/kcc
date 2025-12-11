@@ -1553,9 +1553,10 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
             if errors:
                 GUI.showDialog("Some files failed to save:\n\n" + "\n".join(errors[:10]) + 
                               (f"\n...and {len(errors) - 10} more" if len(errors) > 10 else ""), 'error')
+                self.statusLabel.setText('Errors occurred.')
             else:
                 self.statusLabel.setText(f'Successfully updated {total} files.')
-            self.ui.close()
+                self.ui.close()
         else:
             for field in (self.volumeLine, self.numberLine):
                 if field.text().isnumeric() or self.cleanData(field.text()) == '':
