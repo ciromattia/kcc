@@ -861,7 +861,6 @@ def getWorkFolder(afile, workdir=None):
         if disk_usage(gettempdir())[2] < getDirectorySize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
         try:
-            os.rmdir(workdir)
             copytree(afile, fullPath)
             sanitizePermissions(fullPath)
             return workdir
