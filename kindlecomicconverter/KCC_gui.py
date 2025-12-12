@@ -358,6 +358,7 @@ class WorkerThread(QThread):
             options.author = str(GUI.authorEdit.text())
         if GUI.chunkSizeCheckBox.isChecked():
             options.targetsize = int(GUI.chunkSizeBox.value())
+        options.jpegquality = int(GUI.jpegQualitySpinBox.value())
 
         for i in range(GUI.jobList.count()):
             # Make sure that we don't consider any system message as job to do
@@ -779,12 +780,15 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def toggleImageFormatBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
         if value == 1:
+            GUI.jpegQualitySpinBox.setEnabled(False)
             if profile['Label'] == 'KS':
                 current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
                 for bad_format in ('MOBI', 'EPUB'):
                     if bad_format in current_format:
                         self.addMessage('Scribe PNG MOBI/EPUB has a lot of problems like blank pages/sections. Use JPG instead.', 'warning')
                         break
+        else:
+            GUI.jpegQualitySpinBox.setEnabled(True)
 
     def togglechunkSizeCheckBox(self, value):
         GUI.chunkSizeWidget.setVisible(value)
@@ -837,6 +841,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         else:
             self.modeChange(1)
         GUI.colorBox.setChecked(profile['ForceColor'])
+        GUI.jpegQualitySpinBox.setValue(profile.get('DefaultJpegQuality', 85))
         self.changeFormat()
         if not GUI.webtoonBox.isChecked():
             GUI.qualityBox.setEnabled(profile['PVOptions'])
@@ -1019,7 +1024,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'maximizeStrips': GUI.maximizeStrips.checkState(),
                                            'gammaSlider': float(self.gammaValue) * 100,
                                            'chunkSizeCheckBox': GUI.chunkSizeCheckBox.checkState(),
-                                           'chunkSizeBox': GUI.chunkSizeBox.value()})
+                                           'chunkSizeBox': GUI.chunkSizeBox.value(),
+                                           'jpegQualitySpinBox': GUI.jpegQualitySpinBox.value()})
         self.settings.sync()
         self.tray.hide()
 
@@ -1163,7 +1169,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KV'},
             "Kindle Scribe": {
-                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS',
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS', 'DefaultJpegQuality': 90,
             },
             "Kindle 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'K11',
@@ -1390,6 +1396,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     GUI.preserveMarginBox.setValue(self.options.get('preserveMarginBox', 0))
             elif str(option) == "chunkSizeBox":
                 GUI.chunkSizeBox.setValue(int(self.options[option]))
+            elif str(option) == "jpegQualitySpinBox":
+                GUI.jpegQualitySpinBox.setValue(int(self.options[option]))
             else:
                 try:
                     if getattr(GUI, option).isEnabled():

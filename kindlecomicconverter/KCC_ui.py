@@ -18,8 +18,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComboBox,
     QGridLayout, QHBoxLayout, QLabel, QLineEdit,
     QListWidget, QListWidgetItem, QMainWindow, QProgressBar,
-    QPushButton, QSizePolicy, QSlider, QSpinBox,
-    QStatusBar, QWidget)
+    QPushButton, QSizePolicy, QSlider, QSpacerItem,
+    QSpinBox, QStatusBar, QWidget)
 from . import KCC_rc
 
 class Ui_mainWindow(object):
@@ -464,6 +464,36 @@ class Ui_mainWindow(object):
 
         self.gridLayout.addWidget(self.chunkSizeWidget, 6, 0, 1, 1)
 
+        self.jpegQualityWidget = QWidget(self.centralWidget)
+        self.jpegQualityWidget.setObjectName(u"jpegQualityWidget")
+        sizePolicy.setHeightForWidth(self.jpegQualityWidget.sizePolicy().hasHeightForWidth())
+        self.jpegQualityWidget.setSizePolicy(sizePolicy)
+        self.horizontalLayout_5 = QHBoxLayout(self.jpegQualityWidget)
+        self.horizontalLayout_5.setSpacing(6)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.jpegQualityLabel = QLabel(self.jpegQualityWidget)
+        self.jpegQualityLabel.setObjectName(u"jpegQualityLabel")
+        sizePolicy4.setHeightForWidth(self.jpegQualityLabel.sizePolicy().hasHeightForWidth())
+        self.jpegQualityLabel.setSizePolicy(sizePolicy4)
+
+        self.horizontalLayout_5.addWidget(self.jpegQualityLabel)
+
+        self.jpegQualitySpinBox = QSpinBox(self.jpegQualityWidget)
+        self.jpegQualitySpinBox.setObjectName(u"jpegQualitySpinBox")
+        self.jpegQualitySpinBox.setMinimum(1)
+        self.jpegQualitySpinBox.setMaximum(100)
+        self.jpegQualitySpinBox.setValue(85)
+
+        self.horizontalLayout_5.addWidget(self.jpegQualitySpinBox)
+
+        self.jpegQualitySpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_5.addItem(self.jpegQualitySpacer)
+
+
+        self.gridLayout.addWidget(self.jpegQualityWidget, 10, 0, 1, 2)
+
         mainWindow.setCentralWidget(self.centralWidget)
         self.statusBar = QStatusBar(mainWindow)
         self.statusBar.setObjectName(u"statusBar")
@@ -489,7 +519,8 @@ class Ui_mainWindow(object):
         QWidget.setTabOrder(self.borderBox, self.outputSplit)
         QWidget.setTabOrder(self.outputSplit, self.colorBox)
         QWidget.setTabOrder(self.colorBox, self.mozJpegBox)
-        QWidget.setTabOrder(self.mozJpegBox, self.maximizeStrips)
+        QWidget.setTabOrder(self.mozJpegBox, self.jpegQualitySpinBox)
+        QWidget.setTabOrder(self.jpegQualitySpinBox, self.maximizeStrips)
         QWidget.setTabOrder(self.maximizeStrips, self.croppingBox)
         QWidget.setTabOrder(self.croppingBox, self.croppingPowerSlider)
         QWidget.setTabOrder(self.croppingPowerSlider, self.preserveMarginBox)
@@ -678,5 +709,10 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.chunkSizeLabel.setText(QCoreApplication.translate("mainWindow", u"Chunk size MB:", None))
         self.chunkSizeWarnLabel.setText(QCoreApplication.translate("mainWindow", u"Greater than default may cause performance issues on older ereaders.", None))
+#if QT_CONFIG(tooltip)
+        self.jpegQualityWidget.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>JPEG compression quality (1-100). Higher values produce better quality but larger files.</p><p>Changing this for Kindle Scribe may cause issues.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.jpegQualityLabel.setText(QCoreApplication.translate("mainWindow", u"JPEG Quality:", None))
+        self.jpegQualitySpinBox.setSuffix(QCoreApplication.translate("mainWindow", u"%", None))
     # retranslateUi
 

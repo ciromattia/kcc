@@ -889,6 +889,78 @@
       </layout>
      </widget>
     </item>
+    <item row="10" column="0" colspan="2">
+     <widget class="QWidget" name="jpegQualityWidget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;JPEG compression quality (1-100). Higher values produce better quality but larger files.&lt;/p&gt;&lt;p&gt;Changing this for Kindle Scribe may cause issues.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="jpegQualityLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>JPEG Quality:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="jpegQualitySpinBox">
+         <property name="suffix">
+          <string>%</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>85</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="jpegQualitySpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar">
@@ -919,6 +991,7 @@
   <tabstop>outputSplit</tabstop>
   <tabstop>colorBox</tabstop>
   <tabstop>mozJpegBox</tabstop>
+  <tabstop>jpegQualitySpinBox</tabstop>
   <tabstop>maximizeStrips</tabstop>
   <tabstop>croppingBox</tabstop>
   <tabstop>croppingPowerSlider</tabstop>

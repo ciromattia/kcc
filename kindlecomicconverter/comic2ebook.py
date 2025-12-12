@@ -1317,6 +1317,9 @@ def makeParser():
     main_options.add_argument("--ts", "--targetsize", type=int, dest="targetsize", default=None,
                               help="the maximal size of output file in MB."
                                    " [Default=100MB for webtoon and 400MB for others]")
+    main_options.add_argument("-q", "--jpeg-quality", type=int, dest="jpegquality", default=85,
+                              help="JPEG compression quality (1-100). Higher values produce better quality "
+                                   "but larger files. [Default=85]")
 
     output_options.add_argument("-o", "--output", action="store", dest="output", default=None,
                                 help="Output generated file to specified directory or file")
