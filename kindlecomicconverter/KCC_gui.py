@@ -780,7 +780,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def toggleImageFormatBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
         if value == 1:
-            GUI.jpegQualitySpinBox.setEnabled(False)
+            GUI.jpegQualityWidget.setVisible(False)
             if profile['Label'] == 'KS':
                 current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
                 for bad_format in ('MOBI', 'EPUB'):
@@ -788,7 +788,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                         self.addMessage('Scribe PNG MOBI/EPUB has a lot of problems like blank pages/sections. Use JPG instead.', 'warning')
                         break
         else:
-            GUI.jpegQualitySpinBox.setEnabled(True)
+            GUI.jpegQualityWidget.setVisible(True)
 
     def togglechunkSizeCheckBox(self, value):
         GUI.chunkSizeWidget.setVisible(value)
