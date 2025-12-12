@@ -1433,6 +1433,64 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
 
 class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
+    def _buildBulkFieldToolTip(self, fieldLabel, valuesByFile):
+        """Build HTML tooltip for bulk metadata mismatch fields.
+
+        valuesByFile: list of (file_path, value_str)
+        - if <= 20 rows: show File | Value
+        - else: show Value | Count
+        """
+        note = '<p><em>Note: Changing this field will overwrite all values in all selected files.</em></p>'
+
+        if len(valuesByFile) <= 20:
+            rows = ''.join(
+                '<tr>'
+                f'<td style="padding:2px 6px; white-space:nowrap;">{escape(os.path.basename(f))}</td>'
+                f'<td style="padding:2px 6px;">{escape(v)}</td>'
+                '</tr>'
+                for f, v in valuesByFile
+            )
+
+            table = (
+                '<table border="1" cellspacing="0" cellpadding="0">'
+                '<tr>'
+                '<th style="padding:2px 6px; text-align:left;">File</th>'
+                '<th style="padding:2px 6px; text-align:left;">Value</th>'
+                '</tr>'
+                f'{rows}'
+                '</table>'
+            )
+        else:
+            counts = {}
+            for _, v in valuesByFile:
+                counts[v] = counts.get(v, 0) + 1
+
+            rows = ''.join(
+                '<tr>'
+                f'<td style="padding:2px 6px;">{escape(v)}</td>'
+                f'<td style="padding:2px 6px; text-align:right;">{c}</td>'
+                '</tr>'
+                for v, c in sorted(counts.items(), key=lambda t: (-t[1], t[0]))
+            )
+
+            table = (
+                '<table border="1" cellspacing="0" cellpadding="0">'
+                '<tr>'
+                '<th style="padding:2px 6px; text-align:left;">Value</th>'
+                '<th style="padding:2px 6px; text-align:right;">Count</th>'
+                '</tr>'
+                f'{rows}'
+                '</table>'
+            )
+
+        tooltipHTML = f'\
+            <b>{escape(fieldLabel)}</b>\
+            {note}\
+            {table}\
+        '
+
+        return tooltipHTML
+
     def loadData(self, files):
         self.files = files if isinstance(files, list) else [files]
         self.bulkMode = len(self.files) > 1
@@ -1455,25 +1513,44 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
             self.editorWidget.setEnabled(True)
             self.okButton.setEnabled(True)
             self.statusLabel.setText(f'Editing {len(self.files)} files.')
-            
+
             # Show bulk volume checkbox
             self.bulkVolumeCheck.setVisible(True)
             self.bulkVolumeCheck.setChecked(False)
-            
+
             for field in (self.volumeLine, self.numberLine, self.titleLine):
                 field.setEnabled(False)
                 field.setText('')
                 field.setPlaceholderText('(multiple files)')
-            
-            for field in (self.seriesLine,):
-                field.setEnabled(True)
-                field.setPlaceholderText('')
-                field.setText(self.parser.data[field.objectName().capitalize()[:-4]])
-            
-            for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
-                field.setEnabled(True)
-                field.setPlaceholderText('')
-                field.setText(', '.join(self.parser.data[field.objectName().capitalize()[:-4] + 's']))
+                field.setToolTip('')
+
+            # Load metadata for all files and show common values, or “(multiple values)” + tooltip.
+            parsed = []
+            for file in self.files:
+                parsed.append((file, metadata.MetadataParser(file)))
+
+            field_specs = [
+                (self.seriesLine, 'Series', lambda p: (p.data.get('Series', '') or '')),
+                (self.writerLine, 'Writer', lambda p: ', '.join(p.data.get('Writers', []) or [])),
+                (self.pencillerLine, 'Penciller', lambda p: ', '.join(p.data.get('Pencillers', []) or [])),
+                (self.inkerLine, 'Inker', lambda p: ', '.join(p.data.get('Inkers', []) or [])),
+                (self.coloristLine, 'Colorist', lambda p: ', '.join(p.data.get('Colorists', []) or [])),
+            ]
+
+            for line, label, extractor in field_specs:
+                line.setEnabled(True)
+                valuesByFile = [(f, extractor(p)) for f, p in parsed]
+                uniqueValues = {v for _, v in valuesByFile}
+
+                if len(uniqueValues) == 1:
+                    common_value = valuesByFile[0][1] if valuesByFile else ''
+                    line.setPlaceholderText('')
+                    line.setToolTip('')
+                    line.setText(common_value)
+                else:
+                    line.setText('')
+                    line.setPlaceholderText('(multiple values)')
+                    line.setToolTip(self._buildBulkFieldToolTip(label, valuesByFile))
         else:
             file = self.files[0]
             self.parser = metadata.MetadataParser(file)
