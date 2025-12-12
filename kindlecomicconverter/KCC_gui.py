@@ -1434,12 +1434,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
 class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
     def _buildBulkFieldToolTip(self, fieldLabel, valuesByFile):
-        """Build HTML tooltip for bulk metadata mismatch fields.
-
-        valuesByFile: list of (file_path, value_str)
-        - if <= 20 rows: show File | Value
-        - else: show Value | Count
-        """
         note = '<p><em>Note: Changing this field will overwrite all values in all selected files.</em></p>'
 
         if len(valuesByFile) <= 20:
@@ -1668,10 +1662,6 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         return escape(s.strip())
 
     def parseVolumeInput(self, text, fileCount):
-        """Parse volume input and return list of volume numbers.
-        Supports: single number (5), range (5-10), comma list (1,3,5)
-        Returns (volumes_list, error_message) tuple.
-        """
         text = text.strip()
         if not text:
             return None, None
@@ -1720,7 +1710,6 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         return volumes, None
     
     def toggleBulkVolume(self, checked):
-        """Toggle volume field enabled state based on checkbox."""
         self.volumeLine.setEnabled(checked)
         if checked:
             self.volumeLine.setText('')
