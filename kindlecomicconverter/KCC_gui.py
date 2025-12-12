@@ -1440,6 +1440,15 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         # Sort files by name for consistent volume assignment
         self.files.sort()
         
+        # Unified CBR check for all files (both single and bulk mode)
+        for file in self.files:
+            parser = metadata.MetadataParser(file)
+            if parser.format in ['RAR', 'RAR5']:
+                self.editorWidget.setEnabled(False)
+                self.okButton.setEnabled(False)
+                self.statusLabel.setText('CBR files in selection are read-only.')
+                return
+        
         if self.bulkMode:
             firstFile = self.files[0]
             self.parser = metadata.MetadataParser(firstFile)
@@ -1477,14 +1486,9 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
                 field.setEnabled(True)
                 field.setPlaceholderText('')
             
-            if self.parser.format in ['RAR', 'RAR5']:
-                self.editorWidget.setEnabled(False)
-                self.okButton.setEnabled(False)
-                self.statusLabel.setText('CBR metadata are read-only.')
-            else:
-                self.editorWidget.setEnabled(True)
-                self.okButton.setEnabled(True)
-                self.statusLabel.setText('Separate authors with a comma.')
+            self.editorWidget.setEnabled(True)
+            self.okButton.setEnabled(True)
+            self.statusLabel.setText('Separate authors with a comma.')
             
             for field in (self.seriesLine, self.volumeLine, self.numberLine, self.titleLine):
                 field.setText(self.parser.data[field.objectName().capitalize()[:-4]])
