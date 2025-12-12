@@ -613,7 +613,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;After calculating the cropping boundaries, &amp;quot;back up&amp;quot; a specified percentage amount.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Preserve Margin %</string>
+          <string>Preserve Margin:</string>
          </property>
         </widget>
        </item>
@@ -644,6 +644,9 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="suffix">
+          <string>%</string>
          </property>
          <property name="maximum">
           <number>99</number>
