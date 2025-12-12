@@ -629,10 +629,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 # Enable multi-selection in the dialog (may not work with native dialog on all platforms)
                 file_view = dialog.findChild(QListView, 'listView')
                 if file_view:
-                    file_view.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
+                    file_view.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
                 file_tree = dialog.findChild(QTreeView)
                 if file_tree:
-                    file_tree.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
+                    file_tree.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
                 
                 if dialog.exec():
                     selected_dirs = dialog.selectedFiles()
