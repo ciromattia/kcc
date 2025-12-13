@@ -853,7 +853,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
 
 def getWorkFolder(afile, workdir=None):
     if not workdir:
-        workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
+        workdir = mkdtemp('', 'KCC-')
         fullPath = os.path.join(workdir, 'OEBPS', 'Images')
     else:
         fullPath = workdir
