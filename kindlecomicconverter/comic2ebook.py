@@ -851,14 +851,16 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
 
 
 
-def getWorkFolder(afile):
+def getWorkFolder(afile, workdir=None):
+    if not workdir:
+        workdir = mkdtemp('', 'KCC-')
+        fullPath = os.path.join(workdir, 'OEBPS', 'Images')
+    else:
+        fullPath = workdir
     if os.path.isdir(afile):
         if disk_usage(gettempdir())[2] < getDirectorySize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
-        workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
         try:
-            os.rmdir(workdir)
-            fullPath = os.path.join(workdir, 'OEBPS', 'Images')
             copytree(afile, fullPath)
             sanitizePermissions(fullPath)
             return workdir
@@ -869,8 +871,6 @@ def getWorkFolder(afile):
         if disk_usage(gettempdir())[2] < os.path.getsize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
         if afile.lower().endswith('.pdf'):
-            workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
-            fullPath = os.path.join(workdir, 'OEBPS', 'Images')
             if not os.path.exists(fullPath):
                 os.makedirs(fullPath)
             path = workdir
@@ -887,8 +887,6 @@ def getWorkFolder(afile):
                 raise UserWarning(f"Failed to extract images from PDF file. {e}")
             return workdir
         else:
-            workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
-            fullPath = os.path.join(workdir, 'OEBPS', 'Images')
             if not os.path.exists(fullPath):
                 os.makedirs(fullPath)
             try:
@@ -1532,17 +1530,15 @@ def makeFusion(sources: List[str]):
         print(f"Processing {source}...")
         checkPre(source)
         print("Checking images...")
-        path = getWorkFolder(source)
-        pathfinder = os.path.join(path, "OEBPS", "Images")
-        sanitizeTree(pathfinder)
-        # TODO: remove flattenTree when subchapters are supported
-        flattenTree(pathfinder)
         source_path = Path(source)
         if source_path.is_file():
-            os.renames(pathfinder, fusion_path.joinpath(source_path.stem))
+            targetpath = fusion_path.joinpath(source_path.stem)
         else:
-            os.renames(pathfinder, fusion_path.joinpath(source_path.name))
-        
+            targetpath = fusion_path.joinpath(source_path.name)
+        getWorkFolder(source, str(targetpath))
+        sanitizeTree(targetpath)
+        # TODO: remove flattenTree when subchapters are supported
+        flattenTree(targetpath)   
 
     end = perf_counter()
     print(f"makefusion: {end - start} seconds")
