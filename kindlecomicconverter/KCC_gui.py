@@ -22,7 +22,7 @@ import itertools
 from pathlib import Path
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
 from PySide6.QtGui import (QColor, QIcon, QPixmap, QDesktopServices)
-from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog)
+from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QTreeView, QAbstractItemView)
 from PySide6.QtNetwork import (QLocalSocket, QLocalServer)
 
 import os
@@ -610,11 +610,29 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                                             'Comic (*.pdf);;All (*.*)')
         for fname in fnames[0]:
             if fname != '':
-                if sys.platform.startswith('win'):
-                    fname = fname.replace('/', '\\')
                 self.lastPath = os.path.abspath(os.path.join(fname, os.pardir))
                 GUI.jobList.addItem(fname)
                 GUI.jobList.scrollToBottom()
+
+    def selectDir(self):
+        if self.needClean:
+            self.needClean = False
+            GUI.jobList.clear()
+ 
+        dialog = QFileDialog(MW, 'Select input folder(s)', self.lastPath)
+        dialog.setFileMode(QFileDialog.FileMode.Directory)
+        dialog.setOption(QFileDialog.Option.ShowDirsOnly, True)
+        dialog.setOption(QFileDialog.Option.DontUseNativeDialog, True)
+        dialog.findChild(QTreeView).setSelectionMode(QAbstractItemView.ExtendedSelection)
+
+        if dialog.exec():
+            dnames = dialog.selectedFiles()
+            for dname in dnames:
+                if dname != '':
+                    self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
+                    GUI.jobList.addItem(dname)
+                    GUI.jobList.scrollToBottom()
+
 
     def selectFileMetaEditor(self, sname):
         if not sname:
@@ -1319,6 +1337,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.defaultOutputFolderButton.clicked.connect(self.selectDefaultOutputFolder)
         GUI.clearButton.clicked.connect(self.clearJobs)
         GUI.fileButton.clicked.connect(self.selectFile)
+        GUI.directoryButton.clicked.connect(self.selectDir)
         GUI.editorButton.clicked.connect(self.selectFileMetaEditor)
         GUI.wikiButton.clicked.connect(self.openWiki)
         GUI.kofiButton.clicked.connect(self.openKofi)
