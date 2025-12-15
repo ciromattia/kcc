@@ -348,6 +348,51 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="2">
+        <widget class="QWidget" name="outputFolderWidget" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QCheckBox" name="defaultOutputFolderBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - next to source&lt;br/&gt;&lt;/span&gt;Place output files next to source files&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - folder next to source&lt;br/&gt;&lt;/span&gt;Place output files in a folder next to source files&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Custom&lt;br/&gt;&lt;/span&gt;Place output files in custom directory specified by right button&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Output Folder</string>
+            </property>
+            <property name="tristate">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="defaultOutputFolderButton">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use this to select the default output directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="KCC.qrc">
+              <normaloff>:/Other/icons/folder_new.png</normaloff>:/Other/icons/folder_new.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -747,7 +792,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Add CBR, CBZ, CB7 or PDF file to queue.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Add file(s)</string>
+          <string>Add input file(s)</string>
          </property>
          <property name="icon">
           <iconset resource="KCC.qrc">
@@ -755,19 +800,13 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="5">
-        <widget class="QPushButton" name="defaultOutputFolderButton">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>30</height>
-          </size>
-         </property>
+       <item row="0" column="4">
+        <widget class="QPushButton" name="directoryButton">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use this to select the default output directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Add directory containing JPG, PNG or GIF files to queue.&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CBR, CBZ and CB7 files inside will not be processed!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string/>
+          <string>Add input folder(s)</string>
          </property>
          <property name="icon">
           <iconset resource="KCC.qrc">
@@ -775,26 +814,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="4">
-        <widget class="QCheckBox" name="defaultOutputFolderBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - next to source&lt;br/&gt;&lt;/span&gt;Place output files next to source files&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - folder next to source&lt;br/&gt;&lt;/span&gt;Place output files in a folder next to source files&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Custom&lt;br/&gt;&lt;/span&gt;Place output files in custom directory specified by right button&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>Output Folder</string>
-         </property>
-         <property name="tristate">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="4" colspan="2">
+       <item row="1" column="4">
         <widget class="QComboBox" name="formatBox">
          <property name="minimumSize">
           <size>
@@ -811,10 +831,9 @@
       <zorder>clearButton</zorder>
       <zorder>deviceBox</zorder>
       <zorder>convertButton</zorder>
-      <zorder>formatBox</zorder>
-      <zorder>defaultOutputFolderButton</zorder>
       <zorder>fileButton</zorder>
-      <zorder>defaultOutputFolderBox</zorder>
+      <zorder>directoryButton</zorder>
+      <zorder>formatBox</zorder>
      </widget>
     </item>
     <item row="6" column="0">
@@ -901,12 +920,9 @@
   <tabstop>jobList</tabstop>
   <tabstop>fileButton</tabstop>
   <tabstop>clearButton</tabstop>
-  <tabstop>defaultOutputFolderButton</tabstop>
-  <tabstop>defaultOutputFolderBox</tabstop>
   <tabstop>deviceBox</tabstop>
   <tabstop>widthBox</tabstop>
   <tabstop>heightBox</tabstop>
-  <tabstop>formatBox</tabstop>
   <tabstop>convertButton</tabstop>
   <tabstop>mangaBox</tabstop>
   <tabstop>rotateBox</tabstop>

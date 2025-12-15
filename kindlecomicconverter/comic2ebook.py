@@ -905,7 +905,9 @@ def getWorkFolder(afile):
                             os.path.join(fullPath, tdir[0], 'ComicInfo.xml')
                         )
                 if len(tdir) == 1 and os.path.isdir(os.path.join(fullPath, tdir[0])):
-                    path = os.path.join(fullPath, tdir[0])
+                    for file in os.listdir(os.path.join(fullPath, tdir[0])):
+                        move(os.path.join(fullPath, tdir[0], file), fullPath)
+                    os.rmdir(os.path.join(fullPath, tdir[0]))
                 return workdir
  
             except OSError as e:

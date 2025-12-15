@@ -25,8 +25,10 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ macos-13, macos-14 ]
+        os: [ macos-15-intel, macos-14 ]
     runs-on: ${{ matrix.os }}
+    env:
+      MACOSX_DEPLOYMENT_TARGET: '14.0'
     steps:
       - uses: actions/checkout@v6
       - name: Set up Python
@@ -78,7 +80,7 @@ jobs:
         run: |
           python setup.py build_binary
       - name: upload build
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: mac-os-build-${{ runner.arch }}
           path: dist/*.dmg

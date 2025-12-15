@@ -7,7 +7,7 @@
 [![Github All Releases](https://img.shields.io/github/downloads/ciromattia/kcc/total.svg)](https://github.com/ciromattia/kcc/releases)
 
 
-**Kindle Comic Converter** optimizes black & white comics and manga for E-ink ereaders 
+**Kindle Comic Converter** optimizes black & white (or color) comics and manga for E-ink ereaders 
 like Kindle, Kobo, ReMarkable, and more.
 Pages display in fullscreen without margins, 
 with proper fixed layout support.
@@ -92,7 +92,7 @@ Click on **Assets** of the latest release.
 You probably want either
 - `KCC_*.*.*.exe` (Windows)
 - `kcc_macos_arm_*.*.*.dmg` (recent Mac with Apple Silicon M1 chip or later)
-- `kcc_macos_i386_*.*.*.dmg` (older Mac with Intel chip macOS 12+)
+- `kcc_macos_i386_*.*.*.dmg` (older Mac with Intel chip macOS 14+)
 
 There are also legacy macOS 10.14+ and Windows 7 experimental versions available.
 
