@@ -46,7 +46,7 @@ jobs:
           python setup.py build_binary
       - name: upload-unsigned-artifact
         id: upload-unsigned-artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: windows7-build
           path: dist/*.exe
