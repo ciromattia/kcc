@@ -26,7 +26,7 @@ class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         if not mainWindow.objectName():
             mainWindow.setObjectName(u"mainWindow")
-        mainWindow.resize(566, 573)
+        mainWindow.resize(566, 581)
         icon = QIcon()
         icon.addFile(u":/Icon/icons/comic2ebook.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         mainWindow.setWindowIcon(icon)
@@ -420,6 +420,11 @@ class Ui_mainWindow(object):
 
         self.directoryButton = QPushButton(self.buttonWidget)
         self.directoryButton.setObjectName(u"directoryButton")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.directoryButton.sizePolicy().hasHeightForWidth())
+        self.directoryButton.setSizePolicy(sizePolicy4)
         self.directoryButton.setIcon(icon1)
 
         self.gridLayout_4.addWidget(self.directoryButton, 0, 4, 1, 1)
@@ -450,11 +455,11 @@ class Ui_mainWindow(object):
         self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.chunkSizeLabel = QLabel(self.chunkSizeWidget)
         self.chunkSizeLabel.setObjectName(u"chunkSizeLabel")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.chunkSizeLabel.sizePolicy().hasHeightForWidth())
-        self.chunkSizeLabel.setSizePolicy(sizePolicy4)
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.chunkSizeLabel.sizePolicy().hasHeightForWidth())
+        self.chunkSizeLabel.setSizePolicy(sizePolicy5)
 
         self.horizontalLayout_4.addWidget(self.chunkSizeLabel)
 
@@ -468,8 +473,8 @@ class Ui_mainWindow(object):
 
         self.chunkSizeWarnLabel = QLabel(self.chunkSizeWidget)
         self.chunkSizeWarnLabel.setObjectName(u"chunkSizeWarnLabel")
-        sizePolicy4.setHeightForWidth(self.chunkSizeWarnLabel.sizePolicy().hasHeightForWidth())
-        self.chunkSizeWarnLabel.setSizePolicy(sizePolicy4)
+        sizePolicy5.setHeightForWidth(self.chunkSizeWarnLabel.sizePolicy().hasHeightForWidth())
+        self.chunkSizeWarnLabel.setSizePolicy(sizePolicy5)
 
         self.horizontalLayout_4.addWidget(self.chunkSizeWarnLabel)
 
