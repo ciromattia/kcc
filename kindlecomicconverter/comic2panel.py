@@ -67,13 +67,14 @@ def mergeDirectory(work):
             result = Image.new('RGB', (targetWidth, targetHeight))
             y = 0
             for i in imagesValid:
-                img = Image.open(i).convert('RGB')
-                if img.size[0] < targetWidth or img.size[0] > targetWidth:
-                    widthPercent = (targetWidth / float(img.size[0]))
-                    heightSize = int((float(img.size[1]) * float(widthPercent)))
-                    img = ImageOps.fit(img, (targetWidth, heightSize), method=Image.BICUBIC, centering=(0.5, 0.5))
-                result.paste(img, (0, y))
-                y += img.size[1]
+                with Image.open(i) as img:
+                    img = img.convert('RGB')
+                    if img.size[0] < targetWidth or img.size[0] > targetWidth:
+                        widthPercent = (targetWidth / float(img.size[0]))
+                        heightSize = int((float(img.size[1]) * float(widthPercent)))
+                        img = ImageOps.fit(img, (targetWidth, heightSize), method=Image.BICUBIC, centering=(0.5, 0.5))
+                    result.paste(img, (0, y))
+                    y += img.size[1]
                 os.remove(i)
             savePath = os.path.split(imagesValid[0])
             result.save(os.path.join(savePath[0], os.path.splitext(savePath[1])[0] + '.png'), 'PNG')
@@ -253,10 +254,8 @@ def main(argv=None, job_progress='', qtgui=None):
         return 1
     if args.height > 0:
         for sourceDir in args.input:
-            targetDir = sourceDir + "-Splitted"
+            targetDir = sourceDir
             if os.path.isdir(sourceDir):
-                rmtree(targetDir, True)
-                os.renames(sourceDir, targetDir)
                 work = []
                 pagenumber = 1
                 splitWorkerOutput = []
@@ -313,8 +312,6 @@ def main(argv=None, job_progress='', qtgui=None):
                         rmtree(targetDir, True)
                         raise RuntimeError("One of workers crashed. Cause: " + splitWorkerOutput[0][0],
                                            splitWorkerOutput[0][1])
-                    if args.inPlace:
-                        os.renames(targetDir, sourceDir)
                 else:
                     rmtree(targetDir, True)
                     raise UserWarning("C2P: Source directory is empty.")
