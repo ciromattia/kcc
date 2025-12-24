@@ -1180,8 +1180,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                              'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW34'},
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KV'},
-            "Kindle Scribe": {
+            "Kindle Scribe 1/2": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS',
+            },
+            "Kindle Scribe 3": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS3',
+            },
+            "Kindle Scribe Colorsoft": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': True, 'Label': 'KSCS',
             },
             "Kindle 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'K11',
@@ -1257,9 +1263,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                       'Label': 'OTHER'},
         }
         profilesGUI = [
+            "Kindle Scribe Colorsoft",
+            "Kindle Scribe 3",
             "Kindle Colorsoft",
             "Kindle Paperwhite 12",
-            "Kindle Scribe",
+            "Kindle Scribe 1/2",
             "Kindle Paperwhite 11",
             "Kindle 11",
             "Kindle Oasis 9/10",
