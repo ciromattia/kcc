@@ -485,7 +485,7 @@ class ComicPage:
             if self.opt.kindle_azw3 and any(dim > 1920 for dim in self.image.size):
                 self.image = ImageOps.contain(self.image, (1920, 1920), Image.Resampling.LANCZOS)
             elif self.image.size[0] > self.size[0] * 2 or self.image.size[1] > self.size[1]:
-                self.image = ImageOps.contain(self.image, (self.size[0] * 2, self.size[1], Image.Resampling.LANCZOS))
+                self.image = ImageOps.contain(self.image, (self.size[0] * 2, self.size[1]), Image.Resampling.LANCZOS)
             return
         
         ratio_device = float(self.size[1]) / float(self.size[0])
