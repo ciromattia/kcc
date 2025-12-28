@@ -255,6 +255,7 @@ PROCESSING:
   --forcecolor          Don't convert images to grayscale
   --forcepng            Create PNG files instead JPEG
   --mozjpeg             Create JPEG files using mozJpeg
+  --jpeg-quality        The JPEG quality, on a scale from 0 (worst) to 95 (best). Default 85 for most devices.
   --maximizestrips      Turn 1x4 strips to 2x2 strips
   -d, --delete          Delete source file(s) or a directory. It's not recoverable.
 

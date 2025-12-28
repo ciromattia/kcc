@@ -1380,6 +1380,8 @@ def makeParser():
                                     help="Create PNG files instead JPEG")
     processing_options.add_argument("--mozjpeg", action="store_true", dest="mozjpeg", default=False,
                                     help="Create JPEG files using mozJpeg")
+    processing_options.add_argument("--jpeg-quality", type=int, dest="jpegquality", 
+                                    help="The JPEG quality, on a scale from 0 (worst) to 95 (best). Default 85 for most devices.")
     processing_options.add_argument("--maximizestrips", action="store_true", dest="maximizestrips", default=False,
                                     help="Turn 1x4 strips to 2x2 strips")
     processing_options.add_argument("-d", "--delete", action="store_true", dest="delete", default=False,
@@ -1479,6 +1481,11 @@ def checkOptions(options):
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
+    if not options.jpegquality:
+        if options.profile.startswith('KS') or options.profile == 'KCS':
+            options.jpegquality = 90
+        else:
+            options.jpegquality = 85
     return options
 
 
