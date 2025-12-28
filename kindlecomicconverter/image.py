@@ -408,13 +408,13 @@ class ComicPage:
             targetPath += '.jpg'
             if self.opt.mozjpeg:
                 with io.BytesIO() as output:
-                    image.save(output, format="JPEG", optimize=1, quality=85)
+                    image.save(output, format="JPEG", optimize=1, quality=self.opt.jpegquality)
                     input_jpeg_bytes = output.getvalue()
                     output_jpeg_bytes = mozjpeg_lossless_optimization.optimize(input_jpeg_bytes)
                     with open(targetPath, "wb") as output_jpeg_file:
                         output_jpeg_file.write(output_jpeg_bytes)
             else:
-                image.save(targetPath, 'JPEG', optimize=1, quality=85)
+                image.save(targetPath, 'JPEG', optimize=1, quality=self.opt.jpegquality)
         return targetPath
 
     def gammaCorrectImage(self):
@@ -584,7 +584,7 @@ class Cover:
     def save_to_epub(self, target, tomeid, len_tomes=0):
         try:
             if tomeid == 0:
-                self.image.save(target, "JPEG", optimize=1, quality=85)
+                self.image.save(target, "JPEG", optimize=1, quality=self.options.jpegquality)
             else:
                 copy = self.image.copy()
                 draw = ImageDraw.Draw(copy)
@@ -598,7 +598,7 @@ class Cover:
                     stroke_fill=0,
                     stroke_width=25
                 )
-                copy.save(target, "JPEG", optimize=1, quality=85)
+                copy.save(target, "JPEG", optimize=1, quality=self.options.jpegquality)
         except IOError:
             raise RuntimeError('Failed to save cover.')
 
@@ -606,6 +606,6 @@ class Cover:
         self.image = ImageOps.contain(self.image, (300, 470), Image.Resampling.LANCZOS)
         try:
             self.image.save(os.path.join(kindle.path.split('documents')[0], 'system', 'thumbnails',
-                                         'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG', optimize=1, quality=85)
+                                         'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG', optimize=1, quality=self.options.jpegquality)
         except IOError:
             raise RuntimeError('Failed to upload cover.')
