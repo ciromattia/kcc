@@ -387,7 +387,7 @@ class ComicPage:
             #     self.save_with_codec(self.image.crop((1920, 0, w, 1920)), self.targetPathStart + self.targetPathOrder + '-quad2')
             #     self.save_with_codec(self.image.crop((0, 1920, 1920, h)), self.targetPathStart + self.targetPathOrder + '-quad3') 
             #     self.save_with_codec(self.image.crop((1920, 1920, w, h)), self.targetPathStart + self.targetPathOrder + '-quad4') 
-            if (self.opt.kindle_scribe_azw3 or self.opt.kindle_scribe3_azw3) and self.image.size[1] > 1920:
+            if self.opt.kindle_scribe_azw3 and self.image.size[1] > 1920:
                 w, h = self.image.size
                 targetPath = self.save_with_codec(self.image.crop((0, 0, w, 1920)), self.targetPathStart + self.targetPathOrder + '-above')
                 self.save_with_codec(self.image.crop((0, 1920, w, h)), self.targetPathStart + self.targetPathOrder + '-below')
@@ -488,7 +488,7 @@ class ComicPage:
             self.image = erase_rainbow_artifacts(self.image, is_color)
 
     def resizeImage(self):
-        if self.opt.norotate and self.targetPathOrder in ('-kcc-a', '-kcc-d') and not any([self.opt.kindle_scribe_azw3, self.opt.kindle_scribe3_azw3]):
+        if self.opt.norotate and self.targetPathOrder in ('-kcc-a', '-kcc-d') and not self.opt.kindle_scribe_azw3:
             # TODO: Kindle Scribe case
             if self.opt.kindle_azw3 and any(dim > 1920 for dim in self.image.size):
                 self.image = ImageOps.contain(self.image, (1920, 1920), Image.Resampling.LANCZOS)
@@ -570,8 +570,6 @@ class Cover:
 
         size = list(self.options.profileData[1])
         if self.options.kindle_scribe_azw3:
-            size[1] = min(size[1], 1920)
-        elif self.options.kindle_scribe3_azw3:
             size[0] = min(size[0], 1920)
             size[1] = min(size[1], 1920)
         self.image.thumbnail(tuple(size), Image.Resampling.LANCZOS)

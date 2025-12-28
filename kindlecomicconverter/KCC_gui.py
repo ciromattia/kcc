@@ -772,7 +772,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.rotateBox.setEnabled(True)
             GUI.borderBox.setEnabled(True)
             profile = GUI.profiles[str(GUI.deviceBox.currentText())]
-            if profile['Label'] != 'KS':
+            if not profile['Label'].startswith('KS'):
                 GUI.upscaleBox.setEnabled(True)
             GUI.croppingBox.setEnabled(True)
             GUI.interPanelCropBox.setEnabled(True)
@@ -797,7 +797,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def toggleImageFormatBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
         if value == 1:
-            if profile['Label'] == 'KS':
+            if profile['Label'].startswith('KS'):
                 current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
                 for bad_format in ('MOBI', 'EPUB'):
                     if bad_format in current_format:
@@ -859,7 +859,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if not GUI.webtoonBox.isChecked():
             GUI.qualityBox.setEnabled(profile['PVOptions'])
         GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
-        if profile['Label'] == 'KS':
+        if profile['Label'].startswith('KS'):
             GUI.upscaleBox.setDisabled(True)
         else:
             if not GUI.webtoonBox.isChecked():

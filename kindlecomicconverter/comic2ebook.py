@@ -470,7 +470,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, ori
                   "padding: 0;\n",
                   "}\n",
                   ])
-    if options.kindle_scribe_azw3 or options.kindle_scribe3_azw3:
+    if options.kindle_scribe_azw3:
         f.writelines([
                     "img {\n",
                     "display: block;\n",
@@ -1237,7 +1237,7 @@ def detectSuboptimalProcessing(tmppath, orgpath):
             GUI.addMessage.emit('Source files are probably created by KCC. The second conversion will decrease quality.'
                                 , 'warning', False)
             GUI.addMessage.emit('', '', False)
-    if imageSmaller > imageNumber * 0.25 and not options.upscale and not options.stretch and options.profile != 'KS':
+    if imageSmaller > imageNumber * 0.25 and not options.upscale and not options.stretch and not options.profile.startswith('KS'):
         print("WARNING: More than 25% of images are smaller than target device resolution. "
               "Consider enabling stretching or upscaling to improve readability.")
         if GUI:
@@ -1556,8 +1556,7 @@ def makeBook(source, qtgui=None, job_progress=''):
     else:
         checkTools(source)
     options.kindle_azw3 = options.iskindle and ('MOBI' in options.format or 'EPUB' in options.format)
-    options.kindle_scribe_azw3 = options.profile == 'KS' and ('MOBI' in options.format or 'EPUB' in options.format)
-    options.kindle_scribe3_azw3 = (options.profile in ('KS3', 'KSCS')) and ('MOBI' in options.format or 'EPUB' in options.format)
+    options.kindle_scribe_azw3 = options.profile.startswith('KS') and options.kindle_azw3
     checkPre(source)
     print(f"{job_progress}Preparing source images...")
     path = getWorkFolder(source)
