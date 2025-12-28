@@ -381,12 +381,6 @@ class ComicPage:
                 flags.append('Rotated')
             if self.fill != 'white':
                 flags.append('BlackBackground')
-            # if self.opt.kindle_scribe3_azw3 and self.image.size[0] > 1920 and self.image.size[1] > 1920:
-            #     w, h = self.image.size
-            #     targetPath = self.save_with_codec(self.image.crop((0, 0, 1920, 1920)), self.targetPathStart + self.targetPathOrder + '-quad1')
-            #     self.save_with_codec(self.image.crop((1920, 0, w, 1920)), self.targetPathStart + self.targetPathOrder + '-quad2')
-            #     self.save_with_codec(self.image.crop((0, 1920, 1920, h)), self.targetPathStart + self.targetPathOrder + '-quad3') 
-            #     self.save_with_codec(self.image.crop((1920, 1920, w, h)), self.targetPathStart + self.targetPathOrder + '-quad4') 
             if self.opt.kindle_scribe_azw3 and self.image.size[1] > 1920:
                 w, h = self.image.size
                 targetPath = self.save_with_codec(self.image.crop((0, 0, w, 1920)), self.targetPathStart + self.targetPathOrder + '-above')
