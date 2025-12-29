@@ -347,6 +347,8 @@ class WorkerThread(QThread):
             options.forcepng = True
         elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
             options.mozjpeg = True
+        if GUI.jpegQualityBox.isChecked():
+            options.jpegquality = GUI.jpegQualitySpinBox.value()
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.widthBox.value())
             options.customheight = str(GUI.heightBox.value())
@@ -742,6 +744,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.croppingWidget.setVisible(False)
             self.changeCroppingPower(100)  # 1.0
 
+    def togglejpegqualityBox(self, value):
+        if value:
+            GUI.jpegQualityWidget.setVisible(True)
+        else:
+            GUI.jpegQualityWidget.setVisible(False)
+
     def togglewebtoonBox(self, value):
         if value:
             self.addMessage('You can choose a taller device profile to get taller cuts in webtoon mode.', 'info')
@@ -1026,6 +1034,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState(),
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
+                                           'jpegQualityBox': GUI.jpegQualityBox.checkState(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
                                            'deleteBox': GUI.deleteBox.checkState(),
@@ -1354,6 +1363,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)
         GUI.croppingBox.stateChanged.connect(self.togglecroppingBox)
         GUI.croppingPowerSlider.valueChanged.connect(self.changeCroppingPower)
+        GUI.jpegQualityBox.stateChanged.connect(self.togglejpegqualityBox)
         GUI.webtoonBox.stateChanged.connect(self.togglewebtoonBox)
         GUI.qualityBox.stateChanged.connect(self.togglequalityBox)
         GUI.mozJpegBox.stateChanged.connect(self.toggleImageFormatBox)
