@@ -438,6 +438,7 @@ class Ui_mainWindow(object):
         self.outputFolderWidget.setObjectName(u"outputFolderWidget")
         self.horizontalLayout_3 = QHBoxLayout(self.outputFolderWidget)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.defaultOutputFolderBox = QCheckBox(self.outputFolderWidget)
         self.defaultOutputFolderBox.setObjectName(u"defaultOutputFolderBox")
         sizePolicy.setHeightForWidth(self.defaultOutputFolderBox.sizePolicy().hasHeightForWidth())
