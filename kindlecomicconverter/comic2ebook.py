@@ -1486,6 +1486,12 @@ def checkOptions(options):
             options.jpegquality = 90
         else:
             options.jpegquality = 85
+    options.kindle_azw3 = options.iskindle and ('MOBI' in options.format or 'EPUB' in options.format)
+    options.kindle_scribe_azw3 = options.profile.startswith('KS') and options.kindle_azw3
+    if options.kindle_scribe_azw3:
+        options.profileData = list(image.ProfileData.Profiles[options.profile])
+        options.profileData[1] = list(options.profileData[1])
+        options.profileData[1][0] = min(1920, options.profileData[1][0])
     return options
 
 
@@ -1562,8 +1568,6 @@ def makeBook(source, qtgui=None, job_progress=''):
         GUI.progressBarTick.emit('1')
     else:
         checkTools(source)
-    options.kindle_azw3 = options.iskindle and ('MOBI' in options.format or 'EPUB' in options.format)
-    options.kindle_scribe_azw3 = options.profile.startswith('KS') and options.kindle_azw3
     checkPre(source)
     print(f"{job_progress}Preparing source images...")
     path = getWorkFolder(source)
