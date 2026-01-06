@@ -65,9 +65,9 @@ def main(argv=None):
         parser.print_help()
         return 0
     if sys.platform.startswith('win'):
-        sources = set([source for option in options.input for source in glob(escape(option))])
+        sources = list([source for option in options.input for source in glob(escape(option))])
     else:
-        sources = set(options.input)
+        sources = list(options.input)
     if len(sources) == 0:
         print('No matching files found.')
         return 1
