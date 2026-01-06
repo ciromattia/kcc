@@ -65,16 +65,16 @@ def main(argv=None):
         parser.print_help()
         return 0
     if sys.platform.startswith('win'):
-        sources = set([source for option in options.input for source in glob(escape(option))])
+        sources = [source for option in options.input for source in glob(escape(option))]
     else:
-        sources = set(options.input)
+        sources = options.input
     if len(sources) == 0:
         print('No matching files found.')
         return 1
     if options.filefusion:
         fusion_path = makeFusion(list(sources))
         sources.clear()
-        sources.add(fusion_path)
+        sources.append(fusion_path)
     for source in sources:
         source = source.rstrip('\\').rstrip('/')
         options = copy(args)
