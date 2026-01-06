@@ -67,7 +67,7 @@ def main(argv=None):
     if sys.platform.startswith('win'):
         sources = [source for option in options.input for source in glob(escape(option))]
     else:
-        sources = list(options.input)
+        sources = options.input
     if len(sources) == 0:
         print('No matching files found.')
         return 1
