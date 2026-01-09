@@ -105,8 +105,8 @@ class ProfileData:
         'KS1920': ("Kindle 1920", (1920, 1920), Palette16, 1.0),
         'KS': ("Kindle Scribe 1/2", (1860, 2480), Palette16, 1.0),
         'KCS': ("Kindle Colorsoft", (1264, 1680), Palette16, 1.0),
-        'KS3': ("Kindle Scribe 3", (1980, 2640), Palette16, 1.0),
-        'KSCS': ("Kindle Scribe Colorsoft", (1980, 2640), Palette16, 1.0),
+        'KS3': ("Kindle Scribe 3", (1986, 2648), Palette16, 1.0),
+        'KSCS': ("Kindle Scribe Colorsoft", (1986, 2648), Palette16, 1.0),
     }
 
     ProfilesKindle = {
