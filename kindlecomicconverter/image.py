@@ -157,6 +157,7 @@ class ComicPageParser:
 
         # Detect corruption in source image, let caller catch any exceptions triggered.
         srcImgPath = os.path.join(source[0], source[1])
+        # Image.open(srcImgPath).verify()
         with Image.open(srcImgPath) as im:
             self.image = im.copy()
 
