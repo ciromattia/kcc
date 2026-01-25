@@ -896,6 +896,18 @@ Higher values are larger and higher quality, and may resolve blank page issues.<
          </property>
         </widget>
        </item>
+       <item row="9" column="0">
+        <widget class="QCheckBox" name="pdfExtractBox">
+         <property name="toolTip">
+          <string>Use the PDF image extraction method from KCC 8 and earlier.
+
+Useful for really weird PDFs.</string>
+         </property>
+         <property name="text">
+          <string>PDF Legacy Extract</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>

@@ -48,6 +48,7 @@ from .comicarchive import SEVENZIP, available_archive_tools
 from . import comic2panel
 from . import image
 from . import comicarchive
+from . import pdfjpgextract
 from . import dualmetafix
 from . import metadata
 from . import kindle
@@ -875,6 +876,12 @@ def getWorkFolder(afile, workdir=None):
                 os.makedirs(fullPath)
             path = workdir
             sanitizePermissions(path)
+            if options.pdfextract:
+                pdf = pdfjpgextract.PdfJpgExtract(afile, fullPath)
+                njpg = pdf.extract()
+                if njpg == 0:
+                    raise UserWarning("Failed to extract images from PDF file.")
+                return workdir
             target_height = options.profileData[1][1]
             if options.cropping == 1:
                 target_height = target_height + target_height*0.20 #Account for possible margin at the top and bottom
@@ -1342,6 +1349,8 @@ def makeParser():
 
     processing_options.add_argument("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
                                     help="Do not modify image and ignore any profile or processing option")
+    processing_options.add_argument("--pdfextract", action="store_true", dest="pdfextract", default=False,
+                                    help="Use the legacy PDF image extraction method from KCC 8 and earlier")
     processing_options.add_argument("-u", "--upscale", action="store_true", dest="upscale", default=False,
                                     help="Resize images smaller than device's resolution")
     processing_options.add_argument("-s", "--stretch", action="store_true", dest="stretch", default=False,

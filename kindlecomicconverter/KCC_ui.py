@@ -462,6 +462,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.jpegQualityBox, 8, 0, 1, 1)
 
+        self.pdfExtractBox = QCheckBox(self.optionWidget)
+        self.pdfExtractBox.setObjectName(u"pdfExtractBox")
+
+        self.gridLayout_2.addWidget(self.pdfExtractBox, 9, 0, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -733,6 +738,12 @@ class Ui_mainWindow(object):
 "Higher values are larger and higher quality, and may resolve blank page issues.", None))
 #endif // QT_CONFIG(tooltip)
         self.jpegQualityBox.setText(QCoreApplication.translate("mainWindow", u"Custom JPEG Quality", None))
+#if QT_CONFIG(tooltip)
+        self.pdfExtractBox.setToolTip(QCoreApplication.translate("mainWindow", u"Use the PDF image extraction method from KCC 8 and earlier.\n"
+"\n"
+"Useful for really weird PDFs.", None))
+#endif // QT_CONFIG(tooltip)
+        self.pdfExtractBox.setText(QCoreApplication.translate("mainWindow", u"PDF Legacy Extract", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
         self.jpegQualityLabel.setText(QCoreApplication.translate("mainWindow", u"JPEG Quality:", None))
     # retranslateUi
