@@ -801,9 +801,7 @@ def extract_page(vector):
             if len(image_list) > 1:
                 raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
             if not image_list:
-                width, height = int(page.rect.width), int(page.rect.height)
-                blank_page = Image.new("RGB", (width, height), "white")
-                blank_page.save(output_path)
+                continue
             else:
                 xref = image_list[0][0]
                 d = doc.extract_image(xref)
