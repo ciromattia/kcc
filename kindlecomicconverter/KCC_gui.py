@@ -1198,6 +1198,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Kindle 1920x1920": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS1920',
             },
+            "Kindle 1240x1860": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS1240',
+            },
             "Kindle Scribe 1/2": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS',
             },
@@ -1307,6 +1310,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Separator",
             "Kindle 1920x1920",
             "Kindle 1860x1920",
+            "Kindle 1240x1860",
             "Kindle 8/10",
             "Kindle Oasis 8",
             "Kindle Paperwhite 7/10",

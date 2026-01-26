@@ -103,6 +103,7 @@ class ProfileData:
         'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.0),
         'KS1860': ("Kindle 1860", (1860, 1920), Palette16, 1.0),
         'KS1920': ("Kindle 1920", (1920, 1920), Palette16, 1.0),
+        'KS1240': ("Kindle 1240", (1240, 1860), Palette16, 1.0),
         'KS': ("Kindle Scribe 1/2", (1860, 2480), Palette16, 1.0),
         'KCS': ("Kindle Colorsoft", (1264, 1680), Palette16, 1.0),
         'KS3': ("Kindle Scribe 3", (1986, 2648), Palette16, 1.0),
