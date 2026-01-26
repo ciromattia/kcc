@@ -855,6 +855,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
 def getWorkFolder(afile, workdir=None):
     if not workdir:
         workdir = mkdtemp('', 'KCC-')
+        # workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
         fullPath = os.path.join(workdir, 'OEBPS', 'Images')
     else:
         fullPath = workdir
@@ -1073,7 +1074,7 @@ def removeNonImages(filetree):
         raise UserWarning('No images detected, nested archives are not supported.')
 
 
-def sanitizeTree(filetree):
+def sanitizeTree(filetree, prefix='kcc'):
     chapterNames = {}
     page = 1
     cover_path = None
@@ -1083,7 +1084,7 @@ def sanitizeTree(filetree):
             _, ext = getImageFileName(name)
 
             # 9999 page limit
-            unique_name = f'kcc-{page:04}'
+            unique_name = f'{prefix}-{page:04}'
             page += 1
 
             newKey = os.path.join(root, unique_name + ext)
@@ -1558,7 +1559,7 @@ def makeFusion(sources: List[str]):
         else:
             targetpath = fusion_path.joinpath(source_path.name)
         getWorkFolder(source, str(targetpath))
-        sanitizeTree(targetpath)
+        sanitizeTree(targetpath, prefix='fusion')
         # TODO: remove flattenTree when subchapters are supported
         flattenTree(targetpath)   
 
