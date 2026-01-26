@@ -89,7 +89,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           prerelease: true
-          generate_release_notes: true
+          generate_release_notes: false
           files: |
             dist/*.dmg
       - name: Clean up keychain and provisioning profile
