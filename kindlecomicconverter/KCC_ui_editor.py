@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QDialog, QGridLayout, QHBoxLayout,
-    QLabel, QLineEdit, QPushButton, QSizePolicy,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QDialog, QGridLayout,
+    QHBoxLayout, QLabel, QLineEdit, QPushButton,
+    QSizePolicy, QVBoxLayout, QWidget)
 from . import KCC_rc
 
 class Ui_editorDialog(object):
@@ -56,6 +56,12 @@ class Ui_editorDialog(object):
         self.volumeLine.setObjectName(u"volumeLine")
 
         self.gridLayout.addWidget(self.volumeLine, 1, 1, 1, 1)
+
+        self.bulkVolumeCheck = QCheckBox(self.editorWidget)
+        self.bulkVolumeCheck.setObjectName(u"bulkVolumeCheck")
+        self.bulkVolumeCheck.setVisible(False)
+
+        self.gridLayout.addWidget(self.bulkVolumeCheck, 1, 2, 1, 1)
 
         self.label_3 = QLabel(self.editorWidget)
         self.label_3.setObjectName(u"label_3")
@@ -157,7 +163,8 @@ class Ui_editorDialog(object):
         self.verticalLayout.addWidget(self.optionWidget)
 
         QWidget.setTabOrder(self.seriesLine, self.volumeLine)
-        QWidget.setTabOrder(self.volumeLine, self.titleLine)
+        QWidget.setTabOrder(self.volumeLine, self.bulkVolumeCheck)
+        QWidget.setTabOrder(self.bulkVolumeCheck, self.titleLine)
         QWidget.setTabOrder(self.titleLine, self.numberLine)
         QWidget.setTabOrder(self.numberLine, self.writerLine)
         QWidget.setTabOrder(self.writerLine, self.pencillerLine)
@@ -175,6 +182,10 @@ class Ui_editorDialog(object):
         editorDialog.setWindowTitle(QCoreApplication.translate("editorDialog", u"Metadata editor", None))
         self.label_1.setText(QCoreApplication.translate("editorDialog", u"Series:", None))
         self.label_2.setText(QCoreApplication.translate("editorDialog", u"Volume:", None))
+#if QT_CONFIG(tooltip)
+        self.bulkVolumeCheck.setToolTip(QCoreApplication.translate("editorDialog", u"<b>Bulk Volume Editing</b><br>Check this box to assign volume numbers to multiple files.<br><br><b>Input formats:</b><br><code>5</code> \u2192 sequence starting from 5 (5, 6, 7...)<br><code>1-10</code> \u2192 range from 1 to 10<br><code>1, 3, 5</code> \u2192 specific values<br><br><i>Note: Files are sorted alphabetically before assignment.</i>", None))
+#endif // QT_CONFIG(tooltip)
+        self.bulkVolumeCheck.setText("")
         self.label_3.setText(QCoreApplication.translate("editorDialog", u"Number:", None))
         self.label_4.setText(QCoreApplication.translate("editorDialog", u"Writer:", None))
         self.label_5.setText(QCoreApplication.translate("editorDialog", u"Penciller:", None))
