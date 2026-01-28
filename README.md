@@ -13,6 +13,7 @@ Pages display in fullscreen without margins,
 with proper fixed layout support.
 Supported input formats include JPG/PNG image files in folders, archives, or PDFs.
 Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
+KCC runs on Windows, macOS, and Linux.
 
 **WARNING**: Kindle Scribe 2025 support may not be possible. Does not work well currently.
 
