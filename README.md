@@ -101,7 +101,7 @@ There are also legacy macOS 10.14+ and Windows 7 experimental versions available
 
 The `c2e` and `c2p` versions are command line tools for power users.
 
-On Mac, follow: https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac
+On macOS, if you get a `can't be opened` error, follow: https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac
 
 For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
 
