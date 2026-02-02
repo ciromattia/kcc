@@ -50,6 +50,7 @@ Then just drag and drop the generated output files onto your device's documents 
 If you are on macOS and use a 2022+ Kindle, you may need to use Amazon USB File Manager for Mac.
 
 YouTube tutorial (please subscribe): https://www.youtube.com/watch?v=QQ6zJcMF2Iw
+
 Installation tutorial: https://www.youtube.com/watch?v=IR2Fhcm9658
 
 ### A word of warning
