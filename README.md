@@ -49,7 +49,8 @@ You can change the default output directory by holding `Shift` while clicking th
 Then just drag and drop the generated output files onto your device's documents folder via USB.
 If you are on macOS and use a 2022+ Kindle, you may need to use Amazon USB File Manager for Mac.
 
-YouTube tutorial (please subscribe): https://www.youtube.com/watch?v=IR2Fhcm9658
+YouTube tutorial (please subscribe): https://www.youtube.com/watch?v=QQ6zJcMF2Iw
+Installation tutorial: https://www.youtube.com/watch?v=IR2Fhcm9658
 
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.
