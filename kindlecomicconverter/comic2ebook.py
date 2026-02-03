@@ -660,7 +660,7 @@ def imgDirectoryProcessing(path, job_progress=''):
             raise UserWarning("Conversion interrupted.")
         if len(workerOutput) > 0:
             rmtree(os.path.join(path, '..', '..'), True)
-            raise RuntimeError("One of workers crashed. Cause: " + workerOutput[0][0], workerOutput[0][1])
+            raise RuntimeError("One of workers crashed. Cause: " + str(workerOutput))
     else:
         rmtree(os.path.join(path, '..', '..'), True)
         raise UserWarning("C2E: Source directory is empty.")
