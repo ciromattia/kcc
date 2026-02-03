@@ -523,6 +523,7 @@ class WorkerThread(QThread):
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
                         MW.addMessage.emit('KindleGen failed to create MOBI!', 'error', False)
+                        MW.addMessage.emit(self.kindlegenErrorCode[1], 'error', False)
                         MW.addTrayMessage.emit('KindleGen failed to create MOBI!', 'Critical')
                         if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':
                             MW.showDialog.emit("KindleGen error:\n\n" + self.kindlegenErrorCode[1], 'error')
