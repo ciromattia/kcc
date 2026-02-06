@@ -266,7 +266,7 @@ class Ui_mainWindow(object):
 
         self.chunkSizeBox = QSpinBox(self.chunkSizeWidget)
         self.chunkSizeBox.setObjectName(u"chunkSizeBox")
-        self.chunkSizeBox.setMinimum(100)
+        self.chunkSizeBox.setMinimum(50)
         self.chunkSizeBox.setMaximum(600)
         self.chunkSizeBox.setValue(400)
 
