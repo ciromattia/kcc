@@ -1423,6 +1423,8 @@ def checkOptions(options):
         options.format = 'MOBI'
         if options.batchsplit != 2:
             options.batchsplit = 1
+    if not options.targetsize and options.profile.startswith('Rmk'):
+        options.targetsize = 95
     if options.format == 'MOBI+EPUB':
         options.keep_epub = True
         options.format = 'MOBI'
@@ -1775,4 +1777,3 @@ def makeMOBI(work, qtgui=None):
     makeMOBIWorkerPool.close()
     makeMOBIWorkerPool.join()
     return makeMOBIWorkerOutput
-
