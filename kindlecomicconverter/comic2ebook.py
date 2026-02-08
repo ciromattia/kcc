@@ -1549,15 +1549,16 @@ def makeFusion(sources: List[str]):
         fusion_path = first_path.parent.joinpath(first_path.name + ' [fused]')
     print("Running Fusion")
 
-    for source in sources:
+    for index, source in enumerate(sources, start=1):
         print(f"Processing {source}...")
         checkPre(source)
         print("Checking images...")
         source_path = Path(source)
+        # Add the fusion_0001_ prefix for proper ordering
         if source_path.is_file():
-            targetpath = fusion_path.joinpath(source_path.stem)
+            targetpath = fusion_path.joinpath(f'fusion_{index:04d}_{source_path.stem}')
         else:
-            targetpath = fusion_path.joinpath(source_path.name)
+            targetpath = fusion_path.joinpath(f'fusion_{index:04d}_{source_path.name}')
         getWorkFolder(source, str(targetpath))
         sanitizeTree(targetpath, prefix='fusion')
         # TODO: remove flattenTree when subchapters are supported
@@ -1586,6 +1587,9 @@ def makeBook(source, qtgui=None, job_progress=''):
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
     chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    if options.filefusion:
+        # Strip the fusion_0001_ sort prefix from makeFusion
+        chapterNames = {k: sub(r'^fusion_\d{4}_', '', v) for k, v in chapterNames.items()}
     cover = None
     if not options.webtoon:
         cover = image.Cover(cover_path, options)

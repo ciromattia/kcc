@@ -1090,7 +1090,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if message[-1] == '/':
                     message = message[:-1]
             self.handleMessage(message)
-        GUI.jobList.sortItems()
+        # sorting may conflict with manual file fusion order
+        # GUI.jobList.sortItems()
 
     def forceShutdown(self):
         self.saveSettings(None)
