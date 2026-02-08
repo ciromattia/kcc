@@ -1549,15 +1549,21 @@ def makeFusion(sources: List[str]):
         fusion_path = first_path.parent.joinpath(first_path.name + ' [fused]')
     print("Running Fusion")
 
-    for source in sources:
+    # Calculate the number of digits needed for zero-padding
+    num_sources = len(sources)
+    padding_width = len(str(num_sources))
+
+    for index, source in enumerate(sources, start=1):
         print(f"Processing {source}...")
         checkPre(source)
         print("Checking images...")
         source_path = Path(source)
+        # Add numeric prefix to preserve order
+        prefix = str(index).zfill(padding_width)
         if source_path.is_file():
-            targetpath = fusion_path.joinpath(source_path.stem)
+            targetpath = fusion_path.joinpath(prefix + ' ' + source_path.stem)
         else:
-            targetpath = fusion_path.joinpath(source_path.name)
+            targetpath = fusion_path.joinpath(prefix + ' ' + source_path.name)
         getWorkFolder(source, str(targetpath))
         sanitizeTree(targetpath, prefix='fusion')
         # TODO: remove flattenTree when subchapters are supported
