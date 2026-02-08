@@ -1549,43 +1549,16 @@ def makeFusion(sources: List[str]):
         fusion_path = first_path.parent.joinpath(first_path.name + ' [fused]')
     print("Running Fusion")
 
-    # Extract directory names that will be created
-    dir_names = []
-    for source in sources:
-        source_path = Path(source)
-        if source_path.is_file():
-            dir_names.append(source_path.stem)
-        else:
-            dir_names.append(source_path.name)
-
-    # Check if OS natural sorting would preserve user-specified order
-    sorted_names = os_sorted(dir_names)
-    needs_prefix = (sorted_names != dir_names)
-
-    # Calculate the number of digits needed for zero-padding (only if needed)
-    if needs_prefix:
-        num_sources = len(sources)
-        padding_width = len(str(num_sources))
-
     for index, source in enumerate(sources, start=1):
         print(f"Processing {source}...")
         checkPre(source)
         print("Checking images...")
         source_path = Path(source)
-
-        # Only add numeric prefix if sorting would change the order
-        if needs_prefix:
-            prefix = str(index).zfill(padding_width)
-            if source_path.is_file():
-                targetpath = fusion_path.joinpath(prefix + ' ' + source_path.stem)
-            else:
-                targetpath = fusion_path.joinpath(prefix + ' ' + source_path.name)
+        # Add the fusion_0001_ prefix for proper ordering
+        if source_path.is_file():
+            targetpath = fusion_path.joinpath(f'fusion_{index:04d}_{source_path.stem}')
         else:
-            if source_path.is_file():
-                targetpath = fusion_path.joinpath(source_path.stem)
-            else:
-                targetpath = fusion_path.joinpath(source_path.name)
-
+            targetpath = fusion_path.joinpath(f'fusion_{index:04d}_{source_path.name}')
         getWorkFolder(source, str(targetpath))
         sanitizeTree(targetpath, prefix='fusion')
         # TODO: remove flattenTree when subchapters are supported
@@ -1614,6 +1587,9 @@ def makeBook(source, qtgui=None, job_progress=''):
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
     chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    if options.filefusion:
+        # Strip the fusion_0001_ sort prefix from makeFusion
+        chapterNames = {k: sub(r'^fusion_\d{4}_', '', v) for k, v in chapterNames.items()}
     cover = None
     if not options.webtoon:
         cover = image.Cover(cover_path, options)
