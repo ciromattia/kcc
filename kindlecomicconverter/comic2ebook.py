@@ -963,6 +963,13 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
         while os.path.isfile(basename + '_kcc' + str(counter) + ext):
             counter += 1
         filename = basename + '_kcc' + str(counter) + ext
+    elif options.format == 'MOBI' and ext == '.epub':
+        counter = 0
+        basename = os.path.splitext(filename)[0]
+        if os.path.isfile(basename + '.mobi'):
+            while os.path.isfile(basename + '_kcc' + str(counter) + '.mobi'):
+                counter += 1
+            filename = basename + '_kcc' + str(counter) + ext      
     return filename
 
 
