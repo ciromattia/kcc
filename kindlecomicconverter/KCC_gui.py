@@ -1039,6 +1039,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'jpegQualityBox': GUI.jpegQualityBox.checkState(),
+                                           'jpegQuality': GUI.jpegQualitySpinBox.value(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
                                            'deleteBox': GUI.deleteBox.checkState(),
@@ -1441,6 +1442,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     GUI.croppingPowerSlider.setValue(int(self.options[option]))
                     self.changeCroppingPower(int(self.options[option]))
                     GUI.preserveMarginBox.setValue(self.options.get('preserveMarginBox', 0))
+            elif str(option) == "jpegQuality":
+                GUI.jpegQualitySpinBox.setValue(int(self.options[option]))
             elif str(option) == "chunkSizeBox":
                 GUI.chunkSizeBox.setValue(int(self.options[option]))
             else:
