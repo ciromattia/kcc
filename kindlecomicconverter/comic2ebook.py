@@ -1559,16 +1559,14 @@ def makeFusion(sources: List[str]):
         print("Checking images...")
         source_path = Path(source)
         # Add the fusion_0001_ prefix to maintain user-specified order if needed
+        prefix = ''
         if needs_prefix:
-            if source_path.is_file():
-                targetpath = fusion_path.joinpath(f'fusion_{index:04d}_{source_path.stem}')
-            else:
-                targetpath = fusion_path.joinpath(f'fusion_{index:04d}_{source_path.name}')
+            prefix = f'fusion_{index:04d}_'
+        if source_path.is_file():
+            targetpath = fusion_path.joinpath(f'{prefix}{source_path.stem}')
         else:
-            if source_path.is_file():
-                targetpath = fusion_path.joinpath(source_path.stem)
-            else:
-                targetpath = fusion_path.joinpath(source_path.name)
+            targetpath = fusion_path.joinpath(f'{prefix}{source_path.name}')
+
         getWorkFolder(source, str(targetpath))
         sanitizeTree(targetpath, prefix='fusion')
         # TODO: remove flattenTree when subchapters are supported
