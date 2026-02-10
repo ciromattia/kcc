@@ -1556,15 +1556,24 @@ def makeFusion(sources: List[str]):
         fusion_path = first_path.parent.joinpath(first_path.name + ' [fused]')
     print("Running Fusion")
 
-    for source in sources:
+    # Check if prefix is needed when user-specified ordering differs from OS natural sorting
+    path_names = [Path(s).stem if Path(s).is_file() else Path(s).name for s in sources]
+    needs_prefix = os_sorted(path_names) != path_names
+
+    for index, source in enumerate(sources, start=1):
         print(f"Processing {source}...")
         checkPre(source)
         print("Checking images...")
         source_path = Path(source)
+        # Add the fusion_0001_ prefix to maintain user-specified order if needed
+        prefix = ''
+        if needs_prefix:
+            prefix = f'fusion_{index:04d}_'
         if source_path.is_file():
-            targetpath = fusion_path.joinpath(source_path.stem)
+            targetpath = fusion_path.joinpath(f'{prefix}{source_path.stem}')
         else:
-            targetpath = fusion_path.joinpath(source_path.name)
+            targetpath = fusion_path.joinpath(f'{prefix}{source_path.name}')
+
         getWorkFolder(source, str(targetpath))
         sanitizeTree(targetpath, prefix='fusion')
         # TODO: remove flattenTree when subchapters are supported
@@ -1593,6 +1602,9 @@ def makeBook(source, qtgui=None, job_progress=''):
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
     chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    if options.filefusion:
+        # Strip the fusion_0001_ sort prefix from makeFusion if present
+        chapterNames = {k: sub(r'^fusion_\d{4}_', '', v) for k, v in chapterNames.items()}
     cover = None
     if not options.webtoon:
         cover = image.Cover(cover_path, options)
