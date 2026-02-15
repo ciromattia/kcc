@@ -15,6 +15,10 @@ Supported input formats include JPG/PNG image files in folders, archives, or PDF
 Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
 KCC runs on Windows, macOS, and Linux.
 
+Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
+
+https://github.com/user-attachments/assets/da73d625-e082-482d-91a4-ae4765e96fd7
+
 **WARNING**: Kindle Scribe 2025 support may not be possible. Does not work well currently.
 
 **NEW**: PDF output is now supported for direct conversion to reMarkable devices! 
@@ -37,6 +41,7 @@ KCC avoids many common formatting issues (some of which occur [even on the Kindl
 3) Not utilizing the full 1860x2480 resolution of the 10" Kindle Scribe
 4) incorrect page turn direction for manga that's read right to left
 5) unaligned two page spreads in landscape, where pages are shifted over by 1
+6) Rainbow effect on color eink Kaleido 3 due to manga screentones
 
 The GUI looks like this, built in Qt6, with my most commonly used settings:
 
