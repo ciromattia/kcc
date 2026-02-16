@@ -41,7 +41,7 @@ KCC avoids many common formatting issues (some of which occur [even on the Kindl
 3) Not utilizing the full 1860x2480 resolution of the 10" Kindle Scribe
 4) incorrect page turn direction for manga that's read right to left
 5) unaligned two page spreads in landscape, where pages are shifted over by 1
-6) Rainbow effect on color eink Kaleido 3 due to manga screentones
+6) Removing without blur the rainbow effect on color eink Kaleido 3 due to manga screentones
 
 The GUI looks like this, built in Qt6, with my most commonly used settings:
 
