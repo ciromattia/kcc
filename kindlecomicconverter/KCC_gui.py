@@ -640,27 +640,45 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
 
     def selectFileMetaEditor(self, sname):
+        files = []
         if not sname:
             if QApplication.keyboardModifiers() == Qt.ShiftModifier:
-                dname = QFileDialog.getExistingDirectory(MW, 'Select directory', self.lastPath)
-                if dname != '':
-                    sname = os.path.join(dname, 'ComicInfo.xml')
-                    self.lastPath = os.path.dirname(sname)
+                # Multi-directory selection for bulk editing ComicInfo.xml
+                dialog = QFileDialog(MW, 'Select volume directories', self.lastPath)
+                dialog.setFileMode(QFileDialog.FileMode.Directory)
+                dialog.setOption(QFileDialog.Option.ShowDirsOnly, True)
+                dialog.setOption(QFileDialog.Option.DontUseNativeDialog, True)
+                
+                # Enable multi-selection in the dialog (may not work with native dialog on all platforms)
+                file_view = dialog.findChild(QListView, 'listView')
+                if file_view:
+                    file_view.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+                file_tree = dialog.findChild(QTreeView)
+                if file_tree:
+                    file_tree.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+                
+                if dialog.exec():
+                    selected_dirs = dialog.selectedFiles()
+                    if selected_dirs:
+                        files = [os.path.join(d, 'ComicInfo.xml') for d in selected_dirs]
+                        self.lastPath = os.path.dirname(selected_dirs[0])
             else:
                 if self.sevenzip:
-                    fname = QFileDialog.getOpenFileName(MW, 'Select file', self.lastPath,
-                                                                  'Comic (*.cbz *.cbr *.cb7)')
+                    fnames = QFileDialog.getOpenFileNames(MW, 'Select file(s)', self.lastPath,
+                                                          'Comic (*.cbz *.cbr *.cb7)')
+                    files = fnames[0]
+                    if files:
+                        self.lastPath = os.path.abspath(os.path.join(files[0], os.pardir))
                 else:
-                    fname = ['']
                     self.showDialog("Editor is disabled due to a lack of 7z.", 'error')
                     self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
                     ' to enable metadata editing.', 'warning')
-                if fname[0] != '':
-                    sname = fname[0]
-                    self.lastPath = os.path.abspath(os.path.join(sname, os.pardir))
-        if sname:
+        else:
+            files = [sname]
+        
+        if files:
             try:
-                self.editor.loadData(sname)
+                self.editor.loadData(files)
             except Exception as err:
                 _, _, traceback = sys.exc_info()
                 GUI.sentry.captureException()
@@ -1472,62 +1490,301 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
 
 class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
-    def loadData(self, file):
-        self.parser = metadata.MetadataParser(file)
-        if self.parser.format in ['RAR', 'RAR5']:
-            self.editorWidget.setEnabled(False)
-            self.okButton.setEnabled(False)
-            self.statusLabel.setText('CBR metadata are read-only.')
+    def _buildBulkFieldToolTip(self, fieldLabel, valuesByFile):
+        note = '<p><em>Note: Changing this field will overwrite all values in all selected files.</em></p>'
+
+        if len(valuesByFile) <= 20:
+            rows = ''.join(
+                '<tr>'
+                f'<td style="padding:2px 6px; white-space:nowrap;">{escape(os.path.basename(f))}</td>'
+                f'<td style="padding:2px 6px;">{escape(v)}</td>'
+                '</tr>'
+                for f, v in valuesByFile
+            )
+
+            table = (
+                '<table border="1" cellspacing="0" cellpadding="0">'
+                '<tr>'
+                '<th style="padding:2px 6px; text-align:left;">File</th>'
+                '<th style="padding:2px 6px; text-align:left;">Value</th>'
+                '</tr>'
+                f'{rows}'
+                '</table>'
+            )
         else:
+            counts = {}
+            for _, v in valuesByFile:
+                counts[v] = counts.get(v, 0) + 1
+
+            rows = ''.join(
+                '<tr>'
+                f'<td style="padding:2px 6px;">{escape(v)}</td>'
+                f'<td style="padding:2px 6px; text-align:right;">{c}</td>'
+                '</tr>'
+                for v, c in sorted(counts.items(), key=lambda t: (-t[1], t[0]))
+            )
+
+            table = (
+                '<table border="1" cellspacing="0" cellpadding="0">'
+                '<tr>'
+                '<th style="padding:2px 6px; text-align:left;">Value</th>'
+                '<th style="padding:2px 6px; text-align:right;">Count</th>'
+                '</tr>'
+                f'{rows}'
+                '</table>'
+            )
+
+        tooltipHTML = f'\
+            <b>{escape(fieldLabel)}</b>\
+            {note}\
+            {table}\
+        '
+
+        return tooltipHTML
+
+    def loadData(self, files):
+        self.files = files if isinstance(files, list) else [files]
+        self.bulkMode = len(self.files) > 1
+        
+        # Sort files by name for consistent volume assignment
+        self.files.sort()
+        
+        # Unified CBR check for all files (both single and bulk mode)
+        for file in self.files:
+            parser = metadata.MetadataParser(file)
+            if parser.format in ['RAR', 'RAR5']:
+                self.editorWidget.setEnabled(False)
+                self.okButton.setEnabled(False)
+                self.statusLabel.setText('CBR files in selection are read-only.')
+                return
+        
+        if self.bulkMode:
+            firstFile = self.files[0]
+            self.parser = metadata.MetadataParser(firstFile)
+            self.editorWidget.setEnabled(True)
+            self.okButton.setEnabled(True)
+            self.statusLabel.setText(f'Editing {len(self.files)} files.')
+
+            # Show bulk volume checkbox
+            self.bulkVolumeCheck.setVisible(True)
+            self.bulkVolumeCheck.setChecked(False)
+
+            for field in (self.volumeLine, self.numberLine, self.titleLine):
+                field.setEnabled(False)
+                field.setText('')
+                field.setPlaceholderText('(multiple files)')
+                field.setToolTip('')
+
+            # Load metadata for all files and show common values, or “(multiple values)” + tooltip.
+            parsed = []
+            for file in self.files:
+                parsed.append((file, metadata.MetadataParser(file)))
+
+            field_specs = [
+                (self.seriesLine, 'Series', lambda p: (p.data.get('Series', '') or '')),
+                (self.writerLine, 'Writer', lambda p: ', '.join(p.data.get('Writers', []) or [])),
+                (self.pencillerLine, 'Penciller', lambda p: ', '.join(p.data.get('Pencillers', []) or [])),
+                (self.inkerLine, 'Inker', lambda p: ', '.join(p.data.get('Inkers', []) or [])),
+                (self.coloristLine, 'Colorist', lambda p: ', '.join(p.data.get('Colorists', []) or [])),
+            ]
+
+            for line, label, extractor in field_specs:
+                line.setEnabled(True)
+                valuesByFile = [(f, extractor(p)) for f, p in parsed]
+                uniqueValues = {v for _, v in valuesByFile}
+
+                if len(uniqueValues) == 1:
+                    common_value = valuesByFile[0][1] if valuesByFile else ''
+                    line.setPlaceholderText('')
+                    line.setToolTip('')
+                    line.setText(common_value)
+                else:
+                    line.setText('')
+                    line.setPlaceholderText('(multiple values)')
+                    line.setToolTip(self._buildBulkFieldToolTip(label, valuesByFile))
+        else:
+            file = self.files[0]
+            self.parser = metadata.MetadataParser(file)
+            
+            # Hide bulk volume checkbox in single file mode
+            self.bulkVolumeCheck.setVisible(False)
+            
+            for field in (self.volumeLine, self.numberLine, self.titleLine, self.seriesLine,
+                          self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
+                field.setEnabled(True)
+                field.setPlaceholderText('')
+            
             self.editorWidget.setEnabled(True)
             self.okButton.setEnabled(True)
             self.statusLabel.setText('Separate authors with a comma.')
-        for field in (self.seriesLine, self.volumeLine, self.numberLine, self.titleLine):
-            field.setText(self.parser.data[field.objectName().capitalize()[:-4]])
-        for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
-            field.setText(', '.join(self.parser.data[field.objectName().capitalize()[:-4] + 's']))
-        for field in (self.seriesLine, self.titleLine):
-            if field.text() == '':
-                path = Path(file)
-                if file.endswith('.xml'):
-                    field.setText(path.parent.name)
-                else:
-                    field.setText(path.stem)
+            
+            for field in (self.seriesLine, self.volumeLine, self.numberLine, self.titleLine):
+                field.setText(self.parser.data[field.objectName().capitalize()[:-4]])
+            for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
+                field.setText(', '.join(self.parser.data[field.objectName().capitalize()[:-4] + 's']))
+            for field in (self.seriesLine, self.titleLine):
+                if field.text() == '':
+                    path = Path(file)
+                    if file.endswith('.xml'):
+                        field.setText(path.parent.name)
+                    else:
+                        field.setText(path.stem)
 
     def saveData(self):
-        for field in (self.volumeLine, self.numberLine):
-            if field.text().isnumeric() or self.cleanData(field.text()) == '':
-                self.parser.data[field.objectName().capitalize()[:-4]] = self.cleanData(field.text())
-            else:
-                self.statusLabel.setText(field.objectName().capitalize()[:-4] + ' field must be a number.')
-                break
-        else:
-            for field in (self.seriesLine, self.titleLine):
-                self.parser.data[field.objectName().capitalize()[:-4]] = self.cleanData(field.text())
+        if self.bulkMode:
+            bulkData = {}
+            if self.cleanData(self.seriesLine.text()):
+                bulkData['Series'] = self.cleanData(self.seriesLine.text())
+            
             for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
+                fieldName = field.objectName().capitalize()[:-4] + 's'
                 values = self.cleanData(field.text()).split(',')
-                tmpData = []
-                for value in values:
-                    if self.cleanData(value) != '':
-                        tmpData.append(self.cleanData(value))
-                self.parser.data[field.objectName().capitalize()[:-4] + 's'] = tmpData
-            try:
-                self.parser.saveXML()
-            except Exception as err:
-                _, _, traceback = sys.exc_info()
-                GUI.sentry.captureException()
-                GUI.showDialog("Failed to save metadata!\n\n%s\n\nTraceback:\n%s"
-                               % (str(err), sanitizeTrace(traceback)), 'error')
-            self.ui.close()
+                tmpData = [self.cleanData(v) for v in values if self.cleanData(v)]
+                if tmpData:
+                    bulkData[fieldName] = tmpData
+            
+            # Handle bulk volume editing
+            volumes = None
+            if self.bulkVolumeCheck.isChecked():
+                volumeText = self.volumeLine.text()
+                volumes, error = self.parseVolumeInput(volumeText, len(self.files))
+                if error:
+                    self.statusLabel.setText(error)
+                    return
+            
+            if not bulkData and volumes is None:
+                self.statusLabel.setText('No changes to apply.')
+                return
+            
+            errors = []
+            total = len(self.files)
+            self.okButton.setEnabled(False)
+            self.cancelButton.setEnabled(False)
+            
+            for i, file in enumerate(self.files, 1):
+                self.statusLabel.setText(f'Processing {i}/{total}: {os.path.basename(file)}')
+                QApplication.processEvents()
+                
+                try:
+                    parser = metadata.MetadataParser(file)
+                    if parser.format in ['RAR', 'RAR5']:
+                        errors.append(f'{os.path.basename(file)}: CBR is read-only')
+                        continue
+                    for key, value in bulkData.items():
+                        parser.data[key] = value
+                    # Set volume if bulk volume editing is enabled
+                    if volumes is not None:
+                        parser.data['Volume'] = str(volumes[i - 1])
+                    parser.saveXML()
+                except Exception as err:
+                    errors.append(f'{os.path.basename(file)}: {str(err)}')
+            
+            self.okButton.setEnabled(True)
+            self.cancelButton.setEnabled(True)
+            
+            if errors:
+                GUI.showDialog("Some files failed to save:\n\n" + "\n".join(errors[:10]) + 
+                              (f"\n...and {len(errors) - 10} more" if len(errors) > 10 else ""), 'error')
+                self.statusLabel.setText('Errors occurred.')
+            else:
+                self.statusLabel.setText(f'Successfully updated {total} files.')
+                self.ui.close()
+        else:
+            for field in (self.volumeLine, self.numberLine):
+                if field.text().isnumeric() or self.cleanData(field.text()) == '':
+                    self.parser.data[field.objectName().capitalize()[:-4]] = self.cleanData(field.text())
+                else:
+                    self.statusLabel.setText(field.objectName().capitalize()[:-4] + ' field must be a number.')
+                    break
+            else:
+                for field in (self.seriesLine, self.titleLine):
+                    self.parser.data[field.objectName().capitalize()[:-4]] = self.cleanData(field.text())
+                for field in (self.writerLine, self.pencillerLine, self.inkerLine, self.coloristLine):
+                    values = self.cleanData(field.text()).split(',')
+                    tmpData = []
+                    for value in values:
+                        if self.cleanData(value) != '':
+                            tmpData.append(self.cleanData(value))
+                    self.parser.data[field.objectName().capitalize()[:-4] + 's'] = tmpData
+                try:
+                    self.parser.saveXML()
+                except Exception as err:
+                    _, _, traceback = sys.exc_info()
+                    GUI.sentry.captureException()
+                    GUI.showDialog("Failed to save metadata!\n\n%s\n\nTraceback:\n%s"
+                                   % (str(err), sanitizeTrace(traceback)), 'error')
+                self.ui.close()
 
     def cleanData(self, s):
         return escape(s.strip())
 
+    def parseVolumeInput(self, text, fileCount):
+        text = text.strip()
+        if not text:
+            return None, None
+        
+        volumes = []
+        
+        # Check if it's a range (e.g., "5-10")
+        if '-' in text and ',' not in text:
+            parts = text.split('-')
+            if len(parts) != 2 or not parts[0].strip() or not parts[1].strip():
+                return None, 'Invalid range format (use start-end)'
+            try:
+                start = int(parts[0].strip())
+                end = int(parts[1].strip())
+                if start < 0 or end < 0:
+                    return None, 'Volume numbers must be positive'
+                if start > end:
+                    return None, 'Invalid range: start > end'
+                volumes = list(range(start, end + 1))
+            except ValueError:
+                return None, 'Invalid range format'
+        # Check if it's a comma-separated list (e.g., "1,3,5")
+        elif ',' in text:
+            try:
+                volumes = [int(v.strip()) for v in text.split(',') if v.strip()]
+                if any(v < 0 for v in volumes):
+                    return None, 'Volume numbers must be positive'
+            except ValueError:
+                return None, 'Invalid list format'
+        # Single number - generate sequence starting from that number
+        else:
+            try:
+                start = int(text)
+                if start < 0:
+                    return None, 'Volume number must be positive'
+                volumes = list(range(start, start + fileCount))
+            except ValueError:
+                return None, 'Invalid number'
+        
+        # Validate count
+        if not volumes:
+            return None, 'No valid volume numbers parsed'
+        if len(volumes) != fileCount:
+            return None, f'Volume count ({len(volumes)}) ≠ file count ({fileCount})'
+        
+        return volumes, None
+    
+    def toggleBulkVolume(self, checked):
+        self.volumeLine.setEnabled(checked)
+        if checked:
+            self.volumeLine.setText('')
+            self.volumeLine.setPlaceholderText('e.g., 5 or 1-10 or 1,3,5')
+        else:
+            self.volumeLine.setText('')
+            self.volumeLine.setPlaceholderText('(multiple files)')
+
     def __init__(self):
         self.ui = QDialog()
         self.parser = None
+        self.files = []
+        self.bulkMode = False
         self.setupUi(self.ui)
         self.ui.setWindowFlags(self.ui.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint)
+        
+        self.bulkVolumeCheck.stateChanged.connect(self.toggleBulkVolume)
+        
         self.okButton.clicked.connect(self.saveData)
         self.cancelButton.clicked.connect(self.ui.close)
         if sys.platform.startswith('linux'):
