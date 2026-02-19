@@ -467,6 +467,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.pdfExtractBox, 9, 0, 1, 1)
 
+        self.coverExactBox = QCheckBox(self.optionWidget)
+        self.coverExactBox.setObjectName(u"coverExactBox")
+
+        self.gridLayout_2.addWidget(self.coverExactBox, 9, 1, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -549,7 +554,8 @@ class Ui_mainWindow(object):
         QWidget.setTabOrder(self.fileFusionBox, self.noRotateBox)
         QWidget.setTabOrder(self.noRotateBox, self.interPanelCropBox)
         QWidget.setTabOrder(self.interPanelCropBox, self.metadataTitleBox)
-        QWidget.setTabOrder(self.metadataTitleBox, self.chunkSizeCheckBox)
+        QWidget.setTabOrder(self.metadataTitleBox, self.coverExactBox)
+        QWidget.setTabOrder(self.coverExactBox, self.chunkSizeCheckBox)
         QWidget.setTabOrder(self.chunkSizeCheckBox, self.chunkSizeBox)
         QWidget.setTabOrder(self.chunkSizeBox, self.eraseRainbowBox)
         QWidget.setTabOrder(self.eraseRainbowBox, self.rotateFirstBox)
@@ -744,7 +750,11 @@ class Ui_mainWindow(object):
 "Useful for really weird PDFs.", None))
 #endif // QT_CONFIG(tooltip)
         self.pdfExtractBox.setText(QCoreApplication.translate("mainWindow", u"PDF Legacy Extract", None))
+#if QT_CONFIG(tooltip)
+        self.coverExactBox.setToolTip(QCoreApplication.translate("mainWindow", u"Resize cover to exact device resolution by center-cropping to aspect ratio first.\n"
+"May crop top/bottom or left/right depending on source aspect ratio.", None))
+#endif // QT_CONFIG(tooltip)
+        self.coverExactBox.setText(QCoreApplication.translate("mainWindow", u"Exact Cover Fit", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
         self.jpegQualityLabel.setText(QCoreApplication.translate("mainWindow", u"JPEG Quality:", None))
     # retranslateUi
-
