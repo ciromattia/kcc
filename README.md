@@ -269,6 +269,7 @@ PROCESSING:
                         Crop empty sections. 0: Disabled 1: Horizontally 2: Both [Default=0]
   --blackborders        Disable autodetection and force black borders
   --whiteborders        Disable autodetection and force white borders
+  --coverexact          Center-crop only the cover to the exact target device resolution
   --forcecolor          Don't convert images to grayscale
   --forcepng            Create PNG files instead JPEG
   --mozjpeg             Create JPEG files using mozJpeg
