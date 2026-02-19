@@ -140,8 +140,6 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 - [Windows 7 support](https://github.com/ciromattia/kcc/issues/678)
 - Image too dark?
   - The default gamma correction of 1.8 makes the image darker, and is useful for faded/gray artwork/text. Disable by setting gamma = 1.0
-- Cover has side borders?
-  - Enable `Exact Cover Fit` (GUI) or `--coverexact` (CLI) to center-crop only the cover to the exact target device resolution.
 - Huge margins / slow page turns?
   - You likely modified the file during transfer using a 3rd party app. Try simply dragging and dropping the final mobi/kepub file into the Kindle documents folder via USB.
 
@@ -271,6 +269,7 @@ PROCESSING:
                         Crop empty sections. 0: Disabled 1: Horizontally 2: Both [Default=0]
   --blackborders        Disable autodetection and force black borders
   --whiteborders        Disable autodetection and force white borders
+  --coverexact          Center-crop only the cover to the exact target device resolution
   --forcecolor          Don't convert images to grayscale
   --forcepng            Create PNG files instead JPEG
   --mozjpeg             Create JPEG files using mozJpeg
