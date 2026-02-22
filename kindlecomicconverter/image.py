@@ -569,7 +569,8 @@ class Cover:
         if self.options.kindle_scribe_azw3:
             size[0] = min(size[0], 1920)
             size[1] = min(size[1], 1920)
-        if self.options.coverfill:
+        if self.options.coverfill and not self.options.kindle_scribe_azw3:
+            # TODO: Kindle Scribe case
             self.image = ImageOps.fit(self.image, tuple(size), Image.Resampling.LANCZOS, centering=(0.5, 0.5))
         else:
             self.image.thumbnail(tuple(size), Image.Resampling.LANCZOS)

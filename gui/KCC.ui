@@ -912,7 +912,7 @@ Useful for really weird PDFs.</string>
         <widget class="QCheckBox" name="coverFillBox">
          <property name="toolTip">
           <string>Resize cover to exact device resolution by center-cropping to aspect ratio first.
-May crop top/bottom or left/right depending on source aspect ratio.</string>
+May crop top/bottom or left/right depending on source aspect ratio. Not implemented for Kindle Scribe.</string>
          </property>
          <property name="text">
           <string>Cover Fill</string>

@@ -752,7 +752,7 @@ class Ui_mainWindow(object):
         self.pdfExtractBox.setText(QCoreApplication.translate("mainWindow", u"PDF Legacy Extract", None))
 #if QT_CONFIG(tooltip)
         self.coverFillBox.setToolTip(QCoreApplication.translate("mainWindow", u"Resize cover to exact device resolution by center-cropping to aspect ratio first.\n"
-"May crop top/bottom or left/right depending on source aspect ratio.", None))
+"May crop top/bottom or left/right depending on source aspect ratio. Not implemented for Kindle Scribe.", None))
 #endif // QT_CONFIG(tooltip)
         self.coverFillBox.setText(QCoreApplication.translate("mainWindow", u"Cover Fill", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
