@@ -329,8 +329,8 @@ class WorkerThread(QThread):
             options.noprocessing = True
         if GUI.pdfExtractBox.isChecked():
             options.pdfextract = True
-        if GUI.coverExactBox.isChecked():
-            options.coverexact = True
+        if GUI.coverFillBox.isChecked():
+            options.coverfill = True
         if GUI.metadataTitleBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.metadatatitle = 1
         elif GUI.metadataTitleBox.checkState() == Qt.CheckState.Checked:
@@ -1038,7 +1038,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'eraseRainbowBox': GUI.eraseRainbowBox.checkState(),
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState(),
                                            'pdfExtractBox': GUI.pdfExtractBox.checkState(),
-                                           'coverExactBox': GUI.coverExactBox.checkState(),
+                                           'coverFillBox': GUI.coverFillBox.checkState(),
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'jpegQualityBox': GUI.jpegQualityBox.checkState(),

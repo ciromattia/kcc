@@ -909,13 +909,13 @@ Useful for really weird PDFs.</string>
         </widget>
        </item>
        <item row="9" column="1">
-        <widget class="QCheckBox" name="coverExactBox">
+        <widget class="QCheckBox" name="coverFillBox">
          <property name="toolTip">
           <string>Resize cover to exact device resolution by center-cropping to aspect ratio first.
 May crop top/bottom or left/right depending on source aspect ratio.</string>
          </property>
          <property name="text">
-          <string>Exact Cover Fit</string>
+          <string>Cover Fill</string>
          </property>
         </widget>
        </item>
@@ -1048,7 +1048,7 @@ May crop top/bottom or left/right depending on source aspect ratio.</string>
   <tabstop>noRotateBox</tabstop>
   <tabstop>interPanelCropBox</tabstop>
   <tabstop>metadataTitleBox</tabstop>
-  <tabstop>coverExactBox</tabstop>
+  <tabstop>coverFillBox</tabstop>
   <tabstop>chunkSizeCheckBox</tabstop>
   <tabstop>chunkSizeBox</tabstop>
   <tabstop>eraseRainbowBox</tabstop>
