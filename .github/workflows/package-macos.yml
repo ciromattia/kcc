@@ -38,7 +38,7 @@ jobs:
           cache: 'pip'
       - name: Install python dependencies
         run: |
-          python -m pip install --upgrade pip setuptools wheel pyinstaller certifi
+          python -m pip install --upgrade pip pyinstaller certifi
           pip install -r requirements.txt
       - name: Install the Apple certificate and provisioning profile
 #        TODO signing
