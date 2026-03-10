@@ -1424,6 +1424,11 @@ def checkOptions(options):
     options.isKobo = False
     options.bordersColor = None
     options.keep_epub = False
+    if options.format == 'PDF-200MB':
+        options.targetsize = 195
+        options.format = 'PDF'
+        if options.batchsplit != 2:
+            options.batchsplit = 1
     if options.format == 'EPUB-200MB':
         options.targetsize = 195
         options.format = 'EPUB'
