@@ -353,6 +353,8 @@ class WorkerThread(QThread):
             options.forcepng = True
         elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
             options.mozjpeg = True
+        if GUI.noQuantizeBox.isChecked():
+            options.noquantize = True
         if GUI.jpegQualityBox.isChecked():
             options.jpegquality = GUI.jpegQualitySpinBox.value()
         if GUI.currentMode > 2:
@@ -1045,6 +1047,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'coverFillBox': GUI.coverFillBox.checkState(),
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
+                                           'noQuantizeBox': GUI.noQuantizeBox.checkState(),
                                            'jpegQualityBox': GUI.jpegQualityBox.checkState(),
                                            'jpegQuality': GUI.jpegQualitySpinBox.value(),
                                            'widthBox': GUI.widthBox.value(),

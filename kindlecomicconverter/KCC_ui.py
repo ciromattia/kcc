@@ -477,6 +477,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.rotateRightBox, 10, 1, 1, 1)
 
+        self.noQuantizeBox = QCheckBox(self.optionWidget)
+        self.noQuantizeBox.setObjectName(u"noQuantizeBox")
+
+        self.gridLayout_2.addWidget(self.noQuantizeBox, 10, 2, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -764,6 +769,14 @@ class Ui_mainWindow(object):
         self.rotateRightBox.setToolTip(QCoreApplication.translate("mainWindow", u"Rotate 2 page spreads in opposite direction than normal.", None))
 #endif // QT_CONFIG(tooltip)
         self.rotateRightBox.setText(QCoreApplication.translate("mainWindow", u"Rotate Right", None))
+#if QT_CONFIG(tooltip)
+        self.noQuantizeBox.setToolTip(QCoreApplication.translate("mainWindow", u"Don't quantize PNG images to 16 colors (4 bit)\n"
+"\n"
+"This will double file size but preserve all 256 colors (8 bit).\n"
+"\n"
+"Eink only has 16 shades of gray so you probably don't want this.", None))
+#endif // QT_CONFIG(tooltip)
+        self.noQuantizeBox.setText(QCoreApplication.translate("mainWindow", u"No Quantize", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
         self.jpegQualityLabel.setText(QCoreApplication.translate("mainWindow", u"JPEG Quality:", None))
     # retranslateUi

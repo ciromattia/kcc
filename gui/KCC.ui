@@ -929,6 +929,20 @@ Higher values are larger and higher quality, and may resolve blank page issues.<
          </property>
         </widget>
        </item>
+       <item row="10" column="2">
+        <widget class="QCheckBox" name="noQuantizeBox">
+         <property name="toolTip">
+          <string>Don't quantize PNG images to 16 colors (4 bit)
+
+This will double file size but preserve all 256 colors (8 bit).
+
+Eink only has 16 shades of gray so you probably don't want this.</string>
+         </property>
+         <property name="text">
+          <string>No Quantize</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
