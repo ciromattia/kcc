@@ -1356,6 +1356,8 @@ def makeParser():
                                 help="Shift first page to opposite side in landscape for spread alignment")
     output_options.add_argument("--norotate", action="store_true", dest="norotate", default=False,
                                 help="Do not rotate double page spreads in spread splitter option.")
+    output_options.add_argument("--rotateright", action="store_true", dest="rotateright", default=False,
+                                help="Rotate double page spreads in opposite direction.")
     output_options.add_argument("--rotatefirst", action="store_true", dest="rotatefirst", default=False,
                                 help="Put rotated 2 page spread first in spread splitter option.")
 
