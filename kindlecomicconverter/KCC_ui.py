@@ -482,6 +482,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.noQuantizeBox, 10, 2, 1, 1)
 
+        self.pdfWidthBox = QCheckBox(self.optionWidget)
+        self.pdfWidthBox.setObjectName(u"pdfWidthBox")
+
+        self.gridLayout_2.addWidget(self.pdfWidthBox, 10, 0, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -777,6 +782,12 @@ class Ui_mainWindow(object):
 "Eink only has 16 shades of gray so you probably don't want this.", None))
 #endif // QT_CONFIG(tooltip)
         self.noQuantizeBox.setText(QCoreApplication.translate("mainWindow", u"No Quantize", None))
+#if QT_CONFIG(tooltip)
+        self.pdfWidthBox.setToolTip(QCoreApplication.translate("mainWindow", u"Render vector PDFs to device width instead of height.\n"
+"\n"
+"Useful if you plan to crop a little off the top and bottom to fill screen.", None))
+#endif // QT_CONFIG(tooltip)
+        self.pdfWidthBox.setText(QCoreApplication.translate("mainWindow", u"PDF Width Render", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
         self.jpegQualityLabel.setText(QCoreApplication.translate("mainWindow", u"JPEG Quality:", None))
     # retranslateUi

@@ -329,6 +329,8 @@ class WorkerThread(QThread):
             options.noprocessing = True
         if GUI.pdfExtractBox.isChecked():
             options.pdfextract = True
+        if GUI.pdfWidthBox.isChecked():
+            options.pdfwidth = True
         if GUI.coverFillBox.isChecked():
             options.coverfill = True
         if GUI.metadataTitleBox.checkState() == Qt.CheckState.PartiallyChecked:
@@ -888,6 +890,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     self.addMessage('Colorsoft MOBI/EPUB can have blank pages. Just go back a few pages, exit, and reenter book.', 'info')
                     break
         elif profile['Label'] == 'KDX':
+            GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
             GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
         if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
@@ -1044,6 +1047,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'eraseRainbowBox': GUI.eraseRainbowBox.checkState(),
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState(),
                                            'pdfExtractBox': GUI.pdfExtractBox.checkState(),
+                                           'pdfWidthBox': GUI.pdfWidthBox.checkState(),
                                            'coverFillBox': GUI.coverFillBox.checkState(),
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),

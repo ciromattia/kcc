@@ -744,7 +744,9 @@ def render_page(vector):
     cpu = vector[1]  # number of CPUs
     filename = vector[2]  # document filename
     output_dir = vector[3]
-    target_height = vector[4]
+    target_width = vector[4]
+    target_height = vector[5]
+    pdf_width = vector[6]
     with pymupdf.open(filename) as doc:  # open the document
         num_pages = doc.page_count  # get number of pages
 
@@ -755,7 +757,10 @@ def render_page(vector):
 
         for i in range(seg_from, seg_to):  # work through our page segment
             page = doc[i]
-            zoom = target_height / page.rect.height
+            if not pdf_width or page.rect.width > page.rect.height:
+                zoom = target_height / page.rect.height
+            else:
+                zoom = target_width / page.rect.width
             mat = pymupdf.Matrix(zoom, zoom)
             # TODO: decide colorspace earlier so later color check is cheaper.
             # This is actually pretty hard when you have to deal with color vector text
@@ -820,7 +825,7 @@ def extract_page(vector):
 
 
 
-def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
+def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_height):
     render = False
     with pymupdf.open(filename) as doc:
         for page in doc:
@@ -840,7 +845,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_height):
     cpu = cpu_count()
 
     # make vectors of arguments for the processes
-    vectors = [(i, cpu, filename, output_dir, target_height) for i in range(cpu)]
+    vectors = [(i, cpu, filename, output_dir, target_width, target_height, options.pdfwidth) for i in range(cpu)]
     print("Starting %i processes for '%s'." % (cpu, filename))
 
 
@@ -885,13 +890,13 @@ def getWorkFolder(afile, workdir=None):
                 if njpg == 0:
                     raise UserWarning("Failed to extract images from PDF file.")
                 return workdir
-            target_height = options.profileData[1][1]
+            target_width, target_height = options.profileData[1]
             if options.cropping == 1:
                 target_height = target_height + target_height*0.20 #Account for possible margin at the top and bottom
             elif options.cropping == 2:
                 target_height = target_height + target_height*0.25 #Account for possible margin at the top and bottom with page number
             try:
-                mupdf_pdf_process_pages_parallel(afile, fullPath, target_height)
+                mupdf_pdf_process_pages_parallel(afile, fullPath, target_width, target_height)
             except Exception as e:
                 rmtree(path, True)
                 raise UserWarning(f"Failed to extract images from PDF file. {e}")
@@ -1366,6 +1371,8 @@ def makeParser():
                                     help="Do not modify image and ignore any profile or processing option")
     processing_options.add_argument("--pdfextract", action="store_true", dest="pdfextract", default=False,
                                     help="Use the legacy PDF image extraction method from KCC 8 and earlier")
+    processing_options.add_argument("--pdfwidth", action="store_true", dest="pdfwidth", default=False,
+                                    help="Render vector PDFs to device width instead of height.")
     processing_options.add_argument("--coverfill", action="store_true", dest="coverfill", default=False,
                                     help="Crop cover to fill screen")
     processing_options.add_argument("-u", "--upscale", action="store_true", dest="upscale", default=False,

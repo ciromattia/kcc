@@ -943,6 +943,18 @@ Eink only has 16 shades of gray so you probably don't want this.</string>
          </property>
         </widget>
        </item>
+       <item row="10" column="0">
+        <widget class="QCheckBox" name="pdfWidthBox">
+         <property name="toolTip">
+          <string>Render vector PDFs to device width instead of height.
+
+Useful if you plan to crop a little off the top and bottom to fill screen.</string>
+         </property>
+         <property name="text">
+          <string>PDF Width Render</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
