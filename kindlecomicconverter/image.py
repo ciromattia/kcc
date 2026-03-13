@@ -197,7 +197,10 @@ class ComicPageParser:
                 and not self.opt.webtoon and self.opt.splitter == 1:
             spread = self.image
             if not self.opt.norotate:
-                spread = spread.rotate(90, Image.Resampling.BICUBIC, True)
+                if not self.opt.rotateright:
+                    spread = spread.rotate(90, Image.Resampling.BICUBIC, True)
+                else:
+                    spread = spread.rotate(-90, Image.Resampling.BICUBIC, True)
             self.payload.append(['R', self.source, spread, self.fill])
         elif (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:
             if self.opt.splitter != 1:
@@ -218,7 +221,10 @@ class ComicPageParser:
             if self.opt.splitter > 0:
                 spread = self.image
                 if not self.opt.norotate:
-                    spread = spread.rotate(90, Image.Resampling.BICUBIC, True)
+                    if not self.opt.rotateright:
+                        spread = spread.rotate(90, Image.Resampling.BICUBIC, True)
+                    else:
+                        spread = spread.rotate(-90, Image.Resampling.BICUBIC, True)
                 self.payload.append(['R', self.source, spread, self.fill])
         else:
             self.payload.append(['N', self.source, self.image, self.fill])
