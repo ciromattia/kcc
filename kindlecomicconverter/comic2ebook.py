@@ -707,8 +707,11 @@ def imgFileProcessing(work):
                 pass
             elif opt.forcepng:
                 img.convertToGrayscale()
-                if opt.format != 'PDF':
-                    img.quantizeImage()
+                img.quantizeImage()
+                if opt.format == 'PDF':
+                    img.convertToGrayscale()
+                elif opt.profile == 'KDX' and opt.format == 'CBZ':
+                    img.convertToGrayscale()
             else:
                 img.convertToGrayscale()
             output.append(img.saveToDir())
@@ -1487,9 +1490,6 @@ def checkOptions(options):
     if 'Ko' in options.profile:
         options.panelview = False
         options.hq = False
-    # CBZ files on Kindle DX/DXG support higher resolution
-    if options.profile == 'KDX' and options.format == 'CBZ':
-        options.customheight = 1200
     # KFX output create EPUB that might be can be by jhowell KFX Output Calibre plugin
     if options.format == 'KFX':
         options.format = 'EPUB'
@@ -1515,6 +1515,13 @@ def checkOptions(options):
             options.jpegquality = 85
     options.kindle_azw3 = options.iskindle and ('MOBI' in options.format or 'EPUB' in options.format)
     options.kindle_scribe_azw3 = options.profile.startswith('KS') and options.kindle_azw3
+
+    # CBZ files on Kindle DX/DXG support higher resolution
+    if options.profile == 'KDX' and options.format == 'CBZ':
+        options.profileData = list(image.ProfileData.Profiles[options.profile])
+        options.profileData[1] = list(options.profileData[1])
+        options.profileData[1][1] = 1200
+
     if options.kindle_scribe_azw3:
         options.profileData = list(image.ProfileData.Profiles[options.profile])
         options.profileData[1] = list(options.profileData[1])
