@@ -883,6 +883,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if bad_format in current_format:
                     self.addMessage('Colorsoft MOBI/EPUB can have blank pages. Just go back a few pages, exit, and reenter book.', 'info')
                     break
+        elif profile['Label'] == 'KDX':
+            GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
         if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
         if str(GUI.deviceBox.currentText()) == 'Other':
@@ -909,7 +911,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         elif not GUI.webtoonBox.isChecked():
             GUI.chunkSizeCheckBox.setEnabled(True)
         if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'PDF') and not GUI.webtoonBox.isChecked():
-            self.addMessage("Partially check W/B Margins if you don't want KCC to extend the image margins.", 'info')   
+            self.addMessage("Partially check W/B Margins if you don't want KCC to extend the image margins.", 'info')
 
     def stripTags(self, html):
         s = HTMLStripper()
