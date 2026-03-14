@@ -273,6 +273,7 @@ PROCESSING:
   --coverfill           Center-crop only the cover to fill target device screen
   --forcecolor          Don't convert images to grayscale
   --forcepng            Create PNG files instead JPEG
+  --pnglegacy           Use a more compatible 8 bit PNG instead of 4 bit.
   --noquantize          Don't quantize PNG images to 16 colors
   --mozjpeg             Create JPEG files using mozJpeg
   --jpeg-quality        The JPEG quality, on a scale from 0 (worst) to 95 (best). Default 85 for most devices.
