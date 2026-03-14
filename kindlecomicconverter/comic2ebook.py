@@ -713,6 +713,8 @@ def imgFileProcessing(work):
                     img.convertToGrayscale()
                 elif opt.profile == 'KDX' and opt.format == 'CBZ':
                     img.convertToGrayscale()
+                elif opt.pnglegacy:
+                    img.convertToGrayscale()
             else:
                 img.convertToGrayscale()
             output.append(img.saveToDir())
@@ -1411,6 +1413,8 @@ def makeParser():
                                 help="Erase rainbow effect on color eink screen by attenuating interfering frequencies")
     processing_options.add_argument("--forcepng", action="store_true", dest="forcepng", default=False,
                                     help="Create PNG files instead JPEG")
+    processing_options.add_argument("--pnglegacy", action="store_true", dest="pnglegacy", default=False,
+                                    help="Use a more compatible 8 bit png instead of 4 bit")
     processing_options.add_argument("--noquantize", action="store_true", dest="noquantize", default=False,
                                     help="Don't quantize to 16 color PNG")
     processing_options.add_argument("--mozjpeg", action="store_true", dest="mozjpeg", default=False,
