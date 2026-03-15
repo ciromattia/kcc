@@ -277,6 +277,8 @@ class ComicPage:
         self.original_color_mode = image.mode
         # TODO: color check earlier
         self.image = image.convert("RGB")
+        self.color = self.colorCheck()
+        self.colorOutput = self.color and self.opt.forcecolor
         self.fill = fill
         self.rotated = False
         self.orgPath = os.path.join(path[0], path[1])
@@ -295,8 +297,7 @@ class ComicPage:
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
 
-    @cached_property
-    def color(self):
+    def colorCheck(self):
         if self.original_color_mode in ("L", "1"):
             return False
         if self.opt.webtoon:
@@ -405,7 +406,7 @@ class ComicPage:
             raise RuntimeError('Cannot save image. ' + str(err))
 
     def save_with_codec(self, image, targetPath):
-        if self.opt.forcepng and not self.color:
+        if self.opt.forcepng and not self.colorOutput:
             image.info.pop('transparency', None)
             if self.opt.iskindle and ('MOBI' in self.opt.format or 'EPUB' in self.opt.format):
                 targetPath += '.gif'

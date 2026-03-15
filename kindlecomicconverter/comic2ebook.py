@@ -689,7 +689,6 @@ def imgFileProcessing(work):
         workImg = image.ComicPageParser((dirpath, afile), opt)
         for i in workImg.payload:
             img = image.ComicPage(opt, *i)
-            is_color = (opt.forcecolor and img.color)
             if opt.cropping == 2 and not opt.webtoon:
                 img.cropPageNumber(opt.croppingp, opt.croppingm)
             if opt.cropping == 1 and not opt.webtoon:
@@ -701,11 +700,11 @@ def imgFileProcessing(work):
 
             img.autocontrastImage()
             img.resizeImage()
-            img.optimizeForDisplay(opt.eraserainbow, is_color)
+            img.optimizeForDisplay(opt.eraserainbow, opt.colorOutput)
 
-            if is_color:
+            if opt.colorOutput:
                 pass
-            elif opt.forcepng and not img.color:
+            elif opt.forcepng and not img.colorOutput:
                 img.convertToGrayscale()
                 if not opt.noquantize:
                     img.quantizeImage()
