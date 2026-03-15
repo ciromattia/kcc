@@ -705,7 +705,7 @@ def imgFileProcessing(work):
 
             if is_color:
                 pass
-            elif opt.forcepng:
+            elif opt.forcepng and not img.color:
                 img.convertToGrayscale()
                 if not opt.noquantize:
                     img.quantizeImage()
