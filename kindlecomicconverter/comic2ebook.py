@@ -700,9 +700,9 @@ def imgFileProcessing(work):
 
             img.autocontrastImage()
             img.resizeImage()
-            img.optimizeForDisplay(opt.eraserainbow, opt.colorOutput)
+            img.optimizeForDisplay(opt.eraserainbow, img.colorOutput)
 
-            if opt.colorOutput:
+            if img.colorOutput:
                 pass
             elif opt.forcepng and not img.colorOutput:
                 img.convertToGrayscale()
