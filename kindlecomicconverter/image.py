@@ -484,7 +484,7 @@ class ComicPage:
 
         palImg = Image.new('P', (1, 1))
         palImg.putpalette(self.palette)
-        self.image = self.image.quantize(palette=palImg)
+        self.image = self.image.quantize(palette=palImg, dither=Image.Dither.NONE)
 
     def optimizeForDisplay(self, eraserainbow, is_color):
         # Erase rainbow artifacts for grayscale and color images by removing spectral frequencies that cause Moire interference with color filter array
