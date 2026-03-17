@@ -698,6 +698,9 @@ def imgFileProcessing(work):
 
             img.gammaCorrectImage()
 
+            if not img.colorOutput:
+                img.convertToGrayscale()
+
             img.autocontrastImage()
             img.resizeImage()
             img.optimizeForDisplay(opt.eraserainbow, img.colorOutput)
@@ -705,7 +708,6 @@ def imgFileProcessing(work):
             if img.colorOutput:
                 pass
             elif opt.forcepng:
-                img.convertToGrayscale()
                 if not opt.noquantize:
                     img.quantizeImage()
                 if opt.format == 'PDF':
@@ -714,8 +716,6 @@ def imgFileProcessing(work):
                     img.convertToGrayscale()
                 elif opt.pnglegacy:
                     img.convertToGrayscale()
-            else:
-                img.convertToGrayscale()
             output.append(img.saveToDir())
         return output
     except Exception:
