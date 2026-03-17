@@ -355,6 +355,8 @@ class WorkerThread(QThread):
             options.forcepng = True
         elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
             options.mozjpeg = True
+        if GUI.pngLegacyBox.isChecked():
+            options.pnglegacy = True
         if GUI.noQuantizeBox.isChecked():
             options.noquantize = True
         if GUI.jpegQualityBox.isChecked():
@@ -892,6 +894,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         elif profile['Label'] == 'KDX':
             GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
             GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
+            GUI.pngLegacyBox.setChecked(True)
         if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
         if str(GUI.deviceBox.currentText()) == 'Other':
@@ -1051,6 +1054,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'coverFillBox': GUI.coverFillBox.checkState(),
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
+                                           'pngLegacyBox': GUI.pngLegacyBox.checkState(),
                                            'noQuantizeBox': GUI.noQuantizeBox.checkState(),
                                            'jpegQualityBox': GUI.jpegQualityBox.checkState(),
                                            'jpegQuality': GUI.jpegQualitySpinBox.value(),
