@@ -518,7 +518,7 @@ class ComicPage:
                 self.image = ImageOps.contain(self.image, self.size, method=method)
 
     def resize_method(self):
-        if self.image.size[0] < self.size[0] and self.image.size[1] < self.size[1]:
+        if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             return Image.Resampling.BICUBIC
         else:
             return Image.Resampling.LANCZOS
