@@ -272,7 +272,7 @@ PROCESSING:
   --whiteborders        Disable autodetection and force white borders
   --coverfill           Center-crop only the cover to fill target device screen
   --forcecolor          Don't convert images to grayscale
-  --forcepng            Create PNG files instead JPEG
+  --forcepng            Create PNG files instead JPEG for black and white images
   --force-png-rgb       Force color images to be saved as PNG
   --pnglegacy           Use a more compatible 8 bit PNG instead of 4 bit.
   --noquantize          Don't quantize PNG images to 16 colors
