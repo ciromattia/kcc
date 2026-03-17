@@ -1412,6 +1412,8 @@ def makeParser():
                                 help="Erase rainbow effect on color eink screen by attenuating interfering frequencies")
     processing_options.add_argument("--forcepng", action="store_true", dest="forcepng", default=False,
                                     help="Create PNG files instead JPEG")
+    processing_options.add_argument("--force-png-rgb", action="store_true", dest="force_png_rgb", default=False,
+                                    help="Force color images to be saved as PNG")
     processing_options.add_argument("--pnglegacy", action="store_true", dest="pnglegacy", default=False,
                                     help="Use a more compatible 8 bit png instead of 4 bit")
     processing_options.add_argument("--noquantize", action="store_true", dest="noquantize", default=False,

@@ -406,7 +406,7 @@ class ComicPage:
             raise RuntimeError('Cannot save image. ' + str(err))
 
     def save_with_codec(self, image, targetPath):
-        if self.opt.forcepng and not self.colorOutput:
+        if self.opt.forcepng and (not self.colorOutput or self.opt.force_png_rgb):
             image.info.pop('transparency', None)
             if self.opt.iskindle and ('MOBI' in self.opt.format or 'EPUB' in self.opt.format):
                 targetPath += '.gif'
