@@ -351,6 +351,8 @@ class WorkerThread(QThread):
             options.rotateright = True
         if GUI.rotateFirstBox.isChecked():
             options.rotatefirst = True
+        if GUI.forcePngRgbBox.isChecked():
+            options.force_png_rgb = True
         if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.forcepng = True
         elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
@@ -1054,6 +1056,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'coverFillBox': GUI.coverFillBox.checkState(),
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
+                                           'forcePngRgbBox': GUI.forcePngRgbBox.checkState(),
                                            'pngLegacyBox': GUI.pngLegacyBox.checkState(),
                                            'noQuantizeBox': GUI.noQuantizeBox.checkState(),
                                            'jpegQualityBox': GUI.jpegQualityBox.checkState(),

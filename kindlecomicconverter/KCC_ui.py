@@ -492,6 +492,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.pngLegacyBox, 11, 0, 1, 1)
 
+        self.forcePngRgbBox = QCheckBox(self.optionWidget)
+        self.forcePngRgbBox.setObjectName(u"forcePngRgbBox")
+
+        self.gridLayout_2.addWidget(self.forcePngRgbBox, 11, 2, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -745,7 +750,7 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.qualityBox.setText(QCoreApplication.translate("mainWindow", u"Panel View 4/2/HQ", None))
 #if QT_CONFIG(tooltip)
-        self.mozJpegBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - JPEG<br/></span>Use JPEG files</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - force PNG<br/></span>Create PNG files instead JPEG</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - mozJpeg<br/></span>10-20% smaller JPEG file, with the same image quality, but processing time multiplied by 2</p></body></html>", None))
+        self.mozJpegBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - JPEG<br/></span>Use JPEG files</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - force PNG<br/></span>Create PNG files instead JPEG for black and white images</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - mozJpeg<br/></span>10-20% smaller JPEG file, with the same image quality, but processing time multiplied by 2</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.mozJpegBox.setText(QCoreApplication.translate("mainWindow", u"JPEG/PNG/mozJpeg", None))
 #if QT_CONFIG(tooltip)
@@ -797,6 +802,10 @@ class Ui_mainWindow(object):
         self.pngLegacyBox.setToolTip(QCoreApplication.translate("mainWindow", u"Use a more compatible 8 bit PNG instead of 4 bit.", None))
 #endif // QT_CONFIG(tooltip)
         self.pngLegacyBox.setText(QCoreApplication.translate("mainWindow", u"PNG Legacy Mode", None))
+#if QT_CONFIG(tooltip)
+        self.forcePngRgbBox.setToolTip(QCoreApplication.translate("mainWindow", u"Force full color images to be saved in lossless PNG format, dramatically increases the filesize.", None))
+#endif // QT_CONFIG(tooltip)
+        self.forcePngRgbBox.setText(QCoreApplication.translate("mainWindow", u"Force PNG RGB", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
         self.jpegQualityLabel.setText(QCoreApplication.translate("mainWindow", u"JPEG Quality:", None))
     # retranslateUi
