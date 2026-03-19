@@ -22,7 +22,7 @@ import itertools
 from pathlib import Path
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
 from PySide6.QtGui import (QColor, QIcon, QPixmap, QDesktopServices)
-from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QTreeView, QAbstractItemView)
+from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QTreeView, QAbstractItemView, QInputDialog)
 from PySide6.QtNetwork import (QLocalSocket, QLocalServer)
 
 import os
@@ -692,6 +692,50 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         # noinspection PyCallByClass
         QDesktopServices.openUrl(QUrl('https://ko-fi.com/eink_dude'))
 
+    def changeLanguage(self):
+        current = self.settings.value('locale', 'es', type=str)
+        items = ['Español (es)', 'English (en)']
+        current_idx = 1 if current == 'en' else 0
+        choice, ok = QInputDialog.getItem(None, 'Idioma / Language', 'Select language:', items, current_idx, False)
+        if ok:
+            locale = 'en' if choice.endswith('(en)') else 'es'
+            self.settings.setValue('locale', locale)
+            self.settings.sync()
+            # Update the translator and UI immediately
+            global APP, MW
+            if hasattr(APP, '_translator'):
+                APP._translator.loadLocale(locale)
+                
+                # Save current jobs (items without icons)
+                jobs = []
+                for i in range(GUI.jobList.count()):
+                    item = GUI.jobList.item(i)
+                    if item.icon().isNull():
+                        jobs.append(item.text())
+                
+                # Clear the list
+                GUI.jobList.clear()
+                
+                # Re-add tips/messages in the new language
+                self.addMessage('<b>Tip:</b> Hover mouse over options to see additional information in tooltips.', 'info')
+                self.addMessage('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.', 'info')
+                if self.startNumber < 5:
+                    self.addMessage('Since you are a new user of <b>KCC</b> please see few '
+                                    '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
+                                    'info')
+                if not any([self.tar, self.sevenzip]):
+                    self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
+                                    ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
+                
+                for job in jobs:
+                    item = QListWidgetItem(job)
+                    GUI.jobList.addItem(item)
+                    
+                self.retranslateUi(MW)
+            else:
+                QMessageBox.information(None, 'Idioma / Language',
+                    'Reinicia la aplicación para aplicar el cambio.\nRestart the app to apply the change.')
+
     def modeChange(self, mode):
         if mode == 1:
             self.currentMode = 1
@@ -931,6 +975,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         return s.get_data()
 
     def addMessage(self, message, icon, replace=False):
+        from PySide6.QtCore import QCoreApplication
+        # Translate the message if possible
+        # Use a context that matches our JSON keys (some are already there)
+        translated = QCoreApplication.translate("KCCGUI", message, None)
+        message = translated
         if icon != '':
             icon = getattr(self.icons, icon)
             item = QListWidgetItem(icon, '   ' + self.stripTags(message))
@@ -1399,6 +1448,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.editorButton.clicked.connect(self.selectFileMetaEditor)
         GUI.wikiButton.clicked.connect(self.openWiki)
         GUI.kofiButton.clicked.connect(self.openKofi)
+        GUI.langButton.clicked.connect(self.changeLanguage)
         GUI.convertButton.clicked.connect(self.convertStart)
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)

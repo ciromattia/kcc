@@ -29,6 +29,12 @@ def start():
     from . import KCC_gui
     os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = "1"
     KCCAplication = KCC_gui.QApplicationMessaging(sys.argv)
+    
+    from .i18n import JsonTranslator
+    translator = JsonTranslator()
+    KCCAplication.installTranslator(translator)
+    KCCAplication._translator = translator
+    
     if KCCAplication.isRunning():
         for i in range(1, len(sys.argv)):
             KCCAplication.sendMessage(sys.argv[i])

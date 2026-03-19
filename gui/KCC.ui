@@ -118,6 +118,23 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="langButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Language</string>
+         </property>
+         <property name="icon">
+          <iconset resource="KCC.qrc">
+           <normaloff>:/Status/icons/info.png</normaloff>:/Status/icons/info.png</iconset>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
