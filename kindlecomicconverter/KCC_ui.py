@@ -79,6 +79,15 @@ class Ui_mainWindow(object):
 
         self.horizontalLayout.addWidget(self.wikiButton)
 
+        self.langButton = QPushButton(self.toolWidget)
+        self.langButton.setObjectName(u"langButton")
+        self.langButton.setMinimumSize(QSize(0, 30))
+        icon4 = QIcon()
+        icon4.addFile(u":/Status/icons/info.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.langButton.setIcon(icon4)
+
+        self.horizontalLayout.addWidget(self.langButton)
+
 
         self.gridLayout.addWidget(self.toolWidget, 0, 0, 1, 2)
 
@@ -174,18 +183,18 @@ class Ui_mainWindow(object):
         self.convertButton.setObjectName(u"convertButton")
         self.convertButton.setMinimumSize(QSize(0, 30))
         self.convertButton.setFont(font)
-        icon4 = QIcon()
-        icon4.addFile(u":/Other/icons/convert.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.convertButton.setIcon(icon4)
+        icon5 = QIcon()
+        icon5.addFile(u":/Other/icons/convert.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.convertButton.setIcon(icon5)
 
         self.gridLayout_4.addWidget(self.convertButton, 1, 3, 1, 1)
 
         self.clearButton = QPushButton(self.buttonWidget)
         self.clearButton.setObjectName(u"clearButton")
         self.clearButton.setMinimumSize(QSize(0, 30))
-        icon5 = QIcon()
-        icon5.addFile(u":/Other/icons/clear.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.clearButton.setIcon(icon5)
+        icon6 = QIcon()
+        icon6.addFile(u":/Other/icons/clear.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.clearButton.setIcon(icon6)
 
         self.gridLayout_4.addWidget(self.clearButton, 0, 3, 1, 1)
 
@@ -198,9 +207,9 @@ class Ui_mainWindow(object):
         self.fileButton = QPushButton(self.buttonWidget)
         self.fileButton.setObjectName(u"fileButton")
         self.fileButton.setMinimumSize(QSize(0, 30))
-        icon6 = QIcon()
-        icon6.addFile(u":/Other/icons/document_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.fileButton.setIcon(icon6)
+        icon7 = QIcon()
+        icon7.addFile(u":/Other/icons/document_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.fileButton.setIcon(icon7)
 
         self.gridLayout_4.addWidget(self.fileButton, 0, 1, 1, 1)
 
@@ -211,9 +220,9 @@ class Ui_mainWindow(object):
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.directoryButton.sizePolicy().hasHeightForWidth())
         self.directoryButton.setSizePolicy(sizePolicy3)
-        icon7 = QIcon()
-        icon7.addFile(u":/Other/icons/folder_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.directoryButton.setIcon(icon7)
+        icon8 = QIcon()
+        icon8.addFile(u":/Other/icons/folder_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.directoryButton.setIcon(icon8)
 
         self.gridLayout_4.addWidget(self.directoryButton, 0, 4, 1, 1)
 
@@ -374,7 +383,7 @@ class Ui_mainWindow(object):
         self.defaultOutputFolderButton = QPushButton(self.outputFolderWidget)
         self.defaultOutputFolderButton.setObjectName(u"defaultOutputFolderButton")
         self.defaultOutputFolderButton.setMinimumSize(QSize(0, 30))
-        self.defaultOutputFolderButton.setIcon(icon7)
+        self.defaultOutputFolderButton.setIcon(icon8)
 
         self.horizontalLayout_3.addWidget(self.defaultOutputFolderButton)
 
@@ -603,6 +612,7 @@ class Ui_mainWindow(object):
         self.editorButton.setText(QCoreApplication.translate("mainWindow", u"Metadata Editor", None))
         self.kofiButton.setText(QCoreApplication.translate("mainWindow", u"Support me on Ko-fi", None))
         self.wikiButton.setText(QCoreApplication.translate("mainWindow", u"Wiki", None))
+        self.langButton.setText(QCoreApplication.translate("mainWindow", u"Language", None))
 #if QT_CONFIG(tooltip)
         self.preserveMarginLabel.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>After calculating the cropping boundaries, &quot;back up&quot; a specified percentage amount.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
