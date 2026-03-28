@@ -29,6 +29,15 @@ if sys.version_info < (3, 8, 0):
     sys.exit(1)
 
 def modify_path():
+    """
+    Modifies the system PATH environment variable and changes the current working directory.
+
+    This function adds specific directories to the system's PATH based on the operating
+    system (macOS, Linux, Windows) to ensure that external tools like Kindle Previewer
+    and 7-Zip are discoverable. It also sets the current working directory to the
+    application's executable path when running as a frozen application, or to the
+    script's directory otherwise.
+    """
     if platform.system() == 'Darwin':
         mac_paths = [
             '/Applications/Kindle Comic Creator/Kindle Comic Creator.app/Contents/MacOS',
