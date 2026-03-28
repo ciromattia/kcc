@@ -1,0 +1,53 @@
+# kindlecomicconverter/profiles.py
+
+# Default profiles for various e-readers
+PROFILES = {
+    'KindlePaperwhite': {
+        'Name': 'Kindle Paperwhite',
+        'Resolution': (1072, 1448),
+        'Gamma': 2.2,
+        'Quality': 90,
+        'Color': False,
+        'MangaMode': True,
+        'Crop': True,
+        'Upscale': False,
+        'Border': 'none',
+        'PanelView': False,
+    },
+    'KoboClaraHD': {
+        'Name': 'Kobo Clara HD',
+        'Resolution': (1072, 1448),
+        'Gamma': 2.2,
+        'Quality': 90,
+        'Color': False,
+        'MangaMode': True,
+        'Crop': True,
+        'Upscale': False,
+        'Border': 'none',
+        'PanelView': False,
+    },
+    'CS12': {
+        'Name': 'Kindle Colorsoft (CS12)',
+        'Resolution': (1648, 2208),
+        'Gamma': 2.2,
+        'Quality': 85,
+        'Color': True,
+        'MangaMode': True,
+        'Crop': True,
+        'Upscale': False,
+        'Border': 'none',
+        'PanelView': False,
+    },
+    'Rmk1': {
+        'Name': 'reMarkable 1',
+        'Resolution': (1404, 1872),
+        'Gamma': 2.2,
+        'Quality': 90,
+        'Color': False,
+        'MangaMode': True,
+        'Crop': True,
+        'Upscale': False,
+        'Border': 'none',
+        'PanelView': False,
+    },
+}
