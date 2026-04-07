@@ -147,11 +147,15 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 
 You'll need to install various tools to access important but optional features. Close and re-open KCC to get KCC to detect them.
 
-### KindleGen
+### Kindling (recommended) or KindleGen
 
-On Windows and macOS, install [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011) and `kindlegen` will be autodetected from it.
+For MOBI conversion, KCC supports [Kindling](https://github.com/ciscoriordan/kindling) or KindleGen. Kindling is preferred - it is an open-source, cross-platform Rust replacement for Amazon's deprecated KindleGen that produces the same dual KF7+KF8 MOBI output with HD images.
 
-If you have issues detecting it, get stuck on the MOBI conversion step, or use Linux AppImage or Flatpak, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation#kindlegen
+Download the latest kindling binary for your platform from [kindling releases](https://github.com/ciscoriordan/kindling/releases) and place it on your PATH. KCC will auto-detect it.
+
+If kindling is not found, KCC falls back to KindleGen. On Windows and macOS, install [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011) and `kindlegen` will be autodetected from it.
+
+If you have issues detecting either tool, get stuck on the MOBI conversion step, or use Linux AppImage or Flatpak, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation#kindlegen
 
 ### 7-Zip
 

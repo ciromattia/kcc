@@ -41,7 +41,7 @@ from packaging.version import Version
 from raven import Client
 from tempfile import gettempdir
 
-from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
+from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run, detect_mobi_tool
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
 from . import __version__
 from . import comic2ebook
@@ -534,11 +534,11 @@ class WorkerThread(QThread):
                                 os.remove(item)
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
-                        MW.addMessage.emit('KindleGen failed to create MOBI!', 'error', False)
+                        MW.addMessage.emit('MOBI conversion failed!', 'error', False)
                         MW.addMessage.emit(self.kindlegenErrorCode[1], 'error', False)
-                        MW.addTrayMessage.emit('KindleGen failed to create MOBI!', 'Critical')
+                        MW.addTrayMessage.emit('MOBI conversion failed!', 'Critical')
                         if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':
-                            MW.showDialog.emit("KindleGen error:\n\n" + self.kindlegenErrorCode[1], 'error')
+                            MW.showDialog.emit("MOBI conversion error:\n\n" + self.kindlegenErrorCode[1], 'error')
                         if self.kindlegenErrorCode[0] == 23026:
                             MW.addMessage.emit('Created EPUB file was too big. Weird file structure?', 'error', False)
                             MW.addMessage.emit('EPUB file: ' + str(epubSize) + 'MB. Supported size: ~350MB.', 'error',
@@ -1014,7 +1014,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def display_kindlegen_missing(self):
         self.addMessage(
-            '<a href="https://github.com/ciromattia/kcc#kindlegen"><b>Install KindleGen (link)</b></a> to enable MOBI conversion for Kindles!',
+            '<a href="https://github.com/ciromattia/kcc#kindlegen"><b>Install kindling or KindleGen (link)</b></a>'
+            ' to enable MOBI conversion for Kindles!',
             'error'
         )
 
@@ -1121,22 +1122,38 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         sys.exit(0)
 
     def detectKindleGen(self, startup=False):
+        # Try kindling first, then kindlegen
+        detected = detect_mobi_tool()
+        if detected == 'kindling':
+            self.kindleGen = True
+            return
+        # If neither was found yet, try the legacy chmod path for kindlegen
+        # on non-Windows systems, then re-detect.
         if not sys.platform.startswith('win'):
             try:
                 os.chmod('/usr/local/bin/kindlegen', 0o755)
             except Exception:
                 pass
-        try:
-            versionCheck = subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8', errors='ignore', check=True)
+            if detected is None:
+                # The chmod above may have fixed permissions, so clear the
+                # cached result and retry.
+                import kindlecomicconverter.shared as _shared
+                _shared.MOBI_TOOL = None
+                detected = detect_mobi_tool()
+        if detected == 'kindlegen':
             self.kindleGen = True
-            for line in versionCheck.stdout.splitlines():
-                if 'Amazon kindlegen' in line:
-                    versionCheck = line.split('V')[1].split(' ')[0]
-                    if Version(versionCheck) < Version('2.9'):
-                        self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
-                                        ' is outdated! MOBI conversion might fail.', 'warning')
-                    break
-        except (FileNotFoundError, CalledProcessError):
+            try:
+                versionCheck = subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8', errors='ignore', check=True)
+                for line in versionCheck.stdout.splitlines():
+                    if 'Amazon kindlegen' in line:
+                        versionCheck = line.split('V')[1].split(' ')[0]
+                        if Version(versionCheck) < Version('2.9'):
+                            self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
+                                            ' is outdated! MOBI conversion might fail.', 'warning')
+                        break
+            except (FileNotFoundError, CalledProcessError):
+                pass
+        else:
             self.kindleGen = False
             if startup:
                 self.display_kindlegen_missing()

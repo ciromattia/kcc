@@ -20,6 +20,7 @@
 
 import os
 from html.parser import HTMLParser
+from shutil import which
 import subprocess
 from packaging.version import Version
 from re import split
@@ -145,3 +146,39 @@ def subprocess_run(command, **kwargs):
     if (os.name == 'nt'):
         kwargs.setdefault('creationflags', subprocess.CREATE_NO_WINDOW)
     return subprocess.run(command, **kwargs)
+
+
+# The command used to convert EPUB to MOBI.  Set by detect_mobi_tool() and
+# shared across comic2ebook (CLI) and KCC_gui.
+MOBI_TOOL = None
+
+
+def detect_mobi_tool():
+    """Detect whether kindling or kindlegen is available on PATH.
+
+    Kindling is preferred because it is actively maintained and produces
+    the same MOBI output.  When invoked without the ``build`` sub-command
+    it runs in kindlegen compatibility mode, accepting the same flags
+    (``-dont_append_source``, ``-locale en``) and printing the same
+    status codes (``:I1036:``, ``:E23026:``).
+
+    Returns the tool name ('kindling' or 'kindlegen') or None.
+    Sets the module-level MOBI_TOOL variable on success.
+    """
+    global MOBI_TOOL
+    if MOBI_TOOL is not None:
+        return MOBI_TOOL
+    for tool in ('kindling', 'kindlegen'):
+        if which(tool) is not None:
+            try:
+                subprocess_run(
+                    [tool, '-locale', 'en'],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    check=True,
+                )
+                MOBI_TOOL = tool
+                return MOBI_TOOL
+            except (FileNotFoundError, subprocess.CalledProcessError):
+                continue
+    return None

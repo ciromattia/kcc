@@ -43,7 +43,7 @@ from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 import pymupdf
 
-from .shared import IMAGE_TYPES, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean
+from .shared import IMAGE_TYPES, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean, detect_mobi_tool
 from .comicarchive import SEVENZIP, available_archive_tools
 from . import comic2panel
 from . import image
@@ -1554,10 +1554,8 @@ def checkTools(source):
             print('ERROR: 7z is missing!')
             sys.exit(1)
     if options.format == 'MOBI':
-        try:
-            subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, check=True)
-        except (FileNotFoundError, CalledProcessError):
-            print('ERROR: KindleGen is missing!')
+        if detect_mobi_tool() is None:
+            print('ERROR: Neither kindling nor KindleGen found on PATH!')
             sys.exit(1)
 
 
@@ -1781,9 +1779,13 @@ def makeMOBIWorker(item):
     item = item[0]
     kindlegenErrorCode = 0
     kindlegenError = ''
+    # detect_mobi_tool() caches its result, so this is fast after the first
+    # call.  We call it here because multiprocessing workers are separate
+    # processes that do not inherit the parent's module-level MOBI_TOOL value.
+    tool = detect_mobi_tool() or 'kindlegen'
     try:
         if os.path.getsize(item) < 629145600:
-            output = subprocess_run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
+            output = subprocess_run([tool, '-dont_append_source', '-locale', 'en', item],
                            stdout=PIPE, stderr=STDOUT, encoding='UTF-8', errors='ignore', check=True)
         else:
             # ERROR: EPUB too big
