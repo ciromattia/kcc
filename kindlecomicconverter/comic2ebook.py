@@ -1295,12 +1295,12 @@ def makeZIP(zipfilename, basedir, job_progress='', isepub=False):
             mimetypeFile = open(os.path.join(basedir, '!mimetype'), 'w')
             mimetypeFile.write('application/epub+zip')
             mimetypeFile.close()
-        subprocess_run([SEVENZIP, 'a', '-tzip', zipfilename, "*"], capture_output=True, check=True, cwd=basedir)
+        subprocess_run([SEVENZIP, 'a', '-mx0', '-tzip', zipfilename, "*"], capture_output=True, check=True, cwd=basedir)
         # crazy hack to ensure mimetype is first when using 7zip
         if isepub:
             subprocess_run([SEVENZIP, 'rn', zipfilename, '!mimetype', 'mimetype'], capture_output=True, check=True, cwd=basedir)
     else:
-        zipOutput = ZipFile(zipfilename, 'w', ZIP_DEFLATED)
+        zipOutput = ZipFile(zipfilename, 'w', ZIP_STORED)
         if isepub:
             zipOutput.writestr('mimetype', 'application/epub+zip', ZIP_STORED)
         for dirpath, _, filenames in os.walk(basedir):
