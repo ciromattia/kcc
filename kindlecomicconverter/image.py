@@ -508,7 +508,7 @@ class ComicPage:
         elif method == Image.Resampling.BICUBIC and not self.opt.upscale:
             pass
         else: # if image bigger than device resolution or smaller with upscaling
-            if self.opt.zoomfill and abs(ratio_image - ratio_device) < 0.07:
+            if self.opt.zoomfill and abs(ratio_image - ratio_device) < 0.076:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
             elif abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
@@ -585,6 +585,8 @@ class Cover:
             self.image.thumbnail(tuple(size), Image.Resampling.LANCZOS)
 
     def crop_main_cover(self):
+        if self.options.is_landscape_comic:
+            return
         w, h = self.image.size
         if w / h > 2:
             if self.options.righttoleft:

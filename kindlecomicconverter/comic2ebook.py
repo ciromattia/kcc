@@ -868,6 +868,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
         )
     end = perf_counter()
     print(f"MuPDF: {end - start} sec")
+    return is_landscape_comic
 
 
 
@@ -908,7 +909,7 @@ def getWorkFolder(afile, workdir=None):
                 target_width  *= 2
                 target_height *= 2
             try:
-                mupdf_pdf_process_pages_parallel(afile, fullPath, target_width, target_height)
+                options.is_landscape_comic = mupdf_pdf_process_pages_parallel(afile, fullPath, target_width, target_height)
             except Exception as e:
                 rmtree(path, True)
                 raise UserWarning(f"Failed to extract images from PDF file. {e}")
