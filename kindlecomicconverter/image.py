@@ -508,7 +508,7 @@ class ComicPage:
         elif method == Image.Resampling.BICUBIC and not self.opt.upscale:
             pass
         else: # if image bigger than device resolution or smaller with upscaling
-            if self.opt.profile == 'KDX' and abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD * 3:
+            if self.opt.zoomfill and abs(ratio_image - ratio_device) < 0.07:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
             elif abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
                 self.image = ImageOps.fit(self.image, self.size, method=method)

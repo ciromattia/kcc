@@ -975,6 +975,13 @@ May crop top/bottom or left/right depending on source aspect ratio. Not implemen
          </property>
         </widget>
        </item>
+       <item row="11" column="1">
+        <widget class="QCheckBox" name="zoomFillBox">
+         <property name="text">
+          <string>Zoom Fill</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>

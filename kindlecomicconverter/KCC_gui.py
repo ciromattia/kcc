@@ -333,6 +333,8 @@ class WorkerThread(QThread):
             options.pdfwidth = True
         if GUI.coverFillBox.isChecked():
             options.coverfill = True
+        if GUI.zoomFillBox.isChecked():
+            options.zoomfill = True
         if GUI.metadataTitleBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.metadatatitle = 1
         elif GUI.metadataTitleBox.checkState() == Qt.CheckState.Checked:
@@ -897,6 +899,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
             GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
             GUI.pngLegacyBox.setChecked(True)
+            GUI.zoomFillBox.setChecked(True)
         if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
         if str(GUI.deviceBox.currentText()) == 'Other':
@@ -1054,6 +1057,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'pdfExtractBox': GUI.pdfExtractBox.checkState(),
                                            'pdfWidthBox': GUI.pdfWidthBox.checkState(),
                                            'coverFillBox': GUI.coverFillBox.checkState(),
+                                           'zoomFillBox': GUI.zoomFillBox.checkState(),
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'forcePngRgbBox': GUI.forcePngRgbBox.checkState(),

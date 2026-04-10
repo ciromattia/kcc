@@ -748,6 +748,7 @@ def render_page(vector):
     target_width = vector[4]
     target_height = vector[5]
     pdf_width = vector[6]
+    is_landscape_comic = vector[7]
     with pymupdf.open(filename) as doc:  # open the document
         num_pages = doc.page_count  # get number of pages
 
@@ -758,10 +759,13 @@ def render_page(vector):
 
         for i in range(seg_from, seg_to):  # work through our page segment
             page = doc[i]
-            if not pdf_width or page.rect.width > page.rect.height:
-                zoom = target_height / page.rect.height
-            else:
-                zoom = target_width / page.rect.width
+            zoom = target_height / page.rect.height
+
+            if pdf_width:
+                if not is_landscape_comic and page.rect.width > page.rect.height:
+                    pass
+                else:
+                    zoom = target_width / page.rect.width
             mat = pymupdf.Matrix(zoom, zoom)
             # TODO: decide colorspace earlier so later color check is cheaper.
             # This is actually pretty hard when you have to deal with color vector text
@@ -847,12 +851,13 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
             aspect_ratio_list.append(page.rect.width / page.rect.height)
 
     landscape_page_ratio = sum([(r > 1.2) for r in aspect_ratio_list]) / len(aspect_ratio_list)
-    if landscape_page_ratio > .9:
+    is_landscape_comic = landscape_page_ratio > .9
+    if is_landscape_comic:
         target_width, target_height = target_height, target_width
     cpu = cpu_count()
 
     # make vectors of arguments for the processes
-    vectors = [(i, cpu, filename, output_dir, target_width, target_height, options.pdfwidth) for i in range(cpu)]
+    vectors = [(i, cpu, filename, output_dir, target_width, target_height, options.pdfwidth, is_landscape_comic) for i in range(cpu)]
     print("Starting %i processes for '%s'." % (cpu, filename))
 
 
@@ -869,7 +874,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
 def getWorkFolder(afile, workdir=None):
     if not workdir:
         workdir = mkdtemp('', 'KCC-')
-        # workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
+        workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
         fullPath = os.path.join(workdir, 'OEBPS', 'Images')
     else:
         fullPath = workdir
@@ -1382,6 +1387,8 @@ def makeParser():
                                     help="Render vector PDFs to device width instead of height.")
     processing_options.add_argument("--coverfill", action="store_true", dest="coverfill", default=False,
                                     help="Crop cover to fill screen")
+    processing_options.add_argument("--zoomfill", action="store_true", dest="zoomfill", default=False,
+                                    help="")
     processing_options.add_argument("-u", "--upscale", action="store_true", dest="upscale", default=False,
                                     help="Resize images smaller than device's resolution")
     processing_options.add_argument("-s", "--stretch", action="store_true", dest="stretch", default=False,

@@ -497,6 +497,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.forcePngRgbBox, 11, 2, 1, 1)
 
+        self.zoomFillBox = QCheckBox(self.optionWidget)
+        self.zoomFillBox.setObjectName(u"zoomFillBox")
+
+        self.gridLayout_2.addWidget(self.zoomFillBox, 11, 1, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -806,6 +811,7 @@ class Ui_mainWindow(object):
         self.forcePngRgbBox.setToolTip(QCoreApplication.translate("mainWindow", u"Force full color images to be saved in lossless PNG format, dramatically increases the filesize.", None))
 #endif // QT_CONFIG(tooltip)
         self.forcePngRgbBox.setText(QCoreApplication.translate("mainWindow", u"Force PNG RGB", None))
+        self.zoomFillBox.setText(QCoreApplication.translate("mainWindow", u"Zoom Fill", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
         self.jpegQualityLabel.setText(QCoreApplication.translate("mainWindow", u"JPEG Quality:", None))
     # retranslateUi
