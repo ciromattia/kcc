@@ -828,6 +828,7 @@ def extract_page(vector):
 
 def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_height):
     render = False
+    aspect_ratio_list = []
     with pymupdf.open(filename) as doc:
         for page in doc:
             page_text = page.get_text().strip()
@@ -842,7 +843,12 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
                 if not image[5] or image[8] == 'CCITTFaxDecode':
                     render = True
                     break
+        for page in doc:
+            aspect_ratio_list.append(page.rect.width / page.rect.height)
 
+    landscape_page_ratio = sum([(r > 1.2) for r in aspect_ratio_list]) / len(aspect_ratio_list)
+    if landscape_page_ratio > .9:
+        target_width, target_height = target_height, target_width
     cpu = cpu_count()
 
     # make vectors of arguments for the processes
