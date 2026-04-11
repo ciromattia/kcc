@@ -695,6 +695,7 @@ def imgFileProcessing(work):
                 img.cropMargin(opt.croppingp, opt.croppingm)
             if opt.interpanelcrop > 0:
                 img.cropInterPanelEmptySections("horizontal" if opt.interpanelcrop == 1 else "both")
+            is_cropped = img.original_size != img.image.size
 
             img.gammaCorrectImage()
 
@@ -702,7 +703,7 @@ def imgFileProcessing(work):
                 img.convertToGrayscale()
 
             img.autocontrastImage()
-            img.resizeImage()
+            img.resizeImage(is_cropped)
             img.optimizeForDisplay(opt.eraserainbow, img.colorOutput)
 
             if img.colorOutput:
@@ -873,6 +874,8 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
 
 
 def getWorkFolder(afile, workdir=None):
+    # TODO: set this for non PDF
+    options.is_landscape_comic = False
     if not workdir:
         workdir = mkdtemp('', 'KCC-')
         workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))

@@ -275,6 +275,7 @@ class ComicPage:
         if self.opt.hq:
             self.size = (int(self.size[0] * 1.5), int(self.size[1] * 1.5))
         self.original_color_mode = image.mode
+        self.original_size = image.size
         # TODO: color check earlier
         self.image = image.convert("RGB")
         self.color = self.colorCheck()
@@ -491,7 +492,7 @@ class ComicPage:
         if eraserainbow and all(dim > 1 for dim in self.image.size):
             self.image = erase_rainbow_artifacts(self.image, is_color)
 
-    def resizeImage(self):
+    def resizeImage(self, is_cropped):
         if self.opt.norotate and self.targetPathOrder in ('-kcc-a', '-kcc-d') and not self.opt.kindle_scribe_azw3:
             # TODO: Kindle Scribe case
             if self.opt.kindle_azw3 and any(dim > 1920 for dim in self.image.size):
@@ -508,7 +509,7 @@ class ComicPage:
         elif method == Image.Resampling.BICUBIC and not self.opt.upscale:
             pass
         else: # if image bigger than device resolution or smaller with upscaling
-            if self.opt.zoomfill and abs(ratio_image - ratio_device) < 0.076:
+            if not is_cropped and self.opt.zoomfill and abs(ratio_image - ratio_device) < 0.076:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
             elif abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
