@@ -1376,6 +1376,8 @@ def makeParser():
                                     help="Use the legacy PDF image extraction method from KCC 8 and earlier")
     processing_options.add_argument("--pdfwidth", action="store_true", dest="pdfwidth", default=False,
                                     help="Render vector PDFs to device width instead of height.")
+    processing_options.add_argument("--smartcovercrop", action="store_true", dest="smartcovercrop", default=False,
+                                    help="Attempt to crop main cover from wide image")
     processing_options.add_argument("--coverfill", action="store_true", dest="coverfill", default=False,
                                     help="Crop cover to fill screen")
     processing_options.add_argument("-u", "--upscale", action="store_true", dest="upscale", default=False,

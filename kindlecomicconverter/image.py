@@ -572,7 +572,8 @@ class Cover:
         self.image = ImageOps.autocontrast(self.image, preserve_tone=True)
         if not self.options.forcecolor:
             self.image = self.image.convert('L')
-        self.crop_main_cover()
+        if self.options.smartcovercrop:
+            self.crop_main_cover()
 
         size = list(self.options.profileData[1])
         if self.options.kindle_scribe_azw3:

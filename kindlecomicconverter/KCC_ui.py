@@ -497,6 +497,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.forcePngRgbBox, 11, 2, 1, 1)
 
+        self.smartCoverCropBox = QCheckBox(self.optionWidget)
+        self.smartCoverCropBox.setObjectName(u"smartCoverCropBox")
+
+        self.gridLayout_2.addWidget(self.smartCoverCropBox, 11, 1, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -806,6 +811,10 @@ class Ui_mainWindow(object):
         self.forcePngRgbBox.setToolTip(QCoreApplication.translate("mainWindow", u"Force full color images to be saved in lossless PNG format, dramatically increases the filesize.", None))
 #endif // QT_CONFIG(tooltip)
         self.forcePngRgbBox.setText(QCoreApplication.translate("mainWindow", u"Force PNG RGB", None))
+#if QT_CONFIG(tooltip)
+        self.smartCoverCropBox.setToolTip(QCoreApplication.translate("mainWindow", u"Attempt to crop main cover from wide image.", None))
+#endif // QT_CONFIG(tooltip)
+        self.smartCoverCropBox.setText(QCoreApplication.translate("mainWindow", u"Smart Cover Crop", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
         self.jpegQualityLabel.setText(QCoreApplication.translate("mainWindow", u"JPEG Quality:", None))
     # retranslateUi
