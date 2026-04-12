@@ -408,15 +408,21 @@ class ComicPage:
     def save_with_codec(self, image, targetPath):
         if self.opt.forcepng and (not self.colorOutput or self.opt.force_png_rgb):
             image.info.pop('transparency', None)
-            if self.opt.iskindle and ('MOBI' in self.opt.format or 'EPUB' in self.opt.format):
+            if self.opt.webp_output:
+                targetPath += '.webp'
+                image.save(targetPath, 'WEBP', lossless=True, quality=self.opt.jpegquality)
+            elif self.opt.kindle_azw3:
                 targetPath += '.gif'
                 image.save(targetPath, 'GIF', optimize=1, interlace=False)
             else:
                 targetPath += '.png'
                 image.save(targetPath, 'PNG', optimize=1)
         else:
-            targetPath += '.jpg'
-            if self.opt.mozjpeg:
+            if self.opt.webp_output:
+                targetPath += '.webp'
+                image.save(targetPath, 'WEBP', quality=self.opt.jpegquality)
+            elif self.opt.mozjpeg:
+                targetPath += '.jpg'
                 with io.BytesIO() as output:
                     image.save(output, format="JPEG", optimize=1, quality=self.opt.jpegquality)
                     input_jpeg_bytes = output.getvalue()
@@ -424,6 +430,7 @@ class ComicPage:
                     with open(targetPath, "wb") as output_jpeg_file:
                         output_jpeg_file.write(output_jpeg_bytes)
             else:
+                targetPath += '.jpg'
                 image.save(targetPath, 'JPEG', optimize=1, quality=self.opt.jpegquality)
         return targetPath
 

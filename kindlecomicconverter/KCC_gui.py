@@ -359,6 +359,8 @@ class WorkerThread(QThread):
             options.forcepng = True
         elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
             options.mozjpeg = True
+        if GUI.webpBox.isChecked():
+            options.webp = True
         if GUI.pngLegacyBox.isChecked():
             options.pnglegacy = True
         if GUI.noQuantizeBox.isChecked():
@@ -1068,6 +1070,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'forcePngRgbBox': GUI.forcePngRgbBox.checkState(),
+                                           'webpBox': GUI.webpBox.checkState(),
                                            'pngLegacyBox': GUI.pngLegacyBox.checkState(),
                                            'noQuantizeBox': GUI.noQuantizeBox.checkState(),
                                            'jpegQualityBox': GUI.jpegQualityBox.checkState(),
