@@ -26,7 +26,7 @@ class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         if not mainWindow.objectName():
             mainWindow.setObjectName(u"mainWindow")
-        mainWindow.resize(566, 658)
+        mainWindow.resize(566, 671)
         icon = QIcon()
         icon.addFile(u":/Icon/icons/comic2ebook.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         mainWindow.setWindowIcon(icon)
@@ -198,11 +198,13 @@ class Ui_mainWindow(object):
 
         self.youtubeButton = QPushButton(self.toolWidget)
         self.youtubeButton.setObjectName(u"youtubeButton")
+        self.youtubeButton.setMinimumSize(QSize(0, 30))
 
         self.gridLayout_6.addWidget(self.youtubeButton, 1, 0, 1, 1)
 
         self.humbleButton = QPushButton(self.toolWidget)
         self.humbleButton.setObjectName(u"humbleButton")
+        self.humbleButton.setMinimumSize(QSize(0, 30))
         icon4 = QIcon()
         icon4.addFile(u":/Brand/icons/Humble_H-Red.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.humbleButton.setIcon(icon4)
@@ -211,6 +213,7 @@ class Ui_mainWindow(object):
 
         self.discordButton = QPushButton(self.toolWidget)
         self.discordButton.setObjectName(u"discordButton")
+        self.discordButton.setMinimumSize(QSize(0, 30))
 
         self.gridLayout_6.addWidget(self.discordButton, 1, 2, 1, 1)
 

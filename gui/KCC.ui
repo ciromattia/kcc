@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>566</width>
-    <height>658</height>
+    <height>671</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -334,6 +334,12 @@
        </item>
        <item row="1" column="0">
         <widget class="QPushButton" name="youtubeButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
          <property name="text">
           <string>YouTube</string>
          </property>
@@ -341,6 +347,12 @@
        </item>
        <item row="1" column="1">
         <widget class="QPushButton" name="humbleButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
          <property name="text">
           <string>Humble Bundle Referral</string>
          </property>
@@ -352,6 +364,12 @@
        </item>
        <item row="1" column="2">
         <widget class="QPushButton" name="discordButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
          <property name="text">
           <string>Discord</string>
          </property>
