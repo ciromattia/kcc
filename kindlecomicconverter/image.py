@@ -408,7 +408,7 @@ class ComicPage:
     def save_with_codec(self, image, targetPath):
         if self.opt.forcepng and (not self.colorOutput or self.opt.force_png_rgb):
             image.info.pop('transparency', None)
-            if not self.opt.kindle_azw3 and self.opt.webp:
+            if self.opt.webp_output:
                 targetPath += '.webp'
                 image.save(targetPath, 'WEBP', lossless=True, quality=self.opt.jpegquality)
             elif self.opt.kindle_azw3:
@@ -418,7 +418,7 @@ class ComicPage:
                 targetPath += '.png'
                 image.save(targetPath, 'PNG', optimize=1)
         else:
-            if not self.opt.kindle_azw3 and self.opt.webp:
+            if self.opt.webp_output:
                 targetPath += '.webp'
                 image.save(targetPath, 'WEBP', quality=self.opt.jpegquality)
             elif self.opt.mozjpeg:

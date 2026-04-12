@@ -999,7 +999,7 @@ Useful if you plan to crop a little off the top and bottom to fill screen.</stri
          <property name="toolTip">
           <string>Replace JPG with lossy WebP and PNG with lossless WebP. This includes the JPG Quality.
 
-Ignored for Kindle EPUB/MOBI.</string>
+Ignored for Kindle EPUB/MOBI and all PDF.</string>
          </property>
          <property name="text">
           <string>WebP (experimental)</string>

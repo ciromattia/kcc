@@ -1541,6 +1541,8 @@ def checkOptions(options):
     options.kindle_azw3 = options.iskindle and ('MOBI' in options.format or 'EPUB' in options.format)
     options.kindle_scribe_azw3 = options.profile.startswith('KS') and options.kindle_azw3
 
+    options.webp_output = options.format != 'PDF' and not options.kindle_azw3 and options.webp
+
     # CBZ files on Kindle DX/DXG support higher resolution
     if options.profile == 'KDX' and options.format == 'CBZ':
         options.profileData = list(image.ProfileData.Profiles[options.profile])

@@ -826,7 +826,7 @@ class Ui_mainWindow(object):
 #if QT_CONFIG(tooltip)
         self.webpBox.setToolTip(QCoreApplication.translate("mainWindow", u"Replace JPG with lossy WebP and PNG with lossless WebP. This includes the JPG Quality.\n"
 "\n"
-"Ignored for Kindle EPUB/MOBI.", None))
+"Ignored for Kindle EPUB/MOBI and all PDF.", None))
 #endif // QT_CONFIG(tooltip)
         self.webpBox.setText(QCoreApplication.translate("mainWindow", u"WebP (experimental)", None))
         self.gammaLabel.setText(QCoreApplication.translate("mainWindow", u"Gamma: Auto", None))
