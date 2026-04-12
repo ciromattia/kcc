@@ -195,7 +195,7 @@ class VersionThread(QThread):
                         icon = 'bindle'
                     if category == 'kofi':
                         icon = 'kofi'
-                    message = f"<b>{payload.get('name')}</b>"
+                    message = f"{payload.get('name')}"
                     if payload.get('link'):
                         message = '<a href="{}"><b>{}</b></a>'.format(payload.get('link'), payload.get('name'))
                     if payload.get('showDeadline'):
@@ -695,6 +695,18 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def openKofi(self):
         # noinspection PyCallByClass
         QDesktopServices.openUrl(QUrl('https://ko-fi.com/eink_dude'))
+
+    def openHumble(self):
+        # noinspection PyCallByClass
+        QDesktopServices.openUrl(QUrl('https://humblebundleinc.sjv.io/3JaR3A'))
+
+    def openYouTube(self):
+        # noinspection PyCallByClass
+        QDesktopServices.openUrl(QUrl('https://www.youtube.com/@eink-dude'))
+    
+    def openDiscord(self):
+        # noinspection PyCallByClass
+        QDesktopServices.openUrl(QUrl('https://discord.gg/um5JRKwmGT'))
 
     def modeChange(self, mode):
         if mode == 1:
@@ -1205,7 +1217,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                             'convertButton', 'formatBox']:
                 getattr(GUI, element).setMinimumSize(QSize(0, 0))
             GUI.gridLayout.setContentsMargins(-1, -1, -1, -1)
-            for element in ['gridLayout_2', 'gridLayout_3', 'gridLayout_4', 'horizontalLayout', 'horizontalLayout_2']:
+            for element in ['gridLayout_2', 'gridLayout_3', 'gridLayout_4', 'gridLayout_6', 'horizontalLayout_2']:
                 getattr(GUI, element).setContentsMargins(-1, 0, -1, 0)
             if self.windowSize == '0x0':
                 MW.resize(500, 500)
@@ -1413,6 +1425,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.editorButton.clicked.connect(self.selectFileMetaEditor)
         GUI.wikiButton.clicked.connect(self.openWiki)
         GUI.kofiButton.clicked.connect(self.openKofi)
+        GUI.humbleButton.clicked.connect(self.openHumble)
+        GUI.youtubeButton.clicked.connect(self.openYouTube)
+        GUI.discordButton.clicked.connect(self.openDiscord)
         GUI.convertButton.clicked.connect(self.convertStart)
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)
