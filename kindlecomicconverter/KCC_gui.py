@@ -1217,7 +1217,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                             'convertButton', 'formatBox']:
                 getattr(GUI, element).setMinimumSize(QSize(0, 0))
             GUI.gridLayout.setContentsMargins(-1, -1, -1, -1)
-            for element in ['gridLayout_2', 'gridLayout_3', 'gridLayout_4', 'horizontalLayout_2']:
+            for element in ['gridLayout_2', 'gridLayout_3', 'gridLayout_4', 'gridLayout_6', 'horizontalLayout_2']:
                 getattr(GUI, element).setContentsMargins(-1, 0, -1, 0)
             if self.windowSize == '0x0':
                 MW.resize(500, 500)
