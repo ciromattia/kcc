@@ -892,10 +892,12 @@ def getWorkFolder(afile, workdir=None):
                     raise UserWarning("Failed to extract images from PDF file.")
                 return workdir
             target_width, target_height = options.profileData[1]
-            #Account for possible margin at the top and bottom
-            if options.cropping:
-                target_width  *= 2
-                target_height *= 2
+            if options.cropping == 1:
+                target_height *= 1.2 #Account for possible margin at the top and bottom
+                target_width *= 1.2
+            elif options.cropping == 2:
+                target_height *= 1.25 #Account for possible margin at the top and bottom with page number
+                target_width *= 1.25
             try:
                 mupdf_pdf_process_pages_parallel(afile, fullPath, target_width, target_height)
             except Exception as e:
