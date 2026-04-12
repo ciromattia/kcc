@@ -549,6 +549,9 @@
        </item>
        <item row="11" column="0">
         <widget class="QCheckBox" name="pngLegacyBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="toolTip">
           <string>Use a more compatible 8 bit PNG instead of 4 bit.</string>
          </property>
@@ -656,6 +659,9 @@
        </item>
        <item row="10" column="2">
         <widget class="QCheckBox" name="noQuantizeBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="toolTip">
           <string>Don't quantize PNG images to 16 colors (4 bit)
 
@@ -814,6 +820,9 @@ Higher values are larger and higher quality, and may resolve blank page issues.<
        </item>
        <item row="11" column="2">
         <widget class="QCheckBox" name="forcePngRgbBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="toolTip">
           <string>Force full color images to be saved in lossless PNG format, dramatically increases the filesize.</string>
          </property>

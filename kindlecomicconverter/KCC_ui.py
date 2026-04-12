@@ -305,6 +305,7 @@ class Ui_mainWindow(object):
 
         self.pngLegacyBox = QCheckBox(self.optionWidget)
         self.pngLegacyBox.setObjectName(u"pngLegacyBox")
+        self.pngLegacyBox.setEnabled(False)
 
         self.gridLayout_2.addWidget(self.pngLegacyBox, 11, 0, 1, 1)
 
@@ -354,6 +355,7 @@ class Ui_mainWindow(object):
 
         self.noQuantizeBox = QCheckBox(self.optionWidget)
         self.noQuantizeBox.setObjectName(u"noQuantizeBox")
+        self.noQuantizeBox.setEnabled(False)
 
         self.gridLayout_2.addWidget(self.noQuantizeBox, 10, 2, 1, 1)
 
@@ -427,6 +429,7 @@ class Ui_mainWindow(object):
 
         self.forcePngRgbBox = QCheckBox(self.optionWidget)
         self.forcePngRgbBox.setObjectName(u"forcePngRgbBox")
+        self.forcePngRgbBox.setEnabled(False)
 
         self.gridLayout_2.addWidget(self.forcePngRgbBox, 11, 2, 1, 1)
 
