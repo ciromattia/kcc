@@ -828,6 +828,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     if bad_format in current_format:
                         self.addMessage('Scribe PNG MOBI/EPUB has a lot of problems like blank pages/sections. Use JPG instead.', 'warning')
                         break
+            GUI.pngLegacyBox.setEnabled(True)
+            GUI.noQuantizeBox.setEnabled(True)
+            GUI.forcePngRgbBox.setEnabled(True)
+        else:
+            GUI.pngLegacyBox.setEnabled(False)
+            GUI.noQuantizeBox.setEnabled(False)
+            GUI.forcePngRgbBox.setEnabled(False)           
+
 
     def togglechunkSizeCheckBox(self, value):
         GUI.chunkSizeWidget.setVisible(value)
