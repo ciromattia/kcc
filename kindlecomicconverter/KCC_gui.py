@@ -195,7 +195,7 @@ class VersionThread(QThread):
                         icon = 'bindle'
                     if category == 'kofi':
                         icon = 'kofi'
-                    message = f"<b>{payload.get('name')}</b>"
+                    message = f"{payload.get('name')}"
                     if payload.get('link'):
                         message = '<a href="{}"><b>{}</b></a>'.format(payload.get('link'), payload.get('name'))
                     if payload.get('showDeadline'):
