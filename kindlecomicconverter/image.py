@@ -203,7 +203,7 @@ class ComicPageParser:
                     spread = spread.rotate(-90, Image.Resampling.BICUBIC, True)
             self.payload.append(['R', self.source, spread, self.fill])
         elif (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:
-            if self.opt.splitter != 1:
+            if self.opt.splitter != 1 and width / height < 2:
                 if width > height:
                     leftbox = (0, 0, int(width / 2), height)
                     rightbox = (int(width / 2), 0, width, height)
@@ -218,7 +218,7 @@ class ComicPageParser:
                     pagetwo = self.image.crop(rightbox)
                 self.payload.append(['S1', self.source, pageone, self.fill])
                 self.payload.append(['S2', self.source, pagetwo, self.fill])
-            if self.opt.splitter > 0:
+            if self.opt.splitter > 0 or (self.opt.splitter == 0 and width / height >= 2):
                 spread = self.image
                 if not self.opt.norotate:
                     if not self.opt.rotateright:
