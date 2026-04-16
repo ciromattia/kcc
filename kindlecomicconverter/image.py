@@ -569,6 +569,7 @@ class Cover:
         self.options = opt
         self.source = source
         self.image = Image.open(source)
+        self.smartcover = False
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
@@ -579,7 +580,7 @@ class Cover:
         self.image = ImageOps.autocontrast(self.image, preserve_tone=True)
         if not self.options.forcecolor:
             self.image = self.image.convert('L')
-        if self.options.smartcovercrop:
+        if not self.options.nosmartcovercrop:
             self.crop_main_cover()
 
         size = list(self.options.profileData[1])
@@ -595,17 +596,19 @@ class Cover:
     def crop_main_cover(self):
         w, h = self.image.size
         if w / h > 2:
+            self.smartcover = True
             if self.options.righttoleft:
                 self.image = self.image.crop((w/6, 0, w/2 - w * 0.02, h))
             else:
                 self.image = self.image.crop((w/2 + w * 0.02, 0, 5/6 * w, h))
         elif w / h > 1.34:
+            self.smartcover = True
             if self.options.righttoleft:
                 self.image = self.image.crop((0, 0, w/2 - w * 0.03, h))
             else:
                 self.image = self.image.crop((w/2 + w * 0.03, 0, w, h))
 
-    def save_to_epub(self, target, tomeid, len_tomes=0):
+    def save_to_folder(self, target, tomeid, len_tomes=0):
         try:
             if tomeid == 0:
                 self.image.save(target, "JPEG", optimize=1, quality=self.options.jpegquality)
