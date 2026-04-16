@@ -282,6 +282,7 @@ PROCESSING:
   --jpeg-quality        The JPEG quality, on a scale from 0 (worst) to 95 (best). Default 85 for most devices.
   --maximizestrips      Turn 1x4 strips to 2x2 strips
   -d, --delete          Delete source file(s) or a directory. It's not recoverable.
+  --tempdir             Create temporary files directory on source file drive.
 
 OUTPUT SETTINGS:
   -o OUTPUT, --output OUTPUT

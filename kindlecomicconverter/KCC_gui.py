@@ -341,6 +341,8 @@ class WorkerThread(QThread):
             options.metadatatitle = 2
         if GUI.deleteBox.isChecked():
             options.delete = True
+        if GUI.tempDirBox.isChecked():
+            options.tempdir = True
         if GUI.spreadShiftBox.isChecked():
             options.spreadshift = True
         if GUI.fileFusionBox.isChecked():
@@ -1090,6 +1092,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
                                            'deleteBox': GUI.deleteBox.checkState(),
+                                           'tempDirBox': GUI.tempDirBox.checkState(),
                                            'spreadShiftBox': GUI.spreadShiftBox.checkState(),
                                            'fileFusionBox': GUI.fileFusionBox.checkState(),
                                            'defaultOutputFolderBox': GUI.defaultOutputFolderBox.checkState(),
