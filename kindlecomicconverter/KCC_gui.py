@@ -1260,10 +1260,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS',
             },
             "Kindle Scribe 3": {
-                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS3',
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS3',
             },
             "Kindle Scribe Colorsoft": {
-                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': True, 'Label': 'KSCS',
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': False, 'ForceColor': True, 'Label': 'KSCS',
             },
             "Kindle 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'K11',
