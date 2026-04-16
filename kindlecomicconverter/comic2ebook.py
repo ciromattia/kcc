@@ -556,7 +556,7 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, ori
     f.close()
     build_html_start = perf_counter()
     if cover:
-        cover.save_to_epub(os.path.join(path, 'OEBPS', 'Images', 'cover.jpg'), tomenumber, len_tomes)
+        cover.save_to_folder(os.path.join(path, 'OEBPS', 'Images', 'cover.jpg'), tomenumber, len_tomes)
     dot_clean(path)
     options.covers.append((cover, options.uuid))
     for dirpath, dirnames, filenames in os.walk(os.path.join(path, 'OEBPS', 'Images')):
@@ -1394,8 +1394,8 @@ def makeParser():
                                     help="Use the legacy PDF image extraction method from KCC 8 and earlier")
     processing_options.add_argument("--pdfwidth", action="store_true", dest="pdfwidth", default=False,
                                     help="Render vector PDFs to device width instead of height.")
-    processing_options.add_argument("--smartcovercrop", action="store_true", dest="smartcovercrop", default=False,
-                                    help="Attempt to crop main cover from wide image")
+    processing_options.add_argument("--nosmartcovercrop", action="store_true", dest="nosmartcovercrop", default=False,
+                                    help="Disable attempt to crop main cover from wide image")
     processing_options.add_argument("--coverfill", action="store_true", dest="coverfill", default=False,
                                     help="Crop cover to fill screen")
     processing_options.add_argument("-u", "--upscale", action="store_true", dest="upscale", default=False,
@@ -1712,12 +1712,16 @@ def makeBook(source, qtgui=None, job_progress=''):
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ' ' + str(tomeNumber)))
             else:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
+            if cover.smartcover:
+                cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', 'cover.jpg'), tomeNumber, len(tomes))
             makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"), job_progress)
         elif options.format == 'PDF':
             print(f"{job_progress}Creating PDF file with PyMuPDF...")
             # determine output filename based on source and tome count
             suffix = (' ' + str(tomeNumber)) if len(tomes) > 1 else ''
             output_file = getOutputFilename(source, options.output, '.pdf', suffix)
+            if cover.smartcover:
+                cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', 'cover.jpg'), tomeNumber, len(tomes))
             # use optimized buildPDF logic with streaming and compression
             output_pdf = buildPDF(tome, options.title, job_progress, None, output_file)
             filepath.append(output_pdf)

@@ -344,10 +344,10 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.metadataTitleBox, 7, 0, 1, 1)
 
-        self.smartCoverCropBox = QCheckBox(self.optionWidget)
-        self.smartCoverCropBox.setObjectName(u"smartCoverCropBox")
+        self.noSmartCoverCropBox = QCheckBox(self.optionWidget)
+        self.noSmartCoverCropBox.setObjectName(u"noSmartCoverCropBox")
 
-        self.gridLayout_2.addWidget(self.smartCoverCropBox, 11, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.noSmartCoverCropBox, 11, 1, 1, 1)
 
         self.rotateFirstBox = QCheckBox(self.optionWidget)
         self.rotateFirstBox.setObjectName(u"rotateFirstBox")
@@ -748,9 +748,9 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.metadataTitleBox.setText(QCoreApplication.translate("mainWindow", u"Metadata Title", None))
 #if QT_CONFIG(tooltip)
-        self.smartCoverCropBox.setToolTip(QCoreApplication.translate("mainWindow", u"Attempt to crop main cover from wide image.", None))
+        self.noSmartCoverCropBox.setToolTip(QCoreApplication.translate("mainWindow", u"Disable attempt to crop main cover from wide image.", None))
 #endif // QT_CONFIG(tooltip)
-        self.smartCoverCropBox.setText(QCoreApplication.translate("mainWindow", u"Smart Cover Crop", None))
+        self.noSmartCoverCropBox.setText(QCoreApplication.translate("mainWindow", u"No Smart Cover Crop", None))
 #if QT_CONFIG(tooltip)
         self.rotateFirstBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>When the spread splitter option is partially checked,</p><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Rotate Last<br/></span>Put the rotated 2 page spread after the split spreads.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate First<br/></span>Put the rotated 2 page spread before the split spreads.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
