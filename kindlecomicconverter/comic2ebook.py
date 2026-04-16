@@ -310,6 +310,15 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
         f.writelines(["<dc:description>", hescape(options.summary), "</dc:description>\n"])
     for author in options.authors:
         f.writelines(["<dc:creator>", hescape(author), "</dc:creator>\n"])
+    if not options.iskindle and options.series:
+        f.writelines(['<meta property="belongs-to-collection" id="c02">', hescape(options.series), "</meta>\n"])
+        f.writelines(['<meta refines="#c02" property="collection-type">', "series", "</meta>\n"])
+        if options.volume and options.number:
+            f.writelines(['<meta refines="#c02" property="group-position">', hescape(f"{options.volume}.{options.number}"), "</meta>\n"])
+        elif options.volume:
+            f.writelines(['<meta refines="#c02" property="group-position">', hescape(options.volume), "</meta>\n"])
+        elif options.number:
+            f.writelines(['<meta refines="#c02" property="group-position">', hescape(options.number), "</meta>\n"])
     f.write("<meta property=\"dcterms:modified\">" + strftime("%Y-%m-%dT%H:%M:%SZ", gmtime()) + "</meta>\n")
     if cover:
         f.write("<meta name=\"cover\" content=\"cover\"/>\n")
@@ -992,6 +1001,9 @@ def getMetadata(path, originalpath):
     options.comicinfo_chapters = []
     options.summary = ''
     titleSuffix = ''
+    options.volume = ''
+    options.number = ''
+    options.series = ''
     if options.title == 'defaulttitle':
         defaultTitle = True
         if os.path.isdir(originalpath):
@@ -1020,8 +1032,10 @@ def getMetadata(path, originalpath):
                 options.title = xml.data['Series']
             if xml.data['Volume']:
                 titleSuffix += ' Vol. ' + xml.data['Volume'].zfill(2)
+                options.volume = xml.data['Volume']
             if xml.data['Number']:
                 titleSuffix += ' #' + xml.data['Number'].zfill(3)
+                options.number = xml.data['Number']
             if options.metadatatitle == 1 and xml.data['Title']:
                 titleSuffix += ': ' + xml.data['Title']
             options.title += titleSuffix
@@ -1039,6 +1053,8 @@ def getMetadata(path, originalpath):
             options.comicinfo_chapters = xml.data['Bookmarks']
         if xml.data['Summary']:
             options.summary = xml.data['Summary']
+        if xml.data['Series']:
+            options.series = xml.data['Series']
         os.remove(xmlPath)
 
     if originalpath.lower().endswith('.pdf'):
