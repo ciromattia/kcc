@@ -450,6 +450,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.webpBox, 12, 0, 1, 1)
 
+        self.tempDirBox = QCheckBox(self.optionWidget)
+        self.tempDirBox.setObjectName(u"tempDirBox")
+
+        self.gridLayout_2.addWidget(self.tempDirBox, 12, 1, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -821,6 +826,10 @@ class Ui_mainWindow(object):
 "Ignored for Kindle EPUB/MOBI and all PDF.", None))
 #endif // QT_CONFIG(tooltip)
         self.webpBox.setText(QCoreApplication.translate("mainWindow", u"WebP (experimental)", None))
+#if QT_CONFIG(tooltip)
+        self.tempDirBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Main Drive<br/></span>Use dedicated temporary directory on main OS drive.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Source File Drive<br/></span>Create temporary file directory on source file drive.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.tempDirBox.setText(QCoreApplication.translate("mainWindow", u"Temp Directory", None))
 #if QT_CONFIG(tooltip)
         self.convertButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Shift+Click to select the output directory for this list.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

@@ -885,6 +885,16 @@ Ignored for Kindle EPUB/MOBI and all PDF.</string>
          </property>
         </widget>
        </item>
+       <item row="12" column="1">
+        <widget class="QCheckBox" name="tempDirBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - Main Drive&lt;br/&gt;&lt;/span&gt;Use dedicated temporary directory on main OS drive.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - Source File Drive&lt;br/&gt;&lt;/span&gt;Create temporary file directory on source file drive.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Temp Directory</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>

@@ -874,7 +874,8 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
 def getWorkFolder(afile, workdir=None):
     if not workdir:
         workdir = mkdtemp('', 'KCC-')
-        # workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
+        if options.tempdir:
+            workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
         fullPath = os.path.join(workdir, 'OEBPS', 'Images')
     else:
         fullPath = workdir
@@ -1450,6 +1451,8 @@ def makeParser():
                                     help="Turn 1x4 strips to 2x2 strips")
     processing_options.add_argument("-d", "--delete", action="store_true", dest="delete", default=False,
                                     help="Delete source file(s) or a directory. It's not recoverable.")
+    processing_options.add_argument("--tempdir", action="store_true", dest="tempdir", default=False,
+                                    help="Create temporary files directory on source file drive.")
 
     custom_profile_options.add_argument("--customwidth", type=int, dest="customwidth", default=0,
                                         help="Replace screen width provided by device profile")
