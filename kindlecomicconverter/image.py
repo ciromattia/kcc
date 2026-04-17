@@ -602,12 +602,18 @@ class Cover:
                 self.image = self.image.crop((w/6, 0, w/2 - w * 0.02, h))
             else:
                 self.image = self.image.crop((w/2 + w * 0.02, 0, 5/6 * w, h))
-        elif w / h > 1.7:
+        elif w / h > 1.83:
             self.smartcover = True
             if self.options.righttoleft:
                 self.image = self.image.crop((w * .19, 0, w * .575, h))
             else:
                 self.image = self.image.crop((w * .425, 0, .81 * w, h))
+        elif w / h > 1.7:
+            self.smartcover = True
+            if self.options.righttoleft:
+                self.image = self.image.crop((w * .2, 0, w * .583, h))
+            else:
+                self.image = self.image.crop((w * .417, 0, .8 * w, h))
         elif w / h > 1.34:
             self.smartcover = True
             if self.options.righttoleft:
