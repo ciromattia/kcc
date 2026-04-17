@@ -620,6 +620,12 @@ class Cover:
                 self.image = self.image.crop((0, 0, w/2 - w * 0.03, h))
             else:
                 self.image = self.image.crop((w/2 + w * 0.03, 0, w, h))
+        elif w / h > 1.08:
+            self.smartcover = True
+            if self.options.righttoleft:
+                self.image = self.image.crop((w * .36, 0, w, h))
+            else:
+                self.image = self.image.crop((w, 0, .64 * w, h))
 
     def save_to_folder(self, target, tomeid, len_tomes=0):
         try:
