@@ -194,8 +194,10 @@ class ComicPageParser:
             new_image.paste(pageone, (0, 0))
             new_image.paste(pagetwo, (0, height))
             self.payload.append(['N', self.source, new_image, self.fill])
-        elif (width > height) != (dstwidth > dstheight) and width <= dstheight and height <= dstwidth \
-                and not self.opt.webtoon and self.opt.splitter == 1:
+        elif self.opt.webtoon:
+            self.payload.append(['N', self.source, self.image, self.fill])
+        # rotate only TODO dead code?
+        elif (width > height) != (dstwidth > dstheight) and width <= dstheight and height <= dstwidth and self.opt.splitter == 1:
             spread = self.image
             if not self.opt.norotate:
                 if not self.opt.rotateright:
@@ -203,8 +205,10 @@ class ComicPageParser:
                 else:
                     spread = spread.rotate(-90, Image.Resampling.BICUBIC, True)
             self.payload.append(['R', self.source, spread, self.fill])
-        elif (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:
-            if self.opt.splitter != 1 and width / height < 2:
+        # elif wide enough to split
+        elif (width > height) != (dstwidth > dstheight) and width / height > 1.16:
+            # if (split) or (split and rotate)
+            if self.opt.splitter != 1 and width / height < 1.75:
                 if width > height:
                     leftbox = (0, 0, int(width / 2), height)
                     rightbox = (int(width / 2), 0, width, height)
@@ -219,7 +223,9 @@ class ComicPageParser:
                     pagetwo = self.image.crop(rightbox)
                 self.payload.append(['S1', self.source, pageone, self.fill])
                 self.payload.append(['S2', self.source, pagetwo, self.fill])
-            if self.opt.splitter > 0 or (self.opt.splitter == 0 and width / height >= 2):
+
+            # if (rotate) or (split and rotate)
+            if self.opt.splitter > 0 or (self.opt.splitter == 0 and width / height >= 1.75):
                 spread = self.image
                 if not self.opt.norotate:
                     if not self.opt.rotateright:
