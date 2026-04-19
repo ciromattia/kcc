@@ -117,7 +117,7 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
   - No. Calibre doesn't properly support fixed layout EPUB/MOBI, so modifying KCC output (even just metadata!) in Calibre can break the formatting.
     Additionally, it will break page numbers.
     Viewing KCC output in Calibre will also not work properly.
-    If you are careful to not modify the file however, you can still use Calibre, but direct USB dropping is reccomended.
+    Direct USB dropping is reccomended.
 - Blank pages?
   - May happen when [using PNG with Kindle Scribe](https://github.com/ciromattia/kcc/issues/665) or [any format with a Kindle Colorsoft](https://github.com/ciromattia/kcc/issues/768). Solve by using JPG with Kindle Scribe or buying a Kobo Colour. Happens more often when turning pages really fast. You can try PDF output.
     Going back a few pages and exiting and re-entering book should fix it temporarily.
