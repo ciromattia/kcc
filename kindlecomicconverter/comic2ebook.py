@@ -324,8 +324,8 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
         f.write("<meta name=\"cover\" content=\"cover\"/>\n")
     if options.iskindle and options.profile != 'Custom':
         f.writelines(["<meta name=\"fixed-layout\" content=\"true\"/>\n",
-                      "<meta name=\"original-resolution\" content=\"",
-                      str(deviceres[0]) + "x" + str(deviceres[1]) + "\"/>\n",
+                    #   "<meta name=\"original-resolution\" content=\"",
+                    #   str(deviceres[0]) + "x" + str(deviceres[1]) + "\"/>\n",
                       "<meta name=\"book-type\" content=\"comic\"/>\n",
                       "<meta name=\"primary-writing-mode\" content=\"" + writingmode + "\"/>\n",
                       "<meta name=\"zero-gutter\" content=\"true\"/>\n",
