@@ -1557,8 +1557,8 @@ def checkOptions(options):
             options.jpegquality = 90
         else:
             options.jpegquality = 85
-    options.kindle_azw3 = options.iskindle and ('MOBI' in options.format or 'EPUB' in options.format)
-    options.kindle_scribe_azw3 = options.profile.startswith('KS') and options.kindle_azw3
+    options.kindle_azw3 = options.iskindle and ('MOBI' in options.format or 'EPUB' in options.format) and False
+    options.kindle_scribe_azw3 = options.profile.startswith('KS') and options.kindle_azw3 and False
 
     options.webp_output = options.format != 'PDF' and not options.kindle_azw3 and options.webp
 
