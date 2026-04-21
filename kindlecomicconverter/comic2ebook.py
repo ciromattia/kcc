@@ -880,8 +880,11 @@ def getWorkFolder(afile, workdir=None):
         fullPath = os.path.join(workdir, 'OEBPS', 'Images')
     else:
         fullPath = workdir
+    check_path = gettempdir()
+    if options.tempdir:
+        check_path = os.path.dirname(afile)
     if os.path.isdir(afile):
-        if disk_usage(gettempdir())[2] < getDirectorySize(afile) * 2.5:
+        if disk_usage(check_path)[2] < getDirectorySize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
         try:
             copytree(afile, fullPath)
@@ -891,7 +894,7 @@ def getWorkFolder(afile, workdir=None):
             rmtree(workdir, True)
             raise UserWarning("Failed to prepare a workspace.")
     elif os.path.isfile(afile):
-        if disk_usage(gettempdir())[2] < os.path.getsize(afile) * 2.5:
+        if disk_usage(check_path)[2] < getDirectorySize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
         if afile.lower().endswith('.pdf'):
             if not os.path.exists(fullPath):
