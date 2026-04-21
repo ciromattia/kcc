@@ -1632,10 +1632,13 @@ def makeFusion(sources: List[str]):
         raise UserWarning('Fusion requires at least 2 sources. Did you forget to uncheck fusion?')
     start = perf_counter()
     first_path = Path(sources[0])
+    fusion_parent = Path(gettempdir())
+    if options.tempdir:
+        fusion_parent = first_path.parent
     if first_path.is_file():
-        fusion_path = first_path.parent.joinpath(first_path.stem + ' [fused]')
+        fusion_path = fusion_parent.joinpath(first_path.stem + ' [fused]')
     else:
-        fusion_path = first_path.parent.joinpath(first_path.name + ' [fused]')
+        fusion_path = fusion_parent.joinpath(first_path.name + ' [fused]')
     print("Running Fusion")
 
     # Check if prefix is needed when user-specified ordering differs from OS natural sorting
