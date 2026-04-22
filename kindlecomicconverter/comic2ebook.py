@@ -143,7 +143,7 @@ def buildHTML(path, imgfile, imgfilepath, imgfile2=None):
         f.write('<div style="display:none;">.</div>\n')
     f.write(f'<img width="{imgsize[0]}" height="{imgsize[1]}" src="{"../" * backref}Images/{postfix}{imgfile}"/>\n')
     if imgfile2:
-        f.write(f'<img width="{imgsize2[0]}" height="{imgsize2[1]}" src="{"../" * backref}Images/{postfix}{imgfile2}"/>\n')
+        f.write(f'<img style="bottom: 0" width="{imgsize2[0]}" height="{imgsize2[1]}" src="{"../" * backref}Images/{postfix}{imgfile2}"/>\n')
     f.write("</div>\n")
     if options.iskindle and options.panelview:
         if options.autoscale:
@@ -1558,7 +1558,7 @@ def checkOptions(options):
         else:
             options.jpegquality = 85
     options.kindle_azw3 = options.iskindle and ('MOBI' in options.format or 'EPUB' in options.format)
-    options.kindle_scribe_azw3 = options.profile.startswith('KS') and options.kindle_azw3 and False
+    options.kindle_scribe_azw3 = options.profile.startswith('KS') and options.kindle_azw3
 
     options.webp_output = options.format != 'PDF' and not options.kindle_azw3 and options.webp
 
