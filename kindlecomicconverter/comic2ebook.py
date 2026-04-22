@@ -136,7 +136,7 @@ def buildHTML(path, imgfile, imgfilepath, imgfile2=None):
                   "content=\"width=" + str(imgsizeframe[0]) + ", height=" + str(imgsizeframe[1]) + "\"/>\n"
                   "</head>\n",
                   "<body style=\"" + additionalStyle + "\">\n",
-                  "<div style=\"text-align:center;top:" + getTopMargin(deviceres, imgsizeframe) + "%;\">\n",
+                  "<div style=\"text-align:center;\">\n",
     ])
     if options.iskindle:
         # this display none div fixes formatting issues with virtual panel mode, for some reason
@@ -1073,11 +1073,6 @@ def getDirectorySize(start_path='.'):
             fp = os.path.join(dirpath, f)
             total_size += os.path.getsize(fp)
     return total_size
-
-
-def getTopMargin(deviceres, size):
-    y = int((deviceres[1] - size[1]) / 2) / deviceres[1] * 100
-    return str(round(y, 1))
 
 
 def getPanelViewResolution(imagesize, deviceres):
