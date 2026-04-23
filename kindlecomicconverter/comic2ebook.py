@@ -894,7 +894,7 @@ def getWorkFolder(afile, workdir=None):
             rmtree(workdir, True)
             raise UserWarning("Failed to prepare a workspace.")
     elif os.path.isfile(afile):
-        if disk_usage(check_path)[2] < getDirectorySize(afile) * 2.5:
+        if disk_usage(check_path)[2]< os.path.getsize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
         if afile.lower().endswith('.pdf'):
             if not os.path.exists(fullPath):
@@ -918,7 +918,7 @@ def getWorkFolder(afile, workdir=None):
                 mupdf_pdf_process_pages_parallel(afile, fullPath, target_width, target_height)
             except Exception as e:
                 rmtree(path, True)
-                raise UserWarning(f"Failed to extract images from PDF file. {e}")
+                raise  UserWarning(f"Failed to extract images from PDF file. {e}")
             return workdir
         else:
             if not os.path.exists(fullPath):
@@ -1617,13 +1617,10 @@ def makeFusion(sources: List[str]):
         raise UserWarning('Fusion requires at least 2 sources. Did you forget to uncheck fusion?')
     start = perf_counter()
     first_path = Path(sources[0])
-    fusion_parent = Path(gettempdir())
-    if options.tempdir:
-        fusion_parent = first_path.parent
     if first_path.is_file():
-        fusion_path = fusion_parent.joinpath(first_path.stem + ' [fused]')
+        fusion_path = first_path.parent.joinpath(first_path.stem + ' [fused]')
     else:
-        fusion_path = fusion_parent.joinpath(first_path.name + ' [fused]')
+        fusion_path = first_path.parent.joinpath(first_path.name + ' [fused]')
     print("Running Fusion")
 
     # Check if prefix is needed when user-specified ordering differs from OS natural sorting
