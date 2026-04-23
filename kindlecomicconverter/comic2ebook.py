@@ -1710,7 +1710,7 @@ def makeBook(source, qtgui=None, job_progress=''):
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ' ' + str(tomeNumber)))
             else:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
-            if cover.smartcover:
+            if cover and cover.smartcover:
                 cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', 'cover.jpg'), tomeNumber, len(tomes))
             makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"), job_progress)
         elif options.format == 'PDF':
@@ -1718,7 +1718,7 @@ def makeBook(source, qtgui=None, job_progress=''):
             # determine output filename based on source and tome count
             suffix = (' ' + str(tomeNumber)) if len(tomes) > 1 else ''
             output_file = getOutputFilename(source, options.output, '.pdf', suffix)
-            if cover.smartcover:
+            if cover and cover.smartcover:
                 cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', 'cover.jpg'), tomeNumber, len(tomes))
             # use optimized buildPDF logic with streaming and compression
             output_pdf = buildPDF(tome, options.title, job_progress, None, output_file)
