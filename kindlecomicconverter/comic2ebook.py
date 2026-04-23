@@ -918,7 +918,7 @@ def getWorkFolder(afile, workdir=None):
                 mupdf_pdf_process_pages_parallel(afile, fullPath, target_width, target_height)
             except Exception as e:
                 rmtree(path, True)
-                raise  UserWarning(f"Failed to extract images from PDF file. {e}")
+                raise UserWarning(f"Failed to extract images from PDF file. {e}")
             return workdir
         else:
             if not os.path.exists(fullPath):
