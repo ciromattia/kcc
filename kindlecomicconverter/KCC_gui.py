@@ -795,8 +795,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.rotateBox.setChecked(False)
             GUI.borderBox.setEnabled(False)
             GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
-            GUI.upscaleBox.setEnabled(False)
-            GUI.upscaleBox.setChecked(False)
+            # GUI.upscaleBox.setEnabled(False)
+            # GUI.upscaleBox.setChecked(False)
             GUI.croppingBox.setEnabled(False)
             GUI.croppingBox.setChecked(False)
             GUI.interPanelCropBox.setEnabled(False)
@@ -813,7 +813,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.rotateBox.setEnabled(True)
             GUI.borderBox.setEnabled(True)
             profile = GUI.profiles[str(GUI.deviceBox.currentText())]
-            if not profile['Label'].startswith('KS'):
+            if not profile['Label'].startswith('KS') or True:
                 GUI.upscaleBox.setEnabled(True)
             GUI.croppingBox.setEnabled(True)
             GUI.interPanelCropBox.setEnabled(True)
@@ -908,10 +908,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if not GUI.webtoonBox.isChecked():
             GUI.qualityBox.setEnabled(profile['PVOptions'])
         GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
-        if profile['Label'].startswith('KS'):
+        if profile['Label'].startswith('KS') and False:
             GUI.upscaleBox.setDisabled(True)
         else:
-            if not GUI.webtoonBox.isChecked():
+            if not GUI.webtoonBox.isChecked() or True:
                 GUI.upscaleBox.setEnabled(True)
         if profile['Label'] == 'KCS':
             current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
