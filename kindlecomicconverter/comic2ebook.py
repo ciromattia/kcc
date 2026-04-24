@@ -327,16 +327,15 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
         f.writelines(["<meta name=\"fixed-layout\" content=\"true\"/>\n",
                       ])
         if not options.kfx_resolution:
+            f.writelines([
+                        "<meta name=\"original-resolution\" content=\"",
+                        str(deviceres[0]) + "x" + str(deviceres[1]) + "\"/>\n",
+            ])
+        else:
             x, y = options.kfx_resolution
             f.writelines([
                         "<meta name=\"original-resolution\" content=\"",
                         str(x) + "x" + str(y) + "\"/>\n",
-            ])
-        else:
-
-            f.writelines([
-                        "<meta name=\"original-resolution\" content=\"",
-                        str(deviceres[0]) + "x" + str(deviceres[1]) + "\"/>\n",
             ])
         f.writelines([
                       "<meta name=\"book-type\" content=\"comic\"/>\n",
