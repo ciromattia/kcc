@@ -946,6 +946,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'MOBI+EPUB-200MB'):
             GUI.chunkSizeCheckBox.setEnabled(False)
             GUI.chunkSizeCheckBox.setChecked(False)
+        elif GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'KFX':
+            GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
         elif not GUI.webtoonBox.isChecked():
             GUI.chunkSizeCheckBox.setEnabled(True)
         if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'PDF') and not GUI.webtoonBox.isChecked():
