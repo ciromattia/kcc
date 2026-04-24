@@ -1553,6 +1553,7 @@ def checkOptions(options):
         options.hq = False
     # KFX output create EPUB that might be can be by jhowell KFX Output Calibre plugin
     if options.format == 'KFX':
+        options.targetsize = 195
         options.format = 'EPUB'
         options.kfx = True
         options.panelview = False
