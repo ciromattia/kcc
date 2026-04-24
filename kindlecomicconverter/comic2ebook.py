@@ -1470,6 +1470,15 @@ def checkOptions(options):
     options.isKobo = False
     options.bordersColor = None
     options.keep_epub = False
+
+    if options.profile in image.ProfileData.ProfilesKindle.keys():
+        options.iskindle = True
+    else:
+        options.isKobo = True
+
+    if not options.iskindle and ('MOBI' in options.format or 'EPUB-200MB' in options.format):
+        raise UserWarning('MOBI/EPUB-200MB not supported for non-Kindle profiles')
+
     if options.format == 'PDF-200MB':
         options.targetsize = 195
         options.format = 'PDF'
@@ -1501,10 +1510,7 @@ def checkOptions(options):
             options.format = 'PDF'
         else:
             options.format = 'EPUB'
-    if options.profile in image.ProfileData.ProfilesKindle.keys():
-        options.iskindle = True
-    else:
-        options.isKobo = True
+
     if options.white_borders:
         options.bordersColor = 'white'
     if options.black_borders:
@@ -1556,6 +1562,7 @@ def checkOptions(options):
             options.jpegquality = 90
         else:
             options.jpegquality = 85
+
     options.kindle_azw3 = options.iskindle and ('MOBI' in options.format or 'EPUB' in options.format)
     options.kindle_scribe_azw3 = options.profile.startswith('KS') and options.kindle_azw3
 
