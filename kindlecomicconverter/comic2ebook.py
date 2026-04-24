@@ -1735,11 +1735,12 @@ def makeBook(source, qtgui=None, job_progress=''):
             options.kfx_resolution = most_common_res
             if most_common_count / counter.total() > .6:
                 pass
-            elif max(aspect_ratios) - min(aspect_ratios) < .2:
+            #elif max(aspect_ratios) - min(aspect_ratios) < .2:
+            else:
                 # get the widest resolution
                 options.kfx_resolution = max(filtered_resolutions)
-            else:
-                raise UserWarning('Aspect ratio of pages too different for KFX conversion')
+            # else:
+            #     raise UserWarning('Aspect ratio of pages too different for KFX conversion')
 
     if options.noprocessing:
         print(f"{job_progress}Do not process image, ignore any profile or processing option")
