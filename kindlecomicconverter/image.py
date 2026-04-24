@@ -517,7 +517,9 @@ class ComicPage:
         ratio_device = float(self.size[1]) / float(self.size[0])
         ratio_image = float(self.image.size[1]) / float(self.image.size[0])
         method = self.resize_method()
-        if self.opt.stretch:
+        if self.opt.kfx:
+            self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
+        elif self.opt.stretch:
             self.image = self.image.resize(self.size, method)
         elif method == Image.Resampling.BICUBIC and not self.opt.upscale:
             pass
@@ -526,7 +528,7 @@ class ComicPage:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
             elif abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
-            elif (self.opt.format in ('CBZ', 'PDF') or self.opt.kfx) and not self.opt.white_borders:
+            elif (self.opt.format in ('CBZ', 'PDF')) and not self.opt.white_borders:
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
                 self.image = ImageOps.contain(self.image, self.size, method=method)

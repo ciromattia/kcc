@@ -1231,7 +1231,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "CBZ": {'icon': 'CBZ', 'format': 'CBZ'},
             "PDF": {'icon': 'EPUB', 'format': 'PDF'},
             "PDF (200MB limit)": {'icon': 'EPUB', 'format': 'PDF-200MB'},
-            "KFX (does not work)": {'icon': 'KFX', 'format': 'KFX'},
+            "KFX (Send to Kindle EPUB)": {'icon': 'KFX', 'format': 'KFX'},
             "MOBI + EPUB": {'icon': 'MOBI', 'format': 'MOBI+EPUB'},
             "EPUB (200MB limit)": {'icon': 'EPUB', 'format': 'EPUB-200MB'},
             "MOBI + EPUB (200MB limit)": {'icon': 'MOBI', 'format': 'MOBI+EPUB-200MB'},
