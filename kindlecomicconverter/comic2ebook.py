@@ -1725,7 +1725,7 @@ def makeBook(source, qtgui=None, job_progress=''):
             aspect_ratios = []
             filtered_resolutions = []
             for w, h in normalized_resolutions:
-                aspect_ratio = w / h
+                aspect_ratio = h / w
                 # page-like aspect ratios, could be improved
                 if aspect_ratio > 1.3 and aspect_ratio < 1.7:
                     aspect_ratios.append(aspect_ratio)
