@@ -819,7 +819,7 @@ class Ui_mainWindow(object):
 #if QT_CONFIG(tooltip)
         self.autocontrastBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - BW only<br/></span>Only autocontrast bw pages. Ignored for pages where near blacks or whites don't exist.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Disabled<br/></span>Disable autocontrast</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - BW and Color<br/></span>BW and color images will be autocontrasted. Ignored for pages where near blacks or whites don't exist.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.autocontrastBox.setText(QCoreApplication.translate("mainWindow", u"Autocontrast", None))
+        self.autocontrastBox.setText(QCoreApplication.translate("mainWindow", u"Custom Autocontrast", None))
 #if QT_CONFIG(tooltip)
         self.webpBox.setToolTip(QCoreApplication.translate("mainWindow", u"Replace JPG with lossy WebP and PNG with lossless WebP. This includes the JPG Quality.\n"
 "\n"

@@ -866,7 +866,7 @@ Useful if you plan to crop a little off the top and bottom to fill screen.</stri
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Unchecked - BW only&lt;br/&gt;&lt;/span&gt;Only autocontrast bw pages. Ignored for pages where near blacks or whites don't exist.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Indeterminate - Disabled&lt;br/&gt;&lt;/span&gt;Disable autocontrast&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; text-decoration: underline;&quot;&gt;Checked - BW and Color&lt;br/&gt;&lt;/span&gt;BW and color images will be autocontrasted. Ignored for pages where near blacks or whites don't exist.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Autocontrast</string>
+          <string>Custom Autocontrast</string>
          </property>
          <property name="tristate">
           <bool>true</bool>
