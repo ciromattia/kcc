@@ -1488,8 +1488,8 @@ def checkOptions(options):
     else:
         options.isKobo = True
 
-    if not options.iskindle and ('MOBI' in options.format or 'EPUB-200MB' in options.format):
-        raise UserWarning('MOBI/EPUB-200MB not supported for non-Kindle profiles')
+    if not options.iskindle and ('MOBI' in options.format or 'EPUB-200MB' in options.format or 'KFX' in options.format):
+        raise UserWarning('MOBI/Send to Kindle not supported for non-Kindle profiles')
 
     if options.format == 'PDF-200MB':
         options.targetsize = 195
