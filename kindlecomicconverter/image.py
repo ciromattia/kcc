@@ -518,8 +518,8 @@ class ComicPage:
         ratio_image = float(self.image.size[1]) / float(self.image.size[0])
         method = self.resize_method()
         if self.opt.kfx:
-            w, h = self.opt.kfx_resolution
-            if abs(ratio_image - h / w) < AUTO_CROP_THRESHOLD:
+            ratio_kfx = self.opt.kfx_resolution[1] / self.opt.kfx_resolution[0]
+            if abs(ratio_image - ratio_kfx) < AUTO_CROP_THRESHOLD:
                 self.image = ImageOps.fit(self.image, self.opt.kfx_resolution, method=method)
             else:
                 self.image = ImageOps.pad(self.image, self.opt.kfx_resolution, method=method, color=self.fill)
