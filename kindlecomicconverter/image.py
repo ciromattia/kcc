@@ -29,6 +29,7 @@ from PIL import Image, ImageOps, ImageFile, ImageChops, ImageDraw
 from .rainbow_artifacts_eraser import erase_rainbow_artifacts
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
+from .shared import get_contain_resolution
 
 AUTO_CROP_THRESHOLD = 0.015
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -519,8 +520,12 @@ class ComicPage:
         method = self.resize_method()
         if self.opt.kfx:
             ratio_kfx = self.opt.kfx_resolution[1] / self.opt.kfx_resolution[0]
+            contain_size = get_contain_resolution(self.image, self.size)
             if abs(ratio_image - ratio_kfx) < AUTO_CROP_THRESHOLD:
-                self.image = ImageOps.fit(self.image, self.opt.kfx_resolution, method=method)
+                if contain_size[0] > self.opt.kfx_resolution[0] or contain_size[1] > self.opt.kfx_resolution[1]:
+                    self.image = ImageOps.fit(self.image, self.opt.kfx_resolution, method=method)
+                else:
+                    self.image = ImageOps.pad(self.image, self.opt.kfx_resolution, method=method, color=self.fill)
             else:
                 self.image = ImageOps.pad(self.image, self.opt.kfx_resolution, method=method, color=self.fill)
         elif self.opt.stretch:
