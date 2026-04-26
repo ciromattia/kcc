@@ -18,6 +18,7 @@
 # PERFORMANCE OF THIS SOFTWARE.
 #
 
+from collections import Counter
 import os
 import pathlib
 import re
@@ -43,7 +44,7 @@ from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 import pymupdf
 
-from .shared import IMAGE_TYPES, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean
+from .shared import IMAGE_TYPES, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean, get_contain_resolution
 from .comicarchive import SEVENZIP, available_archive_tools
 from . import comic2panel
 from . import image
@@ -324,8 +325,19 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
         f.write("<meta name=\"cover\" content=\"cover\"/>\n")
     if options.iskindle and options.profile != 'Custom':
         f.writelines(["<meta name=\"fixed-layout\" content=\"true\"/>\n",
-                      "<meta name=\"original-resolution\" content=\"",
-                      str(deviceres[0]) + "x" + str(deviceres[1]) + "\"/>\n",
+                      ])
+        if not options.kfx_resolution:
+            f.writelines([
+                        "<meta name=\"original-resolution\" content=\"",
+                        str(deviceres[0]) + "x" + str(deviceres[1]) + "\"/>\n",
+            ])
+        else:
+            x, y = options.kfx_resolution
+            f.writelines([
+                        "<meta name=\"original-resolution\" content=\"",
+                        str(x) + "x" + str(y) + "\"/>\n",
+            ])
+        f.writelines([
                       "<meta name=\"book-type\" content=\"comic\"/>\n",
                       "<meta name=\"primary-writing-mode\" content=\"" + writingmode + "\"/>\n",
                       "<meta name=\"zero-gutter\" content=\"true\"/>\n",
@@ -1476,8 +1488,8 @@ def checkOptions(options):
     else:
         options.isKobo = True
 
-    if not options.iskindle and ('MOBI' in options.format or 'EPUB-200MB' in options.format):
-        raise UserWarning('MOBI/EPUB-200MB not supported for non-Kindle profiles')
+    if not options.iskindle and ('MOBI' in options.format or 'EPUB-200MB' in options.format or 'KFX' in options.format):
+        raise UserWarning('MOBI/Send to Kindle not supported for non-Kindle profiles')
 
     if options.format == 'PDF-200MB':
         options.targetsize = 195
@@ -1541,6 +1553,7 @@ def checkOptions(options):
         options.hq = False
     # KFX output create EPUB that might be can be by jhowell KFX Output Calibre plugin
     if options.format == 'KFX':
+        options.targetsize = 195
         options.format = 'EPUB'
         options.kfx = True
         options.panelview = False
@@ -1678,9 +1691,43 @@ def makeBook(source, qtgui=None, job_progress=''):
     if not options.webtoon:
         cover = image.Cover(cover_path, options)
 
+    x, y = image.ProfileData.Profiles[options.profile][1]
     if options.webtoon:
-        x, y = image.ProfileData.Profiles[options.profile][1]
         comic2panel.main(['-y ' + str(y), '-x' + str(x), '-i', '-m', path], job_progress, qtgui)
+
+    options.kfx_resolution = None
+    if options.kfx:
+        original_resolutions = []
+        normalized_resolutions = []
+        for root, _, files in os.walk(os.path.join(path, "OEBPS", "Images")):
+            for file in files:
+                with Image.open(os.path.join(root, file)) as imagef:
+                    original_resolutions.append(imagef.size)
+                    size = get_contain_resolution(imagef, (x, y))
+                    normalized_resolutions.append(size)
+
+            counter = Counter(normalized_resolutions)
+
+            aspect_ratios = []
+            filtered_resolutions = []
+            for w, h in normalized_resolutions:
+                aspect_ratio = h / w
+                # page-like aspect ratios, could be improved
+                if aspect_ratio > 1.3 and aspect_ratio < 1.7:
+                    aspect_ratios.append(aspect_ratio)
+                    filtered_resolutions.append((w, h))
+
+            most_common_res, most_common_count = counter.most_common(1)[0]
+            options.kfx_resolution = most_common_res
+            if most_common_count / counter.total() > .6:
+                pass
+            #elif max(aspect_ratios) - min(aspect_ratios) < .2:
+            else:
+                # get the widest resolution
+                options.kfx_resolution = max(filtered_resolutions)
+            # else:
+            #     raise UserWarning('Aspect ratio of pages too different for KFX conversion')
+
     if options.noprocessing:
         print(f"{job_progress}Do not process image, ignore any profile or processing option")
     else:
