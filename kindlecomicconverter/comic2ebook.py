@@ -44,7 +44,7 @@ from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 import pymupdf
 
-from .shared import IMAGE_TYPES, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean
+from .shared import IMAGE_TYPES, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean, get_contain_resolution
 from .comicarchive import SEVENZIP, available_archive_tools
 from . import comic2panel
 from . import image
@@ -1702,23 +1702,8 @@ def makeBook(source, qtgui=None, job_progress=''):
         for root, _, files in os.walk(os.path.join(path, "OEBPS", "Images")):
             for file in files:
                 with Image.open(os.path.join(root, file)) as imagef:
-                    size = x, y
                     original_resolutions.append(imagef.size)
-
-                    # same code as Pillow ImageOps.contain
-                    im_ratio = imagef.width / imagef.height
-                    dest_ratio = size[0] / size[1]
-
-                    if im_ratio != dest_ratio:
-                        if im_ratio > dest_ratio:
-                            new_height = round(imagef.height / imagef.width * size[0])
-                            if new_height != size[1]:
-                                size = (size[0], new_height)
-                        else:
-                            new_width = round(imagef.width / imagef.height * size[1])
-                            if new_width != size[0]:
-                                size = (new_width, size[1])
-                    
+                    size = get_contain_resolution(imagef, (x, y))
                     normalized_resolutions.append(size)
 
             counter = Counter(normalized_resolutions)
