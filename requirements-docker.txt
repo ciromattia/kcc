@@ -1,4 +1,4 @@
-Pillow>=11.3.0
+Pillow>=12.2.0
 psutil>=5.9.5
 requests>=2.31.0
 python-slugify>=1.2.1
