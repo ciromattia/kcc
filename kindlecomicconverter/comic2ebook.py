@@ -1719,7 +1719,7 @@ def makeBook(source, qtgui=None, job_progress=''):
 
         most_common_res, most_common_count = counter.most_common(1)[0]
         options.kfx_resolution = most_common_res
-        if most_common_count / counter.total() > .6:
+        if most_common_count / sum(counter.values()) > .6:
             pass
         #elif max(aspect_ratios) - min(aspect_ratios) < .2:
         else:
