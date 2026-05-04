@@ -948,6 +948,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.chunkSizeCheckBox.setChecked(False)
         elif GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'KFX':
             GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
+            GUI.upscaleBox.setChecked(True)
         elif not GUI.webtoonBox.isChecked():
             GUI.chunkSizeCheckBox.setEnabled(True)
         if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'PDF') and not GUI.webtoonBox.isChecked():
