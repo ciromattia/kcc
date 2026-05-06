@@ -599,7 +599,7 @@ class Cover:
         self.image = ImageOps.autocontrast(self.image, preserve_tone=True)
         if not self.options.forcecolor:
             self.image = self.image.convert('L')
-        if not self.options.nosmartcovercrop:
+        if self.options.smartcovercrop:
             self.crop_main_cover()
 
         size = list(self.options.profileData[1])

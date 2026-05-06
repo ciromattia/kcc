@@ -655,12 +655,12 @@ Higher values are larger and higher quality, and may resolve blank page issues.<
         </widget>
        </item>
        <item row="11" column="1">
-        <widget class="QCheckBox" name="noSmartCoverCropBox">
+        <widget class="QCheckBox" name="smartCoverCropBox">
          <property name="toolTip">
-          <string>Disable attempt to crop main cover from wide image.</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Attempt to crop main cover from wide image.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>No Smart Cover Crop</string>
+          <string>Smart Cover Crop</string>
          </property>
         </widget>
        </item>
