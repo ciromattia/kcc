@@ -269,7 +269,7 @@ PROCESSING:
                         Crop empty sections. 0: Disabled 1: Horizontally 2: Both [Default=0]
   --blackborders        Disable autodetection and force black borders
   --whiteborders        Disable autodetection and force white borders
-  --nosmartcovercrop    Disable attempt to crop main cover from wide image
+  --smartcovercrop      Attempt to crop main cover from wide image
   --coverfill           Center-crop only the cover to fill target device screen
   --forcecolor          Don't convert images to grayscale
   --forcepng            Create PNG files instead JPEG for black and white images

@@ -331,8 +331,8 @@ class WorkerThread(QThread):
             options.pdfextract = True
         if GUI.pdfWidthBox.isChecked():
             options.pdfwidth = True
-        if GUI.noSmartCoverCropBox.isChecked():
-            options.nosmartcovercrop = True
+        if GUI.smartCoverCropBox.isChecked():
+            options.smartcovercrop = True
         if GUI.coverFillBox.isChecked():
             options.coverfill = True
         if GUI.metadataTitleBox.checkState() == Qt.CheckState.PartiallyChecked:
@@ -1085,7 +1085,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState(),
                                            'pdfExtractBox': GUI.pdfExtractBox.checkState(),
                                            'pdfWidthBox': GUI.pdfWidthBox.checkState(),
-                                           'noSmartCoverCropBox': GUI.noSmartCoverCropBox.checkState(),
+                                           'smartCoverCropBox': GUI.smartCoverCropBox.checkState(),
                                            'coverFillBox': GUI.coverFillBox.checkState(),
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
