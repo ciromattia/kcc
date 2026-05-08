@@ -29,6 +29,7 @@ from PIL import Image, ImageOps, ImageFile, ImageChops, ImageDraw
 from .rainbow_artifacts_eraser import erase_rainbow_artifacts
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
+from .shared import get_contain_resolution
 
 AUTO_CROP_THRESHOLD = 0.015
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -98,11 +99,18 @@ class ProfileData:
         'KV': ("Kindle Voyage", (1072, 1448), Palette16, 1.0),
         'KPW34': ("Kindle Paperwhite 3/4/Oasis", (1072, 1448), Palette16, 1.0),
         'K810': ("Kindle 8/10", (600, 800), Palette16, 1.0),
-        'KO': ("Kindle Oasis 2/3/Paperwhite 12", (1264, 1680), Palette16, 1.0),
+        'KO': ("Kindle Oasis 2/3", (1264, 1680), Palette16, 1.0),
         'K11': ("Kindle 11", (1072, 1448), Palette16, 1.0),
         'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.0),
-        'KS': ("Kindle Scribe", (1860, 2480), Palette16, 1.0),
-        'KCS': ("Kindle Colorsoft", (1264, 1680), Palette16, 1.0),
+        'KPW6': ("Kindle Paperwhite 6", (1272, 1696), Palette16, 1.0),
+        'KS1860': ("Kindle 1860", (1860, 1920), Palette16, 1.0),
+        'KS1920': ("Kindle 1920", (1920, 1920), Palette16, 1.0),
+        'KS1240': ("Kindle 1240", (1240, 1860), Palette16, 1.0),
+        'KS1324': ("Kindle 1324", (1324, 1986), Palette16, 1.0),
+        'KS': ("Kindle Scribe 1/2", (1860, 2480), Palette16, 1.0),
+        'KCS': ("Kindle Colorsoft", (1272, 1696), Palette16, 1.0),
+        'KS3': ("Kindle Scribe 3", (1986, 2648), Palette16, 1.0),
+        'KSCS': ("Kindle Scribe Colorsoft", (1986, 2648), Palette16, 1.0),
     }
 
     ProfilesKindle = {
@@ -153,7 +161,7 @@ class ComicPageParser:
 
         # Detect corruption in source image, let caller catch any exceptions triggered.
         srcImgPath = os.path.join(source[0], source[1])
-        Image.open(srcImgPath).verify()
+        # Image.open(srcImgPath).verify()
         with Image.open(srcImgPath) as im:
             self.image = im.copy()
 
@@ -188,14 +196,21 @@ class ComicPageParser:
             new_image.paste(pageone, (0, 0))
             new_image.paste(pagetwo, (0, height))
             self.payload.append(['N', self.source, new_image, self.fill])
-        elif (width > height) != (dstwidth > dstheight) and width <= dstheight and height <= dstwidth \
-                and not self.opt.webtoon and self.opt.splitter == 1:
+        elif self.opt.webtoon:
+            self.payload.append(['N', self.source, self.image, self.fill])
+        # rotate only TODO dead code?
+        elif (width > height) != (dstwidth > dstheight) and width <= dstheight and height <= dstwidth and self.opt.splitter == 1:
             spread = self.image
             if not self.opt.norotate:
-                spread = spread.rotate(90, Image.Resampling.BICUBIC, True)
+                if not self.opt.rotateright:
+                    spread = spread.rotate(90, Image.Resampling.BICUBIC, True)
+                else:
+                    spread = spread.rotate(-90, Image.Resampling.BICUBIC, True)
             self.payload.append(['R', self.source, spread, self.fill])
-        elif (width > height) != (dstwidth > dstheight) and not self.opt.webtoon:
-            if self.opt.splitter != 1:
+        # elif wide enough to split
+        elif (width > height) != (dstwidth > dstheight) and width / height > 1.16:
+            # if (split) or (split and rotate)
+            if self.opt.splitter != 1 and width / height < 1.75:
                 if width > height:
                     leftbox = (0, 0, int(width / 2), height)
                     rightbox = (int(width / 2), 0, width, height)
@@ -210,10 +225,15 @@ class ComicPageParser:
                     pagetwo = self.image.crop(rightbox)
                 self.payload.append(['S1', self.source, pageone, self.fill])
                 self.payload.append(['S2', self.source, pagetwo, self.fill])
-            if self.opt.splitter > 0:
+
+            # if (rotate) or (split and rotate)
+            if self.opt.splitter > 0 or (self.opt.splitter == 0 and width / height >= 1.75):
                 spread = self.image
                 if not self.opt.norotate:
-                    spread = spread.rotate(90, Image.Resampling.BICUBIC, True)
+                    if not self.opt.rotateright:
+                        spread = spread.rotate(90, Image.Resampling.BICUBIC, True)
+                    else:
+                        spread = spread.rotate(-90, Image.Resampling.BICUBIC, True)
                 self.payload.append(['R', self.source, spread, self.fill])
         else:
             self.payload.append(['N', self.source, self.image, self.fill])
@@ -266,6 +286,8 @@ class ComicPage:
         self.original_color_mode = image.mode
         # TODO: color check earlier
         self.image = image.convert("RGB")
+        self.color = self.colorCheck()
+        self.colorOutput = self.color and self.opt.forcecolor
         self.fill = fill
         self.rotated = False
         self.orgPath = os.path.join(path[0], path[1])
@@ -284,8 +306,7 @@ class ComicPage:
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
 
-    @cached_property
-    def color(self):
+    def colorCheck(self):
         if self.original_color_mode in ("L", "1"):
             return False
         if self.opt.webtoon:
@@ -394,25 +415,32 @@ class ComicPage:
             raise RuntimeError('Cannot save image. ' + str(err))
 
     def save_with_codec(self, image, targetPath):
-        if self.opt.forcepng:
+        if self.opt.forcepng and (not self.colorOutput or self.opt.force_png_rgb):
             image.info.pop('transparency', None)
-            if self.opt.iskindle and ('MOBI' in self.opt.format or 'EPUB' in self.opt.format):
+            if self.opt.webp_output:
+                targetPath += '.webp'
+                image.save(targetPath, 'WEBP', lossless=True, quality=self.opt.jpegquality)
+            elif self.opt.kindle_azw3:
                 targetPath += '.gif'
                 image.save(targetPath, 'GIF', optimize=1, interlace=False)
             else:
                 targetPath += '.png'
                 image.save(targetPath, 'PNG', optimize=1)
         else:
-            targetPath += '.jpg'
-            if self.opt.mozjpeg:
+            if self.opt.webp_output:
+                targetPath += '.webp'
+                image.save(targetPath, 'WEBP', quality=self.opt.jpegquality)
+            elif self.opt.mozjpeg:
+                targetPath += '.jpg'
                 with io.BytesIO() as output:
-                    image.save(output, format="JPEG", optimize=1, quality=85)
+                    image.save(output, format="JPEG", optimize=1, quality=self.opt.jpegquality)
                     input_jpeg_bytes = output.getvalue()
                     output_jpeg_bytes = mozjpeg_lossless_optimization.optimize(input_jpeg_bytes)
                     with open(targetPath, "wb") as output_jpeg_file:
                         output_jpeg_file.write(output_jpeg_bytes)
             else:
-                image.save(targetPath, 'JPEG', optimize=1, quality=85)
+                targetPath += '.jpg'
+                image.save(targetPath, 'JPEG', optimize=1, quality=self.opt.jpegquality)
         return targetPath
 
     def gammaCorrectImage(self):
@@ -485,26 +513,38 @@ class ComicPage:
             if self.opt.kindle_azw3 and any(dim > 1920 for dim in self.image.size):
                 self.image = ImageOps.contain(self.image, (1920, 1920), Image.Resampling.LANCZOS)
             elif self.image.size[0] > self.size[0] * 2 or self.image.size[1] > self.size[1]:
-                self.image = ImageOps.contain(self.image, (self.size[0] * 2, self.size[1], Image.Resampling.LANCZOS))
+                self.image = ImageOps.contain(self.image, (self.size[0] * 2, self.size[1]), Image.Resampling.LANCZOS)
             return
         
         ratio_device = float(self.size[1]) / float(self.size[0])
         ratio_image = float(self.image.size[1]) / float(self.image.size[0])
         method = self.resize_method()
-        if self.opt.stretch:
+        if self.opt.kfx:
+            ratio_kfx = self.opt.kfx_resolution[1] / self.opt.kfx_resolution[0]
+            contain_size = get_contain_resolution(self.image, self.size)
+            if abs(ratio_image - ratio_kfx) < AUTO_CROP_THRESHOLD:
+                if contain_size[0] > self.opt.kfx_resolution[0] or contain_size[1] > self.opt.kfx_resolution[1]:
+                    self.image = ImageOps.fit(self.image, self.opt.kfx_resolution, method=method)
+                else:
+                    self.image = ImageOps.pad(self.image, self.opt.kfx_resolution, method=method, color=self.fill)
+            else:
+                self.image = ImageOps.pad(self.image, self.opt.kfx_resolution, method=method, color=self.fill)
+        elif self.opt.stretch:
             self.image = self.image.resize(self.size, method)
         elif method == Image.Resampling.BICUBIC and not self.opt.upscale:
             pass
         else: # if image bigger than device resolution or smaller with upscaling
-            if abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
+            if self.opt.profile == 'KDX' and abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD * 3:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
-            elif (self.opt.format in ('CBZ', 'PDF') or self.opt.kfx) and not self.opt.white_borders:
+            elif abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
+                self.image = ImageOps.fit(self.image, self.size, method=method)
+            elif (self.opt.format in ('CBZ', 'PDF')) and not self.opt.white_borders:
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
                 self.image = ImageOps.contain(self.image, self.size, method=method)
 
     def resize_method(self):
-        if self.image.size[0] < self.size[0] and self.image.size[1] < self.size[1]:
+        if self.image.size[0] <= self.size[0] and self.image.size[1] <= self.size[1]:
             return Image.Resampling.BICUBIC
         else:
             return Image.Resampling.LANCZOS
@@ -548,6 +588,7 @@ class Cover:
         self.options = opt
         self.source = source
         self.image = Image.open(source)
+        self.smartcover = False
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
@@ -558,30 +599,56 @@ class Cover:
         self.image = ImageOps.autocontrast(self.image, preserve_tone=True)
         if not self.options.forcecolor:
             self.image = self.image.convert('L')
-        self.crop_main_cover()
+        if self.options.smartcovercrop:
+            self.crop_main_cover()
 
         size = list(self.options.profileData[1])
         if self.options.kindle_scribe_azw3:
+            size[0] = min(size[0], 1920)
             size[1] = min(size[1], 1920)
-        self.image.thumbnail(tuple(size), Image.Resampling.LANCZOS)
+        if self.options.coverfill and not self.options.kindle_scribe_azw3:
+            # TODO: Kindle Scribe case
+            self.image = ImageOps.fit(self.image, tuple(size), Image.Resampling.LANCZOS, centering=(0.5, 0.5))
+        else:
+            self.image.thumbnail(tuple(size), Image.Resampling.LANCZOS)
 
     def crop_main_cover(self):
         w, h = self.image.size
         if w / h > 2:
+            self.smartcover = True
             if self.options.righttoleft:
                 self.image = self.image.crop((w/6, 0, w/2 - w * 0.02, h))
             else:
                 self.image = self.image.crop((w/2 + w * 0.02, 0, 5/6 * w, h))
+        elif w / h > 1.83:
+            self.smartcover = True
+            if self.options.righttoleft:
+                self.image = self.image.crop((w * .19, 0, w * .575, h))
+            else:
+                self.image = self.image.crop((w * .425, 0, .81 * w, h))
+        elif w / h > 1.7:
+            self.smartcover = True
+            if self.options.righttoleft:
+                self.image = self.image.crop((w * .2, 0, w * .583, h))
+            else:
+                self.image = self.image.crop((w * .417, 0, .8 * w, h))
         elif w / h > 1.34:
+            self.smartcover = True
             if self.options.righttoleft:
                 self.image = self.image.crop((0, 0, w/2 - w * 0.03, h))
             else:
                 self.image = self.image.crop((w/2 + w * 0.03, 0, w, h))
+        elif w / h > 1.0:
+            self.smartcover = True
+            if self.options.righttoleft:
+                self.image = self.image.crop((w * .36, 0, w, h))
+            else:
+                self.image = self.image.crop((w, 0, .64 * w, h))
 
-    def save_to_epub(self, target, tomeid, len_tomes=0):
+    def save_to_folder(self, target, tomeid, len_tomes=0):
         try:
             if tomeid == 0:
-                self.image.save(target, "JPEG", optimize=1, quality=85)
+                self.image.save(target, "JPEG", optimize=1, quality=self.options.jpegquality)
             else:
                 copy = self.image.copy()
                 draw = ImageDraw.Draw(copy)
@@ -595,7 +662,7 @@ class Cover:
                     stroke_fill=0,
                     stroke_width=25
                 )
-                copy.save(target, "JPEG", optimize=1, quality=85)
+                copy.save(target, "JPEG", optimize=1, quality=self.options.jpegquality)
         except IOError:
             raise RuntimeError('Failed to save cover.')
 
@@ -603,6 +670,6 @@ class Cover:
         self.image = ImageOps.contain(self.image, (300, 470), Image.Resampling.LANCZOS)
         try:
             self.image.save(os.path.join(kindle.path.split('documents')[0], 'system', 'thumbnails',
-                                         'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG', optimize=1, quality=85)
+                                         'thumbnail_' + asin + '_EBOK_portrait.jpg'), 'JPEG', optimize=1, quality=self.options.jpegquality)
         except IOError:
             raise RuntimeError('Failed to upload cover.')

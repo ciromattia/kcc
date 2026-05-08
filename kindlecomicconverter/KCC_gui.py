@@ -42,7 +42,7 @@ from raven import Client
 from tempfile import gettempdir
 
 from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
-from .comicarchive import SEVENZIP, available_archive_tools
+from .comicarchive import SEVENZIP, TAR, available_archive_tools
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -195,7 +195,7 @@ class VersionThread(QThread):
                         icon = 'bindle'
                     if category == 'kofi':
                         icon = 'kofi'
-                    message = f"<b>{payload.get('name')}</b>"
+                    message = f"{payload.get('name')}"
                     if payload.get('link'):
                         message = '<a href="{}"><b>{}</b></a>'.format(payload.get('link'), payload.get('name'))
                     if payload.get('showDeadline'):
@@ -327,12 +327,22 @@ class WorkerThread(QThread):
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
+        if GUI.pdfExtractBox.isChecked():
+            options.pdfextract = True
+        if GUI.pdfWidthBox.isChecked():
+            options.pdfwidth = True
+        if GUI.smartCoverCropBox.isChecked():
+            options.smartcovercrop = True
+        if GUI.coverFillBox.isChecked():
+            options.coverfill = True
         if GUI.metadataTitleBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.metadatatitle = 1
         elif GUI.metadataTitleBox.checkState() == Qt.CheckState.Checked:
             options.metadatatitle = 2
         if GUI.deleteBox.isChecked():
             options.delete = True
+        if GUI.tempDirBox.isChecked():
+            options.tempdir = True
         if GUI.spreadShiftBox.isChecked():
             options.spreadshift = True
         if GUI.fileFusionBox.isChecked():
@@ -341,12 +351,24 @@ class WorkerThread(QThread):
             options.filefusion = False
         if GUI.noRotateBox.isChecked():
             options.norotate = True
+        if GUI.rotateRightBox.isChecked():
+            options.rotateright = True
         if GUI.rotateFirstBox.isChecked():
             options.rotatefirst = True
+        if GUI.forcePngRgbBox.isChecked():
+            options.force_png_rgb = True
         if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.forcepng = True
         elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
             options.mozjpeg = True
+        if GUI.webpBox.isChecked():
+            options.webp = True
+        if GUI.pngLegacyBox.isChecked():
+            options.pnglegacy = True
+        if GUI.noQuantizeBox.isChecked():
+            options.noquantize = True
+        if GUI.jpegQualityBox.isChecked():
+            options.jpegquality = GUI.jpegQualitySpinBox.value()
         if GUI.currentMode > 2:
             options.customwidth = str(GUI.widthBox.value())
             options.customheight = str(GUI.heightBox.value())
@@ -519,6 +541,7 @@ class WorkerThread(QThread):
                             if os.path.exists(item.replace('.epub', '.mobi')):
                                 os.remove(item.replace('.epub', '.mobi'))
                         MW.addMessage.emit('KindleGen failed to create MOBI!', 'error', False)
+                        MW.addMessage.emit(self.kindlegenErrorCode[1], 'error', False)
                         MW.addTrayMessage.emit('KindleGen failed to create MOBI!', 'Critical')
                         if self.kindlegenErrorCode[0] == 1 and self.kindlegenErrorCode[1] != '':
                             MW.showDialog.emit("KindleGen error:\n\n" + self.kindlegenErrorCode[1], 'error')
@@ -693,6 +716,18 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         # noinspection PyCallByClass
         QDesktopServices.openUrl(QUrl('https://ko-fi.com/eink_dude'))
 
+    def openHumble(self):
+        # noinspection PyCallByClass
+        QDesktopServices.openUrl(QUrl('https://humblebundleinc.sjv.io/3JaR3A'))
+
+    def openYouTube(self):
+        # noinspection PyCallByClass
+        QDesktopServices.openUrl(QUrl('https://www.youtube.com/@eink-dude'))
+    
+    def openDiscord(self):
+        # noinspection PyCallByClass
+        QDesktopServices.openUrl(QUrl('https://discord.gg/um5JRKwmGT'))
+
     def modeChange(self, mode):
         if mode == 1:
             self.currentMode = 1
@@ -760,6 +795,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.croppingWidget.setVisible(False)
             self.changeCroppingPower(100)  # 1.0
 
+    def togglejpegqualityBox(self, value):
+        if value:
+            GUI.jpegQualityWidget.setVisible(True)
+        else:
+            GUI.jpegQualityWidget.setVisible(False)
+
     def togglewebtoonBox(self, value):
         if value:
             self.addMessage('You can choose a taller device profile to get taller cuts in webtoon mode.', 'info')
@@ -772,8 +813,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.rotateBox.setChecked(False)
             GUI.borderBox.setEnabled(False)
             GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
-            GUI.upscaleBox.setEnabled(False)
-            GUI.upscaleBox.setChecked(False)
+            # GUI.upscaleBox.setEnabled(False)
+            # GUI.upscaleBox.setChecked(False)
             GUI.croppingBox.setEnabled(False)
             GUI.croppingBox.setChecked(False)
             GUI.interPanelCropBox.setEnabled(False)
@@ -790,7 +831,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.rotateBox.setEnabled(True)
             GUI.borderBox.setEnabled(True)
             profile = GUI.profiles[str(GUI.deviceBox.currentText())]
-            if profile['Label'] != 'KS':
+            if not profile['Label'].startswith('KS') or True:
                 GUI.upscaleBox.setEnabled(True)
             GUI.croppingBox.setEnabled(True)
             GUI.interPanelCropBox.setEnabled(True)
@@ -815,12 +856,20 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def toggleImageFormatBox(self, value):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
         if value == 1:
-            if profile['Label'] == 'KS':
+            if profile['Label'].startswith('KS'):
                 current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
                 for bad_format in ('MOBI', 'EPUB'):
                     if bad_format in current_format:
                         self.addMessage('Scribe PNG MOBI/EPUB has a lot of problems like blank pages/sections. Use JPG instead.', 'warning')
                         break
+            GUI.pngLegacyBox.setEnabled(True)
+            GUI.noQuantizeBox.setEnabled(True)
+            GUI.forcePngRgbBox.setEnabled(True)
+        else:
+            GUI.pngLegacyBox.setEnabled(False)
+            GUI.noQuantizeBox.setEnabled(False)
+            GUI.forcePngRgbBox.setEnabled(False)           
+
 
     def togglechunkSizeCheckBox(self, value):
         GUI.chunkSizeWidget.setVisible(value)
@@ -877,10 +926,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if not GUI.webtoonBox.isChecked():
             GUI.qualityBox.setEnabled(profile['PVOptions'])
         GUI.upscaleBox.setChecked(profile['DefaultUpscale'])
-        if profile['Label'] == 'KS':
+        if profile['Label'].startswith('KS') and False:
             GUI.upscaleBox.setDisabled(True)
         else:
-            if not GUI.webtoonBox.isChecked():
+            if not GUI.webtoonBox.isChecked() or True:
                 GUI.upscaleBox.setEnabled(True)
         if profile['Label'] == 'KCS':
             current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
@@ -888,6 +937,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if bad_format in current_format:
                     self.addMessage('Colorsoft MOBI/EPUB can have blank pages. Just go back a few pages, exit, and reenter book.', 'info')
                     break
+        elif profile['Label'] == 'KDX':
+            GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
+            GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
+            GUI.pngLegacyBox.setChecked(True)
         if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
         if str(GUI.deviceBox.currentText()) == 'Other':
@@ -911,10 +964,16 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'MOBI+EPUB-200MB'):
             GUI.chunkSizeCheckBox.setEnabled(False)
             GUI.chunkSizeCheckBox.setChecked(False)
+        elif GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'KFX':
+            GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
+            GUI.upscaleBox.setChecked(True)
         elif not GUI.webtoonBox.isChecked():
             GUI.chunkSizeCheckBox.setEnabled(True)
         if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'PDF') and not GUI.webtoonBox.isChecked():
-            self.addMessage("Partially check W/B Margins if you don't want KCC to extend the image margins.", 'info')   
+            self.addMessage("Partially check W/B Margins if you don't want KCC to extend the image margins.", 'info')
+            GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
+        else:
+            GUI.borderBox.setCheckState(Qt.CheckState.Unchecked)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -1042,15 +1101,27 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'colorBox': GUI.colorBox.checkState(),
                                            'eraseRainbowBox': GUI.eraseRainbowBox.checkState(),
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState(),
+                                           'pdfExtractBox': GUI.pdfExtractBox.checkState(),
+                                           'pdfWidthBox': GUI.pdfWidthBox.checkState(),
+                                           'smartCoverCropBox': GUI.smartCoverCropBox.checkState(),
+                                           'coverFillBox': GUI.coverFillBox.checkState(),
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
+                                           'forcePngRgbBox': GUI.forcePngRgbBox.checkState(),
+                                           'webpBox': GUI.webpBox.checkState(),
+                                           'pngLegacyBox': GUI.pngLegacyBox.checkState(),
+                                           'noQuantizeBox': GUI.noQuantizeBox.checkState(),
+                                           'jpegQualityBox': GUI.jpegQualityBox.checkState(),
+                                           'jpegQuality': GUI.jpegQualitySpinBox.value(),
                                            'widthBox': GUI.widthBox.value(),
                                            'heightBox': GUI.heightBox.value(),
                                            'deleteBox': GUI.deleteBox.checkState(),
+                                           'tempDirBox': GUI.tempDirBox.checkState(),
                                            'spreadShiftBox': GUI.spreadShiftBox.checkState(),
                                            'fileFusionBox': GUI.fileFusionBox.checkState(),
                                            'defaultOutputFolderBox': GUI.defaultOutputFolderBox.checkState(),
                                            'noRotateBox': GUI.noRotateBox.checkState(),
+                                           'rotateRightBox': GUI.rotateRightBox.checkState(),
                                            'rotateFirstBox': GUI.rotateFirstBox.checkState(),
                                            'maximizeStrips': GUI.maximizeStrips.checkState(),
                                            'gammaSlider': float(self.gammaValue) * 100,
@@ -1095,7 +1166,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if message[-1] == '/':
                     message = message[:-1]
             self.handleMessage(message)
-        GUI.jobList.sortItems()
+        # sorting may conflict with manual file fusion order
+        # GUI.jobList.sortItems()
 
     def forceShutdown(self):
         self.saveSettings(None)
@@ -1172,7 +1244,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                             'convertButton', 'formatBox']:
                 getattr(GUI, element).setMinimumSize(QSize(0, 0))
             GUI.gridLayout.setContentsMargins(-1, -1, -1, -1)
-            for element in ['gridLayout_2', 'gridLayout_3', 'gridLayout_4', 'horizontalLayout', 'horizontalLayout_2']:
+            for element in ['gridLayout_2', 'gridLayout_3', 'gridLayout_4', 'gridLayout_6', 'horizontalLayout_2']:
                 getattr(GUI, element).setContentsMargins(-1, 0, -1, 0)
             if self.windowSize == '0x0':
                 MW.resize(500, 500)
@@ -1182,7 +1254,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "EPUB": {'icon': 'EPUB', 'format': 'EPUB'},
             "CBZ": {'icon': 'CBZ', 'format': 'CBZ'},
             "PDF": {'icon': 'EPUB', 'format': 'PDF'},
-            "KFX (does not work)": {'icon': 'KFX', 'format': 'KFX'},
+            "PDF (200MB limit)": {'icon': 'EPUB', 'format': 'PDF-200MB'},
+            "KFX (Send to Kindle EPUB)": {'icon': 'KFX', 'format': 'KFX'},
             "MOBI + EPUB": {'icon': 'MOBI', 'format': 'MOBI+EPUB'},
             "EPUB (200MB limit)": {'icon': 'EPUB', 'format': 'EPUB-200MB'},
             "MOBI + EPUB (200MB limit)": {'icon': 'MOBI', 'format': 'MOBI+EPUB-200MB'},
@@ -1198,8 +1271,26 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                              'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW34'},
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KV'},
-            "Kindle Scribe": {
+            "Kindle 1860x1920": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS1860',
+            },
+            "Kindle 1920x1920": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS1920',
+            },
+            "Kindle 1240x1860": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS1240',
+            },
+            "Kindle 1324x1986": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS1324',
+            },
+            "Kindle Scribe 1/2": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS',
+            },
+            "Kindle Scribe 3": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS3',
+            },
+            "Kindle Scribe Colorsoft": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': False, 'ForceColor': True, 'Label': 'KSCS',
             },
             "Kindle 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'K11',
@@ -1208,7 +1299,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW5',
             },
             "Kindle Paperwhite 12": {
-                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KO',
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW6',
             },
             "Kindle Colorsoft": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': True, 'Label': 'KCS',
@@ -1275,9 +1366,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                       'Label': 'OTHER'},
         }
         profilesGUI = [
+            "Kindle Scribe Colorsoft",
+            "Kindle Scribe 3",
             "Kindle Colorsoft",
             "Kindle Paperwhite 12",
-            "Kindle Scribe",
+            "Kindle Scribe 1/2",
             "Kindle Paperwhite 11",
             "Kindle 11",
             "Kindle Oasis 9/10",
@@ -1297,6 +1390,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "Separator",
             "Other",
             "Separator",
+            "Kindle 1324x1986",
+            "Kindle 1920x1920",
+            "Kindle 1860x1920",
+            "Kindle 1240x1860",
             "Kindle 8/10",
             "Kindle Oasis 8",
             "Kindle Paperwhite 7/10",
@@ -1344,7 +1441,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
                             'info')
         
-        self.tar = 'tar' in available_archive_tools()
+        self.tar = TAR in available_archive_tools()
         self.sevenzip = SEVENZIP in available_archive_tools()
         if not any([self.tar, self.sevenzip]):
             self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
@@ -1359,11 +1456,15 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.editorButton.clicked.connect(self.selectFileMetaEditor)
         GUI.wikiButton.clicked.connect(self.openWiki)
         GUI.kofiButton.clicked.connect(self.openKofi)
+        GUI.humbleButton.clicked.connect(self.openHumble)
+        GUI.youtubeButton.clicked.connect(self.openYouTube)
+        GUI.discordButton.clicked.connect(self.openDiscord)
         GUI.convertButton.clicked.connect(self.convertStart)
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)
         GUI.croppingBox.stateChanged.connect(self.togglecroppingBox)
         GUI.croppingPowerSlider.valueChanged.connect(self.changeCroppingPower)
+        GUI.jpegQualityBox.stateChanged.connect(self.togglejpegqualityBox)
         GUI.webtoonBox.stateChanged.connect(self.togglewebtoonBox)
         GUI.qualityBox.stateChanged.connect(self.togglequalityBox)
         GUI.mozJpegBox.stateChanged.connect(self.toggleImageFormatBox)
@@ -1425,6 +1526,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     GUI.croppingPowerSlider.setValue(int(self.options[option]))
                     self.changeCroppingPower(int(self.options[option]))
                     GUI.preserveMarginBox.setValue(self.options.get('preserveMarginBox', 0))
+            elif str(option) == "jpegQuality":
+                GUI.jpegQualitySpinBox.setValue(int(self.options[option]))
             elif str(option) == "chunkSizeBox":
                 GUI.chunkSizeBox.setValue(int(self.options[option]))
             else:

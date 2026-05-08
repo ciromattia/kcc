@@ -40,7 +40,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python3 --version
-          pip3 install --upgrade pip setuptools wheel pyinstaller certifi
+          pip3 install --upgrade pip pyinstaller certifi
           pip3 install --upgrade -r requirements-osx-legacy.txt
           ./gen_ui_files.sh
       - uses: actions/setup-node@v6
@@ -60,7 +60,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           prerelease: true
-          generate_release_notes: true
+          generate_release_notes: false
           files: |
             LICENSE.txt
             dist/*.dmg
