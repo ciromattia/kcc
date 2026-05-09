@@ -311,7 +311,7 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
         f.writelines(["<dc:description>", hescape(options.summary), "</dc:description>\n"])
     for author in options.authors:
         f.writelines(["<dc:creator>", hescape(author), "</dc:creator>\n"])
-    if not options.iskindle and options.series:
+    if options.series:
         f.writelines(['<meta property="belongs-to-collection" id="c02">', hescape(options.series), "</meta>\n"])
         f.writelines(['<meta refines="#c02" property="collection-type">', "series", "</meta>\n"])
         if options.volume and options.number:
