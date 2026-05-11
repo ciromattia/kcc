@@ -30,8 +30,8 @@ from glob import glob, escape
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from typing import List
-from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
-from tempfile import mkdtemp, gettempdir, TemporaryFile
+from zipfile import ZipFile, ZIP_STORED
+from tempfile import mkdtemp, gettempdir
 from shutil import move, copytree, rmtree, copyfile
 from multiprocessing import Pool, cpu_count
 from uuid import uuid4
@@ -892,9 +892,12 @@ def getWorkFolder(afile, workdir=None):
         fullPath = os.path.join(workdir, 'OEBPS', 'Images')
     else:
         fullPath = workdir
-    check_path = gettempdir()
+
     if options.tempdir:
         check_path = os.path.dirname(afile)
+    else:
+        check_path = gettempdir()
+
     if os.path.isdir(afile):
         if disk_usage(check_path)[2] < getDirectorySize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
@@ -1615,26 +1618,18 @@ def checkPre(source):
         for tempdir in dirs:
             if tempdir.startswith('KCC-'):
                 rmtree(os.path.join(root, tempdir), True)
-    # Make sure that target directory is writable
-    if os.path.isdir(source):
-        src = os.path.abspath(os.path.join(source, '..'))
-    else:
-        src = os.path.dirname(source)
-    try:
-        with TemporaryFile(prefix='KCC-', dir=src):
-            pass
-    except Exception:
-        raise UserWarning("Target directory is not writable.")
-
 
 def makeFusion(sources: List[str]):
     if len(sources) < 2:
         raise UserWarning('Fusion requires at least 2 sources. Did you forget to uncheck fusion?')
     start = perf_counter()
     first_path = Path(sources[0])
-    fusion_parent = Path(gettempdir())
+    
     if options.tempdir:
         fusion_parent = first_path.parent
+    else:
+        fusion_parent = Path(gettempdir())
+
     if first_path.is_file():
         fusion_path = fusion_parent.joinpath(first_path.stem + ' [fused]')
     else:
