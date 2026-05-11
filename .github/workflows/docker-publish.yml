@@ -54,7 +54,7 @@ jobs:
             type=raw,value=${{ steps.release_date.outputs.release_date }}
 
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           context: .
