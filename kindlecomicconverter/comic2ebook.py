@@ -90,6 +90,7 @@ def main(argv=None):
                 os.remove(path)
             elif os.path.isdir(path):
                 rmtree(path, True)
+        checkPre('LLL-')
     return 0
 
 
@@ -1612,11 +1613,11 @@ def checkTools(source):
             sys.exit(1)
 
 
-def checkPre(source):
+def checkPre(source='KCC-'):
     # Make sure that all temporary files are gone
     for root, dirs, _ in walkLevel(gettempdir(), 0):
         for tempdir in dirs:
-            if tempdir.startswith('KCC-'):
+            if tempdir.startswith(source):
                 rmtree(os.path.join(root, tempdir), True)
 
 def makeFusion(sources: List[str]):
@@ -1628,7 +1629,9 @@ def makeFusion(sources: List[str]):
     if options.tempdir:
         fusion_parent = first_path.parent
     else:
-        fusion_parent = Path(gettempdir())
+        # LLL is after KCC
+        checkPre('LLL-')
+        fusion_parent = Path(mkdtemp('', 'LLL-'))
 
     if first_path.is_file():
         fusion_path = fusion_parent.joinpath(first_path.stem + ' [fused]')
@@ -1642,7 +1645,6 @@ def makeFusion(sources: List[str]):
 
     for index, source in enumerate(sources, start=1):
         print(f"Processing {source}...")
-        checkPre(source)
         print("Checking images...")
         source_path = Path(source)
         # Add the fusion_0001_ prefix to maintain user-specified order if needed
@@ -1674,7 +1676,9 @@ def makeBook(source, qtgui=None, job_progress=''):
         GUI.progressBarTick.emit('1')
     else:
         checkTools(source)
-    checkPre(source)
+    checkPre()
+    if not options.filefusion:
+        checkPre('LLL-')
     print(f"{job_progress}Preparing source images...")
     path = getWorkFolder(source)
     print(f"{job_progress}Checking images...")
