@@ -564,6 +564,7 @@ class WorkerThread(QThread):
                     os.remove(path)
                 elif os.path.isdir(path):
                     rmtree(path, True)
+            comic2ebook.checkPre('LLL-')
         GUI.progress.content = ''
         GUI.progress.stop()
         MW.hideProgressBar.emit()

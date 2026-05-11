@@ -30,8 +30,8 @@ from glob import glob, escape
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from typing import List
-from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
-from tempfile import mkdtemp, gettempdir, TemporaryFile
+from zipfile import ZipFile, ZIP_STORED
+from tempfile import mkdtemp, gettempdir
 from shutil import move, copytree, rmtree, copyfile
 from multiprocessing import Pool, cpu_count
 from uuid import uuid4
@@ -90,6 +90,7 @@ def main(argv=None):
                 os.remove(path)
             elif os.path.isdir(path):
                 rmtree(path, True)
+        checkPre('LLL-')
     return 0
 
 
@@ -892,9 +893,12 @@ def getWorkFolder(afile, workdir=None):
         fullPath = os.path.join(workdir, 'OEBPS', 'Images')
     else:
         fullPath = workdir
-    check_path = gettempdir()
+
     if options.tempdir:
         check_path = os.path.dirname(afile)
+    else:
+        check_path = gettempdir()
+
     if os.path.isdir(afile):
         if disk_usage(check_path)[2] < getDirectorySize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
@@ -1609,33 +1613,30 @@ def checkTools(source):
             sys.exit(1)
 
 
-def checkPre(source):
+def checkPre(source='KCC-'):
     # Make sure that all temporary files are gone
     for root, dirs, _ in walkLevel(gettempdir(), 0):
         for tempdir in dirs:
-            if tempdir.startswith('KCC-'):
+            if tempdir.startswith(source):
                 rmtree(os.path.join(root, tempdir), True)
-    # Make sure that target directory is writable
-    if os.path.isdir(source):
-        src = os.path.abspath(os.path.join(source, '..'))
-    else:
-        src = os.path.dirname(source)
-    try:
-        with TemporaryFile(prefix='KCC-', dir=src):
-            pass
-    except Exception:
-        raise UserWarning("Target directory is not writable.")
-
 
 def makeFusion(sources: List[str]):
     if len(sources) < 2:
         raise UserWarning('Fusion requires at least 2 sources. Did you forget to uncheck fusion?')
     start = perf_counter()
     first_path = Path(sources[0])
-    if first_path.is_file():
-        fusion_path = first_path.parent.joinpath(first_path.stem + ' [fused]')
+    
+    if options.tempdir:
+        fusion_parent = first_path.parent
     else:
-        fusion_path = first_path.parent.joinpath(first_path.name + ' [fused]')
+        # LLL is after KCC
+        checkPre('LLL-')
+        fusion_parent = Path(mkdtemp('', 'LLL-'))
+
+    if first_path.is_file():
+        fusion_path = fusion_parent.joinpath(first_path.stem + ' [fused]')
+    else:
+        fusion_path = fusion_parent.joinpath(first_path.name + ' [fused]')
     print("Running Fusion")
 
     # Check if prefix is needed when user-specified ordering differs from OS natural sorting
@@ -1644,7 +1645,6 @@ def makeFusion(sources: List[str]):
 
     for index, source in enumerate(sources, start=1):
         print(f"Processing {source}...")
-        checkPre(source)
         print("Checking images...")
         source_path = Path(source)
         # Add the fusion_0001_ prefix to maintain user-specified order if needed
@@ -1676,7 +1676,9 @@ def makeBook(source, qtgui=None, job_progress=''):
         GUI.progressBarTick.emit('1')
     else:
         checkTools(source)
-    checkPre(source)
+    checkPre()
+    if not options.filefusion:
+        checkPre('LLL-')
     print(f"{job_progress}Preparing source images...")
     path = getWorkFolder(source)
     print(f"{job_progress}Checking images...")
