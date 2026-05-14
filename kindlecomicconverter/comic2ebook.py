@@ -991,6 +991,10 @@ def getWorkFolder(afile, workdir=None):
                         # TODO empty image
                         if img_path:
                             ordered_image_paths.append(img_path)
+                    # fallback if naive spine extraction fails
+                    if not ordered_image_paths:
+                        return workdir
+
                     if options.tempdir:
                         workdir2 = mkdtemp('', 'KCC-', os.path.dirname(afile))
                     else:
