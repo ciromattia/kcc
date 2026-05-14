@@ -22,6 +22,7 @@ from collections import Counter
 import os
 import pathlib
 import re
+import shutil
 import sys
 import xml.etree.ElementTree as ET
 from argparse import ArgumentParser
@@ -957,13 +958,14 @@ def getWorkFolder(afile, workdir=None):
                     for manifest_item in opf.findall(".//*[@media-type='application/xhtml+xml']"):
                         manifest_dict[manifest_item.attrib.get('id')] = manifest_item.attrib.get('href')
                     ordered_image_paths = []
-                    for spine_item in spine:
+                    for i, spine_item in enumerate(spine):
                         if spine_item not in manifest_dict:
                             continue
                         page_path = os.path.join(os.path.dirname(opf_path), manifest_dict[spine_item])
                         page = ET.parse(page_path)
                         imgs = page.findall(r'.//{*}img') + page.findall(r'.//{*}image')
                         img_path = None
+                        # TODO handle more than first image
                         for img in imgs:
                             for key in img.attrib:
                                 if 'src' in key or 'href' in key:
@@ -972,34 +974,38 @@ def getWorkFolder(afile, workdir=None):
                                         img_path = os.path.join(os.path.dirname(opf_path), os.path.dirname(manifest_dict[spine_item]), img_path)
                                     else:
                                         img_path = os.path.join(os.path.dirname(opf_path), os.path.dirname(manifest_dict[spine_item]), img_path)
-                                    break
+                            break
                         # TODO empty image
                         if img_path:
                             ordered_image_paths.append(img_path)
-                    path = mkdtemp('', 'KCC-', os.path.dirname(afile))
+                    if options.tempdir:
+                        workdir2 = mkdtemp('', 'KCC-', os.path.dirname(afile))
+                    else:
+                        workdir2 = mkdtemp('', 'KCC-')
                     for i, img_path in enumerate(ordered_image_paths):
                         _, ext = os.path.splitext(img_path)
-                        new_path = os.path.join(path, f"{i}{ext}")
-                        os.rename(img_path, new_path)
+                        fullpath2 = os.path.join(workdir2, 'OEBPS', 'Images')
+                        os.makedirs(fullpath2, exist_ok=True)
+                        shutil.copyfile(img_path, os.path.join(fullpath2, f"{i}{ext}"))
                     rmtree(workdir, True)
-
-                tdir = os.listdir(fullPath)
-                if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
-                    tdir.remove('ComicInfo.xml')
-                    if os.path.isdir(os.path.join(fullPath, tdir[0])):
-                        os.replace(
-                            os.path.join(fullPath, 'ComicInfo.xml'),
-                            os.path.join(fullPath, tdir[0], 'ComicInfo.xml')
-                        )
-                if len(tdir) == 1 and os.path.isdir(os.path.join(fullPath, tdir[0])):
-                    for file in os.listdir(os.path.join(fullPath, tdir[0])):
-                        move(os.path.join(fullPath, tdir[0], file), fullPath)
-                    os.rmdir(os.path.join(fullPath, tdir[0]))
+                    return workdir2
+                else:
+                    tdir = os.listdir(fullPath)
+                    if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
+                        tdir.remove('ComicInfo.xml')
+                        if os.path.isdir(os.path.join(fullPath, tdir[0])):
+                            os.replace(
+                                os.path.join(fullPath, 'ComicInfo.xml'),
+                                os.path.join(fullPath, tdir[0], 'ComicInfo.xml')
+                            )
+                    if len(tdir) == 1 and os.path.isdir(os.path.join(fullPath, tdir[0])):
+                        for file in os.listdir(os.path.join(fullPath, tdir[0])):
+                            move(os.path.join(fullPath, tdir[0], file), fullPath)
+                        os.rmdir(os.path.join(fullPath, tdir[0]))
                 return workdir
  
-            except OSError as e:
-                rmtree(workdir, True)
-                raise UserWarning(e)
+            finally:
+                pass
     else:
         raise UserWarning("Failed to open source file/directory.")
 
