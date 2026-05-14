@@ -7,12 +7,19 @@
 [![Github All Releases](https://img.shields.io/github/downloads/ciromattia/kcc/total.svg)](https://github.com/ciromattia/kcc/releases)
 
 
-**Kindle Comic Converter** optimizes black & white comics and manga for E-ink ereaders 
+**Kindle Comic Converter** optimizes black & white (or color) comics and manga for E-ink ereaders 
 like Kindle, Kobo, ReMarkable, and more.
 Pages display in fullscreen without margins, 
 with proper fixed layout support.
-Supported input formats include JPG/PNG/GIF image files in folders, archives, or PDFs.
+Supported input formats include JPG/PNG image files in folders, archives like CBZ, or PDFs.
 Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
+KCC runs on Windows, macOS, and Linux.
+
+Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
+
+https://github.com/user-attachments/assets/da73d625-e082-482d-91a4-ae4765e96fd7
+
+**WARNING**: Kindle Scribe 2025 support may not be possible. Does not work well currently.
 
 **NEW**: PDF output is now supported for direct conversion to reMarkable devices! 
 When using a reMarkable profile (Rmk1, Rmk2, RmkPP), the format automatically defaults to PDF 
@@ -26,7 +33,7 @@ which have different requirements than normal LCD screens.
 Combining that with downscaling to your specific device's screen resolution
 can result in filesize reductions of hundreds of MB per volume with no visible quality loss on eink.
 This can also improve battery life, page turn speed, and general performance 
-on underpowered ereaders with small storage capacities.
+on underpowered ereaders with small memory and storage capacities.
 
 KCC avoids many common formatting issues (some of which occur [even on the Kindle Store](https://github.com/ciromattia/kcc/wiki/Kindle-Store-bad-formatting)), such as:
 1) faded black levels causing unneccessarily low contrast, which is hard to see and can cause eyestrain.
@@ -34,6 +41,7 @@ KCC avoids many common formatting issues (some of which occur [even on the Kindl
 3) Not utilizing the full 1860x2480 resolution of the 10" Kindle Scribe
 4) incorrect page turn direction for manga that's read right to left
 5) unaligned two page spreads in landscape, where pages are shifted over by 1
+6) Removing without blur the rainbow effect on color eink Kaleido 3 due to manga screentones
 
 The GUI looks like this, built in Qt6, with my most commonly used settings:
 
@@ -46,7 +54,9 @@ You can change the default output directory by holding `Shift` while clicking th
 Then just drag and drop the generated output files onto your device's documents folder via USB.
 If you are on macOS and use a 2022+ Kindle, you may need to use Amazon USB File Manager for Mac.
 
-YouTube tutorial (please subscribe): https://www.youtube.com/watch?v=IR2Fhcm9658
+YouTube tutorial (please subscribe): https://www.youtube.com/watch?v=QQ6zJcMF2Iw
+
+Installation tutorial: https://www.youtube.com/watch?v=IR2Fhcm9658
 
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.
@@ -92,27 +102,31 @@ Click on **Assets** of the latest release.
 You probably want either
 - `KCC_*.*.*.exe` (Windows)
 - `kcc_macos_arm_*.*.*.dmg` (recent Mac with Apple Silicon M1 chip or later)
-- `kcc_macos_i386_*.*.*.dmg` (older Mac with Intel chip macOS 12+)
+- `kcc_macos_i386_*.*.*.dmg` (older Mac with Intel chip macOS 14+)
 
 There are also legacy macOS 10.14+ and Windows 7 experimental versions available.
 
 The `c2e` and `c2p` versions are command line tools for power users.
 
-On Mac, right click open to get past the security warning.
+On macOS, if you get a `can't be opened` error, follow: https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac
 
 For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
 
 ## FAQ
 - Should I use Calibre?
-  - No. Calibre doesn't properly support fixed layout EPUB/MOBI, so modifying KCC output in Calibre will break the formatting.
+  - No. Calibre doesn't properly support fixed layout EPUB/MOBI, so modifying KCC output (even just metadata!) in Calibre can break the formatting.
+    Additionally, it will break page numbers.
     Viewing KCC output in Calibre will also not work properly.
-    On 7th gen and later Kindles running firmware 5.15.1+, you can get cover thumbnails simply by USB dropping into documents folder.
-    On 6th gen and older, you can get cover thumbnails by keeping Kindle plugged in during conversion.
-    If you are careful to not modify the file however, you can still use Calibre, but direct USB dropping is reccomended.
+    Direct USB dropping is reccomended.
+- Blank pages?
+  - May happen when [using PNG with Kindle Scribe](https://github.com/ciromattia/kcc/issues/665) or [any format with a Kindle Colorsoft](https://github.com/ciromattia/kcc/issues/768). Solve by using JPG with Kindle Scribe or buying a Kobo Colour. Happens more often when turning pages really fast. You can try PDF output.
+    Going back a few pages and exiting and re-entering book should fix it temporarily.
 - What output format should I use?
-  - MOBI for Kindles. CBZ for Kindle DX. CBZ for Koreader. KEPUB for Kobo.
+  - MOBI for Kindles. CBZ for Kindle DX. CBZ for Koreader. KEPUB for Kobo. PDF for ReMarkable or Kindle Scribe 2025.
 - All options have additional information in tooltips if you hover over the option.
 - To get the converted book onto your Kindle/Kobo, just drag and drop the mobi/kepub into the documents folder on your Kindle/Kobo via USB
+- Kindle panel view not working?
+  - Virtual panel view is enabled in Aa menu on your Kindle, not in KCC as of 7.4
 - Right to left mode not working?
   - RTL mode only affects splitting order for CBZ output. Your cbz reader itself sets the page turn direction.
 - Colors inverted?
@@ -122,9 +136,6 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
     (no login required). Works much better than previously recommended Android File Transfer. Cannot run simutaneously with other transfer apps.
 - How to make AZW3 instead of MOBI?
   - The `.mobi` file generated by KCC is a dual filetype, it's both MOBI and AZW3. The file extension is `.mobi` for compatibility reasons.
-- [Windows 7 support](https://github.com/ciromattia/kcc/issues/678)
-- Image too dark?
-  - The default gamma correction of 1.8 makes the image darker, and is useful for faded/gray artwork/text. Disable by setting gamma = 1.0
 - Huge margins / slow page turns?
   - You likely modified the file during transfer using a 3rd party app. Try simply dragging and dropping the final mobi/kepub file into the Kindle documents folder via USB.
 
@@ -172,38 +183,47 @@ sudo apt-get install python3 p7zip-full python3-pil python3-psutil python3-slugi
 ### Profiles:
 
 ```
-        'K1': ("Kindle 1", (600, 670), Palette4, 1.8),
-        'K11': ("Kindle 11", (1072, 1448), Palette16, 1.8),
-        'K2': ("Kindle 2", (600, 670), Palette15, 1.8),
-        'K34': ("Kindle Keyboard/Touch", (600, 800), Palette16, 1.8),
-        'K57': ("Kindle 5/7", (600, 800), Palette16, 1.8),
-        'K810': ("Kindle 8/10", (600, 800), Palette16, 1.8),
-        'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.8),
-        'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.8),
-        'KV': ("Kindle Voyage, (1072, 1448), Palette16, 1.8),
-        'KPW34': ("Kindle Paperwhite 3/4/Oasis", (1072, 1448), Palette16, 1.8),
-        'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.8),
-        'KO': ("Kindle Oasis 2/3/Paperwhite 12/Colorsoft 12", (1264, 1680), Palette16, 1.8),
-        'KS': ("Kindle Scribe", (1860, 2480), Palette16, 1.8),
-        'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.8),
-        'KoG': ("Kobo Glo", (768, 1024), Palette16, 1.8),
-        'KoGHD': ("Kobo Glo HD", (1072, 1448), Palette16, 1.8),
-        'KoA': ("Kobo Aura", (758, 1024), Palette16, 1.8),
-        'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.8),
-        'KoAH2O': ("Kobo Aura H2O", (1080, 1430), Palette16, 1.8),
-        'KoAO': ("Kobo Aura ONE", (1404, 1872), Palette16, 1.8),
-        'KoN': ("Kobo Nia", (758, 1024), Palette16, 1.8),
-        'KoC': ("Kobo Clara HD/Kobo Clara 2E", (1072, 1448), Palette16, 1.8),
-        'KoCC': ("Kobo Clara Colour", (1072, 1448), Palette16, 1.8),
-        'KoL': ("Kobo Libra H2O/Kobo Libra 2", (1264, 1680), Palette16, 1.8),
-        'KoLC': ("Kobo Libra Colour", (1264, 1680), Palette16, 1.8),
-        'KoF': ("Kobo Forma", (1440, 1920), Palette16, 1.8),
-        'KoS': ("Kobo Sage", (1440, 1920), Palette16, 1.8),
-        'KoE': ("Kobo Elipsa", (1404, 1872), Palette16, 1.8),
-        'Rmk1': ("reMarkable 1", (1404, 1872), Palette16, 1.8),
-        'Rmk2': ("reMarkable 2", (1404, 1872), Palette16, 1.8),
-        'RmkPP': ("reMarkable Paper Pro", (1620, 2160), Palette16, 1.8),
-        'OTHER': ("Other", (0, 0), Palette16, 1.8),
+        'K1': ("Kindle 1", (600, 670), Palette4, 1.0),
+        'K2': ("Kindle 2", (600, 670), Palette15, 1.0),
+        'K11': ("Kindle 11", (1072, 1448), Palette16, 1.0),
+        'K34': ("Kindle Keyboard/Touch", (600, 800), Palette16, 1.0),
+        'K57': ("Kindle 5/7", (600, 800), Palette16, 1.0),
+        'K810': ("Kindle 8/10", (600, 800), Palette16, 1.0),
+        'KDX': ("Kindle DX/DXG", (824, 1000), Palette16, 1.0),
+        'KPW': ("Kindle Paperwhite 1/2", (758, 1024), Palette16, 1.0),
+        'KV': ("Kindle Voyage", (1072, 1448), Palette16, 1.0),
+        'KPW34': ("Kindle Paperwhite 3/4", (1072, 1448), Palette16, 1.0),
+        'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.0),
+        'KPW6': ("Kindle Paperwhite 6", (1272, 1696), Palette16, 1.0),
+        'KO': ("Kindle Oasis 2/3", (1264, 1680), Palette16, 1.0),
+        'KCS': ("Kindle Colorsoft", (1272, 1696), Palette16, 1.0),
+        'KS1860': ("Kindle 1860", (1860, 1920), Palette16, 1.0),
+        'KS1920': ("Kindle 1920", (1920, 1920), Palette16, 1.0),
+        'KS1240': ("Kindle 1240", (1240, 1860), Palette16, 1.0),
+        'KS1324': ("Kindle 1324", (1324, 1986), Palette16, 1.0),
+        'KS': ("Kindle Scribe 1/2", (1860, 2480), Palette16, 1.0),
+        'KS3': ("Kindle Scribe 3", (1986, 2648), Palette16, 1.0),
+        'KSCS': ("Kindle Scribe Colorsoft", (1986, 2648), Palette16, 1.0),
+        'KoMT': ("Kobo Mini/Touch", (600, 800), Palette16, 1.0),
+        'KoG': ("Kobo Glo", (768, 1024), Palette16, 1.0),
+        'KoGHD': ("Kobo Glo HD", (1072, 1448), Palette16, 1.0),
+        'KoA': ("Kobo Aura", (758, 1024), Palette16, 1.0),
+        'KoAHD': ("Kobo Aura HD", (1080, 1440), Palette16, 1.0),
+        'KoAH2O': ("Kobo Aura H2O", (1080, 1430), Palette16, 1.0),
+        'KoAO': ("Kobo Aura ONE", (1404, 1872), Palette16, 1.0),
+        'KoN': ("Kobo Nia", (758, 1024), Palette16, 1.0),
+        'KoC': ("Kobo Clara HD/Kobo Clara 2E", (1072, 1448), Palette16, 1.0),
+        'KoCC': ("Kobo Clara Colour", (1072, 1448), Palette16, 1.0),
+        'KoL': ("Kobo Libra H2O/Kobo Libra 2", (1264, 1680), Palette16, 1.0),
+        'KoLC': ("Kobo Libra Colour", (1264, 1680), Palette16, 1.0),
+        'KoF': ("Kobo Forma", (1440, 1920), Palette16, 1.0),
+        'KoS': ("Kobo Sage", (1440, 1920), Palette16, 1.0),
+        'KoE': ("Kobo Elipsa", (1404, 1872), Palette16, 1.0),
+        'Rmk1': ("reMarkable 1", (1404, 1872), Palette16, 1.0),
+        'Rmk2': ("reMarkable 2", (1404, 1872), Palette16, 1.0),
+        'RmkPP': ("reMarkable Paper Pro", (1620, 2160), Palette16, 1.0),
+        'RmkPPMove': ("reMarkable Paper Pro Move", (954, 1696), Palette16, 1.0),
+        'OTHER': ("Other", (0, 0), Palette16, 1.0),
 ```
 
 ### Standalone `kcc-c2e.py` usage:
@@ -226,7 +246,9 @@ MAIN:
                         the maximal size of output file in MB. [Default=100MB for webtoon and 400MB for others]
 
 PROCESSING:
-  -n, --noprocessing    Do not modify image and ignore any profil or processing option
+  -n, --noprocessing    Do not modify image and ignore any profile or processing option
+  --pdfextract          Use legacy PDF image extraction method from KCC 8 and earlier.
+  --pdfwidth            Render vector PDFs based on device width instead of height.
   -u, --upscale         Resize images smaller than device's resolution
   -s, --stretch         Stretch images to device's resolution
   -r SPLITTER, --splitter SPLITTER
@@ -234,6 +256,8 @@ PROCESSING:
   -g GAMMA, --gamma GAMMA
                         Apply gamma correction to linearize the image [Default=Auto]
   --autolevel           Set most common dark pixel value to be black point for leveling.
+  --noautocontrast      Disable autocontrast
+  --colorautocontrast   Force autocontrast for all pages. Skipped when near blacks and whites don't exist
   -c CROPPING, --cropping CROPPING
                         Set cropping mode. 0: Disabled 1: Margins 2: Margins + page numbers [Default=2]
   --cp CROPPINGP, --croppingpower CROPPINGP
@@ -245,18 +269,26 @@ PROCESSING:
                         Crop empty sections. 0: Disabled 1: Horizontally 2: Both [Default=0]
   --blackborders        Disable autodetection and force black borders
   --whiteborders        Disable autodetection and force white borders
+  --smartcovercrop      Attempt to crop main cover from wide image
+  --coverfill           Center-crop only the cover to fill target device screen
   --forcecolor          Don't convert images to grayscale
-  --forcepng            Create PNG files instead JPEG
+  --forcepng            Create PNG files instead JPEG for black and white images
+  --webp                Replace JPG with lossy WEBP and PNG with lossless WEBP
+  --force-png-rgb       Force color images to be saved as PNG
+  --pnglegacy           Use a more compatible 8 bit PNG instead of 4 bit.
+  --noquantize          Don't quantize PNG images to 16 colors
   --mozjpeg             Create JPEG files using mozJpeg
+  --jpeg-quality        The JPEG quality, on a scale from 0 (worst) to 95 (best). Default 85 for most devices.
   --maximizestrips      Turn 1x4 strips to 2x2 strips
   -d, --delete          Delete source file(s) or a directory. It's not recoverable.
+  --tempdir             Create temporary files directory on source file drive.
 
 OUTPUT SETTINGS:
   -o OUTPUT, --output OUTPUT
                         Output generated file to specified directory or file
   -t TITLE, --title TITLE
                         Comic title [Default=filename or directory name]
-  --metadatatitle      Write title from ComicInfo.xml or other embedded metadata
+  --metadatatitle       Write title using ComicInfo.xml or other embedded metadata. 0: Don't use Title from metadata 1: Combine Title with default schema 2: Use Title only [Default=0]
   -a AUTHOR, --author AUTHOR
                         Author name [Default=KCC]
   -f FORMAT, --format FORMAT
@@ -266,7 +298,9 @@ OUTPUT SETTINGS:
                         Split output into multiple files. 0: Don't split 1: Automatic mode 2: Consider every subdirectory as separate volume [Default=0]
   --spreadshift         Shift first page to opposite side in landscape for two page spread alignment
   --norotate            Do not rotate double page spreads in spread splitter option.
+  --rotateright         Rotate double page spreads in opposite direction.
   --rotatefirst         Put rotated spread first in spread splitter option.
+  --filefusion          Combines all input files into a single file.
   --eraserainbow       Erase rainbow effect on color eink screen by attenuating interfering frequencies
 
 CUSTOM PROFILE:
@@ -310,6 +344,7 @@ Depending on your system [Python](https://www.python.org) may be called either `
 If you want to edit the code, a good code editor is [VS Code](https://code.visualstudio.com).
 
 If you want to edit the `.ui` files, use `pyside6-designer` which is included in the `pip install pyside6`.
+If new objects have been added, verify that correct tab order has been applied by using [Tab Order Editing Mode](https://doc.qt.io/qt-6/designer-tab-order.html).
 Then use the `gen_ui_files` scripts to autogenerate the python UI.
 
 An example PR adding a new checkbox is here: https://github.com/ciromattia/kcc/pull/785

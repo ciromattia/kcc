@@ -23,9 +23,19 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        entry: [ kcc, kcc-c2e, kcc-c2p ]
+        include:
+          - entry: kcc
+            command: build_binary
+          - entry: kcc-c2e
+            command: build_c2e
+          - entry: kcc-c2p
+            command: build_c2p
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -35,20 +45,20 @@ jobs:
         env:
           PYINSTALLER_COMPILE_BOOTLOADER: 1
         run: |
-          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install certifi pyinstaller --no-binary pyinstaller
       - name: build binary
         run: |
-          python setup.py build_binary
+          python setup.py ${{ matrix.command }}
       - name: upload-unsigned-artifact
         id: upload-unsigned-artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: windows-build
+          name: windows-build-${{ matrix.entry }}
           path: dist/*.exe
       - id: optional_step_id
-        uses: signpath/github-action-submit-signing-request@v1.3
+        uses: signpath/github-action-submit-signing-request@v2.2
         if: ${{ github.repository == 'ciromattia/kcc' }}
         with:
          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
@@ -59,11 +69,10 @@ jobs:
          wait-for-completion: true
          output-artifact-directory: 'dist/'
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           prerelease: true
-          generate_release_notes: true
+          generate_release_notes: false
           files: |
-            LICENSE.txt
             dist/*.exe

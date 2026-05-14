@@ -1,7 +1,9 @@
-from PIL import Image, ImageFilter, ImageOps
+from PIL import Image, ImageFilter, ImageOps, ImageFile
 import numpy as np
 from typing import Literal
 from .common_crop import threshold_from_power, group_close_values
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 '''
@@ -19,10 +21,10 @@ def crop_empty_inter_panel(img, direction: Literal["horizontal", "vertical", "bo
     img_temp = img
     
     if img.mode != 'L':
-        img_temp = ImageOps.grayscale(img)
+        img_temp = ImageOps.grayscale(img_temp)
         
     if background_color != 'white':
-        img_temp = ImageOps.invert(img)
+        img_temp = ImageOps.invert(img_temp)
         
     img_mat = np.array(img)
     

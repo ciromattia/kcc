@@ -23,7 +23,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ macos-13 ]
+        os: [ macos-15-intel ]
     runs-on: ${{ matrix.os }}
     env:
       # We need the official Python, because the GA ones only support newer macOS versions
@@ -31,7 +31,7 @@ jobs:
       PYTHON_VERSION: 3.11.9
       MACOSX_DEPLOYMENT_TARGET: '10.14'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Get Python
         run: curl https://www.python.org/ftp/python/3.11.9/python-3.11.9-macos11.pkg -o "python.pkg"
       - name: Install Python
@@ -40,10 +40,10 @@ jobs:
       - name: Install Python dependencies
         run: |
           python3 --version
-          pip3 install --upgrade pip setuptools wheel pyinstaller certifi
+          pip3 install --upgrade pip pyinstaller certifi
           pip3 install --upgrade -r requirements-osx-legacy.txt
           ./gen_ui_files.sh
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: 16
       - run: npm install -g appdmg
@@ -51,16 +51,16 @@ jobs:
         run: |
           python3 setup.py build_binary
       - name: upload build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: osx-build-${{ runner.arch }}
           path: dist/*.dmg
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           prerelease: true
-          generate_release_notes: true
+          generate_release_notes: false
           files: |
             LICENSE.txt
             dist/*.dmg

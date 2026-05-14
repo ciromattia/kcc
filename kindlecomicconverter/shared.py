@@ -27,6 +27,9 @@ import sys
 from traceback import format_tb
 
 
+IMAGE_TYPES = ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.jp2', '.avif')
+
+
 class HTMLStripper(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
@@ -57,6 +60,23 @@ def getImageFileName(imgfile):
     name, ext = os.path.splitext(imgfile)
     ext = ext.lower()
     return [name, ext]
+
+def get_contain_resolution(image, size):
+    '''same code as Pillow ImageOps.contain()'''
+    im_ratio = image.width / image.height
+    dest_ratio = size[0] / size[1]
+
+    if im_ratio != dest_ratio:
+        if im_ratio > dest_ratio:
+            new_height = round(image.height / image.width * size[0])
+            if new_height != size[1]:
+                size = (size[0], new_height)
+        else:
+            new_width = round(image.width / image.height * size[1])
+            if new_width != size[0]:
+                size = (new_width, size[1])
+    
+    return size
 
 
 def walkSort(dirnames, filenames):

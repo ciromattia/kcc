@@ -20,15 +20,17 @@
 
 from functools import cached_property, lru_cache
 import os
+from pathlib import Path
 import platform
 import distro
 from subprocess import STDOUT, PIPE, CalledProcessError
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
-from .shared import subprocess_run
+from .shared import IMAGE_TYPES, subprocess_run
 
 EXTRACTION_ERROR = 'Failed to extract archive. Try extracting file outside of KCC.'
 SEVENZIP = '7zz' if platform.system() == 'Darwin' else '7z'
+TAR = 'bsdtar' if platform.system() == 'Linux' else 'tar'
 
 
 class ComicArchive:
@@ -65,11 +67,14 @@ class ComicArchive:
     def extract(self, targetdir):
         if not os.path.isdir(targetdir):
             raise OSError('Target directory doesn\'t exist.')
+        
+        if Path(self.basename).suffix.lower() in IMAGE_TYPES:
+            raise UserWarning('Put images into folder and drag and drop folder into KCC window.')
 
         missing = []
 
         extraction_commands = [
-            ['tar', '--exclude', '__MACOSX', '--exclude', '.DS_Store', '--exclude', 'thumbs.db', '--exclude', 'Thumbs.db', '-xf', self.basename, '-C', targetdir],
+            [TAR, '--exclude', '__MACOSX', '--exclude', '.DS_Store', '--exclude', 'thumbs.db', '--exclude', 'Thumbs.db', '-xf', self.basename, '-C', targetdir],
             [SEVENZIP, 'x', '-y', '-xr!__MACOSX', '-xr!.DS_Store', '-xr!thumbs.db', '-xr!Thumbs.db', '-o' + targetdir, self.basename],
         ]
 
@@ -121,7 +126,7 @@ class ComicArchive:
 def available_archive_tools():
     available = []
 
-    for tool in ['tar', SEVENZIP, 'unar', 'unrar']:
+    for tool in [TAR, SEVENZIP, 'unar', 'unrar']:
         try:
             subprocess_run([tool], stdout=PIPE, stderr=STDOUT)
             available.append(tool)
