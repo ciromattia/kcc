@@ -946,6 +946,19 @@ def getWorkFolder(afile, workdir=None):
                 path = cbx.extract(fullPath)
                 sanitizePermissions(path)
 
+                tdir = os.listdir(fullPath)
+                if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
+                    tdir.remove('ComicInfo.xml')
+                    if os.path.isdir(os.path.join(fullPath, tdir[0])):
+                        os.replace(
+                            os.path.join(fullPath, 'ComicInfo.xml'),
+                            os.path.join(fullPath, tdir[0], 'ComicInfo.xml')
+                        )
+                if len(tdir) == 1 and os.path.isdir(os.path.join(fullPath, tdir[0])):
+                    for file in os.listdir(os.path.join(fullPath, tdir[0])):
+                        move(os.path.join(fullPath, tdir[0], file), fullPath)
+                    os.rmdir(os.path.join(fullPath, tdir[0]))
+
                 if afile.lower().endswith('.epub'):
                     container = ET.parse(os.path.join(path, 'META-INF', 'container.xml'))
                     opf_path = container.find(r'.//{*}rootfile').attrib['full-path']
@@ -989,21 +1002,8 @@ def getWorkFolder(afile, workdir=None):
                         shutil.copyfile(img_path, os.path.join(fullpath2, f"{i}{ext}"))
                     rmtree(workdir, True)
                     return workdir2
-                else:
-                    tdir = os.listdir(fullPath)
-                    if len(tdir) == 2 and 'ComicInfo.xml' in tdir:
-                        tdir.remove('ComicInfo.xml')
-                        if os.path.isdir(os.path.join(fullPath, tdir[0])):
-                            os.replace(
-                                os.path.join(fullPath, 'ComicInfo.xml'),
-                                os.path.join(fullPath, tdir[0], 'ComicInfo.xml')
-                            )
-                    if len(tdir) == 1 and os.path.isdir(os.path.join(fullPath, tdir[0])):
-                        for file in os.listdir(os.path.join(fullPath, tdir[0])):
-                            move(os.path.join(fullPath, tdir[0], file), fullPath)
-                        os.rmdir(os.path.join(fullPath, tdir[0]))
+                
                 return workdir
- 
             finally:
                 pass
     else:
