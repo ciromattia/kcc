@@ -153,7 +153,6 @@ setuptools.setup(
         'psutil>=5.9.5',
         'requests>=2.31.0',
         'python-slugify>=1.2.1,<9.0.0',
-        'raven>=6.0.0',
         'mozjpeg-lossless-optimization>=1.2.0',
         'natsort>=8.4.0',
         'distro>=1.8.0',
