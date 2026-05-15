@@ -389,10 +389,10 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.qualityBox, 1, 2, 1, 1)
 
-        self.pdfExtractBox = QCheckBox(self.optionWidget)
-        self.pdfExtractBox.setObjectName(u"pdfExtractBox")
+        self.legacyExtractBox = QCheckBox(self.optionWidget)
+        self.legacyExtractBox.setObjectName(u"legacyExtractBox")
 
-        self.gridLayout_2.addWidget(self.pdfExtractBox, 9, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.legacyExtractBox, 9, 0, 1, 1)
 
         self.colorBox = QCheckBox(self.optionWidget)
         self.colorBox.setObjectName(u"colorBox")
@@ -785,11 +785,9 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.qualityBox.setText(QCoreApplication.translate("mainWindow", u"Panel View 4/2/HQ", None))
 #if QT_CONFIG(tooltip)
-        self.pdfExtractBox.setToolTip(QCoreApplication.translate("mainWindow", u"Use the PDF image extraction method from KCC 8 and earlier.\n"
-"\n"
-"Useful for really weird PDFs.", None))
+        self.legacyExtractBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Use the PDF/EPUB image extraction method from older KCC versions.</p><p><br/></p><p>Use if standard extraction fails for whatever reason.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.pdfExtractBox.setText(QCoreApplication.translate("mainWindow", u"PDF Legacy Extract", None))
+        self.legacyExtractBox.setText(QCoreApplication.translate("mainWindow", u"Legacy Extract", None))
 #if QT_CONFIG(tooltip)
         self.colorBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Disable conversion to grayscale.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

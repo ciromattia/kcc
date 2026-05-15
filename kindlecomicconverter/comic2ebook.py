@@ -919,7 +919,7 @@ def getWorkFolder(afile, workdir=None):
                 os.makedirs(fullPath)
             path = workdir
             sanitizePermissions(path)
-            if options.pdfextract:
+            if options.legacyextract:
                 pdf = pdfjpgextract.PdfJpgExtract(afile, fullPath)
                 njpg = pdf.extract()
                 if njpg == 0:
@@ -958,6 +958,9 @@ def getWorkFolder(afile, workdir=None):
                     for file in os.listdir(os.path.join(fullPath, tdir[0])):
                         move(os.path.join(fullPath, tdir[0], file), fullPath)
                     os.rmdir(os.path.join(fullPath, tdir[0]))
+
+                if options.legacyextract:
+                    return workdir
 
                 if afile.lower().endswith('.epub'):
                     container = ET.parse(os.path.join(path, 'META-INF', 'container.xml'))
@@ -1455,8 +1458,8 @@ def makeParser():
 
     processing_options.add_argument("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
                                     help="Do not modify image and ignore any profile or processing option")
-    processing_options.add_argument("--pdfextract", action="store_true", dest="pdfextract", default=False,
-                                    help="Use the legacy PDF image extraction method from KCC 8 and earlier")
+    processing_options.add_argument("--legacyextract", action="store_true", dest="legacyextract", default=False,
+                                    help="Use the legacy PDF/EPUB image extraction method from older KCC versions")
     processing_options.add_argument("--pdfwidth", action="store_true", dest="pdfwidth", default=False,
                                     help="Render vector PDFs to device width instead of height.")
     processing_options.add_argument("--smartcovercrop", action="store_true", dest="smartcovercrop", default=False,

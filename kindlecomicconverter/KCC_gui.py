@@ -327,8 +327,8 @@ class WorkerThread(QThread):
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
-        if GUI.pdfExtractBox.isChecked():
-            options.pdfextract = True
+        if GUI.legacyExtractBox.isChecked():
+            options.legacyextract = True
         if GUI.pdfWidthBox.isChecked():
             options.pdfwidth = True
         if GUI.smartCoverCropBox.isChecked():
@@ -1084,7 +1084,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'colorBox': GUI.colorBox.checkState(),
                                            'eraseRainbowBox': GUI.eraseRainbowBox.checkState(),
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState(),
-                                           'pdfExtractBox': GUI.pdfExtractBox.checkState(),
+                                           'legacyExtractBox': GUI.legacyExtractBox.checkState(),
                                            'pdfWidthBox': GUI.pdfWidthBox.checkState(),
                                            'smartCoverCropBox': GUI.smartCoverCropBox.checkState(),
                                            'coverFillBox': GUI.coverFillBox.checkState(),
