@@ -38,7 +38,6 @@ from xml.sax.saxutils import escape
 from psutil import Process
 from copy import copy
 from packaging.version import Version
-from raven import Client
 from tempfile import gettempdir
 
 from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
@@ -445,8 +444,6 @@ class WorkerThread(QThread):
                 _, _, traceback = sys.exc_info()
                 MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
                                    % (jobargv[-1], str(err), sanitizeTrace(traceback)), 'error')
-                if ' is corrupted.' not in str(err):
-                    GUI.sentry.captureException()
                 MW.addMessage.emit('Error during conversion! Please consult '
                                    '<a href="https://github.com/ciromattia/kcc/wiki/Error-messages">wiki</a> '
                                    'for more details.', 'error', False)
@@ -682,7 +679,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.editor.loadData(sname)
             except Exception as err:
                 _, _, traceback = sys.exc_info()
-                GUI.sentry.captureException()
                 self.showDialog("Failed to parse metadata!\n\n%s\n\nTraceback:\n%s"
                                 % (str(err), sanitizeTrace(traceback)), 'error')
             else:
@@ -1211,7 +1207,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.croppingPowerValue = 1.0
         self.currentMode = 1
         self.targetDirectory = ''
-        self.sentry = Client(release=__version__)
         if sys.platform.startswith('win'):
             # noinspection PyUnresolvedReferences
             from psutil import BELOW_NORMAL_PRIORITY_CLASS
@@ -1581,7 +1576,6 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
                 self.parser.saveXML()
             except Exception as err:
                 _, _, traceback = sys.exc_info()
-                GUI.sentry.captureException()
                 GUI.showDialog("Failed to save metadata!\n\n%s\n\nTraceback:\n%s"
                                % (str(err), sanitizeTrace(traceback)), 'error')
             self.ui.close()
