@@ -157,6 +157,7 @@ setuptools.setup(
         'natsort>=8.4.0',
         'distro>=1.8.0',
         'numpy>=1.22.4',
+        'packaging>=23.2',
         'PyMuPDF>=1.16.1',
     ],
     classifiers=[],
