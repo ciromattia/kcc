@@ -247,7 +247,7 @@ MAIN:
 
 PROCESSING:
   -n, --noprocessing    Do not modify image and ignore any profile or processing option
-  --pdfextract          Use legacy PDF image extraction method from KCC 8 and earlier.
+  --legacyextract       Use legacy PDF/EPUB image extraction method from earlier KCC versions.
   --pdfwidth            Render vector PDFs based on device width instead of height.
   -u, --upscale         Resize images smaller than device's resolution
   -s, --stretch         Stretch images to device's resolution

@@ -22,7 +22,9 @@ from collections import Counter
 import os
 import pathlib
 import re
+import shutil
 import sys
+import xml.etree.ElementTree as ET
 from argparse import ArgumentParser
 from time import perf_counter, strftime, gmtime
 from copy import copy
@@ -917,7 +919,7 @@ def getWorkFolder(afile, workdir=None):
                 os.makedirs(fullPath)
             path = workdir
             sanitizePermissions(path)
-            if options.pdfextract:
+            if options.legacyextract:
                 pdf = pdfjpgextract.PdfJpgExtract(afile, fullPath)
                 njpg = pdf.extract()
                 if njpg == 0:
@@ -956,11 +958,61 @@ def getWorkFolder(afile, workdir=None):
                     for file in os.listdir(os.path.join(fullPath, tdir[0])):
                         move(os.path.join(fullPath, tdir[0], file), fullPath)
                     os.rmdir(os.path.join(fullPath, tdir[0]))
+
+                if options.legacyextract:
+                    return workdir
+
+                if afile.lower().endswith('.epub'):
+                    container = ET.parse(os.path.join(path, 'META-INF', 'container.xml'))
+                    opf_path = container.find(r'.//{*}rootfile').attrib['full-path']
+                    opf_path = os.path.join(path, opf_path)
+                    opf = ET.parse(opf_path)
+                    spine = []
+                    for spine_item in opf.findall(r'.//{*}itemref'):
+                        spine.append(spine_item.attrib.get('idref'))
+                    manifest_dict = {}
+                    for manifest_item in opf.findall(".//*[@media-type='application/xhtml+xml']"):
+                        manifest_dict[manifest_item.attrib.get('id')] = manifest_item.attrib.get('href')
+                    ordered_image_paths = []
+                    for i, spine_item in enumerate(spine):
+                        if spine_item not in manifest_dict:
+                            continue
+                        page_path = os.path.join(os.path.dirname(opf_path), manifest_dict[spine_item])
+                        page = ET.parse(page_path)
+                        imgs = page.findall(r'.//{*}img') + page.findall(r'.//{*}image')
+                        img_path = None
+                        # TODO handle more than first image
+                        for img in imgs:
+                            for key in img.attrib:
+                                if 'src' in key or 'href' in key:
+                                    img_path = img.attrib[key]
+                                    if img_path.startswith('..'):
+                                        img_path = os.path.join(os.path.dirname(opf_path), os.path.dirname(manifest_dict[spine_item]), img_path)
+                                    else:
+                                        img_path = os.path.join(os.path.dirname(opf_path), os.path.dirname(manifest_dict[spine_item]), img_path)
+                            break
+                        # TODO empty image
+                        if img_path:
+                            ordered_image_paths.append(img_path)
+                    # fallback if naive spine extraction fails
+                    if not ordered_image_paths:
+                        return workdir
+
+                    if options.tempdir:
+                        workdir2 = mkdtemp('', 'KCC-', os.path.dirname(afile))
+                    else:
+                        workdir2 = mkdtemp('', 'KCC-')
+                    for i, img_path in enumerate(ordered_image_paths):
+                        _, ext = os.path.splitext(img_path)
+                        fullpath2 = os.path.join(workdir2, 'OEBPS', 'Images')
+                        os.makedirs(fullpath2, exist_ok=True)
+                        shutil.copyfile(img_path, os.path.join(fullpath2, f"{i}{ext}"))
+                    rmtree(workdir, True)
+                    return workdir2
+                
                 return workdir
- 
-            except OSError as e:
-                rmtree(workdir, True)
-                raise UserWarning(e)
+            finally:
+                pass
     else:
         raise UserWarning("Failed to open source file/directory.")
 
@@ -1406,8 +1458,8 @@ def makeParser():
 
     processing_options.add_argument("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
                                     help="Do not modify image and ignore any profile or processing option")
-    processing_options.add_argument("--pdfextract", action="store_true", dest="pdfextract", default=False,
-                                    help="Use the legacy PDF image extraction method from KCC 8 and earlier")
+    processing_options.add_argument("--legacyextract", action="store_true", dest="legacyextract", default=False,
+                                    help="Use the legacy PDF/EPUB image extraction method from older KCC versions")
     processing_options.add_argument("--pdfwidth", action="store_true", dest="pdfwidth", default=False,
                                     help="Render vector PDFs to device width instead of height.")
     processing_options.add_argument("--smartcovercrop", action="store_true", dest="smartcovercrop", default=False,

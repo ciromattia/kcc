@@ -326,8 +326,8 @@ class WorkerThread(QThread):
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
-        if GUI.pdfExtractBox.isChecked():
-            options.pdfextract = True
+        if GUI.legacyExtractBox.isChecked():
+            options.legacyextract = True
         if GUI.pdfWidthBox.isChecked():
             options.pdfwidth = True
         if GUI.smartCoverCropBox.isChecked():
@@ -625,7 +625,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.jobList.clear()
         if self.tar or self.sevenzip:
             fnames = QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                            'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf);;All (*.*)')
+                                                            'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.epub *.pdf);;All (*.*)')
         else:
             fnames = QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
                                                             'Comic (*.pdf);;All (*.*)')
@@ -1080,7 +1080,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'colorBox': GUI.colorBox.checkState(),
                                            'eraseRainbowBox': GUI.eraseRainbowBox.checkState(),
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState(),
-                                           'pdfExtractBox': GUI.pdfExtractBox.checkState(),
+                                           'legacyExtractBox': GUI.legacyExtractBox.checkState(),
                                            'pdfWidthBox': GUI.pdfWidthBox.checkState(),
                                            'smartCoverCropBox': GUI.smartCoverCropBox.checkState(),
                                            'coverFillBox': GUI.coverFillBox.checkState(),
@@ -1120,7 +1120,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 GUI.jobList.clear()
             formats = ['.pdf']
             if self.tar or self.sevenzip:
-                formats.extend(['.cb7', '.7z', '.cbz', '.zip', '.cbr', '.rar'])
+                formats.extend(['.cb7', '.7z', '.cbz', '.zip', '.cbr', '.rar', '.epub'])
             if os.path.isdir(message):
                 GUI.jobList.addItem(message)
                 GUI.jobList.scrollToBottom()
