@@ -344,6 +344,8 @@ class WorkerThread(QThread):
             options.tempdir = True
         if GUI.spreadShiftBox.isChecked():
             options.spreadshift = True
+        if GUI.onePageLandscapeBox.isChecked():
+            options.onepagelandscape = True
         if GUI.fileFusionBox.isChecked():
             options.filefusion = True
         else:
@@ -1097,6 +1099,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'deleteBox': GUI.deleteBox.checkState(),
                                            'tempDirBox': GUI.tempDirBox.checkState(),
                                            'spreadShiftBox': GUI.spreadShiftBox.checkState(),
+                                           'onePageLandscapeBox': GUI.onePageLandscapeBox.checkState(),
                                            'fileFusionBox': GUI.fileFusionBox.checkState(),
                                            'defaultOutputFolderBox': GUI.defaultOutputFolderBox.checkState(),
                                            'noRotateBox': GUI.noRotateBox.checkState(),

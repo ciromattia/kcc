@@ -469,6 +469,8 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
                 pageside = "right"
 
     for entry, prop in zip(reflist, page_spread_property_list):
+        if options.onepagelandscape:
+            prop = 'center'
         f.write(f'<itemref idref="page_{entry}" {pageSpreadProperty(prop)}/>\n')
 
     f.write("</spine>\n</package>\n")
@@ -1456,6 +1458,8 @@ def makeParser():
                                      "2: Consider every subdirectory as separate volume [Default=0]")
     output_options.add_argument("--spreadshift", action="store_true", dest="spreadshift", default=False,
                                 help="Shift first page to opposite side in landscape for spread alignment")
+    output_options.add_argument("--onepagelandscape", action="store_true", dest="onepagelandscape", default=False,
+                                help="Show a single centered page in landscape")
     output_options.add_argument("--norotate", action="store_true", dest="norotate", default=False,
                                 help="Do not rotate double page spreads in spread splitter option.")
     output_options.add_argument("--rotateright", action="store_true", dest="rotateright", default=False,
