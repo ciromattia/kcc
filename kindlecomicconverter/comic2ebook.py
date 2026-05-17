@@ -980,9 +980,10 @@ def getWorkFolder(afile, workdir=None):
                         page_path = os.path.join(os.path.dirname(opf_path), manifest_dict[spine_item])
                         page = ET.parse(page_path)
                         imgs = page.findall(r'.//{*}img') + page.findall(r'.//{*}image')
+
+                        largest_size = 0
                         img_path = None
                         for img in imgs:
-                            largest_size = 0
                             for key in img.attrib:
                                 if 'src' in key or 'href' in key:
                                     temp_img_path = img.attrib[key]
