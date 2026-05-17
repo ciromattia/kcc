@@ -981,16 +981,22 @@ def getWorkFolder(afile, workdir=None):
                         page = ET.parse(page_path)
                         imgs = page.findall(r'.//{*}img') + page.findall(r'.//{*}image')
                         img_path = None
-                        # TODO handle more than first image
                         for img in imgs:
+                            largest_size = 0
                             for key in img.attrib:
                                 if 'src' in key or 'href' in key:
-                                    img_path = img.attrib[key]
-                                    if img_path.startswith('..'):
-                                        img_path = os.path.join(os.path.dirname(opf_path), os.path.dirname(manifest_dict[spine_item]), img_path)
+                                    temp_img_path = img.attrib[key]
+                                    if temp_img_path.startswith('..'):
+                                        temp_img_path = os.path.join(os.path.dirname(opf_path), os.path.dirname(manifest_dict[spine_item]), temp_img_path)
                                     else:
-                                        img_path = os.path.join(os.path.dirname(opf_path), os.path.dirname(manifest_dict[spine_item]), img_path)
-                            break
+                                        temp_img_path = os.path.join(os.path.dirname(opf_path), os.path.dirname(manifest_dict[spine_item]), temp_img_path)
+                                    try:
+                                        temp_size = os.path.getsize(temp_img_path)
+                                        if temp_size > largest_size:
+                                            largest_size = temp_size
+                                            img_path = temp_img_path
+                                    except OSError:
+                                        pass
                         # TODO empty image
                         if img_path:
                             ordered_image_paths.append(img_path)
