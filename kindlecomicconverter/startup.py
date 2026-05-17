@@ -24,11 +24,41 @@ from . import __version__
 from .shared import dependencyCheck
 
 
+def _install_zh_CN(KCC_gui, application):
+    from pathlib import Path
+    from PySide6.QtCore import QTranslator
+    from . import i18n_zh_CN
+
+    translation_name = 'kcc_zh_CN.qm'
+    base_dir = Path(__file__).resolve().parents[1]
+    pyinstaller_dir = Path(getattr(sys, '_MEIPASS', ''))
+    executable_dir = Path(sys.executable).resolve().parent
+    candidates = [
+        base_dir / 'translations' / translation_name,
+        Path(__file__).resolve().parent / 'translations' / translation_name,
+        pyinstaller_dir / 'translations' / translation_name,
+        executable_dir / 'translations' / translation_name,
+        executable_dir.parent / 'Resources' / 'translations' / translation_name,
+        executable_dir.parent / 'Frameworks' / 'translations' / translation_name,
+        Path.cwd() / 'translations' / translation_name,
+    ]
+
+    for translation_path in candidates:
+        if translation_path.is_file():
+            translator = QTranslator(application)
+            if translator.load(str(translation_path)):
+                application.installTranslator(translator)
+                application.kcc_zh_CN_translator = translator
+                break
+    i18n_zh_CN.install(KCC_gui)
+
+
 def start():
     dependencyCheck(3)
     from . import KCC_gui
     os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = "1"
     KCCAplication = KCC_gui.QApplicationMessaging(sys.argv)
+    _install_zh_CN(KCC_gui, KCCAplication)
     if KCCAplication.isRunning():
         for i in range(1, len(sys.argv)):
             KCCAplication.sendMessage(sys.argv[i])

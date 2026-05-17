@@ -1,0 +1,854 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TS version="2.1" language="zh_CN">
+    <context>
+        <name>editorDialog</name>
+        <message>
+            <location filename="../gui/MetaEditor.ui" line="20" />
+            <source>Metadata editor</source>
+            <translation>元数据编辑器</translation>
+        </message>
+        <message>
+            <location filename="../gui/MetaEditor.ui" line="48" />
+            <source>Series:</source>
+            <translation>系列：</translation>
+        </message>
+        <message>
+            <location filename="../gui/MetaEditor.ui" line="58" />
+            <source>Volume:</source>
+            <translation>卷：</translation>
+        </message>
+        <message>
+            <location filename="../gui/MetaEditor.ui" line="68" />
+            <source>Number:</source>
+            <translation>编号：</translation>
+        </message>
+        <message>
+            <location filename="../gui/MetaEditor.ui" line="78" />
+            <source>Writer:</source>
+            <translation>编剧：</translation>
+        </message>
+        <message>
+            <location filename="../gui/MetaEditor.ui" line="88" />
+            <source>Penciller:</source>
+            <translation>线稿：</translation>
+        </message>
+        <message>
+            <location filename="../gui/MetaEditor.ui" line="98" />
+            <source>Inker:</source>
+            <translation>墨线：</translation>
+        </message>
+        <message>
+            <location filename="../gui/MetaEditor.ui" line="108" />
+            <source>Colorist:</source>
+            <translation>上色：</translation>
+        </message>
+        <message>
+            <location filename="../gui/MetaEditor.ui" line="118" />
+            <source>Title:</source>
+            <translation>标题：</translation>
+        </message>
+        <message>
+            <location filename="../gui/MetaEditor.ui" line="165" />
+            <source>Save</source>
+            <translation>保存</translation>
+        </message>
+        <message>
+            <location filename="../gui/MetaEditor.ui" line="182" />
+            <source>Cancel</source>
+            <translation>取消</translation>
+        </message>
+    </context>
+    <context>
+        <name>mainWindow</name>
+        <message>
+            <location filename="../gui/KCC.ui" line="14" />
+            <source>Kindle Comic Converter</source>
+            <translation>Kindle Comic Converter</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="78" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;After calculating the cropping boundaries, &amp;quot;back up&amp;quot; a specified percentage amount.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;计算裁切边界后，按指定百分比向外保留一部分边距。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="81" />
+            <source>Preserve Margin %</source>
+            <translation>保留边距 %</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="88" />
+            <source>Cropping power:</source>
+            <translation>裁切强度：</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="143" />
+            <source>JPEG Quality:</source>
+            <translation>JPEG 质量：</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="175" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Warning: chunk size greater than default may cause&lt;br/&gt;performance/battery issues, especially on older devices.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;警告：分卷大小高于默认值可能导致&lt;br/&gt;性能或耗电问题，旧设备上尤其明显。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="202" />
+            <source>Chunk size MB:</source>
+            <translation>分卷大小 MB：</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="228" />
+            <source>Greater than default may cause performance issues on older ereaders.</source>
+            <translation>高于默认值可能导致旧款电纸书性能下降。</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="244" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Double click on source to open it in metadata editor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;双击源文件可在元数据编辑器中打开。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="284" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Shift+Click to edit directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Shift+点击可编辑目录。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="287" />
+            <source>Metadata Editor</source>
+            <translation>元数据编辑器</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="304" />
+            <source>Support me on Ko-fi</source>
+            <translation>在 Ko-fi 支持我</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="327" />
+            <source>Wiki</source>
+            <translation>Wiki</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="344" />
+            <source>YouTube</source>
+            <translation>YouTube</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="357" />
+            <source>Humble Bundle Referral</source>
+            <translation>Humble Bundle 推荐链接</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="374" />
+            <source>Discord</source>
+            <translation>Discord</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="399" />
+            <source>Do not rotate double page spreads in spread splitter option.</source>
+            <translation>使用跨页拆分时不要旋转双页跨页。</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="402" />
+            <source>No rotate</source>
+            <translation>不旋转</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="409" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - 1x4&lt;br/&gt;&lt;/span&gt;Keep format 1x4 panels strips.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - 2x2&lt;br/&gt;&lt;/span&gt;Turn 1x4 strips to 2x2 to maximize screen usage.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 1x4&lt;br/&gt;&lt;/span&gt;保持 1x4 分格条格式。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 2x2&lt;br/&gt;&lt;/span&gt;将 1x4 分格条转为 2x2，以充分利用屏幕。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="412" />
+            <source>1x4 to 2x2 strips</source>
+            <translation>1x4 转 2x2 条漫</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="419" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - Split&lt;br/&gt;&lt;/span&gt;Double page spreads will be cut into two separate pages.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Indeterminate - Split and rotate&lt;br/&gt;&lt;/span&gt;Double page spreads will be displayed twice. First split and then rotated. &lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - Rotate&lt;br/&gt;&lt;/span&gt;Double page spreads will be rotated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 拆分&lt;br/&gt;&lt;/span&gt;双页跨页会被切成两个独立页面。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;半选中 - 拆分并旋转&lt;br/&gt;&lt;/span&gt;双页跨页会显示两次：先拆分，再旋转。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 旋转&lt;br/&gt;&lt;/span&gt;双页跨页会被旋转。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="422" />
+            <source>Spread splitter</source>
+            <translation>跨页拆分</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="435" />
+            <source>Use a more compatible 8 bit PNG instead of 4 bit.</source>
+            <translation>使用兼容性更好的 8 位 PNG，而不是 4 位 PNG。</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="438" />
+            <source>PNG Legacy Mode</source>
+            <translation>PNG 兼容模式</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="445" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - Disabled&lt;br/&gt;&lt;/span&gt;Disabled&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Indeterminate - Horizontal&lt;br/&gt;&lt;/span&gt;Crop empty horizontal lines.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - Both&lt;br/&gt;&lt;/span&gt;Crop empty horizontal and vertical lines.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 禁用&lt;br/&gt;&lt;/span&gt;禁用&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;半选中 - 水平&lt;br/&gt;&lt;/span&gt;裁掉空白水平区域。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 水平和垂直&lt;br/&gt;&lt;/span&gt;裁掉空白水平和垂直区域。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="448" />
+            <source>Inter-panel crop</source>
+            <translation>格间裁切</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="467" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Default Title&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;默认标题&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="470" />
+            <source>Default Title</source>
+            <translation>默认标题</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="489" />
+            <source>Default Author is KCC</source>
+            <translation>默认作者为 KCC</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="492" />
+            <source>Default Author</source>
+            <translation>默认作者</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="502" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Enable special parsing mode for Korean Webtoons.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;启用韩式 Webtoon 的特殊解析模式。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="505" />
+            <source>Webtoon mode</source>
+            <translation>Webtoon 模式</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="512" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Combines all selected files into a single file. (Helpful for combining chapters into volumes.)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;将所有选中的文件合并为单个文件。（适合把章节合并成卷。）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="515" />
+            <source>File Fusion</source>
+            <translation>文件合并</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="522" />
+            <source>Delete input file(s) or directory. It's not recoverable!</source>
+            <translation>删除输入文件或目录。此操作不可恢复！</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="525" />
+            <source>Delete input</source>
+            <translation>删除输入</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="532" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set a custom gamma correction.&lt;/p&gt;&lt;p&gt;1.0 is default (disabled).&lt;br/&gt;&amp;lt; 1.0 makes the image brighter.&lt;br/&gt;&amp;gt; 1.0 makes the image darker. &lt;/p&gt;&lt;p&gt;1.8 was the default in KCC 9.1.0 and earlier.&lt;/p&gt;&lt;p&gt;Use if you want to make midtones darker.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;设置自定义 gamma 校正。&lt;/p&gt;&lt;p&gt;1.0 是默认值（禁用）。&lt;br/&gt;&amp;lt; 1.0 会让图像更亮。&lt;br/&gt;&amp;gt; 1.0 会让图像更暗。&lt;/p&gt;&lt;p&gt;1.8 是 KCC 9.1.0 及更早版本的默认值。&lt;/p&gt;&lt;p&gt;如果想让中间调更暗，可以使用此项。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="535" />
+            <source>Custom gamma</source>
+            <translation>自定义 gamma</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="545" />
+            <source>Don't quantize PNG images to 16 colors (4 bit)
+
+This will double file size but preserve all 256 colors (8 bit).
+
+Eink only has 16 shades of gray so you probably don't want this.</source>
+            <translation>不要将 PNG 图像量化为 16 色（4 位）。
+
+这会让文件大小翻倍，但会保留全部 256 色（8 位）。
+
+电纸书通常只有 16 级灰度，一般不需要启用。</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="552" />
+            <source>No Quantize</source>
+            <translation>不量化</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="559" />
+            <source>Erase rainbow effect on color eink screen by attenuating interfering frequencies</source>
+            <translation>通过衰减干扰频率来消除彩色电纸书上的彩虹纹</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="562" />
+            <source>Rainbow eraser</source>
+            <translation>彩虹纹消除</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="569" />
+            <source>Resize cover to exact device resolution by center-cropping to aspect ratio first.
+May crop top/bottom or left/right depending on source aspect ratio. Not implemented for Kindle Scribe.</source>
+            <translation>先居中裁切到目标比例，再将封面缩放到设备的精确分辨率。
+根据源图比例，可能会裁掉上下或左右区域。Kindle Scribe 暂未实现。</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="573" />
+            <source>Cover Fill</source>
+            <translation>封面填充</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="580" />
+            <source>Rotate 2 page spreads in opposite direction than normal.</source>
+            <translation>将双页跨页按与默认方向相反的方向旋转。</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="583" />
+            <source>Rotate Right</source>
+            <translation>向右旋转</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="590" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Enable right-to-left reading.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;启用从右到左阅读。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="593" />
+            <source>Right-to-left (manga)</source>
+            <translation>从右到左（漫画）</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="600" />
+            <source>Shift first page to opposite side in landscape for two page spread alignment</source>
+            <translation>横屏双页对齐时，将第一页移到另一侧</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="603" />
+            <source>Spread shift</source>
+            <translation>跨页偏移</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="610" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - Disabled&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Disabled&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Indeterminate - Margins&lt;br/&gt;&lt;/span&gt;Margins&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - Margins + page numbers&lt;br/&gt;&lt;/span&gt;Margins +page numbers&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 禁用&lt;/span&gt;&lt;/p&gt;&lt;p&gt;禁用&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;半选中 - 边距&lt;br/&gt;&lt;/span&gt;裁切边距&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 边距 + 页码&lt;br/&gt;&lt;/span&gt;裁切边距和页码&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="613" />
+            <source>Cropping mode</source>
+            <translation>裁切模式</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="623" />
+            <source>The JPEG quality, on a scale from 0 (worst) to 95 (best). 
+
+Default is 85 for most devices besides Kindle Scribe and Colorsoft, which are 90.
+
+Higher values are larger and higher quality, and may resolve blank page issues.</source>
+            <translation>JPEG 质量，范围 0（最差）到 95（最好）。
+
+除 Kindle Scribe 和 Colorsoft 默认为 90 外，大多数设备默认是 85。
+
+数值越高，文件越大、质量越高，也可能缓解空白页问题。</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="630" />
+            <source>Custom JPEG Quality</source>
+            <translation>自定义 JPEG 质量</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="637" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - Automatic mode&lt;br/&gt;&lt;/span&gt;The output will be split automatically.&lt;/p&gt;&lt;p style='white-space:pre'&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - Volume mode&lt;br/&gt;&lt;/span&gt;Every subdirectory will be considered as a separate volume.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 自动模式&lt;br/&gt;&lt;/span&gt;输出会自动拆分。&lt;/p&gt;&lt;p style='white-space:pre'&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 分卷模式&lt;br/&gt;&lt;/span&gt;每个子目录都会视为单独的一卷。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="640" />
+            <source>Output split</source>
+            <translation>输出拆分</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="647" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - Don't use metadata Title&lt;br/&gt;&lt;/span&gt;Write default title.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Indeterminate - Add metadata Title to the default schema&lt;br/&gt;&lt;/span&gt;Write default title with Title from ComicInfo.xml or other embedded metadata.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - Use metadata Title only&lt;br/&gt;&lt;/span&gt;Write Title from ComicInfo.xml or other embedded metadata.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 不使用元数据标题&lt;br/&gt;&lt;/span&gt;写入默认标题。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;半选中 - 将元数据标题加入默认格式&lt;br/&gt;&lt;/span&gt;写入默认标题，并附加 ComicInfo.xml 或其他嵌入元数据中的标题。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 仅使用元数据标题&lt;br/&gt;&lt;/span&gt;写入 ComicInfo.xml 或其他嵌入元数据中的标题。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="650" />
+            <source>Metadata Title</source>
+            <translation>元数据标题</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="660" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Attempt to crop main cover from wide image.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;尝试从宽图中裁出主封面。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="663" />
+            <source>Smart Cover Crop</source>
+            <translation>智能封面裁切</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="670" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When the spread splitter option is partially checked,&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - Rotate Last&lt;br/&gt;&lt;/span&gt;Put the rotated 2 page spread after the split spreads.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - Rotate First&lt;br/&gt;&lt;/span&gt;Put the rotated 2 page spread before the split spreads.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;当跨页拆分选项为半选中时，&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 旋转页在后&lt;br/&gt;&lt;/span&gt;将旋转后的双页跨页放在拆分页之后。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 旋转页在前&lt;br/&gt;&lt;/span&gt;将旋转后的双页跨页放在拆分页之前。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="673" />
+            <source>Rotate First</source>
+            <translation>旋转页在前</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="680" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - JPEG&lt;br/&gt;&lt;/span&gt;Use JPEG files&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Indeterminate - force PNG&lt;br/&gt;&lt;/span&gt;Create PNG files instead JPEG for black and white images&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - mozJpeg&lt;br/&gt;&lt;/span&gt;10-20% smaller JPEG file, with the same image quality, but processing time multiplied by 2&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - JPEG&lt;br/&gt;&lt;/span&gt;使用 JPEG 文件&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;半选中 - 强制 PNG&lt;br/&gt;&lt;/span&gt;黑白图像使用 PNG 而不是 JPEG&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - mozJpeg&lt;br/&gt;&lt;/span&gt;在相同画质下让 JPEG 小 10-20%，但处理时间约翻倍&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="683" />
+            <source>JPEG/PNG/mozJpeg</source>
+            <translation>JPEG/PNG/mozJpeg</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="693" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;By default, KCC maps the darkest pixel value to pure black (the black point.)&lt;/p&gt;&lt;p&gt;Extreme black point sets the black point to be the most common dark pixel value.&lt;/p&gt;&lt;p&gt;Useful when text is black but artwork is gray.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;默认情况下，KCC 会把最暗的像素值映射为纯黑（黑点）。&lt;/p&gt;&lt;p&gt;极限黑点会把最常见的暗色像素值设为黑点。&lt;/p&gt;&lt;p&gt;当文字是黑色而画面是灰色时很有用。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="696" />
+            <source>Extreme Black Point</source>
+            <translation>极限黑点</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="706" />
+            <source>Force full color images to be saved in lossless PNG format, dramatically increases the filesize.</source>
+            <translation>强制将全彩图像保存为无损 PNG，会显著增加文件大小。</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="709" />
+            <source>Force PNG RGB</source>
+            <translation>强制 PNG RGB</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="716" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - Nothing&lt;br/&gt;&lt;/span&gt;Images smaller than device resolution will not be resized.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Indeterminate - Stretching&lt;br/&gt;&lt;/span&gt;Images smaller than device resolution will be resized. Aspect ratio will be not preserved.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - Upscaling&lt;br/&gt;&lt;/span&gt;Images smaller than device resolution will be resized. Aspect ratio will be preserved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 不处理&lt;br/&gt;&lt;/span&gt;小于设备分辨率的图像不会被缩放。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;半选中 - 拉伸&lt;br/&gt;&lt;/span&gt;小于设备分辨率的图像会被缩放，不保留宽高比。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 放大&lt;br/&gt;&lt;/span&gt;小于设备分辨率的图像会被缩放，并保留宽高比。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="719" />
+            <source>Stretch/Upscale</source>
+            <translation>拉伸/放大</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="729" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - Autodetection&lt;br/&gt;&lt;/span&gt;The color of margins fill will be detected automatically.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Indeterminate - White&lt;br/&gt;&lt;/span&gt;Margins will be untouched.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - Black&lt;br/&gt;&lt;/span&gt;Margins will be filled with black color.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 自动检测&lt;br/&gt;&lt;/span&gt;自动检测边距填充颜色。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;半选中 - 白色&lt;br/&gt;&lt;/span&gt;边距保持不变。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 黑色&lt;br/&gt;&lt;/span&gt;边距会填充为黑色。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="732" />
+            <source>W/B margins</source>
+            <translation>黑/白边距</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="742" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - 4 panels&lt;br/&gt;&lt;/span&gt;Zoom each corner separately.&lt;/p&gt;&lt;p style='white-space:pre'&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Indeterminate - 2 panels&lt;br/&gt;&lt;/span&gt;Zoom only the top and bottom of the page.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - 4 high-quality panels&lt;br/&gt;&lt;/span&gt;Zoom each corner separately. Try to increase the quality of magnification. Check wiki for more details.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 4 个面板&lt;br/&gt;&lt;/span&gt;分别放大四个角。&lt;/p&gt;&lt;p style='white-space:pre'&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;半选中 - 2 个面板&lt;br/&gt;&lt;/span&gt;只放大页面顶部和底部。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 4 个高质量面板&lt;br/&gt;&lt;/span&gt;分别放大四个角，并尝试提升放大质量。详情请查看 wiki。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="745" />
+            <source>Panel View 4/2/HQ</source>
+            <translation>面板视图 4/2/HQ</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="755" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use the PDF/EPUB image extraction method from older KCC versions.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Use if standard extraction fails for whatever reason.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使用旧版 KCC 的 PDF/EPUB 图像提取方式。&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;如果标准提取因任何原因失败，可以启用此项。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="758" />
+            <source>Legacy Extract</source>
+            <translation>旧版提取</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="765" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Disable conversion to grayscale.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;禁用灰度转换。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="768" />
+            <source>Color mode</source>
+            <translation>彩色模式</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="775" />
+            <source>Render vector PDFs to device width instead of height.
+
+Useful if you plan to crop a little off the top and bottom to fill screen.</source>
+            <translation>将矢量 PDF 按设备宽度渲染，而不是按高度渲染。
+
+如果你计划稍微裁掉上下边缘来填满屏幕，此项会有用。</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="780" />
+            <source>PDF Width Render</source>
+            <translation>PDF 按宽度渲染</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="787" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Do not process any image, ignore profile and processing options.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;不处理任何图像，忽略设备配置和处理选项。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="790" />
+            <source>Disable processing</source>
+            <translation>禁用处理</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="818" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - next to source&lt;br/&gt;&lt;/span&gt;Place output files next to source files&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Indeterminate - folder next to source&lt;br/&gt;&lt;/span&gt;Place output files in a folder next to source files&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - Custom&lt;br/&gt;&lt;/span&gt;Place output files in custom directory specified by right button&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 源文件旁边&lt;br/&gt;&lt;/span&gt;将输出文件放在源文件旁边&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;半选中 - 源文件旁的文件夹&lt;br/&gt;&lt;/span&gt;将输出文件放在源文件旁边的文件夹中&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 自定义&lt;br/&gt;&lt;/span&gt;将输出文件放在右侧按钮指定的自定义目录中&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="821" />
+            <source>Output Folder</source>
+            <translation>输出文件夹</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="837" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use this to select the default output directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使用此按钮选择默认输出目录。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="854" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700; text-decoration: underline;"&gt;Unchecked&lt;br/&gt;&lt;/span&gt;Maximal output file size is 100 MB for Webtoon, 400 MB for others before split occurs.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:700; text-decoration: underline;"&gt;Checked&lt;/span&gt;&lt;br/&gt;Output file size specified in &amp;quot;Chunk size MB&amp;quot; before split occurs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:700; text-decoration: underline;"&gt;未选中&lt;br/&gt;&lt;/span&gt;拆分前最大输出文件大小：Webtoon 为 100 MB，其他为 400 MB。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:700; text-decoration: underline;"&gt;选中&lt;/span&gt;&lt;br/&gt;按“分卷大小 MB”中指定的输出文件大小拆分。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="857" />
+            <source>Chunk size</source>
+            <translation>分卷大小</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="864" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - BW only&lt;br/&gt;&lt;/span&gt;Only autocontrast bw pages. Ignored for pages where near blacks or whites don't exist.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Indeterminate - Disabled&lt;br/&gt;&lt;/span&gt;Disable autocontrast&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - BW and Color&lt;br/&gt;&lt;/span&gt;BW and color images will be autocontrasted. Ignored for pages where near blacks or whites don't exist.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 仅黑白&lt;br/&gt;&lt;/span&gt;只对黑白页面自动对比度处理。缺少接近黑色或白色区域的页面会被忽略。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;半选中 - 禁用&lt;br/&gt;&lt;/span&gt;禁用自动对比度&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 黑白和彩色&lt;br/&gt;&lt;/span&gt;黑白和彩色图像都会自动对比度处理。缺少接近黑色或白色区域的页面会被忽略。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="867" />
+            <source>Custom Autocontrast</source>
+            <translation>自定义自动对比度</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="877" />
+            <source>Replace JPG with lossy WebP and PNG with lossless WebP. This includes the JPG Quality.
+
+Ignored for Kindle EPUB/MOBI and all PDF.</source>
+            <translation>将 JPG 替换为有损 WebP，将 PNG 替换为无损 WebP。此项会使用 JPG 质量设置。
+
+Kindle EPUB/MOBI 和所有 PDF 会忽略此项。</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="882" />
+            <source>WebP (experimental)</source>
+            <translation>WebP（实验性）</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="889" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - Main Drive&lt;br/&gt;&lt;/span&gt;Use dedicated temporary directory on main OS drive.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - Source File Drive&lt;br/&gt;&lt;/span&gt;Create temporary file directory on source file drive.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未选中 - 主磁盘&lt;br/&gt;&lt;/span&gt;在系统主磁盘上使用专用临时目录。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;选中 - 源文件所在磁盘&lt;br/&gt;&lt;/span&gt;在源文件所在磁盘上创建临时目录。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="892" />
+            <source>Temp Directory</source>
+            <translation>临时目录</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="934" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Shift+Click to select the output directory for this list.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Shift+点击可为当前列表选择输出目录。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="937" />
+            <source>Convert</source>
+            <translation>转换</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="954" />
+            <source>Clear list</source>
+            <translation>清空列表</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="971" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Target device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;目标设备。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="984" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Add CBR, CBZ, CB7 or PDF file to queue.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;将 CBR、CBZ、CB7 或 PDF 文件加入队列。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="987" />
+            <source>Add input file(s)</source>
+            <translation>添加输入文件</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="1004" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Add directory containing JPG, PNG or GIF files to queue.&lt;br/&gt;&lt;span style=" font-weight:600;"&gt;CBR, CBZ and CB7 files inside will not be processed!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;将包含 JPG、PNG 或 GIF 文件的目录加入队列。&lt;br/&gt;&lt;span style=" font-weight:600;"&gt;目录内的 CBR、CBZ 和 CB7 文件不会被处理！&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="1007" />
+            <source>Add input folder(s)</source>
+            <translation>添加输入文件夹</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="1024" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Output format.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;输出格式。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="1058" />
+            <source>Gamma: Auto</source>
+            <translation>Gamma：自动</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="1105" />
+            <location filename="../gui/KCC.ui" line="1115" />
+            <location filename="../gui/KCC.ui" line="1131" />
+            <location filename="../gui/KCC.ui" line="1141" />
+            <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Resolution of the target device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;目标设备分辨率。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="1108" />
+            <source>Custom height:</source>
+            <translation>自定义高度：</translation>
+        </message>
+        <message>
+            <location filename="../gui/KCC.ui" line="1134" />
+            <source>Custom width:</source>
+            <translation>自定义宽度：</translation>
+        </message>
+    </context>
+    <context>
+        <name>KCCGUIRuntime</name>
+        <message>
+            <source>&lt;b&gt;Tip:&lt;/b&gt; Hover mouse over options to see additional information in tooltips.</source>
+            <translation>&lt;b&gt;提示：&lt;/b&gt;将鼠标悬停在选项上可查看额外说明。</translation>
+        </message>
+        <message>
+            <source>&lt;b&gt;Tip:&lt;/b&gt; You can drag and drop image folders or comic files/archives into this window to convert.</source>
+            <translation>&lt;b&gt;提示：&lt;/b&gt;可以将图片文件夹、漫画文件或压缩包拖放到此窗口进行转换。</translation>
+        </message>
+        <message>
+            <source>Since you are a new user of &lt;b&gt;KCC&lt;/b&gt; please see few &lt;a href="https://github.com/ciromattia/kcc/wiki/Important-tips"&gt;important tips&lt;/a&gt;.</source>
+            <translation>如果你是 &lt;b&gt;KCC&lt;/b&gt; 新用户，请先查看几个&lt;a href="https://github.com/ciromattia/kcc/wiki/Important-tips"&gt;重要提示&lt;/a&gt;。</translation>
+        </message>
+        <message>
+            <source>&lt;a href="https://github.com/ciromattia/kcc#7-zip"&gt;Install 7z (link)&lt;/a&gt; to enable CBZ/CBR/ZIP/etc processing.</source>
+            <translation>&lt;a href="https://github.com/ciromattia/kcc#7-zip"&gt;安装 7z（链接）&lt;/a&gt;以启用 CBZ/CBR/ZIP 等格式处理。</translation>
+        </message>
+        <message>
+            <source>&lt;a href="https://github.com/ciromattia/kcc#7-zip"&gt;Install 7z (link)&lt;/a&gt; to enable metadata editing.</source>
+            <translation>&lt;a href="https://github.com/ciromattia/kcc#7-zip"&gt;安装 7z（链接）&lt;/a&gt;以启用元数据编辑。</translation>
+        </message>
+        <message>
+            <source>&lt;a href="https://github.com/ciromattia/kcc#kindlegen"&gt;&lt;b&gt;Install KindleGen (link)&lt;/b&gt;&lt;/a&gt; to enable MOBI conversion for Kindles!</source>
+            <translation>&lt;a href="https://github.com/ciromattia/kcc#kindlegen"&gt;&lt;b&gt;安装 KindleGen（链接）&lt;/b&gt;&lt;/a&gt;以启用 Kindle 的 MOBI 转换！</translation>
+        </message>
+        <message>
+            <source>Colorsoft MOBI/EPUB can have blank pages. Just go back a few pages, exit, and reenter book.</source>
+            <translation>Colorsoft 的 MOBI/EPUB 可能出现空白页。返回几页、退出并重新进入书籍即可。</translation>
+        </message>
+        <message>
+            <source>Calibre may add margins! USB drop directly into documents folder.</source>
+            <translation>Calibre 可能会添加边距！请通过 USB 直接放入 documents 文件夹。</translation>
+        </message>
+        <message>
+            <source>All KCC options explained/quick tutorial - Youtube</source>
+            <translation>KCC 所有选项说明/快速教程 - YouTube</translation>
+        </message>
+        <message>
+            <source>Kindle 5.19.2 reverted on 11th gen fixing death margins and other bugs - YouTube</source>
+            <translation>Kindle 5.19.2 已在第 11 代设备回退，修复严重边距和其他问题 - YouTube</translation>
+        </message>
+        <message>
+            <source>Kindle 5.19.4 fixes most but not all manga bugs - YouTube</source>
+            <translation>Kindle 5.19.4 修复了大多数漫画问题，但并非全部 - YouTube</translation>
+        </message>
+        <message>
+            <source>Give a software job referral to KCC dev! USA, 2+ YOE, Computer Science B.S. - LinkedIn</source>
+            <translation>给 KCC 开发者推荐软件岗位！美国，2 年以上经验，计算机科学本科 - LinkedIn</translation>
+        </message>
+        <message>
+            <source>Kana Manga Mini-Bundle: The Sequel! by Abrams - referral</source>
+            <translation>Kana Manga 迷你套装：续篇！Abrams - 推荐链接</translation>
+        </message>
+        <message>
+            <source>day(s) left</source>
+            <translation>天剩余</translation>
+        </message>
+        <message>
+            <source>[referral]</source>
+            <translation>[推荐链接]</translation>
+        </message>
+        <message>
+            <source>Convert</source>
+            <translation>转换</translation>
+        </message>
+        <message>
+            <source>Abort</source>
+            <translation>中止</translation>
+        </message>
+        <message>
+            <source>Gamma: Auto</source>
+            <translation>Gamma：自动</translation>
+        </message>
+        <message>
+            <source>Gamma: </source>
+            <translation>Gamma：</translation>
+        </message>
+        <message>
+            <source>Cropping Power: </source>
+            <translation>裁切强度：</translation>
+        </message>
+        <message>
+            <source>&lt;b&gt;Conversion interrupted.&lt;/b&gt;</source>
+            <translation>&lt;b&gt;转换已中断。&lt;/b&gt;</translation>
+        </message>
+        <message>
+            <source>Conversion interrupted.</source>
+            <translation>转换已中断。</translation>
+        </message>
+        <message>
+            <source>Attempting file fusion</source>
+            <translation>正在尝试文件合并</translation>
+        </message>
+        <message>
+            <source>Creating CBZ files</source>
+            <translation>正在创建 CBZ 文件</translation>
+        </message>
+        <message>
+            <source>Creating PDF files</source>
+            <translation>正在创建 PDF 文件</translation>
+        </message>
+        <message>
+            <source>Creating EPUB files</source>
+            <translation>正在创建 EPUB 文件</translation>
+        </message>
+        <message>
+            <source>Creating MOBI files</source>
+            <translation>正在创建 MOBI 文件</translation>
+        </message>
+        <message>
+            <source>Processing MOBI files</source>
+            <translation>正在处理 MOBI 文件</translation>
+        </message>
+        <message>
+            <source>Creating CBZ files... &lt;b&gt;Done!&lt;/b&gt;</source>
+            <translation>创建 CBZ 文件... &lt;b&gt;完成！&lt;/b&gt;</translation>
+        </message>
+        <message>
+            <source>Creating PDF files... &lt;b&gt;Done!&lt;/b&gt;</source>
+            <translation>创建 PDF 文件... &lt;b&gt;完成！&lt;/b&gt;</translation>
+        </message>
+        <message>
+            <source>Creating EPUB files... &lt;b&gt;Done!&lt;/b&gt;</source>
+            <translation>创建 EPUB 文件... &lt;b&gt;完成！&lt;/b&gt;</translation>
+        </message>
+        <message>
+            <source>Creating MOBI files... &lt;b&gt;Done!&lt;/b&gt;</source>
+            <translation>创建 MOBI 文件... &lt;b&gt;完成！&lt;/b&gt;</translation>
+        </message>
+        <message>
+            <source>Processing MOBI files... &lt;b&gt;Done!&lt;/b&gt;</source>
+            <translation>处理 MOBI 文件... &lt;b&gt;完成！&lt;/b&gt;</translation>
+        </message>
+        <message>
+            <source>Kindle detected. Uploading covers... &lt;b&gt;Done!&lt;/b&gt;</source>
+            <translation>检测到 Kindle。正在上传封面... &lt;b&gt;完成！&lt;/b&gt;</translation>
+        </message>
+        <message>
+            <source>Failed to process MOBI file!</source>
+            <translation>处理 MOBI 文件失败！</translation>
+        </message>
+        <message>
+            <source>KindleGen failed to create MOBI!</source>
+            <translation>KindleGen 创建 MOBI 失败！</translation>
+        </message>
+        <message>
+            <source>Created EPUB file was too big. Weird file structure?</source>
+            <translation>创建的 EPUB 文件过大。可能是文件结构异常？</translation>
+        </message>
+        <message>
+            <source>Unknown Windows error. Possibly filepath too long?</source>
+            <translation>未知 Windows 错误。可能是文件路径过长？</translation>
+        </message>
+        <message>
+            <source>&lt;b&gt;All jobs completed.&lt;/b&gt;</source>
+            <translation>&lt;b&gt;所有任务已完成。&lt;/b&gt;</translation>
+        </message>
+        <message>
+            <source>All jobs completed.</source>
+            <translation>所有任务已完成。</translation>
+        </message>
+        <message>
+            <source>Cannot select Kindle as output directory</source>
+            <translation>不能选择 Kindle 作为输出目录</translation>
+        </message>
+        <message>
+            <source>Editor is disabled due to a lack of 7z.</source>
+            <translation>缺少 7z，编辑器已禁用。</translation>
+        </message>
+        <message>
+            <source>This option is intended for older Kindle models.</source>
+            <translation>此选项适用于较旧的 Kindle 型号。</translation>
+        </message>
+        <message>
+            <source>On this device, there will be conversion speed and quality issues.</source>
+            <translation>在此设备上可能出现转换速度和质量问题。</translation>
+        </message>
+        <message>
+            <source>Use the Kindle Scribe profile if you want higher resolution when zooming.</source>
+            <translation>如果想在缩放时获得更高分辨率，请使用 Kindle Scribe 配置。</translation>
+        </message>
+        <message>
+            <source>Scribe PNG MOBI/EPUB has a lot of problems like blank pages/sections. Use JPG instead.</source>
+            <translation>Scribe 的 PNG MOBI/EPUB 有很多问题，比如空白页或空白区域。请改用 JPG。</translation>
+        </message>
+        <message>
+            <source>&lt;a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices"&gt;List of supported Non-Kindle devices.&lt;/a&gt;</source>
+            <translation>&lt;a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices"&gt;支持的非 Kindle 设备列表。&lt;/a&gt;</translation>
+        </message>
+        <message>
+            <source>The process will be interrupted. Please wait.</source>
+            <translation>进程将被中断，请稍候。</translation>
+        </message>
+        <message>
+            <source>No files selected! Please choose files to convert.</source>
+            <translation>未选择文件！请选择要转换的文件。</translation>
+        </message>
+        <message>
+            <source>Target resolution is not set!</source>
+            <translation>未设置目标分辨率！</translation>
+        </message>
+        <message>
+            <source>Unsupported file type for </source>
+            <translation>不支持的文件类型：</translation>
+        </message>
+        <message>
+            <source>Your &lt;a href="https://www.amazon.com/b?node=23496309011"&gt;KindleGen&lt;/a&gt; is outdated! MOBI conversion might fail.</source>
+            <translation>你的 &lt;a href="https://www.amazon.com/b?node=23496309011"&gt;KindleGen&lt;/a&gt; 版本过旧！MOBI 转换可能失败。</translation>
+        </message>
+        <message>
+            <source>You can choose a taller device profile to get taller cuts in webtoon mode.</source>
+            <translation>在 Webtoon 模式下，可以选择更高的设备配置来获得更长的切片。</translation>
+        </message>
+        <message>
+            <source>Try reading webtoon panels side by side in landscape!</source>
+            <translation>可以试试横屏并排阅读 Webtoon 分格。</translation>
+        </message>
+        <message>
+            <source>Partially check W/B Margins if you don't want KCC to extend the image margins.</source>
+            <translation>如果不希望 KCC 扩展图像边距，请将黑/白边距设为半选中。</translation>
+        </message>
+        <message>
+            <source>CBR metadata are read-only.</source>
+            <translation>CBR 元数据为只读。</translation>
+        </message>
+        <message>
+            <source>Separate authors with a comma.</source>
+            <translation>多个作者请用逗号分隔。</translation>
+        </message>
+    </context>
+</TS>

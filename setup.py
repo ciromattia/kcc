@@ -38,7 +38,7 @@ class BuildBinaryCommand(setuptools.Command):
     def run(self):
         VERSION = __version__
         if sys.platform == 'darwin':
-            os.system('pyinstaller --hidden-import=_cffi_backend -y -D -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
+            os.system('pyinstaller --hidden-import=_cffi_backend --add-data "translations:translations" -y -D -i icons/comic2ebook.icns -n "Kindle Comic Converter" -w -s kcc.py')
             # TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
             min_os = os.getenv('MACOSX_DEPLOYMENT_TARGET', '')
             if min_os.startswith('10.1'):
