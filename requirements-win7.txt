@@ -1,6 +1,6 @@
 PySide6==6.1.3
 Pillow>=9
-psutil>=5.9.5
+psutil>=7.2.2
 requests>=2.34.2
 python-slugify>=8.0.4
 packaging>=26.2
