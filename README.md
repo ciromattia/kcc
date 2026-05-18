@@ -247,7 +247,7 @@ MAIN:
 
 PROCESSING:
   -n, --noprocessing    Do not modify image and ignore any profile or processing option
-  --pdfextract          Use legacy PDF image extraction method from KCC 8 and earlier.
+  --legacyextract       Use legacy PDF/EPUB image extraction method from earlier KCC versions.
   --pdfwidth            Render vector PDFs based on device width instead of height.
   -u, --upscale         Resize images smaller than device's resolution
   -s, --stretch         Stretch images to device's resolution
@@ -297,6 +297,7 @@ OUTPUT SETTINGS:
   -b BATCHSPLIT, --batchsplit BATCHSPLIT
                         Split output into multiple files. 0: Don't split 1: Automatic mode 2: Consider every subdirectory as separate volume [Default=0]
   --spreadshift         Shift first page to opposite side in landscape for two page spread alignment
+  --onepagelandscape    Show a single centered page in landscape
   --norotate            Do not rotate double page spreads in spread splitter option.
   --rotateright         Rotate double page spreads in opposite direction.
   --rotatefirst         Put rotated spread first in spread splitter option.
@@ -442,7 +443,6 @@ Older links (dead):
 ## PRIVACY
 **KCC** is initiating internet connections in two cases:
 * During startup - Version check and announcement check.
-* When error occurs - Automatic reporting on Windows and macOS.
 
 ## KNOWN ISSUES
 Please check [wiki page](https://github.com/ciromattia/kcc/wiki/Known-issues).

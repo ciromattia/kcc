@@ -22,7 +22,9 @@ from collections import Counter
 import os
 import pathlib
 import re
+import shutil
 import sys
+import xml.etree.ElementTree as ET
 from argparse import ArgumentParser
 from time import perf_counter, strftime, gmtime
 from copy import copy
@@ -30,8 +32,8 @@ from glob import glob, escape
 from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from typing import List
-from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED
-from tempfile import mkdtemp, gettempdir, TemporaryFile
+from zipfile import ZipFile, ZIP_STORED
+from tempfile import mkdtemp, gettempdir
 from shutil import move, copytree, rmtree, copyfile
 from multiprocessing import Pool, cpu_count
 from uuid import uuid4
@@ -90,6 +92,7 @@ def main(argv=None):
                 os.remove(path)
             elif os.path.isdir(path):
                 rmtree(path, True)
+        checkPre('LLL-')
     return 0
 
 
@@ -466,6 +469,8 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
                 pageside = "right"
 
     for entry, prop in zip(reflist, page_spread_property_list):
+        if options.onepagelandscape:
+            prop = 'center'
         f.write(f'<itemref idref="page_{entry}" {pageSpreadProperty(prop)}/>\n')
 
     f.write("</spine>\n</package>\n")
@@ -892,9 +897,12 @@ def getWorkFolder(afile, workdir=None):
         fullPath = os.path.join(workdir, 'OEBPS', 'Images')
     else:
         fullPath = workdir
-    check_path = gettempdir()
+
     if options.tempdir:
         check_path = os.path.dirname(afile)
+    else:
+        check_path = gettempdir()
+
     if os.path.isdir(afile):
         if disk_usage(check_path)[2] < getDirectorySize(afile) * 2.5:
             raise UserWarning("Not enough disk space to perform conversion.")
@@ -913,7 +921,7 @@ def getWorkFolder(afile, workdir=None):
                 os.makedirs(fullPath)
             path = workdir
             sanitizePermissions(path)
-            if options.pdfextract:
+            if options.legacyextract:
                 pdf = pdfjpgextract.PdfJpgExtract(afile, fullPath)
                 njpg = pdf.extract()
                 if njpg == 0:
@@ -952,11 +960,68 @@ def getWorkFolder(afile, workdir=None):
                     for file in os.listdir(os.path.join(fullPath, tdir[0])):
                         move(os.path.join(fullPath, tdir[0], file), fullPath)
                     os.rmdir(os.path.join(fullPath, tdir[0]))
+
+                if options.legacyextract:
+                    return workdir
+
+                if afile.lower().endswith('.epub'):
+                    container = ET.parse(os.path.join(path, 'META-INF', 'container.xml'))
+                    opf_path = container.find(r'.//{*}rootfile').attrib['full-path']
+                    opf_path = os.path.join(path, opf_path)
+                    opf = ET.parse(opf_path)
+                    spine = []
+                    for spine_item in opf.findall(r'.//{*}itemref'):
+                        spine.append(spine_item.attrib.get('idref'))
+                    manifest_dict = {}
+                    for manifest_item in opf.findall(".//*[@media-type='application/xhtml+xml']"):
+                        manifest_dict[manifest_item.attrib.get('id')] = manifest_item.attrib.get('href')
+                    ordered_image_paths = []
+                    for i, spine_item in enumerate(spine):
+                        if spine_item not in manifest_dict:
+                            continue
+                        page_path = os.path.join(os.path.dirname(opf_path), manifest_dict[spine_item])
+                        page = ET.parse(page_path)
+                        imgs = page.findall(r'.//{*}img') + page.findall(r'.//{*}image')
+
+                        largest_size = 0
+                        img_path = None
+                        for img in imgs:
+                            for key in img.attrib:
+                                if 'src' in key or 'href' in key:
+                                    temp_img_path = img.attrib[key]
+                                    if temp_img_path.startswith('..'):
+                                        temp_img_path = os.path.join(os.path.dirname(opf_path), os.path.dirname(manifest_dict[spine_item]), temp_img_path)
+                                    else:
+                                        temp_img_path = os.path.join(os.path.dirname(opf_path), os.path.dirname(manifest_dict[spine_item]), temp_img_path)
+                                    try:
+                                        temp_size = os.path.getsize(temp_img_path)
+                                        if temp_size > largest_size:
+                                            largest_size = temp_size
+                                            img_path = temp_img_path
+                                    except OSError:
+                                        pass
+                        # TODO empty image
+                        if img_path:
+                            ordered_image_paths.append(img_path)
+                    # fallback if naive spine extraction fails
+                    if not ordered_image_paths:
+                        return workdir
+
+                    if options.tempdir:
+                        workdir2 = mkdtemp('', 'KCC-', os.path.dirname(afile))
+                    else:
+                        workdir2 = mkdtemp('', 'KCC-')
+                    for i, img_path in enumerate(ordered_image_paths):
+                        _, ext = os.path.splitext(img_path)
+                        fullpath2 = os.path.join(workdir2, 'OEBPS', 'Images')
+                        os.makedirs(fullpath2, exist_ok=True)
+                        shutil.copyfile(img_path, os.path.join(fullpath2, f"{i}{ext}"))
+                    rmtree(workdir, True)
+                    return workdir2
+                
                 return workdir
- 
-            except OSError as e:
-                rmtree(workdir, True)
-                raise UserWarning(e)
+            finally:
+                pass
     else:
         raise UserWarning("Failed to open source file/directory.")
 
@@ -1393,6 +1458,8 @@ def makeParser():
                                      "2: Consider every subdirectory as separate volume [Default=0]")
     output_options.add_argument("--spreadshift", action="store_true", dest="spreadshift", default=False,
                                 help="Shift first page to opposite side in landscape for spread alignment")
+    output_options.add_argument("--onepagelandscape", action="store_true", dest="onepagelandscape", default=False,
+                                help="Show a single centered page in landscape")
     output_options.add_argument("--norotate", action="store_true", dest="norotate", default=False,
                                 help="Do not rotate double page spreads in spread splitter option.")
     output_options.add_argument("--rotateright", action="store_true", dest="rotateright", default=False,
@@ -1402,8 +1469,8 @@ def makeParser():
 
     processing_options.add_argument("-n", "--noprocessing", action="store_true", dest="noprocessing", default=False,
                                     help="Do not modify image and ignore any profile or processing option")
-    processing_options.add_argument("--pdfextract", action="store_true", dest="pdfextract", default=False,
-                                    help="Use the legacy PDF image extraction method from KCC 8 and earlier")
+    processing_options.add_argument("--legacyextract", action="store_true", dest="legacyextract", default=False,
+                                    help="Use the legacy PDF/EPUB image extraction method from older KCC versions")
     processing_options.add_argument("--pdfwidth", action="store_true", dest="pdfwidth", default=False,
                                     help="Render vector PDFs to device width instead of height.")
     processing_options.add_argument("--smartcovercrop", action="store_true", dest="smartcovercrop", default=False,
@@ -1609,33 +1676,30 @@ def checkTools(source):
             sys.exit(1)
 
 
-def checkPre(source):
+def checkPre(source='KCC-'):
     # Make sure that all temporary files are gone
     for root, dirs, _ in walkLevel(gettempdir(), 0):
         for tempdir in dirs:
-            if tempdir.startswith('KCC-'):
+            if tempdir.startswith(source):
                 rmtree(os.path.join(root, tempdir), True)
-    # Make sure that target directory is writable
-    if os.path.isdir(source):
-        src = os.path.abspath(os.path.join(source, '..'))
-    else:
-        src = os.path.dirname(source)
-    try:
-        with TemporaryFile(prefix='KCC-', dir=src):
-            pass
-    except Exception:
-        raise UserWarning("Target directory is not writable.")
-
 
 def makeFusion(sources: List[str]):
     if len(sources) < 2:
         raise UserWarning('Fusion requires at least 2 sources. Did you forget to uncheck fusion?')
     start = perf_counter()
     first_path = Path(sources[0])
-    if first_path.is_file():
-        fusion_path = first_path.parent.joinpath(first_path.stem + ' [fused]')
+    
+    if options.tempdir:
+        fusion_parent = first_path.parent
     else:
-        fusion_path = first_path.parent.joinpath(first_path.name + ' [fused]')
+        # LLL is after KCC
+        checkPre('LLL-')
+        fusion_parent = Path(mkdtemp('', 'LLL-'))
+
+    if first_path.is_file():
+        fusion_path = fusion_parent.joinpath(first_path.stem + ' [fused]')
+    else:
+        fusion_path = fusion_parent.joinpath(first_path.name + ' [fused]')
     print("Running Fusion")
 
     # Check if prefix is needed when user-specified ordering differs from OS natural sorting
@@ -1644,7 +1708,6 @@ def makeFusion(sources: List[str]):
 
     for index, source in enumerate(sources, start=1):
         print(f"Processing {source}...")
-        checkPre(source)
         print("Checking images...")
         source_path = Path(source)
         # Add the fusion_0001_ prefix to maintain user-specified order if needed
@@ -1676,7 +1739,9 @@ def makeBook(source, qtgui=None, job_progress=''):
         GUI.progressBarTick.emit('1')
     else:
         checkTools(source)
-    checkPre(source)
+    checkPre()
+    if not options.filefusion:
+        checkPre('LLL-')
     print(f"{job_progress}Preparing source images...")
     path = getWorkFolder(source)
     print(f"{job_progress}Checking images...")

@@ -122,10 +122,6 @@ def dependencyCheck(level):
                 missing.append('PySide 6.0.0')
         except ImportError:
             missing.append('PySide 6.0.0+')
-        try:
-            import raven
-        except ImportError:
-            missing.append('raven 6.0.0+')
     if level > 1:
         try:
             from psutil import __version__ as psutilVersion

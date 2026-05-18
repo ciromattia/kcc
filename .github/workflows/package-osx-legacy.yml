@@ -51,12 +51,12 @@ jobs:
         run: |
           python3 setup.py build_binary
       - name: upload build
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: osx-build-${{ runner.arch }}
           path: dist/*.dmg
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           prerelease: true

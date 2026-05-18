@@ -38,7 +38,6 @@ from xml.sax.saxutils import escape
 from psutil import Process
 from copy import copy
 from packaging.version import Version
-from raven import Client
 from tempfile import gettempdir
 
 from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
@@ -327,8 +326,8 @@ class WorkerThread(QThread):
             options.maximizestrips = True
         if GUI.disableProcessingBox.isChecked():
             options.noprocessing = True
-        if GUI.pdfExtractBox.isChecked():
-            options.pdfextract = True
+        if GUI.legacyExtractBox.isChecked():
+            options.legacyextract = True
         if GUI.pdfWidthBox.isChecked():
             options.pdfwidth = True
         if GUI.smartCoverCropBox.isChecked():
@@ -345,6 +344,8 @@ class WorkerThread(QThread):
             options.tempdir = True
         if GUI.spreadShiftBox.isChecked():
             options.spreadshift = True
+        if GUI.onePageLandscapeBox.isChecked():
+            options.onepagelandscape = True
         if GUI.fileFusionBox.isChecked():
             options.filefusion = True
         else:
@@ -445,8 +446,6 @@ class WorkerThread(QThread):
                 _, _, traceback = sys.exc_info()
                 MW.showDialog.emit("Error during conversion %s:\n\n%s\n\nTraceback:\n%s"
                                    % (jobargv[-1], str(err), sanitizeTrace(traceback)), 'error')
-                if ' is corrupted.' not in str(err):
-                    GUI.sentry.captureException()
                 MW.addMessage.emit('Error during conversion! Please consult '
                                    '<a href="https://github.com/ciromattia/kcc/wiki/Error-messages">wiki</a> '
                                    'for more details.', 'error', False)
@@ -564,6 +563,7 @@ class WorkerThread(QThread):
                     os.remove(path)
                 elif os.path.isdir(path):
                     rmtree(path, True)
+            comic2ebook.checkPre('LLL-')
         GUI.progress.content = ''
         GUI.progress.stop()
         MW.hideProgressBar.emit()
@@ -627,7 +627,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.jobList.clear()
         if self.tar or self.sevenzip:
             fnames = QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
-                                                            'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.pdf);;All (*.*)')
+                                                            'Comic (*.cbz *.cbr *.cb7 *.zip *.rar *.7z *.epub *.pdf);;All (*.*)')
         else:
             fnames = QFileDialog.getOpenFileNames(MW, 'Select file', self.lastPath,
                                                             'Comic (*.pdf);;All (*.*)')
@@ -699,7 +699,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.editor.loadData(files)
             except Exception as err:
                 _, _, traceback = sys.exc_info()
-                GUI.sentry.captureException()
                 self.showDialog("Failed to parse metadata!\n\n%s\n\nTraceback:\n%s"
                                 % (str(err), sanitizeTrace(traceback)), 'error')
             else:
@@ -1101,7 +1100,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'colorBox': GUI.colorBox.checkState(),
                                            'eraseRainbowBox': GUI.eraseRainbowBox.checkState(),
                                            'disableProcessingBox': GUI.disableProcessingBox.checkState(),
-                                           'pdfExtractBox': GUI.pdfExtractBox.checkState(),
+                                           'legacyExtractBox': GUI.legacyExtractBox.checkState(),
                                            'pdfWidthBox': GUI.pdfWidthBox.checkState(),
                                            'smartCoverCropBox': GUI.smartCoverCropBox.checkState(),
                                            'coverFillBox': GUI.coverFillBox.checkState(),
@@ -1118,6 +1117,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'deleteBox': GUI.deleteBox.checkState(),
                                            'tempDirBox': GUI.tempDirBox.checkState(),
                                            'spreadShiftBox': GUI.spreadShiftBox.checkState(),
+                                           'onePageLandscapeBox': GUI.onePageLandscapeBox.checkState(),
                                            'fileFusionBox': GUI.fileFusionBox.checkState(),
                                            'defaultOutputFolderBox': GUI.defaultOutputFolderBox.checkState(),
                                            'noRotateBox': GUI.noRotateBox.checkState(),
@@ -1141,7 +1141,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 GUI.jobList.clear()
             formats = ['.pdf']
             if self.tar or self.sevenzip:
-                formats.extend(['.cb7', '.7z', '.cbz', '.zip', '.cbr', '.rar'])
+                formats.extend(['.cb7', '.7z', '.cbz', '.zip', '.cbr', '.rar', '.epub'])
             if os.path.isdir(message):
                 GUI.jobList.addItem(message)
                 GUI.jobList.scrollToBottom()
@@ -1228,7 +1228,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.croppingPowerValue = 1.0
         self.currentMode = 1
         self.targetDirectory = ''
-        self.sentry = Client(release=__version__)
         if sys.platform.startswith('win'):
             # noinspection PyUnresolvedReferences
             from psutil import BELOW_NORMAL_PRIORITY_CLASS
@@ -1775,7 +1774,6 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
                     self.parser.saveXML()
                 except Exception as err:
                     _, _, traceback = sys.exc_info()
-                    GUI.sentry.captureException()
                     GUI.showDialog("Failed to save metadata!\n\n%s\n\nTraceback:\n%s"
                                    % (str(err), sanitizeTrace(traceback)), 'error')
                 self.ui.close()

@@ -389,10 +389,10 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.qualityBox, 1, 2, 1, 1)
 
-        self.pdfExtractBox = QCheckBox(self.optionWidget)
-        self.pdfExtractBox.setObjectName(u"pdfExtractBox")
+        self.legacyExtractBox = QCheckBox(self.optionWidget)
+        self.legacyExtractBox.setObjectName(u"legacyExtractBox")
 
-        self.gridLayout_2.addWidget(self.pdfExtractBox, 9, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.legacyExtractBox, 9, 0, 1, 1)
 
         self.colorBox = QCheckBox(self.optionWidget)
         self.colorBox.setObjectName(u"colorBox")
@@ -453,7 +453,12 @@ class Ui_mainWindow(object):
         self.tempDirBox = QCheckBox(self.optionWidget)
         self.tempDirBox.setObjectName(u"tempDirBox")
 
-        self.gridLayout_2.addWidget(self.tempDirBox, 12, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.tempDirBox, 12, 2, 1, 1)
+
+        self.onePageLandscapeBox = QCheckBox(self.optionWidget)
+        self.onePageLandscapeBox.setObjectName(u"onePageLandscapeBox")
+
+        self.gridLayout_2.addWidget(self.onePageLandscapeBox, 12, 1, 1, 1)
 
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
@@ -785,11 +790,9 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.qualityBox.setText(QCoreApplication.translate("mainWindow", u"Panel View 4/2/HQ", None))
 #if QT_CONFIG(tooltip)
-        self.pdfExtractBox.setToolTip(QCoreApplication.translate("mainWindow", u"Use the PDF image extraction method from KCC 8 and earlier.\n"
-"\n"
-"Useful for really weird PDFs.", None))
+        self.legacyExtractBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Use the PDF/EPUB image extraction method from older KCC versions.</p><p><br/></p><p>Use if standard extraction fails for whatever reason.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.pdfExtractBox.setText(QCoreApplication.translate("mainWindow", u"PDF Legacy Extract", None))
+        self.legacyExtractBox.setText(QCoreApplication.translate("mainWindow", u"Legacy Extract", None))
 #if QT_CONFIG(tooltip)
         self.colorBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Disable conversion to grayscale.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
@@ -830,6 +833,10 @@ class Ui_mainWindow(object):
         self.tempDirBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Main Drive<br/></span>Use dedicated temporary directory on main OS drive.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Source File Drive<br/></span>Create temporary file directory on source file drive.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.tempDirBox.setText(QCoreApplication.translate("mainWindow", u"Temp Directory", None))
+#if QT_CONFIG(tooltip)
+        self.onePageLandscapeBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 2 page landscape<br/></span>2 viewports for left and right pages</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - 1 page landscape<br/></span>A single centered viewport for 1 page</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.onePageLandscapeBox.setText(QCoreApplication.translate("mainWindow", u"1 Page Landscape", None))
 #if QT_CONFIG(tooltip)
         self.convertButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Shift+Click to select the output directory for this list.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
