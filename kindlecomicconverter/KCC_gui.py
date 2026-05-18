@@ -1825,7 +1825,7 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         if not volumes:
             return None, 'No valid volume numbers parsed'
         if len(volumes) != fileCount:
-            return None, f'Volume count ({len(volumes)}) ≠ file count ({fileCount})'
+            return None, f'Volume count ({len(volumes)}) != file count ({fileCount})'
         
         return volumes, None
     
