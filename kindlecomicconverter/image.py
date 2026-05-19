@@ -210,7 +210,8 @@ class ComicPageParser:
         # elif wide enough to split
         elif (width > height) != (dstwidth > dstheight) and width / height > 1.16:
             # if (split) or (split and rotate)
-            if self.opt.splitter != 1 and width / height < 1.75:
+            BISECT_THRESHOLD = 1.8
+            if self.opt.splitter != 1 and width / height < BISECT_THRESHOLD:
                 if width > height:
                     leftbox = (0, 0, int(width / 2), height)
                     rightbox = (int(width / 2), 0, width, height)
@@ -227,7 +228,7 @@ class ComicPageParser:
                 self.payload.append(['S2', self.source, pagetwo, self.fill])
 
             # if (rotate) or (split and rotate)
-            if self.opt.splitter > 0 or (self.opt.splitter == 0 and width / height >= 1.75):
+            if self.opt.splitter > 0 or (self.opt.splitter == 0 and width / height >= BISECT_THRESHOLD):
                 spread = self.image
                 if not self.opt.norotate:
                     if not self.opt.rotateright:
