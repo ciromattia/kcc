@@ -62,6 +62,19 @@
       <item row="1" column="1">
        <widget class="QLineEdit" name="volumeLine"/>
       </item>
+      <item row="1" column="2">
+       <widget class="QCheckBox" name="bulkVolumeCheck">
+        <property name="visible">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>&lt;b&gt;Bulk Volume Editing&lt;/b&gt;&lt;br&gt;Check this box to assign volume numbers to multiple files.&lt;br&gt;&lt;br&gt;&lt;b&gt;Input formats:&lt;/b&gt;&lt;br&gt;&lt;code&gt;5&lt;/code&gt; → sequence starting from 5 (5, 6, 7...)&lt;br&gt;&lt;code&gt;1-10&lt;/code&gt; → range from 1 to 10&lt;br&gt;&lt;code&gt;1, 3, 5&lt;/code&gt; → specific values&lt;br&gt;&lt;br&gt;&lt;i&gt;Note: Files are sorted alphabetically before assignment.&lt;/i&gt;</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
@@ -195,6 +208,7 @@
  <tabstops>
   <tabstop>seriesLine</tabstop>
   <tabstop>volumeLine</tabstop>
+  <tabstop>bulkVolumeCheck</tabstop>
   <tabstop>titleLine</tabstop>
   <tabstop>numberLine</tabstop>
   <tabstop>writerLine</tabstop>
