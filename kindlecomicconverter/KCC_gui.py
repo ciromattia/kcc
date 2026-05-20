@@ -1773,7 +1773,6 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
                     self.parser.saveXML()
                 except Exception as err:
                     _, _, traceback = sys.exc_info()
-                    GUI.sentry.captureException()
                     GUI.showDialog("Failed to save metadata!\n\n%s\n\nTraceback:\n%s"
                                    % (str(err), sanitizeTrace(traceback)), 'error')
                 self.ui.close()
