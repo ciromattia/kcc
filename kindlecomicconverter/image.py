@@ -165,7 +165,10 @@ class ComicPageParser:
         with Image.open(srcImgPath) as im:
             self.image = im.copy()
 
-        self.fill = self.fillCheck()
+        self.page_background_color = self.fillCheck()
+        self.fill = self.page_background_color
+        if self.opt.bordersColor:
+            self.fill = self.opt.bordersColor
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
@@ -195,9 +198,9 @@ class ComicPageParser:
             new_image = Image.new("RGB", (int(width / 2), int(height*2)))
             new_image.paste(pageone, (0, 0))
             new_image.paste(pagetwo, (0, height))
-            self.payload.append(['N', self.source, new_image, self.fill])
+            self.payload.append(['N', self.source, new_image, self.page_background_color, self.fill])
         elif self.opt.webtoon:
-            self.payload.append(['N', self.source, self.image, self.fill])
+            self.payload.append(['N', self.source, self.image, self.page_background_color, self.fill])
         # rotate only TODO dead code?
         elif (width > height) != (dstwidth > dstheight) and width <= dstheight and height <= dstwidth and self.opt.splitter == 1:
             spread = self.image
@@ -206,7 +209,7 @@ class ComicPageParser:
                     spread = spread.rotate(90, Image.Resampling.BICUBIC, True)
                 else:
                     spread = spread.rotate(-90, Image.Resampling.BICUBIC, True)
-            self.payload.append(['R', self.source, spread, self.fill])
+            self.payload.append(['R', self.source, spread, self.page_background_color, self.fill])
         # elif wide enough to split
         elif (width > height) != (dstwidth > dstheight) and width / height > 1.16:
             # if (split) or (split and rotate)
@@ -224,8 +227,8 @@ class ComicPageParser:
                 else:
                     pageone = self.image.crop(leftbox)
                     pagetwo = self.image.crop(rightbox)
-                self.payload.append(['S1', self.source, pageone, self.fill])
-                self.payload.append(['S2', self.source, pagetwo, self.fill])
+                self.payload.append(['S1', self.source, pageone, self.page_background_color, self.fill])
+                self.payload.append(['S2', self.source, pagetwo, self.page_background_color, self.fill])
 
             # if (rotate) or (split and rotate)
             if self.opt.splitter > 0 or (self.opt.splitter == 0 and width / height >= BISECT_THRESHOLD):
@@ -235,12 +238,12 @@ class ComicPageParser:
                         spread = spread.rotate(90, Image.Resampling.BICUBIC, True)
                     else:
                         spread = spread.rotate(-90, Image.Resampling.BICUBIC, True)
-                self.payload.append(['R', self.source, spread, self.fill])
+                self.payload.append(['R', self.source, spread, self.page_background_color, self.fill])
         else:
-            self.payload.append(['N', self.source, self.image, self.fill])
+            self.payload.append(['N', self.source, self.image, self.page_background_color, self.fill])
 
     def fillCheck(self):
-        if self.opt.bordersColor:
+        if False:
             return self.opt.bordersColor
         else:
             bw = self.image.convert('L').point(lambda x: 0 if x < 128 else 255, '1')
@@ -279,7 +282,7 @@ class ComicPageParser:
 
 
 class ComicPage:
-    def __init__(self, options, mode, path, image, fill):
+    def __init__(self, options, mode, path, image, page_background_color, fill):
         self.opt = options
         _, self.size, self.palette, self.gamma = self.opt.profileData
         if self.opt.hq:
@@ -289,6 +292,7 @@ class ComicPage:
         self.image = image.convert("RGB")
         self.color = self.colorCheck()
         self.colorOutput = self.color and self.opt.forcecolor
+        self.page_background_color = page_background_color
         self.fill = fill
         self.rotated = False
         self.orgPath = os.path.join(path[0], path[1])
@@ -562,7 +566,7 @@ class ComicPage:
             self.image = self.image.crop(box)
 
     def cropPageNumber(self, power, minimum):
-        bbox = get_bbox_crop_margin_page_number(self.image, power, self.fill)
+        bbox = get_bbox_crop_margin_page_number(self.image, power, self.page_background_color)
         
         if bbox:
             w, h = self.image.size
@@ -572,7 +576,7 @@ class ComicPage:
             self.maybeCrop(bbox, minimum)
 
     def cropMargin(self, power, minimum):
-        bbox = get_bbox_crop_margin(self.image, power, self.fill)
+        bbox = get_bbox_crop_margin(self.image, power, self.page_background_color)
         
         if bbox:
             w, h = self.image.size
@@ -582,7 +586,7 @@ class ComicPage:
             self.maybeCrop(bbox, minimum)
 
     def cropInterPanelEmptySections(self, direction):
-        self.image = crop_empty_inter_panel(self.image, direction, background_color=self.fill)
+        self.image = crop_empty_inter_panel(self.image, direction, background_color=self.page_background_color)
 
 class Cover:
     def __init__(self, source, opt):
