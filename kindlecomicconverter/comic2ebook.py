@@ -903,9 +903,11 @@ def getWorkFolder(afile, workdir=None):
     else:
         check_path = gettempdir()
 
+    DISK_WARNING = "Not enough disk space to perform conversion. Try Temp Directory option."
+
     if os.path.isdir(afile):
         if disk_usage(check_path)[2] < getDirectorySize(afile) * 2.5:
-            raise UserWarning("Not enough disk space to perform conversion.")
+            raise UserWarning(DISK_WARNING)
         try:
             copytree(afile, fullPath)
             sanitizePermissions(fullPath)
@@ -915,7 +917,7 @@ def getWorkFolder(afile, workdir=None):
             raise UserWarning("Failed to prepare a workspace.")
     elif os.path.isfile(afile):
         if disk_usage(check_path)[2]< os.path.getsize(afile) * 2.5:
-            raise UserWarning("Not enough disk space to perform conversion.")
+            raise UserWarning(DISK_WARNING)
         if afile.lower().endswith('.pdf'):
             if not os.path.exists(fullPath):
                 os.makedirs(fullPath)
