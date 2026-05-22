@@ -1689,7 +1689,7 @@ def makeFusion(sources: List[str]):
     start = perf_counter()
     first_path = Path(sources[0])
     
-    if options.tempdir:
+    if True:
         fusion_parent = first_path.parent
     else:
         # LLL is after KCC
