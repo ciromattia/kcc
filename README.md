@@ -365,6 +365,7 @@ One time setup and running for the first time:
 ```
 python -m venv venv
 venv\Scripts\activate.bat
+pip install --upgrade pip
 pip install -r requirements.txt
 python kcc.py
 ```
@@ -390,6 +391,7 @@ One time setup and running for the first time:
 ```
 python3 -m venv venv
 source venv/bin/activate
+pip install --upgrade pip
 pip install -r requirements.txt
 python kcc.py
 ```
