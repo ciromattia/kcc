@@ -393,7 +393,10 @@ class WorkerThread(QThread):
             for job in currentJobs:
                 bookDir.append(job)
             try:
+                fusion_source_parent = str(Path(bookDir[0]).parent)
                 comic2ebook.options = comic2ebook.checkOptions(copy(options))
+                if options.output is None:
+                    options.output = fusion_source_parent
                 currentJobs.clear()
                 currentJobs.append(comic2ebook.makeFusion(bookDir))
                 MW.addMessage.emit('Created fusion at ' + currentJobs[0], 'info', False)
@@ -563,7 +566,8 @@ class WorkerThread(QThread):
                     os.remove(path)
                 elif os.path.isdir(path):
                     rmtree(path, True)
-            comic2ebook.checkPre('LLL-')
+            if not options.tempdir:
+                comic2ebook.checkPre('LLL-')
         GUI.progress.content = ''
         GUI.progress.stop()
         MW.hideProgressBar.emit()
