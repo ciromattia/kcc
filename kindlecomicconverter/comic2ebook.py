@@ -86,13 +86,6 @@ def main(argv=None):
         print('Working on ' + source + '...')
         makeBook(source)
 
-    if options.filefusion:
-        for path in sources:
-            if os.path.isfile(path):
-                os.remove(path)
-            elif os.path.isdir(path):
-                rmtree(path, True)
-        checkPre('LLL-')
     return 0
 
 
@@ -1899,11 +1892,11 @@ def makeBook(source, qtgui=None, job_progress=''):
 
     end = perf_counter()
     print(f"{job_progress}makeBook: {end - start} seconds")
-    # Clean up temporary workspace
-    try:
-        rmtree(path, True)
-    except Exception:
-        pass
+
+    if options.filefusion:
+        rmtree(source, True)
+        checkPre('LLL-')
+
     return filepath
 
 

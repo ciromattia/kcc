@@ -557,13 +557,6 @@ class WorkerThread(QThread):
                                 move(item, GUI.targetDirectory)
                             except Exception:
                                 pass
-        if options.filefusion:
-            for path in currentJobs:
-                if os.path.isfile(path):
-                    os.remove(path)
-                elif os.path.isdir(path):
-                    rmtree(path, True)
-            comic2ebook.checkPre('LLL-')
         GUI.progress.content = ''
         GUI.progress.stop()
         MW.hideProgressBar.emit()
