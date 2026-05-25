@@ -8,4 +8,4 @@ mozjpeg-lossless-optimization>=1.2.0
 natsort>=8.4.0
 distro>=1.8.0
 numpy==1.23.0
-PyMuPDF>=1.16
+PyMuPDF>=1.26.1
