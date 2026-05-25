@@ -76,12 +76,15 @@ def main(argv=None):
         print('No matching files found.')
         return 1
     if options.filefusion:
+        fusion_source_parent = str(Path(sources[0]).parent)
         fusion_path = makeFusion(list(sources))
         sources.clear()
         sources.append(fusion_path)
     for source in sources:
         source = source.rstrip('\\').rstrip('/')
         options = copy(args)
+        if options.filefusion and options.output is None:
+            options.output = fusion_source_parent
         options = checkOptions(options)
         print('Working on ' + source + '...')
         makeBook(source)
@@ -1683,8 +1686,8 @@ def makeFusion(sources: List[str]):
         raise UserWarning('Fusion requires at least 2 sources. Did you forget to uncheck fusion?')
     start = perf_counter()
     first_path = Path(sources[0])
-    
-    if True:
+
+    if options.tempdir:
         fusion_parent = first_path.parent
     else:
         # LLL is after KCC
