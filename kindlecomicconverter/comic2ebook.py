@@ -1690,6 +1690,7 @@ def makeFusion(sources: List[str]):
     if options.tempdir:
         fusion_parent = first_path.parent
     else:
+        # LLL is after KCC
         checkPre('LLL-')
         fusion_parent = Path(mkdtemp('', 'LLL-'))
 
@@ -1737,6 +1738,8 @@ def makeBook(source, qtgui=None, job_progress=''):
     else:
         checkTools(source)
     checkPre()
+    if not options.filefusion:
+        checkPre('LLL-')
     print(f"{job_progress}Preparing source images...")
     path = getWorkFolder(source)
     print(f"{job_progress}Checking images...")
