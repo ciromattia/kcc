@@ -965,8 +965,8 @@ def getWorkFolder(afile, workdir=None):
                 if afile.lower().endswith('.epub'):
                     container = ET.parse(os.path.join(path, 'META-INF', 'container.xml'))
                     opf_path = container.find(r'.//{*}rootfile').attrib['full-path']
-                    page_path = os.path.join(os.path.dirname(opf_path), manifest_dict[spine_item])
-                    page = ET.parse(page_path)
+                    opf_path = os.path.join(path, opf_path)
+                    opf = ET.parse(opf_path)
                     spine = []
                     for spine_item in opf.findall(r'.//{*}itemref'):
                         spine.append(spine_item.attrib.get('idref'))
