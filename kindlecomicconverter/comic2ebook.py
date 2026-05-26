@@ -965,11 +965,8 @@ def getWorkFolder(afile, workdir=None):
                 if afile.lower().endswith('.epub'):
                     container = ET.parse(os.path.join(path, 'META-INF', 'container.xml'))
                     opf_path = container.find(r'.//{*}rootfile').attrib['full-path']
-                    try:
-                        page_path = os.path.join(os.path.dirname(opf_path), manifest_dict[spine_item])
-                        page = ET.parse(page_path)
-                    except Exception:
-                        continue
+                    page_path = os.path.join(os.path.dirname(opf_path), manifest_dict[spine_item])
+                    page = ET.parse(page_path)
                     spine = []
                     for spine_item in opf.findall(r'.//{*}itemref'):
                         spine.append(spine_item.attrib.get('idref'))
@@ -978,10 +975,11 @@ def getWorkFolder(afile, workdir=None):
                         manifest_dict[manifest_item.attrib.get('id')] = manifest_item.attrib.get('href')
                     ordered_image_paths = []
                     for i, spine_item in enumerate(spine):
-                        if spine_item not in manifest_dict:
+                        try:
+                            page_path = os.path.join(os.path.dirname(opf_path), manifest_dict[spine_item])
+                            page = ET.parse(page_path)
+                        except Exception:
                             continue
-                        page_path = os.path.join(os.path.dirname(opf_path), manifest_dict[spine_item])
-                        page = ET.parse(page_path)
                         imgs = page.findall(r'.//{*}img') + page.findall(r'.//{*}image')
 
                         largest_size = 0
