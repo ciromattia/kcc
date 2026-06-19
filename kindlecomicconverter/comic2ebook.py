@@ -1673,6 +1673,11 @@ def checkTools(source):
         except (FileNotFoundError, CalledProcessError):
             print('ERROR: KindleGen is missing!')
             sys.exit(1)
+        except OSError as e:
+            print(e.strerror)
+            print('Re-install Rosetta/Kindle Previewer/other Intel app?')
+            print('Amazon needs to make Kindle Previewer Apple silicon native.')
+            sys.exit(1)
 
 
 def checkPre(source='KCC-'):
