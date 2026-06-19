@@ -1192,7 +1192,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         except OSError as e:
             self.kindleGen = False
             if startup:
-                error = f"kindlegen: {e.strerror} \n Re-install Rosetta/Kindle Previewer/other Intel app? Amazon needs to make Kindle Previewer Apple silicon native.\n "
+                error = f"kindlegen: {e.strerror}\n\n Re-install Rosetta/Kindle Previewer/other Intel app?\n\nAmazon needs to make Kindle Previewer Apple silicon native."
                 self.showDialog(error, 'error')
 
     def __init__(self, kccapp, kccwindow):
