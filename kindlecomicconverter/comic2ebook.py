@@ -1676,7 +1676,7 @@ def checkTools(source):
         except OSError as e:
             print(f"kindlegen: {e.strerror}")
             print('Re-install Rosetta/Kindle Previewer/other Intel app?')
-            print('Amazon needs to make Kindle Previewer Apple silicon native.')
+            print('Please email Amazon to make Kindle Previewer Apple silicon native at amazon.com/kindle-help')
             sys.exit(1)
 
 
