@@ -383,6 +383,8 @@ class WorkerThread(QThread):
             options.title = str(GUI.titleEdit.text())
         if GUI.authorEdit.text():
             options.author = str(GUI.authorEdit.text())
+        if GUI.languageEdit.text():
+            options.language = str(GUI.languageEdit.text())
         if GUI.chunkSizeCheckBox.isChecked():
             options.targetsize = int(GUI.chunkSizeBox.value())
 
@@ -1085,6 +1087,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
         self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
                                            'invertDirectionBox': GUI.invertDirectionBox.checkState(),
+                                           'languageEdit': GUI.languageEdit.text(),
                                            'rotateBox': GUI.rotateBox.checkState(),
                                            'qualityBox': GUI.qualityBox.checkState(),
                                            'vertical4PanelBox': GUI.vertical4PanelBox.checkState(),
@@ -1523,6 +1526,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 GUI.widthBox.setValue(int(self.options[option]))
             elif str(option) == "heightBox":
                 GUI.heightBox.setValue(int(self.options[option]))
+            elif str(option) == "languageEdit":
+                GUI.languageEdit.setText(str(self.options[option]))
             elif str(option) == "gammaSlider":
                 if GUI.gammaSlider.isEnabled():
                     GUI.gammaSlider.setValue(int(self.options[option]))

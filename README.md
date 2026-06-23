@@ -293,6 +293,7 @@ OUTPUT SETTINGS:
   --metadatatitle       Write title using ComicInfo.xml or other embedded metadata. 0: Don't use Title from metadata 1: Combine Title with default schema 2: Use Title only [Default=0]
   -a AUTHOR, --author AUTHOR
                         Author name [Default=KCC]
+  --language            EPUB language [Default=en-US]
   -f FORMAT, --format FORMAT
                         Output format (Available options: Auto, MOBI, EPUB, CBZ, PDF, KFX, MOBI+EPUB) [Default=Auto]
   --nokepub             If format is EPUB, output file with '.epub' extension rather than '.kepub.epub'

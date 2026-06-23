@@ -226,7 +226,7 @@ def buildNCX(dstdir, title, chapters, chapternames):
     ncxfile = os.path.join(dstdir, 'OEBPS', 'toc.ncx')
     f = open(ncxfile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
-                  "<ncx version=\"2005-1\" xml:lang=\"en-US\" xmlns=\"http://www.daisy.org/z3986/2005/ncx/\">\n",
+                  f"<ncx version=\"2005-1\" xml:lang=\"{options.language}\" xmlns=\"http://www.daisy.org/z3986/2005/ncx/\">\n",
                   "<head>\n",
                   "<meta name=\"dtb:uid\" content=\"urn:uuid:", options.uuid, "\"/>\n",
                   "<meta name=\"dtb:depth\" content=\"1\"/>\n",
@@ -315,7 +315,7 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
                   "<metadata xmlns:opf=\"http://www.idpf.org/2007/opf\" ",
                   "xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n",
                   "<dc:title>", hescape(title), "</dc:title>\n",
-                  "<dc:language>en-US</dc:language>\n",
+                  f"<dc:language>{options.language}</dc:language>\n",
                   "<dc:identifier id=\"BookID\">urn:uuid:", options.uuid, "</dc:identifier>\n",
                   "<dc:contributor id=\"contributor\">KindleComicConverter-" + __version__ + "</dc:contributor>\n"])
     if len(options.summary) > 0:
@@ -1472,6 +1472,8 @@ def makeParser():
                                      "2: Use Title only")
     output_options.add_argument("-a", "--author", action="store", dest="author", default="defaultauthor",
                                 help="Author name [Default=KCC]")
+    output_options.add_argument("--language", action="store", dest="language", default="en-US",
+                                help="EPUB language [Default=en-US]")
     output_options.add_argument("-f", "--format", action="store", dest="format", default="Auto",
                                 help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB, PDF) "
                                      "[Default=Auto]")
