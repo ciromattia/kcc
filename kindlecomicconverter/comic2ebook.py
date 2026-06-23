@@ -292,10 +292,22 @@ def buildNAV(dstdir, title, chapters, chapternames):
 def buildOPF(dstdir, title, filelist, originalpath, cover=None):
     opffile = os.path.join(dstdir, 'OEBPS', 'content.opf')
     deviceres = options.profileData[1]
-    if options.righttoleft:
-        writingmode = "horizontal-rl"
+
+    if options.vertical4panel:
+        writingmode = "vertical"
     else:
-        writingmode = "horizontal-lr"
+        writingmode = "horizontal"
+    if options.invertdirection:
+        if options.righttoleft:
+            writingmode += "-lr"
+        else:
+            writingmode += "-rl"
+    else:
+        if options.righttoleft:
+            writingmode += "-rl"
+        else:
+            writingmode += "-lr"
+
     f = open(opffile, "w", encoding='UTF-8')
     f.writelines(["<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                   "<package version=\"3.0\" unique-identifier=\"BookID\" ",
@@ -394,12 +406,21 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
         else:
             return ""
 
-    if options.righttoleft:
-        f.write("</manifest>\n<spine page-progression-direction=\"rtl\" toc=\"ncx\">\n")
-        pageside = "right"
+    if options.invertdirection:
+        if options.righttoleft:
+            f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
+            pageside = "left"
+        else:
+            f.write("</manifest>\n<spine page-progression-direction=\"rtl\" toc=\"ncx\">\n")
+            pageside = "right"
     else:
-        f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
-        pageside = "left"
+        if options.righttoleft:
+            f.write("</manifest>\n<spine page-progression-direction=\"rtl\" toc=\"ncx\">\n")
+            pageside = "right"
+        else:
+            f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
+            pageside = "left"
+
     if originalpath.lower().endswith('.pdf'):
         if pageside == "right":
             pageside = "left"
@@ -1428,10 +1449,14 @@ def makeParser():
                                    " [Default=KV]")
     main_options.add_argument("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                               help="Manga style (right-to-left reading and splitting)")
+    main_options.add_argument("--invertdirection", action="store_true", dest="invertdirection", default=False,
+                              help="Invert page turn direction")
     main_options.add_argument("-q", "--hq", action="store_true", dest="hq", default=False,
                               help="Try to increase the quality of magnification")
     main_options.add_argument("-2", "--two-panel", action="store_true", dest="autoscale", default=False,
                               help="Display two not four panels in Panel View mode")
+    main_options.add_argument("--vertical4panel", action="store_true", dest="vertical4panel", default=False,
+                              help="Display side panels first in virtual panel view")
     main_options.add_argument("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
                               help="Webtoon processing mode"),
     main_options.add_argument("--ts", "--targetsize", type=int, dest="targetsize", default=None,
