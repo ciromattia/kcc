@@ -273,6 +273,8 @@ class WorkerThread(QThread):
         options.format = gui_current_format
         if GUI.mangaBox.isChecked():
             options.righttoleft = True
+        if GUI.invertDirectionBox.isChecked():
+            options.invertdirection = True
         if GUI.rotateBox.checkState() == Qt.CheckState.PartiallyChecked:
             options.splitter = 2
         elif GUI.rotateBox.checkState() == Qt.CheckState.Checked:
@@ -281,6 +283,8 @@ class WorkerThread(QThread):
             options.autoscale = True
         elif GUI.qualityBox.checkState() == Qt.CheckState.Checked:
             options.hq = True
+        if GUI.vertical4PanelBox.isChecked():
+            options.vertical4panel = True
         if GUI.webtoonBox.isChecked():
             options.webtoon = True
         if GUI.upscaleBox.checkState() == Qt.CheckState.PartiallyChecked:
@@ -1080,8 +1084,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings.setValue('startNumber', self.startNumber + 1)
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
         self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
+                                           'invertDirectionBox': GUI.invertDirectionBox.checkState(),
                                            'rotateBox': GUI.rotateBox.checkState(),
                                            'qualityBox': GUI.qualityBox.checkState(),
+                                           'vertical4PanelBox': GUI.vertical4PanelBox.checkState(),
                                            'gammaBox': GUI.gammaBox.checkState(),
                                            'autoLevelBox': GUI.autoLevelBox.checkState(),
                                            'autocontrastBox': GUI.autocontrastBox.checkState(),
