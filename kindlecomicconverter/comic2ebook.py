@@ -400,7 +400,7 @@ def buildOPF(dstdir, title, filelist, originalpath, cover=None):
     else:
         f.write("</manifest>\n<spine page-progression-direction=\"ltr\" toc=\"ncx\">\n")
         pageside = "left"
-    if originalpath.lower().endswith('.pdf'):
+    if originalpath.lower().endswith('.pdf') or originalpath.lower().endswith('.epub'):
         if pageside == "right":
             pageside = "left"
         else:
