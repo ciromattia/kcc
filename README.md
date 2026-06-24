@@ -239,10 +239,11 @@ MAIN:
                         Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KPW5, KV, KO, K11, KS, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoN, KoC, KoCC, KoL, KoLC, KoF, KoS, KoE)
                         [Default=KV]
   -m, --manga-style     Manga style (right-to-left reading and splitting)
-  -invertdirection      Invert page turn direction
+  --ebok                Force EBOK tag instead of PDOC for MOBI
+  --invertdirection     Invert page turn direction
   -q, --hq              Try to increase the quality of magnification
   -2, --two-panel       Display two not four panels in Panel View mode
-  -vertical4panel       Show side panels first in virtual panel view
+  --vertical4panel       Show side panels first in virtual panel view
   -w, --webtoon         Webtoon processing mode
   --ts TARGETSIZE, --targetsize TARGETSIZE
                         the maximal size of output file in MB. [Default=100MB for webtoon and 400MB for others]

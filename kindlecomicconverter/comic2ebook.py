@@ -1449,6 +1449,8 @@ def makeParser():
                                    " [Default=KV]")
     main_options.add_argument("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                               help="Manga style (right-to-left reading and splitting)")
+    main_options.add_argument("--ebok", action="store_true", dest="ebok", default=False,
+                              help="Force EBOK tag instead of PDOC for MOBI")
     main_options.add_argument("--invertdirection", action="store_true", dest="invertdirection", default=False,
                               help="Invert page turn direction")
     main_options.add_argument("-q", "--hq", action="store_true", dest="hq", default=False,
@@ -1938,6 +1940,8 @@ def makeBook(source, qtgui=None, job_progress=''):
 
 def makeMOBIFix(item, uuid):
     is_pdoc = options.profile in image.ProfileData.ProfilesKindlePDOC.keys()
+    if options.ebok:
+        is_pdoc = False
     if not options.keep_epub:
         os.remove(item)
     mobiPath = item.replace('.epub', '.mobi')
