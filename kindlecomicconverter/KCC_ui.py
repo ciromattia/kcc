@@ -339,11 +339,6 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.vertical4PanelBox, 9, 2, 1, 1)
 
-        self.tempDirBox = QCheckBox(self.optionWidget)
-        self.tempDirBox.setObjectName(u"tempDirBox")
-
-        self.gridLayout_2.addWidget(self.tempDirBox, 10, 3, 1, 1)
-
         self.onePageLandscapeBox = QCheckBox(self.optionWidget)
         self.onePageLandscapeBox.setObjectName(u"onePageLandscapeBox")
 
@@ -492,8 +487,20 @@ class Ui_mainWindow(object):
         self.languageEdit.setObjectName(u"languageEdit")
         sizePolicy3.setHeightForWidth(self.languageEdit.sizePolicy().hasHeightForWidth())
         self.languageEdit.setSizePolicy(sizePolicy3)
+        self.languageEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.languageEdit.setClearButtonEnabled(False)
 
         self.gridLayout_2.addWidget(self.languageEdit, 0, 3, 1, 1)
+
+        self.tempDirBox = QCheckBox(self.optionWidget)
+        self.tempDirBox.setObjectName(u"tempDirBox")
+
+        self.gridLayout_2.addWidget(self.tempDirBox, 10, 2, 1, 1)
+
+        self.ebokBox = QCheckBox(self.optionWidget)
+        self.ebokBox.setObjectName(u"ebokBox")
+
+        self.gridLayout_2.addWidget(self.ebokBox, 10, 3, 1, 1)
 
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
@@ -760,10 +767,6 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.vertical4PanelBox.setText(QCoreApplication.translate("mainWindow", u"Vertical 4 Panel", None))
 #if QT_CONFIG(tooltip)
-        self.tempDirBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Main Drive<br/></span>Use dedicated temporary directory on main OS drive.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Source File Drive<br/></span>Create temporary file directory on source file drive.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.tempDirBox.setText(QCoreApplication.translate("mainWindow", u"Temp Directory", None))
-#if QT_CONFIG(tooltip)
         self.onePageLandscapeBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 2 page landscape<br/></span>2 viewports for left and right pages</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - 1 page landscape<br/></span>A single centered viewport for 1 page</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.onePageLandscapeBox.setText(QCoreApplication.translate("mainWindow", u"1 Page Landscape", None))
@@ -866,6 +869,14 @@ class Ui_mainWindow(object):
         self.languageEdit.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Default EPUB language is en-US.</p><p>Only use if your EPUB reader has problems with English fonts.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.languageEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"EPUB language", None))
+#if QT_CONFIG(tooltip)
+        self.tempDirBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Main Drive<br/></span>Use dedicated temporary directory on main OS drive.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Source File Drive<br/></span>Create temporary file directory on source file drive.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.tempDirBox.setText(QCoreApplication.translate("mainWindow", u"Temp Directory", None))
+#if QT_CONFIG(tooltip)
+        self.ebokBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Force Kindle MOBI to be be tagged as EBOK instead of PDOC.</p><p>This may cause USB loaded books to be deleted if you go online after a month offline.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.ebokBox.setText(QCoreApplication.translate("mainWindow", u"Force EBOK", None))
 #if QT_CONFIG(tooltip)
         self.hLabel.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Resolution of the target device.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

@@ -273,6 +273,8 @@ class WorkerThread(QThread):
         options.format = gui_current_format
         if GUI.mangaBox.isChecked():
             options.righttoleft = True
+        if GUI.ebokBox.isChecked():
+            options.ebok = True
         if GUI.invertDirectionBox.isChecked():
             options.invertdirection = True
         if GUI.rotateBox.checkState() == Qt.CheckState.PartiallyChecked:
@@ -1086,6 +1088,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings.setValue('startNumber', self.startNumber + 1)
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
         self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
+                                           'ebokBox': GUI.ebokBox.checkState(),
                                            'invertDirectionBox': GUI.invertDirectionBox.checkState(),
                                            'languageEdit': GUI.languageEdit.text(),
                                            'rotateBox': GUI.rotateBox.checkState(),
