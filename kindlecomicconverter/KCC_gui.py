@@ -1215,7 +1215,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.setupUi(MW)
         self.editor = KCCGUI_MetaEditor()
         self.icons = Icons()
-        self.settings = QSettings('ciromattia', 'kcc9')
+        self.settings = QSettings('ciromattia', 'kcc10')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.defaultOutputFolder = str(self.settings.value('defaultOutputFolder', '', type=str))
