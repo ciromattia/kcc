@@ -34,7 +34,7 @@ from stat import S_IWRITE, S_IREAD, S_IEXEC
 from typing import List
 from zipfile import ZipFile, ZIP_STORED
 from tempfile import mkdtemp, gettempdir
-from shutil import move, copytree, rmtree, copyfile
+from shutil import move, copytree, rmtree
 from multiprocessing import Pool, cpu_count
 from uuid import uuid4
 from natsort import os_sort_keygen, os_sorted
@@ -1890,12 +1890,7 @@ def makeBook(source, qtgui=None, job_progress=''):
             makeZIP(tome + '_comic', tome, job_progress, True)
         # Copy files to final destination (PDF files are already saved directly)
         if options.format != 'PDF':
-            copyfile(tome + '_comic.zip', filepath[-1])
-            try:
-                os.remove(tome + '_comic.zip')
-            except FileNotFoundError:
-                # newly temporary created file is not found. It might have been already deleted
-                pass
+            move(tome + '_comic.zip', filepath[-1])
         rmtree(tome, True)
         if GUI:
             GUI.progressBarTick.emit('tick')
