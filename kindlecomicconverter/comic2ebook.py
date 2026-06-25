@@ -1449,6 +1449,8 @@ def makeParser():
                               help=f"Device profile (Available options: {', '.join(image.ProfileData.Profiles.keys())})"
                                    " [Default=KV]")
     main_options.add_argument("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
+                              help="Only resize images and preserve original file structure.")
+    main_options.add_argument("--lightnovel", action="store_true", dest="lightnovel", default=False,
                               help="Manga style (right-to-left reading and splitting)")
     main_options.add_argument("--ebok", action="store_true", dest="ebok", default=False,
                               help="Force EBOK tag instead of PDOC for MOBI")
