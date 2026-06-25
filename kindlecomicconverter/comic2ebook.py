@@ -1788,14 +1788,22 @@ def makeBook(source, qtgui=None, job_progress=''):
                 _, ext = os.path.splitext(file)
                 if ext.lower() in ('.jpg', '.jpeg', '.png', '.webp', '.gif'):
                     with Image.open(os.path.join(root, file)) as img:
-                        MAX_DIM = 1920
-                        if img.size[0] > MAX_DIM or img.size[1] > MAX_DIM:
-                            img = ImageOps.contain(img, (MAX_DIM, MAX_DIM))
-                            img.save(os.path.join(root, file))
-        novel, _ = os.path.splitext(source)
-        makeZIP(novel + '_kcc.epub', path, job_progress)
+                        # TODO: detect BW images saved as RGB
+                        if not options.forcecolor and 'RGB' in img.mode:
+                            img = img.convert('L')
+                        x, y = image.ProfileData.Profiles[options.profile][1]
+                        if options.iskindle:
+                            x = min(x, 1920)
+                            y = min(y, 1920)
+                        if img.size[0] > x or img.size[1] > y:
+                            img = ImageOps.contain(img, (x, y))
+                            img.save(os.path.join(root, file), quality=options.jpegquality)
+        novel, ext = os.path.splitext(source)
+        if ext != '.epub':
+            ext = '.cbz'
+        makeZIP(f"{novel}_kcc{ext}", path, job_progress)
         
-        return [novel + '_kcc.epub']
+        return [f"{novel}_kcc{ext}"]
 
     getMetadata(os.path.join(path, "OEBPS", "Images"), source)
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
