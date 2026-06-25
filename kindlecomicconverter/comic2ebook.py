@@ -1406,7 +1406,6 @@ def slugify(value, is_natural_sorted):
 
 def makeZIP(zipfilename, basedir, job_progress='', isepub=False):
     start = perf_counter()
-    zipfilename = os.path.abspath(zipfilename) + '.zip'
     if SEVENZIP in available_archive_tools():
         if isepub:
             mimetypeFile = open(os.path.join(basedir, '!mimetype'), 'w')
@@ -1868,7 +1867,7 @@ def makeBook(source, qtgui=None, job_progress=''):
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
             if cover and cover.smartcover:
                 cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', 'cover.jpg'), tomeNumber, len(tomes))
-            makeZIP(tome + '_comic', os.path.join(tome, "OEBPS", "Images"), job_progress)
+            makeZIP(filepath[-1], os.path.join(tome, "OEBPS", "Images"), job_progress)
         elif options.format == 'PDF':
             print(f"{job_progress}Creating PDF file with PyMuPDF...")
             # determine output filename based on source and tome count
@@ -1887,10 +1886,7 @@ def makeBook(source, qtgui=None, job_progress=''):
             else:
                 buildEPUB(tome, chapterNames, tomeNumber, False, cover, source, job_progress)
                 filepath.append(getOutputFilename(source, options.output, '.epub', ''))
-            makeZIP(tome + '_comic', tome, job_progress, True)
-        # Copy files to final destination (PDF files are already saved directly)
-        if options.format != 'PDF':
-            move(tome + '_comic.zip', filepath[-1])
+            makeZIP(filepath[-1], tome, job_progress, True)
         rmtree(tome, True)
         if GUI:
             GUI.progressBarTick.emit('tick')
