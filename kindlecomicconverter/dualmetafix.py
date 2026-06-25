@@ -136,12 +136,11 @@ def del_exth(rec0, exth_num):
 
 
 class DualMobiMetaFix:
-    def __init__(self, infile, outfile, asin, is_pdoc):
+    def __init__(self, outfile, asin, is_pdoc):
         cdetype = b'EBOK'
         if is_pdoc:
             cdetype = b'PDOC'
 
-        shutil.copyfile(infile, outfile)
         f = open(outfile, "r+b")
         self.datain = mmap.mmap(f.fileno(), 0)
         self.datain_rec0 = readsection(self.datain, 0)
