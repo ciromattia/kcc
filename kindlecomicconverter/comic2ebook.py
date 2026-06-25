@@ -39,7 +39,7 @@ from multiprocessing import Pool, cpu_count
 from uuid import uuid4
 from natsort import os_sort_keygen, os_sorted
 from slugify import slugify as slugify_ext
-from PIL import Image, ImageFile
+from PIL import Image, ImageFile, ImageOps
 from pathlib import Path
 from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
@@ -965,6 +965,8 @@ def getWorkFolder(afile, workdir=None):
             try:
                 cbx = comicarchive.ComicArchive(afile)
                 path = cbx.extract(fullPath)
+                if True:
+                    return path
                 sanitizePermissions(path)
 
                 tdir = os.listdir(fullPath)
@@ -1777,6 +1779,22 @@ def makeBook(source, qtgui=None, job_progress=''):
     print(f"{job_progress}Preparing source images...")
     path = getWorkFolder(source)
     print(f"{job_progress}Checking images...")
+
+    if options.lightnovel:
+        for root, _, files in os.walk(path):
+            for file in files:
+                _, ext = os.path.splitext(file)
+                if ext.lower() in ('.jpg', '.jpeg', '.png', '.webp', '.gif'):
+                    with Image.open(os.path.join(root, file)) as img:
+                        MAX_DIM = 1920
+                        if img.size[0] > MAX_DIM or img.size[1] > MAX_DIM:
+                            img = ImageOps.contain(img, (MAX_DIM, MAX_DIM))
+                            img.save(os.path.join(root, file))
+        novel, _ = os.path.splitext(source)
+        makeZIP(novel + '_kcc.epub', path, job_progress)
+        
+        return [novel + '_kcc.epub']
+
     getMetadata(os.path.join(path, "OEBPS", "Images"), source)
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
