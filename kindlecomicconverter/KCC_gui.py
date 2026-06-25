@@ -517,7 +517,6 @@ class WorkerThread(QThread):
                             for item in outputPath:
                                 GUI.progress.content = ''
                                 mobiPath = item.replace('.epub', '.mobi')
-                                os.remove(mobiPath + '_toclean')
                                 if GUI.targetDirectory and GUI.targetDirectory != os.path.dirname(mobiPath):
                                     try:
                                         move(mobiPath, GUI.targetDirectory)
@@ -538,8 +537,6 @@ class WorkerThread(QThread):
                                 mobiPath = item.replace('.epub', '.mobi')
                                 if os.path.exists(mobiPath):
                                     os.remove(mobiPath)
-                                if os.path.exists(mobiPath + '_toclean'):
-                                    os.remove(mobiPath + '_toclean')
                             MW.addMessage.emit('Failed to process MOBI file!', 'error', False)
                             MW.addTrayMessage.emit('Failed to process MOBI file!', 'Critical')
                     else:

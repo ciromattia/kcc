@@ -1918,8 +1918,6 @@ def makeBook(source, qtgui=None, job_progress=''):
             if not output[0]:
                 print(f'{job_progress}Error: Failed to tweak KindleGen output!')
                 return filepath
-            else:
-                os.remove(i.replace('.epub', '.mobi') + '_toclean')
             if cover and k.path and k.coverSupport:
                 options.covers[filepath.index(i)][0].saveToKindle(k, options.covers[filepath.index(i)][1])
     if options.delete:
@@ -1945,9 +1943,8 @@ def makeMOBIFix(item, uuid):
     if not options.keep_epub:
         os.remove(item)
     mobiPath = item.replace('.epub', '.mobi')
-    move(mobiPath, mobiPath + '_toclean')
     try:
-        dualmetafix.DualMobiMetaFix(mobiPath + '_toclean', mobiPath, bytes(uuid, 'UTF-8'), is_pdoc)
+        dualmetafix.DualMobiMetaFix(mobiPath, bytes(uuid, 'UTF-8'), is_pdoc)
         return [True]
     except Exception as err:
         return [False, format(err)]
