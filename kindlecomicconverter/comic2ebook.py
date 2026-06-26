@@ -1923,7 +1923,7 @@ def makeBook(source, qtgui=None, job_progress=''):
         rmtree(tome, True)
         if GUI:
             GUI.progressBarTick.emit('tick')
-    if not GUI and options.format == 'MOBI':
+    if not GUI and options.format == 'MOBI' and not options.lightnovel:
         print(f"{job_progress}Creating MOBI files...")
         work = []
         for i in filepath:
