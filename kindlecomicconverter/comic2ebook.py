@@ -1792,8 +1792,11 @@ def makeBook(source, qtgui=None, job_progress=''):
                 if ext.lower() in ('.jpg', '.jpeg', '.png', '.webp', '.gif'):
                     with Image.open(os.path.join(root, file)) as img:
                         # TODO: detect BW images saved as RGB
-                        if not options.forcecolor and 'RGB' in img.mode:
-                            img = img.convert('L')
+                        if not options.forcecolor:
+                            if img.mode == 'RGB':
+                                img = img.convert('L')
+                            elif img.mode == 'RGBA':
+                                img = img.convert('LA')
                         x, y = image.ProfileData.Profiles[options.profile][1]
                         if options.iskindle:
                             x = min(x, 1920)
