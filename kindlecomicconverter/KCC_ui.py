@@ -885,7 +885,7 @@ class Ui_mainWindow(object):
 #if QT_CONFIG(tooltip)
         self.lightnovelBox.setToolTip(QCoreApplication.translate("mainWindow", u"Only resize images and preserve original file structure.\n"
 "\n"
-"Ignores most options besides JPEG quality and Color Mode.", None))
+"Ignores most options besides JPEG quality, color mode, output folder.", None))
 #endif // QT_CONFIG(tooltip)
         self.lightnovelBox.setText(QCoreApplication.translate("mainWindow", u"Light novel mode", None))
 #if QT_CONFIG(tooltip)

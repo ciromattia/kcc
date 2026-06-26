@@ -995,7 +995,7 @@ Ignored for Kindle EPUB/MOBI and all PDF.</string>
          <property name="toolTip">
           <string>Only resize images and preserve original file structure.
 
-Ignores most options besides JPEG quality and Color Mode.</string>
+Ignores most options besides JPEG quality, color mode, output folder.</string>
          </property>
          <property name="text">
           <string>Light novel mode</string>

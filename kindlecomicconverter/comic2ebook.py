@@ -966,7 +966,7 @@ def getWorkFolder(afile, workdir=None):
                 cbx = comicarchive.ComicArchive(afile)
                 path = cbx.extract(fullPath)
                 if options.lightnovel:
-                    return path
+                    return workdir
                 sanitizePermissions(path)
 
                 tdir = os.listdir(fullPath)
@@ -1407,6 +1407,7 @@ def slugify(value, is_natural_sorted):
     return value
 
 def makeZIP(zipfilename, basedir, job_progress='', isepub=False):
+    print(zipfilename)
     start = perf_counter()
     if SEVENZIP in available_archive_tools():
         if isepub:
@@ -1585,6 +1586,9 @@ def checkOptions(options):
         options.iskindle = True
     else:
         options.isKobo = True
+
+    if options.lightnovel:
+        options.noKepub = True
 
     if not options.iskindle and ('MOBI' in options.format or 'EPUB-200MB' in options.format or 'KFX' in options.format):
         raise UserWarning('MOBI/Send to Kindle not supported for non-Kindle profiles')
@@ -1783,7 +1787,7 @@ def makeBook(source, qtgui=None, job_progress=''):
     print(f"{job_progress}Checking images...")
 
     if options.lightnovel:
-        for root, _, files in os.walk(path):
+        for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
             for file in files:
                 _, ext = os.path.splitext(file)
                 if ext.lower() in ('.jpg', '.jpeg', '.png', '.webp', '.gif'):
@@ -1801,7 +1805,10 @@ def makeBook(source, qtgui=None, job_progress=''):
         novel, ext = os.path.splitext(source)
         if ext != '.epub':
             ext = '.cbz'
-        makeZIP(f"{novel}_kcc{ext}", path, job_progress)
+        output_file = getOutputFilename(source, options.output, ext, '')
+        makeZIP(output_file, os.path.join(path, 'OEBPS', 'Images'), job_progress)
+        rmtree(path, True)
+        print(path)
         
         return [f"{novel}_kcc{ext}"]
 
