@@ -273,6 +273,8 @@ class WorkerThread(QThread):
         options.format = gui_current_format
         if GUI.mangaBox.isChecked():
             options.righttoleft = True
+        if GUI.lightnovelBox.isChecked():
+            options.lightnovel = True
         if GUI.ebokBox.isChecked():
             options.ebok = True
         if GUI.invertDirectionBox.isChecked():
@@ -476,7 +478,7 @@ class WorkerThread(QThread):
                     MW.addMessage.emit('Creating PDF files... <b>Done!</b>', 'info', True)
                 else:
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
-                if 'MOBI' in gui_current_format:
+                if 'MOBI' in gui_current_format and not options.lightnovel:
                     MW.progressBarTick.emit(f'{job_progress_number}Creating MOBI files')
                     MW.progressBarTick.emit(str(len(outputPath) * 2 + 1))
                     MW.progressBarTick.emit('tick')
@@ -1085,6 +1087,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings.setValue('startNumber', self.startNumber + 1)
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
         self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
+                                           'lightnovelBox': GUI.lightnovelBox.checkState(),
                                            'ebokBox': GUI.ebokBox.checkState(),
                                            'invertDirectionBox': GUI.invertDirectionBox.checkState(),
                                            'languageEdit': GUI.languageEdit.text(),

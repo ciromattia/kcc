@@ -502,6 +502,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.ebokBox, 10, 3, 1, 1)
 
+        self.lightnovelBox = QCheckBox(self.optionWidget)
+        self.lightnovelBox.setObjectName(u"lightnovelBox")
+
+        self.gridLayout_2.addWidget(self.lightnovelBox, 10, 0, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -877,6 +882,12 @@ class Ui_mainWindow(object):
         self.ebokBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Force Kindle MOBI to be be tagged as EBOK instead of PDOC.</p><p>This may cause USB loaded books to be deleted if you go online after a month offline.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.ebokBox.setText(QCoreApplication.translate("mainWindow", u"Force EBOK", None))
+#if QT_CONFIG(tooltip)
+        self.lightnovelBox.setToolTip(QCoreApplication.translate("mainWindow", u"Only resize images and preserve original file structure.\n"
+"\n"
+"Ignores most options besides JPEG quality, color mode, output folder.", None))
+#endif // QT_CONFIG(tooltip)
+        self.lightnovelBox.setText(QCoreApplication.translate("mainWindow", u"Light novel mode", None))
 #if QT_CONFIG(tooltip)
         self.hLabel.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Resolution of the target device.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

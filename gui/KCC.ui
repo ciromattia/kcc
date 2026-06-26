@@ -990,6 +990,18 @@ Ignored for Kindle EPUB/MOBI and all PDF.</string>
          </property>
         </widget>
        </item>
+       <item row="10" column="0">
+        <widget class="QCheckBox" name="lightnovelBox">
+         <property name="toolTip">
+          <string>Only resize images and preserve original file structure.
+
+Ignores most options besides JPEG quality, color mode, output folder.</string>
+         </property>
+         <property name="text">
+          <string>Light novel mode</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>

@@ -39,7 +39,7 @@ from multiprocessing import Pool, cpu_count
 from uuid import uuid4
 from natsort import os_sort_keygen, os_sorted
 from slugify import slugify as slugify_ext
-from PIL import Image, ImageFile
+from PIL import Image, ImageFile, ImageOps
 from pathlib import Path
 from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
@@ -965,6 +965,8 @@ def getWorkFolder(afile, workdir=None):
             try:
                 cbx = comicarchive.ComicArchive(afile)
                 path = cbx.extract(fullPath)
+                if options.lightnovel:
+                    return workdir
                 sanitizePermissions(path)
 
                 tdir = os.listdir(fullPath)
@@ -1448,6 +1450,8 @@ def makeParser():
                                    " [Default=KV]")
     main_options.add_argument("-m", "--manga-style", action="store_true", dest="righttoleft", default=False,
                               help="Manga style (right-to-left reading and splitting)")
+    main_options.add_argument("--lightnovel", action="store_true", dest="lightnovel", default=False,
+                              help="Only resize images and preserve original file structure.")
     main_options.add_argument("--ebok", action="store_true", dest="ebok", default=False,
                               help="Force EBOK tag instead of PDOC for MOBI")
     main_options.add_argument("--invertdirection", action="store_true", dest="invertdirection", default=False,
@@ -1581,6 +1585,9 @@ def checkOptions(options):
         options.iskindle = True
     else:
         options.isKobo = True
+
+    if options.lightnovel:
+        options.noKepub = True
 
     if not options.iskindle and ('MOBI' in options.format or 'EPUB-200MB' in options.format or 'KFX' in options.format):
         raise UserWarning('MOBI/Send to Kindle not supported for non-Kindle profiles')
@@ -1779,6 +1786,35 @@ def makeBook(source, qtgui=None, job_progress=''):
     print(f"{job_progress}Preparing source images...")
     path = getWorkFolder(source)
     print(f"{job_progress}Checking images...")
+
+    if options.lightnovel:
+        for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
+            for file in files:
+                _, ext = os.path.splitext(file)
+                if ext.lower() in ('.jpg', '.jpeg', '.png', '.webp', '.gif'):
+                    with Image.open(os.path.join(root, file)) as img:
+                        # TODO: detect BW images saved as RGB
+                        if not options.forcecolor:
+                            if img.mode == 'RGB':
+                                img = img.convert('L')
+                            elif img.mode == 'RGBA':
+                                img = img.convert('LA')
+                        x, y = image.ProfileData.Profiles[options.profile][1]
+                        if options.iskindle:
+                            x = min(x, 1920)
+                            y = min(y, 1920)
+                        if img.size[0] > x or img.size[1] > y:
+                            img = ImageOps.contain(img, (x, y))
+                            img.save(os.path.join(root, file), quality=options.jpegquality)
+        _, ext = os.path.splitext(source)
+        if ext != '.epub':
+            ext = '.cbz'
+        output_file = getOutputFilename(source, options.output, ext, '')
+        makeZIP(output_file, os.path.join(path, 'OEBPS', 'Images'), job_progress)
+        rmtree(path, True)
+        
+        return [output_file]
+
     getMetadata(os.path.join(path, "OEBPS", "Images"), source)
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
@@ -1892,7 +1928,7 @@ def makeBook(source, qtgui=None, job_progress=''):
         rmtree(tome, True)
         if GUI:
             GUI.progressBarTick.emit('tick')
-    if not GUI and options.format == 'MOBI':
+    if not GUI and options.format == 'MOBI' and not options.lightnovel:
         print(f"{job_progress}Creating MOBI files...")
         work = []
         for i in filepath:
