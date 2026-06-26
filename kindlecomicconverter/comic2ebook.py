@@ -1407,7 +1407,6 @@ def slugify(value, is_natural_sorted):
     return value
 
 def makeZIP(zipfilename, basedir, job_progress='', isepub=False):
-    print(zipfilename)
     start = perf_counter()
     if SEVENZIP in available_archive_tools():
         if isepub:
