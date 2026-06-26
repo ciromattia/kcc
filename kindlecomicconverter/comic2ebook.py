@@ -1751,7 +1751,9 @@ def makeFusion(sources: List[str]):
         else:
             targetpath = fusion_path.joinpath(f'{prefix}{source_path.name}')
 
-        getWorkFolder(source, str(targetpath))
+        path = getWorkFolder(source, str(targetpath))
+        if path != str(targetpath):
+            move(os.path.join(path, 'OEBPS', 'Images'), targetpath)
         sanitizeTree(targetpath, prefix='fusion')
         # TODO: remove flattenTree when subchapters are supported
         flattenTree(targetpath)   
