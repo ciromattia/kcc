@@ -1807,9 +1807,8 @@ def makeBook(source, qtgui=None, job_progress=''):
         output_file = getOutputFilename(source, options.output, ext, '')
         makeZIP(output_file, os.path.join(path, 'OEBPS', 'Images'), job_progress)
         rmtree(path, True)
-        print(path)
         
-        return [f"{novel}_kcc{ext}"]
+        return [output_file]
 
     getMetadata(os.path.join(path, "OEBPS", "Images"), source)
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
