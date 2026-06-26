@@ -1804,7 +1804,7 @@ def makeBook(source, qtgui=None, job_progress=''):
                         if img.size[0] > x or img.size[1] > y:
                             img = ImageOps.contain(img, (x, y))
                             img.save(os.path.join(root, file), quality=options.jpegquality)
-        novel, ext = os.path.splitext(source)
+        _, ext = os.path.splitext(source)
         if ext != '.epub':
             ext = '.cbz'
         output_file = getOutputFilename(source, options.output, ext, '')
