@@ -478,7 +478,7 @@ class WorkerThread(QThread):
                     MW.addMessage.emit('Creating PDF files... <b>Done!</b>', 'info', True)
                 else:
                     MW.addMessage.emit('Creating EPUB files... <b>Done!</b>', 'info', True)
-                if 'MOBI' in gui_current_format:
+                if 'MOBI' in gui_current_format and not options.lightnovel:
                     MW.progressBarTick.emit(f'{job_progress_number}Creating MOBI files')
                     MW.progressBarTick.emit(str(len(outputPath) * 2 + 1))
                     MW.progressBarTick.emit('tick')
