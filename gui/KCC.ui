@@ -37,23 +37,20 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="editorButton">
+       <item row="0" column="2">
+        <widget class="QPushButton" name="humbleButton">
          <property name="minimumSize">
           <size>
            <width>0</width>
            <height>30</height>
           </size>
          </property>
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Shift+Click to edit directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
          <property name="text">
-          <string>Metadata Editor</string>
+          <string>Humble Bundle Referral</string>
          </property>
          <property name="icon">
           <iconset resource="KCC.qrc">
-           <normaloff>:/Other/icons/editor.png</normaloff>:/Other/icons/editor.png</iconset>
+           <normaloff>:/Brand/icons/Humble_H-Red.png</normaloff>:/Brand/icons/Humble_H-Red.png</iconset>
          </property>
         </widget>
        </item>
@@ -80,63 +77,23 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="wikiButton">
+       <item row="0" column="0">
+        <widget class="QPushButton" name="editorButton">
          <property name="minimumSize">
           <size>
            <width>0</width>
            <height>30</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style='white-space:pre'&gt;Shift+Click to edit directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
-          <string>Wiki</string>
+          <string>Metadata Editor</string>
          </property>
          <property name="icon">
           <iconset resource="KCC.qrc">
-           <normaloff>:/Other/icons/wiki.png</normaloff>:/Other/icons/wiki.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="youtubeButton">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>YouTube</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="humbleButton">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Humble Bundle Referral</string>
-         </property>
-         <property name="icon">
-          <iconset resource="KCC.qrc">
-           <normaloff>:/Brand/icons/Humble_H-Red.png</normaloff>:/Brand/icons/Humble_H-Red.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="discordButton">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Discord</string>
+           <normaloff>:/Other/icons/editor.png</normaloff>:/Other/icons/editor.png</iconset>
          </property>
         </widget>
        </item>
@@ -1258,7 +1215,6 @@ Ignores most options besides JPEG quality, color mode, output folder.</string>
   <tabstop>chunkSizeBox</tabstop>
   <tabstop>editorButton</tabstop>
   <tabstop>kofiButton</tabstop>
-  <tabstop>wikiButton</tabstop>
  </tabstops>
  <resources>
   <include location="KCC.qrc"/>
