@@ -155,7 +155,6 @@ setuptools.setup(
         'python-slugify>=1.2.1,<9.0.0',
         'mozjpeg-lossless-optimization>=1.2.0',
         'natsort>=8.4.0',
-        'distro>=1.8.0',
         'numpy>=1.22.4',
         'packaging>=23.2',
         'PyMuPDF>=1.16.1',

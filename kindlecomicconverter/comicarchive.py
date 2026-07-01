@@ -43,8 +43,12 @@ class ComicArchive:
     def type(self):
         extraction_commands = [
             [SEVENZIP, 'l', '-y', '-p1', self.basename],
-            ['unrar', 'l', '-y', '-p1', self.basename],
         ]
+
+        if platform.system() == 'Linux':
+            extraction_commands.append(
+                ['unrar', 'l', '-y', '-p1', self.basename],
+            )
 
         for cmd in extraction_commands:
             try:
@@ -56,13 +60,6 @@ class ComicArchive:
                 pass
             except CalledProcessError:
                 pass
-
-        try:
-            import rarfile
-            if rarfile.is_rarfile(self.filepath):
-                return 'RAR'
-        except Exception:
-            pass
 
         raise OSError(EXTRACTION_ERROR)
 
@@ -86,9 +83,11 @@ class ComicArchive:
             )
 
         extraction_commands.reverse()
-        extraction_commands.append(
-            ['unrar', 'x', '-y', '-x__MACOSX', '-x.DS_Store', '-xthumbs.db', '-xThumbs.db', self.basename, targetdir]
-        )
+
+        if platform.system() == 'Linux':
+            extraction_commands.append(
+                ['unrar', 'x', '-y', '-x__MACOSX', '-x.DS_Store', '-xthumbs.db', '-xThumbs.db', self.basename, targetdir]
+            )
 
         for cmd in extraction_commands:
             try:
@@ -98,14 +97,6 @@ class ComicArchive:
                 missing.append(cmd[0])
             except CalledProcessError:
                 pass
-
-        try:
-            import rarfile
-            with rarfile.RarFile(self.filepath) as rf:
-                rf.extractall(targetdir)
-            return targetdir
-        except Exception:
-            pass
 
         if missing:
             raise OSError(f'Extraction failed, install <a href="https://github.com/ciromattia/kcc#7-zip">specialized extraction software.</a>  ')
