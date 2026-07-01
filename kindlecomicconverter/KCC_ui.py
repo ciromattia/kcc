@@ -40,14 +40,14 @@ class Ui_mainWindow(object):
         self.gridLayout_6 = QGridLayout(self.toolWidget)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
         self.gridLayout_6.setContentsMargins(0, 0, 0, 0)
-        self.editorButton = QPushButton(self.toolWidget)
-        self.editorButton.setObjectName(u"editorButton")
-        self.editorButton.setMinimumSize(QSize(0, 30))
+        self.humbleButton = QPushButton(self.toolWidget)
+        self.humbleButton.setObjectName(u"humbleButton")
+        self.humbleButton.setMinimumSize(QSize(0, 30))
         icon1 = QIcon()
-        icon1.addFile(u":/Other/icons/editor.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.editorButton.setIcon(icon1)
+        icon1.addFile(u":/Brand/icons/Humble_H-Red.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.humbleButton.setIcon(icon1)
 
-        self.gridLayout_6.addWidget(self.editorButton, 0, 0, 1, 1)
+        self.gridLayout_6.addWidget(self.humbleButton, 0, 2, 1, 1)
 
         self.kofiButton = QPushButton(self.toolWidget)
         self.kofiButton.setObjectName(u"kofiButton")
@@ -59,35 +59,14 @@ class Ui_mainWindow(object):
 
         self.gridLayout_6.addWidget(self.kofiButton, 0, 1, 1, 1)
 
-        self.wikiButton = QPushButton(self.toolWidget)
-        self.wikiButton.setObjectName(u"wikiButton")
-        self.wikiButton.setMinimumSize(QSize(0, 30))
+        self.editorButton = QPushButton(self.toolWidget)
+        self.editorButton.setObjectName(u"editorButton")
+        self.editorButton.setMinimumSize(QSize(0, 30))
         icon3 = QIcon()
-        icon3.addFile(u":/Other/icons/wiki.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.wikiButton.setIcon(icon3)
+        icon3.addFile(u":/Other/icons/editor.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.editorButton.setIcon(icon3)
 
-        self.gridLayout_6.addWidget(self.wikiButton, 0, 2, 1, 1)
-
-        self.youtubeButton = QPushButton(self.toolWidget)
-        self.youtubeButton.setObjectName(u"youtubeButton")
-        self.youtubeButton.setMinimumSize(QSize(0, 30))
-
-        self.gridLayout_6.addWidget(self.youtubeButton, 1, 0, 1, 1)
-
-        self.humbleButton = QPushButton(self.toolWidget)
-        self.humbleButton.setObjectName(u"humbleButton")
-        self.humbleButton.setMinimumSize(QSize(0, 30))
-        icon4 = QIcon()
-        icon4.addFile(u":/Brand/icons/Humble_H-Red.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.humbleButton.setIcon(icon4)
-
-        self.gridLayout_6.addWidget(self.humbleButton, 1, 1, 1, 1)
-
-        self.discordButton = QPushButton(self.toolWidget)
-        self.discordButton.setObjectName(u"discordButton")
-        self.discordButton.setMinimumSize(QSize(0, 30))
-
-        self.gridLayout_6.addWidget(self.discordButton, 1, 2, 1, 1)
+        self.gridLayout_6.addWidget(self.editorButton, 0, 0, 1, 1)
 
 
         self.gridLayout.addWidget(self.toolWidget, 0, 0, 1, 2)
@@ -148,18 +127,18 @@ class Ui_mainWindow(object):
         font = QFont()
         font.setBold(True)
         self.convertButton.setFont(font)
-        icon5 = QIcon()
-        icon5.addFile(u":/Other/icons/convert.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.convertButton.setIcon(icon5)
+        icon4 = QIcon()
+        icon4.addFile(u":/Other/icons/convert.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.convertButton.setIcon(icon4)
 
         self.gridLayout_4.addWidget(self.convertButton, 1, 3, 1, 1)
 
         self.clearButton = QPushButton(self.buttonWidget)
         self.clearButton.setObjectName(u"clearButton")
         self.clearButton.setMinimumSize(QSize(0, 30))
-        icon6 = QIcon()
-        icon6.addFile(u":/Other/icons/clear.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.clearButton.setIcon(icon6)
+        icon5 = QIcon()
+        icon5.addFile(u":/Other/icons/clear.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.clearButton.setIcon(icon5)
 
         self.gridLayout_4.addWidget(self.clearButton, 0, 3, 1, 1)
 
@@ -172,9 +151,9 @@ class Ui_mainWindow(object):
         self.fileButton = QPushButton(self.buttonWidget)
         self.fileButton.setObjectName(u"fileButton")
         self.fileButton.setMinimumSize(QSize(0, 30))
-        icon7 = QIcon()
-        icon7.addFile(u":/Other/icons/document_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.fileButton.setIcon(icon7)
+        icon6 = QIcon()
+        icon6.addFile(u":/Other/icons/document_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.fileButton.setIcon(icon6)
 
         self.gridLayout_4.addWidget(self.fileButton, 0, 1, 1, 1)
 
@@ -185,9 +164,9 @@ class Ui_mainWindow(object):
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.directoryButton.sizePolicy().hasHeightForWidth())
         self.directoryButton.setSizePolicy(sizePolicy2)
-        icon8 = QIcon()
-        icon8.addFile(u":/Other/icons/folder_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.directoryButton.setIcon(icon8)
+        icon7 = QIcon()
+        icon7.addFile(u":/Other/icons/folder_new.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.directoryButton.setIcon(icon7)
 
         self.gridLayout_4.addWidget(self.directoryButton, 0, 4, 1, 1)
 
@@ -431,7 +410,7 @@ class Ui_mainWindow(object):
         self.defaultOutputFolderButton = QPushButton(self.outputFolderWidget)
         self.defaultOutputFolderButton.setObjectName(u"defaultOutputFolderButton")
         self.defaultOutputFolderButton.setMinimumSize(QSize(0, 30))
-        self.defaultOutputFolderButton.setIcon(icon8)
+        self.defaultOutputFolderButton.setIcon(icon7)
 
         self.horizontalLayout_3.addWidget(self.defaultOutputFolderButton)
 
@@ -650,7 +629,6 @@ class Ui_mainWindow(object):
         QWidget.setTabOrder(self.fileFusionBox, self.chunkSizeBox)
         QWidget.setTabOrder(self.chunkSizeBox, self.editorButton)
         QWidget.setTabOrder(self.editorButton, self.kofiButton)
-        QWidget.setTabOrder(self.kofiButton, self.wikiButton)
 
         self.retranslateUi(mainWindow)
 
@@ -659,15 +637,12 @@ class Ui_mainWindow(object):
 
     def retranslateUi(self, mainWindow):
         mainWindow.setWindowTitle(QCoreApplication.translate("mainWindow", u"Kindle Comic Converter", None))
+        self.humbleButton.setText(QCoreApplication.translate("mainWindow", u"Humble Bundle Referral", None))
+        self.kofiButton.setText(QCoreApplication.translate("mainWindow", u"Support me on Ko-fi", None))
 #if QT_CONFIG(tooltip)
         self.editorButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Shift+Click to edit directory.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.editorButton.setText(QCoreApplication.translate("mainWindow", u"Metadata Editor", None))
-        self.kofiButton.setText(QCoreApplication.translate("mainWindow", u"Support me on Ko-fi", None))
-        self.wikiButton.setText(QCoreApplication.translate("mainWindow", u"Wiki", None))
-        self.youtubeButton.setText(QCoreApplication.translate("mainWindow", u"YouTube", None))
-        self.humbleButton.setText(QCoreApplication.translate("mainWindow", u"Humble Bundle Referral", None))
-        self.discordButton.setText(QCoreApplication.translate("mainWindow", u"Discord", None))
 #if QT_CONFIG(tooltip)
         self.preserveMarginLabel.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>After calculating the cropping boundaries, &quot;back up&quot; a specified percentage amount.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

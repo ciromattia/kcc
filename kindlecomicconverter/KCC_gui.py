@@ -750,7 +750,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         else:
             status = True
         GUI.editorButton.setEnabled(status)
-        GUI.wikiButton.setEnabled(status)
         GUI.deviceBox.setEnabled(status)
         GUI.defaultOutputFolderButton.setEnabled(status)
         GUI.clearButton.setEnabled(status)
@@ -1252,7 +1251,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             if self.windowSize == '0x0':
                 MW.resize(500, 500)
         elif sys.platform.startswith('darwin'):
-            for element in ['editorButton', 'wikiButton', 'defaultOutputFolderButton', 'clearButton', 'fileButton', 'deviceBox',
+            for element in ['editorButton', 'defaultOutputFolderButton', 'clearButton', 'fileButton', 'deviceBox',
                             'convertButton', 'formatBox']:
                 getattr(GUI, element).setMinimumSize(QSize(0, 0))
             GUI.gridLayout.setContentsMargins(-1, -1, -1, -1)
@@ -1433,8 +1432,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         link_dict = {
             'README': "https://github.com/ciromattia/kcc?tab=readme-ov-file#kcc",
             'FAQ': "https://github.com/ciromattia/kcc/blob/master/README.md#faq",
-            'YOUTUBE': "https://youtu.be/IR2Fhcm9658?si=Z-2zzLaUFjmaEbrj",
-            'COMMISSIONS': "https://github.com/ciromattia/kcc?tab=readme-ov-file#commissions",
+            'WIKI': "https://github.com/ciromattia/kcc/wiki",
+            'TUTORIAL': "https://youtu.be/QQ6zJcMF2Iw?si=80rfm6DU6OUJdFqa",
+            'EMAIL': "https://github.com/ciromattia/kcc?tab=readme-ov-file#commissions",
             'DONATE': "https://github.com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations",
             'FORUM': "http://www.mobileread.com/forums/showthread.php?t=207461",
             'DISCORD': "https://discord.com/invite/qj7wpnUHav",
@@ -1466,11 +1466,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.fileButton.clicked.connect(self.selectFile)
         GUI.directoryButton.clicked.connect(self.selectDir)
         GUI.editorButton.clicked.connect(self.selectFileMetaEditor)
-        GUI.wikiButton.clicked.connect(self.openWiki)
         GUI.kofiButton.clicked.connect(self.openKofi)
         GUI.humbleButton.clicked.connect(self.openHumble)
-        GUI.youtubeButton.clicked.connect(self.openYouTube)
-        GUI.discordButton.clicked.connect(self.openDiscord)
         GUI.convertButton.clicked.connect(self.convertStart)
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)
