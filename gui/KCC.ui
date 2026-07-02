@@ -1087,7 +1087,7 @@ Ignores most options besides JPEG quality, color mode, output folder.</string>
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>150</height>
+        <height>110</height>
        </size>
       </property>
       <property name="toolTip">
