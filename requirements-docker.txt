@@ -5,7 +5,6 @@ python-slugify>=8.0.4
 packaging>=26.2
 mozjpeg-lossless-optimization>=1.2.0
 natsort>=8.4.0
-distro>=1.9.0
 # Below requirements are compiled in Dockefile
 # numpy==2.3.4
 # PyMuPDF==1.26.6
