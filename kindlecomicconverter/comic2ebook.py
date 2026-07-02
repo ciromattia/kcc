@@ -1904,7 +1904,7 @@ def makeBook(source, qtgui=None, job_progress=''):
             else:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
             if cover and cover.smartcover:
-                cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', 'cover.jpg'), tomeNumber, len(tomes))
+                cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', '!cover.jpg'), tomeNumber, len(tomes))
             makeZIP(filepath[-1], os.path.join(tome, "OEBPS", "Images"), job_progress)
         elif options.format == 'PDF':
             print(f"{job_progress}Creating PDF file with PyMuPDF...")
