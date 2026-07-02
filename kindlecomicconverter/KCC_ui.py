@@ -553,7 +553,7 @@ class Ui_mainWindow(object):
 
         self.jobList = QListWidget(self.centralWidget)
         self.jobList.setObjectName(u"jobList")
-        self.jobList.setMinimumSize(QSize(0, 150))
+        self.jobList.setMinimumSize(QSize(0, 110))
         self.jobList.setStyleSheet(u"")
         self.jobList.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.jobList.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
