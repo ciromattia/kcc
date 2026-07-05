@@ -1103,6 +1103,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
 def getMetadata(path, originalpath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.comicinfo_chapters = []
+    options.comicinfo_xml = None
     options.summary = ''
     titleSuffix = ''
     options.volume = ''
@@ -1159,6 +1160,10 @@ def getMetadata(path, originalpath):
             options.summary = xml.data['Summary']
         if xml.data['Series']:
             options.series = xml.data['Series']
+        # ComicInfo.xml in output may break old Kindles and Kobos, keep only for OTHER profile
+        if options.isOther and options.format == 'CBZ':
+            with open(xmlPath, 'rb') as f:
+                options.comicinfo_xml = f.read()
         os.remove(xmlPath)
 
     if originalpath.lower().endswith('.pdf'):
@@ -1585,6 +1590,8 @@ def checkOptions(options):
         options.iskindle = True
     else:
         options.isKobo = True
+    # remember before custom width/height overrides profile to 'Custom'
+    options.isOther = options.profile == 'OTHER'
 
     if options.lightnovel:
         options.noKepub = True
@@ -1905,6 +1912,9 @@ def makeBook(source, qtgui=None, job_progress=''):
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
             if cover and cover.smartcover:
                 cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', '##cover.jpg'), tomeNumber, len(tomes))
+            if options.comicinfo_xml:
+                with open(os.path.join(tome, 'OEBPS', 'Images', 'ComicInfo.xml'), 'wb') as xmlOutput:
+                    xmlOutput.write(options.comicinfo_xml)
             makeZIP(filepath[-1], os.path.join(tome, "OEBPS", "Images"), job_progress)
         elif options.format == 'PDF':
             print(f"{job_progress}Creating PDF file with PyMuPDF...")
