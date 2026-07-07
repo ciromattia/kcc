@@ -2009,7 +2009,7 @@ def makeMOBIWorker(item):
             # ERROR: Generic error
             if "Error(" in line:
                 kindlegenErrorCode = 1
-                kindlegenError = line
+                kindlegenError = err.stdout
             # ERROR: EPUB too big
             if ":E23026:" in line:
                 kindlegenErrorCode = 23026
