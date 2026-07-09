@@ -1193,7 +1193,7 @@ def removeNonImages(filetree):
     # clean dot from original file
     dot_clean(filetree)
 
-    for root, dirs, files in os.walk(filetree):
+    for root, dirs, files in os.walk(filetree, False):
         for name in files:
             _, ext = getImageFileName(name)
             if ext not in IMAGE_TYPES:
@@ -1205,7 +1205,15 @@ def removeNonImages(filetree):
             os.rmdir(root)
     
     if not os.listdir(Path(filetree).parent):
-        raise UserWarning('No images detected, nested archives are not supported.')
+        warning = [
+            'No images detected.',
+            '',
+            'Possible causes:',
+            '',
+            '1) Incompatible image file extension like .jxl. Convert to .png first outside of KCC.',
+            '2) Nested archive: Either extract the nested archive outside of KCC or use File Fusion option.',
+        ]
+        raise RuntimeError('\n'.join(warning))
 
 
 def sanitizeTree(filetree, prefix='kcc'):
@@ -1254,7 +1262,8 @@ def flattenTree(filetree):
 
 
 def sanitizePermissions(filetree):
-    for root, dirs, files in os.walk(filetree, False):
+    os.chmod(filetree, S_IWRITE | S_IREAD | S_IEXEC)
+    for root, dirs, files in os.walk(filetree):
         for name in files:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
