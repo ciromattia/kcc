@@ -1193,7 +1193,7 @@ def removeNonImages(filetree):
     # clean dot from original file
     dot_clean(filetree)
 
-    for root, dirs, files in os.walk(filetree, False):
+    for root, dirs, files in os.walk(filetree):
         for name in files:
             _, ext = getImageFileName(name)
             if ext not in IMAGE_TYPES:
@@ -1263,7 +1263,7 @@ def flattenTree(filetree):
 
 def sanitizePermissions(filetree):
     os.chmod(filetree, S_IWRITE | S_IREAD | S_IEXEC)
-    for root, dirs, files in os.walk(filetree):
+    for root, dirs, files in os.walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
         for name in dirs:
