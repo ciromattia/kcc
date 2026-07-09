@@ -1201,7 +1201,7 @@ def removeNonImages(filetree):
                     os.remove(os.path.join(root, name))
     # remove empty nested folders
     for root, dirs, files in os.walk(filetree, False):
-        if not files and not dirs:
+        if not os.listdir(root):
             os.rmdir(root)
     
     if not os.listdir(Path(filetree).parent):
