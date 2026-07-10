@@ -2026,7 +2026,7 @@ def makeMOBIWorker(item):
             # ERROR: Generic error
             if "Error(" in line:
                 kindlegenErrorCode = 1
-                kindlegenError = '\n'.join(warnings + [line, 'kindlegen logs dumped'])
+                kindlegenError = '\n\n'.join(warnings + [line, 'kindlegen logs dumped'])
                 try:
                     timestamp = datetime.now().isoformat(timespec='seconds').replace(':', '_')
                     with open(os.path.join(os.path.dirname(item), f'kindlegen_log_{timestamp}.txt'), 'w') as f:
@@ -2055,7 +2055,7 @@ def makeMOBIWorker(item):
         # ERROR: KCC unknown generic error
         if kindlegenErrorCode == 0:
             kindlegenErrorCode = err.returncode
-            kindlegenError = '\n'.join(warnings + [line, 'kindlegen logs dumped'])
+            kindlegenError = '\n\n'.join(warnings + [line, 'kindlegen logs dumped'])
         return [kindlegenErrorCode, kindlegenError, item, warnings]
 
 
