@@ -558,8 +558,6 @@ class WorkerThread(QThread):
                             MW.addMessage.emit('Created EPUB file was too big. Weird file structure?', 'error', False)
                             MW.addMessage.emit('EPUB file: ' + str(epubSize) + 'MB. Supported size: ~350MB.', 'error',
                                                False)
-                        if self.kindlegenErrorCode[0] == 3221226505:
-                            MW.addMessage.emit('Unknown Windows error. Possibly filepath too long?', 'error', False)
                 else:
                     for item in outputPath:
                         if GUI.targetDirectory and GUI.targetDirectory != os.path.dirname(item):

@@ -2056,8 +2056,11 @@ def makeMOBIWorker(item):
                 return [0, '', item, warnings]
         # ERROR: KCC unknown generic error
         if kindlegenErrorCode == 0:
-            kindlegenErrorCode = err.returncode
-            kindlegenError = '\n\n'.join(warnings + [line, 'kindlegen logs dumped'])
+            kindlegenErrorCode = -1
+            if err.returncode == 3221226505:
+                kindlegenError = f'Error {err.returncode}: Unknown Windows error. Possibly filepath too long?'
+            else:
+                kindlegenError = f'Error {err.returncode}'
         return [kindlegenErrorCode, kindlegenError, item, warnings]
 
 
