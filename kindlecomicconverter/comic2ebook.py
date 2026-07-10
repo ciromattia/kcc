@@ -19,6 +19,7 @@
 #
 
 from collections import Counter
+from datetime import datetime
 import os
 import pathlib
 import re
@@ -2026,6 +2027,12 @@ def makeMOBIWorker(item):
             if "Error(" in line:
                 kindlegenErrorCode = 1
                 kindlegenError = '\n'.join(warnings + [line, 'kindlegen logs dumped'])
+                try:
+                    with open(os.path.join(os.path.dirname(item), f'kindlegen_log_{datetime.now()}.txt'), 'w') as f:
+                        f.write(err.stdout)
+                except Exception as e:
+                    print(e)
+
             # examples
             # Warning(prcgen):W14016: Cover not specified
             # Warning(prcgen):W14019: Cover is too small
