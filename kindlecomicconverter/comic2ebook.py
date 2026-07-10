@@ -2010,6 +2010,7 @@ def makeMOBIWorker(item):
     kindlegenErrorCode = 0
     kindlegenError = ''
     try:
+        # TODO: I don't this size check is correct, I think kindlegen increased the limit
         if os.path.getsize(item) < 629145600:
             start = perf_counter()
             # TODO: should anything be done with the kindlegen output during successes?
