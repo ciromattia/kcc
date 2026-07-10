@@ -2014,24 +2014,33 @@ def makeMOBIWorker(item):
             kindlegenErrorCode = 23026
         return [kindlegenErrorCode, kindlegenError, item]
     except CalledProcessError as err:
+        warnings = []
         for line in err.stdout.splitlines():
             # ERROR: Generic error
             if "Error(" in line:
                 kindlegenErrorCode = 1
-                kindlegenError = err.stdout
+                kindlegenError = '\n'.join(warnings + [line, 'kindlegen logs dumped'])
+            # examples
+            # Warning(prcgen):W14016: Cover not specified
+            # Warning(prcgen):W14019: Cover is too small
+            if "Warning(" in line:
+                warnings.append(line)
             # ERROR: EPUB too big
             if ":E23026:" in line:
                 kindlegenErrorCode = 23026
+            if ":E23028:" in line:
+                kindlegenErrorCode = 23028
             if kindlegenErrorCode > 0:
                 break
             if ":I1036: Mobi file built successfully" in line:
                 return [0, '', item]
+            # TODO show the warnings
             if ":I1037: Mobi file built with WARNINGS!" in line:
                 return [0, '', item]
         # ERROR: KCC unknown generic error
         if kindlegenErrorCode == 0:
             kindlegenErrorCode = err.returncode
-            kindlegenError = err.stdout
+            kindlegenError = '\n'.join(warnings + [line, 'kindlegen logs dumped'])
         return [kindlegenErrorCode, kindlegenError, item]
 
 
