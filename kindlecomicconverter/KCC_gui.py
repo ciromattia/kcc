@@ -836,7 +836,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.interPanelCropBox.setEnabled(True)
             GUI.autoLevelBox.setEnabled(True)
             GUI.autocontrastBox.setEnabled(True)
-            GUI.autocontrastBox.setChecked(True)
 
 
     def togglequalityBox(self, value):
