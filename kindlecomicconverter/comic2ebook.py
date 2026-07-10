@@ -19,6 +19,7 @@
 #
 
 from collections import Counter
+from datetime import datetime
 import os
 import pathlib
 import re
@@ -1992,8 +1993,14 @@ def makeMOBIWorkerTick(output):
     makeMOBIWorkerOutput.append(output)
     if output[0] != 0:
         makeMOBIWorkerPool.terminate()
+    for warning in output[3]:
+        print(warning)
     if GUI:
         GUI.progressBarTick.emit('tick')
+        if output[3]:
+            for warning in output[3]:
+                GUI.addMessage.emit(warning, 'warning', False)
+            GUI.addMessage.emit('', '', False)
         if not GUI.conversionAlive:
             makeMOBIWorkerPool.terminate()
 
@@ -2003,8 +2010,10 @@ def makeMOBIWorker(item):
     kindlegenErrorCode = 0
     kindlegenError = ''
     try:
+        # TODO: This size check is incorrect, I think kindlegen increased the limit
         if os.path.getsize(item) < 629145600:
             start = perf_counter()
+            # TODO: should anything be done with the kindlegen output during successes?
             output = subprocess_run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
                            stdout=PIPE, stderr=STDOUT, encoding='UTF-8', errors='ignore', check=True)
             end = perf_counter()
@@ -2012,27 +2021,47 @@ def makeMOBIWorker(item):
         else:
             # ERROR: EPUB too big
             kindlegenErrorCode = 23026
-        return [kindlegenErrorCode, kindlegenError, item]
+        return [kindlegenErrorCode, kindlegenError, item, []]
     except CalledProcessError as err:
+        warnings = []
         for line in err.stdout.splitlines():
             # ERROR: Generic error
             if "Error(" in line:
                 kindlegenErrorCode = 1
-                kindlegenError = err.stdout
+                kindlegenError = '\n\n'.join(warnings + [line, 'kindlegen logs dumped'])
+                try:
+                    timestamp = datetime.now().isoformat(timespec='seconds').replace(':', '_')
+                    with open(os.path.join(os.path.dirname(item), f'kindlegen_log_{timestamp}.txt'), 'w') as f:
+                        f.write(err.stdout)
+                except Exception as e:
+                    print(e)
+
+            # examples
+            # Warning(prcgen):W14019: Cover is too small
+            if "Warning(" in line:
+                if ":W14016: Cover not specified" in line and options.webtoon:
+                    pass
+                else:
+                    warnings.append(line)
             # ERROR: EPUB too big
             if ":E23026:" in line:
                 kindlegenErrorCode = 23026
+            if ":E23028:" in line:
+                kindlegenErrorCode = 23028
             if kindlegenErrorCode > 0:
                 break
             if ":I1036: Mobi file built successfully" in line:
-                return [0, '', item]
+                return [0, '', item, warnings]
             if ":I1037: Mobi file built with WARNINGS!" in line:
-                return [0, '', item]
+                return [0, '', item, warnings]
         # ERROR: KCC unknown generic error
         if kindlegenErrorCode == 0:
-            kindlegenErrorCode = err.returncode
-            kindlegenError = err.stdout
-        return [kindlegenErrorCode, kindlegenError, item]
+            kindlegenErrorCode = -1
+            if err.returncode == 3221226505:
+                kindlegenError = f'Error {err.returncode}: Unknown Windows error. Possibly filepath too long?'
+            else:
+                kindlegenError = f'Error {err.returncode}'
+        return [kindlegenErrorCode, kindlegenError, item, warnings]
 
 
 def makeMOBI(work, qtgui=None):
