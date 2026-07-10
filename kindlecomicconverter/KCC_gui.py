@@ -1217,11 +1217,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.defaultOutputFolder = str(self.settings.value('defaultOutputFolder', '', type=str))
         if not os.path.exists(self.defaultOutputFolder):
             self.defaultOutputFolder = ''
-        self.lastDevice = self.settings.value('lastDevice', 0, type=int)
+
+        # default is Kindle Paperwhite 12th Gen
+        self.lastDevice = self.settings.value('lastDevice', 3, type=int)
+
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
         self.windowSize = self.settings.value('windowSize', '0x0', type=str)
-        default_options = {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100}
+        default_options = {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100, 'rotateBox': 1, 'mangaBox': 2}
         try:
             self.options = self.settings.value('options', default_options)
         except Exception:
