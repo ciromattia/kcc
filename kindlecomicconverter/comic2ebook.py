@@ -1993,11 +1993,11 @@ def makeMOBIWorkerTick(output):
     makeMOBIWorkerOutput.append(output)
     if output[0] != 0:
         makeMOBIWorkerPool.terminate()
-    for warning in output[1]:
+    for warning in output[3]:
         print(warning)
     if GUI:
         GUI.progressBarTick.emit('tick')
-        if output[1]:
+        if output[3]:
             for warning in output[1]:
                 GUI.addMessage.emit(warning, 'warning', False)
             GUI.addMessage.emit('', '', False)
@@ -2019,7 +2019,7 @@ def makeMOBIWorker(item):
         else:
             # ERROR: EPUB too big
             kindlegenErrorCode = 23026
-        return [kindlegenErrorCode, [], kindlegenError, item]
+        return [kindlegenErrorCode, kindlegenError, item, []]
     except CalledProcessError as err:
         warnings = []
         for line in err.stdout.splitlines():
@@ -2046,14 +2046,14 @@ def makeMOBIWorker(item):
             if kindlegenErrorCode > 0:
                 break
             if ":I1036: Mobi file built successfully" in line:
-                return [0, warnings, '', item]
+                return [0, '', item, warnings]
             if ":I1037: Mobi file built with WARNINGS!" in line:
-                return [0, warnings, '', item]
+                return [0, '', item, warnings]
         # ERROR: KCC unknown generic error
         if kindlegenErrorCode == 0:
             kindlegenErrorCode = err.returncode
             kindlegenError = '\n'.join(warnings + [line, 'kindlegen logs dumped'])
-        return [kindlegenErrorCode, warnings, kindlegenError, item]
+        return [kindlegenErrorCode, kindlegenError, item, warnings]
 
 
 def makeMOBI(work, qtgui=None):
