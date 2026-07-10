@@ -2012,6 +2012,7 @@ def makeMOBIWorker(item):
     try:
         if os.path.getsize(item) < 629145600:
             start = perf_counter()
+            # TODO: should anything be done with the kindlegen output during successes?
             output = subprocess_run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
                            stdout=PIPE, stderr=STDOUT, encoding='UTF-8', errors='ignore', check=True)
             end = perf_counter()
