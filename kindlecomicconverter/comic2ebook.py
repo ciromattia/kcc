@@ -1998,7 +1998,7 @@ def makeMOBIWorkerTick(output):
     if GUI:
         GUI.progressBarTick.emit('tick')
         if output[3]:
-            for warning in output[1]:
+            for warning in output[3]:
                 GUI.addMessage.emit(warning, 'warning', False)
             GUI.addMessage.emit('', '', False)
         if not GUI.conversionAlive:
