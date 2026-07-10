@@ -2034,10 +2034,12 @@ def makeMOBIWorker(item):
                     print(e)
 
             # examples
-            # Warning(prcgen):W14016: Cover not specified
             # Warning(prcgen):W14019: Cover is too small
             if "Warning(" in line:
-                warnings.append(line)
+                if ":W14016: Cover not specified" in line and options.webtoon:
+                    pass
+                else:
+                    warnings.append(line)
             # ERROR: EPUB too big
             if ":E23026:" in line:
                 kindlegenErrorCode = 23026
