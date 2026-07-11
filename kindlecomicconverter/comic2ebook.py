@@ -2030,8 +2030,8 @@ def makeMOBIWorker(item):
                 kindlegenErrorCode = 1
                 kindlegenError = '\n\n'.join(warnings + [line, 'kindlegen logs dumped'])
                 try:
-                    timestamp = datetime.now().isoformat(timespec='seconds').replace(':', '_')
-                    with open(os.path.join(os.path.dirname(item), f'kindlegen_log_{timestamp}.txt'), 'w') as f:
+                    timestamp = datetime.now().isoformat(timespec='milliseconds').replace(':', '-').replace('.', '-')
+                    with open(os.path.join(os.path.dirname(item), f'kindlegen-log-{timestamp}.txt'), 'w') as f:
                         f.write(err.stdout)
                 except Exception as e:
                     print(e)
