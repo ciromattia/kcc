@@ -1160,8 +1160,8 @@ def getMetadata(path, originalpath):
             options.summary = xml.data['Summary']
         if xml.data['Series']:
             options.series = xml.data['Series']
-        # ComicInfo.xml in output may break old Kindles and Kobos, keep only for OTHER profile
-        if options.isOther and options.format == 'CBZ':
+        # ComicInfo.xml in output may break readers like the Kobo native CBZ reader
+        if options.keepcomicinfo and options.format == 'CBZ':
             with open(xmlPath, 'rb') as f:
                 options.comicinfo_xml = f.read()
         os.remove(xmlPath)
@@ -1480,6 +1480,8 @@ def makeParser():
     output_options.add_argument("--metadatatitle", type=int, dest="metadatatitle", default=0,
                                 help="Write title using ComicInfo.xml or other embedded metadata. 1: Combine Title with default schema "
                                      "2: Use Title only")
+    output_options.add_argument("--keepcomicinfo", type=int, dest="keepcomicinfo", default=0,
+                                help="Keep any original ComicInfo.xml files")
     output_options.add_argument("-a", "--author", action="store", dest="author", default="defaultauthor",
                                 help="Author name [Default=KCC]")
     output_options.add_argument("--language", action="store", dest="language", default="en-US",
@@ -1590,8 +1592,6 @@ def checkOptions(options):
         options.iskindle = True
     else:
         options.isKobo = True
-    # remember before custom width/height overrides profile to 'Custom'
-    options.isOther = options.profile == 'OTHER'
 
     if options.lightnovel:
         options.noKepub = True

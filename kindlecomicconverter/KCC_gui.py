@@ -346,6 +346,8 @@ class WorkerThread(QThread):
             options.metadatatitle = 1
         elif GUI.metadataTitleBox.checkState() == Qt.CheckState.Checked:
             options.metadatatitle = 2
+        if GUI.keepComicInfoBox.isChecked():
+            options.keepcomicinfo = True
         if GUI.deleteBox.isChecked():
             options.delete = True
         if GUI.tempDirBox.isChecked():
@@ -1112,6 +1114,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'smartCoverCropBox': GUI.smartCoverCropBox.checkState(),
                                            'coverFillBox': GUI.coverFillBox.checkState(),
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
+                                           'keepComicInfoBox': GUI.keepComicInfoBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'forcePngRgbBox': GUI.forcePngRgbBox.checkState(),
                                            'webpBox': GUI.webpBox.checkState(),
