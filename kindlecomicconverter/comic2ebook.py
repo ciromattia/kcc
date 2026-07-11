@@ -1104,6 +1104,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
 def getMetadata(path, originalpath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.comicinfo_chapters = []
+    options.comicinfo_xml = None
     options.summary = ''
     titleSuffix = ''
     options.volume = ''
@@ -1160,6 +1161,10 @@ def getMetadata(path, originalpath):
             options.summary = xml.data['Summary']
         if xml.data['Series']:
             options.series = xml.data['Series']
+        # ComicInfo.xml in output may break readers like the Kobo native CBZ reader
+        if options.keepcomicinfo and options.format == 'CBZ':
+            with open(xmlPath, 'rb') as f:
+                options.comicinfo_xml = f.read()
         os.remove(xmlPath)
 
     if originalpath.lower().endswith('.pdf'):
@@ -1485,6 +1490,8 @@ def makeParser():
     output_options.add_argument("--metadatatitle", type=int, dest="metadatatitle", default=0,
                                 help="Write title using ComicInfo.xml or other embedded metadata. 1: Combine Title with default schema "
                                      "2: Use Title only")
+    output_options.add_argument("--keepcomicinfo", type=int, dest="keepcomicinfo", default=0,
+                                help="Keep any original ComicInfo.xml files")
     output_options.add_argument("-a", "--author", action="store", dest="author", default="defaultauthor",
                                 help="Author name [Default=KCC]")
     output_options.add_argument("--language", action="store", dest="language", default="en-US",
@@ -1915,6 +1922,9 @@ def makeBook(source, qtgui=None, job_progress=''):
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
             if cover and cover.smartcover:
                 cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', '##cover.jpg'), tomeNumber, len(tomes))
+            if options.comicinfo_xml:
+                with open(os.path.join(tome, 'OEBPS', 'Images', 'ComicInfo.xml'), 'wb') as xmlOutput:
+                    xmlOutput.write(options.comicinfo_xml)
             makeZIP(filepath[-1], os.path.join(tome, "OEBPS", "Images"), job_progress)
         elif options.format == 'PDF':
             print(f"{job_progress}Creating PDF file with PyMuPDF...")
