@@ -123,6 +123,8 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
     Going back a few pages and exiting and re-entering book should fix it temporarily.
 - What output format should I use?
   - MOBI for Kindles. CBZ for Kindle DX. CBZ for Koreader. KEPUB for Kobo. PDF for ReMarkable or Kindle Scribe 2025.
+- Where is KEPUB option?
+  - Choosing a Kobo profile and EPUB output will output KEPUB.
 - All options have additional information in tooltips if you hover over the option.
 - To get the converted book onto your Kindle/Kobo, just drag and drop the mobi/kepub into the documents folder on your Kindle/Kobo via USB
 - Kindle panel view not working?
