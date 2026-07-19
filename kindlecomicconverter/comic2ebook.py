@@ -1368,8 +1368,11 @@ def detectSuboptimalProcessing(tmppath, orgpath):
                 path = os.path.join(root, name)
                 pathOrg = orgpath + path.split('OEBPS' + os.path.sep + 'Images')[1]
                 if os.path.getsize(path) == 0:
-                    rmtree(os.path.join(tmppath, '..', '..'), True)
-                    raise RuntimeError('Image file %s is corrupted.' % pathOrg)
+                    # A single corrupt (zero-byte) page should not fail the whole book;
+                    # skip it and continue with the remaining pages.
+                    os.remove(path)
+                    print('WARNING: Skipping corrupt (empty) image %s' % pathOrg)
+                    continue
                 try:
                     img = Image.open(path)
                     imageNumber += 1
@@ -1377,11 +1380,14 @@ def detectSuboptimalProcessing(tmppath, orgpath):
                     if options.profileData[1][0] > img.size[0] and options.profileData[1][1] > img.size[1]:
                         imageSmaller += 1
                 except Exception as err:
-                    rmtree(os.path.join(tmppath, '..', '..'), True)
                     if 'decoder' in str(err) and 'not available' in str(err):
+                        rmtree(os.path.join(tmppath, '..', '..'), True)
                         raise RuntimeError('Pillow was compiled without JPG and/or PNG decoder.')
-                    else:
-                        raise RuntimeError('Image file %s is corrupted. Error: %s' % (pathOrg, str(err)))
+                    # A single corrupt/unreadable page should not fail the whole book;
+                    # skip it and continue with the remaining pages.
+                    os.remove(path)
+                    print('WARNING: Skipping corrupt image %s (%s)' % (pathOrg, str(err)))
+                    continue
             else:
                 try:
                     if os.path.exists(os.path.join(root, name)):
@@ -1840,7 +1846,7 @@ def makeBook(source, qtgui=None, job_progress=''):
         # Strip the fusion_0001_ sort prefix from makeFusion if present
         chapterNames = {k: sub(r'^fusion_\d{4}_', '', v) for k, v in chapterNames.items()}
     cover = None
-    if not options.webtoon:
+    if not options.webtoon and cover_path:
         cover = image.Cover(cover_path, options)
 
     x, y = image.ProfileData.Profiles[options.profile][1]
