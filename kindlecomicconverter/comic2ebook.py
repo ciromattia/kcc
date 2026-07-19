@@ -678,7 +678,9 @@ def buildPDF(path, title, job_progress='', cover=None, output_file=None):
 
 def imgDirectoryProcessing(path, job_progress=''):
     global workerPool, workerOutput
-    workerPool = Pool(maxtasksperchild=100)
+    # Bound by KCC_WORKERS like the PDF render pool: each worker holds a full
+    # image in memory, so an unbounded cpu_count() pool can OOM on large books.
+    workerPool = Pool(pdf_render_worker_count(), maxtasksperchild=100)
     workerOutput = []
     options.imgMetadata = {}
     work = []
@@ -2106,6 +2108,9 @@ def makeMOBI(work, qtgui=None):
         threadNumber = 4
     else:
         threadNumber = None
+    # virtual_memory().total reports host/node RAM, not the container limit, so
+    # also cap by KCC_WORKERS to respect a constrained pod's memory budget.
+    threadNumber = min(threadNumber or cpu_count(), pdf_render_worker_count())
     makeMOBIWorkerPool = Pool(threadNumber, maxtasksperchild=10)
     for i in work:
         makeMOBIWorkerPool.apply_async(func=makeMOBIWorker, args=(i, ), callback=makeMOBIWorkerTick)
