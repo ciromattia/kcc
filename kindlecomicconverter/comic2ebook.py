@@ -802,16 +802,22 @@ def render_page(vector):
         seg_to = min(seg_from + seg_size, num_pages)  # last page number
 
         for i in range(seg_from, seg_to):  # work through our page segment
-            page = doc[i]
-            if not pdf_width or page.rect.width > page.rect.height:
-                zoom = target_height / page.rect.height
-            else:
-                zoom = target_width / page.rect.width
-            mat = pymupdf.Matrix(zoom, zoom)
-            # TODO: decide colorspace earlier so later color check is cheaper.
-            # This is actually pretty hard when you have to deal with color vector text
-            pix = page.get_pixmap(matrix=mat, colorspace='RGB', alpha=False)
-            pix.save(os.path.join(output_dir, "p-%i.png" % i))
+            try:
+                page = doc[i]
+                if not pdf_width or page.rect.width > page.rect.height:
+                    zoom = target_height / page.rect.height
+                else:
+                    zoom = target_width / page.rect.width
+                mat = pymupdf.Matrix(zoom, zoom)
+                # TODO: decide colorspace earlier so later color check is cheaper.
+                # This is actually pretty hard when you have to deal with color vector text
+                pix = page.get_pixmap(matrix=mat, colorspace='RGB', alpha=False)
+                pix.save(os.path.join(output_dir, "p-%i.png" % i))
+            except Exception as e:
+                # A single unrenderable page must not abort the whole PDF. Skipping it
+                # also prevents an unpicklable PyMuPDF error from crossing the Pool
+                # boundary and masking the real cause with a pickling TypeError.
+                print("WARNING: Skipping PDF page %i: %s" % (i, e))
         print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
 
 
@@ -851,22 +857,28 @@ def extract_page(vector):
 
         for i in range(seg_from, seg_to):  # work through our page segment
             output_path = os.path.join(output_dir, "p-%i.png" % i)
-            page = doc.load_page(i)
-            image_list = page.get_images()
-            if len(image_list) > 1:
-                raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
-            if not image_list:
-                continue
-            else:
-                xref = image_list[0][0]
-                d = doc.extract_image(xref)
-                if d['cs-name'] == 'DeviceCMYK':
-                    pix = pymupdf.Pixmap(doc, xref)
-                    pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
-                    pix.save(output_path)
+            try:
+                page = doc.load_page(i)
+                image_list = page.get_images()
+                if len(image_list) > 1:
+                    raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
+                if not image_list:
+                    continue
                 else:
-                    with open(Path(output_path).with_suffix('.' + d['ext']), "wb") as imgout:
-                        imgout.write(d["image"])
+                    xref = image_list[0][0]
+                    d = doc.extract_image(xref)
+                    if d['cs-name'] == 'DeviceCMYK':
+                        pix = pymupdf.Pixmap(doc, xref)
+                        pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
+                        pix.save(output_path)
+                    else:
+                        with open(Path(output_path).with_suffix('.' + d['ext']), "wb") as imgout:
+                            imgout.write(d["image"])
+            except Exception as e:
+                # A single unextractable page must not abort the whole PDF. Skipping it
+                # also prevents an unpicklable PyMuPDF error from crossing the Pool
+                # boundary and masking the real cause with a pickling TypeError.
+                print("WARNING: Skipping PDF page %i: %s" % (i, e))
         print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
 
 
