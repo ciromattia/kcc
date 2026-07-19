@@ -346,6 +346,8 @@ class WorkerThread(QThread):
             options.metadatatitle = 1
         elif GUI.metadataTitleBox.checkState() == Qt.CheckState.Checked:
             options.metadatatitle = 2
+        if GUI.keepComicInfoBox.isChecked():
+            options.keepcomicinfo = True
         if GUI.deleteBox.isChecked():
             options.delete = True
         if GUI.tempDirBox.isChecked():
@@ -558,8 +560,6 @@ class WorkerThread(QThread):
                             MW.addMessage.emit('Created EPUB file was too big. Weird file structure?', 'error', False)
                             MW.addMessage.emit('EPUB file: ' + str(epubSize) + 'MB. Supported size: ~350MB.', 'error',
                                                False)
-                        if self.kindlegenErrorCode[0] == 3221226505:
-                            MW.addMessage.emit('Unknown Windows error. Possibly filepath too long?', 'error', False)
                 else:
                     for item in outputPath:
                         if GUI.targetDirectory and GUI.targetDirectory != os.path.dirname(item):
@@ -838,7 +838,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.interPanelCropBox.setEnabled(True)
             GUI.autoLevelBox.setEnabled(True)
             GUI.autocontrastBox.setEnabled(True)
-            GUI.autocontrastBox.setChecked(True)
 
 
     def togglequalityBox(self, value):
@@ -1112,6 +1111,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'smartCoverCropBox': GUI.smartCoverCropBox.checkState(),
                                            'coverFillBox': GUI.coverFillBox.checkState(),
                                            'metadataTitleBox': GUI.metadataTitleBox.checkState(),
+                                           'keepComicInfoBox': GUI.keepComicInfoBox.checkState(),
                                            'mozJpegBox': GUI.mozJpegBox.checkState(),
                                            'forcePngRgbBox': GUI.forcePngRgbBox.checkState(),
                                            'webpBox': GUI.webpBox.checkState(),
@@ -1220,11 +1220,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.defaultOutputFolder = str(self.settings.value('defaultOutputFolder', '', type=str))
         if not os.path.exists(self.defaultOutputFolder):
             self.defaultOutputFolder = ''
-        self.lastDevice = self.settings.value('lastDevice', 0, type=int)
+
+        # default is Kindle Paperwhite 12th Gen
+        self.lastDevice = self.settings.value('lastDevice', 3, type=int)
+
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
         self.windowSize = self.settings.value('windowSize', '0x0', type=str)
-        default_options = {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100}
+        default_options = {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100, 'rotateBox': 1, 'mangaBox': 2}
         try:
             self.options = self.settings.value('options', default_options)
         except Exception:

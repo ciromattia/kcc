@@ -19,6 +19,7 @@
 #
 
 from collections import Counter
+from datetime import datetime
 import os
 import pathlib
 import re
@@ -1136,6 +1137,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
 def getMetadata(path, originalpath):
     xmlPath = os.path.join(path, 'ComicInfo.xml')
     options.comicinfo_chapters = []
+    options.comicinfo_xml = None
     options.summary = ''
     titleSuffix = ''
     options.volume = ''
@@ -1192,6 +1194,10 @@ def getMetadata(path, originalpath):
             options.summary = xml.data['Summary']
         if xml.data['Series']:
             options.series = xml.data['Series']
+        # ComicInfo.xml in output may break readers like the Kobo native CBZ reader
+        if options.keepcomicinfo and options.format == 'CBZ':
+            with open(xmlPath, 'rb') as f:
+                options.comicinfo_xml = f.read()
         os.remove(xmlPath)
 
     if originalpath.lower().endswith('.pdf'):
@@ -1234,11 +1240,19 @@ def removeNonImages(filetree):
                     os.remove(os.path.join(root, name))
     # remove empty nested folders
     for root, dirs, files in os.walk(filetree, False):
-        if not files and not dirs:
+        if not os.listdir(root):
             os.rmdir(root)
     
     if not os.listdir(Path(filetree).parent):
-        raise UserWarning('No images detected, nested archives are not supported.')
+        warning = [
+            'No images detected.',
+            '',
+            'Possible causes:',
+            '',
+            '1) Incompatible image file extension like .jxl. Convert to .png first outside of KCC.',
+            '2) Nested archive: Either extract the nested archive outside of KCC or use File Fusion option.',
+        ]
+        raise RuntimeError('\n'.join(warning))
 
 
 def sanitizeTree(filetree, prefix='kcc'):
@@ -1287,6 +1301,7 @@ def flattenTree(filetree):
 
 
 def sanitizePermissions(filetree):
+    os.chmod(filetree, S_IWRITE | S_IREAD | S_IEXEC)
     for root, dirs, files in os.walk(filetree, False):
         for name in files:
             os.chmod(os.path.join(root, name), S_IWRITE | S_IREAD)
@@ -1521,6 +1536,8 @@ def makeParser():
     output_options.add_argument("--metadatatitle", type=int, dest="metadatatitle", default=0,
                                 help="Write title using ComicInfo.xml or other embedded metadata. 1: Combine Title with default schema "
                                      "2: Use Title only")
+    output_options.add_argument("--keepcomicinfo", type=int, dest="keepcomicinfo", default=0,
+                                help="Keep any original ComicInfo.xml files")
     output_options.add_argument("-a", "--author", action="store", dest="author", default="defaultauthor",
                                 help="Author name [Default=KCC]")
     output_options.add_argument("--language", action="store", dest="language", default="en-US",
@@ -1964,7 +1981,10 @@ def makeBook(source, qtgui=None, job_progress=''):
             else:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
             if cover and cover.smartcover:
-                cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', 'cover.jpg'), tomeNumber, len(tomes))
+                cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', '##cover.jpg'), tomeNumber, len(tomes))
+            if options.comicinfo_xml:
+                with open(os.path.join(tome, 'OEBPS', 'Images', 'ComicInfo.xml'), 'wb') as xmlOutput:
+                    xmlOutput.write(options.comicinfo_xml)
             makeZIP(filepath[-1], os.path.join(tome, "OEBPS", "Images"), job_progress)
         elif options.format == 'PDF':
             print(f"{job_progress}Creating PDF file with PyMuPDF...")
@@ -2043,8 +2063,14 @@ def makeMOBIWorkerTick(output):
     makeMOBIWorkerOutput.append(output)
     if output[0] != 0:
         makeMOBIWorkerPool.terminate()
+    for warning in output[3]:
+        print(warning)
     if GUI:
         GUI.progressBarTick.emit('tick')
+        if output[3]:
+            for warning in output[3]:
+                GUI.addMessage.emit(warning, 'warning', False)
+            GUI.addMessage.emit('', '', False)
         if not GUI.conversionAlive:
             makeMOBIWorkerPool.terminate()
 
@@ -2054,8 +2080,10 @@ def makeMOBIWorker(item):
     kindlegenErrorCode = 0
     kindlegenError = ''
     try:
+        # TODO: This size check is incorrect, I think kindlegen increased the limit
         if os.path.getsize(item) < 629145600:
             start = perf_counter()
+            # TODO: should anything be done with the kindlegen output during successes?
             output = subprocess_run(['kindlegen', '-dont_append_source', '-locale', 'en', item],
                            stdout=PIPE, stderr=STDOUT, encoding='UTF-8', errors='ignore', check=True)
             end = perf_counter()
@@ -2063,27 +2091,47 @@ def makeMOBIWorker(item):
         else:
             # ERROR: EPUB too big
             kindlegenErrorCode = 23026
-        return [kindlegenErrorCode, kindlegenError, item]
+        return [kindlegenErrorCode, kindlegenError, item, []]
     except CalledProcessError as err:
+        warnings = []
         for line in err.stdout.splitlines():
             # ERROR: Generic error
             if "Error(" in line:
                 kindlegenErrorCode = 1
-                kindlegenError = line
+                kindlegenError = '\n\n'.join(warnings + [line, 'kindlegen logs dumped'])
+                try:
+                    timestamp = datetime.now().isoformat(timespec='milliseconds').replace(':', '-').replace('.', '-')
+                    with open(os.path.join(os.path.dirname(item), f'kindlegen-log-{timestamp}.txt'), 'w') as f:
+                        f.write(err.stdout)
+                except Exception as e:
+                    print(e)
+
+            # examples
+            # Warning(prcgen):W14019: Cover is too small
+            if "Warning(" in line:
+                if ":W14016: Cover not specified" in line and options.webtoon:
+                    pass
+                else:
+                    warnings.append(line)
             # ERROR: EPUB too big
             if ":E23026:" in line:
                 kindlegenErrorCode = 23026
+            if ":E23028:" in line:
+                kindlegenErrorCode = 23028
             if kindlegenErrorCode > 0:
                 break
             if ":I1036: Mobi file built successfully" in line:
-                return [0, '', item]
+                return [0, '', item, warnings]
             if ":I1037: Mobi file built with WARNINGS!" in line:
-                return [0, '', item]
+                return [0, '', item, warnings]
         # ERROR: KCC unknown generic error
         if kindlegenErrorCode == 0:
-            kindlegenErrorCode = err.returncode
-            kindlegenError = err.stdout
-        return [kindlegenErrorCode, kindlegenError, item]
+            kindlegenErrorCode = -1
+            if err.returncode == 3221226505:
+                kindlegenError = f'Error {err.returncode}: Unknown Windows error. Possibly filepath too long?'
+            else:
+                kindlegenError = f'Error {err.returncode}'
+        return [kindlegenErrorCode, kindlegenError, item, warnings]
 
 
 def makeMOBI(work, qtgui=None):

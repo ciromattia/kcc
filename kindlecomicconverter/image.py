@@ -648,7 +648,7 @@ class Cover:
             if self.options.righttoleft:
                 self.image = self.image.crop((w * .36, 0, w, h))
             else:
-                self.image = self.image.crop((w, 0, .64 * w, h))
+                self.image = self.image.crop((0, 0, .64 * w, h))
 
     def save_to_folder(self, target, tomeid, len_tomes=0):
         try:
