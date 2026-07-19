@@ -883,6 +883,25 @@ def extract_page(vector):
 
 
 
+def pdf_render_worker_count():
+    """Number of parallel MuPDF render/extract processes.
+
+    Each worker opens the document and holds a full-resolution page pixmap in
+    memory, so peak memory scales with the number of workers. On memory-limited
+    hosts an unbounded cpu_count() pool can exhaust RAM on large or high-DPI
+    PDFs. Honour the KCC_WORKERS environment variable as an upper bound; fall
+    back to the CPU count when it is unset.
+    """
+    workers = cpu_count()
+    env = os.environ.get('KCC_WORKERS')
+    if env:
+        try:
+            workers = min(workers, int(env))
+        except ValueError:
+            pass
+    return max(1, workers)
+
+
 def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_height):
     render = False
     with pymupdf.open(filename) as doc:
@@ -900,7 +919,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
                     render = True
                     break
 
-    cpu = cpu_count()
+    cpu = pdf_render_worker_count()
 
     # make vectors of arguments for the processes
     vectors = [(i, cpu, filename, output_dir, target_width, target_height, options.pdfwidth) for i in range(cpu)]
@@ -908,7 +927,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
 
 
     start = perf_counter()
-    with Pool() as pool:
+    with Pool(cpu) as pool:
         results = pool.map(
             render_page if render else extract_page, vectors
         )
