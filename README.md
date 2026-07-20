@@ -42,6 +42,7 @@ KCC avoids many common formatting issues (some of which occur [even on the Kindl
 4) incorrect page turn direction for manga that's read right to left
 5) unaligned two page spreads in landscape, where pages are shifted over by 1
 6) Removing without blur the rainbow effect on color eink Kaleido 3 due to manga screentones
+7) Fixing page order problems due to Windows sort being different than Kindle/Kobo sort
 
 The GUI looks like this, built in Qt6, with my most commonly used settings:
 
