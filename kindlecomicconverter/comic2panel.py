@@ -60,10 +60,12 @@ def mergeDirectory(work):
             for i in images:
                 targetHeight += i[2]
                 imagesValid.append(i[0])
-            # Silently drop directories that contain too many images
-            # 131072 = GIMP_MAX_IMAGE_SIZE / 4
+            # Skip directories whose merged height exceeds GIMP_MAX_IMAGE_SIZE.
+            # Returning None here is falsy, so mergeDirectoryTick won't record
+            # an error; the original page files remain on disk and each page is
+            # panel-split individually by the split pass instead.
             if targetHeight > 131072 * 4:
-                raise RuntimeError(f'Image too tall at {targetHeight} pixels. {targetWidth} pixels wide. Try using separate chapter folders or file fusion.')
+                return
             result = Image.new('RGB', (targetWidth, targetHeight))
             y = 0
             for i in imagesValid:
