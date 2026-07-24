@@ -1694,6 +1694,20 @@ def checkOptions(options):
         image.ProfileData.Profiles["Custom"] = newProfile
         options.profile = "Custom"
     options.profileData = image.ProfileData.Profiles[options.profile]
+    # Guard against a zero-sized target resolution. The generic "Other"/"OTHER"
+    # profile is defined as (0, 0) and is meant to be overridden by custom
+    # width/height; when a user selects it without supplying custom dimensions the
+    # (0, 0) target propagates into PIL resize/thumbnail and crashes with a
+    # ZeroDivisionError (surfaced to users as ERR:zero_dimension). Fall back to a
+    # sane default e-reader resolution so the conversion produces valid output.
+    if not options.profileData[1][0] or not options.profileData[1][1]:
+        fallbackRes = (1264, 1680)
+        newProfile = list(options.profileData)
+        newProfile[1] = fallbackRes
+        options.profileData = tuple(newProfile)
+        image.ProfileData.Profiles[options.profile] = options.profileData
+        print('WARNING: profile "%s" has no resolution; falling back to %dx%d'
+              % (options.profile, fallbackRes[0], fallbackRes[1]))
     if not options.jpegquality:
         if options.profile.startswith('KS') or options.profile == 'KCS':
             options.jpegquality = 90
