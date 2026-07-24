@@ -1012,9 +1012,15 @@ def getWorkFolder(afile, workdir=None):
                             os.path.join(fullPath, tdir[0], 'ComicInfo.xml')
                         )
                 if len(tdir) == 1 and os.path.isdir(os.path.join(fullPath, tdir[0])):
+                    if options.tempdir:
+                        workdir2 = mkdtemp('', 'KCC-', os.path.dirname(afile))
+                    else:
+                        workdir2 = mkdtemp('', 'KCC-')
+                    fullPath2 = os.path.join(workdir2, 'OEBPS', 'Images')
                     for file in os.listdir(os.path.join(fullPath, tdir[0])):
-                        move(os.path.join(fullPath, tdir[0], file), fullPath)
-                    os.rmdir(os.path.join(fullPath, tdir[0]))
+                        move(os.path.join(fullPath, tdir[0], file), fullPath2)
+                    rmtree(workdir, True)
+                    return workdir2
 
                 if options.legacyextract:
                     return workdir
