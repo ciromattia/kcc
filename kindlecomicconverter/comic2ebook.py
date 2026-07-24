@@ -984,6 +984,7 @@ def getWorkFolder(afile, workdir=None):
                     else:
                         workdir2 = mkdtemp('', 'KCC-')
                     fullPath2 = os.path.join(workdir2, 'OEBPS', 'Images')
+                    os.makedirs(fullPath2, exist_ok=True)
                     for file in os.listdir(os.path.join(fullPath, tdir[0])):
                         move(os.path.join(fullPath, tdir[0], file), fullPath2)
                     rmtree(workdir, True)
