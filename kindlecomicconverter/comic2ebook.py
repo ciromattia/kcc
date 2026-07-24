@@ -1372,13 +1372,6 @@ def detectSuboptimalProcessing(tmppath, orgpath):
                     raise RuntimeError('Image file %s is corrupted.' % pathOrg)
                 try:
                     img = Image.open(path)
-                    if 0 in img.size:
-                        # Zero-dimension image (broken/blank page): skip it instead of
-                        # crashing later in resize/thumbnail with ZeroDivisionError.
-                        img.close()
-                        os.remove(path)
-                        print('WARNING: Skipping zero-dimension image %s' % pathOrg)
-                        continue
                     imageNumber += 1
                     # count images smaller than device resolution
                     if options.profileData[1][0] > img.size[0] and options.profileData[1][1] > img.size[1]:
