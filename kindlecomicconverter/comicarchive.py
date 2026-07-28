@@ -98,11 +98,19 @@ class ComicArchive:
             except CalledProcessError as err:
                 # 7z exit codes 1 (warning) and 2 (fatal error) can still leave the
                 # readable files extracted, e.g. an archive with a few corrupt members.
-                # Continue with what was extracted instead of failing the whole book.
+                # Drop the members 7z reported as damaged ('ERROR: CRC Failed : <name>')
+                # and continue with the rest instead of failing the whole book.
                 if cmd[0] == SEVENZIP and err.returncode in (1, 2):
+                    damaged = [line.split(b' : ', 1)[1].decode(errors='ignore')
+                               for line in err.stdout.splitlines() + err.stderr.splitlines()
+                               if line.startswith(b'ERROR: ') and b' : ' in line]
+                    for name in damaged:
+                        damaged_file = os.path.join(targetdir, name)
+                        if os.path.isfile(damaged_file):
+                            os.remove(damaged_file)
                     extracted = sum(len(files) for _, _, files in os.walk(targetdir))
                     if extracted > 0:
-                        print(f'WARNING: {self.basename} is damaged. Extracted {extracted} files, skipping the corrupt ones.')
+                        print(f'WARNING: {self.basename} is damaged. {len(damaged)} corrupt files were skipped, continuing with the {extracted} readable ones.')
                         return targetdir
 
         if missing:
