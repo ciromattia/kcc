@@ -95,8 +95,15 @@ class ComicArchive:
                 return targetdir
             except FileNotFoundError:
                 missing.append(cmd[0])
-            except CalledProcessError:
-                pass
+            except CalledProcessError as err:
+                # 7z exit codes 1 (warning) and 2 (fatal error) can still leave the
+                # readable files extracted, e.g. an archive with a few corrupt members.
+                # Continue with what was extracted instead of failing the whole book.
+                if cmd[0] == SEVENZIP and err.returncode in (1, 2):
+                    extracted = sum(len(files) for _, _, files in os.walk(targetdir))
+                    if extracted > 0:
+                        print(f'WARNING: {self.basename} is damaged. Extracted {extracted} files, skipping the corrupt ones.')
+                        return targetdir
 
         if missing:
             raise OSError(f'Extraction failed, install <a href="https://github.com/ciromattia/kcc#7-zip">specialized extraction software.</a>  ')
