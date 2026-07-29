@@ -19,10 +19,11 @@
 
 from datetime import datetime, timezone
 import itertools
+import json
 from pathlib import Path
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
 from PySide6.QtGui import (QColor, QIcon, QImage, QKeyEvent, QPixmap, QDesktopServices)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QListWidgetItem, QMainWindow, QSizePolicy, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QAbstractItemView, QListView, QTreeView, QWidget)
+from PySide6.QtWidgets import (QApplication, QDialogButtonBox, QHBoxLayout, QLabel, QListWidgetItem, QMainWindow, QSizePolicy, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QAbstractItemView, QListView, QTreeView, QWidget)
 from PySide6.QtNetwork import (QLocalSocket, QLocalServer)
 
 import os
@@ -671,8 +672,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
 
     def labelSpreadsStart(self):
-        from PySide6.QtWidgets import QDialog, QDialogButtonBox, QLabel, QVBoxLayout
-
         # TODO: make this a function since it's copy pasted
         currentJobs = []
         for i in range(GUI.jobList.count()):
@@ -693,6 +692,74 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 workdir = mkdtemp('', 'KCC-')
 
             for root, _, files in os.walk(path):
+                spreads = []
+                class CustomDialog(QDialog):
+                    def __init__(self):
+                        super().__init__()
+                        self.index = 0
+
+                        self.setWindowTitle("TODO: Filename goes here")
+                        # self.setGeometry(APP.primaryScreen().availableGeometry())
+                        # self.setMaximumSize(APP.primaryScreen().availableSize())
+                        self.availableHeight = APP.primaryScreen().availableSize().height()
+
+                        QBtn = (
+                            QDialogButtonBox.Yes | QDialogButtonBox.No
+                        )
+
+                        self.buttonBox = QDialogButtonBox(QBtn)
+                        self.buttonBox.accepted.connect(self.accept)
+                        self.buttonBox.rejected.connect(self.reject)
+
+                        layout = QHBoxLayout()
+                        self.setLayout(layout)
+                        
+                        label = QLabel()
+                        label2 = QLabel()
+                        self.label = label
+                        #self.label2 = label2
+                        layout.addWidget(label)
+                        #layout.addWidget(label2)
+                        layout.addWidget(self.buttonBox)
+                        print(label.size())
+                        print(label.maximumSize())
+                        l, t, r, b = layout.getContentsMargins()
+                        
+                        #label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                        pixmap = QPixmap(images[0]).scaledToHeight(self.availableHeight * 0.9)
+                        label.setPixmap(pixmap)
+                        #label.setScaledContents(True)
+                        
+                        #label2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                        # pixmap2 = QPixmap(images[0]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                        # label2.setPixmap(pixmap2)
+                        #label2.setScaledContents(True)
+                        #self.resize(pixmap2.width(), pixmap2.height())
+                    def keyReleaseEvent(self, event):
+                        t = 20
+                        b = 20
+                        if isinstance(event, QKeyEvent):
+                            # TODO: negative indices
+                            if event.key() == Qt.Key.Key_Left:
+                                self.index = self.index - 1
+                                pixmap = QPixmap(images[self.index]).scaledToHeight(self.availableHeight * 0.9)
+                                self.label.setPixmap(pixmap)
+                                # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                                # self.label2.setPixmap(pixmap2)
+                            elif event.key() == Qt.Key.Key_Right:
+                                self.index = self.index + 1
+                                print(self.index)
+                                pixmap = QPixmap(images[self.index]).scaledToHeight(self.availableHeight * 0.9)
+                                self.label.setPixmap(pixmap)
+                                # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                                # self.label2.setPixmap(pixmap2)
+                            elif event.key()== Qt.Key.Key_Space:
+                                spreads.append(self.index)
+                                print(self.index)
+                            else:
+                                super().keyReleaseEvent(event)
+                        else:
+                            super().keyReleaseEvent(event)
                 files.sort(key=OS_SORT_KEY)
                 # TODO: edge case on end
                 # TODO: start from 0 or 1
@@ -726,92 +793,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     dst.save(os.path.join(workdir, f'label-{i:04}.png'))
                     images.append(os.path.join(workdir, f'label-{i:04}.png'))
 
-        # class ScaledLabel(QLabel):
-        #     def __init__(self, *args, **kwargs):
-        #         QLabel.__init__(self)
-        #         self._pixmap = self.pixmap()
-        #         self._resized= False
-            
-        #     def resizeEvent(self, event):
-        #         self.setPixmap(self._pixmap)     
-
-        #     def setPixmap(self, pixmap): #overiding setPixmap
-        #         if not pixmap:return 
-        #         self._pixmap = pixmap
-        #         return QLabel.setPixmap(self,self._pixmap.scaled(
-        #                 self.frameSize(),
-        #                 Qt.KeepAspectRatio))
-
-        class CustomDialog(QDialog):
-            def __init__(self):
-                super().__init__()
-                self.index = 1
-
-                self.setWindowTitle("TODO: Filename goes here")
-                # self.setGeometry(APP.primaryScreen().availableGeometry())
-                # self.setMaximumSize(APP.primaryScreen().availableSize())
-                self.availableHeight = APP.primaryScreen().availableSize().height()
-
-                QBtn = (
-                    QDialogButtonBox.Yes | QDialogButtonBox.No
-                )
-
-                self.buttonBox = QDialogButtonBox(QBtn)
-                self.buttonBox.accepted.connect(self.accept)
-                self.buttonBox.rejected.connect(self.reject)
-
-                layout = QHBoxLayout()
-                self.setLayout(layout)
-                
-                label = QLabel()
-                label2 = QLabel()
-                self.label = label
-                #self.label2 = label2
-                layout.addWidget(label)
-                #layout.addWidget(label2)
-                layout.addWidget(self.buttonBox)
-                print(label.size())
-                print(label.maximumSize())
-                l, t, r, b = layout.getContentsMargins()
-                
-                #label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                pixmap = QPixmap(images[0]).scaledToHeight(self.availableHeight * 0.9)
-                label.setPixmap(pixmap)
-                #label.setScaledContents(True)
-                
-                #label2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                # pixmap2 = QPixmap(images[0]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
-                # label2.setPixmap(pixmap2)
-                #label2.setScaledContents(True)
-                #self.resize(pixmap2.width(), pixmap2.height())
-            def keyReleaseEvent(self, event):
-                t = 20
-                b = 20
-                if isinstance(event, QKeyEvent):
-                    # TODO: negative indices
-                    if event.key() == Qt.Key.Key_Left:
-                        self.index = self.index - 1
-                        pixmap = QPixmap(images[self.index]).scaledToHeight(self.availableHeight * 0.9)
-                        self.label.setPixmap(pixmap)
-                        # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
-                        # self.label2.setPixmap(pixmap2)
-                    elif event.key() == Qt.Key.Key_Right:
-                        self.index = self.index + 1
-                        print(self.index)
-                        pixmap = QPixmap(images[self.index]).scaledToHeight(self.availableHeight * 0.9)
-                        self.label.setPixmap(pixmap)
-                        # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
-                        # self.label2.setPixmap(pixmap2)
-                    else:
-                        super().keyReleaseEvent(event)
-                else:
-                    super().keyReleaseEvent(event)
-
-                
-
-        dlg = CustomDialog()
-        dlg.setWindowTitle("HELLO!")
-        print(dlg.exec())
+                dlg = CustomDialog()
+                dlg.setWindowTitle(job)
+                if dlg.exec() == 1:
+                    with open(job+'.json', "w") as fp:
+                        json.dump({'spreads': spreads} , fp) 
 
 
     def selectFileMetaEditor(self, sname):
