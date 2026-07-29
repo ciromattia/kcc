@@ -38,7 +38,9 @@ from xml.sax.saxutils import escape
 from psutil import Process
 from copy import copy
 from packaging.version import Version
-from tempfile import gettempdir
+from tempfile import gettempdir, mkdtemp
+from PIL import Image
+from PIL.Image import Dither
 
 from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
@@ -679,14 +681,50 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 currentJobs.append(str(GUI.jobList.item(i).text()))
         images = []
         for job in currentJobs:
+            # TODO: render PDF at lower res
             path = getWorkFolder(job)
             removeNonImages(path)
             sanitizeTree(path)
             flattenTree(path)
+
+            if True:
+                workdir = mkdtemp('', 'KCC-', os.path.dirname(job))
+            else:
+                workdir = mkdtemp('', 'KCC-')
+
             for root, _, files in os.walk(path):
                 files.sort(key=OS_SORT_KEY)
-                for file in files:
-                    images.append(os.path.join(root, file))
+                # TODO: edge case on end
+                # TODO: start from 0 or 1
+                for i in range(1, len(files), 2):
+                    if i  == len(files) - 1:
+                        continue 
+                    # TODO: with statements
+                    im1 = Image.open(os.path.join(root, files[i])).convert('1', dither=Dither.NONE)
+                    size1 = im1.size
+                    crop1 = im1.crop((0, 0, 0.2*size1[0], size1[1]))
+                    crop11 = im1.crop((0.01*size1[0], 0, 0.04*size1[0], size1[1]))
+                    #crop1 = crop11
+                    im2 = Image.open(os.path.join(root, files[i+1])).convert('1', dither=Dither.NONE)
+                    size2 = im2.size
+                    crop2 = im2.crop((0.8*size2[0], 0, size2[0], size2[1]))
+                    crop22 = im2.crop((0.96*size2[0], 0, .99* size2[0], size2[1]))
+                    #crop2 = crop22
+                    # dst = Image.new('1', (im1.width + im2.width, im1.height))
+                    # dst.paste(im2, (0, 0))
+                    # dst.paste(im1, (im1.width, 0))
+                    hist1 = crop11.histogram()
+                    hist2 = crop22.histogram()
+                    # TODO: small percentage instead of zero
+                    if hist1[0] == 0 or hist1[-1] == 0 or hist2[0] == 0 or hist2[-1] == 0:
+                        continue
+
+                    dst = Image.new('1', (crop1.width + crop2.width, crop1.height))
+
+                    dst.paste(crop2, (0, 0))
+                    dst.paste(crop1, (crop1.width, 0))
+                    dst.save(os.path.join(workdir, f'label-{i:04}.png'))
+                    images.append(os.path.join(workdir, f'label-{i:04}.png'))
 
         # class ScaledLabel(QLabel):
         #     def __init__(self, *args, **kwargs):
@@ -710,8 +748,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.index = 1
 
                 self.setWindowTitle("TODO: Filename goes here")
-                self.setGeometry(APP.primaryScreen().availableGeometry())
-                self.setMaximumSize(APP.primaryScreen().availableSize())
+                # self.setGeometry(APP.primaryScreen().availableGeometry())
+                # self.setMaximumSize(APP.primaryScreen().availableSize())
+                self.availableHeight = APP.primaryScreen().availableSize().height()
 
                 QBtn = (
                     QDialogButtonBox.Yes | QDialogButtonBox.No
@@ -727,40 +766,42 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 label = QLabel()
                 label2 = QLabel()
                 self.label = label
-                self.label2 = label2
+                #self.label2 = label2
                 layout.addWidget(label)
-                layout.addWidget(label2)
+                #layout.addWidget(label2)
                 layout.addWidget(self.buttonBox)
                 print(label.size())
                 print(label.maximumSize())
                 l, t, r, b = layout.getContentsMargins()
                 
                 #label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                pixmap = QPixmap(images[1]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                pixmap = QPixmap(images[0]).scaledToHeight(self.availableHeight * 0.9)
                 label.setPixmap(pixmap)
                 #label.setScaledContents(True)
                 
                 #label2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                pixmap2 = QPixmap(images[0]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
-                label2.setPixmap(pixmap2)
+                # pixmap2 = QPixmap(images[0]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                # label2.setPixmap(pixmap2)
                 #label2.setScaledContents(True)
                 #self.resize(pixmap2.width(), pixmap2.height())
             def keyReleaseEvent(self, event):
                 t = 20
                 b = 20
                 if isinstance(event, QKeyEvent):
+                    # TODO: negative indices
                     if event.key() == Qt.Key.Key_Left:
-                        self.index = max(0, self.index - 2)
-                        pixmap = QPixmap(images[self.index+1]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                        self.index = self.index - 1
+                        pixmap = QPixmap(images[self.index]).scaledToHeight(self.availableHeight * 0.9)
                         self.label.setPixmap(pixmap)
-                        pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
-                        self.label2.setPixmap(pixmap2)
+                        # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                        # self.label2.setPixmap(pixmap2)
                     elif event.key() == Qt.Key.Key_Right:
-                        self.index = min(100, self.index + 2)
-                        pixmap = QPixmap(images[self.index+1]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                        self.index = self.index + 1
+                        print(self.index)
+                        pixmap = QPixmap(images[self.index]).scaledToHeight(self.availableHeight * 0.9)
                         self.label.setPixmap(pixmap)
-                        pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
-                        self.label2.setPixmap(pixmap2)
+                        # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                        # self.label2.setPixmap(pixmap2)
                     else:
                         super().keyReleaseEvent(event)
                 else:
