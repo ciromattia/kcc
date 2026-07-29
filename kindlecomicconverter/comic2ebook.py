@@ -906,7 +906,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
 
 
 
-def getWorkFolder(afile, workdir=None):
+def getWorkFolder(afile, options, workdir=None):
     if not workdir:
         if options.tempdir:
             workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
@@ -1782,7 +1782,7 @@ def makeFusion(sources: List[str]):
         else:
             targetpath = fusion_path.joinpath(f'{prefix}{source_path.name}')
 
-        path = getWorkFolder(source, str(targetpath))
+        path = getWorkFolder(source, options, str(targetpath))
         if path != str(targetpath):
             move(os.path.join(path, 'OEBPS', 'Images'), targetpath)
         sanitizeTree(targetpath, prefix='fusion')
@@ -1808,7 +1808,7 @@ def makeBook(source, qtgui=None, job_progress=''):
     if not options.filefusion:
         checkPre('LLL-')
     print(f"{job_progress}Preparing source images...")
-    path = getWorkFolder(source)
+    path = getWorkFolder(source, options)
     print(f"{job_progress}Checking images...")
 
     if options.lightnovel:
