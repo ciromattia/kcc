@@ -809,7 +809,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 dlg.setWindowTitle(job)
                 if dlg.exec() == 1:
                     with open(job+'.json', "w") as fp:
-                        print(spreads)
+                        # TODO: not very clean to grab index from filename
                         spreads = [int(filename[6:10]) for filename in spreads]
                         json.dump({'spreads': sorted(set(spreads))} , fp) 
 
