@@ -717,13 +717,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                         label = QLabel()
                         label2 = QLabel()
                         self.label = label
-                        #self.label2 = label2
+                        self.label2 = label2
                         layout.addWidget(label)
-                        #layout.addWidget(label2)
+                        layout.addWidget(label2)
+                        label2.setText("Not a spread")
                         layout.addWidget(self.buttonBox)
-                        print(label.size())
-                        print(label.maximumSize())
-                        l, t, r, b = layout.getContentsMargins()
+                        # print(label.size())
+                        # print(label.maximumSize())
+                        # l, t, r, b = layout.getContentsMargins()
                         
                         #label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
                         pixmap = QPixmap(images[0]).scaledToHeight(self.availableHeight * 0.9)
@@ -739,22 +740,32 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                         t = 20
                         b = 20
                         if isinstance(event, QKeyEvent):
-                            # TODO: negative indices
                             if event.key() == Qt.Key.Key_Left:
+                                # TODO: negative indices
                                 self.index = self.index - 1
+                                if self.index in spreads:
+                                    self.label2.setText('spread')
+                                else:
+                                    self.label2.setText('not a spread')
                                 pixmap = QPixmap(images[self.index]).scaledToHeight(self.availableHeight * 0.9)
                                 self.label.setPixmap(pixmap)
                                 # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
                                 # self.label2.setPixmap(pixmap2)
                             elif event.key() == Qt.Key.Key_Right:
                                 self.index = self.index + 1
+                                if self.index in spreads:
+                                    self.label2.setText('spread')
+                                else:
+                                    self.label2.setText('not a spread')
+                                
                                 print(self.index)
                                 pixmap = QPixmap(images[self.index]).scaledToHeight(self.availableHeight * 0.9)
                                 self.label.setPixmap(pixmap)
                                 # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
                                 # self.label2.setPixmap(pixmap2)
-                            elif event.key()== Qt.Key.Key_Space:
+                            elif event.key() == Qt.Key.Key_Space:
                                 spreads.append(self.index)
+                                self.label2.setText('spread')
                                 print(self.index)
                             else:
                                 super().keyReleaseEvent(event)
@@ -797,7 +808,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 dlg.setWindowTitle(job)
                 if dlg.exec() == 1:
                     with open(job+'.json', "w") as fp:
-                        json.dump({'spreads': spreads} , fp) 
+                        json.dump({'spreads': sorted(set(spreads))} , fp) 
 
 
     def selectFileMetaEditor(self, sname):
