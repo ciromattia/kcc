@@ -907,6 +907,11 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
 
 
 def getWorkFolder(afile, workdir=None):
+    # TODO: make this generic, maybe save in RAM instead of disk?
+    options = lambda: None
+    options.tempdir = True
+    options.lightnovel = False
+    options.legacyextract = False
     if not workdir:
         if options.tempdir:
             workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
@@ -1417,6 +1422,8 @@ def createNewTome(parent):
 
 
 def slugify(value, is_natural_sorted):
+    options = lambda:None
+    options.format = True
     if options.format == 'CBZ' and is_natural_sorted:
         return value
     if options.format != 'CBZ':

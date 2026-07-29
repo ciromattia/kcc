@@ -21,8 +21,8 @@ from datetime import datetime, timezone
 import itertools
 from pathlib import Path
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
-from PySide6.QtGui import (QColor, QIcon, QPixmap, QDesktopServices)
-from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QAbstractItemView, QListView, QTreeView)
+from PySide6.QtGui import (QColor, QIcon, QImage, QKeyEvent, QPixmap, QDesktopServices)
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QListWidgetItem, QMainWindow, QSizePolicy, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QAbstractItemView, QListView, QTreeView, QWidget)
 from PySide6.QtNetwork import (QLocalSocket, QLocalServer)
 
 import os
@@ -42,6 +42,7 @@ from tempfile import gettempdir
 
 from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
+from .comic2ebook import OS_SORT_KEY, flattenTree, getWorkFolder, removeNonImages, sanitizeTree
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -55,6 +56,11 @@ class QApplicationMessaging(QApplication):
 
     def __init__(self, argv):
         QApplication.__init__(self, argv)
+        screen = self.primaryScreen()
+        print(screen.availableGeometry())
+        print(screen.availableSize())
+        print(screen.geometry())
+        print(screen.size())
         self._key = 'KCC'
         self._timeout = 1000
         self._locked = False
@@ -658,6 +664,113 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     self.lastPath = os.path.abspath(os.path.join(dname, os.pardir))
                     GUI.jobList.addItem(dname)
                     GUI.jobList.scrollToBottom()
+
+
+
+
+    def labelSpreadsStart(self):
+        from PySide6.QtWidgets import QDialog, QDialogButtonBox, QLabel, QVBoxLayout
+
+        # TODO: make this a function since it's copy pasted
+        currentJobs = []
+        for i in range(GUI.jobList.count()):
+            # Make sure that we don't consider any system message as job to do
+            if GUI.jobList.item(i).icon().isNull():
+                currentJobs.append(str(GUI.jobList.item(i).text()))
+        images = []
+        for job in currentJobs:
+            path = getWorkFolder(job)
+            removeNonImages(path)
+            sanitizeTree(path)
+            flattenTree(path)
+            for root, _, files in os.walk(path):
+                files.sort(key=OS_SORT_KEY)
+                for file in files:
+                    images.append(os.path.join(root, file))
+
+        # class ScaledLabel(QLabel):
+        #     def __init__(self, *args, **kwargs):
+        #         QLabel.__init__(self)
+        #         self._pixmap = self.pixmap()
+        #         self._resized= False
+            
+        #     def resizeEvent(self, event):
+        #         self.setPixmap(self._pixmap)     
+
+        #     def setPixmap(self, pixmap): #overiding setPixmap
+        #         if not pixmap:return 
+        #         self._pixmap = pixmap
+        #         return QLabel.setPixmap(self,self._pixmap.scaled(
+        #                 self.frameSize(),
+        #                 Qt.KeepAspectRatio))
+
+        class CustomDialog(QDialog):
+            def __init__(self):
+                super().__init__()
+                self.index = 1
+
+                self.setWindowTitle("TODO: Filename goes here")
+                self.setGeometry(APP.primaryScreen().availableGeometry())
+                self.setMaximumSize(APP.primaryScreen().availableSize())
+
+                QBtn = (
+                    QDialogButtonBox.Yes | QDialogButtonBox.No
+                )
+
+                self.buttonBox = QDialogButtonBox(QBtn)
+                self.buttonBox.accepted.connect(self.accept)
+                self.buttonBox.rejected.connect(self.reject)
+
+                layout = QHBoxLayout()
+                self.setLayout(layout)
+                
+                label = QLabel()
+                label2 = QLabel()
+                self.label = label
+                self.label2 = label2
+                layout.addWidget(label)
+                layout.addWidget(label2)
+                layout.addWidget(self.buttonBox)
+                print(label.size())
+                print(label.maximumSize())
+                l, t, r, b = layout.getContentsMargins()
+                
+                #label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                pixmap = QPixmap(images[1]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                label.setPixmap(pixmap)
+                #label.setScaledContents(True)
+                
+                #label2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                pixmap2 = QPixmap(images[0]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                label2.setPixmap(pixmap2)
+                #label2.setScaledContents(True)
+                #self.resize(pixmap2.width(), pixmap2.height())
+            def keyReleaseEvent(self, event):
+                t = 20
+                b = 20
+                if isinstance(event, QKeyEvent):
+                    if event.key() == Qt.Key.Key_Left:
+                        self.index = max(0, self.index - 2)
+                        pixmap = QPixmap(images[self.index+1]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                        self.label.setPixmap(pixmap)
+                        pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                        self.label2.setPixmap(pixmap2)
+                    elif event.key() == Qt.Key.Key_Right:
+                        self.index = min(100, self.index + 2)
+                        pixmap = QPixmap(images[self.index+1]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                        self.label.setPixmap(pixmap)
+                        pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
+                        self.label2.setPixmap(pixmap2)
+                    else:
+                        super().keyReleaseEvent(event)
+                else:
+                    super().keyReleaseEvent(event)
+
+                
+
+        dlg = CustomDialog()
+        dlg.setWindowTitle("HELLO!")
+        print(dlg.exec())
 
 
     def selectFileMetaEditor(self, sname):
@@ -1472,6 +1585,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.kofiButton.clicked.connect(self.openKofi)
         GUI.humbleButton.clicked.connect(self.openHumble)
         GUI.convertButton.clicked.connect(self.convertStart)
+        GUI.labelSpreadsButton.clicked.connect(self.labelSpreadsStart)
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)
         GUI.croppingBox.stateChanged.connect(self.togglecroppingBox)
