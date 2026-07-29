@@ -764,7 +764,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                 # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
                                 # self.label2.setPixmap(pixmap2)
                             elif event.key() == Qt.Key.Key_Space:
-                                spreads.append(self.index)
+                                print(images)
+                                spreads.append(os.path.basename(images[self.index]))
                                 self.label2.setText('spread')
                                 print(self.index)
                             else:
@@ -808,6 +809,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 dlg.setWindowTitle(job)
                 if dlg.exec() == 1:
                     with open(job+'.json', "w") as fp:
+                        print(spreads)
+                        spreads = [int(filename[6:10]) for filename in spreads]
                         json.dump({'spreads': sorted(set(spreads))} , fp) 
 
 
