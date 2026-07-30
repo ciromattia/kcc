@@ -1229,7 +1229,7 @@ def removeNonImages(filetree):
         raise RuntimeError('\n'.join(warning))
 
 
-def sanitizeTree(filetree, prefix='kcc'):
+def sanitizeTree(filetree, options, prefix='kcc'):
     chapterNames = {}
     page = 1
     cover_path = None
@@ -1785,7 +1785,7 @@ def makeFusion(sources: List[str]):
         path = getWorkFolder(source, options, str(targetpath))
         if path != str(targetpath):
             move(os.path.join(path, 'OEBPS', 'Images'), targetpath)
-        sanitizeTree(targetpath, prefix='fusion')
+        sanitizeTree(targetpath, options, prefix='fusion')
         # TODO: remove flattenTree when subchapters are supported
         flattenTree(targetpath)   
 
@@ -1842,7 +1842,7 @@ def makeBook(source, qtgui=None, job_progress=''):
     getMetadata(os.path.join(path, "OEBPS", "Images"), source)
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
-    chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'), options)
     if options.filefusion:
         # Strip the fusion_0001_ sort prefix from makeFusion if present
         chapterNames = {k: sub(r'^fusion_\d{4}_', '', v) for k, v in chapterNames.items()}

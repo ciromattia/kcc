@@ -243,6 +243,138 @@ class ProgressThread(QThread):
         self.running = False
 
 
+def get_options():
+    parser = comic2ebook.makeParser()
+    options = parser.parse_args()
+
+    options.profile = GUI.profiles[str(GUI.deviceBox.currentText())]['Label']
+    gui_current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
+    options.format = gui_current_format
+    if GUI.mangaBox.isChecked():
+        options.righttoleft = True
+    if GUI.lightnovelBox.isChecked():
+        options.lightnovel = True
+    if GUI.ebokBox.isChecked():
+        options.ebok = True
+    if GUI.invertDirectionBox.isChecked():
+        options.invertdirection = True
+    if GUI.rotateBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.splitter = 2
+    elif GUI.rotateBox.checkState() == Qt.CheckState.Checked:
+        options.splitter = 1
+    if GUI.qualityBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.autoscale = True
+    elif GUI.qualityBox.checkState() == Qt.CheckState.Checked:
+        options.hq = True
+    if GUI.vertical4PanelBox.isChecked():
+        options.vertical4panel = True
+    if GUI.webtoonBox.isChecked():
+        options.webtoon = True
+    if GUI.upscaleBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.stretch = True
+    elif GUI.upscaleBox.checkState() == Qt.CheckState.Checked:
+        options.upscale = True
+    if GUI.gammaBox.isChecked() and float(GUI.gammaValue) > 0.09:
+        options.gamma = float(GUI.gammaValue)
+    if GUI.autoLevelBox.isChecked():
+        options.autolevel = True
+    if GUI.autocontrastBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.noautocontrast = True
+    elif GUI.autocontrastBox.checkState() == Qt.CheckState.Checked:
+        options.colorautocontrast = True
+    if GUI.croppingBox.isChecked():
+        if GUI.croppingBox.checkState() == Qt.CheckState.PartiallyChecked:
+            options.cropping = 1
+        else:
+            options.cropping = 2
+    else:
+        options.cropping = 0
+    if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
+        options.croppingp = float(GUI.croppingPowerValue)
+        options.preservemargin = GUI.preserveMarginBox.value()
+    if GUI.interPanelCropBox.isChecked():
+        if GUI.interPanelCropBox.checkState() == Qt.CheckState.PartiallyChecked:
+            options.interpanelcrop = 1
+        else:
+            options.interpanelcrop = 2
+    else:
+        options.interpanelcrop = 0
+    if GUI.borderBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.white_borders = True
+    elif GUI.borderBox.checkState() == Qt.CheckState.Checked:
+        options.black_borders = True
+    if GUI.outputSplit.isChecked():
+        options.batchsplit = 2
+    if GUI.colorBox.isChecked():
+        options.forcecolor = True
+    if GUI.eraseRainbowBox.isChecked():
+        options.eraserainbow = True
+    if GUI.maximizeStrips.isChecked():
+        options.maximizestrips = True
+    if GUI.disableProcessingBox.isChecked():
+        options.noprocessing = True
+    if GUI.legacyExtractBox.isChecked():
+        options.legacyextract = True
+    if GUI.pdfWidthBox.isChecked():
+        options.pdfwidth = True
+    if GUI.smartCoverCropBox.isChecked():
+        options.smartcovercrop = True
+    if GUI.coverFillBox.isChecked():
+        options.coverfill = True
+    if GUI.metadataTitleBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.metadatatitle = 1
+    elif GUI.metadataTitleBox.checkState() == Qt.CheckState.Checked:
+        options.metadatatitle = 2
+    if GUI.keepComicInfoBox.isChecked():
+        options.keepcomicinfo = True
+    if GUI.deleteBox.isChecked():
+        options.delete = True
+    if GUI.tempDirBox.isChecked():
+        options.tempdir = True
+    if GUI.spreadShiftBox.isChecked():
+        options.spreadshift = True
+    if GUI.onePageLandscapeBox.isChecked():
+        options.onepagelandscape = True
+    if GUI.fileFusionBox.isChecked():
+        options.filefusion = True
+    else:
+        options.filefusion = False
+    if GUI.noRotateBox.isChecked():
+        options.norotate = True
+    if GUI.rotateRightBox.isChecked():
+        options.rotateright = True
+    if GUI.rotateFirstBox.isChecked():
+        options.rotatefirst = True
+    if GUI.forcePngRgbBox.isChecked():
+        options.force_png_rgb = True
+    if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.forcepng = True
+    elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
+        options.mozjpeg = True
+    if GUI.webpBox.isChecked():
+        options.webp = True
+    if GUI.pngLegacyBox.isChecked():
+        options.pnglegacy = True
+    if GUI.noQuantizeBox.isChecked():
+        options.noquantize = True
+    if GUI.jpegQualityBox.isChecked():
+        options.jpegquality = GUI.jpegQualitySpinBox.value()
+    if GUI.currentMode > 2:
+        options.customwidth = str(GUI.widthBox.value())
+        options.customheight = str(GUI.heightBox.value())
+    if GUI.targetDirectory != '':
+        options.output = GUI.targetDirectory
+    if GUI.titleEdit.text():
+        options.title = str(GUI.titleEdit.text())
+    if GUI.authorEdit.text():
+        options.author = str(GUI.authorEdit.text())
+    if GUI.languageEdit.text():
+        options.language = str(GUI.languageEdit.text())
+    if GUI.chunkSizeCheckBox.isChecked():
+        options.targetsize = int(GUI.chunkSizeBox.value())
+
+    return options, gui_current_format
+
 class WorkerThread(QThread):
     def __init__(self):
         QThread.__init__(self)
@@ -272,136 +404,9 @@ class WorkerThread(QThread):
     def run(self):
         MW.modeConvert.emit(0)
 
-        parser = comic2ebook.makeParser()
-        options = parser.parse_args()
         argv = ''
         currentJobs = []
-
-        options.profile = GUI.profiles[str(GUI.deviceBox.currentText())]['Label']
-        gui_current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
-        options.format = gui_current_format
-        if GUI.mangaBox.isChecked():
-            options.righttoleft = True
-        if GUI.lightnovelBox.isChecked():
-            options.lightnovel = True
-        if GUI.ebokBox.isChecked():
-            options.ebok = True
-        if GUI.invertDirectionBox.isChecked():
-            options.invertdirection = True
-        if GUI.rotateBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.splitter = 2
-        elif GUI.rotateBox.checkState() == Qt.CheckState.Checked:
-            options.splitter = 1
-        if GUI.qualityBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.autoscale = True
-        elif GUI.qualityBox.checkState() == Qt.CheckState.Checked:
-            options.hq = True
-        if GUI.vertical4PanelBox.isChecked():
-            options.vertical4panel = True
-        if GUI.webtoonBox.isChecked():
-            options.webtoon = True
-        if GUI.upscaleBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.stretch = True
-        elif GUI.upscaleBox.checkState() == Qt.CheckState.Checked:
-            options.upscale = True
-        if GUI.gammaBox.isChecked() and float(GUI.gammaValue) > 0.09:
-            options.gamma = float(GUI.gammaValue)
-        if GUI.autoLevelBox.isChecked():
-            options.autolevel = True
-        if GUI.autocontrastBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.noautocontrast = True
-        elif GUI.autocontrastBox.checkState() == Qt.CheckState.Checked:
-            options.colorautocontrast = True
-        if GUI.croppingBox.isChecked():
-            if GUI.croppingBox.checkState() == Qt.CheckState.PartiallyChecked:
-                options.cropping = 1
-            else:
-                options.cropping = 2
-        else:
-            options.cropping = 0
-        if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
-            options.croppingp = float(GUI.croppingPowerValue)
-            options.preservemargin = GUI.preserveMarginBox.value()
-        if GUI.interPanelCropBox.isChecked():
-            if GUI.interPanelCropBox.checkState() == Qt.CheckState.PartiallyChecked:
-                options.interpanelcrop = 1
-            else:
-                options.interpanelcrop = 2
-        else:
-            options.interpanelcrop = 0
-        if GUI.borderBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.white_borders = True
-        elif GUI.borderBox.checkState() == Qt.CheckState.Checked:
-            options.black_borders = True
-        if GUI.outputSplit.isChecked():
-            options.batchsplit = 2
-        if GUI.colorBox.isChecked():
-            options.forcecolor = True
-        if GUI.eraseRainbowBox.isChecked():
-            options.eraserainbow = True
-        if GUI.maximizeStrips.isChecked():
-            options.maximizestrips = True
-        if GUI.disableProcessingBox.isChecked():
-            options.noprocessing = True
-        if GUI.legacyExtractBox.isChecked():
-            options.legacyextract = True
-        if GUI.pdfWidthBox.isChecked():
-            options.pdfwidth = True
-        if GUI.smartCoverCropBox.isChecked():
-            options.smartcovercrop = True
-        if GUI.coverFillBox.isChecked():
-            options.coverfill = True
-        if GUI.metadataTitleBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.metadatatitle = 1
-        elif GUI.metadataTitleBox.checkState() == Qt.CheckState.Checked:
-            options.metadatatitle = 2
-        if GUI.keepComicInfoBox.isChecked():
-            options.keepcomicinfo = True
-        if GUI.deleteBox.isChecked():
-            options.delete = True
-        if GUI.tempDirBox.isChecked():
-            options.tempdir = True
-        if GUI.spreadShiftBox.isChecked():
-            options.spreadshift = True
-        if GUI.onePageLandscapeBox.isChecked():
-            options.onepagelandscape = True
-        if GUI.fileFusionBox.isChecked():
-            options.filefusion = True
-        else:
-            options.filefusion = False
-        if GUI.noRotateBox.isChecked():
-            options.norotate = True
-        if GUI.rotateRightBox.isChecked():
-            options.rotateright = True
-        if GUI.rotateFirstBox.isChecked():
-            options.rotatefirst = True
-        if GUI.forcePngRgbBox.isChecked():
-            options.force_png_rgb = True
-        if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.forcepng = True
-        elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
-            options.mozjpeg = True
-        if GUI.webpBox.isChecked():
-            options.webp = True
-        if GUI.pngLegacyBox.isChecked():
-            options.pnglegacy = True
-        if GUI.noQuantizeBox.isChecked():
-            options.noquantize = True
-        if GUI.jpegQualityBox.isChecked():
-            options.jpegquality = GUI.jpegQualitySpinBox.value()
-        if GUI.currentMode > 2:
-            options.customwidth = str(GUI.widthBox.value())
-            options.customheight = str(GUI.heightBox.value())
-        if GUI.targetDirectory != '':
-            options.output = GUI.targetDirectory
-        if GUI.titleEdit.text():
-            options.title = str(GUI.titleEdit.text())
-        if GUI.authorEdit.text():
-            options.author = str(GUI.authorEdit.text())
-        if GUI.languageEdit.text():
-            options.language = str(GUI.languageEdit.text())
-        if GUI.chunkSizeCheckBox.isChecked():
-            options.targetsize = int(GUI.chunkSizeBox.value())
+        options, gui_current_format = get_options()
 
         for i in range(GUI.jobList.count()):
             # Make sure that we don't consider any system message as job to do
@@ -681,12 +686,13 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         images = []
         for job in currentJobs:
             # TODO: render PDF at lower res
-            path = getWorkFolder(job, self.options)
+            options, _ = get_options()
+            path = getWorkFolder(job, options)
             removeNonImages(path)
-            sanitizeTree(path)
+            sanitizeTree(path, options)
             flattenTree(path)
 
-            if True:
+            if options.tempdir:
                 workdir = mkdtemp('', 'KCC-', os.path.dirname(job))
             else:
                 workdir = mkdtemp('', 'KCC-')
