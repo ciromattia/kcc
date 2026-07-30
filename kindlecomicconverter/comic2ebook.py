@@ -1254,7 +1254,7 @@ def sanitizeTree(filetree, prefix='kcc'):
         dirs.sort(key=OS_SORT_KEY)
         for i, name in enumerate(dirs):
             tmpName = name
-            slugified = slugify(name, is_natural_sorted)
+            slugified = slugify(name, options, is_natural_sorted)
             while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
                 slugified += "A"
             chapterNames[slugified] = tmpName
@@ -1417,7 +1417,7 @@ def createNewTome(parent):
     return tomePath, tomePathRoot
 
 
-def slugify(value, is_natural_sorted):
+def slugify(value, options, is_natural_sorted):
     if options.format == 'CBZ' and is_natural_sorted:
         return value
     if options.format != 'CBZ':
