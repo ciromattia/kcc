@@ -906,12 +906,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
 
 
 
-def getWorkFolder(afile, workdir=None):
-    # TODO: make this generic, maybe save in RAM instead of disk?
-    options = lambda: None
-    options.tempdir = True
-    options.lightnovel = False
-    options.legacyextract = False
+def getWorkFolder(afile, options, workdir=None):
     if not workdir:
         if options.tempdir:
             workdir = mkdtemp('', 'KCC-', os.path.dirname(afile))
@@ -989,6 +984,7 @@ def getWorkFolder(afile, workdir=None):
                     else:
                         workdir2 = mkdtemp('', 'KCC-')
                     fullPath2 = os.path.join(workdir2, 'OEBPS', 'Images')
+                    os.makedirs(fullPath2, exist_ok=True)
                     for file in os.listdir(os.path.join(fullPath, tdir[0])):
                         move(os.path.join(fullPath, tdir[0], file), fullPath2)
                     rmtree(workdir, True)
@@ -1258,7 +1254,7 @@ def sanitizeTree(filetree, prefix='kcc'):
         dirs.sort(key=OS_SORT_KEY)
         for i, name in enumerate(dirs):
             tmpName = name
-            slugified = slugify(name, is_natural_sorted)
+            slugified = slugify(name, options, is_natural_sorted)
             while os.path.exists(os.path.join(root, slugified)) and name.upper() != slugified.upper():
                 slugified += "A"
             chapterNames[slugified] = tmpName
@@ -1421,9 +1417,7 @@ def createNewTome(parent):
     return tomePath, tomePathRoot
 
 
-def slugify(value, is_natural_sorted):
-    options = lambda:None
-    options.format = True
+def slugify(value, options, is_natural_sorted):
     if options.format == 'CBZ' and is_natural_sorted:
         return value
     if options.format != 'CBZ':
@@ -1788,7 +1782,7 @@ def makeFusion(sources: List[str]):
         else:
             targetpath = fusion_path.joinpath(f'{prefix}{source_path.name}')
 
-        path = getWorkFolder(source, str(targetpath))
+        path = getWorkFolder(source, options, str(targetpath))
         if path != str(targetpath):
             move(os.path.join(path, 'OEBPS', 'Images'), targetpath)
         sanitizeTree(targetpath, prefix='fusion')
@@ -1814,7 +1808,7 @@ def makeBook(source, qtgui=None, job_progress=''):
     if not options.filefusion:
         checkPre('LLL-')
     print(f"{job_progress}Preparing source images...")
-    path = getWorkFolder(source)
+    path = getWorkFolder(source, options)
     print(f"{job_progress}Checking images...")
 
     if options.lightnovel:
