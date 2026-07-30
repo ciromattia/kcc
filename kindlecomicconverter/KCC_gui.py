@@ -681,7 +681,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         images = []
         for job in currentJobs:
             # TODO: render PDF at lower res
-            path = getWorkFolder(job)
+            path = getWorkFolder(job, self.options)
             removeNonImages(path)
             sanitizeTree(path)
             flattenTree(path)
