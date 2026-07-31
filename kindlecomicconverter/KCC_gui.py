@@ -43,6 +43,8 @@ from tempfile import gettempdir, mkdtemp
 from PIL import Image
 from PIL.Image import Dither
 
+from .KCC_spread_label import CustomDialog
+
 from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
 from .comic2ebook import OS_SORT_KEY, flattenTree, getWorkFolder, removeNonImages, sanitizeTree
@@ -673,9 +675,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     GUI.jobList.addItem(dname)
                     GUI.jobList.scrollToBottom()
 
-
-
-
     def labelSpreadsStart(self):
         # TODO: make this a function since it's copy pasted
         currentJobs = []
@@ -699,92 +698,17 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
             for root, _, files in os.walk(path):
                 spreads = []
-                class CustomDialog(QDialog):
-                    def __init__(self):
-                        super().__init__()
-                        self.index = 0
-
-                        self.setWindowTitle("TODO: Filename goes here")
-                        # self.setGeometry(APP.primaryScreen().availableGeometry())
-                        # self.setMaximumSize(APP.primaryScreen().availableSize())
-                        self.availableHeight = APP.primaryScreen().availableSize().height()
-
-                        QBtn = (
-                            QDialogButtonBox.Yes | QDialogButtonBox.No
-                        )
-
-                        self.buttonBox = QDialogButtonBox(QBtn)
-                        self.buttonBox.accepted.connect(self.accept)
-                        self.buttonBox.rejected.connect(self.reject)
-
-                        layout = QHBoxLayout()
-                        self.setLayout(layout)
-                        
-                        label = QLabel()
-                        label2 = QLabel()
-                        self.label = label
-                        self.label2 = label2
-                        layout.addWidget(label)
-                        layout.addWidget(label2)
-                        label2.setText("Not a spread")
-                        layout.addWidget(self.buttonBox)
-                        # print(label.size())
-                        # print(label.maximumSize())
-                        # l, t, r, b = layout.getContentsMargins()
-                        
-                        #label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                        pixmap = QPixmap(images[0]).scaledToHeight(self.availableHeight * 0.9)
-                        label.setPixmap(pixmap)
-                        #label.setScaledContents(True)
-                        
-                        #label2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                        # pixmap2 = QPixmap(images[0]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
-                        # label2.setPixmap(pixmap2)
-                        #label2.setScaledContents(True)
-                        #self.resize(pixmap2.width(), pixmap2.height())
-                    def keyReleaseEvent(self, event):
-                        t = 20
-                        b = 20
-                        if isinstance(event, QKeyEvent):
-                            if event.key() == Qt.Key.Key_Left:
-                                # TODO: negative indices
-                                self.index = self.index - 1
-                                if self.index in spreads:
-                                    self.label2.setText('spread')
-                                else:
-                                    self.label2.setText('not a spread')
-                                pixmap = QPixmap(images[self.index]).scaledToHeight(self.availableHeight * 0.9)
-                                self.label.setPixmap(pixmap)
-                                # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
-                                # self.label2.setPixmap(pixmap2)
-                            elif event.key() == Qt.Key.Key_Right:
-                                self.index = self.index + 1
-                                if self.index in spreads:
-                                    self.label2.setText('spread')
-                                else:
-                                    self.label2.setText('not a spread')
-                                
-                                print(self.index)
-                                pixmap = QPixmap(images[self.index]).scaledToHeight(self.availableHeight * 0.9)
-                                self.label.setPixmap(pixmap)
-                                # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
-                                # self.label2.setPixmap(pixmap2)
-                            elif event.key() == Qt.Key.Key_Space:
-                                print(images)
-                                spreads.append(os.path.basename(images[self.index]))
-                                self.label2.setText('spread')
-                                print(self.index)
-                            else:
-                                super().keyReleaseEvent(event)
-                        else:
-                            super().keyReleaseEvent(event)
                 files.sort(key=OS_SORT_KEY)
-                # TODO: edge case on end
-                # TODO: start from 0 or 1
-                for i in range(1, len(files), 2):
+                start_index = 0
+                if job.endswith('.pdf') or job.endswith('.epub'):
+                    start_index = 1
+                if options.spreadshift:
+                    start_index = 0 if start_index == 1 else 1
+                for i in range(start_index, len(files), 2):
                     if i  == len(files) - 1:
                         continue 
                     # TODO: with statements
+                    # TODO: ignore 1% of top and bottom too?
                     im1 = Image.open(os.path.join(root, files[i])).convert('1', dither=Dither.NONE)
                     size1 = im1.size
                     crop1 = im1.crop((0, 0, 0.2*size1[0], size1[1]))
@@ -811,7 +735,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     dst.save(os.path.join(workdir, f'label-{i:04}.png'))
                     images.append(os.path.join(workdir, f'label-{i:04}.png'))
 
-                dlg = CustomDialog()
+                dlg = CustomDialog(APP.primaryScreen().availableGeometry().height(), images, spreads)
                 dlg.setWindowTitle(job)
                 if dlg.exec() == 1:
                     with open(job+'.json', "w") as fp:
