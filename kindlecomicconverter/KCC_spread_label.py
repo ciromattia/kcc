@@ -36,7 +36,13 @@ class LabelSpreadsDialog(QDialog):
         layout.addWidget(label2)
         label2.setText("not a spread")
 
-        buttonLabel = QLabel("Press Yes to save labels to file.\nUse arrows to change index.\nUse space bar to confirm spreads.")
+        help_text = [
+            "Press Yes to save labels to file.",
+            "Use arrows to change index.",
+            "Use space bar to confirm spreads.",
+            "Use spread shift option to offset by 1.",
+        ]
+        buttonLabel = QLabel('\n'.join(help_text))
         layout.addWidget(buttonLabel)
         layout.addWidget(self.buttonBox)
         # print(label.size())
