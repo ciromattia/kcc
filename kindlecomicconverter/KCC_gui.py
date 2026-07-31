@@ -677,8 +677,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             # Make sure that we don't consider any system message as job to do
             if GUI.jobList.item(i).icon().isNull():
                 currentJobs.append(str(GUI.jobList.item(i).text()))
-        images = []
         for job in currentJobs:
+            images = []
+            spreads = []
             options, _ = get_options()
             options.profileData = [(600, 800), (600,800)]
             path = getWorkFolder(job, options)
@@ -692,7 +693,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 workdir = mkdtemp('', 'KCC-')
 
             for root, _, files in os.walk(path):
-                spreads = []
                 files.sort(key=OS_SORT_KEY)
                 start_index = 0
                 if job.endswith('.pdf') or job.endswith('.epub'):
@@ -737,7 +737,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                         # TODO: not very clean to grab index from filename
                         spreads = [int(filename[6:10]) for filename in spreads]
                         json.dump({'spreads': sorted(set(spreads))} , fp) 
-
+                rmtree(path, True)
+                rmtree(workdir, True)
 
     def selectFileMetaEditor(self, sname):
         files = []
