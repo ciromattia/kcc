@@ -61,11 +61,6 @@ class QApplicationMessaging(QApplication):
 
     def __init__(self, argv):
         QApplication.__init__(self, argv)
-        screen = self.primaryScreen()
-        print(screen.availableGeometry())
-        print(screen.availableSize())
-        print(screen.geometry())
-        print(screen.size())
         self._key = 'KCC'
         self._timeout = 1000
         self._locked = False

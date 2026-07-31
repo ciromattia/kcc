@@ -11,7 +11,6 @@ class CustomDialog(QDialog):
         self.images = images 
         self.spreads = spreads
         self.index2page = {i: os.path.basename(image) for i, image in enumerate(images)}
-        print(self.index2page)
 
         self.setWindowTitle("TODO: Filename goes here")
         # self.setGeometry(APP.primaryScreen().availableGeometry())
@@ -55,14 +54,11 @@ class CustomDialog(QDialog):
         #label2.setScaledContents(True)
         #self.resize(pixmap2.width(), pixmap2.height())
     def keyReleaseEvent(self, event):
-        t = 20
-        b = 20
+        # t = 20
+        # b = 20
         if isinstance(event, QKeyEvent):
             if event.key() == Qt.Key.Key_Left:
-                # TODO: negative indices
                 self.index = max(0, self.index - 1)
-                print(self.index)
-                print(self.spreads)
                 if self.index2page[self.index] in self.spreads:
                     self.label2.setText('spread')
                 else:
@@ -78,7 +74,6 @@ class CustomDialog(QDialog):
                 else:
                     self.label2.setText('not a spread')
                 
-                print(self.index)
                 pixmap = QPixmap(self.images[self.index]).scaledToHeight(self.available_height * 0.9)
                 self.label.setPixmap(pixmap)
                 # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
@@ -86,7 +81,6 @@ class CustomDialog(QDialog):
             elif event.key() == Qt.Key.Key_Space:
                 self.spreads.append(os.path.basename(self.images[self.index]))
                 self.label2.setText('spread')
-                print(self.index)
             else:
                 super().keyReleaseEvent(event)
         else:
