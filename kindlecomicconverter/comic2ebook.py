@@ -20,6 +20,7 @@
 
 from collections import Counter
 from datetime import datetime
+import json
 import os
 import pathlib
 import re
@@ -1843,6 +1844,26 @@ def makeBook(source, qtgui=None, job_progress=''):
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
     chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'), options)
+
+    if os.path.exists(source+'.json'):
+        flattenTree(os.path.join(path, 'OEBPS', 'Images'))
+        with open(source+'.json') as f:
+            data = json.load(f)
+            for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
+                sorted_files = os_sorted(files)
+                for i in range(len(files)):
+                    if i in data['spreads']:
+                        im1 = Image.open(os.path.join(root, sorted_files[i]))
+                        im2 = Image.open(os.path.join(root, sorted_files[i+1]))
+                        dst = Image.new('RGB', (im1.width + im2.width, im1.height))
+                        dst.paste(im2, (0, 0))
+                        dst.paste(im1, (im1.width, 0))
+                        print(sorted_files[i])
+                        base, _ = os.path.splitext(os.path.basename(sorted_files[i]))
+                        dst.save(os.path.join(path, 'OEBPS', 'Images', f'{base}-merged.png'))
+                        os.remove(os.path.join(root, sorted_files[i]))
+                        os.remove(os.path.join(root, sorted_files[i+1]))
+
     if options.filefusion:
         # Strip the fusion_0001_ sort prefix from makeFusion if present
         chapterNames = {k: sub(r'^fusion_\d{4}_', '', v) for k, v in chapterNames.items()}
