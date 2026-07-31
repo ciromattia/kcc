@@ -671,15 +671,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     GUI.jobList.scrollToBottom()
 
     def labelSpreadsStart(self):
-        # TODO: make this a function since it's copy pasted
         currentJobs = []
+        # TODO: make this a function since it's copy pasted
         for i in range(GUI.jobList.count()):
             # Make sure that we don't consider any system message as job to do
             if GUI.jobList.item(i).icon().isNull():
                 currentJobs.append(str(GUI.jobList.item(i).text()))
         images = []
         for job in currentJobs:
-            # TODO: render PDF at lower res
             options, _ = get_options()
             options.profileData = [(600, 800), (600,800)]
             path = getWorkFolder(job, options)
