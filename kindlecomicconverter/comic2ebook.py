@@ -872,7 +872,7 @@ def extract_page(vector):
 
 
 
-def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_height):
+def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_height, pdfwidth):
     render = False
     with pymupdf.open(filename) as doc:
         for page in doc:
@@ -892,7 +892,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
     cpu = cpu_count()
 
     # make vectors of arguments for the processes
-    vectors = [(i, cpu, filename, output_dir, target_width, target_height, options.pdfwidth) for i in range(cpu)]
+    vectors = [(i, cpu, filename, output_dir, target_width, target_height, pdfwidth) for i in range(cpu)]
     print("Starting %i processes for '%s'." % (cpu, filename))
 
 
@@ -955,7 +955,7 @@ def getWorkFolder(afile, options, workdir=None):
                 target_height *= 1.25 #Account for possible margin at the top and bottom with page number
                 target_width *= 1.25
             try:
-                mupdf_pdf_process_pages_parallel(afile, fullPath, target_width, target_height)
+                mupdf_pdf_process_pages_parallel(afile, fullPath, target_width, target_height, options.pdfwidth)
             except Exception as e:
                 rmtree(path, True)
                 raise UserWarning(f"Failed to extract images from PDF file. {e}")

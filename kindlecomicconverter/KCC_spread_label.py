@@ -4,7 +4,7 @@ from PySide6.QtCore import (Qt)
 from PySide6.QtGui import (QKeyEvent, QPixmap)
 from PySide6.QtWidgets import (QDialogButtonBox, QHBoxLayout, QLabel, QDialog)
 
-class CustomDialog(QDialog):
+class LabelSpreadsDialog(QDialog):
     def __init__(self, available_height, images, spreads):
         super().__init__()
         self.index = 0

@@ -43,7 +43,7 @@ from tempfile import gettempdir, mkdtemp
 from PIL import Image
 from PIL.Image import Dither
 
-from .KCC_spread_label import CustomDialog
+from .KCC_spread_label import LabelSpreadsDialog
 
 from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
@@ -681,6 +681,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         for job in currentJobs:
             # TODO: render PDF at lower res
             options, _ = get_options()
+            options.profileData = [(600, 800), (600,800)]
             path = getWorkFolder(job, options)
             removeNonImages(path)
             sanitizeTree(path, options)
@@ -730,7 +731,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     dst.save(os.path.join(workdir, f'label-{i:04}.png'))
                     images.append(os.path.join(workdir, f'label-{i:04}.png'))
 
-                dlg = CustomDialog(APP.primaryScreen().availableGeometry().height(), images, spreads)
+                dlg = LabelSpreadsDialog(APP.primaryScreen().availableGeometry().height(), images, spreads)
                 dlg.setWindowTitle(job)
                 if dlg.exec() == 1:
                     with open(job+'.json', "w") as fp:
