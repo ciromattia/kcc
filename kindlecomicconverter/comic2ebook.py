@@ -1858,7 +1858,6 @@ def makeBook(source, qtgui=None, job_progress=''):
                         dst = Image.new('RGB', (im1.width + im2.width, im1.height))
                         dst.paste(im2, (0, 0))
                         dst.paste(im1, (im1.width, 0))
-                        print(sorted_files[i])
                         base, _ = os.path.splitext(os.path.basename(sorted_files[i]))
                         dst.save(os.path.join(path, 'OEBPS', 'Images', f'{base}-merged.png'))
                         os.remove(os.path.join(root, sorted_files[i]))
