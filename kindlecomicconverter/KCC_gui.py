@@ -1516,6 +1516,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             'README': "https://github.com/ciromattia/kcc?tab=readme-ov-file#kcc",
             'FAQ': "https://github.com/ciromattia/kcc/blob/master/README.md#faq",
             'WIKI': "https://github.com/ciromattia/kcc/wiki",
+            'YOUTUBE': "https://www.youtube.com/@eink-dude",
             'TUTORIAL': "https://youtu.be/QQ6zJcMF2Iw?si=80rfm6DU6OUJdFqa",
             'EMAIL': "https://github.com/ciromattia/kcc?tab=readme-ov-file#commissions",
             'DONATE': "https://github.com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations",
