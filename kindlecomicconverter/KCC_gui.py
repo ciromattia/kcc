@@ -730,13 +730,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     dst.save(os.path.join(workdir, f'label-{i:04}.png'))
                     images.append(os.path.join(workdir, f'label-{i:04}.png'))
 
-                dlg = LabelSpreadsDialog(APP.primaryScreen().availableGeometry().height(), images, spreads)
-                dlg.setWindowTitle(job)
-                if dlg.exec() == 1:
-                    with open(job+'.json', "w") as fp:
-                        # TODO: not very clean to grab index from filename
-                        spreads = [int(filename[6:10]) for filename in spreads]
-                        json.dump({'spreads': sorted(set(spreads))} , fp) 
+                if images:
+                    dlg = LabelSpreadsDialog(APP.primaryScreen().availableGeometry().height(), images, spreads)
+                    dlg.setWindowTitle(job)
+                    if dlg.exec() == 1:
+                        with open(job+'.json', "w") as fp:
+                            # TODO: not very clean to grab index from filename
+                            spreads = [int(filename[6:10]) for filename in spreads]
+                            json.dump({'spreads': sorted(set(spreads))} , fp) 
                 rmtree(path, True)
                 rmtree(workdir, True)
 

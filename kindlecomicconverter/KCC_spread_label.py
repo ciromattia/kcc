@@ -2,7 +2,7 @@ import os
 
 from PySide6.QtCore import (Qt)
 from PySide6.QtGui import (QKeyEvent, QPixmap)
-from PySide6.QtWidgets import (QDialogButtonBox, QHBoxLayout, QLabel, QDialog)
+from PySide6.QtWidgets import (QHBoxLayout, QLabel, QDialog)
 
 class LabelSpreadsDialog(QDialog):
     def __init__(self, available_height, images, spreads):
@@ -17,14 +17,6 @@ class LabelSpreadsDialog(QDialog):
         # self.setMaximumSize(APP.primaryScreen().availableSize())
         self.available_height = available_height
 
-        QBtn = (
-            QDialogButtonBox.Yes | QDialogButtonBox.No
-        )
-
-        self.buttonBox = QDialogButtonBox(QBtn)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-
         layout = QHBoxLayout()
         self.setLayout(layout)
         
@@ -37,14 +29,14 @@ class LabelSpreadsDialog(QDialog):
         label2.setText("not a spread")
 
         help_text = [
-            "Press Yes to save labels to file.",
             "Use arrows to change index.",
             "Use space bar to confirm spreads.",
             "Use spread shift option to offset by 1.",
+            "Use enter key to confirm all spreads."
+            "Close window to cancel."
         ]
         buttonLabel = QLabel('\n'.join(help_text))
         layout.addWidget(buttonLabel)
-        layout.addWidget(self.buttonBox)
         # print(label.size())
         # print(label.maximumSize())
         # l, t, r, b = layout.getContentsMargins()
@@ -59,6 +51,7 @@ class LabelSpreadsDialog(QDialog):
         # label2.setPixmap(pixmap2)
         #label2.setScaledContents(True)
         #self.resize(pixmap2.width(), pixmap2.height())
+    
     def keyReleaseEvent(self, event):
         # t = 20
         # b = 20
@@ -85,8 +78,14 @@ class LabelSpreadsDialog(QDialog):
                 # pixmap2 = QPixmap(images[self.index]).scaledToHeight(self.frameGeometry().height() - t - b - t - b)
                 # self.label2.setPixmap(pixmap2)
             elif event.key() == Qt.Key.Key_Space:
-                self.spreads.append(os.path.basename(self.images[self.index]))
-                self.label2.setText('spread')
+                if self.label2.text() == "not a spread":
+                    self.spreads.append(os.path.basename(self.images[self.index]))
+                    self.label2.setText('spread')
+                else:
+                    self.spreads.remove(os.path.basename(self.images[self.index]))
+                    self.label2.setText('not a spread')
+            elif event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter:
+                self.accept()
             else:
                 super().keyReleaseEvent(event)
         else:
