@@ -19,10 +19,11 @@
 
 from datetime import datetime, timezone
 import itertools
+import json
 from pathlib import Path
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
-from PySide6.QtGui import (QColor, QIcon, QPixmap, QDesktopServices)
-from PySide6.QtWidgets import (QApplication, QLabel, QListWidgetItem, QMainWindow, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QAbstractItemView, QListView, QTreeView)
+from PySide6.QtGui import (QColor, QIcon, QImage, QKeyEvent, QPixmap, QDesktopServices)
+from PySide6.QtWidgets import (QApplication, QDialogButtonBox, QHBoxLayout, QLabel, QListWidgetItem, QMainWindow, QSizePolicy, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QAbstractItemView, QListView, QTreeView, QWidget)
 from PySide6.QtNetwork import (QLocalSocket, QLocalServer)
 
 import os
@@ -38,10 +39,15 @@ from xml.sax.saxutils import escape
 from psutil import Process
 from copy import copy
 from packaging.version import Version
-from tempfile import gettempdir
+from tempfile import gettempdir, mkdtemp
+from PIL import Image
+from PIL.Image import Dither
+
+from .KCC_spread_label import LabelSpreadsDialog
 
 from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
+from .comic2ebook import OS_SORT_KEY, flattenTree, getWorkFolder, removeNonImages, sanitizeTree
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -234,6 +240,138 @@ class ProgressThread(QThread):
         self.running = False
 
 
+def get_options():
+    parser = comic2ebook.makeParser()
+    options = parser.parse_args()
+
+    options.profile = GUI.profiles[str(GUI.deviceBox.currentText())]['Label']
+    gui_current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
+    options.format = gui_current_format
+    if GUI.mangaBox.isChecked():
+        options.righttoleft = True
+    if GUI.lightnovelBox.isChecked():
+        options.lightnovel = True
+    if GUI.ebokBox.isChecked():
+        options.ebok = True
+    if GUI.invertDirectionBox.isChecked():
+        options.invertdirection = True
+    if GUI.rotateBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.splitter = 2
+    elif GUI.rotateBox.checkState() == Qt.CheckState.Checked:
+        options.splitter = 1
+    if GUI.qualityBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.autoscale = True
+    elif GUI.qualityBox.checkState() == Qt.CheckState.Checked:
+        options.hq = True
+    if GUI.vertical4PanelBox.isChecked():
+        options.vertical4panel = True
+    if GUI.webtoonBox.isChecked():
+        options.webtoon = True
+    if GUI.upscaleBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.stretch = True
+    elif GUI.upscaleBox.checkState() == Qt.CheckState.Checked:
+        options.upscale = True
+    if GUI.gammaBox.isChecked() and float(GUI.gammaValue) > 0.09:
+        options.gamma = float(GUI.gammaValue)
+    if GUI.autoLevelBox.isChecked():
+        options.autolevel = True
+    if GUI.autocontrastBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.noautocontrast = True
+    elif GUI.autocontrastBox.checkState() == Qt.CheckState.Checked:
+        options.colorautocontrast = True
+    if GUI.croppingBox.isChecked():
+        if GUI.croppingBox.checkState() == Qt.CheckState.PartiallyChecked:
+            options.cropping = 1
+        else:
+            options.cropping = 2
+    else:
+        options.cropping = 0
+    if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
+        options.croppingp = float(GUI.croppingPowerValue)
+        options.preservemargin = GUI.preserveMarginBox.value()
+    if GUI.interPanelCropBox.isChecked():
+        if GUI.interPanelCropBox.checkState() == Qt.CheckState.PartiallyChecked:
+            options.interpanelcrop = 1
+        else:
+            options.interpanelcrop = 2
+    else:
+        options.interpanelcrop = 0
+    if GUI.borderBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.white_borders = True
+    elif GUI.borderBox.checkState() == Qt.CheckState.Checked:
+        options.black_borders = True
+    if GUI.outputSplit.isChecked():
+        options.batchsplit = 2
+    if GUI.colorBox.isChecked():
+        options.forcecolor = True
+    if GUI.eraseRainbowBox.isChecked():
+        options.eraserainbow = True
+    if GUI.maximizeStrips.isChecked():
+        options.maximizestrips = True
+    if GUI.disableProcessingBox.isChecked():
+        options.noprocessing = True
+    if GUI.legacyExtractBox.isChecked():
+        options.legacyextract = True
+    if GUI.pdfWidthBox.isChecked():
+        options.pdfwidth = True
+    if GUI.smartCoverCropBox.isChecked():
+        options.smartcovercrop = True
+    if GUI.coverFillBox.isChecked():
+        options.coverfill = True
+    if GUI.metadataTitleBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.metadatatitle = 1
+    elif GUI.metadataTitleBox.checkState() == Qt.CheckState.Checked:
+        options.metadatatitle = 2
+    if GUI.keepComicInfoBox.isChecked():
+        options.keepcomicinfo = True
+    if GUI.deleteBox.isChecked():
+        options.delete = True
+    if GUI.tempDirBox.isChecked():
+        options.tempdir = True
+    if GUI.spreadShiftBox.isChecked():
+        options.spreadshift = True
+    if GUI.onePageLandscapeBox.isChecked():
+        options.onepagelandscape = True
+    if GUI.fileFusionBox.isChecked():
+        options.filefusion = True
+    else:
+        options.filefusion = False
+    if GUI.noRotateBox.isChecked():
+        options.norotate = True
+    if GUI.rotateRightBox.isChecked():
+        options.rotateright = True
+    if GUI.rotateFirstBox.isChecked():
+        options.rotatefirst = True
+    if GUI.forcePngRgbBox.isChecked():
+        options.force_png_rgb = True
+    if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:
+        options.forcepng = True
+    elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
+        options.mozjpeg = True
+    if GUI.webpBox.isChecked():
+        options.webp = True
+    if GUI.pngLegacyBox.isChecked():
+        options.pnglegacy = True
+    if GUI.noQuantizeBox.isChecked():
+        options.noquantize = True
+    if GUI.jpegQualityBox.isChecked():
+        options.jpegquality = GUI.jpegQualitySpinBox.value()
+    if GUI.currentMode > 2:
+        options.customwidth = str(GUI.widthBox.value())
+        options.customheight = str(GUI.heightBox.value())
+    if GUI.targetDirectory != '':
+        options.output = GUI.targetDirectory
+    if GUI.titleEdit.text():
+        options.title = str(GUI.titleEdit.text())
+    if GUI.authorEdit.text():
+        options.author = str(GUI.authorEdit.text())
+    if GUI.languageEdit.text():
+        options.language = str(GUI.languageEdit.text())
+    if GUI.chunkSizeCheckBox.isChecked():
+        options.targetsize = int(GUI.chunkSizeBox.value())
+
+    return options, gui_current_format
+
 class WorkerThread(QThread):
     def __init__(self):
         QThread.__init__(self)
@@ -263,136 +401,9 @@ class WorkerThread(QThread):
     def run(self):
         MW.modeConvert.emit(0)
 
-        parser = comic2ebook.makeParser()
-        options = parser.parse_args()
         argv = ''
         currentJobs = []
-
-        options.profile = GUI.profiles[str(GUI.deviceBox.currentText())]['Label']
-        gui_current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
-        options.format = gui_current_format
-        if GUI.mangaBox.isChecked():
-            options.righttoleft = True
-        if GUI.lightnovelBox.isChecked():
-            options.lightnovel = True
-        if GUI.ebokBox.isChecked():
-            options.ebok = True
-        if GUI.invertDirectionBox.isChecked():
-            options.invertdirection = True
-        if GUI.rotateBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.splitter = 2
-        elif GUI.rotateBox.checkState() == Qt.CheckState.Checked:
-            options.splitter = 1
-        if GUI.qualityBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.autoscale = True
-        elif GUI.qualityBox.checkState() == Qt.CheckState.Checked:
-            options.hq = True
-        if GUI.vertical4PanelBox.isChecked():
-            options.vertical4panel = True
-        if GUI.webtoonBox.isChecked():
-            options.webtoon = True
-        if GUI.upscaleBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.stretch = True
-        elif GUI.upscaleBox.checkState() == Qt.CheckState.Checked:
-            options.upscale = True
-        if GUI.gammaBox.isChecked() and float(GUI.gammaValue) > 0.09:
-            options.gamma = float(GUI.gammaValue)
-        if GUI.autoLevelBox.isChecked():
-            options.autolevel = True
-        if GUI.autocontrastBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.noautocontrast = True
-        elif GUI.autocontrastBox.checkState() == Qt.CheckState.Checked:
-            options.colorautocontrast = True
-        if GUI.croppingBox.isChecked():
-            if GUI.croppingBox.checkState() == Qt.CheckState.PartiallyChecked:
-                options.cropping = 1
-            else:
-                options.cropping = 2
-        else:
-            options.cropping = 0
-        if GUI.croppingBox.checkState() != Qt.CheckState.Unchecked:
-            options.croppingp = float(GUI.croppingPowerValue)
-            options.preservemargin = GUI.preserveMarginBox.value()
-        if GUI.interPanelCropBox.isChecked():
-            if GUI.interPanelCropBox.checkState() == Qt.CheckState.PartiallyChecked:
-                options.interpanelcrop = 1
-            else:
-                options.interpanelcrop = 2
-        else:
-            options.interpanelcrop = 0
-        if GUI.borderBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.white_borders = True
-        elif GUI.borderBox.checkState() == Qt.CheckState.Checked:
-            options.black_borders = True
-        if GUI.outputSplit.isChecked():
-            options.batchsplit = 2
-        if GUI.colorBox.isChecked():
-            options.forcecolor = True
-        if GUI.eraseRainbowBox.isChecked():
-            options.eraserainbow = True
-        if GUI.maximizeStrips.isChecked():
-            options.maximizestrips = True
-        if GUI.disableProcessingBox.isChecked():
-            options.noprocessing = True
-        if GUI.legacyExtractBox.isChecked():
-            options.legacyextract = True
-        if GUI.pdfWidthBox.isChecked():
-            options.pdfwidth = True
-        if GUI.smartCoverCropBox.isChecked():
-            options.smartcovercrop = True
-        if GUI.coverFillBox.isChecked():
-            options.coverfill = True
-        if GUI.metadataTitleBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.metadatatitle = 1
-        elif GUI.metadataTitleBox.checkState() == Qt.CheckState.Checked:
-            options.metadatatitle = 2
-        if GUI.keepComicInfoBox.isChecked():
-            options.keepcomicinfo = True
-        if GUI.deleteBox.isChecked():
-            options.delete = True
-        if GUI.tempDirBox.isChecked():
-            options.tempdir = True
-        if GUI.spreadShiftBox.isChecked():
-            options.spreadshift = True
-        if GUI.onePageLandscapeBox.isChecked():
-            options.onepagelandscape = True
-        if GUI.fileFusionBox.isChecked():
-            options.filefusion = True
-        else:
-            options.filefusion = False
-        if GUI.noRotateBox.isChecked():
-            options.norotate = True
-        if GUI.rotateRightBox.isChecked():
-            options.rotateright = True
-        if GUI.rotateFirstBox.isChecked():
-            options.rotatefirst = True
-        if GUI.forcePngRgbBox.isChecked():
-            options.force_png_rgb = True
-        if GUI.mozJpegBox.checkState() == Qt.CheckState.PartiallyChecked:
-            options.forcepng = True
-        elif GUI.mozJpegBox.checkState() == Qt.CheckState.Checked:
-            options.mozjpeg = True
-        if GUI.webpBox.isChecked():
-            options.webp = True
-        if GUI.pngLegacyBox.isChecked():
-            options.pnglegacy = True
-        if GUI.noQuantizeBox.isChecked():
-            options.noquantize = True
-        if GUI.jpegQualityBox.isChecked():
-            options.jpegquality = GUI.jpegQualitySpinBox.value()
-        if GUI.currentMode > 2:
-            options.customwidth = str(GUI.widthBox.value())
-            options.customheight = str(GUI.heightBox.value())
-        if GUI.targetDirectory != '':
-            options.output = GUI.targetDirectory
-        if GUI.titleEdit.text():
-            options.title = str(GUI.titleEdit.text())
-        if GUI.authorEdit.text():
-            options.author = str(GUI.authorEdit.text())
-        if GUI.languageEdit.text():
-            options.language = str(GUI.languageEdit.text())
-        if GUI.chunkSizeCheckBox.isChecked():
-            options.targetsize = int(GUI.chunkSizeBox.value())
+        options, gui_current_format = get_options()
 
         for i in range(GUI.jobList.count()):
             # Make sure that we don't consider any system message as job to do
@@ -659,6 +670,75 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     GUI.jobList.addItem(dname)
                     GUI.jobList.scrollToBottom()
 
+    def labelSpreadsStart(self):
+        currentJobs = []
+        # TODO: make this a function since it's copy pasted
+        for i in range(GUI.jobList.count()):
+            # Make sure that we don't consider any system message as job to do
+            if GUI.jobList.item(i).icon().isNull():
+                currentJobs.append(str(GUI.jobList.item(i).text()))
+        for job in currentJobs:
+            images = []
+            spreads = []
+            options, _ = get_options()
+            options.profileData = [(600, 800), (600,800)]
+            path = getWorkFolder(job, options)
+            removeNonImages(path)
+            sanitizeTree(path, options)
+            flattenTree(path)
+
+            if options.tempdir:
+                workdir = mkdtemp('', 'KCC-', os.path.dirname(job))
+            else:
+                workdir = mkdtemp('', 'KCC-')
+
+            for root, _, files in os.walk(path):
+                files.sort(key=OS_SORT_KEY)
+                start_index = 0
+                if job.endswith('.pdf') or job.endswith('.epub'):
+                    start_index = 1
+                if options.spreadshift:
+                    start_index = 0 if start_index == 1 else 1
+                for i in range(start_index, len(files), 2):
+                    if i  == len(files) - 1:
+                        continue 
+                    # TODO: with statements
+                    # TODO: ignore 1% of top and bottom too?
+                    im1 = Image.open(os.path.join(root, files[i])).convert('1', dither=Dither.NONE)
+                    size1 = im1.size
+                    crop1 = im1.crop((0, 0, 0.2*size1[0], size1[1]))
+                    crop11 = im1.crop((0.01*size1[0], 0, 0.04*size1[0], size1[1]))
+                    #crop1 = crop11
+                    im2 = Image.open(os.path.join(root, files[i+1])).convert('1', dither=Dither.NONE)
+                    size2 = im2.size
+                    crop2 = im2.crop((0.8*size2[0], 0, size2[0], size2[1]))
+                    crop22 = im2.crop((0.96*size2[0], 0, .99* size2[0], size2[1]))
+                    #crop2 = crop22
+                    # dst = Image.new('1', (im1.width + im2.width, im1.height))
+                    # dst.paste(im2, (0, 0))
+                    # dst.paste(im1, (im1.width, 0))
+                    hist1 = crop11.histogram()
+                    hist2 = crop22.histogram()
+                    # TODO: small percentage instead of zero
+                    if hist1[0] == 0 or hist1[-1] == 0 or hist2[0] == 0 or hist2[-1] == 0:
+                        continue
+
+                    dst = Image.new('1', (crop1.width + crop2.width, crop1.height))
+
+                    dst.paste(crop2, (0, 0))
+                    dst.paste(crop1, (crop1.width, 0))
+                    dst.save(os.path.join(workdir, f'label-{i:04}.png'))
+                    images.append(os.path.join(workdir, f'label-{i:04}.png'))
+
+                dlg = LabelSpreadsDialog(APP.primaryScreen().availableGeometry().height(), images, spreads)
+                dlg.setWindowTitle(job)
+                if dlg.exec() == 1:
+                    with open(job+'.json', "w") as fp:
+                        # TODO: not very clean to grab index from filename
+                        spreads = [int(filename[6:10]) for filename in spreads]
+                        json.dump({'spreads': sorted(set(spreads))} , fp) 
+                rmtree(path, True)
+                rmtree(workdir, True)
 
     def selectFileMetaEditor(self, sname):
         files = []
@@ -1436,6 +1516,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             'README': "https://github.com/ciromattia/kcc?tab=readme-ov-file#kcc",
             'FAQ': "https://github.com/ciromattia/kcc/blob/master/README.md#faq",
             'WIKI': "https://github.com/ciromattia/kcc/wiki",
+            'YOUTUBE': "https://www.youtube.com/@eink-dude",
             'TUTORIAL': "https://youtu.be/QQ6zJcMF2Iw?si=80rfm6DU6OUJdFqa",
             'EMAIL': "https://github.com/ciromattia/kcc?tab=readme-ov-file#commissions",
             'DONATE': "https://github.com/ciromattia/kcc/blob/master/README.md#issues--new-features--donations",
@@ -1472,6 +1553,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.kofiButton.clicked.connect(self.openKofi)
         GUI.humbleButton.clicked.connect(self.openHumble)
         GUI.convertButton.clicked.connect(self.convertStart)
+        GUI.labelSpreadsButton.clicked.connect(self.labelSpreadsStart)
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)
         GUI.croppingBox.stateChanged.connect(self.togglecroppingBox)

@@ -20,6 +20,7 @@
 
 from collections import Counter
 from datetime import datetime
+import json
 import os
 import pathlib
 import re
@@ -872,7 +873,7 @@ def extract_page(vector):
 
 
 
-def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_height):
+def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_height, pdfwidth):
     render = False
     with pymupdf.open(filename) as doc:
         for page in doc:
@@ -892,7 +893,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
     cpu = cpu_count()
 
     # make vectors of arguments for the processes
-    vectors = [(i, cpu, filename, output_dir, target_width, target_height, options.pdfwidth) for i in range(cpu)]
+    vectors = [(i, cpu, filename, output_dir, target_width, target_height, pdfwidth) for i in range(cpu)]
     print("Starting %i processes for '%s'." % (cpu, filename))
 
 
@@ -955,7 +956,7 @@ def getWorkFolder(afile, options, workdir=None):
                 target_height *= 1.25 #Account for possible margin at the top and bottom with page number
                 target_width *= 1.25
             try:
-                mupdf_pdf_process_pages_parallel(afile, fullPath, target_width, target_height)
+                mupdf_pdf_process_pages_parallel(afile, fullPath, target_width, target_height, options.pdfwidth)
             except Exception as e:
                 rmtree(path, True)
                 raise UserWarning(f"Failed to extract images from PDF file. {e}")
@@ -1229,7 +1230,7 @@ def removeNonImages(filetree):
         raise RuntimeError('\n'.join(warning))
 
 
-def sanitizeTree(filetree, prefix='kcc'):
+def sanitizeTree(filetree, options, prefix='kcc'):
     chapterNames = {}
     page = 1
     cover_path = None
@@ -1785,7 +1786,7 @@ def makeFusion(sources: List[str]):
         path = getWorkFolder(source, options, str(targetpath))
         if path != str(targetpath):
             move(os.path.join(path, 'OEBPS', 'Images'), targetpath)
-        sanitizeTree(targetpath, prefix='fusion')
+        sanitizeTree(targetpath, options, prefix='fusion')
         # TODO: remove flattenTree when subchapters are supported
         flattenTree(targetpath)   
 
@@ -1842,7 +1843,26 @@ def makeBook(source, qtgui=None, job_progress=''):
     getMetadata(os.path.join(path, "OEBPS", "Images"), source)
     removeNonImages(os.path.join(path, "OEBPS", "Images"))
     detectSuboptimalProcessing(os.path.join(path, "OEBPS", "Images"), source)
-    chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'))
+    chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'), options)
+
+    if os.path.exists(source+'.json'):
+        flattenTree(os.path.join(path, 'OEBPS', 'Images'))
+        with open(source+'.json') as f:
+            data = json.load(f)
+            for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
+                sorted_files = os_sorted(files)
+                for i in range(len(files)):
+                    if i in data['spreads']:
+                        im1 = Image.open(os.path.join(root, sorted_files[i]))
+                        im2 = Image.open(os.path.join(root, sorted_files[i+1]))
+                        dst = Image.new('RGB', (im1.width + im2.width, im1.height))
+                        dst.paste(im2, (0, 0))
+                        dst.paste(im1, (im1.width, 0))
+                        base, _ = os.path.splitext(os.path.basename(sorted_files[i]))
+                        dst.save(os.path.join(path, 'OEBPS', 'Images', f'{base}-merged.png'))
+                        os.remove(os.path.join(root, sorted_files[i]))
+                        os.remove(os.path.join(root, sorted_files[i+1]))
+
     if options.filefusion:
         # Strip the fusion_0001_ sort prefix from makeFusion if present
         chapterNames = {k: sub(r'^fusion_\d{4}_', '', v) for k, v in chapterNames.items()}
