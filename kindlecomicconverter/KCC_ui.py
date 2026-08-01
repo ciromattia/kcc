@@ -390,6 +390,7 @@ class Ui_mainWindow(object):
 
         self.labelSpreadsButton = QPushButton(self.toolWidget)
         self.labelSpreadsButton.setObjectName(u"labelSpreadsButton")
+        self.labelSpreadsButton.setMinimumSize(QSize(0, 30))
 
         self.gridLayout_6.addWidget(self.labelSpreadsButton, 0, 1, 1, 1)
 
