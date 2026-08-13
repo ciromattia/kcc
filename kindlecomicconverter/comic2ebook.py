@@ -71,6 +71,7 @@ def main(argv=None):
     if len(sources) == 0:
         print('No matching files found.')
         return 1
+    options = checkOptions(options)
     if options.filefusion:
         fusion_path = makeFusion(list(sources))
         sources.clear()
