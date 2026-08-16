@@ -148,6 +148,8 @@ You'll need to install various tools to access important but optional features. 
 
 ### KindleGen
 
+(This is not needed for Koreader users on Kindle. Just set output to CBZ instead.)
+
 On Windows and macOS, install [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011) and `kindlegen` will be autodetected from it.
 
 If you have issues detecting it, get stuck on the MOBI conversion step, or use Linux AppImage or Flatpak, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation#kindlegen
