@@ -148,7 +148,7 @@ You'll need to install various tools to access important but optional features. 
 
 ### KindleGen
 
-(This is not needed for Koreader users on Kindle. Just set output to CBZ instead.)
+(This is not needed for Koreader users on jailbroken Kindle. Just set output to CBZ instead.)
 
 On Windows and macOS, install [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011) and `kindlegen` will be autodetected from it.
 
