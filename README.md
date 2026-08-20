@@ -30,7 +30,7 @@ KCC's main goal is maximum image quality. For example, KCC
 
 2) fixes the rainbow effect on Kaleidoscope 3 color eink without blur:
 
-
+<img src="rainbow.jpeg" alt="Rainbow">
 
 Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
 
