@@ -1,4 +1,4 @@
-KCC's main feature is enabling fullscreen manga reading. Other common conversion methods add margins.
+Most common manga conversion methods add margins. KCC enables fullscreen manga reading on ereaders. 
 
 <img src="header_margins.jpeg" alt="Header Image">
 
