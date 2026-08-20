@@ -4,6 +4,8 @@ KCC's main feature is enabling fullscreen manga reading. Other common conversion
 
 <img src="header_margins.jpeg" alt="Header Image">
 
+feat. Ya Boy Kongming! Published by Kodasha Comics, Humble Bundle PDF source.
+
 ## Intro
 
 [![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases)
