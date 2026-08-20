@@ -2,7 +2,7 @@ KCC's main feature is enabling fullscreen manga reading. Other common conversion
 
 <img src="header_margins.jpeg" alt="Header Image">
 
-(feat. Ya Boy Kongming! Humble Bundle PDF source.)
+(feat. Ya Boy Kongming! [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1) PDF source.)
 
 ## KCC
 
