@@ -1,6 +1,10 @@
-<img src="header.jpg" alt="Header Image" width="400">
-
 # KCC
+
+KCC's main feature is enabling fullscreen manga reading. Other common manga conversion methods add margins or % read trackers.
+
+<img src="header_margins.jpeg" alt="Header Image">
+
+## Intro
 
 [![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc)
