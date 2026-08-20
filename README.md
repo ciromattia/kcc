@@ -22,6 +22,10 @@ KCC runs on Windows, macOS, and Linux.
 The absolute highest quality source files are DRM-free PDFs from [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical.
 The PDFs are often x12000 resolution or better, basically print quality.
 
+KCC's main goal is maximum image quality. For example, KCC
+
+1) fixes black levels to avoid gray/faded blacks found in many Kindle Store manga
+
 
 Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
 
@@ -34,7 +38,7 @@ When using a reMarkable profile (Rmk1, Rmk2, RmkPP), the format automatically de
 for optimal compatibility with your device's native PDF reader.
 
 Its main feature is various optional image processing steps to look good on eink screens, 
-which have different requirements than normal LCD screens.
+which have different requirements than normal LCD/LED screens.
 Combining that with downscaling to your specific device's screen resolution
 can result in filesize reductions of hundreds of MB per volume with no visible quality loss on eink.
 This can also improve battery life, page turn speed, and general performance 
