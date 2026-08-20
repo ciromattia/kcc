@@ -15,12 +15,11 @@ Most manga conversion methods for ereaders add margins. But KCC enables true ful
 like Kindle, Kobo, ReMarkable, and more.
 Pages display in fullscreen without margins, 
 with proper fixed layout support.
+KCC runs on Windows, macOS, and Linux.
 
 Supported input formats include JPG/PNG image files in folders, archives like CBZ/EPUB, or PDF.
 
 Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
-
-KCC runs on Windows, macOS, and Linux.
 
 The absolute highest quality source files are DRM-free PDFs from [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical.
 The PDFs are often x12000 resolution or better, basically print quality.
