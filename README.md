@@ -24,7 +24,7 @@ Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
 The absolute highest quality source files are DRM-free PDFs from [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical.
 The PDFs are often x12000 resolution or better, basically print quality.
 
-KCC's main goal is maximum image quality. For example, KCC
+KCC's main goal is maximum image quality at significantly smaller file size. For example, KCC
 
 1) fixes black levels to avoid gray/faded blacks found in many Kindle Store manga
 
@@ -33,6 +33,8 @@ KCC's main goal is maximum image quality. For example, KCC
 2) fixes the rainbow effect on Kaleido 3 color eink without blur:
 
 <img src="rainbow.jpeg" alt="Rainbow">
+
+3) can compress a 600 MB manga volume at x9335 resolution from Humble Bundle to 100 MB at x2480 resolution. 
 
 Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
 
