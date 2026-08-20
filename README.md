@@ -1,6 +1,10 @@
-<img src="header.jpg" alt="Header Image" width="400">
+KCC's main feature is enabling fullscreen manga reading. Other common conversion methods add margins.
 
-# KCC
+<img src="header_margins.jpeg" alt="Header Image">
+
+(feat. Ya Boy Kongming! [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1) PDF source.)
+
+## KCC
 
 [![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc)
@@ -25,7 +29,7 @@ https://github.com/user-attachments/assets/da73d625-e082-482d-91a4-ae4765e96fd7
 When using a reMarkable profile (Rmk1, Rmk2, RmkPP), the format automatically defaults to PDF 
 for optimal compatibility with your device's native PDF reader.
 
-The absolute highest quality source files are print quality DRM-free PDFs from Kodansha/[Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical,
+The absolute highest quality source files are print quality DRM-free PDFs from [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical,
 which can be directly converted by KCC.
 
 Its main feature is various optional image processing steps to look good on eink screens, 
