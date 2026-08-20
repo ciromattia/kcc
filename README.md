@@ -1,6 +1,6 @@
 # KCC
 
-KCC's main feature is enabling fullscreen manga reading. Other common manga conversion methods add margins or % read trackers.
+KCC's main feature is enabling fullscreen manga reading. Other common conversion methods add margins or % read trackers.
 
 <img src="header_margins.jpeg" alt="Header Image">
 
