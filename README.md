@@ -1,12 +1,10 @@
-# KCC
-
 KCC's main feature is enabling fullscreen manga reading. Other common conversion methods add margins.
 
 <img src="header_margins.jpeg" alt="Header Image">
 
 (feat. Ya Boy Kongming! Humble Bundle PDF source.)
 
-## Intro
+## KCC
 
 [![GitHub release](https://img.shields.io/github/release/ciromattia/kcc.svg)](https://github.com/ciromattia/kcc/releases)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ciromattia/kcc/docker-publish.yml?label=docker%20build)](https://github.com/ciromattia/kcc/pkgs/container/kcc)
