@@ -26,6 +26,11 @@ KCC's main goal is maximum image quality. For example, KCC
 
 1) fixes black levels to avoid gray/faded blacks found in many Kindle Store manga
 
+<img src="black.jpeg" alt="Black level">
+
+2) fixes the rainbow effect on Kaleidoscope 3 color eink without blur:
+
+
 
 Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
 
