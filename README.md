@@ -15,9 +15,24 @@ Most manga conversion methods for ereaders add margins. But KCC enables true ful
 like Kindle, Kobo, ReMarkable, and more.
 Pages display in fullscreen without margins, 
 with proper fixed layout support.
-Supported input formats include JPG/PNG image files in folders, archives like CBZ, or PDFs.
-Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
 KCC runs on Windows, macOS, and Linux.
+
+Supported input formats include JPG/PNG image files in folders, archives like CBZ/EPUB, or PDF.
+
+Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
+
+The absolute highest quality source files are DRM-free PDFs from [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical.
+The PDFs are often x12000 resolution or better, basically print quality.
+
+KCC's main goal is maximum image quality. For example, KCC
+
+1) fixes black levels to avoid gray/faded blacks found in many Kindle Store manga
+
+<img src="black.jpeg" alt="Black level">
+
+2) fixes the rainbow effect on Kaleido 3 color eink without blur:
+
+<img src="rainbow.jpeg" alt="Rainbow">
 
 Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
 
@@ -29,11 +44,8 @@ https://github.com/user-attachments/assets/da73d625-e082-482d-91a4-ae4765e96fd7
 When using a reMarkable profile (Rmk1, Rmk2, RmkPP), the format automatically defaults to PDF 
 for optimal compatibility with your device's native PDF reader.
 
-The absolute highest quality source files are print quality DRM-free PDFs from [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical,
-which can be directly converted by KCC.
-
 Its main feature is various optional image processing steps to look good on eink screens, 
-which have different requirements than normal LCD screens.
+which have different requirements than normal LCD/LED screens.
 Combining that with downscaling to your specific device's screen resolution
 can result in filesize reductions of hundreds of MB per volume with no visible quality loss on eink.
 This can also improve battery life, page turn speed, and general performance 
