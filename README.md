@@ -40,6 +40,8 @@ Just drop your input files into the KCC window, hit convert, and USB drop the ou
 
 https://github.com/user-attachments/assets/da73d625-e082-482d-91a4-ae4765e96fd7
 
+Then all your usb loaded comic files will show up next to all your normal books in your ereader library!
+
 **WARNING**: Kindle Scribe 2025 support may not be possible. Does not work well currently.
 
 **NEW**: PDF output is now supported for direct conversion to reMarkable devices! 
@@ -76,6 +78,15 @@ If you are on macOS and use a 2022+ Kindle, you may need to use Amazon USB File 
 YouTube tutorial (please subscribe): https://www.youtube.com/watch?v=QQ6zJcMF2Iw
 
 Installation tutorial: https://www.youtube.com/watch?v=IR2Fhcm9658
+
+## Kindle Jailbreak for KOreader
+
+Jailbreaking to use KOreader is optional. KCC works just fine with the native mobi manga viewer.
+
+But if you jailbreak your Kindle, you'll unlock additional features like:
+
+1) compatibility with image formats better suited for manga like 4-bit PNG and WEBP. This enables better quality at **half the file size** compared to 8-bit JPG.
+2) no dependency on kindlegen, which can mean **twice as fast conversions** since you can convert to CBZ directly.
 
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.
