@@ -76,8 +76,9 @@ Jailbreaking to use KOreader is optional. KCC works just fine with the native mo
 
 But if you jailbreak your Kindle, you'll unlock additional features like:
 
-1) compatibility with image formats better suited for manga like 4-bit PNG and WEBP. This enables better quality at **half the file size** compared to 8-bit JPG.
-2) no dependency on kindlegen, which can mean **twice as fast conversions** since you can convert to CBZ directly.
+1) compatibility with image formats better suited for manga like 4-bit PNG and WEBP. This enables better quality at **half the file size** compared to JPG which must be 8-bit.
+   This is visually lossless since eink screens are 4-bit.
+3) no dependency on kindlegen, which can mean **twice as fast conversions** since you can convert to CBZ directly.
 
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.
