@@ -34,7 +34,10 @@ KCC's main goal is maximum image quality at significantly smaller file size. For
 
 <img src="rainbow.jpeg" alt="Rainbow">
 
-3) can compress a 600 MB manga volume from Humble Bundle to 100 MB. This is mostly accomplished by downscaling to the native resolution of your specific reader.
+3) can compress a 600 MB manga volume from Humble Bundle to 100 MB.
+   This is mostly accomplished by downscaling to the native resolution of your specific device.
+   This can also improve battery life, page turn speed, and general performance
+   on underpowered ereaders with small memory and storage capacities.
 
 Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
 
@@ -42,18 +45,7 @@ https://github.com/user-attachments/assets/da73d625-e082-482d-91a4-ae4765e96fd7
 
 Then all your usb loaded comic files will show up next to all your normal books in your ereader library!
 
-**WARNING**: Kindle Scribe 2025 support may not be possible. Does not work well currently.
-
-**NEW**: PDF output is now supported for direct conversion to reMarkable devices! 
-When using a reMarkable profile (Rmk1, Rmk2, RmkPP), the format automatically defaults to PDF 
-for optimal compatibility with your device's native PDF reader.
-
-Its main feature is various optional image processing steps to look good on eink screens, 
-which have different requirements than normal LCD/LED screens.
-Combining that with downscaling to your specific device's screen resolution
-can result in filesize reductions of hundreds of MB per volume with no visible quality loss on eink.
-This can also improve battery life, page turn speed, and general performance 
-on underpowered ereaders with small memory and storage capacities.
+**WARNING**: Kindle Scribe 2025 MOBI support may have blank pages. Use PDF instead.
 
 KCC avoids many common formatting issues (some of which occur [even on the Kindle Store](https://github.com/ciromattia/kcc/wiki/Kindle-Store-bad-formatting)), such as:
 1) faded black levels causing unneccessarily low contrast, which is hard to see and can cause eyestrain.
@@ -71,9 +63,8 @@ The GUI looks like this, built in Qt6, with my most commonly used settings:
 Simply drag and drop your files/folders into the KCC window, 
 adjust your settings (hover over each option to see details in a tooltip), 
 and hit convert to create ereader optimized files.
-You can change the default output directory by holding `Shift` while clicking the convert button.
 Then just drag and drop the generated output files onto your device's documents folder via USB.
-If you are on macOS and use a 2022+ Kindle, you may need to use Amazon USB File Manager for Mac.
+If you are on macOS and use a 2022+ Kindle, you may need to use Amazon USB File Manager for Mac or OpenMTP.
 
 YouTube tutorial (please subscribe): https://www.youtube.com/watch?v=QQ6zJcMF2Iw
 
