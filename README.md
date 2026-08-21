@@ -34,7 +34,7 @@ KCC's main goal is maximum image quality at significantly smaller file size. For
 
 <img src="rainbow.jpeg" alt="Rainbow">
 
-3) can compress a 600 MB manga volume at x9335 resolution from Humble Bundle to 100 MB at x2480 resolution. 
+3) can compress a 600 MB manga volume from Humble Bundle to 100 MB. This is mostly accomplished by downscaling to the native resolution of your specific reader.
 
 Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
 
