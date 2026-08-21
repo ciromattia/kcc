@@ -86,7 +86,7 @@ Jailbreaking to use KOreader is optional. KCC works just fine with the native mo
 But if you jailbreak your Kindle, you'll unlock additional features like:
 
 1) compatibility with image formats better suited for manga like PNG and WEBP. This enables better quality at **half the file size**.
-2) no dependency on kindlegen, which can mean **twice as fast conversions**.
+2) no dependency on kindlegen, which can mean **twice as fast conversions** since you can convert to CBZ directly.
 
 But jailbreaking to use Koreader enables a lot of awesome features like twice as fast conversion at half the file size
 
