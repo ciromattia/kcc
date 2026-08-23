@@ -41,6 +41,11 @@ KCC's main goal is maximum image quality at significantly smaller file size. For
 
 <img src="rainbow2.jpeg" alt="Rainbow">
 
+4) can semi-automatically detect 2-page spreads from pre-split single pages.
+   You can view combined spreads either before or after the split halves.
+
+![image](spreads.jpeg)
+
 Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
 
 https://github.com/user-attachments/assets/da73d625-e082-482d-91a4-ae4765e96fd7
