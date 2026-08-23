@@ -1,6 +1,6 @@
 Most manga conversion methods for ereaders add margins. But KCC enables true fullscreen from top to bottom. 
 
-<img src="header_margins.jpeg" alt="Header Image">
+![image](header_margins.jpeg)
 
 (feat. Ya Boy Kongming! [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1) PDF source.)
 
@@ -33,7 +33,7 @@ KCC's main goal is maximum image quality at significantly smaller file size. For
 
 2) fixes black levels to avoid gray/faded blacks found in many Kindle Store manga
 
-<img src="black.jpeg" alt="Black level">
+![image](black.jpeg)
 
 (feat. Fire Force)
 
