@@ -1,8 +1,8 @@
 Most manga conversion methods for ereaders add margins. But KCC enables true fullscreen from top to bottom. 
 
-![image](header_margins.jpeg)
+![header](header_margins.jpeg)
 
-(feat. Ya Boy Kongming! [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1) PDF source.)
+(This README feat. Ya Boy Kongming! and Fire Force from a [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1) PDF source.)
 
 # KCC
 
@@ -33,18 +33,16 @@ KCC's main goal is maximum image quality at significantly smaller file size. For
 
 2) fixes black levels to avoid gray/faded blacks found in many Kindle Store manga
 
-![image](black.jpeg)
-
-(feat. Fire Force)
+![black](black.jpeg)
 
 3) fixes [the rainbow effect on Kaleido 3 color eink](https://www.youtube.com/watch?v=Dw2HTJCGMhw) without blur:
 
-<img src="rainbow2.jpeg" alt="Rainbow">
+![rainbow](rainbow2.jpeg)
 
 4) can [semi-automatically detect 2-page spreads](https://www.youtube.com/watch?v=kfIX67f7Aqk) from pre-split single pages.
    You can view combined spreads either before or after the split halves.
 
-![image](spreads.jpeg)
+![spreads](spreads.jpeg)
 
 Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
 
@@ -58,7 +56,7 @@ The final result looks incredible on my 10" Kindle Scribe: https://www.youtube.c
 
 The GUI looks like this, built in Qt6. There are a lot of options, but most people only care about the ones checked below:
 
-![image](settings.png)
+![settings](settings.png)
 
 Simply drag and drop your files/folders into the KCC window, 
 adjust your settings (hover over each option to see details in a tooltip), 
