@@ -41,7 +41,7 @@ KCC's main goal is maximum image quality at significantly smaller file size. For
 
 <img src="rainbow2.jpeg" alt="Rainbow">
 
-4) can semi-automatically detect 2-page spreads from pre-split single pages.
+4) can [semi-automatically detect 2-page spreads](https://www.youtube.com/watch?v=kfIX67f7Aqk) from pre-split single pages.
    You can view combined spreads either before or after the split halves.
 
 ![image](spreads.jpeg)
@@ -69,8 +69,6 @@ If you are on macOS and use a 2022+ Kindle, you may need to use Amazon USB File 
 YouTube tutorial (please subscribe): https://www.youtube.com/watch?v=QQ6zJcMF2Iw
 
 Installation tutorial: https://www.youtube.com/watch?v=IR2Fhcm9658
-
-Semi automatically merge pre-split 2-page spreads tutorial: https://www.youtube.com/watch?v=kfIX67f7Aqk
 
 ## Kindle Jailbreak for KOreader
 
