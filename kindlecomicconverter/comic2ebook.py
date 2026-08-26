@@ -1847,11 +1847,15 @@ def makeBook(source, qtgui=None, job_progress=''):
 
     if os.path.exists(source+'.json'):
         flattenTree(os.path.join(path, 'OEBPS', 'Images'))
+        chapterNames = {}
+        cover_path = None
         with open(source+'.json') as f:
             data = json.load(f)
             for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
                 sorted_files = os_sorted(files)
-                for i in range(len(files)):
+                for i in range(len(sorted_files)):
+                    if not cover_path:
+                        cover_path = os.path.join(root, sorted_files[i])
                     if i in data['spreads']:
                         im1 = Image.open(os.path.join(root, sorted_files[i]))
                         im2 = Image.open(os.path.join(root, sorted_files[i+1]))
@@ -1862,6 +1866,8 @@ def makeBook(source, qtgui=None, job_progress=''):
                         dst.save(os.path.join(path, 'OEBPS', 'Images', f'{base}-merged.png'))
                         os.remove(os.path.join(root, sorted_files[i]))
                         os.remove(os.path.join(root, sorted_files[i+1]))
+                        if not os.path.exists(cover_path):
+                            cover_path = os.path.join(root, f'{base}-merged.png')            
 
     if options.filefusion:
         # Strip the fusion_0001_ sort prefix from makeFusion if present
