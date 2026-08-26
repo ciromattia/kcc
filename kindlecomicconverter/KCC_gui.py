@@ -671,6 +671,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     GUI.jobList.scrollToBottom()
 
     def labelSpreadsStart(self):
+        low_quality_preview = True
+        if QApplication.keyboardModifiers() == Qt.ShiftModifier:
+            low_quality_preview = False
         currentJobs = []
         # TODO: make this a function since it's copy pasted
         for i in range(GUI.jobList.count()):
@@ -704,29 +707,34 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                         continue 
                     # TODO: with statements
                     # TODO: ignore 1% of top and bottom too?
-                    im1 = Image.open(os.path.join(root, files[i])).convert('1', dither=Dither.NONE)
+                    im1 = Image.open(os.path.join(root, files[i]))
                     size1 = im1.size
-                    crop1 = im1.crop((0, 0, 0.2*size1[0], size1[1]))
-                    crop11 = im1.crop((0.01*size1[0], 0, 0.04*size1[0], size1[1]))
+                    preview_crop1 = im1.crop((0, 0, 0.2*size1[0], size1[1]))
+                    if low_quality_preview:
+                        preview_crop1 = preview_crop1.convert('1', dither=Dither.NONE)
+                    calculation_crop1 = im1.crop((0.01*size1[0], 0, 0.04*size1[0], size1[1])).convert('1', dither=Dither.NONE)
                     #crop1 = crop11
-                    im2 = Image.open(os.path.join(root, files[i+1])).convert('1', dither=Dither.NONE)
+                    im2 = Image.open(os.path.join(root, files[i+1]))
                     size2 = im2.size
-                    crop2 = im2.crop((0.8*size2[0], 0, size2[0], size2[1]))
-                    crop22 = im2.crop((0.96*size2[0], 0, .99* size2[0], size2[1]))
+                    preview_crop2 = im2.crop((0.8*size2[0], 0, size2[0], size2[1]))
+                    if low_quality_preview:
+                        preview_crop2 = preview_crop2.convert('1', dither=Dither.NONE)
+                    calculation_crop2 = im2.crop((0.96*size2[0], 0, .99* size2[0], size2[1])).convert('1', dither=Dither.NONE)
                     #crop2 = crop22
                     # dst = Image.new('1', (im1.width + im2.width, im1.height))
                     # dst.paste(im2, (0, 0))
                     # dst.paste(im1, (im1.width, 0))
-                    hist1 = crop11.histogram()
-                    hist2 = crop22.histogram()
+                    hist1 = calculation_crop1.histogram()
+                    hist2 = calculation_crop2.histogram()
                     # TODO: small percentage instead of zero
                     if hist1[0] == 0 or hist1[-1] == 0 or hist2[0] == 0 or hist2[-1] == 0:
                         continue
 
-                    dst = Image.new('1', (crop1.width + crop2.width, crop1.height))
+                    preview_mode = '1' if low_quality_preview else 'RGB'
+                    dst = Image.new(preview_mode, (preview_crop1.width + preview_crop2.width, preview_crop1.height))
 
-                    dst.paste(crop2, (0, 0))
-                    dst.paste(crop1, (crop1.width, 0))
+                    dst.paste(preview_crop2, (0, 0))
+                    dst.paste(preview_crop1, (preview_crop1.width, 0))
                     dst.save(os.path.join(workdir, f'label-{i:04}.png'))
                     images.append(os.path.join(workdir, f'label-{i:04}.png'))
 
