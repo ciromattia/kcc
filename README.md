@@ -1,4 +1,8 @@
-<img src="header.jpg" alt="Header Image" width="400">
+Most manga conversion methods for ereaders add margins. But KCC enables true fullscreen from top to bottom. 
+
+![header](images/header_margins.jpeg)
+
+(feat. Ya Boy Kongming! and Fire Force from a [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1) PDF source.)
 
 # KCC
 
@@ -11,53 +15,76 @@
 like Kindle, Kobo, ReMarkable, and more.
 Pages display in fullscreen without margins, 
 with proper fixed layout support.
-Supported input formats include JPG/PNG image files in folders, archives like CBZ, or PDFs.
-Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
 KCC runs on Windows, macOS, and Linux.
+
+Supported input formats include JPG/PNG image files in folders, archives like CBZ/EPUB, or PDF.
+
+Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
+
+The absolute highest quality source files are DRM-free PDFs from [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical.
+The PDFs are often x12000 resolution or better, while even the 10" Kindle Scribe is only x2480.
+
+KCC's main goal is maximum image quality at significantly smaller file size. For example, KCC
+
+1) can compress a 600 MB manga volume from Humble Bundle to 100 MB.
+   This is mostly accomplished by downscaling to the native resolution of your specific device.
+   This can also improve battery life, page turn speed, and general performance
+   on underpowered ereaders with small memory and storage capacities.
+
+2) fixes black levels to avoid gray/faded blacks found in many Kindle Store manga
+
+![black](images/black.jpeg)
+
+3) fixes [the rainbow effect on Kaleido 3 color eink](https://www.youtube.com/watch?v=Dw2HTJCGMhw) without blur:
+
+![rainbow](images/rainbow2.jpeg)
+
+4) can [semi-automatically detect 2-page spreads](https://www.youtube.com/watch?v=kfIX67f7Aqk) from pre-split single pages:
+
+![before](images/spreadbefore3.jpeg)
+
+You can view combined spreads either rotated or not:
+
+![full](images/full.jpeg)
+
+You can view the split halves either before or after combined spreads:
+
+![half](images/half.jpeg)
+
+## Demo
 
 Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
 
 https://github.com/user-attachments/assets/da73d625-e082-482d-91a4-ae4765e96fd7
 
-**WARNING**: Kindle Scribe 2025 support may not be possible. Does not work well currently.
+Then all your usb loaded comic files will show up next to all your normal books in your ereader library!
 
-**NEW**: PDF output is now supported for direct conversion to reMarkable devices! 
-When using a reMarkable profile (Rmk1, Rmk2, RmkPP), the format automatically defaults to PDF 
-for optimal compatibility with your device's native PDF reader.
+The final result looks incredible on my 10" Kindle Scribe: https://www.youtube.com/watch?v=2CIHW2N9Enc
 
-The absolute highest quality source files are print quality DRM-free PDFs from Kodansha/[Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical,
-which can be directly converted by KCC.
+**WARNING**: Kindle Scribe 2025 MOBI support may have blank pages. Use PDF instead.
 
-Its main feature is various optional image processing steps to look good on eink screens, 
-which have different requirements than normal LCD screens.
-Combining that with downscaling to your specific device's screen resolution
-can result in filesize reductions of hundreds of MB per volume with no visible quality loss on eink.
-This can also improve battery life, page turn speed, and general performance 
-on underpowered ereaders with small memory and storage capacities.
+The GUI looks like this, built in Qt6. 
+There are a lot of options, but most people only care about the ones checked below.
+Hover over each option to see details in a tooltip. 
 
-KCC avoids many common formatting issues (some of which occur [even on the Kindle Store](https://github.com/ciromattia/kcc/wiki/Kindle-Store-bad-formatting)), such as:
-1) faded black levels causing unneccessarily low contrast, which is hard to see and can cause eyestrain.
-2) unneccessary margins at the bottom of the screen
-3) Not utilizing the full 1860x2480 resolution of the 10" Kindle Scribe
-4) incorrect page turn direction for manga that's read right to left
-5) unaligned two page spreads in landscape, where pages are shifted over by 1
-6) Removing without blur the rainbow effect on color eink Kaleido 3 due to manga screentones
-7) Fixing page order problems due to Windows sort being different than Kindle/Kobo sort
+![settings](images/settings.png)
 
-The GUI looks like this, built in Qt6, with my most commonly used settings:
-
-![image](https://github.com/user-attachments/assets/36ad2131-6677-4559-bd6f-314a90c27218)
-
-Simply drag and drop your files/folders into the KCC window, 
-adjust your settings (hover over each option to see details in a tooltip), 
-and hit convert to create ereader optimized files.
-You can change the default output directory by holding `Shift` while clicking the convert button.
-Then just drag and drop the generated output files onto your device's documents folder via USB.
-If you are on macOS and use a 2022+ Kindle, you may need to use Amazon USB File Manager for Mac.
+If you are on macOS and use a 2022+ Kindle, you may need to use Amazon USB File Manager for Mac or OpenMTP.
 
 YouTube tutorial (please subscribe): https://www.youtube.com/watch?v=QQ6zJcMF2Iw
 
 Installation tutorial: https://www.youtube.com/watch?v=IR2Fhcm9658
+
+## Kindle Jailbreak for KOreader
+
+Jailbreaking to use KOreader is optional. KCC works just fine with the native mobi manga viewer.
+
+But if you jailbreak your Kindle, you'll unlock additional features like:
+
+1) compatibility with image formats better suited for manga like 4-bit PNG and WEBP. This enables better quality at **half the file size** compared to JPG which must be 8-bit.
+   This is visually lossless since eink screens are 4-bit.
+2) no dependency on kindlegen, which can mean **twice as fast conversions** since you can convert to CBZ directly.
+3) You can dither by partially checking the JPG/PNG box and can crop in KCC instead of KOreader. This may increase page turn speed and battery.
 
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.
@@ -147,6 +174,8 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
 You'll need to install various tools to access important but optional features. Close and re-open KCC to get KCC to detect them.
 
 ### KindleGen
+
+(This is not needed for Koreader users on jailbroken Kindle. Just set output to CBZ instead.)
 
 On Windows and macOS, install [Kindle Previewer](https://www.amazon.com/Kindle-Previewer/b?ie=UTF8&node=21381691011) and `kindlegen` will be autodetected from it.
 
