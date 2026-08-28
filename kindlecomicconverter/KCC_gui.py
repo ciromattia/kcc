@@ -671,9 +671,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     GUI.jobList.scrollToBottom()
 
     def labelSpreadsStart(self):
-        low_quality_preview = True
+        low_quality_preview = False
         if QApplication.keyboardModifiers() == Qt.ShiftModifier:
-            low_quality_preview = False
+            low_quality_preview = True
         currentJobs = []
         # TODO: make this a function since it's copy pasted
         for i in range(GUI.jobList.count()):
