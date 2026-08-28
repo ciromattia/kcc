@@ -861,7 +861,7 @@ class Ui_mainWindow(object):
         self.humbleButton.setText(QCoreApplication.translate("mainWindow", u"Humble Bundle Referral", None))
         self.kofiButton.setText(QCoreApplication.translate("mainWindow", u"Support me on Ko-fi", None))
 #if QT_CONFIG(tooltip)
-        self.labelSpreadsButton.setToolTip(QCoreApplication.translate("mainWindow", u"Hold shift while clicking for a higher quality preview.", None))
+        self.labelSpreadsButton.setToolTip(QCoreApplication.translate("mainWindow", u"Hold shift while clicking for a low quality preview.", None))
 #endif // QT_CONFIG(tooltip)
         self.labelSpreadsButton.setText(QCoreApplication.translate("mainWindow", u"Label Spreads", None))
 #if QT_CONFIG(tooltip)
