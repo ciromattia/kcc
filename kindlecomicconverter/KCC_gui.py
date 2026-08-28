@@ -708,19 +708,22 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     # TODO: with statements
                     # TODO: ignore 1% of top and bottom too?
                     im1 = Image.open(os.path.join(root, files[i]))
+                    im2 = Image.open(os.path.join(root, files[i+1]))
+                    if not options.righttoleft:
+                        im1, im2 = im2, im1
                     size1 = im1.size
+                    size2 = im2.size
+
                     preview_crop1 = im1.crop((0, 0, 0.2*size1[0], size1[1]))
                     if low_quality_preview:
                         preview_crop1 = preview_crop1.convert('1', dither=Dither.NONE)
                     calculation_crop1 = im1.crop((0.01*size1[0], 0, 0.04*size1[0], size1[1])).convert('1', dither=Dither.NONE)
-                    #crop1 = crop11
-                    im2 = Image.open(os.path.join(root, files[i+1]))
-                    size2 = im2.size
+
                     preview_crop2 = im2.crop((0.8*size2[0], 0, size2[0], size2[1]))
                     if low_quality_preview:
                         preview_crop2 = preview_crop2.convert('1', dither=Dither.NONE)
                     calculation_crop2 = im2.crop((0.96*size2[0], 0, .99* size2[0], size2[1])).convert('1', dither=Dither.NONE)
-                    #crop2 = crop22
+
                     # dst = Image.new('1', (im1.width + im2.width, im1.height))
                     # dst.paste(im2, (0, 0))
                     # dst.paste(im1, (im1.width, 0))

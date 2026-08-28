@@ -1859,6 +1859,8 @@ def makeBook(source, qtgui=None, job_progress=''):
                     if i in data['spreads']:
                         im1 = Image.open(os.path.join(root, sorted_files[i]))
                         im2 = Image.open(os.path.join(root, sorted_files[i+1]))
+                        if not options.righttoleft:
+                            im1, im2 = im2, im1
                         dst = Image.new('RGB', (im1.width + im2.width, im1.height))
                         dst.paste(im2, (0, 0))
                         dst.paste(im1, (im1.width, 0))
