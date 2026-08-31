@@ -37,7 +37,7 @@ KCC's main goal is maximum image quality at significantly smaller file size. For
 
 3) fixes [the rainbow effect on Kaleido 3 color eink](https://www.youtube.com/watch?v=Dw2HTJCGMhw) without blur:
 
-![rainbow](images/rainbow3.jpeg)
+![rainbow](images/rainbow720.jpeg)
 
 4) can [semi-automatically detect 2-page spreads](https://www.youtube.com/watch?v=kfIX67f7Aqk) from pre-split single pages:
 
