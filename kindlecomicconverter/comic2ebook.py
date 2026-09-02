@@ -1058,6 +1058,8 @@ def getWorkFolder(afile, options, workdir=None):
 
 
 def getOutputFilename(srcpath, wantedname, ext, tomenumber):
+    if options.format == 'CBZ' and options.skip_zip:
+        ext = ''
     source_path = Path(srcpath)
     if srcpath[-1] == os.path.sep:
         srcpath = srcpath[:-1]
@@ -1093,10 +1095,10 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
             filename = source_path.with_name(name)
         else:
             filename = os.path.splitext(srcpath)[0] + tomenumber + ext
-    if os.path.isfile(filename):
+    if os.path.exists(filename):
         counter = 0
         basename = os.path.splitext(filename)[0]
-        while os.path.isfile(basename + '_kcc' + str(counter) + ext):
+        while os.path.exists(basename + '_kcc' + str(counter) + ext):
             counter += 1
         filename = basename + '_kcc' + str(counter) + ext
     elif options.format == 'MOBI' and ext == '.epub':
@@ -1430,6 +1432,9 @@ def slugify(value, options, is_natural_sorted):
     return value
 
 def makeZIP(zipfilename, basedir, job_progress='', isepub=False):
+    if options.format == 'CBZ' and options.skip_zip:
+        os.rename(basedir, zipfilename)
+        return zipfilename
     start = perf_counter()
     if SEVENZIP in available_archive_tools():
         if isepub:
@@ -1639,6 +1644,10 @@ def checkOptions(options):
         options.keep_epub = True
         options.format = 'MOBI'
     options.kfx = False
+    options.skip_zip = False
+    if options.format == 'FOLDER':
+        options.format = 'CBZ'
+        options.skip_zip = True
     if options.format == 'Auto':
         if options.profile in ['KDX']:
             options.format = 'CBZ'

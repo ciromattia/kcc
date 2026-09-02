@@ -127,6 +127,8 @@ class Icons:
         self.MOBIFormat.addPixmap(QPixmap(":/Formats/icons/MOBI.png"), QIcon.Mode.Normal, QIcon.State.Off)
         self.CBZFormat = QIcon()
         self.CBZFormat.addPixmap(QPixmap(":/Formats/icons/CBZ.png"), QIcon.Mode.Normal, QIcon.State.Off)
+        self.FOLDERFormat = QIcon()
+        self.FOLDERFormat.addPixmap(QPixmap(":/Formats/icons/CBZ.png"), QIcon.Mode.Normal, QIcon.State.Off)
         self.EPUBFormat = QIcon()
         self.EPUBFormat.addPixmap(QPixmap(":/Formats/icons/EPUB.png"), QIcon.Mode.Normal, QIcon.State.Off)
         self.KFXFormat = QIcon()
@@ -442,6 +444,9 @@ class WorkerThread(QThread):
             if gui_current_format == 'CBZ':
                 MW.addMessage.emit('Creating CBZ files', 'info', False)
                 GUI.progress.content = 'Creating CBZ files'
+            elif gui_current_format == 'FOLDER':
+                MW.addMessage.emit('Creating folders', 'info', False)
+                GUI.progress.content = 'Creating folders'
             elif gui_current_format == 'PDF':
                 MW.addMessage.emit('Creating PDF files', 'info', False)
                 GUI.progress.content = 'Creating PDF files'
@@ -487,6 +492,8 @@ class WorkerThread(QThread):
                 GUI.progress.content = ''
                 if gui_current_format == 'CBZ':
                     MW.addMessage.emit('Creating CBZ files... <b>Done!</b>', 'info', True)
+                elif gui_current_format == 'FOLDER':
+                    MW.addMessage.emit('Creating folders... <b>Done!</b>', 'info', True)
                 elif gui_current_format == 'PDF':
                     MW.addMessage.emit('Creating PDF files... <b>Done!</b>', 'info', True)
                 else:
@@ -1061,7 +1068,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.upscaleBox.setChecked(True)
         elif not GUI.webtoonBox.isChecked():
             GUI.chunkSizeCheckBox.setEnabled(True)
-        if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'PDF') and not GUI.webtoonBox.isChecked():
+        if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'FOLDER', 'PDF') and not GUI.webtoonBox.isChecked():
             self.addMessage("Partially check W/B Margins if you don't want KCC to extend the image margins.", 'info')
             GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
         else:
@@ -1359,6 +1366,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "MOBI/AZW3": {'icon': 'MOBI', 'format': 'MOBI'},
             "EPUB": {'icon': 'EPUB', 'format': 'EPUB'},
             "CBZ": {'icon': 'CBZ', 'format': 'CBZ'},
+            "Folder": {'icon': 'FOLDER', 'format': 'FOLDER'},
             "PDF": {'icon': 'EPUB', 'format': 'PDF'},
             "PDF (200MB limit)": {'icon': 'EPUB', 'format': 'PDF-200MB'},
             "KFX (Send to Kindle EPUB)": {'icon': 'KFX', 'format': 'KFX'},
