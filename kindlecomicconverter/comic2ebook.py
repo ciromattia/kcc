@@ -1891,7 +1891,7 @@ def makeBook(source, qtgui=None, job_progress=''):
     source_path = Path(source)
     options.customcover = False
     if source_path.parent.joinpath('Covers').is_dir():
-        series = os_sorted(filter(lambda s: s.endswith(ext), os.listdir(source_path.parent)))
+        series = os_sorted(filter(lambda s: s.endswith(ext) and '_kcc' not in s, os.listdir(source_path.parent)))
         source_index = series.index(os.path.basename(source))
         covers = os.listdir(source_path.parent.joinpath('Covers'))
         filtered_covers = []
