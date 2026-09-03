@@ -975,6 +975,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if value == 2:
             GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
             GUI.pngLegacyBox.setChecked(True)
+            GUI.rotateBox.setChecked(True)
+            GUI.noRotateBox.setChecked(True)
             GUI.upscaleBox.setChecked(True)
             self.changeFormat(3)
 
