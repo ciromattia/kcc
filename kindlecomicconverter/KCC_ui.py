@@ -352,6 +352,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.keepComicInfoBox, 11, 3, 1, 1)
 
+        self.wallpaperBox = QCheckBox(self.optionWidget)
+        self.wallpaperBox.setObjectName(u"wallpaperBox")
+
+        self.gridLayout_2.addWidget(self.wallpaperBox, 11, 0, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -854,6 +859,12 @@ class Ui_mainWindow(object):
 "Keeping this file may crash some readers like the Kobo native CBZ reader.", None))
 #endif // QT_CONFIG(tooltip)
         self.keepComicInfoBox.setText(QCoreApplication.translate("mainWindow", u"Keep ComicInfo.xml", None))
+#if QT_CONFIG(tooltip)
+        self.wallpaperBox.setToolTip(QCoreApplication.translate("mainWindow", u"Auto check various options intended for KOreader wallpapers.\n"
+"\n"
+"Will also crop images to fill the screen centered.", None))
+#endif // QT_CONFIG(tooltip)
+        self.wallpaperBox.setText(QCoreApplication.translate("mainWindow", u"Wallpaper mode", None))
 #if QT_CONFIG(tooltip)
         self.editorButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Shift+Click to edit directory.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

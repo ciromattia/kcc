@@ -536,6 +536,8 @@ class ComicPage:
                 self.image = ImageOps.pad(self.image, self.opt.kfx_resolution, method=method, color=self.fill)
         elif self.opt.stretch:
             self.image = self.image.resize(self.size, method)
+        elif self.opt.wallpaper:
+            self.image = ImageOps.fit(self.image, self.size, method=method)
         elif method == Image.Resampling.BICUBIC and not self.opt.upscale:
             pass
         else: # if image bigger than device resolution or smaller with upscaling

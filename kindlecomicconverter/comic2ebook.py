@@ -1058,7 +1058,7 @@ def getWorkFolder(afile, options, workdir=None):
 
 
 def getOutputFilename(srcpath, wantedname, ext, tomenumber):
-    if options.format == 'CBZ' and options.skip_zip:
+    if options.folder_output:
         ext = ''
     source_path = Path(srcpath)
     if srcpath[-1] == os.path.sep:
@@ -1071,7 +1071,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
             ext = '.kepub.epub'
     if wantedname is not None:
         wanted_root, wanted_ext = os.path.splitext(wantedname)
-        if wantedname.endswith(ext):
+        if not options.folder_output and wantedname.endswith(ext):
             filename = os.path.abspath(wantedname)
         elif wanted_ext == '.mobi' and ext == '.epub':
             filename = os.path.abspath(wanted_root + ext)
@@ -1432,8 +1432,8 @@ def slugify(value, options, is_natural_sorted):
     return value
 
 def makeZIP(zipfilename, basedir, job_progress='', isepub=False):
-    if options.format == 'CBZ' and options.skip_zip:
-        os.rename(basedir, zipfilename)
+    if options.folder_output:
+        move(basedir, zipfilename)
         return zipfilename
     start = perf_counter()
     if SEVENZIP in available_archive_tools():
@@ -1480,6 +1480,8 @@ def makeParser():
                               help="Manga style (right-to-left reading and splitting)")
     main_options.add_argument("--lightnovel", action="store_true", dest="lightnovel", default=False,
                               help="Only resize images and preserve original file structure.")
+    main_options.add_argument("--wallpaper", action="store_true", dest="wallpaper", default=False,
+                              help="Crop to fill screen.")
     main_options.add_argument("--ebok", action="store_true", dest="ebok", default=False,
                               help="Force EBOK tag instead of PDOC for MOBI")
     main_options.add_argument("--invertdirection", action="store_true", dest="invertdirection", default=False,
@@ -1645,9 +1647,11 @@ def checkOptions(options):
         options.format = 'MOBI'
     options.kfx = False
     options.skip_zip = False
+    options.folder_output = False
     if options.format == 'FOLDER':
         options.format = 'CBZ'
         options.skip_zip = True
+        options.folder_output = True
     if options.format == 'Auto':
         if options.profile in ['KDX']:
             options.format = 'CBZ'
