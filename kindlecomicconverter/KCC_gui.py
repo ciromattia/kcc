@@ -128,7 +128,7 @@ class Icons:
         self.CBZFormat = QIcon()
         self.CBZFormat.addPixmap(QPixmap(":/Formats/icons/CBZ.png"), QIcon.Mode.Normal, QIcon.State.Off)
         self.FOLDERFormat = QIcon()
-        self.FOLDERFormat.addPixmap(QPixmap(":/Formats/icons/CBZ.png"), QIcon.Mode.Normal, QIcon.State.Off)
+        self.FOLDERFormat.addPixmap(QPixmap(":/Other/icons/folder_new.png"), QIcon.Mode.Normal, QIcon.State.Off)
         self.EPUBFormat = QIcon()
         self.EPUBFormat.addPixmap(QPixmap(":/Formats/icons/EPUB.png"), QIcon.Mode.Normal, QIcon.State.Off)
         self.KFXFormat = QIcon()
@@ -1366,7 +1366,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "MOBI/AZW3": {'icon': 'MOBI', 'format': 'MOBI'},
             "EPUB": {'icon': 'EPUB', 'format': 'EPUB'},
             "CBZ": {'icon': 'CBZ', 'format': 'CBZ'},
-            "Folder": {'icon': 'FOLDER', 'format': 'FOLDER'},
+            "Folder of images": {'icon': 'FOLDER', 'format': 'FOLDER'},
             "PDF": {'icon': 'EPUB', 'format': 'PDF'},
             "PDF (200MB limit)": {'icon': 'EPUB', 'format': 'PDF-200MB'},
             "KFX (Send to Kindle EPUB)": {'icon': 'KFX', 'format': 'KFX'},
