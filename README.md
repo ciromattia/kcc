@@ -287,6 +287,7 @@ PROCESSING:
   --pdfwidth            Render vector PDFs based on device width instead of height.
   -u, --upscale         Resize images smaller than device's resolution
   -s, --stretch         Stretch images to device's resolution
+  --wallpaper           Crop images to to fill screen
   -r SPLITTER, --splitter SPLITTER
                         Double page parsing mode. 0: Split 1: Rotate 2: Both [Default=0]
   -g GAMMA, --gamma GAMMA

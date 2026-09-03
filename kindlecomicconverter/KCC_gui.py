@@ -253,6 +253,8 @@ def get_options():
         options.righttoleft = True
     if GUI.lightnovelBox.isChecked():
         options.lightnovel = True
+    if GUI.wallpaperBox.isChecked():
+        options.wallpaper = True
     if GUI.ebokBox.isChecked():
         options.ebok = True
     if GUI.invertDirectionBox.isChecked():
@@ -969,6 +971,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.noQuantizeBox.setEnabled(False)
             GUI.forcePngRgbBox.setEnabled(False)           
 
+    def toggleWallpaperBox(self, value):
+        if value == 2:
+            GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
+            GUI.pngLegacyBox.setChecked(True)
+            GUI.rotateBox.setChecked(True)
+            GUI.noRotateBox.setChecked(True)
+            GUI.upscaleBox.setChecked(True)
+            self.changeFormat(3)
 
     def togglechunkSizeCheckBox(self, value):
         GUI.chunkSizeWidget.setVisible(value)
@@ -1071,6 +1081,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'FOLDER', 'PDF') and not GUI.webtoonBox.isChecked():
             self.addMessage("Partially check W/B Margins if you don't want KCC to extend the image margins.", 'info')
             GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
+            GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
         else:
             GUI.borderBox.setCheckState(Qt.CheckState.Unchecked)
 
@@ -1185,6 +1196,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
         self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
                                            'lightnovelBox': GUI.lightnovelBox.checkState(),
+                                           'wallpaperBox': GUI.wallpaperBox.checkState(),
                                            'ebokBox': GUI.ebokBox.checkState(),
                                            'invertDirectionBox': GUI.invertDirectionBox.checkState(),
                                            'languageEdit': GUI.languageEdit.text(),
@@ -1582,6 +1594,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.webtoonBox.stateChanged.connect(self.togglewebtoonBox)
         GUI.qualityBox.stateChanged.connect(self.togglequalityBox)
         GUI.mozJpegBox.stateChanged.connect(self.toggleImageFormatBox)
+        GUI.wallpaperBox.stateChanged.connect(self.toggleWallpaperBox)
         GUI.chunkSizeCheckBox.stateChanged.connect(self.togglechunkSizeCheckBox)
         GUI.deviceBox.activated.connect(self.changeDevice)
         GUI.formatBox.activated.connect(self.changeFormat)
