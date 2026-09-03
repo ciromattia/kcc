@@ -1824,6 +1824,7 @@ def makeBook(source, qtgui=None, job_progress=''):
     print(f"{job_progress}Preparing source images...")
     path = getWorkFolder(source, options)
     print(f"{job_progress}Checking images...")
+    _, ext = os.path.splitext(source)
 
     if options.lightnovel:
         for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
@@ -1844,7 +1845,6 @@ def makeBook(source, qtgui=None, job_progress=''):
                         if img.size[0] > x or img.size[1] > y:
                             img = ImageOps.contain(img, (x, y))
                             img.save(os.path.join(root, file), quality=options.jpegquality)
-        _, ext = os.path.splitext(source)
         if ext != '.epub':
             ext = '.cbz'
         output_file = getOutputFilename(source, options.output, ext, '')
@@ -1887,6 +1887,25 @@ def makeBook(source, qtgui=None, job_progress=''):
     if options.filefusion:
         # Strip the fusion_0001_ sort prefix from makeFusion if present
         chapterNames = {k: sub(r'^fusion_\d{4}_', '', v) for k, v in chapterNames.items()}
+
+    source_path = Path(source)
+    options.customcover = False
+    if source_path.parent.joinpath('Covers').is_dir():
+        series = os_sorted(filter(lambda s: s.endswith(ext) and '_kcc' not in s, os.listdir(source_path.parent)))
+        source_index = series.index(os.path.basename(source))
+        covers = os.listdir(source_path.parent.joinpath('Covers'))
+        filtered_covers = []
+        for cover in covers:
+            _, cover_ext = getImageFileName(cover)
+            if cover_ext in IMAGE_TYPES:
+                filtered_covers.append(cover)
+        sorted_covers = os_sorted(filtered_covers)
+        try:
+            cover_path = source_path.parent.joinpath('Covers', sorted_covers[source_index])
+            options.customcover = True
+        except IndexError:
+            pass
+
     cover = None
     if not options.webtoon:
         cover = image.Cover(cover_path, options)
@@ -1968,7 +1987,7 @@ def makeBook(source, qtgui=None, job_progress=''):
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ' ' + str(tomeNumber)))
             else:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
-            if cover and cover.smartcover:
+            if cover and (cover.smartcover or options.customcover):
                 cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', '##cover.jpg'), tomeNumber, len(tomes))
             if options.comicinfo_xml:
                 with open(os.path.join(tome, 'OEBPS', 'Images', 'ComicInfo.xml'), 'wb') as xmlOutput:
@@ -1979,7 +1998,7 @@ def makeBook(source, qtgui=None, job_progress=''):
             # determine output filename based on source and tome count
             suffix = (' ' + str(tomeNumber)) if len(tomes) > 1 else ''
             output_file = getOutputFilename(source, options.output, '.pdf', suffix)
-            if cover and cover.smartcover:
+            if cover and (cover.smartcover or options.customcover):
                 cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', 'cover.jpg'), tomeNumber, len(tomes))
             # use optimized buildPDF logic with streaming and compression
             output_pdf = buildPDF(tome, options.title, job_progress, None, output_file)
