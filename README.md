@@ -19,7 +19,7 @@ KCC runs on Windows, macOS, and Linux.
 
 Supported input formats include JPG/PNG image files in folders, archives like CBZ/EPUB, or PDF.
 
-Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, and PDF.
+Supported output formats include MOBI/AZW3, EPUB, KEPUB, CBZ, PDF, and folders of images.
 
 The absolute highest quality source files are DRM-free PDFs from [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1)/Fanatical.
 The PDFs are often x12000 resolution or better, while even the 10" Kindle Scribe is only x2480.
