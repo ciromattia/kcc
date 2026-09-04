@@ -23,7 +23,6 @@ from datetime import datetime
 import json
 import os
 import pathlib
-import re
 import shutil
 import sys
 import xml.etree.ElementTree as ET
@@ -1094,14 +1093,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
     elif os.path.isdir(srcpath):
         filename = srcpath + tomenumber + ext
     else:
-        if 'Ko' in options.profile and options.format == 'EPUB':
-            if source_path.is_file():
-                name = re.sub(r'\W+', '_', source_path.stem) + tomenumber + ext
-            else:
-                name = re.sub(r'\W+', '_', source_path.name) + tomenumber + ext
-            filename = source_path.with_name(name)
-        else:
-            filename = os.path.splitext(srcpath)[0] + tomenumber + ext
+        filename = os.path.splitext(srcpath)[0] + tomenumber + ext
     if os.path.exists(filename):
         counter = 0
         basename = os.path.splitext(filename)[0]
