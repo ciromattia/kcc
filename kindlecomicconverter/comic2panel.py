@@ -112,6 +112,8 @@ def splitImage(work):
         imgProcess = imgEdges.point(lambda p: 255 if p > 6 else 0).convert('1', dither=Dither.NONE)
 
         widthImg, heightImg = imgOrg.size
+        if widthImg < 300:
+            raise UserWarning('PDF render failed < 300 px. Try legacy extract option instead.')
         if heightImg > opt.height:
             if opt.debug:
                 drawImg = Image.open(filePath).convert(mode='RGBA')
