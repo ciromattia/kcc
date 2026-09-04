@@ -892,6 +892,13 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
 
     cpu = cpu_count()
 
+    if not render:
+        print('PDF input can also use legacy extract option if you have any problems')
+        if GUI:
+            GUI.addMessage.emit('PDF input can also use legacy extract option if you have any problems'
+                                , 'info', False)
+            GUI.addMessage.emit('', '', False)
+
     # make vectors of arguments for the processes
     vectors = [(i, cpu, filename, output_dir, target_width, target_height, pdfwidth) for i in range(cpu)]
     print("Starting %i processes for '%s'." % (cpu, filename))
