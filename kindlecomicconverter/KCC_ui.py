@@ -352,6 +352,11 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.keepComicInfoBox, 11, 3, 1, 1)
 
+        self.wallpaperBox = QCheckBox(self.optionWidget)
+        self.wallpaperBox.setObjectName(u"wallpaperBox")
+
+        self.gridLayout_2.addWidget(self.wallpaperBox, 11, 0, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -855,11 +860,20 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.keepComicInfoBox.setText(QCoreApplication.translate("mainWindow", u"Keep ComicInfo.xml", None))
 #if QT_CONFIG(tooltip)
+        self.wallpaperBox.setToolTip(QCoreApplication.translate("mainWindow", u"Auto check various options intended for KOreader wallpapers.\n"
+"\n"
+"Will also crop images to fill the screen centered.", None))
+#endif // QT_CONFIG(tooltip)
+        self.wallpaperBox.setText(QCoreApplication.translate("mainWindow", u"Wallpaper mode", None))
+#if QT_CONFIG(tooltip)
         self.editorButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Shift+Click to edit directory.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.editorButton.setText(QCoreApplication.translate("mainWindow", u"Metadata Editor", None))
         self.humbleButton.setText(QCoreApplication.translate("mainWindow", u"Humble Bundle Referral", None))
         self.kofiButton.setText(QCoreApplication.translate("mainWindow", u"Support me on Ko-fi", None))
+#if QT_CONFIG(tooltip)
+        self.labelSpreadsButton.setToolTip(QCoreApplication.translate("mainWindow", u"Hold shift while clicking for a low quality preview.", None))
+#endif // QT_CONFIG(tooltip)
         self.labelSpreadsButton.setText(QCoreApplication.translate("mainWindow", u"Label Spreads", None))
 #if QT_CONFIG(tooltip)
         self.chunkSizeWidget.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Warning: chunk size greater than default may cause<br/>performance/battery issues, especially on older devices.</p></body></html>", None))

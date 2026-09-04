@@ -16,7 +16,15 @@ class GetOutputFilenameTests(unittest.TestCase):
         self.temp_dir.cleanup()
 
     def get_output(self, source, *, profile="KoC", no_kepub=False, wanted_name=None, tome_number=""):
-        options = SimpleNamespace(profile=profile, format="EPUB", noKepub=no_kepub, output=wanted_name)
+        # checkOptions sets folder_output for every run; only the FOLDER
+        # format turns it on, and these cases are all EPUB.
+        options = SimpleNamespace(
+            profile=profile,
+            format="EPUB",
+            noKepub=no_kepub,
+            output=wanted_name,
+            folder_output=False,
+        )
         with patch.object(comic2ebook, "options", options, create=True):
             return Path(comic2ebook.getOutputFilename(str(source), wanted_name, ".epub", tome_number))
 

@@ -891,6 +891,13 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
 
     cpu = cpu_count()
 
+    if not render:
+        print('PDF input can also use legacy extract option if you have any problems')
+        if GUI:
+            GUI.addMessage.emit('PDF input can also use legacy extract option if you have any problems'
+                                , 'info', False)
+            GUI.addMessage.emit('', '', False)
+
     # make vectors of arguments for the processes
     vectors = [(i, cpu, filename, output_dir, target_width, target_height, pdfwidth) for i in range(cpu)]
     print("Starting %i processes for '%s'." % (cpu, filename))
@@ -1057,6 +1064,8 @@ def getWorkFolder(afile, options, workdir=None):
 
 
 def getOutputFilename(srcpath, wantedname, ext, tomenumber):
+    if options.folder_output:
+        ext = ''
     source_path = Path(srcpath)
     if srcpath[-1] == os.path.sep:
         srcpath = srcpath[:-1]
@@ -1068,7 +1077,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
             ext = '.kepub.epub'
     if wantedname is not None:
         wanted_root, wanted_ext = os.path.splitext(wantedname)
-        if wantedname.endswith(ext):
+        if not options.folder_output and wantedname.endswith(ext):
             filename = os.path.abspath(wantedname)
         elif wanted_ext == '.mobi' and ext == '.epub':
             filename = os.path.abspath(wanted_root + ext)
@@ -1085,10 +1094,10 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
         filename = srcpath + tomenumber + ext
     else:
         filename = os.path.splitext(srcpath)[0] + tomenumber + ext
-    if os.path.isfile(filename):
+    if os.path.exists(filename):
         counter = 0
         basename = os.path.splitext(filename)[0]
-        while os.path.isfile(basename + '_kcc' + str(counter) + ext):
+        while os.path.exists(basename + '_kcc' + str(counter) + ext):
             counter += 1
         filename = basename + '_kcc' + str(counter) + ext
     elif options.format == 'MOBI' and ext == '.epub':
@@ -1422,6 +1431,9 @@ def slugify(value, options, is_natural_sorted):
     return value
 
 def makeZIP(zipfilename, basedir, job_progress='', isepub=False):
+    if options.folder_output:
+        move(basedir, zipfilename)
+        return zipfilename
     start = perf_counter()
     if SEVENZIP in available_archive_tools():
         if isepub:
@@ -1467,6 +1479,8 @@ def makeParser():
                               help="Manga style (right-to-left reading and splitting)")
     main_options.add_argument("--lightnovel", action="store_true", dest="lightnovel", default=False,
                               help="Only resize images and preserve original file structure.")
+    main_options.add_argument("--wallpaper", action="store_true", dest="wallpaper", default=False,
+                              help="Crop to fill screen.")
     main_options.add_argument("--ebok", action="store_true", dest="ebok", default=False,
                               help="Force EBOK tag instead of PDOC for MOBI")
     main_options.add_argument("--invertdirection", action="store_true", dest="invertdirection", default=False,
@@ -1631,6 +1645,12 @@ def checkOptions(options):
         options.keep_epub = True
         options.format = 'MOBI'
     options.kfx = False
+    options.skip_zip = False
+    options.folder_output = False
+    if options.format == 'FOLDER':
+        options.format = 'CBZ'
+        options.skip_zip = True
+        options.folder_output = True
     if options.format == 'Auto':
         if options.profile in ['KDX']:
             options.format = 'CBZ'
@@ -1803,6 +1823,7 @@ def makeBook(source, qtgui=None, job_progress=''):
     print(f"{job_progress}Preparing source images...")
     path = getWorkFolder(source, options)
     print(f"{job_progress}Checking images...")
+    _, ext = os.path.splitext(source)
 
     if options.lightnovel:
         for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
@@ -1823,7 +1844,6 @@ def makeBook(source, qtgui=None, job_progress=''):
                         if img.size[0] > x or img.size[1] > y:
                             img = ImageOps.contain(img, (x, y))
                             img.save(os.path.join(root, file), quality=options.jpegquality)
-        _, ext = os.path.splitext(source)
         if ext != '.epub':
             ext = '.cbz'
         output_file = getOutputFilename(source, options.output, ext, '')
@@ -1839,14 +1859,20 @@ def makeBook(source, qtgui=None, job_progress=''):
 
     if os.path.exists(source+'.json'):
         flattenTree(os.path.join(path, 'OEBPS', 'Images'))
+        chapterNames = {}
+        cover_path = None
         with open(source+'.json') as f:
             data = json.load(f)
             for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
                 sorted_files = os_sorted(files)
-                for i in range(len(files)):
+                for i in range(len(sorted_files)):
+                    if not cover_path:
+                        cover_path = os.path.join(root, sorted_files[i])
                     if i in data['spreads']:
                         im1 = Image.open(os.path.join(root, sorted_files[i]))
                         im2 = Image.open(os.path.join(root, sorted_files[i+1]))
+                        if not options.righttoleft:
+                            im1, im2 = im2, im1
                         dst = Image.new('RGB', (im1.width + im2.width, im1.height))
                         dst.paste(im2, (0, 0))
                         dst.paste(im1, (im1.width, 0))
@@ -1854,10 +1880,31 @@ def makeBook(source, qtgui=None, job_progress=''):
                         dst.save(os.path.join(path, 'OEBPS', 'Images', f'{base}-merged.png'))
                         os.remove(os.path.join(root, sorted_files[i]))
                         os.remove(os.path.join(root, sorted_files[i+1]))
+                        if not os.path.exists(cover_path):
+                            cover_path = os.path.join(root, f'{base}-merged.png')            
 
     if options.filefusion:
         # Strip the fusion_0001_ sort prefix from makeFusion if present
         chapterNames = {k: sub(r'^fusion_\d{4}_', '', v) for k, v in chapterNames.items()}
+
+    source_path = Path(source)
+    options.customcover = False
+    if source_path.parent.joinpath('Covers').is_dir():
+        series = os_sorted(filter(lambda s: s.endswith(ext) and '_kcc' not in s, os.listdir(source_path.parent)))
+        source_index = series.index(os.path.basename(source))
+        covers = os.listdir(source_path.parent.joinpath('Covers'))
+        filtered_covers = []
+        for cover in covers:
+            _, cover_ext = getImageFileName(cover)
+            if cover_ext in IMAGE_TYPES:
+                filtered_covers.append(cover)
+        sorted_covers = os_sorted(filtered_covers)
+        try:
+            cover_path = source_path.parent.joinpath('Covers', sorted_covers[source_index])
+            options.customcover = True
+        except IndexError:
+            pass
+
     cover = None
     if not options.webtoon:
         cover = image.Cover(cover_path, options)
@@ -1939,7 +1986,7 @@ def makeBook(source, qtgui=None, job_progress=''):
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ' ' + str(tomeNumber)))
             else:
                 filepath.append(getOutputFilename(source, options.output, '.cbz', ''))
-            if cover and cover.smartcover:
+            if cover and (cover.smartcover or options.customcover):
                 cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', '##cover.jpg'), tomeNumber, len(tomes))
             if options.comicinfo_xml:
                 with open(os.path.join(tome, 'OEBPS', 'Images', 'ComicInfo.xml'), 'wb') as xmlOutput:
@@ -1950,7 +1997,7 @@ def makeBook(source, qtgui=None, job_progress=''):
             # determine output filename based on source and tome count
             suffix = (' ' + str(tomeNumber)) if len(tomes) > 1 else ''
             output_file = getOutputFilename(source, options.output, '.pdf', suffix)
-            if cover and cover.smartcover:
+            if cover and (cover.smartcover or options.customcover):
                 cover.save_to_folder(os.path.join(tome, 'OEBPS', 'Images', 'cover.jpg'), tomeNumber, len(tomes))
             # use optimized buildPDF logic with streaming and compression
             output_pdf = buildPDF(tome, options.title, job_progress, None, output_file)

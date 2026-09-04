@@ -693,6 +693,18 @@ Keeping this file may crash some readers like the Kobo native CBZ reader.</strin
          </property>
         </widget>
        </item>
+       <item row="11" column="0">
+        <widget class="QCheckBox" name="wallpaperBox">
+         <property name="toolTip">
+          <string>Auto check various options intended for KOreader wallpapers.
+
+Will also crop images to fill the screen centered.</string>
+         </property>
+         <property name="text">
+          <string>Wallpaper mode</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -778,6 +790,9 @@ Keeping this file may crash some readers like the Kobo native CBZ reader.</strin
            <width>0</width>
            <height>30</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>Hold shift while clicking for a low quality preview.</string>
          </property>
          <property name="text">
           <string>Label Spreads</string>

@@ -513,7 +513,9 @@ class ComicPage:
             self.image = erase_rainbow_artifacts(self.image, is_color)
 
     def resizeImage(self):
-        if self.opt.norotate and self.targetPathOrder in ('-kcc-a', '-kcc-d') and not self.opt.kindle_scribe_azw3:
+        if self.opt.wallpaper:
+            pass
+        elif self.opt.norotate and self.targetPathOrder in ('-kcc-a', '-kcc-d') and not self.opt.kindle_scribe_azw3:
             # TODO: Kindle Scribe case
             if self.opt.kindle_azw3 and any(dim > 1920 for dim in self.image.size):
                 self.image = ImageOps.contain(self.image, (1920, 1920), Image.Resampling.LANCZOS)
@@ -536,6 +538,8 @@ class ComicPage:
                 self.image = ImageOps.pad(self.image, self.opt.kfx_resolution, method=method, color=self.fill)
         elif self.opt.stretch:
             self.image = self.image.resize(self.size, method)
+        elif self.opt.wallpaper:
+            self.image = ImageOps.fit(self.image, self.size, method=method)
         elif method == Image.Resampling.BICUBIC and not self.opt.upscale:
             pass
         else: # if image bigger than device resolution or smaller with upscaling

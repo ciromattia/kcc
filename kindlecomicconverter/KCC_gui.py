@@ -127,6 +127,8 @@ class Icons:
         self.MOBIFormat.addPixmap(QPixmap(":/Formats/icons/MOBI.png"), QIcon.Mode.Normal, QIcon.State.Off)
         self.CBZFormat = QIcon()
         self.CBZFormat.addPixmap(QPixmap(":/Formats/icons/CBZ.png"), QIcon.Mode.Normal, QIcon.State.Off)
+        self.FOLDERFormat = QIcon()
+        self.FOLDERFormat.addPixmap(QPixmap(":/Other/icons/folder_new.png"), QIcon.Mode.Normal, QIcon.State.Off)
         self.EPUBFormat = QIcon()
         self.EPUBFormat.addPixmap(QPixmap(":/Formats/icons/EPUB.png"), QIcon.Mode.Normal, QIcon.State.Off)
         self.KFXFormat = QIcon()
@@ -251,6 +253,8 @@ def get_options():
         options.righttoleft = True
     if GUI.lightnovelBox.isChecked():
         options.lightnovel = True
+    if GUI.wallpaperBox.isChecked():
+        options.wallpaper = True
     if GUI.ebokBox.isChecked():
         options.ebok = True
     if GUI.invertDirectionBox.isChecked():
@@ -442,6 +446,9 @@ class WorkerThread(QThread):
             if gui_current_format == 'CBZ':
                 MW.addMessage.emit('Creating CBZ files', 'info', False)
                 GUI.progress.content = 'Creating CBZ files'
+            elif gui_current_format == 'FOLDER':
+                MW.addMessage.emit('Creating folders', 'info', False)
+                GUI.progress.content = 'Creating folders'
             elif gui_current_format == 'PDF':
                 MW.addMessage.emit('Creating PDF files', 'info', False)
                 GUI.progress.content = 'Creating PDF files'
@@ -487,6 +494,8 @@ class WorkerThread(QThread):
                 GUI.progress.content = ''
                 if gui_current_format == 'CBZ':
                     MW.addMessage.emit('Creating CBZ files... <b>Done!</b>', 'info', True)
+                elif gui_current_format == 'FOLDER':
+                    MW.addMessage.emit('Creating folders... <b>Done!</b>', 'info', True)
                 elif gui_current_format == 'PDF':
                     MW.addMessage.emit('Creating PDF files... <b>Done!</b>', 'info', True)
                 else:
@@ -671,6 +680,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                     GUI.jobList.scrollToBottom()
 
     def labelSpreadsStart(self):
+        low_quality_preview = False
+        if QApplication.keyboardModifiers() == Qt.ShiftModifier:
+            low_quality_preview = True
         currentJobs = []
         # TODO: make this a function since it's copy pasted
         for i in range(GUI.jobList.count()):
@@ -704,29 +716,37 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                         continue 
                     # TODO: with statements
                     # TODO: ignore 1% of top and bottom too?
-                    im1 = Image.open(os.path.join(root, files[i])).convert('1', dither=Dither.NONE)
+                    im1 = Image.open(os.path.join(root, files[i]))
+                    im2 = Image.open(os.path.join(root, files[i+1]))
+                    if not options.righttoleft:
+                        im1, im2 = im2, im1
                     size1 = im1.size
-                    crop1 = im1.crop((0, 0, 0.2*size1[0], size1[1]))
-                    crop11 = im1.crop((0.01*size1[0], 0, 0.04*size1[0], size1[1]))
-                    #crop1 = crop11
-                    im2 = Image.open(os.path.join(root, files[i+1])).convert('1', dither=Dither.NONE)
                     size2 = im2.size
-                    crop2 = im2.crop((0.8*size2[0], 0, size2[0], size2[1]))
-                    crop22 = im2.crop((0.96*size2[0], 0, .99* size2[0], size2[1]))
-                    #crop2 = crop22
+
+                    preview_crop1 = im1.crop((0, 0, 0.2*size1[0], size1[1]))
+                    if low_quality_preview:
+                        preview_crop1 = preview_crop1.convert('1', dither=Dither.NONE)
+                    calculation_crop1 = im1.crop((0.01*size1[0], 0, 0.04*size1[0], size1[1])).convert('1', dither=Dither.NONE)
+
+                    preview_crop2 = im2.crop((0.8*size2[0], 0, size2[0], size2[1]))
+                    if low_quality_preview:
+                        preview_crop2 = preview_crop2.convert('1', dither=Dither.NONE)
+                    calculation_crop2 = im2.crop((0.96*size2[0], 0, .99* size2[0], size2[1])).convert('1', dither=Dither.NONE)
+
                     # dst = Image.new('1', (im1.width + im2.width, im1.height))
                     # dst.paste(im2, (0, 0))
                     # dst.paste(im1, (im1.width, 0))
-                    hist1 = crop11.histogram()
-                    hist2 = crop22.histogram()
+                    hist1 = calculation_crop1.histogram()
+                    hist2 = calculation_crop2.histogram()
                     # TODO: small percentage instead of zero
                     if hist1[0] == 0 or hist1[-1] == 0 or hist2[0] == 0 or hist2[-1] == 0:
                         continue
 
-                    dst = Image.new('1', (crop1.width + crop2.width, crop1.height))
+                    preview_mode = '1' if low_quality_preview else 'RGB'
+                    dst = Image.new(preview_mode, (preview_crop1.width + preview_crop2.width, preview_crop1.height))
 
-                    dst.paste(crop2, (0, 0))
-                    dst.paste(crop1, (crop1.width, 0))
+                    dst.paste(preview_crop2, (0, 0))
+                    dst.paste(preview_crop1, (preview_crop1.width, 0))
                     dst.save(os.path.join(workdir, f'label-{i:04}.png'))
                     images.append(os.path.join(workdir, f'label-{i:04}.png'))
 
@@ -951,6 +971,14 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.noQuantizeBox.setEnabled(False)
             GUI.forcePngRgbBox.setEnabled(False)           
 
+    def toggleWallpaperBox(self, value):
+        if value == 2:
+            GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
+            GUI.pngLegacyBox.setChecked(True)
+            GUI.rotateBox.setChecked(True)
+            GUI.noRotateBox.setChecked(True)
+            GUI.upscaleBox.setChecked(True)
+            self.changeFormat(3)
 
     def togglechunkSizeCheckBox(self, value):
         GUI.chunkSizeWidget.setVisible(value)
@@ -1050,9 +1078,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             GUI.upscaleBox.setChecked(True)
         elif not GUI.webtoonBox.isChecked():
             GUI.chunkSizeCheckBox.setEnabled(True)
-        if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'PDF') and not GUI.webtoonBox.isChecked():
+        if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'FOLDER', 'PDF') and not GUI.webtoonBox.isChecked():
             self.addMessage("Partially check W/B Margins if you don't want KCC to extend the image margins.", 'info')
             GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
+            GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
         else:
             GUI.borderBox.setCheckState(Qt.CheckState.Unchecked)
 
@@ -1167,6 +1196,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
         self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
                                            'lightnovelBox': GUI.lightnovelBox.checkState(),
+                                           'wallpaperBox': GUI.wallpaperBox.checkState(),
                                            'ebokBox': GUI.ebokBox.checkState(),
                                            'invertDirectionBox': GUI.invertDirectionBox.checkState(),
                                            'languageEdit': GUI.languageEdit.text(),
@@ -1348,6 +1378,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             "MOBI/AZW3": {'icon': 'MOBI', 'format': 'MOBI'},
             "EPUB": {'icon': 'EPUB', 'format': 'EPUB'},
             "CBZ": {'icon': 'CBZ', 'format': 'CBZ'},
+            "Folder of images": {'icon': 'FOLDER', 'format': 'FOLDER'},
             "PDF": {'icon': 'EPUB', 'format': 'PDF'},
             "PDF (200MB limit)": {'icon': 'EPUB', 'format': 'PDF-200MB'},
             "KFX (Send to Kindle EPUB)": {'icon': 'KFX', 'format': 'KFX'},
@@ -1563,6 +1594,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.webtoonBox.stateChanged.connect(self.togglewebtoonBox)
         GUI.qualityBox.stateChanged.connect(self.togglequalityBox)
         GUI.mozJpegBox.stateChanged.connect(self.toggleImageFormatBox)
+        GUI.wallpaperBox.stateChanged.connect(self.toggleWallpaperBox)
         GUI.chunkSizeCheckBox.stateChanged.connect(self.togglechunkSizeCheckBox)
         GUI.deviceBox.activated.connect(self.changeDevice)
         GUI.formatBox.activated.connect(self.changeFormat)
