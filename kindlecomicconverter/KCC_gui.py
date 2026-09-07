@@ -155,17 +155,21 @@ class Icons:
 
 
 class VersionThread(QThread):
-    def __init__(self):
+    def __init__(self, startNumber2):
         QThread.__init__(self)
         self.newVersion = ''
         self.md5 = ''
         self.barProgress = 0
         self.answer = None
+        self.startNumber2 = startNumber2
 
     def __del__(self):
         self.wait()
 
     def run(self):
+        if self.startNumber2 < 5:
+            return
+
         try:
             # unauthenticated API requests limit is 60 req/hour
             if getattr(sys, 'frozen', False):
@@ -823,6 +827,91 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         # noinspection PyCallByClass
         QDesktopServices.openUrl(QUrl('https://humblebundleinc.sjv.io/3JaR3A'))
 
+    def toggleExpert(self):
+        # noinspection PyCallByClass
+        if self.expertMode:
+            self.hide_expert_options()
+            self.expertMode = False   
+        else:
+            self.show_expert_options()
+            self.expertMode = True 
+
+    def show_expert_options(self):
+        GUI.spreadShiftBox.show()
+        GUI.fileFusionBox.show()
+        GUI.jpegQualityBox.show()
+        GUI.pngLegacyBox.show()
+        GUI.webpBox.show()
+        GUI.lightnovelBox.show()
+        GUI.wallpaperBox.show()
+        GUI.outputSplit.show()
+        GUI.maximizeStrips.show()
+        GUI.noRotateBox.show()
+        GUI.rotateFirstBox.show()
+        GUI.coverFillBox.show()
+        GUI.rotateRightBox.show()
+        GUI.smartCoverCropBox.show()
+        GUI.onePageLandscapeBox.show()
+        GUI.qualityBox.show()
+        GUI.gammaBox.show()
+        GUI.interPanelCropBox.show()
+        GUI.autoLevelBox.show()
+        GUI.autocontrastBox.show()
+        GUI.vertical4PanelBox.show()
+        GUI.tempDirBox.show()
+        GUI.deleteBox.show()
+        GUI.metadataTitleBox.show()
+        GUI.keepComicInfoBox.show()
+        GUI.pdfWidthBox.show()
+        GUI.chunkSizeCheckBox.show()
+        GUI.disableProcessingBox.show()
+        GUI.noQuantizeBox.show()
+        GUI.forcePngRgbBox.show()
+        GUI.invertDirectionBox.show()
+        GUI.ebokBox.show()
+        GUI.languageEdit.show()
+        GUI.labelSpreadsButton.show()
+        GUI.editorButton.show()
+        GUI.easyLabel.hide()
+
+    def hide_expert_options(self):
+        GUI.spreadShiftBox.hide()
+        GUI.fileFusionBox.hide()
+        GUI.jpegQualityBox.hide()
+        GUI.pngLegacyBox.hide()
+        GUI.webpBox.hide()
+        GUI.lightnovelBox.hide()
+        GUI.wallpaperBox.hide()
+        GUI.outputSplit.hide()
+        GUI.maximizeStrips.hide()
+        GUI.noRotateBox.hide()
+        GUI.rotateFirstBox.hide()
+        GUI.coverFillBox.hide()
+        GUI.rotateRightBox.hide()
+        GUI.smartCoverCropBox.hide()
+        GUI.onePageLandscapeBox.hide()
+        GUI.qualityBox.hide()
+        GUI.gammaBox.hide()
+        GUI.interPanelCropBox.hide()
+        GUI.autoLevelBox.hide()
+        GUI.autocontrastBox.hide()
+        GUI.vertical4PanelBox.hide()
+        GUI.tempDirBox.hide()
+        GUI.deleteBox.hide()
+        GUI.metadataTitleBox.hide()
+        GUI.keepComicInfoBox.hide()
+        GUI.pdfWidthBox.hide()
+        GUI.chunkSizeCheckBox.hide()
+        GUI.disableProcessingBox.hide()
+        GUI.noQuantizeBox.hide()
+        GUI.forcePngRgbBox.hide()
+        GUI.invertDirectionBox.hide()
+        GUI.ebokBox.hide()
+        GUI.languageEdit.hide()
+        GUI.labelSpreadsButton.hide()
+        GUI.editorButton.hide()
+        GUI.easyLabel.show()
+
     def openYouTube(self):
         # noinspection PyCallByClass
         QDesktopServices.openUrl(QUrl('https://www.youtube.com/@eink-dude'))
@@ -1188,11 +1277,13 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if not GUI.convertButton.isEnabled():
             event.ignore()
         self.settings.setValue('settingsVersion', __version__)
+        self.settings.setValue('expertMode', self.expertMode)
         self.settings.setValue('lastPath', self.lastPath)
         self.settings.setValue('defaultOutputFolder', self.defaultOutputFolder)
         self.settings.setValue('lastDevice', GUI.deviceBox.currentIndex())
         self.settings.setValue('currentFormat', GUI.formatBox.currentIndex())
         self.settings.setValue('startNumber', self.startNumber + 1)
+        self.settings.setValue('startNumber2', self.startNumber2 + 1)
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
         self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
                                            'lightnovelBox': GUI.lightnovelBox.checkState(),
@@ -1332,11 +1423,16 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if not os.path.exists(self.defaultOutputFolder):
             self.defaultOutputFolder = ''
 
+        self.expertMode = self.settings.value('expertMode', False, type=bool)
+        if not self.expertMode:
+            GUI.hide_expert_options()
+
         # default is Kindle Paperwhite 12th Gen
         self.lastDevice = self.settings.value('lastDevice', 3, type=int)
 
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
+        self.startNumber2 = self.settings.value('startNumber2', 0, type=int)
         self.windowSize = self.settings.value('windowSize', '0x0', type=str)
         default_options = {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100, 'rotateBox': 1, 'mangaBox': 2}
         try:
@@ -1344,7 +1440,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         except Exception:
             self.options = default_options
         self.worker = WorkerThread()
-        self.versionCheck = VersionThread()
+        self.versionCheck = VersionThread(self.startNumber2)
         self.progress = ProgressThread()
         self.tray = SystemTrayIcon()
         self.conversionAlive = False
@@ -1562,8 +1658,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         statusBarLabel.setOpenExternalLinks(True)
         GUI.statusBar.addPermanentWidget(statusBarLabel, 1)
 
-        self.addMessage('<b>Tip:</b> Hover mouse over options to see additional information in tooltips.', 'info')
+        self.addMessage('<b>Tip:</b> Hover mouse over options/buttons to see explanations. Boxes can be partially/fully checked.', 'info')
         self.addMessage('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.', 'info')
+        self.addMessage("<b>Tip:</b> Calibre may add margins! USB drop directly into the device's documents folder instead.", 'info')
+        self.addMessage("<b>Tip:</b> You can toggle easy/expert mode using button at top right.", 'info')
         if self.startNumber < 5:
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
@@ -1584,6 +1682,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.editorButton.clicked.connect(self.selectFileMetaEditor)
         GUI.kofiButton.clicked.connect(self.openKofi)
         GUI.humbleButton.clicked.connect(self.openHumble)
+        GUI.expertButton.clicked.connect(self.toggleExpert)
         GUI.convertButton.clicked.connect(self.convertStart)
         GUI.labelSpreadsButton.clicked.connect(self.labelSpreadsStart)
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
