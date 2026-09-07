@@ -155,17 +155,21 @@ class Icons:
 
 
 class VersionThread(QThread):
-    def __init__(self):
+    def __init__(self, startNumber2):
         QThread.__init__(self)
         self.newVersion = ''
         self.md5 = ''
         self.barProgress = 0
         self.answer = None
+        self.startNumber2 = startNumber2
 
     def __del__(self):
         self.wait()
 
     def run(self):
+        if self.startNumber2 < 5:
+            return
+
         try:
             # unauthenticated API requests limit is 60 req/hour
             if getattr(sys, 'frozen', False):
@@ -868,6 +872,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.languageEdit.show()
         GUI.labelSpreadsButton.show()
         GUI.editorButton.show()
+        GUI.easyLabel.hide()
 
     def hide_expert_options(self):
         GUI.spreadShiftBox.hide()
@@ -905,6 +910,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.languageEdit.hide()
         GUI.labelSpreadsButton.hide()
         GUI.editorButton.hide()
+        GUI.easyLabel.show()
 
     def openYouTube(self):
         # noinspection PyCallByClass
@@ -1277,6 +1283,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.settings.setValue('lastDevice', GUI.deviceBox.currentIndex())
         self.settings.setValue('currentFormat', GUI.formatBox.currentIndex())
         self.settings.setValue('startNumber', self.startNumber + 1)
+        self.settings.setValue('startNumber2', self.startNumber2 + 1)
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
         self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
                                            'lightnovelBox': GUI.lightnovelBox.checkState(),
@@ -1425,6 +1432,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
+        self.startNumber2 = self.settings.value('startNumber2', 0, type=int)
         self.windowSize = self.settings.value('windowSize', '0x0', type=str)
         default_options = {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100, 'rotateBox': 1, 'mangaBox': 2}
         try:
@@ -1432,7 +1440,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         except Exception:
             self.options = default_options
         self.worker = WorkerThread()
-        self.versionCheck = VersionThread()
+        self.versionCheck = VersionThread(self.startNumber2)
         self.progress = ProgressThread()
         self.tray = SystemTrayIcon()
         self.conversionAlive = False
@@ -1650,8 +1658,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         statusBarLabel.setOpenExternalLinks(True)
         GUI.statusBar.addPermanentWidget(statusBarLabel, 1)
 
-        self.addMessage('<b>Tip:</b> Hover mouse over options to see additional information in tooltips.', 'info')
+        self.addMessage('<b>Tip:</b> Hover mouse over options/buttons to see explanations. Boxes can be partially/fully checked.', 'info')
         self.addMessage('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.', 'info')
+        self.addMessage("<b>Tip:</b> Calibre may add margins! USB drop directly into the device's documents folder instead.", 'info')
+        self.addMessage("<b>Tip:</b> You can toggle easy/expert mode using button at top right.", 'info')
         if self.startNumber < 5:
             self.addMessage('Since you are a new user of <b>KCC</b> please see few '
                             '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
