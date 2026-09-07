@@ -80,92 +80,53 @@ class Ui_mainWindow(object):
         self.gridLayout_2 = QGridLayout(self.optionWidget)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.metadataTitleBox = QCheckBox(self.optionWidget)
-        self.metadataTitleBox.setObjectName(u"metadataTitleBox")
-        self.metadataTitleBox.setTristate(True)
-
-        self.gridLayout_2.addWidget(self.metadataTitleBox, 2, 3, 1, 1)
-
-        self.vertical4PanelBox = QCheckBox(self.optionWidget)
-        self.vertical4PanelBox.setObjectName(u"vertical4PanelBox")
-
-        self.gridLayout_2.addWidget(self.vertical4PanelBox, 9, 2, 1, 1)
-
-        self.webtoonBox = QCheckBox(self.optionWidget)
-        self.webtoonBox.setObjectName(u"webtoonBox")
-
-        self.gridLayout_2.addWidget(self.webtoonBox, 2, 0, 1, 1)
-
-        self.webpBox = QCheckBox(self.optionWidget)
-        self.webpBox.setObjectName(u"webpBox")
-
-        self.gridLayout_2.addWidget(self.webpBox, 9, 0, 1, 1)
-
-        self.smartCoverCropBox = QCheckBox(self.optionWidget)
-        self.smartCoverCropBox.setObjectName(u"smartCoverCropBox")
-
-        self.gridLayout_2.addWidget(self.smartCoverCropBox, 9, 1, 1, 1)
-
-        self.croppingBox = QCheckBox(self.optionWidget)
-        self.croppingBox.setObjectName(u"croppingBox")
-        self.croppingBox.setTristate(True)
-
-        self.gridLayout_2.addWidget(self.croppingBox, 4, 2, 1, 1)
-
-        self.autocontrastBox = QCheckBox(self.optionWidget)
-        self.autocontrastBox.setObjectName(u"autocontrastBox")
-        self.autocontrastBox.setTristate(True)
-
-        self.gridLayout_2.addWidget(self.autocontrastBox, 8, 2, 1, 1)
-
-        self.mozJpegBox = QCheckBox(self.optionWidget)
-        self.mozJpegBox.setObjectName(u"mozJpegBox")
-        self.mozJpegBox.setTristate(True)
-
-        self.gridLayout_2.addWidget(self.mozJpegBox, 4, 0, 1, 1)
-
-        self.coverFillBox = QCheckBox(self.optionWidget)
-        self.coverFillBox.setObjectName(u"coverFillBox")
-
-        self.gridLayout_2.addWidget(self.coverFillBox, 7, 1, 1, 1)
-
         self.interPanelCropBox = QCheckBox(self.optionWidget)
         self.interPanelCropBox.setObjectName(u"interPanelCropBox")
         self.interPanelCropBox.setTristate(True)
 
-        self.gridLayout_2.addWidget(self.interPanelCropBox, 5, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.interPanelCropBox, 6, 2, 1, 1)
 
-        self.chunkSizeCheckBox = QCheckBox(self.optionWidget)
-        self.chunkSizeCheckBox.setObjectName(u"chunkSizeCheckBox")
+        self.pdfWidthBox = QCheckBox(self.optionWidget)
+        self.pdfWidthBox.setObjectName(u"pdfWidthBox")
 
-        self.gridLayout_2.addWidget(self.chunkSizeCheckBox, 5, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.pdfWidthBox, 4, 3, 1, 1)
 
-        self.disableProcessingBox = QCheckBox(self.optionWidget)
-        self.disableProcessingBox.setObjectName(u"disableProcessingBox")
+        self.tempDirBox = QCheckBox(self.optionWidget)
+        self.tempDirBox.setObjectName(u"tempDirBox")
 
-        self.gridLayout_2.addWidget(self.disableProcessingBox, 6, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.tempDirBox, 10, 2, 1, 1)
 
         self.spreadShiftBox = QCheckBox(self.optionWidget)
         self.spreadShiftBox.setObjectName(u"spreadShiftBox")
 
         self.gridLayout_2.addWidget(self.spreadShiftBox, 5, 0, 1, 1)
 
-        self.forcePngRgbBox = QCheckBox(self.optionWidget)
-        self.forcePngRgbBox.setObjectName(u"forcePngRgbBox")
-        self.forcePngRgbBox.setEnabled(False)
+        self.borderBox = QCheckBox(self.optionWidget)
+        self.borderBox.setObjectName(u"borderBox")
+        self.borderBox.setTristate(True)
 
-        self.gridLayout_2.addWidget(self.forcePngRgbBox, 8, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.borderBox, 3, 0, 1, 1)
 
-        self.rotateBox = QCheckBox(self.optionWidget)
-        self.rotateBox.setObjectName(u"rotateBox")
-        self.rotateBox.setTristate(True)
+        self.eraseRainbowBox = QCheckBox(self.optionWidget)
+        self.eraseRainbowBox.setObjectName(u"eraseRainbowBox")
 
-        self.gridLayout_2.addWidget(self.rotateBox, 1, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.eraseRainbowBox, 3, 2, 1, 1)
 
-        self.gammaBox = QCheckBox(self.optionWidget)
-        self.gammaBox.setObjectName(u"gammaBox")
+        self.noRotateBox = QCheckBox(self.optionWidget)
+        self.noRotateBox.setObjectName(u"noRotateBox")
 
-        self.gridLayout_2.addWidget(self.gammaBox, 2, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.noRotateBox, 6, 1, 1, 1)
+
+        self.deleteBox = QCheckBox(self.optionWidget)
+        self.deleteBox.setObjectName(u"deleteBox")
+
+        self.gridLayout_2.addWidget(self.deleteBox, 1, 3, 1, 1)
+
+        self.autocontrastBox = QCheckBox(self.optionWidget)
+        self.autocontrastBox.setObjectName(u"autocontrastBox")
+        self.autocontrastBox.setTristate(True)
+
+        self.gridLayout_2.addWidget(self.autocontrastBox, 8, 2, 1, 1)
 
         self.languageEdit = QLineEdit(self.optionWidget)
         self.languageEdit.setObjectName(u"languageEdit")
@@ -179,121 +140,52 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.languageEdit, 0, 3, 1, 1)
 
-        self.rotateRightBox = QCheckBox(self.optionWidget)
-        self.rotateRightBox.setObjectName(u"rotateRightBox")
+        self.ebokBox = QCheckBox(self.optionWidget)
+        self.ebokBox.setObjectName(u"ebokBox")
 
-        self.gridLayout_2.addWidget(self.rotateRightBox, 8, 1, 1, 1)
-
-        self.tempDirBox = QCheckBox(self.optionWidget)
-        self.tempDirBox.setObjectName(u"tempDirBox")
-
-        self.gridLayout_2.addWidget(self.tempDirBox, 10, 2, 1, 1)
-
-        self.deleteBox = QCheckBox(self.optionWidget)
-        self.deleteBox.setObjectName(u"deleteBox")
-
-        self.gridLayout_2.addWidget(self.deleteBox, 1, 3, 1, 1)
-
-        self.maximizeStrips = QCheckBox(self.optionWidget)
-        self.maximizeStrips.setObjectName(u"maximizeStrips")
-
-        self.gridLayout_2.addWidget(self.maximizeStrips, 4, 1, 1, 1)
-
-        self.jpegQualityBox = QCheckBox(self.optionWidget)
-        self.jpegQualityBox.setObjectName(u"jpegQualityBox")
-
-        self.gridLayout_2.addWidget(self.jpegQualityBox, 7, 0, 1, 1)
-
-        self.rotateFirstBox = QCheckBox(self.optionWidget)
-        self.rotateFirstBox.setObjectName(u"rotateFirstBox")
-
-        self.gridLayout_2.addWidget(self.rotateFirstBox, 6, 1, 1, 1)
-
-        self.titleEdit = QLineEdit(self.optionWidget)
-        self.titleEdit.setObjectName(u"titleEdit")
-        sizePolicy1.setHeightForWidth(self.titleEdit.sizePolicy().hasHeightForWidth())
-        self.titleEdit.setSizePolicy(sizePolicy1)
-        self.titleEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
-        self.titleEdit.setClearButtonEnabled(False)
-
-        self.gridLayout_2.addWidget(self.titleEdit, 0, 0, 1, 1)
-
-        self.pdfWidthBox = QCheckBox(self.optionWidget)
-        self.pdfWidthBox.setObjectName(u"pdfWidthBox")
-
-        self.gridLayout_2.addWidget(self.pdfWidthBox, 4, 3, 1, 1)
-
-        self.eraseRainbowBox = QCheckBox(self.optionWidget)
-        self.eraseRainbowBox.setObjectName(u"eraseRainbowBox")
-
-        self.gridLayout_2.addWidget(self.eraseRainbowBox, 6, 2, 1, 1)
-
-        self.onePageLandscapeBox = QCheckBox(self.optionWidget)
-        self.onePageLandscapeBox.setObjectName(u"onePageLandscapeBox")
-
-        self.gridLayout_2.addWidget(self.onePageLandscapeBox, 10, 1, 1, 1)
-
-        self.authorEdit = QLineEdit(self.optionWidget)
-        self.authorEdit.setObjectName(u"authorEdit")
-        sizePolicy1.setHeightForWidth(self.authorEdit.sizePolicy().hasHeightForWidth())
-        self.authorEdit.setSizePolicy(sizePolicy1)
-        self.authorEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
-        self.authorEdit.setClearButtonEnabled(False)
-
-        self.gridLayout_2.addWidget(self.authorEdit, 0, 1, 1, 1)
-
-        self.outputSplit = QCheckBox(self.optionWidget)
-        self.outputSplit.setObjectName(u"outputSplit")
-
-        self.gridLayout_2.addWidget(self.outputSplit, 3, 1, 1, 1)
-
-        self.fileFusionBox = QCheckBox(self.optionWidget)
-        self.fileFusionBox.setObjectName(u"fileFusionBox")
-
-        self.gridLayout_2.addWidget(self.fileFusionBox, 6, 0, 1, 1)
-
-        self.colorBox = QCheckBox(self.optionWidget)
-        self.colorBox.setObjectName(u"colorBox")
-
-        self.gridLayout_2.addWidget(self.colorBox, 3, 2, 1, 1)
-
-        self.upscaleBox = QCheckBox(self.optionWidget)
-        self.upscaleBox.setObjectName(u"upscaleBox")
-        self.upscaleBox.setTristate(True)
-
-        self.gridLayout_2.addWidget(self.upscaleBox, 2, 1, 1, 1)
-
-        self.legacyExtractBox = QCheckBox(self.optionWidget)
-        self.legacyExtractBox.setObjectName(u"legacyExtractBox")
-
-        self.gridLayout_2.addWidget(self.legacyExtractBox, 3, 3, 1, 1)
-
-        self.borderBox = QCheckBox(self.optionWidget)
-        self.borderBox.setObjectName(u"borderBox")
-        self.borderBox.setTristate(True)
-
-        self.gridLayout_2.addWidget(self.borderBox, 3, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.ebokBox, 10, 3, 1, 1)
 
         self.invertDirectionBox = QCheckBox(self.optionWidget)
         self.invertDirectionBox.setObjectName(u"invertDirectionBox")
 
         self.gridLayout_2.addWidget(self.invertDirectionBox, 9, 3, 1, 1)
 
-        self.qualityBox = QCheckBox(self.optionWidget)
-        self.qualityBox.setObjectName(u"qualityBox")
-        self.qualityBox.setTristate(True)
+        self.fileFusionBox = QCheckBox(self.optionWidget)
+        self.fileFusionBox.setObjectName(u"fileFusionBox")
 
-        self.gridLayout_2.addWidget(self.qualityBox, 1, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.fileFusionBox, 6, 0, 1, 1)
 
-        self.noRotateBox = QCheckBox(self.optionWidget)
-        self.noRotateBox.setObjectName(u"noRotateBox")
+        self.mozJpegBox = QCheckBox(self.optionWidget)
+        self.mozJpegBox.setObjectName(u"mozJpegBox")
+        self.mozJpegBox.setTristate(True)
 
-        self.gridLayout_2.addWidget(self.noRotateBox, 5, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.mozJpegBox, 4, 0, 1, 1)
 
-        self.mangaBox = QCheckBox(self.optionWidget)
-        self.mangaBox.setObjectName(u"mangaBox")
+        self.webtoonBox = QCheckBox(self.optionWidget)
+        self.webtoonBox.setObjectName(u"webtoonBox")
 
-        self.gridLayout_2.addWidget(self.mangaBox, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.webtoonBox, 2, 0, 1, 1)
+
+        self.wallpaperBox = QCheckBox(self.optionWidget)
+        self.wallpaperBox.setObjectName(u"wallpaperBox")
+
+        self.gridLayout_2.addWidget(self.wallpaperBox, 11, 0, 1, 1)
+
+        self.rotateRightBox = QCheckBox(self.optionWidget)
+        self.rotateRightBox.setObjectName(u"rotateRightBox")
+
+        self.gridLayout_2.addWidget(self.rotateRightBox, 9, 1, 1, 1)
+
+        self.webpBox = QCheckBox(self.optionWidget)
+        self.webpBox.setObjectName(u"webpBox")
+
+        self.gridLayout_2.addWidget(self.webpBox, 9, 0, 1, 1)
+
+        self.rotateBox = QCheckBox(self.optionWidget)
+        self.rotateBox.setObjectName(u"rotateBox")
+        self.rotateBox.setTristate(True)
+
+        self.gridLayout_2.addWidget(self.rotateBox, 1, 1, 1, 1)
 
         self.outputFolderWidget = QWidget(self.optionWidget)
         self.outputFolderWidget.setObjectName(u"outputFolderWidget")
@@ -320,15 +212,123 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.outputFolderWidget, 0, 2, 1, 1)
 
-        self.autoLevelBox = QCheckBox(self.optionWidget)
-        self.autoLevelBox.setObjectName(u"autoLevelBox")
+        self.vertical4PanelBox = QCheckBox(self.optionWidget)
+        self.vertical4PanelBox.setObjectName(u"vertical4PanelBox")
 
-        self.gridLayout_2.addWidget(self.autoLevelBox, 7, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.vertical4PanelBox, 9, 2, 1, 1)
+
+        self.onePageLandscapeBox = QCheckBox(self.optionWidget)
+        self.onePageLandscapeBox.setObjectName(u"onePageLandscapeBox")
+
+        self.gridLayout_2.addWidget(self.onePageLandscapeBox, 11, 1, 1, 1)
+
+        self.metadataTitleBox = QCheckBox(self.optionWidget)
+        self.metadataTitleBox.setObjectName(u"metadataTitleBox")
+        self.metadataTitleBox.setTristate(True)
+
+        self.gridLayout_2.addWidget(self.metadataTitleBox, 2, 3, 1, 1)
+
+        self.titleEdit = QLineEdit(self.optionWidget)
+        self.titleEdit.setObjectName(u"titleEdit")
+        sizePolicy1.setHeightForWidth(self.titleEdit.sizePolicy().hasHeightForWidth())
+        self.titleEdit.setSizePolicy(sizePolicy1)
+        self.titleEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.titleEdit.setClearButtonEnabled(False)
+
+        self.gridLayout_2.addWidget(self.titleEdit, 0, 0, 1, 1)
+
+        self.authorEdit = QLineEdit(self.optionWidget)
+        self.authorEdit.setObjectName(u"authorEdit")
+        sizePolicy1.setHeightForWidth(self.authorEdit.sizePolicy().hasHeightForWidth())
+        self.authorEdit.setSizePolicy(sizePolicy1)
+        self.authorEdit.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.authorEdit.setClearButtonEnabled(False)
+
+        self.gridLayout_2.addWidget(self.authorEdit, 0, 1, 1, 1)
 
         self.lightnovelBox = QCheckBox(self.optionWidget)
         self.lightnovelBox.setObjectName(u"lightnovelBox")
 
         self.gridLayout_2.addWidget(self.lightnovelBox, 10, 0, 1, 1)
+
+        self.mangaBox = QCheckBox(self.optionWidget)
+        self.mangaBox.setObjectName(u"mangaBox")
+
+        self.gridLayout_2.addWidget(self.mangaBox, 1, 0, 1, 1)
+
+        self.autoLevelBox = QCheckBox(self.optionWidget)
+        self.autoLevelBox.setObjectName(u"autoLevelBox")
+
+        self.gridLayout_2.addWidget(self.autoLevelBox, 7, 2, 1, 1)
+
+        self.legacyExtractBox = QCheckBox(self.optionWidget)
+        self.legacyExtractBox.setObjectName(u"legacyExtractBox")
+
+        self.gridLayout_2.addWidget(self.legacyExtractBox, 3, 1, 1, 1)
+
+        self.chunkSizeCheckBox = QCheckBox(self.optionWidget)
+        self.chunkSizeCheckBox.setObjectName(u"chunkSizeCheckBox")
+
+        self.gridLayout_2.addWidget(self.chunkSizeCheckBox, 5, 3, 1, 1)
+
+        self.jpegQualityBox = QCheckBox(self.optionWidget)
+        self.jpegQualityBox.setObjectName(u"jpegQualityBox")
+
+        self.gridLayout_2.addWidget(self.jpegQualityBox, 7, 0, 1, 1)
+
+        self.gammaBox = QCheckBox(self.optionWidget)
+        self.gammaBox.setObjectName(u"gammaBox")
+
+        self.gridLayout_2.addWidget(self.gammaBox, 5, 2, 1, 1)
+
+        self.rotateFirstBox = QCheckBox(self.optionWidget)
+        self.rotateFirstBox.setObjectName(u"rotateFirstBox")
+
+        self.gridLayout_2.addWidget(self.rotateFirstBox, 7, 1, 1, 1)
+
+        self.maximizeStrips = QCheckBox(self.optionWidget)
+        self.maximizeStrips.setObjectName(u"maximizeStrips")
+
+        self.gridLayout_2.addWidget(self.maximizeStrips, 5, 1, 1, 1)
+
+        self.colorBox = QCheckBox(self.optionWidget)
+        self.colorBox.setObjectName(u"colorBox")
+
+        self.gridLayout_2.addWidget(self.colorBox, 2, 2, 1, 1)
+
+        self.croppingBox = QCheckBox(self.optionWidget)
+        self.croppingBox.setObjectName(u"croppingBox")
+        self.croppingBox.setTristate(True)
+
+        self.gridLayout_2.addWidget(self.croppingBox, 1, 2, 1, 1)
+
+        self.smartCoverCropBox = QCheckBox(self.optionWidget)
+        self.smartCoverCropBox.setObjectName(u"smartCoverCropBox")
+
+        self.gridLayout_2.addWidget(self.smartCoverCropBox, 10, 1, 1, 1)
+
+        self.qualityBox = QCheckBox(self.optionWidget)
+        self.qualityBox.setObjectName(u"qualityBox")
+        self.qualityBox.setTristate(True)
+
+        self.gridLayout_2.addWidget(self.qualityBox, 4, 2, 1, 1)
+
+        self.upscaleBox = QCheckBox(self.optionWidget)
+        self.upscaleBox.setObjectName(u"upscaleBox")
+        self.upscaleBox.setTristate(True)
+
+        self.gridLayout_2.addWidget(self.upscaleBox, 2, 1, 1, 1)
+
+        self.coverFillBox = QCheckBox(self.optionWidget)
+        self.coverFillBox.setObjectName(u"coverFillBox")
+
+        self.gridLayout_2.addWidget(self.coverFillBox, 8, 1, 1, 1)
+
+        self.forcePngRgbBox = QCheckBox(self.optionWidget)
+        self.forcePngRgbBox.setObjectName(u"forcePngRgbBox")
+        self.forcePngRgbBox.setEnabled(False)
+
+        self.gridLayout_2.addWidget(self.forcePngRgbBox, 8, 3, 1, 1)
 
         self.pngLegacyBox = QCheckBox(self.optionWidget)
         self.pngLegacyBox.setObjectName(u"pngLegacyBox")
@@ -336,26 +336,26 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.pngLegacyBox, 8, 0, 1, 1)
 
-        self.ebokBox = QCheckBox(self.optionWidget)
-        self.ebokBox.setObjectName(u"ebokBox")
-
-        self.gridLayout_2.addWidget(self.ebokBox, 10, 3, 1, 1)
-
         self.noQuantizeBox = QCheckBox(self.optionWidget)
         self.noQuantizeBox.setObjectName(u"noQuantizeBox")
         self.noQuantizeBox.setEnabled(False)
 
         self.gridLayout_2.addWidget(self.noQuantizeBox, 7, 3, 1, 1)
 
+        self.outputSplit = QCheckBox(self.optionWidget)
+        self.outputSplit.setObjectName(u"outputSplit")
+
+        self.gridLayout_2.addWidget(self.outputSplit, 4, 1, 1, 1)
+
+        self.disableProcessingBox = QCheckBox(self.optionWidget)
+        self.disableProcessingBox.setObjectName(u"disableProcessingBox")
+
+        self.gridLayout_2.addWidget(self.disableProcessingBox, 6, 3, 1, 1)
+
         self.keepComicInfoBox = QCheckBox(self.optionWidget)
         self.keepComicInfoBox.setObjectName(u"keepComicInfoBox")
 
-        self.gridLayout_2.addWidget(self.keepComicInfoBox, 11, 3, 1, 1)
-
-        self.wallpaperBox = QCheckBox(self.optionWidget)
-        self.wallpaperBox.setObjectName(u"wallpaperBox")
-
-        self.gridLayout_2.addWidget(self.wallpaperBox, 11, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.keepComicInfoBox, 3, 3, 1, 1)
 
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
@@ -365,39 +365,44 @@ class Ui_mainWindow(object):
         self.gridLayout_6 = QGridLayout(self.toolWidget)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
         self.gridLayout_6.setContentsMargins(0, 0, 0, 0)
+        self.labelSpreadsButton = QPushButton(self.toolWidget)
+        self.labelSpreadsButton.setObjectName(u"labelSpreadsButton")
+        self.labelSpreadsButton.setMinimumSize(QSize(0, 30))
+
+        self.gridLayout_6.addWidget(self.labelSpreadsButton, 0, 1, 1, 1)
+
+        self.kofiButton = QPushButton(self.toolWidget)
+        self.kofiButton.setObjectName(u"kofiButton")
+        self.kofiButton.setMinimumSize(QSize(0, 30))
+        icon2 = QIcon()
+        icon2.addFile(u":/Brand/icons/kofi_symbol.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.kofiButton.setIcon(icon2)
+        self.kofiButton.setIconSize(QSize(19, 16))
+
+        self.gridLayout_6.addWidget(self.kofiButton, 0, 2, 1, 1)
+
         self.editorButton = QPushButton(self.toolWidget)
         self.editorButton.setObjectName(u"editorButton")
         self.editorButton.setMinimumSize(QSize(0, 30))
-        icon2 = QIcon()
-        icon2.addFile(u":/Other/icons/editor.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.editorButton.setIcon(icon2)
+        icon3 = QIcon()
+        icon3.addFile(u":/Other/icons/editor.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.editorButton.setIcon(icon3)
 
         self.gridLayout_6.addWidget(self.editorButton, 0, 0, 1, 1)
 
         self.humbleButton = QPushButton(self.toolWidget)
         self.humbleButton.setObjectName(u"humbleButton")
         self.humbleButton.setMinimumSize(QSize(0, 30))
-        icon3 = QIcon()
-        icon3.addFile(u":/Brand/icons/Humble_H-Red.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.humbleButton.setIcon(icon3)
+        icon4 = QIcon()
+        icon4.addFile(u":/Brand/icons/Humble_H-Red.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.humbleButton.setIcon(icon4)
 
         self.gridLayout_6.addWidget(self.humbleButton, 0, 3, 1, 1)
 
-        self.kofiButton = QPushButton(self.toolWidget)
-        self.kofiButton.setObjectName(u"kofiButton")
-        self.kofiButton.setMinimumSize(QSize(0, 30))
-        icon4 = QIcon()
-        icon4.addFile(u":/Brand/icons/kofi_symbol.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.kofiButton.setIcon(icon4)
-        self.kofiButton.setIconSize(QSize(19, 16))
+        self.expertButton = QPushButton(self.toolWidget)
+        self.expertButton.setObjectName(u"expertButton")
 
-        self.gridLayout_6.addWidget(self.kofiButton, 0, 2, 1, 1)
-
-        self.labelSpreadsButton = QPushButton(self.toolWidget)
-        self.labelSpreadsButton.setObjectName(u"labelSpreadsButton")
-        self.labelSpreadsButton.setMinimumSize(QSize(0, 30))
-
-        self.gridLayout_6.addWidget(self.labelSpreadsButton, 0, 1, 1, 1)
+        self.gridLayout_6.addWidget(self.expertButton, 0, 4, 1, 1)
 
 
         self.gridLayout.addWidget(self.toolWidget, 0, 0, 1, 2)
@@ -627,18 +632,12 @@ class Ui_mainWindow(object):
         QWidget.setTabOrder(self.heightBox, self.convertButton)
         QWidget.setTabOrder(self.convertButton, self.mangaBox)
         QWidget.setTabOrder(self.mangaBox, self.rotateBox)
-        QWidget.setTabOrder(self.rotateBox, self.qualityBox)
-        QWidget.setTabOrder(self.qualityBox, self.webtoonBox)
+        QWidget.setTabOrder(self.rotateBox, self.webtoonBox)
         QWidget.setTabOrder(self.webtoonBox, self.upscaleBox)
-        QWidget.setTabOrder(self.upscaleBox, self.gammaBox)
-        QWidget.setTabOrder(self.gammaBox, self.gammaSlider)
+        QWidget.setTabOrder(self.upscaleBox, self.gammaSlider)
         QWidget.setTabOrder(self.gammaSlider, self.borderBox)
-        QWidget.setTabOrder(self.borderBox, self.outputSplit)
-        QWidget.setTabOrder(self.outputSplit, self.colorBox)
-        QWidget.setTabOrder(self.colorBox, self.mozJpegBox)
-        QWidget.setTabOrder(self.mozJpegBox, self.maximizeStrips)
-        QWidget.setTabOrder(self.maximizeStrips, self.croppingBox)
-        QWidget.setTabOrder(self.croppingBox, self.croppingPowerSlider)
+        QWidget.setTabOrder(self.borderBox, self.mozJpegBox)
+        QWidget.setTabOrder(self.mozJpegBox, self.croppingPowerSlider)
         QWidget.setTabOrder(self.croppingPowerSlider, self.preserveMarginBox)
         QWidget.setTabOrder(self.preserveMarginBox, self.spreadShiftBox)
         QWidget.setTabOrder(self.spreadShiftBox, self.fileFusionBox)
@@ -659,108 +658,9 @@ class Ui_mainWindow(object):
         self.preserveMarginLabel.setText(QCoreApplication.translate("mainWindow", u"Preserve Margin %", None))
         self.croppingPowerLabel.setText(QCoreApplication.translate("mainWindow", u"Cropping power:", None))
 #if QT_CONFIG(tooltip)
-        self.metadataTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Don't use metadata Title<br/></span>Write default title.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Add metadata Title to the default schema<br/></span>Write default title with Title from ComicInfo.xml or other embedded metadata.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Use metadata Title only<br/></span>Write Title from ComicInfo.xml or other embedded metadata.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.metadataTitleBox.setText(QCoreApplication.translate("mainWindow", u"Metadata Title", None))
-#if QT_CONFIG(tooltip)
-        self.vertical4PanelBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>In virtual panel mode:</p><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Horizontal<br/></span>First two panels are the top panels.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Vertical<br/></span>First two panels are the side panels.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.vertical4PanelBox.setText(QCoreApplication.translate("mainWindow", u"Vertical 4 Panel", None))
-#if QT_CONFIG(tooltip)
-        self.webtoonBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Enable special parsing mode for Korean Webtoons.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.webtoonBox.setText(QCoreApplication.translate("mainWindow", u"Webtoon mode", None))
-#if QT_CONFIG(tooltip)
-        self.webpBox.setToolTip(QCoreApplication.translate("mainWindow", u"Replace JPG with lossy WebP and PNG with lossless WebP. This includes the JPG Quality.\n"
-"\n"
-"Ignored for Kindle EPUB/MOBI and all PDF.", None))
-#endif // QT_CONFIG(tooltip)
-        self.webpBox.setText(QCoreApplication.translate("mainWindow", u"WebP (experimental)", None))
-#if QT_CONFIG(tooltip)
-        self.smartCoverCropBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Attempt to crop main cover from wide image.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.smartCoverCropBox.setText(QCoreApplication.translate("mainWindow", u"Smart Cover Crop", None))
-#if QT_CONFIG(tooltip)
-        self.croppingBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Disabled</span></p><p>Disabled</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Margins<br/></span>Margins</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Margins + page numbers<br/></span>Margins +page numbers</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.croppingBox.setText(QCoreApplication.translate("mainWindow", u"Cropping mode", None))
-#if QT_CONFIG(tooltip)
-        self.autocontrastBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - BW only<br/></span>Only autocontrast bw pages. Ignored for pages where near blacks or whites don't exist.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Disabled<br/></span>Disable autocontrast</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - BW and Color<br/></span>BW and color images will be autocontrasted. Ignored for pages where near blacks or whites don't exist.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.autocontrastBox.setText(QCoreApplication.translate("mainWindow", u"Custom Autocontrast", None))
-#if QT_CONFIG(tooltip)
-        self.mozJpegBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - JPEG<br/></span>Use JPEG files</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - force PNG<br/></span>Create PNG files instead JPEG for black and white images</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - mozJpeg<br/></span>10-20% smaller JPEG file, with the same image quality, but processing time multiplied by 2</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.mozJpegBox.setText(QCoreApplication.translate("mainWindow", u"JPEG/PNG/mozJpeg", None))
-#if QT_CONFIG(tooltip)
-        self.coverFillBox.setToolTip(QCoreApplication.translate("mainWindow", u"Resize cover to exact device resolution by center-cropping to aspect ratio first.\n"
-"May crop top/bottom or left/right depending on source aspect ratio. Not implemented for Kindle Scribe.", None))
-#endif // QT_CONFIG(tooltip)
-        self.coverFillBox.setText(QCoreApplication.translate("mainWindow", u"Cover Fill", None))
-#if QT_CONFIG(tooltip)
         self.interPanelCropBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Disabled<br/></span>Disabled</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Horizontal<br/></span>Crop empty horizontal lines.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Both<br/></span>Crop empty horizontal and vertical lines.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.interPanelCropBox.setText(QCoreApplication.translate("mainWindow", u"Inter-panel crop", None))
-#if QT_CONFIG(tooltip)
-        self.chunkSizeCheckBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:700; text-decoration: underline;\">Unchecked<br/></span>Maximal output file size is 100 MB for Webtoon, 400 MB for others before split occurs.</p><p><span style=\" font-weight:700; text-decoration: underline;\">Checked</span><br/>Output file size specified in &quot;Chunk size MB&quot; before split occurs.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.chunkSizeCheckBox.setText(QCoreApplication.translate("mainWindow", u"Chunk size", None))
-#if QT_CONFIG(tooltip)
-        self.disableProcessingBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Do not process any image, ignore profile and processing options.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.disableProcessingBox.setText(QCoreApplication.translate("mainWindow", u"Disable processing", None))
-#if QT_CONFIG(tooltip)
-        self.spreadShiftBox.setToolTip(QCoreApplication.translate("mainWindow", u"Shift first page to opposite side in landscape for two page spread alignment", None))
-#endif // QT_CONFIG(tooltip)
-        self.spreadShiftBox.setText(QCoreApplication.translate("mainWindow", u"Spread shift", None))
-#if QT_CONFIG(tooltip)
-        self.forcePngRgbBox.setToolTip(QCoreApplication.translate("mainWindow", u"Force full color images to be saved in lossless PNG format, dramatically increases the filesize.", None))
-#endif // QT_CONFIG(tooltip)
-        self.forcePngRgbBox.setText(QCoreApplication.translate("mainWindow", u"Force PNG RGB", None))
-#if QT_CONFIG(tooltip)
-        self.rotateBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Split<br/></span>Double page spreads will be cut into two separate pages.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Split and rotate<br/></span>Double page spreads will be displayed twice. First split and then rotated. </p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate<br/></span>Double page spreads will be rotated.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.rotateBox.setText(QCoreApplication.translate("mainWindow", u"Spread splitter", None))
-#if QT_CONFIG(tooltip)
-        self.gammaBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Set a custom gamma correction.</p><p>1.0 is default (disabled).<br/>&lt; 1.0 makes the image brighter.<br/>&gt; 1.0 makes the image darker. </p><p>1.8 was the default in KCC 9.1.0 and earlier.</p><p>Use if you want to make midtones darker.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.gammaBox.setText(QCoreApplication.translate("mainWindow", u"Custom gamma", None))
-#if QT_CONFIG(tooltip)
-        self.languageEdit.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Default EPUB language is en-US.</p><p>Only use if your EPUB reader has problems with English fonts.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.languageEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"EPUB language", None))
-#if QT_CONFIG(tooltip)
-        self.rotateRightBox.setToolTip(QCoreApplication.translate("mainWindow", u"Rotate 2 page spreads in opposite direction than normal.", None))
-#endif // QT_CONFIG(tooltip)
-        self.rotateRightBox.setText(QCoreApplication.translate("mainWindow", u"Rotate Right", None))
-#if QT_CONFIG(tooltip)
-        self.tempDirBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Main Drive<br/></span>Use dedicated temporary directory on main OS drive.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Source File Drive<br/></span>Create temporary file directory on source file drive.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.tempDirBox.setText(QCoreApplication.translate("mainWindow", u"Temp Directory", None))
-#if QT_CONFIG(tooltip)
-        self.deleteBox.setToolTip(QCoreApplication.translate("mainWindow", u"Delete input file(s) or directory. It's not recoverable!", None))
-#endif // QT_CONFIG(tooltip)
-        self.deleteBox.setText(QCoreApplication.translate("mainWindow", u"Delete input", None))
-#if QT_CONFIG(tooltip)
-        self.maximizeStrips.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 1x4<br/></span>Keep format 1x4 panels strips.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - 2x2<br/></span>Turn 1x4 strips to 2x2 to maximize screen usage.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.maximizeStrips.setText(QCoreApplication.translate("mainWindow", u"1x4 to 2x2 strips", None))
-#if QT_CONFIG(tooltip)
-        self.jpegQualityBox.setToolTip(QCoreApplication.translate("mainWindow", u"The JPEG quality, on a scale from 0 (worst) to 95 (best). \n"
-"\n"
-"Default is 85 for most devices besides Kindle Scribe and Colorsoft, which are 90.\n"
-"\n"
-"Higher values are larger and higher quality, and may resolve blank page issues.", None))
-#endif // QT_CONFIG(tooltip)
-        self.jpegQualityBox.setText(QCoreApplication.translate("mainWindow", u"Custom JPEG Quality", None))
-#if QT_CONFIG(tooltip)
-        self.rotateFirstBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>When the spread splitter option is partially checked,</p><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Rotate Last<br/></span>Put the rotated 2 page spread after the split spreads.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate First<br/></span>Put the rotated 2 page spread before the split spreads.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.rotateFirstBox.setText(QCoreApplication.translate("mainWindow", u"Rotate First", None))
-#if QT_CONFIG(tooltip)
-        self.titleEdit.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Default Title</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.titleEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Title", None))
 #if QT_CONFIG(tooltip)
         self.pdfWidthBox.setToolTip(QCoreApplication.translate("mainWindow", u"Render vector PDFs to device width instead of height.\n"
 "\n"
@@ -768,57 +668,77 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.pdfWidthBox.setText(QCoreApplication.translate("mainWindow", u"PDF Width Render", None))
 #if QT_CONFIG(tooltip)
-        self.eraseRainbowBox.setToolTip(QCoreApplication.translate("mainWindow", u"Erase rainbow effect on color eink screen by attenuating interfering frequencies", None))
+        self.tempDirBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Main Drive<br/></span>Use dedicated temporary directory on main OS drive.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Source File Drive<br/></span>Create temporary file directory on source file drive.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.eraseRainbowBox.setText(QCoreApplication.translate("mainWindow", u"Rainbow eraser", None))
+        self.tempDirBox.setText(QCoreApplication.translate("mainWindow", u"Temp Directory", None))
 #if QT_CONFIG(tooltip)
-        self.onePageLandscapeBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 2 page landscape<br/></span>2 viewports for left and right pages</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - 1 page landscape<br/></span>A single centered viewport for 1 page</p></body></html>", None))
+        self.spreadShiftBox.setToolTip(QCoreApplication.translate("mainWindow", u"Shift first page to opposite side in landscape for two page spread alignment", None))
 #endif // QT_CONFIG(tooltip)
-        self.onePageLandscapeBox.setText(QCoreApplication.translate("mainWindow", u"1 Page Landscape", None))
-#if QT_CONFIG(tooltip)
-        self.authorEdit.setToolTip(QCoreApplication.translate("mainWindow", u"Default Author is KCC", None))
-#endif // QT_CONFIG(tooltip)
-        self.authorEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Author", None))
-#if QT_CONFIG(tooltip)
-        self.outputSplit.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Automatic mode<br/></span>The output will be split automatically.</p><p style='white-space:pre'><span style=\" font-weight:600; text-decoration: underline;\">Checked - Volume mode<br/></span>Every subdirectory will be considered as a separate volume.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.outputSplit.setText(QCoreApplication.translate("mainWindow", u"Output split", None))
-#if QT_CONFIG(tooltip)
-        self.fileFusionBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Combines all selected files into a single file. (Helpful for combining chapters into volumes.)</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.fileFusionBox.setText(QCoreApplication.translate("mainWindow", u"File Fusion", None))
-#if QT_CONFIG(tooltip)
-        self.colorBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Disable conversion to grayscale.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.colorBox.setText(QCoreApplication.translate("mainWindow", u"Color mode", None))
-#if QT_CONFIG(tooltip)
-        self.upscaleBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.upscaleBox.setText(QCoreApplication.translate("mainWindow", u"Stretch/Upscale", None))
-#if QT_CONFIG(tooltip)
-        self.legacyExtractBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Use the PDF/EPUB image extraction method from older KCC versions.</p><p><br/></p><p>Use if standard extraction fails for whatever reason.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.legacyExtractBox.setText(QCoreApplication.translate("mainWindow", u"Legacy Extract", None))
+        self.spreadShiftBox.setText(QCoreApplication.translate("mainWindow", u"Spread shift", None))
 #if QT_CONFIG(tooltip)
         self.borderBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Autodetection<br/></span>The color of margins fill will be detected automatically.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - White<br/></span>Margins will be untouched.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Black<br/></span>Margins will be filled with black color.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.borderBox.setText(QCoreApplication.translate("mainWindow", u"W/B margins", None))
 #if QT_CONFIG(tooltip)
-        self.invertDirectionBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Invert the page turn direction.</p><p>Usually used with right to left manga but you want to page turn left to right. Spread splitting would still be right to left in this case.</p><p>Will break various features like landscape mode order.</p></body></html>", None))
+        self.eraseRainbowBox.setToolTip(QCoreApplication.translate("mainWindow", u"Erase rainbow effect on color eink screen by attenuating interfering frequencies", None))
 #endif // QT_CONFIG(tooltip)
-        self.invertDirectionBox.setText(QCoreApplication.translate("mainWindow", u"Invert Direction", None))
-#if QT_CONFIG(tooltip)
-        self.qualityBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 4 panels<br/></span>Zoom each corner separately.</p><p style='white-space:pre'><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - 2 panels<br/></span>Zoom only the top and bottom of the page.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - 4 high-quality panels<br/></span>Zoom each corner separately. Try to increase the quality of magnification. Check wiki for more details.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.qualityBox.setText(QCoreApplication.translate("mainWindow", u"Panel View 4/2/HQ", None))
+        self.eraseRainbowBox.setText(QCoreApplication.translate("mainWindow", u"Rainbow eraser", None))
 #if QT_CONFIG(tooltip)
         self.noRotateBox.setToolTip(QCoreApplication.translate("mainWindow", u"Do not rotate double page spreads in spread splitter option.", None))
 #endif // QT_CONFIG(tooltip)
         self.noRotateBox.setText(QCoreApplication.translate("mainWindow", u"No rotate", None))
 #if QT_CONFIG(tooltip)
-        self.mangaBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Enable right-to-left reading.</p></body></html>", None))
+        self.deleteBox.setToolTip(QCoreApplication.translate("mainWindow", u"Delete input file(s) or directory. It's not recoverable!", None))
 #endif // QT_CONFIG(tooltip)
-        self.mangaBox.setText(QCoreApplication.translate("mainWindow", u"Right-to-left (manga)", None))
+        self.deleteBox.setText(QCoreApplication.translate("mainWindow", u"Delete input", None))
+#if QT_CONFIG(tooltip)
+        self.autocontrastBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - BW only<br/></span>Only autocontrast bw pages. Ignored for pages where near blacks or whites don't exist.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Disabled<br/></span>Disable autocontrast</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - BW and Color<br/></span>BW and color images will be autocontrasted. Ignored for pages where near blacks or whites don't exist.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.autocontrastBox.setText(QCoreApplication.translate("mainWindow", u"Custom Autocontrast", None))
+#if QT_CONFIG(tooltip)
+        self.languageEdit.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Default EPUB language is en-US.</p><p>Only use if your EPUB reader has problems with English fonts.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.languageEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"EPUB language", None))
+#if QT_CONFIG(tooltip)
+        self.ebokBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Force Kindle MOBI to be be tagged as EBOK instead of PDOC.</p><p>This may cause USB loaded books to be deleted if you go online after a month offline.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.ebokBox.setText(QCoreApplication.translate("mainWindow", u"Force EBOK", None))
+#if QT_CONFIG(tooltip)
+        self.invertDirectionBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Invert the page turn direction.</p><p>Usually used with right to left manga but you want to page turn left to right. Spread splitting would still be right to left in this case.</p><p>Will break various features like landscape mode order.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.invertDirectionBox.setText(QCoreApplication.translate("mainWindow", u"Invert Direction", None))
+#if QT_CONFIG(tooltip)
+        self.fileFusionBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Combines all selected files into a single file. (Helpful for combining chapters into volumes.)</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.fileFusionBox.setText(QCoreApplication.translate("mainWindow", u"File Fusion", None))
+#if QT_CONFIG(tooltip)
+        self.mozJpegBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - JPEG<br/></span>Use JPEG files</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - force PNG<br/></span>Create PNG files instead JPEG for black and white images</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - mozJpeg<br/></span>10-20% smaller JPEG file, with the same image quality, but processing time multiplied by 2</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.mozJpegBox.setText(QCoreApplication.translate("mainWindow", u"JPEG/PNG/mozJpeg", None))
+#if QT_CONFIG(tooltip)
+        self.webtoonBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Enable special parsing mode for Korean Webtoons.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.webtoonBox.setText(QCoreApplication.translate("mainWindow", u"Webtoon mode", None))
+#if QT_CONFIG(tooltip)
+        self.wallpaperBox.setToolTip(QCoreApplication.translate("mainWindow", u"Auto check various options intended for KOreader wallpapers.\n"
+"\n"
+"Will also crop images to fill the screen centered.", None))
+#endif // QT_CONFIG(tooltip)
+        self.wallpaperBox.setText(QCoreApplication.translate("mainWindow", u"Wallpaper mode", None))
+#if QT_CONFIG(tooltip)
+        self.rotateRightBox.setToolTip(QCoreApplication.translate("mainWindow", u"Rotate 2 page spreads in opposite direction than normal.", None))
+#endif // QT_CONFIG(tooltip)
+        self.rotateRightBox.setText(QCoreApplication.translate("mainWindow", u"Rotate Right", None))
+#if QT_CONFIG(tooltip)
+        self.webpBox.setToolTip(QCoreApplication.translate("mainWindow", u"Replace JPG with lossy WebP and PNG with lossless WebP. This includes the JPG Quality.\n"
+"\n"
+"Ignored for Kindle EPUB/MOBI and all PDF.", None))
+#endif // QT_CONFIG(tooltip)
+        self.webpBox.setText(QCoreApplication.translate("mainWindow", u"WebP (experimental)", None))
+#if QT_CONFIG(tooltip)
+        self.rotateBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Split<br/></span>Double page spreads will be cut into two separate pages.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Split and rotate<br/></span>Double page spreads will be displayed twice. First split and then rotated. </p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate<br/></span>Double page spreads will be rotated.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.rotateBox.setText(QCoreApplication.translate("mainWindow", u"Spread splitter", None))
 #if QT_CONFIG(tooltip)
         self.defaultOutputFolderBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - next to source<br/></span>Place output files next to source files</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - folder next to source<br/></span>Place output files in a folder next to source files</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Custom<br/></span>Place output files in custom directory specified by right button</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
@@ -828,9 +748,25 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.defaultOutputFolderButton.setText("")
 #if QT_CONFIG(tooltip)
-        self.autoLevelBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>By default, KCC maps the darkest pixel value to pure black (the black point.)</p><p>Extreme black point sets the black point to be the most common dark pixel value.</p><p>Useful when text is black but artwork is gray.</p></body></html>", None))
+        self.vertical4PanelBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>In virtual panel mode:</p><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Horizontal<br/></span>First two panels are the top panels.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Vertical<br/></span>First two panels are the side panels.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.autoLevelBox.setText(QCoreApplication.translate("mainWindow", u"Extreme Black Point", None))
+        self.vertical4PanelBox.setText(QCoreApplication.translate("mainWindow", u"Vertical 4 Panel", None))
+#if QT_CONFIG(tooltip)
+        self.onePageLandscapeBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 2 page landscape<br/></span>2 viewports for left and right pages</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - 1 page landscape<br/></span>A single centered viewport for 1 page</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.onePageLandscapeBox.setText(QCoreApplication.translate("mainWindow", u"1 Page Landscape", None))
+#if QT_CONFIG(tooltip)
+        self.metadataTitleBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Don't use metadata Title<br/></span>Write default title.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Add metadata Title to the default schema<br/></span>Write default title with Title from ComicInfo.xml or other embedded metadata.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Use metadata Title only<br/></span>Write Title from ComicInfo.xml or other embedded metadata.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.metadataTitleBox.setText(QCoreApplication.translate("mainWindow", u"Metadata Title", None))
+#if QT_CONFIG(tooltip)
+        self.titleEdit.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Default Title</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.titleEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Title", None))
+#if QT_CONFIG(tooltip)
+        self.authorEdit.setToolTip(QCoreApplication.translate("mainWindow", u"Default Author is KCC", None))
+#endif // QT_CONFIG(tooltip)
+        self.authorEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Author", None))
 #if QT_CONFIG(tooltip)
         self.lightnovelBox.setToolTip(QCoreApplication.translate("mainWindow", u"Only resize images and preserve original file structure.\n"
 "\n"
@@ -838,13 +774,74 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.lightnovelBox.setText(QCoreApplication.translate("mainWindow", u"Light novel mode", None))
 #if QT_CONFIG(tooltip)
+        self.mangaBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Enable right-to-left reading.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.mangaBox.setText(QCoreApplication.translate("mainWindow", u"Right-to-left (manga)", None))
+#if QT_CONFIG(tooltip)
+        self.autoLevelBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>By default, KCC maps the darkest pixel value to pure black (the black point.)</p><p>Extreme black point sets the black point to be the most common dark pixel value.</p><p>Useful when text is black but artwork is gray.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.autoLevelBox.setText(QCoreApplication.translate("mainWindow", u"Extreme Black Point", None))
+#if QT_CONFIG(tooltip)
+        self.legacyExtractBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Use the PDF/EPUB image extraction method from older KCC versions.</p><p><br/></p><p>Use if standard extraction fails for whatever reason.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.legacyExtractBox.setText(QCoreApplication.translate("mainWindow", u"Legacy Extract", None))
+#if QT_CONFIG(tooltip)
+        self.chunkSizeCheckBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:700; text-decoration: underline;\">Unchecked<br/></span>Maximal output file size is 100 MB for Webtoon, 400 MB for others before split occurs.</p><p><span style=\" font-weight:700; text-decoration: underline;\">Checked</span><br/>Output file size specified in &quot;Chunk size MB&quot; before split occurs.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.chunkSizeCheckBox.setText(QCoreApplication.translate("mainWindow", u"Chunk size", None))
+#if QT_CONFIG(tooltip)
+        self.jpegQualityBox.setToolTip(QCoreApplication.translate("mainWindow", u"The JPEG quality, on a scale from 0 (worst) to 95 (best). \n"
+"\n"
+"Default is 85 for most devices besides Kindle Scribe and Colorsoft, which are 90.\n"
+"\n"
+"Higher values are larger and higher quality, and may resolve blank page issues.", None))
+#endif // QT_CONFIG(tooltip)
+        self.jpegQualityBox.setText(QCoreApplication.translate("mainWindow", u"Custom JPEG Quality", None))
+#if QT_CONFIG(tooltip)
+        self.gammaBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Set a custom gamma correction.</p><p>1.0 is default (disabled).<br/>&lt; 1.0 makes the image brighter.<br/>&gt; 1.0 makes the image darker. </p><p>1.8 was the default in KCC 9.1.0 and earlier.</p><p>Use if you want to make midtones darker.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.gammaBox.setText(QCoreApplication.translate("mainWindow", u"Custom gamma", None))
+#if QT_CONFIG(tooltip)
+        self.rotateFirstBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>When the spread splitter option is partially checked,</p><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Rotate Last<br/></span>Put the rotated 2 page spread after the split spreads.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate First<br/></span>Put the rotated 2 page spread before the split spreads.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.rotateFirstBox.setText(QCoreApplication.translate("mainWindow", u"Rotate First", None))
+#if QT_CONFIG(tooltip)
+        self.maximizeStrips.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 1x4<br/></span>Keep format 1x4 panels strips.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - 2x2<br/></span>Turn 1x4 strips to 2x2 to maximize screen usage.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.maximizeStrips.setText(QCoreApplication.translate("mainWindow", u"1x4 to 2x2 strips", None))
+#if QT_CONFIG(tooltip)
+        self.colorBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Disable conversion to grayscale.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.colorBox.setText(QCoreApplication.translate("mainWindow", u"Color mode", None))
+#if QT_CONFIG(tooltip)
+        self.croppingBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Disabled</span></p><p>Disabled</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Margins<br/></span>Margins</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Margins + page numbers<br/></span>Margins +page numbers</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.croppingBox.setText(QCoreApplication.translate("mainWindow", u"Cropping mode", None))
+#if QT_CONFIG(tooltip)
+        self.smartCoverCropBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Attempt to crop main cover from wide image.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.smartCoverCropBox.setText(QCoreApplication.translate("mainWindow", u"Smart Cover Crop", None))
+#if QT_CONFIG(tooltip)
+        self.qualityBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - 4 panels<br/></span>Zoom each corner separately.</p><p style='white-space:pre'><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - 2 panels<br/></span>Zoom only the top and bottom of the page.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - 4 high-quality panels<br/></span>Zoom each corner separately. Try to increase the quality of magnification. Check wiki for more details.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.qualityBox.setText(QCoreApplication.translate("mainWindow", u"Panel View 4/2/HQ", None))
+#if QT_CONFIG(tooltip)
+        self.upscaleBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Nothing<br/></span>Images smaller than device resolution will not be resized.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Stretching<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be not preserved.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Upscaling<br/></span>Images smaller than device resolution will be resized. Aspect ratio will be preserved.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.upscaleBox.setText(QCoreApplication.translate("mainWindow", u"Stretch/Upscale", None))
+#if QT_CONFIG(tooltip)
+        self.coverFillBox.setToolTip(QCoreApplication.translate("mainWindow", u"Resize cover to exact device resolution by center-cropping to aspect ratio first.\n"
+"May crop top/bottom or left/right depending on source aspect ratio. Not implemented for Kindle Scribe.", None))
+#endif // QT_CONFIG(tooltip)
+        self.coverFillBox.setText(QCoreApplication.translate("mainWindow", u"Cover Fill", None))
+#if QT_CONFIG(tooltip)
+        self.forcePngRgbBox.setToolTip(QCoreApplication.translate("mainWindow", u"Force full color images to be saved in lossless PNG format, dramatically increases the filesize.", None))
+#endif // QT_CONFIG(tooltip)
+        self.forcePngRgbBox.setText(QCoreApplication.translate("mainWindow", u"Force PNG RGB", None))
+#if QT_CONFIG(tooltip)
         self.pngLegacyBox.setToolTip(QCoreApplication.translate("mainWindow", u"Use a more compatible 8 bit PNG instead of 4 bit.", None))
 #endif // QT_CONFIG(tooltip)
         self.pngLegacyBox.setText(QCoreApplication.translate("mainWindow", u"PNG Legacy Mode", None))
-#if QT_CONFIG(tooltip)
-        self.ebokBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Force Kindle MOBI to be be tagged as EBOK instead of PDOC.</p><p>This may cause USB loaded books to be deleted if you go online after a month offline.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.ebokBox.setText(QCoreApplication.translate("mainWindow", u"Force EBOK", None))
 #if QT_CONFIG(tooltip)
         self.noQuantizeBox.setToolTip(QCoreApplication.translate("mainWindow", u"Don't quantize PNG images to 16 colors (4 bit)\n"
 "\n"
@@ -854,27 +851,33 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.noQuantizeBox.setText(QCoreApplication.translate("mainWindow", u"No Quantize", None))
 #if QT_CONFIG(tooltip)
+        self.outputSplit.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Automatic mode<br/></span>The output will be split automatically.</p><p style='white-space:pre'><span style=\" font-weight:600; text-decoration: underline;\">Checked - Volume mode<br/></span>Every subdirectory will be considered as a separate volume.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.outputSplit.setText(QCoreApplication.translate("mainWindow", u"Output split", None))
+#if QT_CONFIG(tooltip)
+        self.disableProcessingBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Do not process any image, ignore profile and processing options.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.disableProcessingBox.setText(QCoreApplication.translate("mainWindow", u"Disable processing", None))
+#if QT_CONFIG(tooltip)
         self.keepComicInfoBox.setToolTip(QCoreApplication.translate("mainWindow", u"Keep any original ComicInfo.xml files.\n"
 "\n"
 "Keeping this file may crash some readers like the Kobo native CBZ reader.", None))
 #endif // QT_CONFIG(tooltip)
         self.keepComicInfoBox.setText(QCoreApplication.translate("mainWindow", u"Keep ComicInfo.xml", None))
 #if QT_CONFIG(tooltip)
-        self.wallpaperBox.setToolTip(QCoreApplication.translate("mainWindow", u"Auto check various options intended for KOreader wallpapers.\n"
-"\n"
-"Will also crop images to fill the screen centered.", None))
+        self.labelSpreadsButton.setToolTip(QCoreApplication.translate("mainWindow", u"Hold shift while clicking for a low quality preview.", None))
 #endif // QT_CONFIG(tooltip)
-        self.wallpaperBox.setText(QCoreApplication.translate("mainWindow", u"Wallpaper mode", None))
+        self.labelSpreadsButton.setText(QCoreApplication.translate("mainWindow", u"Label Spreads", None))
+        self.kofiButton.setText(QCoreApplication.translate("mainWindow", u"Support me on Ko-fi", None))
 #if QT_CONFIG(tooltip)
         self.editorButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Shift+Click to edit directory.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.editorButton.setText(QCoreApplication.translate("mainWindow", u"Metadata Editor", None))
         self.humbleButton.setText(QCoreApplication.translate("mainWindow", u"Humble Bundle Referral", None))
-        self.kofiButton.setText(QCoreApplication.translate("mainWindow", u"Support me on Ko-fi", None))
 #if QT_CONFIG(tooltip)
-        self.labelSpreadsButton.setToolTip(QCoreApplication.translate("mainWindow", u"Hold shift while clicking for a low quality preview.", None))
+        self.expertButton.setToolTip(QCoreApplication.translate("mainWindow", u"Toggle Easy/Expert Mode", None))
 #endif // QT_CONFIG(tooltip)
-        self.labelSpreadsButton.setText(QCoreApplication.translate("mainWindow", u"Label Spreads", None))
+        self.expertButton.setText(QCoreApplication.translate("mainWindow", u"Easy/Expert Mode", None))
 #if QT_CONFIG(tooltip)
         self.chunkSizeWidget.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Warning: chunk size greater than default may cause<br/>performance/battery issues, especially on older devices.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

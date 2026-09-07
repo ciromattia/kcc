@@ -823,6 +823,89 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         # noinspection PyCallByClass
         QDesktopServices.openUrl(QUrl('https://humblebundleinc.sjv.io/3JaR3A'))
 
+    def toggleExpert(self):
+        # noinspection PyCallByClass
+        if self.expertMode:
+            self.hide_expert_options()
+            self.expertMode = False   
+        else:
+            self.show_expert_options()
+            self.expertMode = True 
+
+    def show_expert_options(self):
+        GUI.spreadShiftBox.show()
+        GUI.fileFusionBox.show()
+        GUI.jpegQualityBox.show()
+        GUI.pngLegacyBox.show()
+        GUI.webpBox.show()
+        GUI.lightnovelBox.show()
+        GUI.wallpaperBox.show()
+        GUI.outputSplit.show()
+        GUI.maximizeStrips.show()
+        GUI.noRotateBox.show()
+        GUI.rotateFirstBox.show()
+        GUI.coverFillBox.show()
+        GUI.rotateRightBox.show()
+        GUI.smartCoverCropBox.show()
+        GUI.onePageLandscapeBox.show()
+        GUI.qualityBox.show()
+        GUI.gammaBox.show()
+        GUI.interPanelCropBox.show()
+        GUI.autoLevelBox.show()
+        GUI.autocontrastBox.show()
+        GUI.vertical4PanelBox.show()
+        GUI.tempDirBox.show()
+        GUI.deleteBox.show()
+        GUI.metadataTitleBox.show()
+        GUI.keepComicInfoBox.show()
+        GUI.pdfWidthBox.show()
+        GUI.chunkSizeCheckBox.show()
+        GUI.disableProcessingBox.show()
+        GUI.noQuantizeBox.show()
+        GUI.forcePngRgbBox.show()
+        GUI.invertDirectionBox.show()
+        GUI.ebokBox.show()
+        GUI.languageEdit.show()
+        GUI.labelSpreadsButton.show()
+        GUI.editorButton.show()
+
+    def hide_expert_options(self):
+        GUI.spreadShiftBox.hide()
+        GUI.fileFusionBox.hide()
+        GUI.jpegQualityBox.hide()
+        GUI.pngLegacyBox.hide()
+        GUI.webpBox.hide()
+        GUI.lightnovelBox.hide()
+        GUI.wallpaperBox.hide()
+        GUI.outputSplit.hide()
+        GUI.maximizeStrips.hide()
+        GUI.noRotateBox.hide()
+        GUI.rotateFirstBox.hide()
+        GUI.coverFillBox.hide()
+        GUI.rotateRightBox.hide()
+        GUI.smartCoverCropBox.hide()
+        GUI.onePageLandscapeBox.hide()
+        GUI.qualityBox.hide()
+        GUI.gammaBox.hide()
+        GUI.interPanelCropBox.hide()
+        GUI.autoLevelBox.hide()
+        GUI.autocontrastBox.hide()
+        GUI.vertical4PanelBox.hide()
+        GUI.tempDirBox.hide()
+        GUI.deleteBox.hide()
+        GUI.metadataTitleBox.hide()
+        GUI.keepComicInfoBox.hide()
+        GUI.pdfWidthBox.hide()
+        GUI.chunkSizeCheckBox.hide()
+        GUI.disableProcessingBox.hide()
+        GUI.noQuantizeBox.hide()
+        GUI.forcePngRgbBox.hide()
+        GUI.invertDirectionBox.hide()
+        GUI.ebokBox.hide()
+        GUI.languageEdit.hide()
+        GUI.labelSpreadsButton.hide()
+        GUI.editorButton.hide()
+
     def openYouTube(self):
         # noinspection PyCallByClass
         QDesktopServices.openUrl(QUrl('https://www.youtube.com/@eink-dude'))
@@ -1188,6 +1271,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if not GUI.convertButton.isEnabled():
             event.ignore()
         self.settings.setValue('settingsVersion', __version__)
+        self.settings.setValue('expertMode', self.expertMode)
         self.settings.setValue('lastPath', self.lastPath)
         self.settings.setValue('defaultOutputFolder', self.defaultOutputFolder)
         self.settings.setValue('lastDevice', GUI.deviceBox.currentIndex())
@@ -1331,6 +1415,10 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.defaultOutputFolder = str(self.settings.value('defaultOutputFolder', '', type=str))
         if not os.path.exists(self.defaultOutputFolder):
             self.defaultOutputFolder = ''
+
+        self.expertMode = self.settings.value('expertMode', False, type=bool)
+        if not self.expertMode:
+            GUI.hide_expert_options()
 
         # default is Kindle Paperwhite 12th Gen
         self.lastDevice = self.settings.value('lastDevice', 3, type=int)
@@ -1584,6 +1672,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.editorButton.clicked.connect(self.selectFileMetaEditor)
         GUI.kofiButton.clicked.connect(self.openKofi)
         GUI.humbleButton.clicked.connect(self.openHumble)
+        GUI.expertButton.clicked.connect(self.toggleExpert)
         GUI.convertButton.clicked.connect(self.convertStart)
         GUI.labelSpreadsButton.clicked.connect(self.labelSpreadsStart)
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
