@@ -99,7 +99,7 @@ class ComicArchive:
                 pass
 
         if missing:
-            raise OSError(f'Extraction failed, install <a href="https://github.com/ciromattia/kcc#7-zip">specialized extraction software.</a>  ')
+            raise UserWarning(f'Extraction failed, install <a href="https://github.com/ciromattia/kcc#7-zip">specialized extraction software.</a>  ')
         else:
             raise OSError(EXTRACTION_ERROR)
 
