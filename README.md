@@ -55,19 +55,19 @@ You can view the split halves either before or after combined spreads:
 
 Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
 
-https://github.com/user-attachments/assets/da73d625-e082-482d-91a4-ae4765e96fd7
+![settings](images/easy.png)
+
+There are a lot of options, but most people only care about the ones checked above.
 
 Then all your usb loaded comic files will show up next to all your normal books in your ereader library!
+
+Here's a quick video demo of how the process works (using expert mode):
+
+https://github.com/user-attachments/assets/da73d625-e082-482d-91a4-ae4765e96fd7
 
 The final result looks incredible on my 10" Kindle Scribe: https://www.youtube.com/watch?v=2CIHW2N9Enc
 
 **WARNING**: Kindle Scribe 2025 MOBI support may have blank pages. Use PDF instead.
-
-The GUI looks like this, built in Qt6. 
-There are a lot of options, but most people only care about the ones checked below.
-Hover over each option to see details in a tooltip. 
-
-![settings](images/settings.png)
 
 If you are on macOS and use a 2022+ Kindle, you may need to use Amazon USB File Manager for Mac or OpenMTP.
 
