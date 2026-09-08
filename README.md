@@ -59,6 +59,10 @@ Just drop your input files into the KCC window, hit convert, and USB drop the ou
 
 There are a lot of options, but most people only care about the ones checked above.
 
+Hover over each option to see details in a tooltip.
+
+NOTE: some checkboxes can have a half-check marks.
+
 Then all your usb loaded comic files will show up next to all your normal books in your ereader library!
 
 Here's a quick video demo of how the process works (using expert mode):
@@ -67,7 +71,7 @@ https://github.com/user-attachments/assets/da73d625-e082-482d-91a4-ae4765e96fd7
 
 The final result looks incredible on my 10" Kindle Scribe: https://www.youtube.com/watch?v=2CIHW2N9Enc
 
-**WARNING**: Kindle Scribe 2025 MOBI support may have blank pages. Use PDF instead.
+**WARNING**: Kindle Scribe 2025 MOBI support is limited, converted books may have blank pages. Use PDF instead.
 
 If you are on macOS and use a 2022+ Kindle, you may need to use Amazon USB File Manager for Mac or OpenMTP.
 
@@ -77,7 +81,7 @@ Installation tutorial: https://www.youtube.com/watch?v=IR2Fhcm9658
 
 ## Kindle Jailbreak for KOreader
 
-Jailbreaking to use KOreader is optional. KCC works just fine with the native mobi manga viewer.
+Jailbreaking to use KOreader is optional. MOBI manga converted by KCC can be opened in Kindle’s native reader just fine
 
 But if you jailbreak your Kindle, you'll unlock additional features like:
 
@@ -85,6 +89,9 @@ But if you jailbreak your Kindle, you'll unlock additional features like:
    This is visually lossless since eink screens are 4-bit.
 2) no dependency on kindlegen, which can mean **twice as fast conversions** since you can convert to CBZ directly.
 3) You can dither by partially checking the JPG/PNG box and can crop in KCC instead of KOreader. This may increase page turn speed and battery.
+
+Common KOreader manga mistakes: https://youtu.be/gaakIh9p8tw?si=X7OgPJlAvL9XGbLR
+Set per folder setting defaults: https://youtu.be/O9p6HVWIQ6s?si=Jtx607erCBA_auWM
 
 ### A word of warning
 **KCC** _is not_ [Amazon's Kindle Comic Creator](http://www.amazon.com/gp/feature.html?ie=UTF8&docId=1001103761) nor is in any way endorsed by Amazon.
