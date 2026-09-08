@@ -91,6 +91,7 @@ But if you jailbreak your Kindle, you'll unlock additional features like:
 3) You can dither by partially checking the JPG/PNG box and can crop in KCC instead of KOreader. This may increase page turn speed and battery.
 
 Common KOreader manga mistakes: https://youtu.be/gaakIh9p8tw?si=X7OgPJlAvL9XGbLR
+
 Set per folder setting defaults: https://youtu.be/O9p6HVWIQ6s?si=Jtx607erCBA_auWM
 
 ### A word of warning
