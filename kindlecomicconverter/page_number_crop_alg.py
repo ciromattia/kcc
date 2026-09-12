@@ -1,4 +1,5 @@
 from PIL import ImageOps, ImageFilter, ImageFile
+from PIL.Image import Image
 import numpy as np
 from .common_crop import threshold_from_power, group_close_values
 
@@ -149,7 +150,7 @@ def get_bbox_crop_margin(img, power=1, background_color='white'):
 
     return bw_img.getbbox()
 
-def ignore_pixels_near_edge(bw_img):
+def ignore_pixels_near_edge(bw_img: Image):
     w, h = bw_img.size
     edge_bbox = [
         (0, 0, w, int(0.02 * h)),
@@ -157,14 +158,23 @@ def ignore_pixels_near_edge(bw_img):
         (0, 0, int(0.02 * w), h),
         (int(0.98 * w), 0, w, h)
     ]
-    for box in edge_bbox:
-        edge = bw_img.crop(box)
+
+    inner_bbox = [
+        (int(0.02 * w), int(0.02 * h), int(0.98 * w), int(0.04 * h)), # top
+        (int(0.02 * w), int(0.96 * h), int(0.98 * w), int(0.98 * h)), # lower
+        (int(0.02 * w), int(0.02 * h), int(0.04 * w), int(0.98 * h)), # left
+        (int(0.96 * w), int(0.02 * h), int(0.98 * w), int(0.98 * h)), # right
+    ]
+
+    for edge_box, inner_box in zip(edge_bbox, inner_bbox):
+        edge = bw_img.crop(inner_box)
         h = edge.histogram()
         if not edge.height or not edge.width:
             continue
         imperfections = h[255] / (edge.height * edge.width)
-        if imperfections > 0 and imperfections < .02:
-            bw_img.paste(im=0, box=box)
+        # imperfections < 0.019 is too much
+        if imperfections == 0:
+            bw_img.paste(im=0, box=edge_box)
 
 
 def box_intersect(box1, box2, max_dist):
