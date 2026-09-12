@@ -173,7 +173,7 @@ def ignore_pixels_near_edge(bw_img: Image):
             continue
         imperfections = h[255] / (edge.height * edge.width)
         # imperfections < 0.019 is too much
-        if imperfections == 0:
+        if imperfections < .01:
             bw_img.paste(im=0, box=edge_box)
 
 
