@@ -152,6 +152,10 @@ def get_bbox_crop_margin(img, power=1, background_color='white'):
 
 def ignore_pixels_near_edge(bw_img: Image):
     w, h = bw_img.size
+    if int(0.02 * h) == int(0.03 * h):
+        return
+    if int(0.02 * w) == int(0.03 * w):
+        return
     edge_bbox = [
         (0, 0, w, int(0.02 * h)),
         (0, int(0.98 * h), w, h),
@@ -160,21 +164,24 @@ def ignore_pixels_near_edge(bw_img: Image):
     ]
 
     inner_bbox = [
-        (int(0.02 * w), int(0.02 * h), int(0.98 * w), int(0.04 * h)), # top
-        (int(0.02 * w), int(0.96 * h), int(0.98 * w), int(0.98 * h)), # lower
-        (int(0.02 * w), int(0.02 * h), int(0.04 * w), int(0.98 * h)), # left
-        (int(0.96 * w), int(0.02 * h), int(0.98 * w), int(0.98 * h)), # right
+        (int(0.02 * w), int(0.02 * h), int(0.98 * w), int(0.03 * h)), # top
+        (int(0.02 * w), int(0.97 * h), int(0.98 * w), int(0.98 * h)), # lower
+        (int(0.02 * w), int(0.02 * h), int(0.03 * w), int(0.98 * h)), # left
+        (int(0.97 * w), int(0.02 * h), int(0.98 * w), int(0.98 * h)), # right
     ]
 
     for edge_box, inner_box in zip(edge_bbox, inner_bbox):
-        edge = bw_img.crop(inner_box)
-        h = edge.histogram()
-        if not edge.height or not edge.width:
-            continue
-        imperfections = h[255] / (edge.height * edge.width)
-        # imperfections < 0.019 is too much
-        if imperfections < .01:
-            bw_img.paste(im=0, box=edge_box)
+        inner_edge = bw_img.crop(inner_box)
+        h = inner_edge.histogram()
+        imperfections = h[255] / (inner_edge.height * inner_edge.width)
+
+        if imperfections > 0 and imperfections < .001:
+            bw_img.paste(im=0, box=inner_box)
+        if imperfections < .001:
+            edge = bw_img.crop(edge_box)
+            edge_h = edge.histogram()
+            if edge_h[-1] != 0:
+                bw_img.paste(im=0, box=edge_box)
 
 
 def box_intersect(box1, box2, max_dist):
