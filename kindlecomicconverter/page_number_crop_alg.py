@@ -152,9 +152,10 @@ def get_bbox_crop_margin(img, power=1, background_color='white'):
 
 def ignore_pixels_near_edge(bw_img: Image):
     w, h = bw_img.size
-    if int(0.02 * h) == int(0.03 * h):
+    # going 0.02-0.03 was too much
+    if int(0.02 * h) == int(0.025 * h):
         return
-    if int(0.02 * w) == int(0.03 * w):
+    if int(0.02 * w) == int(0.025 * w):
         return
     edge_bbox = [
         (0, 0, w, int(0.02 * h)),
@@ -164,10 +165,10 @@ def ignore_pixels_near_edge(bw_img: Image):
     ]
 
     inner_bbox = [
-        (int(0.02 * w), int(0.02 * h), int(0.98 * w), int(0.03 * h)), # top
-        (int(0.02 * w), int(0.97 * h), int(0.98 * w), int(0.98 * h)), # lower
-        (int(0.02 * w), int(0.02 * h), int(0.03 * w), int(0.98 * h)), # left
-        (int(0.97 * w), int(0.02 * h), int(0.98 * w), int(0.98 * h)), # right
+        (int(0.02 * w), int(0.02 * h), int(0.98 * w), int(0.025 * h)), # top
+        (int(0.02 * w), int(0.975 * h), int(0.98 * w), int(0.98 * h)), # lower
+        (int(0.02 * w), int(0.02 * h), int(0.025 * w), int(0.98 * h)), # left
+        (int(0.975 * w), int(0.02 * h), int(0.98 * w), int(0.98 * h)), # right
     ]
 
     for edge_box, inner_box in zip(edge_bbox, inner_bbox):
