@@ -152,7 +152,7 @@ setuptools.setup(
         'Pillow>=9.3.0',
         'psutil>=5.9.5',
         'requests>=2.31.0',
-        'python-slugify>=1.2.1,<9.0.0',
+        'python-slugify>=1.2.1,<10.0.0',
         'mozjpeg-lossless-optimization>=1.2.0',
         'natsort>=8.4.0',
         'numpy>=1.22.4',
