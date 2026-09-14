@@ -77,9 +77,10 @@ def main(argv=None):
     if len(sources) == 0:
         print('No matching files found.')
         return 1
+    fusion_cover_path = None
     if options.filefusion:
         fusion_source_parent = str(Path(sources[0]).parent)
-        fusion_path = makeFusion(list(sources))
+        fusion_path, fusion_cover_path = makeFusion(list(sources))
         sources.clear()
         sources.append(fusion_path)
     for source in sources:
@@ -89,7 +90,7 @@ def main(argv=None):
             options.output = fusion_source_parent
         options = checkOptions(options)
         print('Working on ' + source + '...')
-        makeBook(source)
+        makeBook(source, fusion_cover_path)
 
     return 0
 
@@ -1773,6 +1774,19 @@ def makeFusion(sources: List[str]):
     start = perf_counter()
     first_path = Path(sources[0])
 
+    fusion_cover_path = None
+    if first_path.parent.joinpath('Covers').is_dir():
+        covers = os.listdir(first_path.parent.joinpath('Covers'))
+        filtered_covers = []
+        for cover in covers:
+            _, cover_ext = getImageFileName(cover)
+            if cover_ext in IMAGE_TYPES:
+                filtered_covers.append(cover)
+        try:
+            fusion_cover_path = first_path.parent.joinpath('Covers', filtered_covers[0])
+        except IndexError:
+            pass
+
     if options.tempdir:
         fusion_parent = first_path.parent
     else:
@@ -1814,10 +1828,10 @@ def makeFusion(sources: List[str]):
     print(f"makefusion: {end - start} seconds")
     print("Combined File: "+ str(fusion_path))
     
-    return str(fusion_path)
+    return str(fusion_path), fusion_cover_path
 
 
-def makeBook(source, qtgui=None, job_progress=''):
+def makeBook(source, fusion_cover_path=None, qtgui=None, job_progress=''):
     start = perf_counter()
     global GUI
     GUI = qtgui
@@ -1912,9 +1926,12 @@ def makeBook(source, qtgui=None, job_progress=''):
             options.customcover = True
         except IndexError:
             pass
+    if fusion_cover_path:
+        options.customcover = True
+        cover_path = fusion_cover_path
 
     cover = None
-    if not options.webtoon:
+    if not options.webtoon or options.customcover:
         cover = image.Cover(cover_path, options)
 
     x, y = image.ProfileData.Profiles[options.profile][1]

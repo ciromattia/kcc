@@ -418,6 +418,7 @@ class WorkerThread(QThread):
             if GUI.jobList.item(i).icon().isNull():
                 currentJobs.append(str(GUI.jobList.item(i).text()))
         GUI.jobList.clear()
+        fusion_cover_path = None
         if options.filefusion:
             bookDir = []
             MW.addMessage.emit('Attempting file fusion', 'info', False)
@@ -429,7 +430,8 @@ class WorkerThread(QThread):
                 if options.output is None:
                     options.output = fusion_source_parent
                 currentJobs.clear()
-                currentJobs.append(comic2ebook.makeFusion(bookDir))
+                job, fusion_cover_path = comic2ebook.makeFusion(bookDir)
+                currentJobs.append(job)
                 MW.addMessage.emit('Created fusion at ' + currentJobs[0], 'info', False)
             except Exception as e:
                 print('Fusion Failed. ' + str(e))
@@ -463,7 +465,7 @@ class WorkerThread(QThread):
             jobargv.append(job)
             try:
                 comic2ebook.options = comic2ebook.checkOptions(copy(options))
-                outputPath = comic2ebook.makeBook(job, self, job_progress_number)
+                outputPath = comic2ebook.makeBook(job, fusion_cover_path, self, job_progress_number)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
                 if not self.conversionAlive:
