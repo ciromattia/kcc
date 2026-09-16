@@ -686,10 +686,13 @@ def imgDirectoryProcessing(path, job_progress=''):
     options.imgMetadata = {}
     work = []
     pagenumber = 0
+    is_first_page = True
     for dirpath, _, filenames in os.walk(path):
-        for afile in filenames:
+        for afile in os_sorted(filenames):
             pagenumber += 1
-            work.append([afile, dirpath, options])
+            work.append([afile, dirpath, options, is_first_page])
+            if is_first_page:
+                is_first_page = False
     if GUI:
         GUI.progressBarTick.emit(str(pagenumber))
     if len(work) > 0:
@@ -734,16 +737,20 @@ def imgFileProcessing(work):
         afile = work[0]
         dirpath = work[1]
         opt = work[2]
+        is_first_page = work[3]
         output = []
         workImg = image.ComicPageParser((dirpath, afile), opt)
         for i in workImg.payload:
             img = image.ComicPage(opt, *i)
-            if opt.cropping == 2 and not opt.webtoon:
-                img.cropPageNumber(opt.croppingp, opt.croppingm)
-            if opt.cropping == 1 and not opt.webtoon:
-                img.cropMargin(opt.croppingp, opt.croppingm)
-            if opt.interpanelcrop > 0:
-                img.cropInterPanelEmptySections("horizontal" if opt.interpanelcrop == 1 else "both")
+            if is_first_page and img.color:
+                pass
+            else:
+                if opt.cropping == 2 and not opt.webtoon:
+                    img.cropPageNumber(opt.croppingp, opt.croppingm)
+                if opt.cropping == 1 and not opt.webtoon:
+                    img.cropMargin(opt.croppingp, opt.croppingm)
+                if opt.interpanelcrop > 0:
+                    img.cropInterPanelEmptySections("horizontal" if opt.interpanelcrop == 1 else "both")
 
             img.gammaCorrectImage()
 
