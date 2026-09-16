@@ -1401,6 +1401,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.expertMode = self.settings.value('expertMode', False, type=bool)
         if not self.expertMode:
             GUI.hide_expert_options()
+        else:
+            GUI.easyLabel.hide()
 
         # default is Kindle Paperwhite 12th Gen
         self.lastDevice = self.settings.value('lastDevice', 3, type=int)
