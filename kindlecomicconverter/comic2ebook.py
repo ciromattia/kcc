@@ -1759,8 +1759,8 @@ def detectKindleGen(GUI=None):
             start = perf_counter()
             try:
                 for i in range(0, 200):
-                    for j in range(0, 10):
-                        for k in range (0, 10):
+                    for j in range(0, 20):
+                        for k in range (0, 20):
                             path = f'C:\\Program Files\\WindowsApps\\KindlePreviewerApp_4.{i}.{j}.{k}_x64__ek06e0aw29nma'
                             if os.path.exists(path):
                                 kindlegen_path = os.path.join(path, 'KindlePreviewerApp\\resources\\KFXGen\\bin\\kindlegen.exe')
