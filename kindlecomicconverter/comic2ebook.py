@@ -40,6 +40,7 @@ from shutil import move, copytree, rmtree
 from multiprocessing import Pool, cpu_count
 from uuid import uuid4
 from natsort import os_sort_keygen, os_sorted
+from packaging.version import Version
 from slugify import slugify as slugify_ext
 from PIL import Image, ImageFile, ImageOps
 from pathlib import Path
@@ -1749,16 +1750,58 @@ def checkTools(source):
             print('ERROR: 7z is missing!')
             sys.exit(1)
     if options.format == 'MOBI':
-        try:
-            subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, check=True)
-        except (FileNotFoundError, CalledProcessError):
-            print('ERROR: KindleGen is missing!')
-            sys.exit(1)
-        except OSError as e:
-            print(f"kindlegen: {e.strerror}")
-            print('Re-install or re-open Rosetta/Kindle Previewer/other Intel app?')
+        if not detectKindleGen():
             sys.exit(1)
 
+def detectKindleGen(GUI=None):
+    if sys.platform.startswith('win'):
+        if not _detectKindleGen():
+            start = perf_counter()
+            try:
+                for i in range(0, 200):
+                    for j in range(0, 20):
+                        for k in range (0, 20):
+                            path = f'C:\\Program Files\\WindowsApps\\KindlePreviewerApp_4.{i}.{j}.{k}_x64__ek06e0aw29nma'
+                            if os.path.exists(path):
+                                kindlegen_path = os.path.join(path, 'KindlePreviewerApp\\resources\\KFXGen\\bin\\kindlegen.exe')
+                                tool_path = 'C:\\Tools'
+                                if not os.path.isdir(tool_path):
+                                    os.mkdir(tool_path)
+                                shutil.copy2(kindlegen_path, tool_path)
+            except Exception:
+                pass
+            end = perf_counter()
+            print(f"Search for Windows KindleGen: {end - start} sec")
+        return _detectKindleGen(GUI)
+    else:
+        try:
+            os.chmod('/usr/local/bin/kindlegen', 0o755)
+        except Exception:
+            pass
+        return _detectKindleGen(GUI)
+
+def _detectKindleGen(GUI=None):
+    try:
+        versionCheck = subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8', errors='ignore', check=True)
+        for line in versionCheck.stdout.splitlines():
+            if 'Amazon kindlegen' in line:
+                versionCheck = line.split('V')[1].split(' ')[0]
+                if Version(versionCheck) < Version('2.9'):
+                    if GUI:
+                        GUI.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
+                                       ' is outdated! MOBI conversion might fail.', 'warning')
+                break
+        return True
+    except (FileNotFoundError, CalledProcessError):
+        print('ERROR: KindleGen is missing!')
+        return False
+    except (OSError, Exception) as e:
+        print(f"kindlegen: {e.strerror}")
+        print('Re-install or re-open Rosetta/Kindle Previewer/other Intel app?')
+        if GUI:
+            error = f"kindlegen: {e.strerror}\n\n Re-install or re-open Rosetta/Kindle Previewer/other Intel app?"
+            GUI.showDialog(error, 'error')
+        return False
 
 def checkPre(source='KCC-'):
     # Make sure that all temporary files are gone

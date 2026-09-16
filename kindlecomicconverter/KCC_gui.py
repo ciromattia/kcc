@@ -32,7 +32,6 @@ import sys
 from urllib.parse import unquote
 from time import sleep
 from shutil import move, rmtree
-from subprocess import STDOUT, PIPE, CalledProcessError
 
 import requests
 from xml.sax.saxutils import escape
@@ -45,9 +44,9 @@ from PIL.Image import Dither
 
 from .KCC_spread_label import LabelSpreadsDialog
 
-from .shared import HTMLStripper, sanitizeTrace, walkLevel, subprocess_run
+from .shared import HTMLStripper, sanitizeTrace, walkLevel
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
-from .comic2ebook import OS_SORT_KEY, flattenTree, getWorkFolder, removeNonImages, sanitizeTree
+from .comic2ebook import OS_SORT_KEY, flattenTree, getWorkFolder, removeNonImages, sanitizeTree, detectKindleGen
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -1255,8 +1254,8 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 self.needClean = True
                 return
             if 'MOBI' in GUI.formats[str(GUI.formatBox.currentText())]['format'] and not self.kindleGen:
-                self.detectKindleGen()
-                if not self.kindleGen:
+                if not detectKindleGen(GUI):
+                    self.progress.stop()
                     GUI.jobList.clear()
                     self.display_kindlegen_missing()
                     self.needClean = True
@@ -1384,32 +1383,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         self.saveSettings(None)
         sys.exit(0)
 
-    def detectKindleGen(self, startup=False):
-        if not sys.platform.startswith('win'):
-            try:
-                os.chmod('/usr/local/bin/kindlegen', 0o755)
-            except Exception:
-                pass
-        try:
-            versionCheck = subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8', errors='ignore', check=True)
-            self.kindleGen = True
-            for line in versionCheck.stdout.splitlines():
-                if 'Amazon kindlegen' in line:
-                    versionCheck = line.split('V')[1].split(' ')[0]
-                    if Version(versionCheck) < Version('2.9'):
-                        self.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
-                                        ' is outdated! MOBI conversion might fail.', 'warning')
-                    break
-        except (FileNotFoundError, CalledProcessError):
-            self.kindleGen = False
-            if startup:
-                self.display_kindlegen_missing()
-        except OSError as e:
-            self.kindleGen = False
-            if startup:
-                error = f"kindlegen: {e.strerror}\n\n Re-install or re-open Rosetta/Kindle Previewer/other Intel app?"
-                self.showDialog(error, 'error')
-
     def __init__(self, kccapp, kccwindow):
         global APP, MW, GUI
         APP = kccapp
@@ -1442,8 +1415,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         except Exception:
             self.options = default_options
         self.worker = WorkerThread()
+        self.worker.setObjectName('worker')
         self.versionCheck = VersionThread(self.startNumber2)
+        self.versionCheck.setObjectName('version')
         self.progress = ProgressThread()
+        self.progress.setObjectName('progress')
         self.tray = SystemTrayIcon()
         self.conversionAlive = False
         self.needClean = True
@@ -1674,7 +1650,6 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if not any([self.tar, self.sevenzip]):
             self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
                             ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
-        self.detectKindleGen(True)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
         GUI.defaultOutputFolderButton.clicked.connect(self.selectDefaultOutputFolder)
