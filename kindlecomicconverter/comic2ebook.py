@@ -1754,11 +1754,33 @@ def checkTools(source):
             sys.exit(1)
 
 def detectKindleGen(GUI=None):
-    if not sys.platform.startswith('win'):
+    if sys.platform.startswith('win'):
+        if not _detectKindleGen():
+            start = perf_counter()
+            try:
+                for i in range(0, 200):
+                    for j in range(0, 10):
+                        for k in range (0, 10):
+                            path = f'C:\\Program Files\\WindowsApps\\KindlePreviewerApp_4.{i}.{j}.{k}_x64__ek06e0aw29nma'
+                            if os.path.exists(path):
+                                kindlegen_path = os.path.join(path, 'KindlePreviewerApp\\resources\\KFXGen\\bin\\kindlegen.exe')
+                                tool_path = 'C:\\Tools'
+                                if not os.path.isdir(tool_path):
+                                    os.mkdir(tool_path)
+                                shutil.copy2(kindlegen_path, tool_path)
+            except Exception:
+                pass
+            end = perf_counter()
+            print(f"Search for Windows KindleGen: {end - start} sec")
+        return _detectKindleGen(GUI)
+    else:
         try:
             os.chmod('/usr/local/bin/kindlegen', 0o755)
         except Exception:
             pass
+        return _detectKindleGen(GUI)
+
+def _detectKindleGen(GUI=None):
     try:
         versionCheck = subprocess_run(['kindlegen', '-locale', 'en'], stdout=PIPE, stderr=STDOUT, encoding='UTF-8', errors='ignore', check=True)
         for line in versionCheck.stdout.splitlines():
@@ -1773,7 +1795,7 @@ def detectKindleGen(GUI=None):
     except (FileNotFoundError, CalledProcessError):
         print('ERROR: KindleGen is missing!')
         return False
-    except OSError as e:
+    except (OSError, Exception) as e:
         print(f"kindlegen: {e.strerror}")
         print('Re-install or re-open Rosetta/Kindle Previewer/other Intel app?')
         if GUI:

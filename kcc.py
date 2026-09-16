@@ -70,7 +70,6 @@ def modify_path():
             os.path.expandvars('%LOCALAPPDATA%\\Amazon\\Kindle Previewer 3\\lib\\fc\\bin\\'),
             os.path.expandvars('%UserProfile%\\Kindle Previewer 3\\lib\\fc\\bin\\'),
             'C:\\Tools',
-            'C:\\Program Files\\WindowsApps\\KindlePreviewerApp_4.0.0.0_x64__ek06e0aw29nma\\KindlePreviewerApp\\resources\\KFXGen\\bin',
             'C:\\Apps\\Kindle Previewer 3\\lib\\fc\\bin',
             'D:\\Apps\\Kindle Previewer 3\\lib\\fc\\bin',
             'E:\\Apps\\Kindle Previewer 3\\lib\\fc\\bin',
