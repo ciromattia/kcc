@@ -567,6 +567,7 @@ class Ui_mainWindow(object):
 
         self.expertButton = QPushButton(self.toolWidget)
         self.expertButton.setObjectName(u"expertButton")
+        self.expertButton.setMinimumSize(QSize(0, 30))
 
         self.gridLayout_6.addWidget(self.expertButton, 0, 4, 1, 1)
 
