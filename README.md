@@ -1,6 +1,6 @@
 Most manga conversion methods for ereaders add margins. But KCC enables true fullscreen from top to bottom. 
 
-![header](images/header_margins720.jpeg)
+![header](images/header_marginsXO.jpeg)
 
 (feat. Ya Boy Kongming! and Fire Force from a [Humble Bundle](https://humblebundleinc.sjv.io/xL6Zv1) PDF source.)
 
