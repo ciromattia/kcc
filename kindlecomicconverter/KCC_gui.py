@@ -270,6 +270,8 @@ def get_options():
         options.autoscale = True
     elif GUI.qualityBox.checkState() == Qt.CheckState.Checked:
         options.hq = True
+    if GUI.legacyPanelViewBox.isChecked():
+        options.legacypanelview = True
     if GUI.vertical4PanelBox.isChecked():
         options.vertical4panel = True
     if GUI.webtoonBox.isChecked():
@@ -859,6 +861,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.autoLevelBox.show()
         GUI.autocontrastBox.show()
         GUI.vertical4PanelBox.show()
+        GUI.legacyPanelViewBox.show()
         GUI.tempDirBox.show()
         GUI.deleteBox.show()
         GUI.metadataTitleBox.show()
@@ -897,6 +900,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         GUI.autoLevelBox.hide()
         GUI.autocontrastBox.hide()
         GUI.vertical4PanelBox.hide()
+        GUI.legacyPanelViewBox.hide()
         GUI.tempDirBox.hide()
         GUI.deleteBox.hide()
         GUI.metadataTitleBox.hide()
@@ -1295,6 +1299,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                            'rotateBox': GUI.rotateBox.checkState(),
                                            'qualityBox': GUI.qualityBox.checkState(),
                                            'vertical4PanelBox': GUI.vertical4PanelBox.checkState(),
+                                           'legacyPanelViewBox': GUI.vertical4PanelBox.checkState(),
                                            'gammaBox': GUI.gammaBox.checkState(),
                                            'autoLevelBox': GUI.autoLevelBox.checkState(),
                                            'autocontrastBox': GUI.autocontrastBox.checkState(),
