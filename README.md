@@ -282,7 +282,8 @@ MAIN:
   --invertdirection     Invert page turn direction
   -q, --hq              Try to increase the quality of magnification
   -2, --two-panel       Display two not four panels in Panel View mode
-  --vertical4panel       Show side panels first in virtual panel view
+  --vertical4panel      Show side panels first in virtual panel view
+  --legacypanelview     Use legacy panel view method from KCC 6
   -w, --webtoon         Webtoon processing mode
   --ts TARGETSIZE, --targetsize TARGETSIZE
                         the maximal size of output file in MB. [Default=100MB for webtoon and 400MB for others]

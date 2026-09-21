@@ -240,11 +240,6 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.outputSplit, 4, 1, 1, 1)
 
-        self.tempDirBox = QCheckBox(self.optionWidget)
-        self.tempDirBox.setObjectName(u"tempDirBox")
-
-        self.gridLayout_2.addWidget(self.tempDirBox, 10, 2, 1, 1)
-
         self.disableProcessingBox = QCheckBox(self.optionWidget)
         self.disableProcessingBox.setObjectName(u"disableProcessingBox")
 
@@ -499,6 +494,16 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.keepComicInfoBox, 3, 3, 1, 1)
 
+        self.tempDirBox = QCheckBox(self.optionWidget)
+        self.tempDirBox.setObjectName(u"tempDirBox")
+
+        self.gridLayout_2.addWidget(self.tempDirBox, 11, 2, 1, 1)
+
+        self.legacyPanelViewBox = QCheckBox(self.optionWidget)
+        self.legacyPanelViewBox.setObjectName(u"legacyPanelViewBox")
+
+        self.gridLayout_2.addWidget(self.legacyPanelViewBox, 10, 2, 1, 1)
+
 
         self.gridLayout.addWidget(self.optionWidget, 5, 0, 1, 2)
 
@@ -716,10 +721,6 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.outputSplit.setText(QCoreApplication.translate("mainWindow", u"Output split", None))
 #if QT_CONFIG(tooltip)
-        self.tempDirBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Main Drive<br/></span>Use dedicated temporary directory on main OS drive.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Source File Drive<br/></span>Create temporary file directory on source file drive.</p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.tempDirBox.setText(QCoreApplication.translate("mainWindow", u"Temp Directory", None))
-#if QT_CONFIG(tooltip)
         self.disableProcessingBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Do not process any image, ignore profile and processing options.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.disableProcessingBox.setText(QCoreApplication.translate("mainWindow", u"Disable processing", None))
@@ -910,6 +911,16 @@ class Ui_mainWindow(object):
 "Keeping this file may crash some readers like the Kobo native CBZ reader.", None))
 #endif // QT_CONFIG(tooltip)
         self.keepComicInfoBox.setText(QCoreApplication.translate("mainWindow", u"Keep ComicInfo.xml", None))
+#if QT_CONFIG(tooltip)
+        self.tempDirBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Main Drive<br/></span>Use dedicated temporary directory on main OS drive.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Source File Drive<br/></span>Create temporary file directory on source file drive.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.tempDirBox.setText(QCoreApplication.translate("mainWindow", u"Temp Directory", None))
+#if QT_CONFIG(tooltip)
+        self.legacyPanelViewBox.setToolTip(QCoreApplication.translate("mainWindow", u"Use legacy panel view method from KCC 6.\n"
+"\n"
+"Kind of works on firmwares 5.19.2 (before revert) and 5.19.3+", None))
+#endif // QT_CONFIG(tooltip)
+        self.legacyPanelViewBox.setText(QCoreApplication.translate("mainWindow", u"Legacy Panel View", None))
         self.jpegQualityLabel.setText(QCoreApplication.translate("mainWindow", u"JPEG Quality:", None))
 #if QT_CONFIG(tooltip)
         self.labelSpreadsButton.setToolTip(QCoreApplication.translate("mainWindow", u"Hold shift while clicking for a low quality preview.", None))

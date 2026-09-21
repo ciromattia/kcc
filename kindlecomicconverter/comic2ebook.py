@@ -1498,6 +1498,8 @@ def makeParser():
                               help="Display two not four panels in Panel View mode")
     main_options.add_argument("--vertical4panel", action="store_true", dest="vertical4panel", default=False,
                               help="Display side panels first in virtual panel view")
+    main_options.add_argument("--legacypanelview", action="store_true", dest="legacypanelview", default=False,
+                              help="Use legacy panel view method from KCC 6")
     main_options.add_argument("-w", "--webtoon", action="store_true", dest="webtoon", default=False,
                               help="Webtoon processing mode"),
     main_options.add_argument("--ts", "--targetsize", type=int, dest="targetsize", default=None,
@@ -1679,7 +1681,7 @@ def checkOptions(options):
     if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K34' or options.profile == 'KDX':
         options.panelview = False
         options.hq = False
-    if not options.hq and not options.autoscale:
+    if not options.hq and not options.autoscale and not options.legacypanelview:
         options.panelview = False
     # Webtoon mode mandatory options
     if options.webtoon:
