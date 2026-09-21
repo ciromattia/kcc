@@ -394,7 +394,7 @@ If you want to edit the `.ui` files, use `pyside6-designer` which is included in
 If new objects have been added, verify that correct tab order has been applied by using [Tab Order Editing Mode](https://doc.qt.io/qt-6/designer-tab-order.html).
 Then use the `gen_ui_files` scripts to autogenerate the python UI.
 
-An example PR adding a new checkbox is here: https://github.com/ciromattia/kcc/pull/785
+An example PR adding a new checkbox is here: https://github.com/ciromattia/kcc/pull/1445
 
 video of adding a new checkbox: https://youtu.be/g3I8DU74C7g
 
