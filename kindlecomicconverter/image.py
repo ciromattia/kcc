@@ -20,15 +20,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import io
 import os
-import numpy as np
 from pathlib import Path
-from functools import cached_property
 import mozjpeg_lossless_optimization
 from PIL import Image, ImageOps, ImageFile, ImageChops, ImageDraw
 
 from .rainbow_artifacts_eraser import erase_rainbow_artifacts
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
+from .color import colorCheck
 from .shared import get_contain_resolution
 
 AUTO_CROP_THRESHOLD = 0.015
@@ -152,7 +151,7 @@ class ProfileData:
 
 
 class ComicPageParser:
-    def __init__(self, source, options):
+    def __init__(self, source, is_first_page, options):
         Image.MAX_IMAGE_PIXELS = int(2048 * 2048 * 2048 // 4 // 3)
         self.opt = options
         self.source = source
@@ -164,6 +163,7 @@ class ComicPageParser:
         # Image.open(srcImgPath).verify()
         with Image.open(srcImgPath) as im:
             self.image = im.copy()
+        self.original_color_mode = self.image.mode
 
         self.page_background_color = self.fillCheck()
         self.fill = self.page_background_color
@@ -172,6 +172,17 @@ class ComicPageParser:
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
+
+        if is_first_page and colorCheck(self.image, self.original_color_mode, self.opt):
+            pass
+        else:
+            if self.opt.cropping == 2 and not self.opt.webtoon:
+                self.cropPageNumber(self.opt.croppingp, self.opt.croppingm)
+            if self.opt.cropping == 1 and not self.opt.webtoon:
+                self.cropMargin(self.opt.croppingp, self.opt.croppingm)
+            if self.opt.interpanelcrop > 0:
+                self.cropInterPanelEmptySections("horizontal" if self.opt.interpanelcrop == 1 else "both")
+
         self.splitCheck()
 
     def getImageHistogram(self, image):
@@ -280,6 +291,40 @@ class ComicPageParser:
                 else:
                     return 'white'
 
+    def maybeCrop(self, box, minimum):
+        w, h = self.image.size
+        left, upper, right, lower = box
+        if self.opt.preservemargin:
+            ratio = 1 - self.opt.preservemargin / 100
+            box = left * ratio, upper * ratio, right + (w - right) * (1 - ratio), lower + (h - lower) * (1 - ratio)
+        box_area = (box[2] - box[0]) * (box[3] - box[1])
+        image_area = self.image.size[0] * self.image.size[1]
+        if (box_area / image_area) >= minimum:
+            self.image = self.image.crop(box)
+
+    def cropPageNumber(self, power, minimum):
+        bbox = get_bbox_crop_margin_page_number(self.image, power, self.page_background_color)
+        
+        if bbox:
+            w, h = self.image.size
+            left, upper, right, lower = bbox
+            # don't crop more than 10% of image
+            bbox = (min(0.1*w, left), min(0.1*h, upper), max(0.9*w, right), max(0.9*h, lower))
+            self.maybeCrop(bbox, minimum)
+
+    def cropMargin(self, power, minimum):
+        bbox = get_bbox_crop_margin(self.image, power, self.page_background_color)
+        
+        if bbox:
+            w, h = self.image.size
+            left, upper, right, lower = bbox
+            # don't crop more than 10% of image
+            bbox = (min(0.1*w, left), min(0.1*h, upper), max(0.9*w, right), max(0.9*h, lower))
+            self.maybeCrop(bbox, minimum)
+
+    def cropInterPanelEmptySections(self, direction):
+        self.image = crop_empty_inter_panel(self.image, direction, background_color=self.page_background_color)
+
 
 class ComicPage:
     def __init__(self, options, mode, path, image, page_background_color, fill):
@@ -290,7 +335,7 @@ class ComicPage:
         self.original_color_mode = image.mode
         # TODO: color check earlier
         self.image = image.convert("RGB")
-        self.color = self.colorCheck()
+        self.color = colorCheck(self.image, self.original_color_mode, self.opt)
         self.colorOutput = self.color and self.opt.forcecolor
         self.page_background_color = page_background_color
         self.fill = fill
@@ -310,93 +355,6 @@ class ComicPage:
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
-
-    def colorCheck(self):
-        if self.original_color_mode in ("L", "1"):
-            return False
-        if self.opt.webtoon:
-            return True
-        if self.calculate_color():
-            return True
-        return False
-    
-    # cut off pixels from both ends of the histogram to remove jpg compression artifacts
-    # for better accuracy, you could split the image in half and analyze each half separately
-    def histograms_cutoff(self, cb_hist, cr_hist, cutoff=(2, 2)):
-        if cutoff == (0, 0):
-            return cb_hist, cr_hist
-
-        for h in cb_hist, cr_hist:
-            # get number of pixels
-            n = sum(h)
-            # remove cutoff% pixels from the low end
-            cut = int(n * cutoff[0] // 100)
-            for lo in range(256):
-                if cut > h[lo]:
-                    cut = cut - h[lo]
-                    h[lo] = 0
-                else:
-                    h[lo] -= cut
-                    cut = 0
-                if cut <= 0:
-                    break
-            # remove cutoff% samples from the high end
-            cut = int(n * cutoff[1] // 100)
-            for hi in range(255, -1, -1):
-                if cut > h[hi]:
-                    cut = cut - h[hi]
-                    h[hi] = 0
-                else:
-                    h[hi] -= cut
-                    cut = 0
-                if cut <= 0:
-                    break
-        return cb_hist, cr_hist
-
-    def color_precision(self, cb_hist_original, cr_hist_original, cutoff, diff_threshold):
-        cb_hist, cr_hist = self.histograms_cutoff(cb_hist_original.copy(), cr_hist_original.copy(), cutoff)
-
-        cb_nonzero = [i for i, e in enumerate(cb_hist) if e]
-        cr_nonzero = [i for i, e in enumerate(cr_hist) if e]
-        cb_spread = cb_nonzero[-1] - cb_nonzero[0]
-        cr_spread = cr_nonzero[-1] - cr_nonzero[0]
-
-        # bias adjustment, don't go lower than 7
-        SPREAD_THRESHOLD = 7
-        if self.opt.forcecolor:
-            if any([
-                cb_nonzero[0] > 128,
-                cr_nonzero[0] > 128,
-                cb_nonzero[-1] < 128,
-                cr_nonzero[-1] < 128,
-            ]):
-                return True, True
-        elif cb_spread < SPREAD_THRESHOLD and cr_spread < SPREAD_THRESHOLD:
-            return True, False
-
-        DIFF_THRESHOLD = diff_threshold
-        if any([
-            cb_nonzero[0] <= 128 - DIFF_THRESHOLD, 
-            cr_nonzero[0] <= 128 - DIFF_THRESHOLD, 
-            cb_nonzero[-1] >= 128 + DIFF_THRESHOLD, 
-            cr_nonzero[-1] >= 128 + DIFF_THRESHOLD,
-        ]):
-            return True, True
-        
-        return False, None
-
-    def calculate_color(self):
-        img = self.image.convert("YCbCr")
-        _, cb, cr = img.split()
-        cb_hist_original = cb.histogram()
-        cr_hist_original = cr.histogram()
-
-        # you can increase 22 but don't increase 10. 4 maybe can go higher
-        for cutoff, diff_threshold in [((0, 0), 22), ((.2, .2), 10), ((3, 3), 4)]:
-            done, decision = self.color_precision(cb_hist_original, cr_hist_original, cutoff, diff_threshold)
-            if done:
-                return decision
-        return False
         
     def saveToDir(self):
         try:
@@ -558,39 +516,6 @@ class ComicPage:
         else:
             return Image.Resampling.LANCZOS
 
-    def maybeCrop(self, box, minimum):
-        w, h = self.image.size
-        left, upper, right, lower = box
-        if self.opt.preservemargin:
-            ratio = 1 - self.opt.preservemargin / 100
-            box = left * ratio, upper * ratio, right + (w - right) * (1 - ratio), lower + (h - lower) * (1 - ratio)
-        box_area = (box[2] - box[0]) * (box[3] - box[1])
-        image_area = self.image.size[0] * self.image.size[1]
-        if (box_area / image_area) >= minimum:
-            self.image = self.image.crop(box)
-
-    def cropPageNumber(self, power, minimum):
-        bbox = get_bbox_crop_margin_page_number(self.image, power, self.page_background_color)
-        
-        if bbox:
-            w, h = self.image.size
-            left, upper, right, lower = bbox
-            # don't crop more than 10% of image
-            bbox = (min(0.1*w, left), min(0.1*h, upper), max(0.9*w, right), max(0.9*h, lower))
-            self.maybeCrop(bbox, minimum)
-
-    def cropMargin(self, power, minimum):
-        bbox = get_bbox_crop_margin(self.image, power, self.page_background_color)
-        
-        if bbox:
-            w, h = self.image.size
-            left, upper, right, lower = bbox
-            # don't crop more than 10% of image
-            bbox = (min(0.1*w, left), min(0.1*h, upper), max(0.9*w, right), max(0.9*h, lower))
-            self.maybeCrop(bbox, minimum)
-
-    def cropInterPanelEmptySections(self, direction):
-        self.image = crop_empty_inter_panel(self.image, direction, background_color=self.page_background_color)
 
 class Cover:
     def __init__(self, source, opt):
