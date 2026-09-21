@@ -739,19 +739,9 @@ def imgFileProcessing(work):
         opt = work[2]
         is_first_page = work[3]
         output = []
-        workImg = image.ComicPageParser((dirpath, afile), opt)
+        workImg = image.ComicPageParser((dirpath, afile), is_first_page, opt)
         for i in workImg.payload:
             img = image.ComicPage(opt, *i)
-            if is_first_page and img.color:
-                pass
-            else:
-                if opt.cropping == 2 and not opt.webtoon:
-                    img.cropPageNumber(opt.croppingp, opt.croppingm)
-                if opt.cropping == 1 and not opt.webtoon:
-                    img.cropMargin(opt.croppingp, opt.croppingm)
-                if opt.interpanelcrop > 0:
-                    img.cropInterPanelEmptySections("horizontal" if opt.interpanelcrop == 1 else "both")
-
             img.gammaCorrectImage()
 
             if not img.colorOutput:
