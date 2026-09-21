@@ -33,7 +33,7 @@ KCC's main goal is maximum image quality at significantly smaller file size. For
 
 2) fixes black levels to avoid gray/faded blacks found in many Kindle Store manga
 
-![black](images/black720.jpeg)
+![black](images/blacktext.jpeg)
 
 3) fixes [the rainbow effect on Kaleido 3 color eink](https://www.youtube.com/watch?v=Dw2HTJCGMhw) without blur:
 
