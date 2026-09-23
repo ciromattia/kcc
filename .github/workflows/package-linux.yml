@@ -73,7 +73,7 @@ jobs:
         OUTNAME: kcc-${{ steps.version.outputs.version }}-${{ matrix.arch }}.AppImage
       run: |
         mkdir -p dist
-        quick-sharun "$(which kcc)" /usr/lib/libQt6Gui.so*
+        quick-sharun "$(which kcc)" /usr/lib/qt6/plugins/styles/libkvantum.so
         quick-sharun --make-appimage
 
     - name: Test AppImage
