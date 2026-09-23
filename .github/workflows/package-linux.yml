@@ -21,6 +21,9 @@ on:
       - '.gitignore'
       - '.dockerignore'
 
+permissions:
+  contents: write
+
 jobs:
   build-appimage:
     name: Build AppImage (${{ matrix.arch }})
