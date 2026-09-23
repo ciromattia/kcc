@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=kcc
+Comment=Optimize comics/manga for eink
+Exec=kcc
+Icon=comic2ebook
+Type=Application
+Terminal=false
