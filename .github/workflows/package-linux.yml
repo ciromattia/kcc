@@ -47,8 +47,8 @@ jobs:
     - name: Install dependencies
       run: |
         pacman -Syu --noconfirm
-        get-debloated-pkgs --add-common --prefer-nano
         pacman -S --noconfirm python-pip pyside6 qt6ct kvantum lxqt-qtplugin python-natsort python-numpy python-pillow python-psutil python-pymupdf python-requests python-slugify python-setuptools
+        get-debloated-pkgs --add-common --prefer-nano
 
     - name: Install kcc
       run: |
