@@ -24,6 +24,7 @@ from pathlib import Path
 import platform
 from subprocess import STDOUT, PIPE, CalledProcessError
 from xml.dom.minidom import parseString
+from xml.parsers.expat import ExpatError
 from .shared import IMAGE_TYPES, subprocess_run
 
 EXTRACTION_ERROR = 'Failed to extract archive. Try extracting file outside of KCC.'
@@ -117,7 +118,7 @@ class ComicArchive:
             raise OSError(EXTRACTION_ERROR)
         try:
             return parseString(process.stdout)
-        except Exception:
+        except ExpatError:
             return None
 
 @lru_cache
