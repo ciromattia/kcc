@@ -47,6 +47,7 @@ jobs:
     - name: Install dependencies
       run: |
         pacman -Syu --noconfirm
+        pacman -S --noconfirm mesa-mini
         pacman -S --noconfirm python-pip pyside6 qt6ct kvantum lxqt-qtplugin python-natsort python-numpy python-pillow python-psutil python-pymupdf python-requests python-slugify python-setuptools
 
     - name: Install kcc
@@ -73,7 +74,7 @@ jobs:
         OUTNAME: kcc-${{ steps.version.outputs.version }}-${{ matrix.arch }}.AppImage
       run: |
         mkdir -p dist
-        quick-sharun "$(which kcc)" /usr/lib/qt6/plugins/styles/libkvantum.so
+        quick-sharun "$(which kcc)"
         quick-sharun --make-appimage
 
     - name: Test AppImage
