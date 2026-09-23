@@ -47,10 +47,12 @@ jobs:
     - name: Install dependencies
       run: |
         pacman -Syu --noconfirm
-        pacman -S --noconfirm python3.11 python-pip
+        pacman -S --noconfirm python python-pip
   
     - name: Install python dependencies
       run: |
+        python -m venv venv
+        sourve venv/bin/activate
         python -m pip install --upgrade pip
         python -m pip install -r requirements.txt
 
