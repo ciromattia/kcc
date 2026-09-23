@@ -42,7 +42,7 @@ jobs:
     - uses: actions/checkout@v7
 
     - name: Prepare container
-      uses: pkgforge-dev/anylinux-setup-action@v2
+      uses: pkgforge-dev/anylinux-setup-action@v5
 
     - name: Install dependencies
       run: |
