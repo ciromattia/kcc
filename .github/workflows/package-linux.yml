@@ -48,7 +48,6 @@ jobs:
   
     - name: Install python dependencies
       run: |
-        pacman -S --noconfirm libpng-dev libjpeg-dev p7zip-full p7zip-rar squashfs-tools libxcb-cursor0
         python -m pip install --upgrade pip
         python -m pip install -r requirements.txt
 
