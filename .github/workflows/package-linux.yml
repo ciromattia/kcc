@@ -47,7 +47,7 @@ jobs:
     - name: Install dependencies
       run: |
         pacman -Syu --noconfirm
-        pacman -S --noconfirm python python-pip
+        pacman -S --noconfirm python3.11 python-pip
   
     - name: Install python dependencies
       run: |
