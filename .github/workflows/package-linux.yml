@@ -79,7 +79,7 @@ jobs:
         OUTNAME: kcc-${{ steps.version.outputs.version }}-${{ matrix.arch }}.AppImage
       run: |
         mkdir -p dist
-        quick-sharun "$(which cli-chess)"
+        quick-sharun "$(which kcc)"
         quick-sharun --make-appimage
 
     - name: Test AppImage
