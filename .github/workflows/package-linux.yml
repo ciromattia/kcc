@@ -47,7 +47,7 @@ jobs:
     - name: Install dependencies
       run: |
         pacman -Syu --noconfirm
-        pacman -S --noconfirm python-pip pyside6 python-natsort python-numpy python-pillow python-psutil python-pymupdf python-requests python-slugify python-setuptools
+        pacman -S --noconfirm python-pip pyside6 qt6ct kvantum lxqt-qtplugin python-natsort python-numpy python-pillow python-psutil python-pymupdf python-requests python-slugify python-setuptools
 
     - name: Install kcc
       run: |
