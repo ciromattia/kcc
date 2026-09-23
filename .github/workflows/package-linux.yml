@@ -47,7 +47,7 @@ jobs:
     - name: Install dependencies
       run: |
         pacman -Syu --noconfirm
-        pacman -S --noconfirm python python-pip
+        pacman -S --noconfirm python python-pip pyside6 python-mozjpeg-lossless-optimization python-natsort python-numpy python-pillow python-psutil python-pymupdf python-requests python-slugify python-setuptools p7zip
 
     - name: Install kcc
       run: |
