@@ -67,6 +67,7 @@ jobs:
         DEPLOY_PYTHON: 1
         OUTPATH: ${{ github.workspace }}/dist
         OUTNAME: kcc_linux-${{ steps.version.outputs.version }}-${{ matrix.arch }}.AppImage
+        UPINFO: gh-releases-zsync|ciromattia|kcc|latest|*${{ matrix.arch }}.AppImage.zsync
       run: |
         mkdir -p dist
         quick-sharun "$(which kcc)" /usr/lib/libQt6Gui.so*
@@ -75,8 +76,6 @@ jobs:
     - name: Test AppImage
       run: |
         quick-sharun --simple-test ./dist/*.AppImage
-      env:
-        UPDATE_INFO: gh-releases-zsync|ciromattia|kcc|latest|*${{ matrix.arch }}.AppImage.zsync
 
     - name: upload artifact
       uses: actions/upload-artifact@v7
