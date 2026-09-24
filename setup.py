@@ -49,6 +49,8 @@ class BuildBinaryCommand(setuptools.Command):
         elif sys.platform == 'win32':
             if os.getenv('WINDOWS_7'):
                 os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_win7_legacy_' + VERSION + ' -w --noupx kcc.py')
+            elif platform.machine() == 'ARM64':
+                os.system(f'pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n KCC_{platform.machine()}_' + VERSION + ' -w --noupx kcc.py')
             else:
                 os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n KCC_' + VERSION + ' -w --noupx kcc.py')
             sys.exit(0)
@@ -80,6 +82,8 @@ class BuildC2ECommand(setuptools.Command):
         elif sys.platform == 'win32':
             if os.getenv('WINDOWS_7'):
                 os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2e_win7_legacy_' + VERSION + ' -c --noupx kcc-c2e.py')
+            elif platform.machine() == 'ARM64':
+                os.system(f'pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_{platform.machine()}_c2e_' + VERSION + ' -c --noupx kcc-c2e.py')
             else:
                 os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2e_' + VERSION + ' -c --noupx kcc-c2e.py')
             sys.exit(0)
@@ -112,6 +116,8 @@ class BuildC2PCommand(setuptools.Command):
         elif sys.platform == 'win32':
             if os.getenv('WINDOWS_7'):
                 os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2p_win7_legacy_' + VERSION + ' -c --noupx kcc-c2p.py')
+            elif platform.machine() == 'ARM64':
+                os.system(f'pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_{platform.machine()}_c2p_' + VERSION + ' -c --noupx kcc-c2p.py')
             else:
                 os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_c2p_' + VERSION + ' -c --noupx kcc-c2p.py')
             sys.exit(0)

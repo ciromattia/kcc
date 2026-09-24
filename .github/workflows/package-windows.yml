@@ -26,6 +26,7 @@ jobs:
     strategy:
       matrix:
         entry: [ kcc, kcc-c2e, kcc-c2p ]
+        os: [ windows-latest, windows-11-arm ]
         include:
           - entry: kcc
             command: build_binary
@@ -33,7 +34,7 @@ jobs:
             command: build_c2e
           - entry: kcc-c2p
             command: build_c2p
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
       - name: Set up Python
@@ -55,7 +56,7 @@ jobs:
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v7
         with:
-          name: windows-build-${{ matrix.entry }}
+          name: windows-build-${{ runner.arch }}-${{ matrix.entry }}
           path: dist/*.exe
       - id: optional_step_id
         uses: signpath/github-action-submit-signing-request@v3.0
