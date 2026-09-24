@@ -65,7 +65,6 @@ jobs:
         ICON: ${{ github.workspace }}/icons/comic2ebook.png
         DESKTOP: ${{ github.workspace }}/packaging/appimage/kcc.desktop
         DEPLOY_PYTHON: 1
-        DEPLOY_QT_WEB_ENGINE: 0
         OUTPATH: ${{ github.workspace }}/dist
         OUTNAME: kcc_linux-${{ steps.version.outputs.version }}-${{ matrix.arch }}.AppImage
       run: |
