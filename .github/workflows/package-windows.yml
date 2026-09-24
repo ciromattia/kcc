@@ -26,7 +26,7 @@ jobs:
     strategy:
       matrix:
         entry: [ kcc, kcc-c2e, kcc-c2p ]
-        os: [ windows-latest, windows-11-arm ]
+        os: [ windows-11-arm ]
         include:
           - entry: kcc
             command: build_binary
@@ -51,7 +51,7 @@ jobs:
           pip install certifi pyinstaller --no-binary pyinstaller
       - name: build binary
         run: |
-          python setup.py ${{ matrix.command }}
+          python -u setup.py ${{ matrix.command }}
       - name: upload-unsigned-artifact
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v7
