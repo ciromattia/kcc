@@ -36,6 +36,8 @@ class BuildBinaryCommand(setuptools.Command):
 
     # noinspection PyShadowingNames
     def run(self):
+        print('run')
+        print(platform.machine())
         VERSION = __version__
         if sys.platform == 'darwin':
             os.system('pyinstaller -y kcc-macos.spec')
@@ -47,7 +49,6 @@ class BuildBinaryCommand(setuptools.Command):
                 os.system(f'appdmg kcc.json dist/kcc_macos_{platform.processor()}_{VERSION}.dmg')
             sys.exit(0)
         elif sys.platform == 'win32':
-            print(platform.processor())
             if os.getenv('WINDOWS_7'):
                 os.system('pyinstaller --hidden-import=_cffi_backend -y -F -i icons\\comic2ebook.ico -n kcc_win7_legacy_' + VERSION + ' -w --noupx kcc.py')
             elif platform.machine() == 'arm64':
