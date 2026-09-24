@@ -25,7 +25,7 @@ jobs:
   build:
     strategy:
       matrix:
-        entry: [ kcc, kcc-c2e, kcc-c2p, kcc-arm ]
+        entry: [ kcc, kcc-c2e, kcc-c2p ]
         os: [ windows-latest, windows-11-arm ]
         include:
           - entry: kcc
