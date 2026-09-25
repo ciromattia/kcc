@@ -31,7 +31,8 @@ KCC's main goal is maximum image quality at significantly smaller file size. For
    This can also improve battery life, page turn speed, and general performance
    on underpowered ereaders with small memory and storage capacities.
 
-2) fixes black levels to avoid gray/faded blacks found in many Kindle Store manga
+2) fixes black levels to avoid gray/faded blacks found in many Kindle Store manga.
+(The original source was gray, KCC processing made it black.)
 
 ![black](images/black_white2.jpeg)
 
