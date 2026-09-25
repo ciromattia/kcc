@@ -62,6 +62,7 @@ from . import __version__
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 OS_SORT_KEY = os_sort_keygen()
+KF7_KINDLES = ('K1', 'K2', 'K34', 'KDX')
 
 def main(argv=None):
     global options
@@ -758,7 +759,7 @@ def imgFileProcessing(work):
                     img.quantizeImage()
                 if opt.format == 'PDF':
                     img.convertToGrayscale()
-                elif opt.profile == 'KDX' and opt.format == 'CBZ':
+                elif opt.profile in KF7_KINDLES and opt.format == 'CBZ':
                     img.convertToGrayscale()
                 elif opt.pnglegacy:
                     img.convertToGrayscale()
@@ -1661,7 +1662,7 @@ def checkOptions(options):
         options.skip_zip = True
         options.folder_output = True
     if options.format == 'Auto':
-        if options.profile in ['KDX']:
+        if options.profile in KF7_KINDLES:
             options.format = 'CBZ'
         elif options.profile in image.ProfileData.ProfilesKindle.keys():
             options.format = 'MOBI'
@@ -1678,7 +1679,7 @@ def checkOptions(options):
     if (options.format == 'MOBI' or options.format == 'KFX') and options.batchsplit != 2:
         options.batchsplit = 1
     # Older Kindle models don't support Panel View.
-    if options.profile == 'K1' or options.profile == 'K2' or options.profile == 'K34' or options.profile == 'KDX':
+    if options.profile in KF7_KINDLES:
         options.panelview = False
         options.hq = False
     if not options.hq and not options.autoscale and not options.legacypanelview:
