@@ -33,7 +33,7 @@ KCC's main goal is maximum image quality at significantly smaller file size. For
 
 2) fixes black levels to avoid gray/faded blacks found in many Kindle Store manga
 
-![black](images/blacktext.jpeg)
+![black](images/black_white2.jpeg)
 
 3) fixes [the rainbow effect on Kaleido 3 color eink](https://www.youtube.com/watch?v=Dw2HTJCGMhw) without blur:
 
@@ -55,7 +55,7 @@ You can view the split halves either before or after combined spreads:
 
 Just drop your input files into the KCC window, hit convert, and USB drop the output files onto your device's `documents` folder!
 
-![settings](images/easy.png)
+![settings](images/easy_small.png)
 
 There are a lot of options, but most people only care about the ones checked above.
 
