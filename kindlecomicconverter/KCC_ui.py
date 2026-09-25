@@ -853,9 +853,13 @@ class Ui_mainWindow(object):
 #if QT_CONFIG(tooltip)
         self.webpBox.setToolTip(QCoreApplication.translate("mainWindow", u"Replace JPG with lossy WebP and PNG with lossless WebP. This includes the JPG Quality.\n"
 "\n"
-"Ignored for Kindle EPUB/MOBI and all PDF.", None))
+"Ignored for Kindle EPUB/MOBI and all PDF.\n"
+"\n"
+"Makes a large difference in filesize for color content.\n"
+"\n"
+"Not very useful for BW content due to minimal filesize improvement compared to PNG and greater resource usage. ", None))
 #endif // QT_CONFIG(tooltip)
-        self.webpBox.setText(QCoreApplication.translate("mainWindow", u"WebP (experimental)", None))
+        self.webpBox.setText(QCoreApplication.translate("mainWindow", u"WebP", None))
 #if QT_CONFIG(tooltip)
         self.rotateBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Split<br/></span>Double page spreads will be cut into two separate pages.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Indeterminate - Split and rotate<br/></span>Double page spreads will be displayed twice. First split and then rotated. </p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Rotate<br/></span>Double page spreads will be rotated.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
