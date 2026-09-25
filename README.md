@@ -158,7 +158,7 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
   - May happen when [using PNG with Kindle Scribe](https://github.com/ciromattia/kcc/issues/665) or [any format with a Kindle Colorsoft](https://github.com/ciromattia/kcc/issues/768). Solve by using JPG with Kindle Scribe or buying a Kobo Colour. Happens more often when turning pages really fast. You can try PDF output.
     Going back a few pages and exiting and re-entering book should fix it temporarily.
 - What output format should I use?
-  - MOBI for Kindles. CBZ for Kindle DX. CBZ for Koreader. KEPUB for Kobo. PDF for ReMarkable or Kindle Scribe 2025.
+  - MOBI for modern Kindles. [CBZ for KF7 Kindles](https://ebooks.stackexchange.com/questions/173/how-to-use-the-e-ink-kindle-readers-to-display-photos) like the Kindle 1/2/3/DX. CBZ for Koreader. KEPUB for Kobo (Kobo profile + EPUB = KEPUB). PDF for ReMarkable or Kindle Scribe 2025.
 - Where is KEPUB option?
   - Choosing a Kobo profile and EPUB output will output KEPUB.
 - All options have additional information in tooltips if you hover over the option.

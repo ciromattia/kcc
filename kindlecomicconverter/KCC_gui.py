@@ -46,7 +46,7 @@ from .KCC_spread_label import LabelSpreadsDialog
 
 from .shared import HTMLStripper, sanitizeTrace, walkLevel
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
-from .comic2ebook import OS_SORT_KEY, flattenTree, getWorkFolder, removeNonImages, sanitizeTree, detectKindleGen
+from .comic2ebook import OS_SORT_KEY, KF7_KINDLES, flattenTree, getWorkFolder, removeNonImages, sanitizeTree, detectKindleGen
 from . import __version__
 from . import comic2ebook
 from . import metadata
@@ -1140,7 +1140,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                 if bad_format in current_format:
                     self.addMessage('Colorsoft MOBI/EPUB can have blank pages. Just go back a few pages, exit, and reenter book.', 'info')
                     break
-        elif profile['Label'] == 'KDX':
+        elif profile['Label'] in KF7_KINDLES:
             GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
             GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
             GUI.pngLegacyBox.setChecked(True)
@@ -1539,11 +1539,11 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
                                'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KoL'},
             "Kobo Forma": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1,
                            'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KoF'},
-            "Kindle 1": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 1": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 2,
                          'DefaultUpscale': False, 'ForceColor': False, 'Label': 'K1'},
-            "Kindle 2": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle 2": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 2,
                          'DefaultUpscale': False, 'ForceColor': False, 'Label': 'K2'},
-            "Kindle Keyboard": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
+            "Kindle Keyboard": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 2,
                                 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'K34'},
             "Kindle Touch": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 0,
                              'DefaultUpscale': False, 'ForceColor': False, 'Label': 'K34'},
