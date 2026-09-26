@@ -152,6 +152,9 @@ class Icons:
         self.bindle = QIcon()
         self.bindle.addPixmap(QPixmap(":/Brand/icons/Bindle_Red.png"), QIcon.Mode.Normal, QIcon.State.Off)
 
+        self.fanatical = QIcon()
+        self.fanatical.addPixmap(QPixmap(":/Brand/icons/fanatical.png"), QIcon.Mode.Normal, QIcon.State.Off)
+
 
 class VersionThread(QThread):
     def __init__(self, startNumber2):
@@ -203,6 +206,8 @@ class VersionThread(QThread):
                         icon = 'humble'
                     if category == 'humbleComicBundles':
                         icon = 'bindle'
+                    if category == 'fanaticalMangaBundles':
+                        icon = 'fanatical'
                     if category == 'kofi':
                         icon = 'kofi'
                     message = f"{payload.get('name')}"
