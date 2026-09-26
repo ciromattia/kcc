@@ -2,7 +2,7 @@ PySide6==6.1.3
 Pillow>=9
 psutil>=7.2.2
 requests>=2.32.4
-python-slugify>=8.0.4
+python-slugify>=9.0.0
 packaging>=26.2
 mozjpeg-lossless-optimization>=1.2.0
 natsort>=8.4.0
