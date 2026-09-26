@@ -21,48 +21,70 @@ on:
       - '.gitignore'
       - '.dockerignore'
 
+permissions:
+  contents: write
+
 jobs:
-  build:
-    runs-on: ubuntu-22.04
+  build-appimage:
+    name: Build AppImage (${{ matrix.arch }})
+    runs-on: ${{ matrix.runs-on }}
+
+    strategy:
+      matrix:
+        include:
+          - runs-on: ubuntu-22.04
+            arch: x86_64
+          - runs-on: ubuntu-22.04-arm
+            arch: aarch64
+
+    container: ghcr.io/pkgforge-dev/archlinux:latest
     steps:
     - uses: actions/checkout@v7
-    - name: Set up Python
-      uses: actions/setup-python@v7
-      with:
-        python-version: 3.11
-        cache: 'pip'
-    - name: Install python dependencies
+
+    - name: Prepare container
+      uses: pkgforge-dev/anylinux-setup-action@v5
+
+    - name: Install dependencies
       run: |
-        sudo apt-get update 
-        sudo apt-get install -y libpng-dev libjpeg-dev p7zip-full p7zip-rar python3-pip squashfs-tools libfuse2 libxcb-cursor0
-        python -m pip install --upgrade pip certifi pyinstaller --no-binary pyinstaller 
-        python -m pip install -r requirements.txt
-    - name: build binary
+        pacman -Syu --noconfirm
+        pacman -S --noconfirm python-pip pyside6 qt6ct kvantum lxqt-qtplugin python-natsort python-numpy python-pillow python-psutil python-pymupdf python-requests python-slugify python-setuptools
+        get-debloated-pkgs --add-common --prefer-nano
+
+    - name: Install kcc
       run: |
-        python setup.py build_binary
-        chmod +x dist/kcc_linux*
-#    issue with this action, disabled and commented out
-#        see https://github.com/AppImageCrafters/build-appimage/issues/5
-#        see https://appimage-builder.readthedocs.io/en/latest/intro/install.html#install-appimagetool
-#    - name: Build AppImage
-#      uses: AppImageCrafters/build-appimage-action@master
-#      env:
-#        UPDATE_INFO: gh-releases-zsync|ciromattia|kcc|latest|*x86_64.AppImage.zsync
-#      with:
-#        recipe: AppImageBuilder.yml
+        python -m pip install --break-system-packages .
+
+    - name: Determine version
+      id: version
+      run: |
+        echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
     - name: Build AppImage
-      run: |
-        wget -O appimage-builder-x86_64.AppImage https://github.com/AppImageCrafters/appimage-builder/releases/download/v1.1.0/appimage-builder-1.1.0-x86_64.AppImage
-        chmod +x appimage-builder-x86_64.AppImage
-        sudo mv appimage-builder-x86_64.AppImage /usr/local/bin/appimage-builder
-        appimage-builder --recipe AppImageBuilder.yml --skip-test
       env:
-        UPDATE_INFO: gh-releases-zsync|ciromattia|kcc|latest|*x86_64.AppImage.zsync
+        ARCH: ${{ matrix.arch }}
+        ICON: ${{ github.workspace }}/icons/comic2ebook.png
+        DESKTOP: ${{ github.workspace }}/packaging/appimage/kcc.desktop
+        DEPLOY_PYTHON: 1
+        OUTPATH: ${{ github.workspace }}/dist
+        OUTNAME: kcc_linux-${{ steps.version.outputs.version }}-${{ matrix.arch }}.AppImage
+        UPINFO: gh-releases-zsync|ciromattia|kcc|latest|*${{ matrix.arch }}.AppImage.zsync
+      run: |
+        mkdir -p dist
+        quick-sharun "$(which kcc)" /usr/lib/libQt6Gui.so*
+        quick-sharun --make-appimage
+
+    - name: Test AppImage
+      run: |
+        quick-sharun --simple-test ./dist/*.AppImage
+
     - name: upload artifact
       uses: actions/upload-artifact@v7
       with:
-        name: AppImage
-        path: './*.AppImage*'
+          name: kcc-${{ steps.version.outputs.version }}-${{ matrix.arch }}
+          path: |
+            dist/*.AppImage
+            dist/*.AppImage.zsync
+
     - name: Release
       uses: softprops/action-gh-release@v3
       if: startsWith(github.ref, 'refs/tags/')
@@ -70,5 +92,5 @@ jobs:
         prerelease: true
         generate_release_notes: false
         files: |
-          LICENSE.txt
-          *.AppImage*
+          dist/*.AppImage
+          dist/*.AppImage.zsync

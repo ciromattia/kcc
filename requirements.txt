@@ -1,4 +1,5 @@
-PySide6<6.10
+PySide6; platform_system == 'Linux'
+PySide6<6.10; platform_system != 'Linux'
 Pillow>=11.3.0
 psutil>=7.2.2
 requests>=2.34.2
