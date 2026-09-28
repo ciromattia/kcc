@@ -36,7 +36,7 @@ KCC's main goal is maximum image quality at significantly smaller file size. For
 
 ![black](images/black_white2.jpeg)
 
-3) fixes [the rainbow effect on Kaleido 3 color eink](https://www.youtube.com/watch?v=Dw2HTJCGMhw) without blur:
+3) fixes [the rainbow effect on Kaleido 3 color eink](https://www.youtube.com/watch?v=Dw2HTJCGMhw) without blur using a 2D Discrete Fourier Transform:
 
 ![rainbow](images/rainbow720.jpeg)
 
