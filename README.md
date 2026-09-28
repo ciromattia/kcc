@@ -86,7 +86,7 @@ Jailbreaking to use KOreader is optional. MOBI manga converted by KCC can be ope
 
 But if you jailbreak your Kindle, you'll unlock additional features like:
 
-1) compatibility with image formats better suited for manga like 4-bit PNG and WEBP. This enables better quality at **half the file size** compared to JPG which must be 8-bit.
+1) compatibility with image formats better suited for manga like dithered 4-bit PNG and WEBP. This enables better quality at **half the file size** compared to JPG which must be 8-bit.
    This is visually lossless since eink screens are 4-bit.
 2) no dependency on kindlegen, which can mean **twice as fast conversions** since you can convert to CBZ directly.
 3) You can dither by partially checking the JPG/PNG box and can crop in KCC instead of KOreader. This may increase page turn speed and battery.
