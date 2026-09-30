@@ -14,3 +14,5 @@ osx10.11
 /kindlegen*
 /kcc.bat
 .DS_Store
+/dist*
+/intel
