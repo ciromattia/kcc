@@ -21,9 +21,11 @@ from datetime import datetime, timezone
 import itertools
 import json
 from pathlib import Path
-from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings)
+from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings,
+                            QCoreApplication, QTranslator, QLocale, QObject)
 from PySide6.QtGui import (QColor, QIcon, QImage, QKeyEvent, QPixmap, QDesktopServices)
-from PySide6.QtWidgets import (QApplication, QDialogButtonBox, QHBoxLayout, QLabel, QListWidgetItem, QMainWindow, QSizePolicy, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QAbstractItemView, QListView, QTreeView, QWidget)
+from PySide6.QtWidgets import (QApplication, QDialogButtonBox, QHBoxLayout, QLabel, QListWidgetItem, QMainWindow, QSizePolicy, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QAbstractItemView, QListView, QTreeView, QWidget,
+                               QToolButton, QMenu)
 from PySide6.QtNetwork import (QLocalSocket, QLocalServer)
 
 import os
@@ -48,6 +50,7 @@ from .shared import HTMLStripper, sanitizeTrace, walkLevel
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
 from .comic2ebook import OS_SORT_KEY, KF7_KINDLES, flattenTree, getWorkFolder, removeNonImages, sanitizeTree, detectKindleGen
 from . import __version__
+from . import i18n
 from . import comic2ebook
 from . import metadata
 from . import kindle
@@ -627,7 +630,7 @@ class SystemTrayIcon(QSystemTrayIcon):
             self.showMessage('Kindle Comic Converter', message, icon)
 
 
-class KCCGUI(KCC_ui.Ui_mainWindow):
+class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
     def selectDefaultOutputFolder(self):
         dname = QFileDialog.getExistingDirectory(MW, 'Select default output folder', self.defaultOutputFolder)
         if self.is_directory_on_kindle(dname):
@@ -965,7 +968,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             icon = QIcon()
             icon.addPixmap(QPixmap(":/Other/icons/convert.png"), QIcon.Mode.Normal, QIcon.State.Off)
             GUI.convertButton.setIcon(icon)
-            GUI.convertButton.setText('Convert')
+            GUI.convertButton.setText(self.tr('Convert'))
             GUI.centralWidget.setAcceptDrops(True)
         elif enable == 0:
             self.conversionAlive = True
@@ -973,7 +976,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             icon = QIcon()
             icon.addPixmap(QPixmap(":/Other/icons/clear.png"), QIcon.Mode.Normal, QIcon.State.Off)
             GUI.convertButton.setIcon(icon)
-            GUI.convertButton.setText('Abort')
+            GUI.convertButton.setText(self.tr('Abort'))
             GUI.centralWidget.setAcceptDrops(False)
         elif enable == -1:
             self.conversionAlive = True
@@ -1108,18 +1111,46 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         valueRaw = int(5 * round(float(value) / 5))
         value = '%.2f' % (float(valueRaw) / 100)
         if float(value) <= 0.09:
-            GUI.gammaLabel.setText('Gamma: Auto')
+            GUI.gammaLabel.setText(self.tr('Gamma: Auto'))
         else:
-            GUI.gammaLabel.setText('Gamma: ' + str(value))
+            GUI.gammaLabel.setText(i18n.tr_arg(self.tr('Gamma: %1'), value))
         GUI.gammaSlider.setValue(valueRaw)
         self.gammaValue = value
 
     def changeCroppingPower(self, value):
         valueRaw = int(5 * round(float(value) / 5))
         value = '%.2f' % (float(valueRaw) / 100)
-        GUI.croppingPowerLabel.setText('Cropping Power: ' + str(value))
+        GUI.croppingPowerLabel.setText(i18n.tr_arg(self.tr('Cropping Power: %1'), value))
         GUI.croppingPowerSlider.setValue(valueRaw)
         self.croppingPowerValue = value
+
+    def updateDynamicText(self):
+        """语言切换后，重新应用所有"代码层动态写入"的文案。"""
+        # 窗口标题
+        MW.setWindowTitle(i18n.tr_arg(self.tr("Kindle Comic Converter %1"), __version__))
+        # 转换按钮状态
+        if getattr(self, 'conversionAlive', False):
+            GUI.convertButton.setText(self.tr('Abort'))
+        else:
+            GUI.convertButton.setText(self.tr('Convert'))
+        # Gamma / Cropping Power 标签
+        self.changeGamma(self.gammaValue * 100)
+        self.changeCroppingPower(self.croppingPowerValue * 100)
+        # 语言按钮 tooltip
+        self.languageButton.setToolTip(self.tr('Switch language / 切换语言 / 言語 / 언어'))
+
+    def changeLanguage(self, lang_code):
+        self.language = i18n.apply_language(lang_code)
+        self.settings.setValue('language', self.language)
+        self.retranslateUi(MW)
+        self.updateDynamicText()
+        # 同步刷新元数据编辑器弹窗
+        if hasattr(self, 'editor'):
+            self.editor.retranslateUi(self.editor.ui)
+            self.editor.updateDynamicText()
+        # 更新菜单勾选
+        for act in self.languageMenu.actions():
+            act.setChecked(act.data() == self.language)
 
     def changeDevice(self):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
@@ -1143,7 +1174,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
             current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
             for bad_format in ('MOBI', 'EPUB'):
                 if bad_format in current_format:
-                    self.addMessage('Colorsoft MOBI/EPUB can have blank pages. Just go back a few pages, exit, and reenter book.', 'info')
+                    self.addMessage(self.tr('Colorsoft MOBI/EPUB can have blank pages. Just go back a few pages, exit, and reenter book.'), 'info')
                     break
         elif profile['Label'] in KF7_KINDLES:
             GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
@@ -1152,8 +1183,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if not profile['PVOptions']:
             GUI.qualityBox.setChecked(False)
         if str(GUI.deviceBox.currentText()) == 'Other':
-            self.addMessage('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">'
-                            'List of supported Non-Kindle devices.</a>', 'info')
+            self.addMessage(self.tr('<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">List of supported Non-Kindle devices.</a>'), 'info')
 
     def changeFormat(self, outputformat=None):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
@@ -1178,7 +1208,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         elif not GUI.webtoonBox.isChecked():
             GUI.chunkSizeCheckBox.setEnabled(True)
         if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'FOLDER', 'PDF') and not GUI.webtoonBox.isChecked():
-            self.addMessage("Partially check W/B Margins if you don't want KCC to extend the image margins.", 'info')
+            self.addMessage(self.tr("Partially check W/B Margins if you don't want KCC to extend the image margins."), 'info')
             GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
             GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
         else:
@@ -1208,9 +1238,9 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def showDialog(self, message, kind):
         if kind == 'error':
-            QMessageBox.critical(MW, 'KCC - Error', message, QMessageBox.StandardButton.Ok)
+            QMessageBox.critical(MW, self.tr('KCC - Error'), message, QMessageBox.StandardButton.Ok)
         elif kind == 'question':
-            GUI.versionCheck.setAnswer(QMessageBox.question(MW, 'KCC - Question', message,
+            GUI.versionCheck.setAnswer(QMessageBox.question(MW, self.tr('KCC - Question'), message,
                                                                       QMessageBox.Yes,
                                                                       QMessageBox.No))
 
@@ -1232,7 +1262,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
     def convertStart(self):
         if self.conversionAlive:
             GUI.convertButton.setEnabled(False)
-            self.addMessage('The process will be interrupted. Please wait.', 'warning')
+            self.addMessage(self.tr('The process will be interrupted. Please wait.'), 'warning')
             self.conversionAlive = False
             self.worker.sync()
         else:
@@ -1273,7 +1303,7 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def display_kindlegen_missing(self):
         self.addMessage(
-            '<a href="https://github.com/ciromattia/kcc#kindlegen"><b>Install KindleGen (link)</b></a> to enable MOBI conversion for Kindles!',
+            self.tr('<a href="https://github.com/ciromattia/kcc#kindlegen"><b>Install KindleGen (link)</b></a> to enable MOBI conversion for Kindles!'),
             'error'
         )
 
@@ -1395,13 +1425,16 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
 
     def __init__(self, kccapp, kccwindow):
         global APP, MW, GUI
+        QObject.__init__(self)
         APP = kccapp
         MW = kccwindow
         GUI = self
+        self.settings = QSettings('ciromattia', 'kcc10')
+        self.language = str(self.settings.value('language', i18n.DEFAULT_LANGUAGE))
+        self.language = i18n.apply_language(self.language)
         self.setupUi(MW)
         self.editor = KCCGUI_MetaEditor()
         self.icons = Icons()
-        self.settings = QSettings('ciromattia', 'kcc10')
         self.settingsVersion = self.settings.value('settingsVersion', '', type=str)
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.defaultOutputFolder = str(self.settings.value('defaultOutputFolder', '', type=str))
@@ -1648,20 +1681,35 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         statusBarLabel.setOpenExternalLinks(True)
         GUI.statusBar.addPermanentWidget(statusBarLabel, 1)
 
-        self.addMessage('<b>Tip:</b> Hover mouse over options/buttons to see explanations. Boxes can be partially/fully checked.', 'info')
-        self.addMessage('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.', 'info')
-        self.addMessage("<b>Tip:</b> Calibre may add margins! USB drop directly into the device's documents folder instead.", 'info')
-        self.addMessage("<b>Tip:</b> You can toggle easy/expert mode using button at top right.", 'info')
+        self.addMessage(self.tr('<b>Tip:</b> Hover mouse over options/buttons to see explanations. Boxes can be partially/fully checked.'), 'info')
+        self.addMessage(self.tr('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.'), 'info')
+        self.addMessage(self.tr("<b>Tip:</b> Calibre may add margins! USB drop directly into the device's documents folder instead."), 'info')
+        self.addMessage(self.tr("<b>Tip:</b> You can toggle easy/expert mode using button at top right."), 'info')
         if self.startNumber < 5:
-            self.addMessage('Since you are a new user of <b>KCC</b> please see few '
-                            '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.',
+            self.addMessage(self.tr('Since you are a new user of <b>KCC</b> please see few '
+                            '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.'),
                             'info')
         
         self.tar = TAR in available_archive_tools()
         self.sevenzip = SEVENZIP in available_archive_tools()
         if not any([self.tar, self.sevenzip]):
-            self.addMessage('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
-                            ' to enable CBZ/CBR/ZIP/etc processing.', 'warning')
+            self.addMessage(self.tr('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
+                            ' to enable CBZ/CBR/ZIP/etc processing.'), 'warning')
+
+        # Language switch button
+        self.languageButton = QToolButton()
+        self.languageButton.setText('🌐')
+        self.languageButton.setToolTip(self.tr('Switch language / 切换语言 / 言語 / 언어'))
+        self.languageButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.languageMenu = QMenu(self.languageButton)
+        for code, label in i18n.LANGUAGES.items():
+            act = self.languageMenu.addAction(label)
+            act.setCheckable(True)
+            act.setChecked(code == self.language)
+            act.setData(code)
+            act.triggered.connect(lambda checked=False, c=code: self.changeLanguage(c))
+        self.languageButton.setMenu(self.languageMenu)
+        self.gridLayout_6.addWidget(self.languageButton, 0, 5)
 
         APP.messageFromOtherInstance.connect(self.handleMessage)
         GUI.defaultOutputFolderButton.clicked.connect(self.selectDefaultOutputFolder)
@@ -1766,12 +1814,12 @@ class KCCGUI(KCC_ui.Ui_mainWindow):
         if self.windowSize != '0x0':
             x, y = self.windowSize.split('x')
             MW.resize(int(x), int(y))
-        MW.setWindowTitle("Kindle Comic Converter " + __version__)
+        MW.setWindowTitle(i18n.tr_arg(self.tr("Kindle Comic Converter %1"), __version__))
         MW.show()
         MW.raise_()
 
 
-class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
+class KCCGUI_MetaEditor(QObject, KCC_ui_editor.Ui_editorDialog):
     def _buildBulkFieldToolTip(self, fieldLabel, valuesByFile):
         note = '<p><em>Note: Changing this field will overwrite all values in all selected files.</em></p>'
 
@@ -1837,7 +1885,7 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
             if parser.format in ['RAR', 'RAR5']:
                 self.editorWidget.setEnabled(False)
                 self.okButton.setEnabled(False)
-                self.statusLabel.setText('CBR files in selection are read-only.')
+                self.statusLabel.setText(self.tr('CBR files in selection are read-only.'))
                 return
         
         if self.bulkMode:
@@ -1845,7 +1893,7 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
             self.parser = metadata.MetadataParser(firstFile)
             self.editorWidget.setEnabled(True)
             self.okButton.setEnabled(True)
-            self.statusLabel.setText(f'Editing {len(self.files)} files.')
+            self.statusLabel.setText(i18n.tr_arg(self.tr('Editing %1 files.'), len(self.files)))
 
             # Show bulk volume checkbox
             self.bulkVolumeCheck.setVisible(True)
@@ -1854,7 +1902,7 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
             for field in (self.volumeLine, self.numberLine, self.titleLine):
                 field.setEnabled(False)
                 field.setText('')
-                field.setPlaceholderText('(multiple files)')
+                field.setPlaceholderText(self.tr('(multiple files)'))
                 field.setToolTip('')
 
             # Load metadata for all files and show common values, or “(multiple values)” + tooltip.
@@ -1898,7 +1946,7 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
             
             self.editorWidget.setEnabled(True)
             self.okButton.setEnabled(True)
-            self.statusLabel.setText('Separate authors with a comma.')
+            self.statusLabel.setText(self.tr('Separate authors with a comma.'))
             
             for field in (self.seriesLine, self.volumeLine, self.numberLine, self.titleLine):
                 field.setText(self.parser.data[field.objectName().capitalize()[:-4]])
@@ -1934,7 +1982,7 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
                     return
 
             if not bulkData and volumes is None:
-                self.statusLabel.setText('No changes to apply.')
+                self.statusLabel.setText(self.tr('No changes to apply.'))
                 return
 
             errors = []
@@ -1943,7 +1991,7 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
             self.cancelButton.setEnabled(False)
 
             for i, file in enumerate(self.files, 1):
-                self.statusLabel.setText(f'Processing {i}/{total}: {os.path.basename(file)}')
+                self.statusLabel.setText(i18n.tr_arg(self.tr('Processing %1/%2: %3'), i, total, os.path.basename(file)))
                 QApplication.processEvents()
 
                 try:
@@ -1966,16 +2014,16 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
             if errors:
                 GUI.showDialog("Some files failed to save:\n\n" + "\n".join(errors[:10]) +
                               (f"\n...and {len(errors) - 10} more" if len(errors) > 10 else ""), 'error')
-                self.statusLabel.setText('Errors occurred.')
+                self.statusLabel.setText(self.tr('Errors occurred.'))
             else:
-                self.statusLabel.setText(f'Successfully updated {total} files.')
+                self.statusLabel.setText(i18n.tr_arg(self.tr('Successfully updated %1 files.'), total))
                 self.ui.close()
         else:
             for field in (self.volumeLine, self.numberLine):
                 if field.text().isnumeric() or self.cleanData(field.text()) == '':
                     self.parser.data[field.objectName().capitalize()[:-4]] = self.cleanData(field.text())
                 else:
-                    self.statusLabel.setText(field.objectName().capitalize()[:-4] + ' field must be a number.')
+                    self.statusLabel.setText(i18n.tr_arg(self.tr('%1 field must be a number.'), field.objectName().capitalize()[:-4]))
                     break
             else:
                 for field in (self.seriesLine, self.titleLine):
@@ -2050,12 +2098,25 @@ class KCCGUI_MetaEditor(KCC_ui_editor.Ui_editorDialog):
         self.volumeLine.setEnabled(checked)
         if checked:
             self.volumeLine.setText('')
-            self.volumeLine.setPlaceholderText('e.g., 5 or 1-10 or 1,3,5')
+            self.volumeLine.setPlaceholderText(self.tr('e.g., 5 or 1-10 or 1,3,5'))
         else:
             self.volumeLine.setText('')
-            self.volumeLine.setPlaceholderText('(multiple files)')
+            self.volumeLine.setPlaceholderText(self.tr('(multiple files)'))
+
+    def updateDynamicText(self):
+        """语言切换后，重新应用动态设置的文案。"""
+        # 重新应用占位符文本
+        if self.bulkMode:
+            for field in (self.volumeLine, self.numberLine, self.titleLine):
+                if not field.isEnabled():
+                    field.setPlaceholderText(self.tr('(multiple files)'))
+            if self.bulkVolumeCheck.isChecked():
+                self.volumeLine.setPlaceholderText(self.tr('e.g., 5 or 1-10 or 1,3,5'))
+            else:
+                self.volumeLine.setPlaceholderText(self.tr('(multiple files)'))
 
     def __init__(self):
+        QObject.__init__(self)
         self.ui = QDialog()
         self.parser = None
         self.files = []
