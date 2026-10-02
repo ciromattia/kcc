@@ -26,6 +26,7 @@ from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThr
 from PySide6.QtGui import (QColor, QIcon, QImage, QKeyEvent, QPixmap, QDesktopServices)
 from PySide6.QtWidgets import (QApplication, QDialogButtonBox, QHBoxLayout, QLabel, QListWidgetItem, QMainWindow, QSizePolicy, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QAbstractItemView, QListView, QTreeView, QWidget,
                                QToolButton, QMenu)
+from PySide6.QtGui import QActionGroup
 from PySide6.QtNetwork import (QLocalSocket, QLocalServer)
 
 import os
@@ -1133,11 +1134,48 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             GUI.convertButton.setText(self.tr('Abort'))
         else:
             GUI.convertButton.setText(self.tr('Convert'))
-        # Gamma / Cropping Power 标签
-        self.changeGamma(self.gammaValue * 100)
-        self.changeCroppingPower(self.croppingPowerValue * 100)
+        # Gamma / Cropping Power 标签（gammaValue/croppingPowerValue 是字符串，须转 float）
+        self.changeGamma(float(self.gammaValue) * 100)
+        self.changeCroppingPower(float(self.croppingPowerValue) * 100)
         # 语言按钮 tooltip
         self.languageButton.setToolTip(self.tr('Switch language / 切换语言 / 言語 / 언어'))
+        # 刷新 jobList 中的初始提示消息（直接更新 label 文本，不影响后面的用户消息）
+        if hasattr(self, '_initialTipLabels'):
+            for label, source, icon in self._initialTipLabels:
+                label.setText(self.tr(source))
+
+    def _addInitialTips(self):
+        """添加初始提示消息，并保存 label 引用以便语言切换时刷新。"""
+        self._initialTipLabels = []
+
+        tip_sources = [
+            ('<b>Tip:</b> Hover mouse over options/buttons to see explanations. Boxes can be partially/fully checked.', 'info'),
+            ('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.', 'info'),
+            ("<b>Tip:</b> Calibre may add margins! USB drop directly into the device's documents folder instead.", 'info'),
+            ("<b>Tip:</b> You can toggle easy/expert mode using button at top right.", 'info'),
+        ]
+        for source, icon in tip_sources:
+            self.addMessage(self.tr(source), icon)
+            # 保存刚添加的 label 引用和 source 原文
+            item = GUI.jobList.item(GUI.jobList.count() - 1)
+            label = GUI.jobList.itemWidget(item)
+            self._initialTipLabels.append((label, source, icon))
+
+        if self.startNumber < 5:
+            source = ('Since you are a new user of <b>KCC</b> please see few '
+                            '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.')
+            self.addMessage(self.tr(source), 'info')
+            item = GUI.jobList.item(GUI.jobList.count() - 1)
+            label = GUI.jobList.itemWidget(item)
+            self._initialTipLabels.append((label, source, 'info'))
+
+        if not any([self.tar, self.sevenzip]):
+            source = ('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
+                            ' to enable CBZ/CBR/ZIP/etc processing.')
+            self.addMessage(self.tr(source), 'warning')
+            item = GUI.jobList.item(GUI.jobList.count() - 1)
+            label = GUI.jobList.itemWidget(item)
+            self._initialTipLabels.append((label, source, 'warning'))
 
     def changeLanguage(self, lang_code):
         self.language = i18n.apply_language(lang_code)
@@ -1681,20 +1719,10 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         statusBarLabel.setOpenExternalLinks(True)
         GUI.statusBar.addPermanentWidget(statusBarLabel, 1)
 
-        self.addMessage(self.tr('<b>Tip:</b> Hover mouse over options/buttons to see explanations. Boxes can be partially/fully checked.'), 'info')
-        self.addMessage(self.tr('<b>Tip:</b> You can drag and drop image folders or comic files/archives into this window to convert.'), 'info')
-        self.addMessage(self.tr("<b>Tip:</b> Calibre may add margins! USB drop directly into the device's documents folder instead."), 'info')
-        self.addMessage(self.tr("<b>Tip:</b> You can toggle easy/expert mode using button at top right."), 'info')
-        if self.startNumber < 5:
-            self.addMessage(self.tr('Since you are a new user of <b>KCC</b> please see few '
-                            '<a href="https://github.com/ciromattia/kcc/wiki/Important-tips">important tips</a>.'),
-                            'info')
-        
         self.tar = TAR in available_archive_tools()
         self.sevenzip = SEVENZIP in available_archive_tools()
-        if not any([self.tar, self.sevenzip]):
-            self.addMessage(self.tr('<a href="https://github.com/ciromattia/kcc#7-zip">Install 7z (link)</a>'
-                            ' to enable CBZ/CBR/ZIP/etc processing.'), 'warning')
+
+        self._addInitialTips()
 
         # Language switch button
         self.languageButton = QToolButton()
@@ -1702,11 +1730,15 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         self.languageButton.setToolTip(self.tr('Switch language / 切换语言 / 言語 / 언어'))
         self.languageButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         self.languageMenu = QMenu(self.languageButton)
+        # 创建互斥 ActionGroup，确保只有一个语言选项被勾选
+        self.languageActionGroup = QActionGroup(self.languageMenu)
+        self.languageActionGroup.setExclusive(True)
         for code, label in i18n.LANGUAGES.items():
             act = self.languageMenu.addAction(label)
             act.setCheckable(True)
             act.setChecked(code == self.language)
             act.setData(code)
+            self.languageActionGroup.addAction(act)
             act.triggered.connect(lambda checked=False, c=code: self.changeLanguage(c))
         self.languageButton.setMenu(self.languageMenu)
         self.gridLayout_6.addWidget(self.languageButton, 0, 5)

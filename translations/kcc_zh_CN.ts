@@ -54,7 +54,7 @@
     <message>
         <location filename="../kindlecomicconverter/KCC_gui.py" line="1211" />
         <source>Partially check W/B Margins if you don't want KCC to extend the image margins.</source>
-        <translation type="unfinished" />
+        <translation>如果不希望 KCC 扩展图像边距，请部分勾选 W/B 边距。</translation>
     </message>
     <message>
         <location filename="../kindlecomicconverter/KCC_gui.py" line="1241" />
@@ -89,7 +89,7 @@
     <message>
         <location filename="../kindlecomicconverter/KCC_gui.py" line="1685" />
         <source>&lt;b&gt;Tip:&lt;/b&gt; Calibre may add margins! USB drop directly into the device's documents folder instead.</source>
-        <translation type="unfinished" />
+        <translation>&lt;b&gt;提示：&lt;/b&gt;Calibre 可能会添加边距！请直接通过 USB 拖放到设备的 documents 文件夹中。</translation>
     </message>
     <message>
         <location filename="../kindlecomicconverter/KCC_gui.py" line="1686" />
@@ -419,7 +419,7 @@ Use if standard extraction fails for whatever reason.</source>
     <message>
         <location filename="../gui/KCC.ui" line="503" />
         <source>Delete input file(s) or directory. It's not recoverable!</source>
-        <translation type="unfinished" />
+        <translation>删除输入文件或目录。无法恢复！</translation>
     </message>
     <message>
         <location filename="../gui/KCC.ui" line="506" />
@@ -443,7 +443,11 @@ Use if standard extraction fails for whatever reason.</source>
 This will double file size but preserve all 256 colors (8 bit).
 
 Eink only has 16 shades of gray so you probably don't want this.</source>
-        <translation type="unfinished" />
+        <translation>不要将 PNG 图像量化为 16 色（4 位）
+
+这会使文件大小翻倍，但会保留全部 256 色（8 位）。
+
+电子墨水屏只有 16 级灰度，所以通常不需要此选项。</translation>
     </message>
     <message>
         <location filename="../gui/KCC.ui" line="533" />
@@ -507,7 +511,7 @@ Ignores most options besides JPEG quality, color mode, output folder.</source>
     <message>
         <location filename="../gui/KCC.ui" line="610" />
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - Don't use metadata Title&lt;br/&gt;&lt;/span&gt;Write default title.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Indeterminate - Add metadata Title to the default schema&lt;br/&gt;&lt;/span&gt;Write default title with Title from ComicInfo.xml or other embedded metadata.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - Use metadata Title only&lt;br/&gt;&lt;/span&gt;Write Title from ComicInfo.xml or other embedded metadata.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished" />
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未勾选 - 不使用元数据标题&lt;br/&gt;&lt;/span&gt;写入默认标题。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;半选 - 将元数据标题添加到默认结构&lt;br/&gt;&lt;/span&gt;在默认标题中加入 ComicInfo.xml 或其他内嵌元数据中的标题。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;全选 - 仅使用元数据标题&lt;br/&gt;&lt;/span&gt;写入 ComicInfo.xml 或其他内嵌元数据中的标题。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../gui/KCC.ui" line="613" />
@@ -595,7 +599,7 @@ Useful if you plan to crop a little off the top and bottom to fill screen.</sour
     <message>
         <location filename="../gui/KCC.ui" line="700" />
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Unchecked - BW only&lt;br/&gt;&lt;/span&gt;Only autocontrast bw pages. Ignored for pages where near blacks or whites don't exist.&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Indeterminate - Disabled&lt;br/&gt;&lt;/span&gt;Disable autocontrast&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;Checked - BW and Color&lt;br/&gt;&lt;/span&gt;BW and color images will be autocontrasted. Ignored for pages where near blacks or whites don't exist.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished" />
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;未勾选 - 仅黑白&lt;br/&gt;&lt;/span&gt;仅对黑白页面应用自动对比度。不存在近黑或近白像素的页面将被忽略。&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;半选 - 禁用&lt;br/&gt;&lt;/span&gt;禁用自动对比度&lt;/p&gt;&lt;p&gt;&lt;span style=" font-weight:600; text-decoration: underline;"&gt;全选 - 黑白和彩色&lt;br/&gt;&lt;/span&gt;黑白和彩色图像都将应用自动对比度。不存在近黑或近白像素的页面将被忽略。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../gui/KCC.ui" line="703" />
