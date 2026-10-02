@@ -34,4 +34,9 @@
     <file>../icons/Bindle_Red.png</file>
     <file>../icons/fanatical.png</file>
   </qresource>
+  <qresource prefix="/i18n">
+    <file alias="kcc_zh_CN.qm">../translations/kcc_zh_CN.qm</file>
+    <file alias="kcc_ja_JP.qm">../translations/kcc_ja_JP.qm</file>
+    <file alias="kcc_ko_KR.qm">../translations/kcc_ko_KR.qm</file>
+  </qresource>
 </RCC>
