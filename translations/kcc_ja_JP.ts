@@ -4,53 +4,53 @@
 <context>
     <name>KCCGUI</name>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="642"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="637"/>
         <source>Select default output folder</source>
         <translation>デフォルトの出力フォルダーを選択</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="654"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="649"/>
         <source>Cannot select Kindle as output directory</source>
         <translation>Kindle を出力先ディレクトリに選択できません</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="659"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="653"/>
         <source>Select output directory</source>
         <translation>出力ディレクトリを選択</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="675"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="678"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="669"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="672"/>
         <source>Select file</source>
         <translation>ファイルを選択</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="691"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="685"/>
         <source>Select input folder(s)</source>
         <translation>入力フォルダーを選択</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="792"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="786"/>
         <source>Select volume directories</source>
         <translation>ボリュームのディレクトリを選択</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="812"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="806"/>
         <source>Select file(s)</source>
         <translation>ファイルを選択</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="818"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="812"/>
         <source>Editor is disabled due to a lack of 7z.</source>
         <translation>7z がないためエディターは無効です。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="820"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="814"/>
         <source>&lt;a href=&quot;https://github.com/ciromattia/kcc#7-zip&quot;&gt;Install 7z (link)&lt;/a&gt; to enable metadata editing.</source>
         <translation>&lt;a href=&quot;https://github.com/ciromattia/kcc#7-zip&quot;&gt;7z をインストール（リンク）&lt;/a&gt;するとメタデータ編集が有効になります。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="831"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="823"/>
         <source>Failed to parse metadata!
 
 %1
@@ -65,248 +65,248 @@ Traceback:
 %2</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="981"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1151"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="973"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1137"/>
         <source>Convert</source>
         <translation>変換</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="989"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1149"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="981"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1135"/>
         <source>Abort</source>
         <translation>中止</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1020"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1012"/>
         <source>You can choose a taller device profile to get taller cuts in webtoon mode.</source>
         <translation>ウェブトゥーンモードでより縦長に切り取るには、縦長のデバイスプロファイルを選択してください。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1022"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1013"/>
         <source>Try reading webtoon panels side by side in landscape!</source>
         <translation>横向きでウェブトゥーンのコマを並べて読んでみてください！</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1062"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1052"/>
         <source>This option is intended for older Kindle models.</source>
         <translation>このオプションは古い Kindle モデル向けです。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1064"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1053"/>
         <source>On this device, there will be conversion speed and quality issues.</source>
         <translation>このデバイスでは変換速度と品質に問題が生じます。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1066"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1054"/>
         <source>Use the Kindle Scribe profile if you want higher resolution when zooming.</source>
         <translation>ズーム時に高解像度にしたい場合は Kindle Scribe プロファイルを使用してください。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1081"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1068"/>
         <source>Scribe PNG MOBI/EPUB has a lot of problems like blank pages/sections. Use JPG instead.</source>
         <translation>Scribe の PNG MOBI/EPUB には空白ページ/セクションなど多くの問題があります。代わりに JPG を使用してください。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1130"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1154"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1116"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1140"/>
         <source>Gamma: Auto</source>
         <translation>ガンマ：自動</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1132"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1156"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1118"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1142"/>
         <source>Gamma: %1</source>
         <translation>ガンマ：%1</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1139"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1157"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1125"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1143"/>
         <source>Cropping Power: %1</source>
         <translation>クロップ強度：%1</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1146"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1887"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1132"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1862"/>
         <source>Kindle Comic Converter %1</source>
         <translation>Kindle コミックコンバーター %1</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1159"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1768"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1145"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1743"/>
         <source>Switch language / 切换语言 / 言語 / 언어</source>
         <translation>言語切替 / Switch language / 切换语言 / 언어</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1223"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1205"/>
         <source>Colorsoft MOBI/EPUB can have blank pages. Just go back a few pages, exit, and reenter book.</source>
         <translation>Colorsoft MOBI/EPUBで空白ページが発生する場合があります。数ページ戻ってから終了し、本を再表示してください。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1233"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1214"/>
         <source>&lt;a href=&quot;https://github.com/ciromattia/kcc/wiki/NonKindle-devices&quot;&gt;List of supported Non-Kindle devices.&lt;/a&gt;</source>
         <translation>&lt;a href=&quot;https://github.com/ciromattia/kcc/wiki/NonKindle-devices&quot;&gt;非Kindleデバイスのサポートリスト。&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1259"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1239"/>
         <source>Partially check W/B Margins if you don&apos;t want KCC to extend the image margins.</source>
         <translation>画像の余白を拡張したくない場合は、W/B Marginsを部分的にチェックしてください。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1310"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1290"/>
         <source>KCC - Error</source>
         <translation>KCC - エラー</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1312"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1292"/>
         <source>KCC - Question</source>
         <translation>KCC - 質問</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1334"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1386"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1314"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1362"/>
         <source>The process will be interrupted. Please wait.</source>
         <translation>プロセスが中断されます。しばらくお待ちください。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1351"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1330"/>
         <source>No files selected! Please choose files to convert.</source>
         <translation>ファイルが選択されていません！変換するファイルを選択してください。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1363"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1341"/>
         <source>Target resolution is not set!</source>
         <translation>ターゲット解像度が設定されていません！</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1378"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1355"/>
         <source>&lt;a href=&quot;https://github.com/ciromattia/kcc#kindlegen&quot;&gt;&lt;b&gt;Install KindleGen (link)&lt;/b&gt;&lt;/a&gt; to enable MOBI conversion for Kindles!</source>
         <translation>&lt;a href=&quot;https://github.com/ciromattia/kcc#kindlegen&quot;&gt;&lt;b&gt;KindleGenをインストール（リンク）&lt;/b&gt;&lt;/a&gt;して、Kindle用MOBI変換を有効にしてください！</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1479"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1454"/>
         <source>Unsupported file type for %1</source>
         <translation>%1 のファイル形式はサポートされていません</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1743"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1718"/>
         <source>README</source>
         <translation>README</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1744"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1719"/>
         <source>FAQ</source>
         <translation>FAQ</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1745"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1720"/>
         <source>WIKI</source>
         <translation>Wiki</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1746"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1721"/>
         <source>YOUTUBE</source>
         <translation>YouTube</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1747"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1722"/>
         <source>TUTORIAL</source>
         <translation>チュートリアル</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1748"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1723"/>
         <source>EMAIL</source>
         <translation>メール</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1749"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1724"/>
         <source>DONATE</source>
         <translation>寄付</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1750"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1725"/>
         <source>FORUM</source>
         <translation>フォーラム</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1751"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1726"/>
         <source>DISCORD</source>
         <translation>Discord</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1166"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1151"/>
         <source>&lt;b&gt;Tip:&lt;/b&gt; Hover mouse over options/buttons to see explanations. Boxes can be partially/fully checked.</source>
         <translation>&lt;b&gt;ヒント：&lt;/b&gt;オプション/ボタンの上にマウスを置くと説明が表示されます。チェックボックスは部分的または完全にチェックできます。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="416"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="415"/>
         <source>&lt;b&gt;Conversion interrupted.&lt;/b&gt;</source>
         <translation>&lt;b&gt;変換が中断されました。&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="436"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="435"/>
         <source>Attempting file fusion</source>
         <translation>ファイル融合を試みています</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="447"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="446"/>
         <source>Created fusion at %1</source>
         <translation>%1 に融合ファイルを作成しました</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="450"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="449"/>
         <source>Fusion Failed. %1</source>
         <translation>融合に失敗しました。%1</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="454"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="453"/>
         <source>Process Failed. Custom title can&apos;t be set when processing more than 1 source.
 Did you forget to check fusion?</source>
         <translation>処理に失敗しました。複数のソースを処理する場合、カスタムタイトルは設定できません。
 「ファイル融合」のチェックを忘れていませんか？</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="463"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="462"/>
         <source>&lt;b&gt;%1Source:&lt;/b&gt; %2</source>
         <translation>&lt;b&gt;%1ソース：&lt;/b&gt;%2</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="465"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="467"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="464"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="466"/>
         <source>Creating CBZ files</source>
         <translation>CBZ ファイルを作成しています</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="468"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="470"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="467"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="469"/>
         <source>Creating folders</source>
         <translation>フォルダーを作成しています</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="471"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="473"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="470"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="472"/>
         <source>Creating PDF files</source>
         <translation>PDF ファイルを作成しています</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="474"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="476"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="473"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="475"/>
         <source>Creating EPUB files</source>
         <translation>EPUB ファイルを作成しています</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="492"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="504"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="491"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="501"/>
         <source>Error during conversion! Please consult &lt;a href=&quot;https://github.com/ciromattia/kcc/wiki/Error-messages&quot;&gt;wiki&lt;/a&gt; for more details.</source>
         <translation>変換中にエラーが発生しました！詳細は &lt;a href=&quot;https://github.com/ciromattia/kcc/wiki/Error-messages&quot;&gt;wiki&lt;/a&gt; をご覧ください。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="495"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="507"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="492"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="502"/>
         <source>Error during conversion!</source>
         <translation>変換中にエラーが発生しました！</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="500"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="497"/>
         <source>Error during conversion %1:
 
 %2
@@ -321,67 +321,67 @@ Traceback:
 %3</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="518"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="513"/>
         <source>Creating CBZ files... &lt;b&gt;Done!&lt;/b&gt;</source>
         <translation>CBZ ファイルを作成中……&lt;b&gt;完了！&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="520"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="515"/>
         <source>Creating folders... &lt;b&gt;Done!&lt;/b&gt;</source>
         <translation>フォルダーを作成中……&lt;b&gt;完了！&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="522"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="517"/>
         <source>Creating PDF files... &lt;b&gt;Done!&lt;/b&gt;</source>
         <translation>PDF ファイルを作成中……&lt;b&gt;完了！&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="524"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="519"/>
         <source>Creating EPUB files... &lt;b&gt;Done!&lt;/b&gt;</source>
         <translation>EPUB ファイルを作成中……&lt;b&gt;完了！&lt;/b&gt;</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="521"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="524"/>
         <location filename="../kindlecomicconverter/KCC_gui.py" line="526"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="529"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="531"/>
         <source>Creating MOBI files</source>
         <translation>MOBI ファイルを作成しています</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="550"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="545"/>
         <source>Creating MOBI files... &lt;b&gt;Done!&lt;/b&gt;</source>
         <translation>MOBI ファイルを作成中……&lt;b&gt;完了！&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="551"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="553"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="546"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="548"/>
         <source>Processing MOBI files</source>
         <translation>MOBI ファイルを処理しています</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="571"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="566"/>
         <source>Processing MOBI files... &lt;b&gt;Done!&lt;/b&gt;</source>
         <translation>MOBI ファイルを処理中……&lt;b&gt;完了！&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="579"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="574"/>
         <source>Kindle detected. Uploading covers... &lt;b&gt;Done!&lt;/b&gt;</source>
         <translation>Kindle を検出しました。カバーをアップロード中……&lt;b&gt;完了！&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="586"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="587"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="581"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="582"/>
         <source>Failed to process MOBI file!</source>
         <translation>MOBI ファイルの処理に失敗しました！</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="596"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="598"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="591"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="593"/>
         <source>KindleGen failed to create MOBI!</source>
         <translation>KindleGen が MOBI を作成できませんでした！</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="600"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="595"/>
         <source>KindleGen error:
 
 </source>
@@ -390,184 +390,205 @@ Traceback:
 </translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="602"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="597"/>
         <source>Created EPUB file was too big. Weird file structure?</source>
         <translation>作成した EPUB ファイルが大きすぎます。ファイル構造が異常ではありませんか？</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="603"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="598"/>
         <source>EPUB file: %1MB. Supported size: ~350MB.</source>
         <translation>EPUB ファイル：%1MB。対応サイズ：約 350MB。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="617"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="612"/>
         <source>&lt;b&gt;All jobs completed.&lt;/b&gt;</source>
         <translation>&lt;b&gt;すべてのジョブが完了しました。&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="618"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="613"/>
         <source>All jobs completed.</source>
         <translation>すべてのジョブが完了しました。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1168"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1153"/>
         <source>&lt;b&gt;Tip:&lt;/b&gt; You can drag and drop image folders or comic files/archives into this window to convert.</source>
         <translation>&lt;b&gt;ヒント：&lt;/b&gt;画像フォルダやコミックファイル/アーカイブをこのウィンドウにドラッグ＆ドロップして変換できます。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1170"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1155"/>
         <source>&lt;b&gt;Tip:&lt;/b&gt; Calibre may add margins! USB drop directly into the device&apos;s documents folder instead.</source>
         <translation>&lt;b&gt;ヒント：&lt;/b&gt;Calibreは余白を追加する場合があります！代わりにデバイスのdocumentsフォルダに直接USB転送してください。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1172"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1157"/>
         <source>&lt;b&gt;Tip:&lt;/b&gt; You can toggle easy/expert mode using button at top right.</source>
         <translation>&lt;b&gt;ヒント：&lt;/b&gt;右上のボタンで簡易/エキスパートモードを切り替えられます。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1177"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1162"/>
         <source>Since you are a new user of &lt;b&gt;KCC&lt;/b&gt; please see few &lt;a href=&quot;https://github.com/ciromattia/kcc/wiki/Important-tips&quot;&gt;important tips&lt;/a&gt;.</source>
         <translation>&lt;b&gt;KCC&lt;/b&gt;の新規ユーザーの方は、いくつかの&lt;a href=&quot;https://github.com/ciromattia/kcc/wiki/Important-tips&quot;&gt;重要なヒント&lt;/a&gt;をご覧ください。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1183"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1167"/>
         <source>&lt;a href=&quot;https://github.com/ciromattia/kcc#7-zip&quot;&gt;Install 7z (link)&lt;/a&gt; to enable CBZ/CBR/ZIP/etc processing.</source>
         <translation>&lt;a href=&quot;https://github.com/ciromattia/kcc#7-zip&quot;&gt;7zをインストール（リンク）&lt;/a&gt;して、CBZ/CBR/ZIPなどの処理を有効にしてください。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="417"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="416"/>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="718"/>
         <source>Conversion interrupted.</source>
         <translation>変換が中断されました。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="721"/>
         <source>One of workers crashed. Maybe restart PC. Cause: %1</source>
-        <translation type="vanished">ワーカーの 1 つがクラッシュしました。PC の再起動が必要かもしれません。原因：%1</translation>
+        <translation>ワーカーの 1 つがクラッシュしました。PC の再起動が必要かもしれません。原因：%1</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="724"/>
         <source>C2E: Source directory is empty.</source>
-        <translation type="vanished">C2E：ソースディレクトリが空です。</translation>
+        <translation>C2E：ソースディレクトリが空です。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="864"/>
         <source>mupdf_pdf_extract_page_image() function can be used only with single image pages.</source>
-        <translation type="vanished">mupdf_pdf_extract_page_image() 関数は単一画像ページでのみ使用できます。</translation>
+        <translation>mupdf_pdf_extract_page_image() 関数は単一画像ページでのみ使用できます。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="904"/>
         <source>PDF input can also use legacy extract option if you have any problems</source>
-        <translation type="vanished">問題がある場合は、PDF 入力でレガシー抽出オプションも使用できます</translation>
+        <translation>問題がある場合は、PDF 入力でレガシー抽出オプションも使用できます</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="939"/>
         <source>Not enough disk space to perform conversion. Try Temp Directory option.</source>
-        <translation type="vanished">変換を実行するためのディスク容量が不足しています。「一時ディレクトリ」オプションを試してください。</translation>
+        <translation>変換を実行するためのディスク容量が不足しています。「一時ディレクトリ」オプションを試してください。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="948"/>
         <source>Failed to prepare a workspace.</source>
-        <translation type="vanished">ワークスペースの準備に失敗しました。</translation>
+        <translation>ワークスペースの準備に失敗しました。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="961"/>
         <source>Failed to extract images from PDF file.</source>
-        <translation type="vanished">PDF ファイルから画像を抽出できませんでした。</translation>
+        <translation>PDF ファイルから画像を抽出できませんでした。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="974"/>
         <source>Failed to extract images from PDF file. %1</source>
-        <translation type="vanished">PDF ファイルから画像を抽出できませんでした。%1</translation>
+        <translation>PDF ファイルから画像を抽出できませんでした。%1</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="1069"/>
         <source>Failed to open source file/directory.</source>
-        <translation type="vanished">ソースファイル/ディレクトリを開けませんでした。</translation>
+        <translation>ソースファイル/ディレクトリを開けませんでした。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="1327"/>
         <source>Unsupported directory structure.</source>
-        <translation type="vanished">サポートされていないディレクトリ構造です。</translation>
+        <translation>サポートされていないディレクトリ構造です。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="1404"/>
         <source>Pillow was compiled without JPG and/or PNG decoder.</source>
-        <translation type="vanished">Pillow が JPG および/または PNG デコーダーなしでコンパイルされています。</translation>
+        <translation>Pillow が JPG および/または PNG デコーダーなしでコンパイルされています。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="1406"/>
         <source>Image file %1 is corrupted. Error: %2</source>
-        <translation type="vanished">画像ファイル %1 が破損しています。エラー：%2</translation>
+        <translation>画像ファイル %1 が破損しています。エラー：%2</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="1412"/>
         <source>%1: %2</source>
-        <translation type="vanished">%1：%2</translation>
+        <translation>%1：%2</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="1417"/>
         <source>Source files are probably created by KCC. The second conversion will decrease quality.</source>
-        <translation type="vanished">ソースファイルはおそらく KCC で作成されています。2 回目の変換では品質が低下します。</translation>
+        <translation>ソースファイルはおそらく KCC で作成されています。2 回目の変換では品質が低下します。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="1423"/>
         <source>More than 25% of images are smaller than target device resolution.</source>
-        <translation type="vanished">画像の 25% 以上がターゲットデバイスの解像度より小さいです。</translation>
+        <translation>画像の 25% 以上がターゲットデバイスの解像度より小さいです。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="1424"/>
         <source>Consider enabling stretching or upscaling to improve readability.</source>
-        <translation type="vanished">読みやすさを向上させるには「ストレッチ/アップスケール」を有効にすることを検討してください。</translation>
+        <translation>読みやすさを向上させるには「ストレッチ/アップスケール」を有効にすることを検討してください。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="1639"/>
         <source>MOBI/Send to Kindle not supported for non-Kindle profiles</source>
-        <translation type="vanished">MOBI/Kindle へ送信は Kindle 以外のプロファイルではサポートされていません</translation>
+        <translation>MOBI/Kindle へ送信は Kindle 以外のプロファイルではサポートされていません</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="1797"/>
         <source>Your &lt;a href=&quot;https://www.amazon.com/b?node=23496309011&quot;&gt;KindleGen&lt;/a&gt; is outdated! MOBI conversion might fail.</source>
-        <translation type="vanished">あなたの &lt;a href=&quot;https://www.amazon.com/b?node=23496309011&quot;&gt;KindleGen&lt;/a&gt; は古いバージョンです！MOBI 変換が失敗する可能性があります。</translation>
+        <translation>あなたの &lt;a href=&quot;https://www.amazon.com/b?node=23496309011&quot;&gt;KindleGen&lt;/a&gt; は古いバージョンです！MOBI 変換が失敗する可能性があります。</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="1807"/>
         <source>kindlegen: %1
 
  Re-install or re-open Rosetta/Kindle Previewer/other Intel app?</source>
-        <translation type="vanished">kindlegen：%1
+        <translation>kindlegen：%1
 
  Rosetta/Kindle Previewer/その他の Intel アプリを再インストールまたは再度開きますか？</translation>
     </message>
     <message>
+        <location filename="../kindlecomicconverter/comic2ebook.py" line="1820"/>
         <source>Fusion requires at least 2 sources. Did you forget to uncheck fusion?</source>
-        <translation type="vanished">フュージョンには少なくとも 2 つのソースが必要です。「ファイル融合」のチェックを外し忘れていませんか？</translation>
+        <translation>フュージョンには少なくとも 2 つのソースが必要です。「ファイル融合」のチェックを外し忘れていませんか？</translation>
     </message>
 </context>
 <context>
     <name>KCCGUI_MetaEditor</name>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1958"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1933"/>
         <source>CBR files in selection are read-only.</source>
         <translation>選択されたCBRファイルは読み取り専用です。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1966"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1941"/>
         <source>Editing %1 files.</source>
         <translation>%1個のファイルを編集中です。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="1975"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2175"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2183"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2187"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1950"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2150"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2158"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2161"/>
         <source>(multiple files)</source>
         <translation>（複数ファイル）</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2019"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="1994"/>
         <source>Separate authors with a comma.</source>
         <translation>作者はカンマで区切ってください。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2055"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2030"/>
         <source>No changes to apply.</source>
         <translation>適用する変更はありません。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2064"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2039"/>
         <source>Processing %1/%2: %3</source>
         <translation>処理中 %1/%2：%3</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2085"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2060"/>
         <source>
 ...and %1 more</source>
         <translation>
 ...さらに %1 件</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2086"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2061"/>
         <source>Some files failed to save:
 
 %1%2</source>
@@ -576,22 +597,22 @@ Traceback:
 %1%2</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2088"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2063"/>
         <source>Errors occurred.</source>
         <translation>エラーが発生しました。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2090"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2065"/>
         <source>Successfully updated %1 files.</source>
         <translation>%1個のファイルの更新に成功しました。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2097"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2072"/>
         <source>%1 field must be a number.</source>
         <translation>%1フィールドは数値である必要があります。</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2113"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2088"/>
         <source>Failed to save metadata!
 
 %1
@@ -606,8 +627,8 @@ Traceback:
 %2</translation>
     </message>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2172"/>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="2185"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2147"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="2160"/>
         <source>e.g., 5 or 1-10 or 1,3,5</source>
         <translation>例：5 または 1-10 または 1,3,5</translation>
     </message>
@@ -615,7 +636,7 @@ Traceback:
 <context>
     <name>VersionThread</name>
     <message>
-        <location filename="../kindlecomicconverter/KCC_gui.py" line="192"/>
+        <location filename="../kindlecomicconverter/KCC_gui.py" line="191"/>
         <source>The new version is available!</source>
         <translation>新しいバージョンが利用可能です！</translation>
     </message>
