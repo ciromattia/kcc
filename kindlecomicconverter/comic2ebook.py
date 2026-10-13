@@ -48,6 +48,7 @@ from subprocess import STDOUT, PIPE, CalledProcessError
 from psutil import virtual_memory, disk_usage
 from html import escape as hescape
 import pymupdf
+from PySide6.QtCore import QCoreApplication
 
 from .shared import IMAGE_TYPES, getImageFileName, walkSort, walkLevel, sanitizeTrace, subprocess_run, dot_clean, get_contain_resolution
 from .comicarchive import SEVENZIP, available_archive_tools
@@ -58,8 +59,12 @@ from . import pdfjpgextract
 from . import dualmetafix
 from . import metadata
 from . import kindle
+from . import i18n
 from . import __version__
 
+
+# GUI 消息统一通过 QCoreApplication.translate("KCCGUI", ...) 翻译，
+# 与主窗口动态文案同 context；CLI 模式下无 QTranslator，返回原文不影响命令行输出。
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 OS_SORT_KEY = os_sort_keygen()
 KF7_KINDLES = ('K1', 'K2', 'K34', 'KDX')
@@ -710,13 +715,13 @@ def imgDirectoryProcessing(path, job_progress=''):
 
         if GUI and not GUI.conversionAlive:
             rmtree(os.path.join(path, '..', '..'), True)
-            raise UserWarning("Conversion interrupted.")
+            raise UserWarning(QCoreApplication.translate("KCCGUI", "Conversion interrupted."))
         if len(workerOutput) > 0:
             rmtree(os.path.join(path, '..', '..'), True)
-            raise RuntimeError("One of workers crashed. Maybe restart PC. Cause: " + workerOutput[0][0], workerOutput[0][1])
+            raise RuntimeError(i18n.tr_arg(QCoreApplication.translate("KCCGUI", "One of workers crashed. Maybe restart PC. Cause: %1"), workerOutput[0][0]), workerOutput[0][1])
     else:
         rmtree(os.path.join(path, '..', '..'), True)
-        raise UserWarning("C2E: Source directory is empty.")
+        raise UserWarning(QCoreApplication.translate("KCCGUI", "C2E: Source directory is empty."))
 
 
 def imgFileProcessingTick(output):
@@ -856,7 +861,7 @@ def extract_page(vector):
             page = doc.load_page(i)
             image_list = page.get_images()
             if len(image_list) > 1:
-                raise UserWarning("mupdf_pdf_extract_page_image() function can be used only with single image pages.")
+                raise UserWarning(QCoreApplication.translate("KCCGUI", "mupdf_pdf_extract_page_image() function can be used only with single image pages."))
             if not image_list:
                 continue
             else:
@@ -895,7 +900,7 @@ def mupdf_pdf_process_pages_parallel(filename, output_dir, target_width, target_
     if not render:
         print('PDF input can also use legacy extract option if you have any problems')
         if GUI:
-            GUI.addMessage.emit('PDF input can also use legacy extract option if you have any problems'
+            GUI.addMessage.emit(QCoreApplication.translate("KCCGUI", 'PDF input can also use legacy extract option if you have any problems')
                                 , 'info', False)
             GUI.addMessage.emit('', '', False)
 
@@ -929,7 +934,7 @@ def getWorkFolder(afile, options, workdir=None):
     else:
         check_path = gettempdir()
 
-    DISK_WARNING = "Not enough disk space to perform conversion. Try Temp Directory option."
+    DISK_WARNING = QCoreApplication.translate("KCCGUI", "Not enough disk space to perform conversion. Try Temp Directory option.")
 
     if os.path.isdir(afile):
         if disk_usage(check_path)[2] < getDirectorySize(afile) * 2.5:
@@ -940,7 +945,7 @@ def getWorkFolder(afile, options, workdir=None):
             return workdir
         except Exception:
             rmtree(workdir, True)
-            raise UserWarning("Failed to prepare a workspace.")
+            raise UserWarning(QCoreApplication.translate("KCCGUI", "Failed to prepare a workspace."))
     elif os.path.isfile(afile):
         if disk_usage(check_path)[2]< os.path.getsize(afile) * 2.5:
             raise UserWarning(DISK_WARNING)
@@ -953,7 +958,7 @@ def getWorkFolder(afile, options, workdir=None):
                 pdf = pdfjpgextract.PdfJpgExtract(afile, fullPath)
                 njpg = pdf.extract()
                 if njpg == 0:
-                    raise UserWarning("Failed to extract images from PDF file.")
+                    raise UserWarning(QCoreApplication.translate("KCCGUI", "Failed to extract images from PDF file."))
                 return workdir
             target_width, target_height = options.profileData[1]
             if options.cropping == 1:
@@ -966,7 +971,7 @@ def getWorkFolder(afile, options, workdir=None):
                 mupdf_pdf_process_pages_parallel(afile, fullPath, target_width, target_height, options.pdfwidth)
             except Exception as e:
                 rmtree(path, True)
-                raise UserWarning(f"Failed to extract images from PDF file. {e}")
+                raise UserWarning(i18n.tr_arg(QCoreApplication.translate("KCCGUI", "Failed to extract images from PDF file. %1"), e))
             return workdir
         else:
             if not os.path.exists(fullPath):
@@ -1061,7 +1066,7 @@ def getWorkFolder(afile, options, workdir=None):
             finally:
                 pass
     else:
-        raise UserWarning("Failed to open source file/directory.")
+        raise UserWarning(QCoreApplication.translate("KCCGUI", "Failed to open source file/directory."))
 
 
 def getOutputFilename(srcpath, wantedname, ext, tomenumber):
@@ -1319,7 +1324,7 @@ def chunk_directory(path):
             path.append(tome)
         return path
     else:
-        raise UserWarning('Unsupported directory structure.')
+        raise UserWarning(QCoreApplication.translate("KCCGUI", 'Unsupported directory structure.'))
 
 
 def chunk_process(path, mode, parent):
@@ -1396,27 +1401,27 @@ def detectSuboptimalProcessing(tmppath, orgpath):
                 except Exception as err:
                     rmtree(os.path.join(tmppath, '..', '..'), True)
                     if 'decoder' in str(err) and 'not available' in str(err):
-                        raise RuntimeError('Pillow was compiled without JPG and/or PNG decoder.')
+                        raise RuntimeError(QCoreApplication.translate("KCCGUI", 'Pillow was compiled without JPG and/or PNG decoder.'))
                     else:
-                        raise RuntimeError('Image file %s is corrupted. Error: %s' % (pathOrg, str(err)))
+                        raise RuntimeError(i18n.tr_arg(QCoreApplication.translate("KCCGUI", 'Image file %1 is corrupted. Error: %2'), pathOrg, str(err)))
             else:
                 try:
                     if os.path.exists(os.path.join(root, name)):
                         os.remove(os.path.join(root, name))
                 except OSError as e:
-                    raise RuntimeError(f"{name}: {e}")
+                    raise RuntimeError(i18n.tr_arg(QCoreApplication.translate("KCCGUI", '%1: %2'), name, e))
     if alreadyProcessed:
         print("WARNING: Source files are probably created by KCC. The second conversion will decrease quality.")
         if GUI:
-            GUI.addMessage.emit('Source files are probably created by KCC. The second conversion will decrease quality.'
+            GUI.addMessage.emit(QCoreApplication.translate("KCCGUI", 'Source files are probably created by KCC. The second conversion will decrease quality.')
                                 , 'warning', False)
             GUI.addMessage.emit('', '', False)
     if imageSmaller > imageNumber * 0.25 and not options.upscale and not options.stretch and not options.profile.startswith('KS'):
         print("WARNING: More than 25% of images are smaller than target device resolution. "
               "Consider enabling stretching or upscaling to improve readability.")
         if GUI:
-            GUI.addMessage.emit('More than 25% of images are smaller than target device resolution.', 'warning', False)
-            GUI.addMessage.emit('Consider enabling stretching or upscaling to improve readability.', 'warning', False)
+            GUI.addMessage.emit(QCoreApplication.translate("KCCGUI", 'More than 25% of images are smaller than target device resolution.'), 'warning', False)
+            GUI.addMessage.emit(QCoreApplication.translate("KCCGUI", 'Consider enabling stretching or upscaling to improve readability.'), 'warning', False)
             GUI.addMessage.emit('', '', False)
 
 
@@ -1631,7 +1636,7 @@ def checkOptions(options):
         options.noKepub = True
 
     if not options.iskindle and ('MOBI' in options.format or 'EPUB-200MB' in options.format or 'KFX' in options.format):
-        raise UserWarning('MOBI/Send to Kindle not supported for non-Kindle profiles')
+        raise UserWarning(QCoreApplication.translate("KCCGUI", 'MOBI/Send to Kindle not supported for non-Kindle profiles'))
 
     if options.format == 'PDF-200MB':
         options.targetsize = 195
@@ -1788,8 +1793,8 @@ def _detectKindleGen(GUI=None):
                 versionCheck = line.split('V')[1].split(' ')[0]
                 if Version(versionCheck) < Version('2.9'):
                     if GUI:
-                        GUI.addMessage('Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
-                                       ' is outdated! MOBI conversion might fail.', 'warning')
+                        GUI.addMessage.emit(QCoreApplication.translate("KCCGUI", 'Your <a href="https://www.amazon.com/b?node=23496309011">KindleGen</a>'
+                                       ' is outdated! MOBI conversion might fail.'), 'warning', False)
                 break
         return True
     except (FileNotFoundError, CalledProcessError):
@@ -1799,7 +1804,7 @@ def _detectKindleGen(GUI=None):
         print(f"kindlegen: {e.strerror}")
         print('Re-install or re-open Rosetta/Kindle Previewer/other Intel app?')
         if GUI:
-            error = f"kindlegen: {e.strerror}\n\n Re-install or re-open Rosetta/Kindle Previewer/other Intel app?"
+            error = i18n.tr_arg(QCoreApplication.translate("KCCGUI", "kindlegen: %1\n\n Re-install or re-open Rosetta/Kindle Previewer/other Intel app?"), e.strerror)
             GUI.showDialog(error, 'error')
         return False
 
@@ -1812,7 +1817,7 @@ def checkPre(source='KCC-'):
 
 def makeFusion(sources: List[str]):
     if len(sources) < 2:
-        raise UserWarning('Fusion requires at least 2 sources. Did you forget to uncheck fusion?')
+        raise UserWarning(QCoreApplication.translate("KCCGUI", 'Fusion requires at least 2 sources. Did you forget to uncheck fusion?'))
     start = perf_counter()
     first_path = Path(sources[0])
 
