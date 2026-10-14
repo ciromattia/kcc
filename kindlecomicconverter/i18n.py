@@ -8,6 +8,7 @@ LANGUAGES = {
     'zh_CN': '中文（简体）',
     'ja_JP': '日本語',
     'ko_KR': '한국어',
+    'es_ES': 'Español',
 }
 DEFAULT_LANGUAGE = 'en'
 

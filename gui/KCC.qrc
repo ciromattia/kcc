@@ -38,5 +38,6 @@
     <file alias="kcc_zh_CN.qm">../translations/kcc_zh_CN.qm</file>
     <file alias="kcc_ja_JP.qm">../translations/kcc_ja_JP.qm</file>
     <file alias="kcc_ko_KR.qm">../translations/kcc_ko_KR.qm</file>
+    <file alias="kcc_es_ES.qm">../translations/kcc_es_ES.qm</file>
   </qresource>
 </RCC>
