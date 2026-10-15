@@ -1696,13 +1696,13 @@ def checkOptions(options):
             options.format = 'EPUB'
 
     if options.xtc_readability and options.xtc_auto_rotate:
-        raise UserWarning('Readability and auto-rotation are alternative modes; choose one')
+        raise UserWarning(QCoreApplication.translate('KCCGUI', 'Readability and auto-rotation are alternative modes; choose one'))
     if options.xtc_auto_rotate or options.xtc_readability:
         options.xtc_panels = True
     if options.xtc_panels and options.format != 'XTC':
-        raise UserWarning('Adaptive panels and auto-rotation require XTC output')
+        raise UserWarning(QCoreApplication.translate('KCCGUI', 'Adaptive panels and auto-rotation require XTC output'))
     if options.xtc_panels and options.webtoon:
-        raise UserWarning('Adaptive panels cannot be combined with Webtoon mode')
+        raise UserWarning(QCoreApplication.translate('KCCGUI', 'Adaptive panels cannot be combined with Webtoon mode'))
     if options.format == 'XTC':
         if options.profile not in image.ProfileData.ProfilesXteink:
             raise UserWarning(QCoreApplication.translate('KCCGUI', 'XTC output requires an XTEINK device profile'))

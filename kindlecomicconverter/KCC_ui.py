@@ -669,7 +669,10 @@ class Ui_mainWindow(object):
         QWidget.setTabOrder(self.preserveMarginBox, self.spreadShiftBox)
         QWidget.setTabOrder(self.spreadShiftBox, self.fileFusionBox)
         QWidget.setTabOrder(self.fileFusionBox, self.chunkSizeBox)
-        QWidget.setTabOrder(self.chunkSizeBox, self.editorButton)
+        QWidget.setTabOrder(self.chunkSizeBox, self.xtcPanelsBox)
+        QWidget.setTabOrder(self.xtcPanelsBox, self.xtcAutoRotateBox)
+        QWidget.setTabOrder(self.xtcAutoRotateBox, self.xtcReadabilityBox)
+        QWidget.setTabOrder(self.xtcReadabilityBox, self.editorButton)
         QWidget.setTabOrder(self.editorButton, self.kofiButton)
 
         self.retranslateUi(mainWindow)

@@ -1309,6 +1309,9 @@ Kind of works on firmwares 5.19.2 (before revert) and 5.19.3+</string>
   <tabstop>spreadShiftBox</tabstop>
   <tabstop>fileFusionBox</tabstop>
   <tabstop>chunkSizeBox</tabstop>
+  <tabstop>xtcPanelsBox</tabstop>
+  <tabstop>xtcAutoRotateBox</tabstop>
+  <tabstop>xtcReadabilityBox</tabstop>
   <tabstop>editorButton</tabstop>
   <tabstop>kofiButton</tabstop>
  </tabstops>
