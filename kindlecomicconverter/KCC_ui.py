@@ -499,6 +499,21 @@ class Ui_mainWindow(object):
 
         self.gridLayout_2.addWidget(self.tempDirBox, 11, 2, 1, 1)
 
+        self.xtcPanelsBox = QCheckBox(self.optionWidget)
+        self.xtcPanelsBox.setObjectName(u"xtcPanelsBox")
+
+        self.gridLayout_2.addWidget(self.xtcPanelsBox, 12, 0, 1, 1)
+
+        self.xtcAutoRotateBox = QCheckBox(self.optionWidget)
+        self.xtcAutoRotateBox.setObjectName(u"xtcAutoRotateBox")
+
+        self.gridLayout_2.addWidget(self.xtcAutoRotateBox, 12, 1, 1, 1)
+
+        self.xtcReadabilityBox = QCheckBox(self.optionWidget)
+        self.xtcReadabilityBox.setObjectName(u"xtcReadabilityBox")
+
+        self.gridLayout_2.addWidget(self.xtcReadabilityBox, 12, 2, 1, 1)
+
         self.legacyPanelViewBox = QCheckBox(self.optionWidget)
         self.legacyPanelViewBox.setObjectName(u"legacyPanelViewBox")
 
@@ -919,6 +934,18 @@ class Ui_mainWindow(object):
         self.tempDirBox.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Unchecked - Main Drive<br/></span>Use dedicated temporary directory on main OS drive.</p><p><span style=\" font-weight:600; text-decoration: underline;\">Checked - Source File Drive<br/></span>Create temporary file directory on source file drive.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.tempDirBox.setText(QCoreApplication.translate("mainWindow", u"Temp Directory", None))
+        self.xtcPanelsBox.setText(QCoreApplication.translate("mainWindow", u"Adaptive panels", None))
+#if QT_CONFIG(tooltip)
+        self.xtcPanelsBox.setToolTip(QCoreApplication.translate("mainWindow", u"Experimental XTC panel grouping. Keep readable adjacent panels together and create landscape reading views. Ambiguous layouts stay intact.", None))
+#endif // QT_CONFIG(tooltip)
+        self.xtcAutoRotateBox.setText(QCoreApplication.translate("mainWindow", u"Auto-rotate", None))
+#if QT_CONFIG(tooltip)
+        self.xtcAutoRotateBox.setToolTip(QCoreApplication.translate("mainWindow", u"With adaptive panels, use portrait when it makes content at least 25% larger. Turn the device for these pages instead of adding overlapping views. Rotate Right selects landscape direction.", None))
+#endif // QT_CONFIG(tooltip)
+        self.xtcReadabilityBox.setText(QCoreApplication.translate("mainWindow", u"Readability", None))
+#if QT_CONFIG(tooltip)
+        self.xtcReadabilityBox.setToolTip(QCoreApplication.translate("mainWindow", u"With adaptive panels, enlarge tall regions into overlapping landscape views. Adds page turns; speech bubbles may span views. Alternative to Auto-rotate.", None))
+#endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
         self.legacyPanelViewBox.setToolTip(QCoreApplication.translate("mainWindow", u"Use legacy panel view method from KCC 6.\n"
 "\n"

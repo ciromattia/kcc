@@ -150,6 +150,16 @@ On macOS, if you get a `can't be opened` error, follow: https://support.apple.co
 For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.com/ciromattia/kcc/wiki/Installation
 
 ## FAQ
+
+- How do I convert comics for an XTEINK X4?
+  - Select **XTEINK X4** in the device list; **XTC (XTEINK)** is selected automatically. Add a comic archive or image folder and click **Convert**. Copy the resulting `.xtc` file to your reader.
+  - From the command line: `python kcc-c2e.py -p XT4 -f XTC comic.cbz`. The X4 profile also selects XTC when the format is `Auto`.
+  - Output uses 480 × 800 monochrome pages and the compact XTC layout. Embedded title, author, chapters, and thumbnails are not written. Standard cropping, manga reading order, and spread splitting settings remain available.
+  - Optional **Adaptive panels** (`--xtc-panels`) groups adjacent panels into landscape reading views. **Auto-rotate** (`--xtc-auto-rotate`) requires adaptive panels and selects portrait when content fits at least 25% larger. **Rotate Right** selects the landscape direction. Both options default to off.
+  - Panel grouping is experimental: ambiguous or connected layouts may remain intact. It replaces standard spread rotation/splitting and cannot be combined with Webtoon mode. Manga order, cropping, margins, gamma, and contrast still apply. Color, JPEG/WebP, and Kindle Panel View do not apply to XTC.
+  - **Readability** (`--xtc-readability`) is an alternative to Auto-rotate: tall regions are enlarged into overlapping landscape views, adding page turns. Speech bubbles can span views; sparse regions may remain intact to avoid empty fragments. In the GUI, enable Adaptive panels first, then choose Readability or Auto-rotate. CLI mode flags enable adaptive panels automatically.
+  - Light Novel mode is not supported for XTC. Custom and smart covers use the selected XTC orientation and 480 × 800 output size.
+
 - Should I use Calibre?
   - No. Calibre doesn't properly support fixed layout EPUB/MOBI, so modifying KCC output (even just metadata!) in Calibre can break the formatting.
     Additionally, it will break page numbers.

@@ -988,6 +988,24 @@ Keeping this file may crash some readers like the Kobo native CBZ reader.</strin
          </property>
         </widget>
        </item>
+       <item row="12" column="0">
+        <widget class="QCheckBox" name="xtcPanelsBox">
+         <property name="text"><string>Adaptive panels</string></property>
+         <property name="toolTip"><string>Experimental XTC panel grouping. Keep readable adjacent panels together and create landscape reading views. Ambiguous layouts stay intact.</string></property>
+        </widget>
+       </item>
+       <item row="12" column="1">
+        <widget class="QCheckBox" name="xtcAutoRotateBox">
+         <property name="text"><string>Auto-rotate</string></property>
+         <property name="toolTip"><string>With adaptive panels, use portrait when it makes content at least 25% larger. Turn the device for these pages instead of adding overlapping views. Rotate Right selects landscape direction.</string></property>
+        </widget>
+       </item>
+       <item row="12" column="2">
+        <widget class="QCheckBox" name="xtcReadabilityBox">
+         <property name="text"><string>Readability</string></property>
+         <property name="toolTip"><string>With adaptive panels, enlarge tall regions into overlapping landscape views. Adds page turns; speech bubbles may span views. Alternative to Auto-rotate.</string></property>
+        </widget>
+       </item>
        <item row="10" column="2">
         <widget class="QCheckBox" name="legacyPanelViewBox">
          <property name="toolTip">

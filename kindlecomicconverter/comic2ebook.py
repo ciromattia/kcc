@@ -59,6 +59,7 @@ from . import pdfjpgextract
 from . import dualmetafix
 from . import metadata
 from . import kindle
+from . import xtc
 from . import i18n
 from . import __version__
 
@@ -683,6 +684,16 @@ def buildPDF(path, title, job_progress='', cover=None, output_file=None):
     end = perf_counter()
     print(f"{job_progress}MuPDF output: {end-start} sec")
     return output_file
+
+
+def buildXTC(path, output_file):
+    image_paths = []
+    for root, dirs, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
+        walkSort(dirs, files)
+        for filename in files:
+            if getImageFileName(filename)[1] in IMAGE_TYPES:
+                image_paths.append(os.path.join(root, filename))
+    return str(xtc.write_xtc(image_paths, output_file))
 
 
 def imgDirectoryProcessing(path, job_progress=''):
@@ -1478,6 +1489,12 @@ def makeParser():
     mandatory_options = psr.add_argument_group("MANDATORY")
     main_options = psr.add_argument_group("MAIN")
     processing_options = psr.add_argument_group("PROCESSING")
+    processing_options.add_argument("--xtc-readability", action="store_true",
+                                    help="For XTC: enable adaptive panels and enlarge tall regions into overlapping views")
+    processing_options.add_argument("--xtc-panels", action="store_true",
+                                    help="For XTC: group adjacent panels into landscape reading views")
+    processing_options.add_argument("--xtc-auto-rotate", action="store_true",
+                                    help="For XTC: enable adaptive panels and use portrait when at least 25%% larger")
     output_options = psr.add_argument_group("OUTPUT SETTINGS")
     custom_profile_options = psr.add_argument_group("CUSTOM PROFILE")
     other_options = psr.add_argument_group("OTHER")
@@ -1526,7 +1543,7 @@ def makeParser():
     output_options.add_argument("--language", action="store", dest="language", default="en-US",
                                 help="EPUB language [Default=en-US]")
     output_options.add_argument("-f", "--format", action="store", dest="format", default="Auto",
-                                help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB, PDF) "
+                                help="Output format (Available options: Auto, MOBI, EPUB, CBZ, KFX, MOBI+EPUB, PDF, XTC) "
                                      "[Default=Auto]")
     output_options.add_argument("--nokepub", action="store_true", dest="noKepub", default=False,
                                 help="If format is EPUB, output file with '.epub' extension rather than '.kepub.epub'")
@@ -1673,8 +1690,36 @@ def checkOptions(options):
             options.format = 'MOBI'
         elif options.profile in image.ProfileData.ProfilesRemarkable.keys():
             options.format = 'PDF'
+        elif options.profile in image.ProfileData.ProfilesXteink:
+            options.format = 'XTC'
         else:
             options.format = 'EPUB'
+
+    if options.xtc_readability and options.xtc_auto_rotate:
+        raise UserWarning('Readability and auto-rotation are alternative modes; choose one')
+    if options.xtc_auto_rotate or options.xtc_readability:
+        options.xtc_panels = True
+    if options.xtc_panels and options.format != 'XTC':
+        raise UserWarning('Adaptive panels and auto-rotation require XTC output')
+    if options.xtc_panels and options.webtoon:
+        raise UserWarning('Adaptive panels cannot be combined with Webtoon mode')
+    if options.format == 'XTC':
+        if options.profile not in image.ProfileData.ProfilesXteink:
+            raise UserWarning(QCoreApplication.translate('KCCGUI', 'XTC output requires an XTEINK device profile'))
+        if options.noprocessing:
+            raise UserWarning(QCoreApplication.translate('KCCGUI', 'XTC output requires image processing'))
+        if options.lightnovel:
+            raise UserWarning(QCoreApplication.translate('KCCGUI', 'Light Novel mode is not supported for XTC output'))
+        if int(options.customwidth) not in (0, 480) or int(options.customheight) not in (0, 800):
+            raise UserWarning(QCoreApplication.translate('KCCGUI', 'XTEINK X4 output requires 480 x 800 pages'))
+        # Lossless intermediates prevent JPEG artifacts in the final dithering.
+        options.forcecolor = False
+        options.forcepng = True
+        options.noquantize = True
+        options.webp = False
+        options.mozjpeg = False
+        options.panelview = False
+        options.hq = False
 
     if options.white_borders:
         options.bordersColor = 'white'
@@ -2038,6 +2083,8 @@ def makeBook(source, fusion_cover_path=None, qtgui=None, job_progress=''):
             GUI.progressBarTick.emit(f'{job_progress}Compressing CBZ files')
         elif options.format == 'PDF':
             GUI.progressBarTick.emit(f'{job_progress}Creating PDF files')
+        elif options.format == 'XTC':
+            GUI.progressBarTick.emit(job_progress + QCoreApplication.translate('KCCGUI', 'Creating XTC files'))
         else:
             GUI.progressBarTick.emit(f'{job_progress}Compressing EPUB files')
         GUI.progressBarTick.emit(str(len(tomes) + 1))
@@ -2074,6 +2121,13 @@ def makeBook(source, fusion_cover_path=None, qtgui=None, job_progress=''):
             # use optimized buildPDF logic with streaming and compression
             output_pdf = buildPDF(tome, options.title, job_progress, None, output_file)
             filepath.append(output_pdf)
+        elif options.format == 'XTC':
+            print(f'{job_progress}Creating XTC file...')
+            suffix = (' ' + str(tomeNumber)) if len(tomes) > 1 else ''
+            output_file = getOutputFilename(source, options.output, '.xtc', suffix)
+            if cover and (cover.smartcover or options.customcover):
+                cover.save_to_xtc(os.path.join(tome, 'OEBPS', 'Images', '##cover.png'), tomeNumber, len(tomes))
+            filepath.append(buildXTC(tome, output_file))
         else:
             print(f"{job_progress}Creating EPUB file...")
             if len(tomes) > 1:
