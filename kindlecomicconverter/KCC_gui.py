@@ -1674,7 +1674,6 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             "Kobo Libra 2",
             "Kobo Libra Colour",
             "Kobo Elipsa",
-            "Kobo Nia",
             "Separator",
             "reMarkable Paper Pro Move",
             "reMarkable Paper Pro",
@@ -1708,6 +1707,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             "Kobo Glo",
             "Kobo Libra H2O",
             "Kobo Mini/Touch",
+            "Kobo Nia",
         ]
 
         # 这些多为约定俗成的缩写，翻译时可保留原文
