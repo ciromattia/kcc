@@ -1190,6 +1190,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
 
     def changeDevice(self):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
+        if profile['Label'] == 'XT4':
+            self.rememberNonXtcOptions()
         if profile['ForceExpert']:
             self.modeChange(3)
         elif GUI.gammaBox.isChecked():
@@ -1220,6 +1222,13 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             GUI.qualityBox.setChecked(False)
         if str(GUI.deviceBox.currentText()) == 'Other':
             self.addMessage(QT_TRANSLATE_NOOP('KCCGUI', '<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">List of supported Non-Kindle devices.</a>'), 'info')
+
+    def rememberNonXtcOptions(self):
+        if not hasattr(self, '_nonXtcOptions'):
+            self._nonXtcOptions = {
+                name: getattr(GUI, name).checkState()
+                for name in ('colorBox', 'disableProcessingBox', 'lightnovelBox')
+            }
 
     def selectXtcReadability(self, checked):
         if checked:
@@ -1264,6 +1273,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         GUI.colorBox.setEnabled(not is_xtc)
         GUI.disableProcessingBox.setEnabled(not is_xtc)
         if is_xtc:
+            self.rememberNonXtcOptions()
             GUI.colorBox.setChecked(False)
             GUI.disableProcessingBox.setChecked(False)
         if not GUI.webtoonBox.isChecked():
@@ -1289,6 +1299,11 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         else:
             GUI.borderBox.setCheckState(Qt.CheckState.Unchecked)
         self.updateXtcOptions()
+        if not is_xtc and hasattr(self, '_nonXtcOptions'):
+            saved = self._nonXtcOptions
+            del self._nonXtcOptions
+            for name, state in saved.items():
+                getattr(GUI, name).setCheckState(state)
 
     def stripTags(self, html):
         s = HTMLStripper()
