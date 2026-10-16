@@ -1698,7 +1698,7 @@ def checkOptions(options):
         options.white_borders = True
         options.bordersColor = 'white'
     # Disable all Kindle features for other e-readers
-    if options.profile == 'OTHER':
+    if options.profile == 'OTHER' in options.profile in image.ProfileData.FIXED_RES_STRINGS:
         options.panelview = False
         options.hq = False
     if 'Ko' in options.profile:

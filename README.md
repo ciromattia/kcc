@@ -275,7 +275,9 @@ MANDATORY:
 
 MAIN:
   -p PROFILE, --profile PROFILE
-                        Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KPW5, KV, KO, K11, KS, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoN, KoC, KoCC, KoL, KoLC, KoF, KoS, KoE)
+                        Device profile (Available options: K1, K2, KDX, K34, K57, KPW, KV, KPW34, K810, KO, K11, KPW5, KPW6, KS1860, KS1920,
+                        KS1240, KS1324, KS, KCS, KS3, KSCS, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoN, KoC, KoCC, KoL, KoLC, KoF, KoS, KoE,
+                        Rmk1, Rmk2, RmkPP, RmkPPMove, OTHER, 1072x1448, 1264x1680, 1404x1872, 1536x2048, 1650x2200, 1860x2480, 2400x3200)
                         [Default=KV]
   -m, --manga-style     Manga style (right-to-left reading and splitting)
   --lightnovel          Only resize images and preserve original file structure.
