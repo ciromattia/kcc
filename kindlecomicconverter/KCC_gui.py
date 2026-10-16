@@ -47,6 +47,7 @@ from PIL.Image import Dither
 from .KCC_spread_label import LabelSpreadsDialog
 
 from .shared import HTMLStripper, sanitizeTrace, walkLevel
+from .image import ProfileData
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
 from .comic2ebook import OS_SORT_KEY, KF7_KINDLES, flattenTree, getWorkFolder, removeNonImages, sanitizeTree, detectKindleGen
 from . import __version__
@@ -1649,15 +1650,20 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                           'Label': 'KoS'},
             "Kobo Elipsa": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1, 'DefaultUpscale': True, 'ForceColor': False,
                             'Label': 'KoE'},
-            "reMarkable 1/2/Pure": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': True, 'ForceColor': False,
+            "reMarkable 1/2/Pure": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 4, 'DefaultUpscale': True, 'ForceColor': False,
                              'Label': 'Rmk1'},
-            "reMarkable Paper Pro": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': True, 'ForceColor': True,
+            "reMarkable Paper Pro": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 4, 'DefaultUpscale': True, 'ForceColor': True,
                              'Label': 'RmkPP'},
-            "reMarkable Paper Pro Move": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': True, 'ForceColor': True,
+            "reMarkable Paper Pro Move": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 4, 'DefaultUpscale': True, 'ForceColor': True,
                              'Label': 'RmkPPMove'},
-            "Other": {'PVOptions': False, 'ForceExpert': True, 'DefaultFormat': 1, 'DefaultUpscale': False, 'ForceColor': False,
+            "Other": {'PVOptions': False, 'ForceExpert': True, 'DefaultFormat': 2, 'DefaultUpscale': False, 'ForceColor': False,
                       'Label': 'OTHER'},
         }
+
+        for s in ProfileData.FIXED_RES_STRINGS:
+            self.profiles[s] = {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 2, 'DefaultUpscale': False, 'ForceColor': False,
+                      'Label': s}
+
         profilesGUI = [
             "Kindle Scribe Colorsoft",
             "Kindle Scribe 3",
@@ -1679,6 +1685,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             "reMarkable 1/2/Pure",
             "Separator",
             "Other",
+            *ProfileData.FIXED_RES_STRINGS,
             "Separator",
             "Kindle Paperwhite 7/10",
             "Kindle Paperwhite 5/6",
@@ -1795,7 +1802,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
 
         self.modeChange(1)
         for profile in profilesGUI:
-            if profile == "Other":
+            if profile == "Other" or profile in ProfileData.FIXED_RES_STRINGS:
                 GUI.deviceBox.addItem(self.icons.deviceOther, profile)
             elif profile == "Separator":
                 GUI.deviceBox.insertSeparator(GUI.deviceBox.count() + 1)

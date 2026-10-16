@@ -141,11 +141,31 @@ class ProfileData:
         'RmkPPMove': ("reMarkable Paper Pro Move", (954, 1696), Palette16, 1.0),
     }
 
+    FIXED_RESOLUTIONS = [
+        (1072, 1448),
+        (1264, 1680),
+        (1404, 1872),
+        (1536, 2048),
+        (1650, 2200),
+        (1860, 2480),
+        (2400, 3200),
+    ]
+
+    FIXED_RESOLUTIONS.reverse()
+
+    FIXED_RES_STRINGS = [f'{w}x{h}' for w, h in FIXED_RESOLUTIONS]
+
+    ProfilesFixed = {}
+    for res, s in zip(FIXED_RESOLUTIONS, FIXED_RES_STRINGS):
+        w, h = res
+        ProfilesFixed[s] = (s, res, Palette16, 1.0)
+
     Profiles = {
         **ProfilesKindle,
         **ProfilesKobo,
         **ProfilesRemarkable,
         'OTHER': ("Other", (0, 0), Palette16, 1.0),
+        **ProfilesFixed
     }
 
 
