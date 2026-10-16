@@ -1498,7 +1498,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             GUI.easyLabel.hide()
 
         # default is Kindle Paperwhite 12th Gen
-        self.lastDevice = self.settings.value('lastDevice', 3, type=int)
+        self.lastDevice = self.settings.value('lastDevice', 4, type=int)
 
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
@@ -1587,13 +1587,13 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             "Kindle Scribe Colorsoft": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 4, 'DefaultUpscale': False, 'ForceColor': True, 'Label': 'KSCS',
             },
-            "Kindle 11": {
+            "Kindle 11/2026": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'K11',
             },
             "Kindle Paperwhite 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW5',
             },
-            "Kindle Paperwhite 12": {
+            "Kindle Paperwhite 12/2026": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW6',
             },
             "Kindle Colorsoft": {
@@ -1663,9 +1663,9 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             "Kindle Scribe 3",
             "Kindle Scribe 1/2",
             "Kindle Colorsoft",
-            "Kindle Paperwhite 12",
+            "Kindle Paperwhite 12/2026",
             "Kindle Paperwhite 11",
-            "Kindle 11",
+            "Kindle 11/2026",
             "Separator",
             "Kobo Clara 2E/BW",
             "Kobo Clara Colour",
