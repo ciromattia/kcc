@@ -28,6 +28,7 @@ from .rainbow_artifacts_eraser import erase_rainbow_artifacts
 from .page_number_crop_alg import get_bbox_crop_margin_page_number, get_bbox_crop_margin
 from .inter_panel_crop_alg import crop_empty_inter_panel
 from .shared import get_contain_resolution
+from .xtc_panels import adaptive_panel_crops, rotate_x4, auto_orient_x4, readability_views
 
 AUTO_CROP_THRESHOLD = 0.015
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -141,10 +142,15 @@ class ProfileData:
         'RmkPPMove': ("reMarkable Paper Pro Move", (954, 1696), Palette16, 1.0),
     }
 
+    ProfilesXteink = {
+        'XT4': ("XTEINK X4", (480, 800), Palette16, 1.0),
+    }
+
     Profiles = {
         **ProfilesKindle,
         **ProfilesKobo,
         **ProfilesRemarkable,
+        **ProfilesXteink,
         'OTHER': ("Other", (0, 0), Palette16, 1.0),
     }
 
@@ -154,6 +160,7 @@ class ComicPageParser:
         Image.MAX_IMAGE_PIXELS = int(2048 * 2048 * 2048 // 4 // 3)
         self.opt = options
         self.source = source
+        self.is_first_page = is_first_page
         self.size = self.opt.profileData[1]
         self.payload = []
 
@@ -196,6 +203,42 @@ class ComicPageParser:
     def splitCheck(self):
         width, height = self.image.size
         dstwidth, dstheight = self.size
+        if (self.opt.format == 'XTC' and getattr(self.opt, 'xtc_panels', False)):
+            if self.is_first_page:
+                cover = (auto_orient_x4(self.image, dstwidth, dstheight, bool(self.opt.rotateright))
+                         if getattr(self.opt, 'xtc_auto_rotate', False)
+                         else rotate_x4(self.image, rotate_right=bool(self.opt.rotateright)))
+                self.payload.append([
+                    'P0', self.source,
+                    cover,
+                    self.page_background_color, self.fill,
+                ])
+                return
+            crops = adaptive_panel_crops(
+                self.image,
+                right_to_left=bool(self.opt.righttoleft),
+                rotate=True,
+                rotate_right=bool(self.opt.rotateright),
+                target_width=dstwidth,
+                target_height=dstheight,
+            )
+            if getattr(self.opt, 'xtc_readability', False):
+                undo = (Image.Transpose.ROTATE_270 if self.opt.rotateright
+                        else Image.Transpose.ROTATE_90)
+                crops = [rotate_x4(view, rotate_right=bool(self.opt.rotateright))
+                         for crop in crops
+                         for view in readability_views(crop.transpose(undo), dstheight, dstwidth)]
+            elif getattr(self.opt, 'xtc_auto_rotate', False):
+                undo = (Image.Transpose.ROTATE_270 if self.opt.rotateright
+                        else Image.Transpose.ROTATE_90)
+                crops = [auto_orient_x4(crop.transpose(undo), dstwidth, dstheight,
+                                       bool(self.opt.rotateright)) for crop in crops]
+            for index, crop in enumerate(crops):
+                self.payload.append([
+                    f'P{index}', self.source, crop,
+                    self.page_background_color, self.fill,
+                ])
+            return
         if self.opt.maximizestrips:
             leftbox = (0, 0, int(width / 2), height)
             rightbox = (int(width / 2), 0, width, height)
@@ -442,6 +485,8 @@ class ComicPage:
             self.targetPathOrder = '-kcc-b'
         elif 'S2' in mode:
             self.targetPathOrder = '-kcc-c'
+        elif mode.startswith('P'):
+            self.targetPathOrder = '-kcc-p' + mode[1:]
         # backwards compatibility for Pillow >9.1.0
         if not hasattr(Image, 'Resampling'):
             Image.Resampling = Image
@@ -563,7 +608,8 @@ class ComicPage:
     def resizeImage(self):
         if self.opt.wallpaper:
             pass
-        elif self.opt.norotate and self.targetPathOrder in ('-kcc-a', '-kcc-d') and not self.opt.kindle_scribe_azw3:
+        elif (self.opt.norotate and self.targetPathOrder in ('-kcc-a', '-kcc-d')
+              and not self.opt.kindle_scribe_azw3 and self.opt.format != 'XTC'):
             # TODO: Kindle Scribe case
             if self.opt.kindle_azw3 and any(dim > 1920 for dim in self.image.size):
                 self.image = ImageOps.contain(self.image, (1920, 1920), Image.Resampling.LANCZOS)
@@ -588,14 +634,14 @@ class ComicPage:
             self.image = self.image.resize(self.size, method)
         elif self.opt.wallpaper:
             self.image = ImageOps.fit(self.image, self.size, method=method)
-        elif method == Image.Resampling.BICUBIC and not self.opt.upscale:
+        elif method == Image.Resampling.BICUBIC and not self.opt.upscale and self.opt.format != 'XTC':
             pass
         else: # if image bigger than device resolution or smaller with upscaling
             if self.opt.profile == 'KDX' and abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD * 3:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
             elif abs(ratio_image - ratio_device) < AUTO_CROP_THRESHOLD:
                 self.image = ImageOps.fit(self.image, self.size, method=method)
-            elif (self.opt.format in ('CBZ', 'PDF')) and not self.opt.white_borders:
+            elif self.opt.format == 'XTC' or ((self.opt.format in ('CBZ', 'PDF')) and not self.opt.white_borders):
                 self.image = ImageOps.pad(self.image, self.size, method=method, color=self.fill)
             else:
                 self.image = ImageOps.contain(self.image, self.size, method=method)
@@ -625,6 +671,9 @@ class Cover:
             self.image = self.image.convert('L')
         if self.options.smartcovercrop:
             self.crop_main_cover()
+
+        if self.options.format == 'XTC':
+            return
 
         size = list(self.options.profileData[1])
         if self.options.kindle_scribe_azw3:
@@ -668,6 +717,33 @@ class Cover:
                 self.image = self.image.crop((w * .36, 0, w, h))
             else:
                 self.image = self.image.crop((0, 0, .64 * w, h))
+
+    def save_to_xtc(self, target, tomeid, len_tomes=0):
+        cover = self.image.copy()
+        if tomeid:
+            width, height = cover.size
+            ImageDraw.Draw(cover).text(
+                (width / 2, height * .85), f'{tomeid}/{len_tomes}',
+                anchor='ms', font_size=max(1, height // 7),
+                fill=255, stroke_fill=0, stroke_width=25)
+        if self.options.xtc_panels:
+            if self.options.xtc_auto_rotate:
+                cover = auto_orient_x4(cover, *self.options.profileData[1],
+                                      rotate_right=self.options.rotateright)
+            else:
+                cover = rotate_x4(cover, rotate_right=self.options.rotateright)
+        fill = self.options.bordersColor or 'white'
+        page = ComicPage(self.options, 'P0', (os.path.dirname(target), os.path.basename(target)),
+                         cover, fill, fill)
+        page.gammaCorrectImage()
+        page.convertToGrayscale()
+        page.autocontrastImage()
+        if self.options.coverfill:
+            page.image = ImageOps.fit(page.image, page.size, method=Image.Resampling.LANCZOS)
+        else:
+            page.resizeImage()
+        page.optimizeForDisplay(self.options.eraserainbow, False)
+        page.image.save(target, 'PNG')
 
     def save_to_folder(self, target, tomeid, len_tomes=0):
         try:

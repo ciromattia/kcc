@@ -262,6 +262,9 @@ def get_options():
     options.profile = GUI.profiles[str(GUI.deviceBox.currentText())]['Label']
     gui_current_format = GUI.formats[str(GUI.formatBox.currentText())]['format']
     options.format = gui_current_format
+    options.xtc_panels = gui_current_format == 'XTC' and GUI.xtcPanelsBox.isChecked()
+    options.xtc_auto_rotate = options.xtc_panels and GUI.xtcAutoRotateBox.isChecked()
+    options.xtc_readability = options.xtc_panels and GUI.xtcReadabilityBox.isChecked()
     if GUI.mangaBox.isChecked():
         options.righttoleft = True
     if GUI.lightnovelBox.isChecked():
@@ -469,6 +472,9 @@ class WorkerThread(QThread):
             elif gui_current_format == 'PDF':
                 MW.addMessage.emit(QT_TRANSLATE_NOOP('KCCGUI', 'Creating PDF files'), 'info', False)
                 GUI.progress.content = QCoreApplication.translate('KCCGUI', 'Creating PDF files')
+            elif gui_current_format == 'XTC':
+                MW.addMessage.emit(QT_TRANSLATE_NOOP('KCCGUI', 'Creating XTC files'), 'info', False)
+                GUI.progress.content = QCoreApplication.translate('KCCGUI', 'Creating XTC files')
             else:
                 MW.addMessage.emit(QT_TRANSLATE_NOOP('KCCGUI', 'Creating EPUB files'), 'info', False)
                 GUI.progress.content = QCoreApplication.translate('KCCGUI', 'Creating EPUB files')
@@ -515,6 +521,8 @@ class WorkerThread(QThread):
                     MW.addMessage.emit(QT_TRANSLATE_NOOP('KCCGUI', 'Creating folders... <b>Done!</b>'), 'info', True)
                 elif gui_current_format == 'PDF':
                     MW.addMessage.emit(QT_TRANSLATE_NOOP('KCCGUI', 'Creating PDF files... <b>Done!</b>'), 'info', True)
+                elif gui_current_format == 'XTC':
+                    MW.addMessage.emit(QT_TRANSLATE_NOOP('KCCGUI', 'Creating XTC files... <b>Done!</b>'), 'info', True)
                 else:
                     MW.addMessage.emit(QT_TRANSLATE_NOOP('KCCGUI', 'Creating EPUB files... <b>Done!</b>'), 'info', True)
                 if 'MOBI' in gui_current_format and not options.lightnovel:
@@ -1182,6 +1190,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
 
     def changeDevice(self):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
+        if profile['Label'] == 'XT4':
+            self.rememberNonXtcOptions()
         if profile['ForceExpert']:
             self.modeChange(3)
         elif GUI.gammaBox.isChecked():
@@ -1213,12 +1223,59 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         if str(GUI.deviceBox.currentText()) == 'Other':
             self.addMessage(QT_TRANSLATE_NOOP('KCCGUI', '<a href="https://github.com/ciromattia/kcc/wiki/NonKindle-devices">List of supported Non-Kindle devices.</a>'), 'info')
 
+    def rememberNonXtcOptions(self):
+        if not hasattr(self, '_nonXtcOptions'):
+            self._nonXtcOptions = {
+                name: getattr(GUI, name).checkState()
+                for name in ('colorBox', 'disableProcessingBox', 'lightnovelBox')
+            }
+
+    def selectXtcReadability(self, checked):
+        if checked:
+            GUI.xtcAutoRotateBox.setChecked(False)
+
+    def selectXtcAutoRotate(self, checked):
+        if checked:
+            GUI.xtcReadabilityBox.setChecked(False)
+
+    def updateXtcOptions(self):
+        is_xtc = GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'XTC'
+        GUI.xtcPanelsBox.setVisible(is_xtc)
+        GUI.xtcAutoRotateBox.setVisible(is_xtc)
+        GUI.xtcReadabilityBox.setVisible(is_xtc)
+        GUI.xtcAutoRotateBox.setEnabled(is_xtc and GUI.xtcPanelsBox.isChecked())
+        GUI.xtcReadabilityBox.setEnabled(is_xtc and GUI.xtcPanelsBox.isChecked())
+        panels = is_xtc and GUI.xtcPanelsBox.isChecked()
+        if panels:
+            GUI.webtoonBox.setChecked(False)
+        for widget in (GUI.webtoonBox, GUI.rotateBox, GUI.maximizeStrips,
+                       GUI.noRotateBox, GUI.rotateFirstBox):
+            widget.setEnabled(not panels)
+        if GUI.webtoonBox.isChecked():
+            GUI.rotateBox.setEnabled(False)
+        self.toggleImageFormatBox(GUI.mozJpegBox.checkState().value)
+        for widget in (GUI.mozJpegBox, GUI.webpBox, GUI.jpegQualityBox,
+                       GUI.legacyPanelViewBox, GUI.vertical4PanelBox, GUI.ebokBox,
+                       GUI.lightnovelBox):
+            widget.setEnabled(not is_xtc)
+        if is_xtc:
+            GUI.lightnovelBox.setChecked(False)
+            for widget in (GUI.pngLegacyBox, GUI.noQuantizeBox, GUI.forcePngRgbBox):
+                widget.setEnabled(False)
+
     def changeFormat(self, outputformat=None):
         profile = GUI.profiles[str(GUI.deviceBox.currentText())]
         if outputformat is not None:
             GUI.formatBox.setCurrentIndex(outputformat)
         else:
             GUI.formatBox.setCurrentIndex(profile['DefaultFormat'])
+        is_xtc = GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'XTC'
+        GUI.colorBox.setEnabled(not is_xtc)
+        GUI.disableProcessingBox.setEnabled(not is_xtc)
+        if is_xtc:
+            self.rememberNonXtcOptions()
+            GUI.colorBox.setChecked(False)
+            GUI.disableProcessingBox.setChecked(False)
         if not GUI.webtoonBox.isChecked():
             GUI.qualityBox.setEnabled(profile['PVOptions'])
         if GUI.formats[str(GUI.formatBox.currentText())]['format'] == 'MOBI':
@@ -1241,6 +1298,12 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
         else:
             GUI.borderBox.setCheckState(Qt.CheckState.Unchecked)
+        self.updateXtcOptions()
+        if not is_xtc and hasattr(self, '_nonXtcOptions'):
+            saved = self._nonXtcOptions
+            del self._nonXtcOptions
+            for name, state in saved.items():
+                getattr(GUI, name).setCheckState(state)
 
     def stripTags(self, html):
         s = HTMLStripper()
@@ -1374,7 +1437,10 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         self.settings.setValue('startNumber', self.startNumber + 1)
         self.settings.setValue('startNumber2', self.startNumber2 + 1)
         self.settings.setValue('windowSize', str(MW.size().width()) + 'x' + str(MW.size().height()))
-        self.settings.setValue('options', {'mangaBox': GUI.mangaBox.checkState(),
+        self.settings.setValue('options', {'xtcPanelsBox': GUI.xtcPanelsBox.checkState(),
+                                           'xtcAutoRotateBox': GUI.xtcAutoRotateBox.checkState(),
+                                           'xtcReadabilityBox': GUI.xtcReadabilityBox.checkState(),
+                                           'mangaBox': GUI.mangaBox.checkState(),
                                            'lightnovelBox': GUI.lightnovelBox.checkState(),
                                            'wallpaperBox': GUI.wallpaperBox.checkState(),
                                            'ebokBox': GUI.ebokBox.checkState(),
@@ -1554,6 +1620,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             "MOBI + EPUB": {'icon': 'MOBI', 'format': 'MOBI+EPUB'},
             "EPUB (200MB limit)": {'icon': 'EPUB', 'format': 'EPUB-200MB'},
             "MOBI + EPUB (200MB limit)": {'icon': 'MOBI', 'format': 'MOBI+EPUB-200MB'},
+            "XTC (XTEINK)": {'icon': 'CBZ', 'format': 'XTC'},
         }
 
 
@@ -1657,6 +1724,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                              'Label': 'RmkPP'},
             "reMarkable Paper Pro Move": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': True, 'ForceColor': True,
                              'Label': 'RmkPPMove'},
+            "XTEINK X4": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 10,
+                          'DefaultUpscale': True, 'ForceColor': False, 'Label': 'XT4'},
             "Other": {'PVOptions': False, 'ForceExpert': True, 'DefaultFormat': 1, 'DefaultUpscale': False, 'ForceColor': False,
                       'Label': 'OTHER'},
         }
@@ -1711,6 +1780,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             "Kobo Glo",
             "Kobo Libra H2O",
             "Kobo Mini/Touch",
+            "Separator",
+            "XTEINK X4",
         ]
 
         # 这些多为约定俗成的缩写，翻译时可保留原文
@@ -1773,6 +1844,9 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         GUI.croppingPowerSlider.valueChanged.connect(self.changeCroppingPower)
         GUI.jpegQualityBox.stateChanged.connect(self.togglejpegqualityBox)
         GUI.webtoonBox.stateChanged.connect(self.togglewebtoonBox)
+        GUI.xtcPanelsBox.toggled.connect(self.updateXtcOptions)
+        GUI.xtcReadabilityBox.toggled.connect(self.selectXtcReadability)
+        GUI.xtcAutoRotateBox.toggled.connect(self.selectXtcAutoRotate)
         GUI.qualityBox.stateChanged.connect(self.togglequalityBox)
         GUI.mozJpegBox.stateChanged.connect(self.toggleImageFormatBox)
         GUI.wallpaperBox.stateChanged.connect(self.toggleWallpaperBox)
@@ -1798,7 +1872,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
 
         self.modeChange(1)
         for profile in profilesGUI:
-            if profile == "Other":
+            if profile == "Other" or profile.startswith("XTEINK"):
                 GUI.deviceBox.addItem(self.icons.deviceOther, profile)
             elif profile == "Separator":
                 GUI.deviceBox.insertSeparator(GUI.deviceBox.count() + 1)
@@ -1821,6 +1895,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         if self.currentFormat != self.profiles[str(GUI.deviceBox.currentText())]['DefaultFormat']:
             self.changeFormat(self.currentFormat)
         for option in self.options:
+            if option in ('xtcPanelsBox', 'xtcAutoRotateBox', 'xtcReadabilityBox'):
+                continue
             if str(option) == "widthBox":
                 GUI.widthBox.setValue(int(self.options[option]))
             elif str(option) == "heightBox":
@@ -1846,6 +1922,10 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                         getattr(GUI, option).setCheckState(Qt.CheckState(self.options[option]))
                 except AttributeError:
                     pass
+        for option in ('xtcPanelsBox', 'xtcAutoRotateBox', 'xtcReadabilityBox'):
+            if option in self.options:
+                getattr(GUI, option).setCheckState(Qt.CheckState(self.options[option]))
+        self.updateXtcOptions()
         self.worker.sync()
         self.versionCheck.start()
         self.tray.show()
