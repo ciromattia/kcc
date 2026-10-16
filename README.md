@@ -222,7 +222,7 @@ sudo apt-get install python3 p7zip-full python3-pil python3-psutil python3-slugi
 ```
         'K1': ("Kindle 1", (600, 670), Palette4, 1.0),
         'K2': ("Kindle 2", (600, 670), Palette15, 1.0),
-        'K11': ("Kindle 11", (1072, 1448), Palette16, 1.0),
+        'K11': ("Kindle 11/2026", (1072, 1448), Palette16, 1.0),
         'K34': ("Kindle Keyboard/Touch", (600, 800), Palette16, 1.0),
         'K57': ("Kindle 5/7", (600, 800), Palette16, 1.0),
         'K810': ("Kindle 8/10", (600, 800), Palette16, 1.0),
@@ -231,7 +231,7 @@ sudo apt-get install python3 p7zip-full python3-pil python3-psutil python3-slugi
         'KV': ("Kindle Voyage", (1072, 1448), Palette16, 1.0),
         'KPW34': ("Kindle Paperwhite 3/4", (1072, 1448), Palette16, 1.0),
         'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.0),
-        'KPW6': ("Kindle Paperwhite 6", (1272, 1696), Palette16, 1.0),
+        'KPW6': ("Kindle Paperwhite 6/2026", (1272, 1696), Palette16, 1.0),
         'KO': ("Kindle Oasis 2/3", (1264, 1680), Palette16, 1.0),
         'KCS': ("Kindle Colorsoft", (1272, 1696), Palette16, 1.0),
         'KS1860': ("Kindle 1860", (1860, 1920), Palette16, 1.0),
@@ -273,7 +273,9 @@ MANDATORY:
 
 MAIN:
   -p PROFILE, --profile PROFILE
-                        Device profile (Available options: K1, K2, K34, K578, KDX, KPW, KPW5, KV, KO, K11, KS, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoN, KoC, KoCC, KoL, KoLC, KoF, KoS, KoE)
+                        Device profile (Available options: K1, K2, KDX, K34, K57, KPW, KV, KPW34, K810, KO, K11, KPW5, KPW6, KS1860, KS1920,
+                        KS1240, KS1324, KS, KCS, KS3, KSCS, KoMT, KoG, KoGHD, KoA, KoAHD, KoAH2O, KoAO, KoN, KoC, KoCC, KoL, KoLC, KoF, KoS, KoE,
+                        Rmk1, Rmk2, RmkPP, RmkPPMove, OTHER, 1072x1448, 1264x1680, 1404x1872, 1536x2048, 1650x2200, 1860x2480, 2400x3200)
                         [Default=KV]
   -m, --manga-style     Manga style (right-to-left reading and splitting)
   --lightnovel          Only resize images and preserve original file structure.

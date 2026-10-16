@@ -98,9 +98,9 @@ class ProfileData:
         'KPW34': ("Kindle Paperwhite 3/4/Oasis", (1072, 1448), Palette16, 1.0),
         'K810': ("Kindle 8/10", (600, 800), Palette16, 1.0),
         'KO': ("Kindle Oasis 2/3", (1264, 1680), Palette16, 1.0),
-        'K11': ("Kindle 11", (1072, 1448), Palette16, 1.0),
+        'K11': ("Kindle 11/2026", (1072, 1448), Palette16, 1.0),
         'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.0),
-        'KPW6': ("Kindle Paperwhite 6", (1272, 1696), Palette16, 1.0),
+        'KPW6': ("Kindle Paperwhite 6/2026", (1272, 1696), Palette16, 1.0),
         'KS1860': ("Kindle 1860", (1860, 1920), Palette16, 1.0),
         'KS1920': ("Kindle 1920", (1920, 1920), Palette16, 1.0),
         'KS1240': ("Kindle 1240", (1240, 1860), Palette16, 1.0),
@@ -141,11 +141,31 @@ class ProfileData:
         'RmkPPMove': ("reMarkable Paper Pro Move", (954, 1696), Palette16, 1.0),
     }
 
+    FIXED_RESOLUTIONS = [
+        (1072, 1448),
+        (1264, 1680),
+        (1404, 1872),
+        (1536, 2048),
+        (1650, 2200),
+        (1860, 2480),
+        (2400, 3200),
+    ]
+
+    FIXED_RESOLUTIONS.reverse()
+
+    FIXED_RES_STRINGS = [f'{w}x{h}' for w, h in FIXED_RESOLUTIONS]
+
+    ProfilesFixed = {}
+    for res, s in zip(FIXED_RESOLUTIONS, FIXED_RES_STRINGS):
+        w, h = res
+        ProfilesFixed[s] = (s, res, Palette16, 1.0)
+
     Profiles = {
         **ProfilesKindle,
         **ProfilesKobo,
         **ProfilesRemarkable,
         'OTHER': ("Other", (0, 0), Palette16, 1.0),
+        **ProfilesFixed
     }
 
 

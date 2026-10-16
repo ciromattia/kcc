@@ -47,6 +47,7 @@ from PIL.Image import Dither
 from .KCC_spread_label import LabelSpreadsDialog
 
 from .shared import HTMLStripper, sanitizeTrace, walkLevel
+from .image import ProfileData
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
 from .comic2ebook import OS_SORT_KEY, KF7_KINDLES, flattenTree, getWorkFolder, removeNonImages, sanitizeTree, detectKindleGen
 from . import __version__
@@ -1498,7 +1499,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             GUI.easyLabel.hide()
 
         # default is Kindle Paperwhite 12th Gen
-        self.lastDevice = self.settings.value('lastDevice', 3, type=int)
+        self.lastDevice = self.settings.value('lastDevice', 4, type=int)
 
         self.currentFormat = self.settings.value('currentFormat', 0, type=int)
         self.startNumber = self.settings.value('startNumber', 0, type=int)
@@ -1587,13 +1588,13 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             "Kindle Scribe Colorsoft": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 4, 'DefaultUpscale': False, 'ForceColor': True, 'Label': 'KSCS',
             },
-            "Kindle 11": {
+            "Kindle 11/2026": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'K11',
             },
             "Kindle Paperwhite 11": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW5',
             },
-            "Kindle Paperwhite 12": {
+            "Kindle Paperwhite 12/2026": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW6',
             },
             "Kindle Colorsoft": {
@@ -1649,26 +1650,28 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                           'Label': 'KoS'},
             "Kobo Elipsa": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 1, 'DefaultUpscale': True, 'ForceColor': False,
                             'Label': 'KoE'},
-            "reMarkable 1": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': True, 'ForceColor': False,
+            "reMarkable 1/2/Pure": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 4, 'DefaultUpscale': True, 'ForceColor': False,
                              'Label': 'Rmk1'},
-            "reMarkable 2": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': True, 'ForceColor': False,
-                             'Label': 'Rmk2'},
-            "reMarkable Paper Pro": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': True, 'ForceColor': True,
+            "reMarkable Paper Pro": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 4, 'DefaultUpscale': True, 'ForceColor': True,
                              'Label': 'RmkPP'},
-            "reMarkable Paper Pro Move": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 3, 'DefaultUpscale': True, 'ForceColor': True,
+            "reMarkable Paper Pro Move": {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 4, 'DefaultUpscale': True, 'ForceColor': True,
                              'Label': 'RmkPPMove'},
-            "Other": {'PVOptions': False, 'ForceExpert': True, 'DefaultFormat': 1, 'DefaultUpscale': False, 'ForceColor': False,
+            "Other": {'PVOptions': False, 'ForceExpert': True, 'DefaultFormat': 2, 'DefaultUpscale': False, 'ForceColor': False,
                       'Label': 'OTHER'},
         }
+
+        for s in ProfileData.FIXED_RES_STRINGS:
+            self.profiles[s] = {'PVOptions': False, 'ForceExpert': False, 'DefaultFormat': 2, 'DefaultUpscale': False, 'ForceColor': False,
+                      'Label': s}
+
         profilesGUI = [
             "Kindle Scribe Colorsoft",
             "Kindle Scribe 3",
-            "Kindle Colorsoft",
-            "Kindle Paperwhite 12",
             "Kindle Scribe 1/2",
+            "Kindle Colorsoft",
+            "Kindle Paperwhite 12/2026",
             "Kindle Paperwhite 11",
-            "Kindle 11",
-            "Kindle Oasis 9/10",
+            "Kindle 11/2026",
             "Separator",
             "Kobo Clara 2E/BW",
             "Kobo Clara Colour",
@@ -1676,30 +1679,30 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             "Kobo Libra 2",
             "Kobo Libra Colour",
             "Kobo Elipsa",
-            "Kobo Nia",
             "Separator",
-            "reMarkable 1",
-            "reMarkable 2",
-            "reMarkable Paper Pro",
             "reMarkable Paper Pro Move",
+            "reMarkable Paper Pro",
+            "reMarkable 1/2/Pure",
             "Separator",
             "Other",
+            *ProfileData.FIXED_RES_STRINGS,
             "Separator",
-            "Kindle 1324x1986",
-            "Kindle 1920x1920",
-            "Kindle 1860x1920",
-            "Kindle 1240x1860",
-            "Kindle 8/10",
-            "Kindle Oasis 8",
             "Kindle Paperwhite 7/10",
-            "Kindle Voyage",
             "Kindle Paperwhite 5/6",
+            "Kindle Oasis 9/10",
+            "Kindle Oasis 8",
+            "Kindle Voyage",
+            "Kindle 8/10",
             "Kindle 4/5/7",
             "Kindle Touch",
             "Kindle Keyboard",
             "Kindle DX",
             "Kindle 2",
             "Kindle 1",
+            "Kindle 1324x1986",
+            "Kindle 1920x1920",
+            "Kindle 1860x1920",
+            "Kindle 1240x1860",
             "Separator",
             "Kobo Aura",
             "Kobo Aura ONE",
@@ -1711,6 +1714,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             "Kobo Glo",
             "Kobo Libra H2O",
             "Kobo Mini/Touch",
+            "Kobo Nia",
         ]
 
         # 这些多为约定俗成的缩写，翻译时可保留原文
@@ -1798,7 +1802,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
 
         self.modeChange(1)
         for profile in profilesGUI:
-            if profile == "Other":
+            if profile == "Other" or profile in ProfileData.FIXED_RES_STRINGS:
                 GUI.deviceBox.addItem(self.icons.deviceOther, profile)
             elif profile == "Separator":
                 GUI.deviceBox.insertSeparator(GUI.deviceBox.count() + 1)
