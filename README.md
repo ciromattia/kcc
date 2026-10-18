@@ -160,6 +160,8 @@ For flatpak, Docker, and AppImage versions, refer to the wiki: https://github.co
   - MOBI for modern Kindles. [CBZ for KF7 Kindles](https://ebooks.stackexchange.com/questions/173/how-to-use-the-e-ink-kindle-readers-to-display-photos) like the Kindle 1/2/3/DX. CBZ for Koreader. KEPUB for Kobo (Kobo profile + EPUB = KEPUB). PDF for ReMarkable or Kindle Scribe 2025.
 - Where is KEPUB option?
   - Choosing a Kobo profile and EPUB output will output KEPUB.
+- KEPUB crashes on Kobo?
+  - Remove any special characters like `!` from the filepath, including any intermediate **folders.** 
 - All options have additional information in tooltips if you hover over the option.
 - To get the converted book onto your Kindle/Kobo, just drag and drop the mobi/kepub into the documents folder on your Kindle/Kobo via USB
 - Kindle panel view not working?
