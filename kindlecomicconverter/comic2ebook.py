@@ -1099,8 +1099,6 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
                 filename = os.path.join(os.path.abspath(options.output), source_path.stem + tomenumber + ext)
             else:
                 filename = os.path.join(os.path.abspath(options.output), source_path.name + tomenumber + ext)
-    elif os.path.isdir(srcpath):
-        filename = srcpath + tomenumber + ext
     else:
         if 'Ko' in options.profile and options.format == 'EPUB':
             if source_path.is_file():
@@ -1108,6 +1106,8 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
             else:
                 name = KOBO_TOUCH_DRIVER_REGEX.sub('_', source_path.name) + tomenumber + ext
             filename = source_path.with_name(name)
+        elif os.path.isdir(srcpath):
+            filename = srcpath + tomenumber + ext
         else:
             filename = os.path.splitext(srcpath)[0] + tomenumber + ext
     if os.path.exists(filename):
