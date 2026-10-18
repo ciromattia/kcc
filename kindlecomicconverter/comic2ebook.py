@@ -69,6 +69,9 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 OS_SORT_KEY = os_sort_keygen()
 KF7_KINDLES = ('K1', 'K2', 'K34', 'KDX')
 
+# https://www.mobileread.com/forums/showpost.php?p=4213802&postcount=4
+KOBO_TOUCH_DRIVER_REGEX = re.compile(r'[\/\\\?%\*:;\|\"\'><\$!]')
+
 def main(argv=None):
     global options
     parser = makeParser()
@@ -1101,9 +1104,9 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
     else:
         if 'Ko' in options.profile and options.format == 'EPUB':
             if source_path.is_file():
-                name = re.sub(r'\W+', '_', source_path.stem) + tomenumber + ext
+                name = KOBO_TOUCH_DRIVER_REGEX.sub('_', source_path.stem) + tomenumber + ext
             else:
-                name = re.sub(r'\W+', '_', source_path.name) + tomenumber + ext
+                name = KOBO_TOUCH_DRIVER_REGEX.sub('_', source_path.name) + tomenumber + ext
             filename = source_path.with_name(name)
         else:
             filename = os.path.splitext(srcpath)[0] + tomenumber + ext
