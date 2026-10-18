@@ -1113,6 +1113,8 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
     if os.path.exists(filename):
         counter = 0
         basename = os.path.splitext(filename)[0]
+        if ext == '.kepub.epub':
+            basename = os.path.splitext(basename)[0]
         while os.path.exists(basename + '_kcc' + str(counter) + ext):
             counter += 1
         filename = basename + '_kcc' + str(counter) + ext
