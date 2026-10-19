@@ -1084,35 +1084,43 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
             ext = '.epub'
         else:
             ext = '.kepub.epub'
-    if wantedname is not None:
+
+    custom_output_directory = False
+    if wantedname:
         wanted_root, wanted_ext = os.path.splitext(wantedname)
+        # so you could have an output folder with . in the filename
         if not options.folder_output and wantedname.endswith(ext):
             filename = os.path.abspath(wantedname)
         elif wanted_ext == '.mobi' and ext == '.epub':
             filename = os.path.abspath(wanted_root + ext)
-        # output directory
         else:
+            custom_output_directory = True
             abs_path = os.path.abspath(options.output)
             if not os.path.exists(abs_path):
                 os.mkdir(abs_path)
-            if source_path.is_file():
-                filename = os.path.join(os.path.abspath(options.output), source_path.stem + tomenumber + ext)
-            else:
-                filename = os.path.join(os.path.abspath(options.output), source_path.name + tomenumber + ext)
-    elif os.path.isdir(srcpath):
-        filename = srcpath + tomenumber + ext
-    else:
+
+    if wantedname is None or custom_output_directory:
         if 'Ko' in options.profile and options.format == 'EPUB':
             if source_path.is_file():
                 name = KOBO_TOUCH_DRIVER_REGEX.sub('_', source_path.stem) + tomenumber + ext
             else:
                 name = KOBO_TOUCH_DRIVER_REGEX.sub('_', source_path.name) + tomenumber + ext
-            filename = source_path.with_name(name)
         else:
-            filename = os.path.splitext(srcpath)[0] + tomenumber + ext
+            if source_path.is_file():
+                name = source_path.stem + tomenumber + ext
+            else:
+                name = source_path.name + tomenumber + ext
+
+        if custom_output_directory:
+            filename = os.path.join(os.path.abspath(options.output), name)
+        else:
+            filename = source_path.with_name(name)
+
     if os.path.exists(filename):
         counter = 0
         basename = os.path.splitext(filename)[0]
+        if ext == '.kepub.epub':
+            basename = os.path.splitext(basename)[0]
         while os.path.exists(basename + '_kcc' + str(counter) + ext):
             counter += 1
         filename = basename + '_kcc' + str(counter) + ext
