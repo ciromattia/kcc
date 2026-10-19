@@ -42,7 +42,7 @@ KCC's main goal is maximum image quality at significantly smaller file size. For
 
 4) can [semi-automatically detect 2-page spreads](https://www.youtube.com/watch?v=kfIX67f7Aqk) from pre-split single pages:
 
-![before](images/spreadbefore720.jpeg)
+![before](images/joinorder.jpeg)
 
 You can view combined spreads either rotated or not:
 
