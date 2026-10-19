@@ -7,4 +7,4 @@ packaging>=26.2
 mozjpeg-lossless-optimization>=1.2.0
 natsort>=8.4.0
 numpy==1.23.5
-PyMuPDF>=1.16
+PyMuPDF<2
