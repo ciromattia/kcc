@@ -1239,7 +1239,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'FOLDER', 'PDF') and not GUI.webtoonBox.isChecked():
             self.addMessage(QT_TRANSLATE_NOOP('KCCGUI', "Partially check W/B Margins if you don't want KCC to extend the image margins."), 'info')
             GUI.borderBox.setCheckState(Qt.CheckState.PartiallyChecked)
-            GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
+            if GUI.formats[str(GUI.formatBox.currentText())]['format'] in ('CBZ', 'PDF'):
+                GUI.mozJpegBox.setCheckState(Qt.CheckState.PartiallyChecked)
         else:
             GUI.borderBox.setCheckState(Qt.CheckState.Unchecked)
 
@@ -1548,7 +1549,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             "MOBI/AZW3": {'icon': 'MOBI', 'format': 'MOBI'},
             "EPUB": {'icon': 'EPUB', 'format': 'EPUB'},
             "CBZ": {'icon': 'CBZ', 'format': 'CBZ'},
-            "Folder of images": {'icon': 'FOLDER', 'format': 'FOLDER'},
+            "Preview/Folder of images": {'icon': 'FOLDER', 'format': 'FOLDER'},
             "PDF": {'icon': 'EPUB', 'format': 'PDF'},
             "PDF (200MB limit)": {'icon': 'EPUB', 'format': 'PDF-200MB'},
             "KFX (Send to Kindle EPUB)": {'icon': 'KFX', 'format': 'KFX'},
