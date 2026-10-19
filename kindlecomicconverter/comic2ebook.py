@@ -1099,7 +1099,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
             if not os.path.exists(abs_path):
                 os.mkdir(abs_path)
 
-    if wantedname is None or custom_output_directory:
+    if not wantedname or custom_output_directory:
         if 'Ko' in options.profile and options.format == 'EPUB':
             if source_path.is_file():
                 name = KOBO_TOUCH_DRIVER_REGEX.sub('_', source_path.stem) + tomenumber + ext
