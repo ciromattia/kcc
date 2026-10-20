@@ -22,6 +22,7 @@ import io
 import os
 from pathlib import Path
 import mozjpeg_lossless_optimization
+import numpy as np
 from PIL import Image, ImageOps, ImageFile, ImageChops, ImageDraw
 
 from .rainbow_artifacts_eraser import erase_rainbow_artifacts
@@ -182,6 +183,12 @@ class ComicPageParser:
         # Image.open(srcImgPath).verify()
         with Image.open(srcImgPath) as im:
             self.image = im.copy()
+
+        # https://github.com/python-pillow/Pillow/issues/3011#issuecomment-552141447
+        if "I;16" in self.image.mode:
+            array = np.uint8(np.array(self.image) / 256)
+            self.image = Image.fromarray(array)
+        
         self.original_color_mode = self.image.mode
 
         self.page_background_color = self.fillCheck()
