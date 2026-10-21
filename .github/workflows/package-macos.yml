@@ -73,7 +73,7 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
       - uses: actions/setup-node@v7
         with:
-          node-version: 16
+          node-version: 24
       - run: npm install -g appdmg
       - name: build binary
 #        TODO /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --options runtime dist/Applications/Kindle\ Comic\ Converter.app -v
