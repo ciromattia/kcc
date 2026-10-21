@@ -45,7 +45,8 @@ jobs:
           ./gen_ui_files.sh
       - uses: actions/setup-node@v7
         with:
-          node-version: 16
+          node-version: 24
+          check-latest: true
       - run: npm install -g appdmg
       - name: build binary
         run: |
