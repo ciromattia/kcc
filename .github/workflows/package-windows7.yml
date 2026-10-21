@@ -36,10 +36,12 @@ jobs:
       - name: Install dependencies
         env:
           PYINSTALLER_COMPILE_BOOTLOADER: 1
+        # should be safe since final Python 3.8 pip came out before eMudhra certificate was issued
         run: |
           python -m pip install --upgrade pip
+          python -m pip install 'certifi>=2026.10.19'
           pip install -r requirements-win7.txt
-          pip install certifi pyinstaller --no-binary pyinstaller
+          pip install pyinstaller --no-binary pyinstaller
           .\gen_ui_files.bat
       - name: build binary
         run: |
