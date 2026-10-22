@@ -1131,7 +1131,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
             while os.path.isfile(basename + '_kcc' + str(counter) + '.mobi'):
                 counter += 1
             filename = basename + '_kcc' + str(counter) + ext      
-    return filename
+    return str(filename)
 
 
 def getMetadata(path, originalpath):
