@@ -38,11 +38,11 @@ jobs:
         run: |
           sudo installer -pkg python.pkg -target /
       - name: Install Python dependencies
+        # Legacy macOS needs Python 3.11, so this emudhra workaround is needed
         run: |
           python3 --version
-          python -m pip install "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
-          python -m pip install 'certifi>=2026.10.19'
-          pip3 install --upgrade pip pyinstaller
+          python3 -m pip install "pip @ https://files.pythonhosted.org/packages/3f/06/3e4420302363fbb71be3c7f35ce042f54bfca330e3e66b3a2e3c4cca579f/pip-26.2.2-py3-none-any.whl#sha256=fd7f4dfa8190e014013b9f08f3e973f4e4c26ffd179a204895533a7254813a70"
+          pip3 install --upgrade pip certifi pyinstaller
           pip3 install --upgrade -r requirements-osx-legacy.txt
           ./gen_ui_files.sh
       - uses: actions/setup-node@v7
