@@ -26,6 +26,7 @@ jobs:
     runs-on: windows-2022
     env:
       WINDOWS_7: 1
+      PIP_CERT: .\packaging\windows7\empty.pem
     steps:
       - uses: actions/checkout@v7
       - name: Set up Python
@@ -38,7 +39,6 @@ jobs:
           PYINSTALLER_COMPILE_BOOTLOADER: 1
         # should be safe since final Python 3.8 pip came out before eMudhra certificate was issued
         run: |
-          set "PIP_CERT=.\packaging\windows7\empty.pem"
           python -m pip install --upgrade pip
           python -m pip install 'certifi>=2026.10.19'
           pip install -r requirements-win7.txt
