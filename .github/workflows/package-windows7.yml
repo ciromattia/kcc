@@ -29,6 +29,8 @@ jobs:
       PIP_CERT: .\packaging\windows7\empty.pem
     steps:
       - uses: actions/checkout@v7
+        run: |
+          cd
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
