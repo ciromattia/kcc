@@ -26,7 +26,7 @@ jobs:
     runs-on: windows-2022
     env:
       WINDOWS_7: 1
-      PIP_CERT: D:\a\kcc\kcc\packaging\windows7\empty.pem
+      PIP_CERT: D:\a\kcc\kcc\packaging\windows7\cacert.pem
     steps:
       - uses: actions/checkout@v7
       - name: use cd
