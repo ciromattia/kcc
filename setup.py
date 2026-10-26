@@ -159,7 +159,7 @@ setuptools.setup(
         'natsort>=8.4.0',
         'numpy>=1.22.4',
         'packaging>=23.2',
-        "PyMuPDF>=1.16.1;python_version<'3.12'",
+        "PyMuPDF<2.0;python_version<'3.12'",
         "pymupdf-lite>=2.0;python_version>='3.12'",
     ],
     classifiers=[],
