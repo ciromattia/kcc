@@ -33,10 +33,10 @@ jobs:
             requirements: requirements.txt
           - entry: kcc-c2e
             command: build_c2e
-            requirements: requirements-cli.txt
+            requirements: requirements.txt
           - entry: kcc-c2p
             command: build_c2p
-            requirements: requirements-cli.txt
+            requirements: requirements.txt
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
