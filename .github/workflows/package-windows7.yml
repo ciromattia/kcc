@@ -73,4 +73,5 @@ jobs:
           prerelease: true
           generate_release_notes: false
           files: |
+            LICENSE.txt
             dist/*.exe
