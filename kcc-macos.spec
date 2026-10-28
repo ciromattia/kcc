@@ -57,5 +57,6 @@ app = BUNDLE(
     info_plist={
         'CFBundleShortVersionString': __version__,
         'CFBundleVersion': __version__,
+        'UIDesignRequiresCompatibility': True,
     },
 )
