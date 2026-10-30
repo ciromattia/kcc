@@ -25,7 +25,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ macos-15-intel, macos-14 ]
+        os: [ macos-15-intel, macos-15 ]
     runs-on: ${{ matrix.os }}
     env:
       MACOSX_DEPLOYMENT_TARGET: '14.0'
