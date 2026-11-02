@@ -442,7 +442,7 @@ class WorkerThread(QThread):
                 if options.output is None:
                     options.output = fusion_source_parent
                 currentJobs.clear()
-                job, fusion_cover_path = comic2ebook.makeFusion(bookDir)
+                job, fusion_cover_path = comic2ebook.makeFusion(bookDir, self)
                 currentJobs.append(job)
                 MW.addMessage.emit(i18n.tr_arg(QCoreApplication.translate('KCCGUI', 'Created fusion at %1'), currentJobs[0]), 'info', False)
             except Exception as e:
