@@ -1826,7 +1826,9 @@ def checkPre(source='KCC-'):
             if tempdir.startswith(source):
                 rmtree(os.path.join(root, tempdir), True)
 
-def makeFusion(sources: List[str]):
+def makeFusion(sources: List[str], qtgui=None):
+    global GUI
+    GUI = qtgui
     if len(sources) < 2:
         raise UserWarning(QCoreApplication.translate("KCCGUI", 'Fusion requires at least 2 sources. Did you forget to uncheck fusion?'))
     start = perf_counter()
