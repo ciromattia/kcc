@@ -1568,6 +1568,9 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                              'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KPW34'},
             "Kindle Voyage": {'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0,
                               'DefaultUpscale': True, 'ForceColor': False, 'Label': 'KV'},
+            "Kindle 1440x1920": {
+                'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'K1920',
+            },
             "Kindle 1860x1920": {
                 'PVOptions': True, 'ForceExpert': False, 'DefaultFormat': 0, 'DefaultUpscale': False, 'ForceColor': False, 'Label': 'KS1860',
             },
@@ -1704,6 +1707,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             "Kindle 1920x1920",
             "Kindle 1860x1920",
             "Kindle 1240x1860",
+            "Kindle 1440x1920",
             "Separator",
             "Kobo Aura",
             "Kobo Aura ONE",
