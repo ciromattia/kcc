@@ -102,6 +102,7 @@ class ProfileData:
         'K11': ("Kindle 11/2026", (1072, 1448), Palette16, 1.0),
         'KPW5': ("Kindle Paperwhite 5/Signature Edition", (1236, 1648), Palette16, 1.0),
         'KPW6': ("Kindle Paperwhite 6/2026", (1272, 1696), Palette16, 1.0),
+        'K1920': ("Kindle 1440x1920", (1440, 1920), Palette16, 1.0),
         'KS1860': ("Kindle 1860", (1860, 1920), Palette16, 1.0),
         'KS1920': ("Kindle 1920", (1920, 1920), Palette16, 1.0),
         'KS1240': ("Kindle 1240", (1240, 1860), Palette16, 1.0),
