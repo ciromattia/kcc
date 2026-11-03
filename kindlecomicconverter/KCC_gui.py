@@ -1509,7 +1509,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         default_options = {'gammaSlider': 0, 'croppingBox': 2, 'croppingPowerSlider': 100, 'rotateBox': 1, 'mangaBox': 2}
         try:
             self.options = self.settings.value('options', default_options)
-        except Exception:
+        except Exception as e:
+            print(e)
             self.options = default_options
         self.worker = WorkerThread()
         self.worker.setObjectName('worker')
