@@ -1191,6 +1191,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         else:
             self.modeChange(1)
         GUI.colorBox.setChecked(profile['ForceColor'])
+        if profile['Label'] not in ('KCS', 'KSCS', 'KoLC', 'KoCC'):
+            GUI.eraseRainbowBox.setChecked(False)
         self.changeFormat()
         if not GUI.webtoonBox.isChecked():
             GUI.qualityBox.setEnabled(profile['PVOptions'])
