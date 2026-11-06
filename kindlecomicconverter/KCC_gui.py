@@ -978,6 +978,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         GUI.defaultOutputFolderButton.setEnabled(status)
         GUI.clearButton.setEnabled(status)
         GUI.fileButton.setEnabled(status)
+        GUI.directoryButton.setEnabled(status)
         GUI.formatBox.setEnabled(status)
         GUI.optionWidget.setEnabled(status)
         GUI.gammaWidget.setEnabled(status)
