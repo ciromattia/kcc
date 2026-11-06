@@ -1348,7 +1348,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                     target_path.mkdir()
                 self.targetDirectory = str(target_path)
             elif GUI.defaultOutputFolderBox.isChecked():
-                self.targetDirectory = self.defaultOutputFolder
+                parent = Path(self.jobList.item(0).text()).parent
+                self.targetDirectory = os.path.join(self.defaultOutputFolder, f"{parent.name} [kcc]")
             else:
                 GUI.targetDirectory = ''
             self.progress.start()
