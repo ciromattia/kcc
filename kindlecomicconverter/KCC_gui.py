@@ -198,6 +198,16 @@ class VersionThread(QThread):
                                        headers={
                                            'Accept': 'application/vnd.github.raw+json',
                                            'X-GitHub-Api-Version': '2022-11-28'}).json()
+            link_allowlist = (
+                'https://humblebundleinc.sjv.io/',
+                'https://www.humblebundle.com/',
+                'https://www.awin1.com/',
+                'https://www.fanatical.com/',
+                'https://kodansha.us/',
+                'https://youtu.be/',
+                'https://www.youtube.com/',
+                'https://www.linkedin.com/',
+            )
             for category, payloads in announcements.items():
                 for payload in payloads:
                     if not isinstance(payload, dict):
@@ -217,8 +227,12 @@ class VersionThread(QThread):
                     if category == 'kofi':
                         icon = 'kofi'
                     message = f"{payload.get('name')}"
-                    if payload.get('link'):
-                        message = '<a href="{}"><b>{}</b></a>'.format(payload.get('link'), payload.get('name'))
+                    link = payload.get('link')
+                    if link:
+                        for allowed_link in link_allowlist:
+                            if link.startswith(allowed_link):
+                                message = '<a href="{}"><b>{}</b></a>'.format(payload.get('link'), payload.get('name'))
+                                break
                     if payload.get('showDeadline'):
                         message += f': {time_left}'
                     if category == 'humbleBundles':
