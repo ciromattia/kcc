@@ -183,6 +183,9 @@ class VersionThread(QThread):
                 json_parser = requests.get("https://api.github.com/repos/ciromattia/kcc/releases/latest").json()
 
                 html_url = json_parser["html_url"]
+                if not html_url.startswith('https://github.com/ciromattia/kcc/releases/tag/'):
+                    print('Somehow you got MITM')
+                    raise Exception('Somehow you got MITM')
                 latest_version = json_parser["tag_name"]
                 latest_version = re.sub(r'^v', "", latest_version)
 
