@@ -1341,6 +1341,12 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier:
                 if not self.selectOutputFolder():
                     return
+            elif GUI.defaultOutputFolderBox.checkState() == Qt.CheckState.PartiallyChecked:
+                parent = Path(self.jobList.item(0).text()).parent
+                target_path = parent.joinpath(f"{parent.name} [kcc]")
+                if not target_path.exists():
+                    target_path.mkdir()
+                self.targetDirectory = str(target_path)
             elif GUI.defaultOutputFolderBox.isChecked():
                 self.targetDirectory = self.defaultOutputFolder
             else:
@@ -1353,12 +1359,6 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                 self.addMessage(QT_TRANSLATE_NOOP('KCCGUI', 'No files selected! Please choose files to convert.'), 'error')
                 self.needClean = True
                 return
-            if GUI.defaultOutputFolderBox.checkState() == Qt.CheckState.PartiallyChecked:
-                parent = Path(self.jobList.item(0).text()).parent
-                target_path = parent.joinpath(f"{parent.name}")
-                if not target_path.exists():
-                    target_path.mkdir()
-                self.targetDirectory = str(target_path)
             if self.currentMode > 2 and (GUI.widthBox.value() == 0 or GUI.heightBox.value() == 0):
                 GUI.jobList.clear()
                 self.addMessage(QT_TRANSLATE_NOOP('KCCGUI', 'Target resolution is not set!'), 'error')
