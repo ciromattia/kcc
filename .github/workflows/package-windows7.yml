@@ -46,6 +46,7 @@ jobs:
           pip install -r requirements-win7.txt
           pip install pyinstaller --no-binary pyinstaller
           .\gen_ui_files.bat
+          python -c "from PySide6.QtWidgets import QStyleFactory;print(QStyleFactory.keys())"
       - name: build binary
         run: |
           python setup.py build_binary
