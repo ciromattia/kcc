@@ -466,11 +466,6 @@ class WorkerThread(QThread):
             except Exception as e:
                 print('Fusion Failed. ' + str(e))
                 MW.addMessage.emit(i18n.tr_arg(QCoreApplication.translate('KCCGUI', 'Fusion Failed. %1'), str(e)), 'error', True)
-        elif len(currentJobs) > 1 and options.title != 'defaulttitle':
-            currentJobs.clear()
-            error_message = QCoreApplication.translate('KCCGUI', 'Process Failed. Custom title can\'t be set when processing more than 1 source.\nDid you forget to check fusion?')
-            print(error_message)
-            MW.addMessage.emit(error_message, 'error', True)
         for i, job in enumerate(currentJobs, start=1):
             job_progress_number = f'[{i}/{len(currentJobs)}] '
             sleep(0.5)
@@ -495,6 +490,8 @@ class WorkerThread(QThread):
             jobargv.append(job)
             try:
                 comic2ebook.options = comic2ebook.checkOptions(copy(options))
+                if len(currentJobs) > 1 and comic2ebook.options.title != 'defaulttitle':
+                    comic2ebook.options.title += f' {i:0{len(str(len(currentJobs)))}}'
                 outputPath = comic2ebook.makeBook(job, fusion_cover_path, self, job_progress_number)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
