@@ -50,7 +50,7 @@ from .KCC_spread_label import LabelSpreadsDialog
 from .shared import HTMLStripper, sanitizeTrace, walkLevel
 from .image import ProfileData
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
-from .comic2ebook import OS_SORT_KEY, KF7_KINDLES, flattenTree, getWorkFolder, removeNonImages, sanitizeTree, detectKindleGen
+from .comic2ebook import KOBO_TOUCH_DRIVER_REGEX, OS_SORT_KEY, KF7_KINDLES, flattenTree, getWorkFolder, removeNonImages, sanitizeTree, detectKindleGen
 from . import __version__
 from . import i18n
 from . import comic2ebook
@@ -1338,18 +1338,21 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             self.conversionAlive = False
             self.worker.sync()
         else:
+            parent = Path(self.jobList.item(0).text()).parent
+            name = parent.name
+            if GUI.deviceBox.currentText().startswith('Kobo') and GUI.formatBox.currentText() == 'EPUB':
+                name = KOBO_TOUCH_DRIVER_REGEX.sub('_', name)
+
             if QApplication.keyboardModifiers() == Qt.KeyboardModifier.ShiftModifier:
                 if not self.selectOutputFolder():
                     return
             elif GUI.defaultOutputFolderBox.checkState() == Qt.CheckState.PartiallyChecked:
-                parent = Path(self.jobList.item(0).text()).parent
-                target_path = parent.joinpath(f"{parent.name} [kcc]")
+                target_path = parent.joinpath(f"{name} [kcc]")
                 if not target_path.exists():
                     target_path.mkdir()
                 self.targetDirectory = str(target_path)
             elif GUI.defaultOutputFolderBox.isChecked():
-                parent = Path(self.jobList.item(0).text()).parent
-                self.targetDirectory = os.path.join(self.defaultOutputFolder, f"{parent.name} [kcc]")
+                self.targetDirectory = os.path.join(self.defaultOutputFolder, f"{name} [kcc]")
             else:
                 GUI.targetDirectory = ''
             self.progress.start()
