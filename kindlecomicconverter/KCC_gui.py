@@ -1557,6 +1557,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             self.p = Process(os.getpid())
             self.p.nice(BELOW_NORMAL_PRIORITY_CLASS)
             self.p.ionice(1)
+            APP.setStyle('windowsvista')
         elif sys.platform.startswith('linux'):
             APP.setStyle('fusion')
             if self.windowSize == '0x0':
