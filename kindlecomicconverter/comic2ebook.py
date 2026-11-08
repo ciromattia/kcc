@@ -1374,9 +1374,13 @@ def split_pages_for_labeling(layout):
 
 
 def flattenTree(filetree):
+    filetree = os.fspath(filetree)
     for root, dirs, files in os.walk(filetree, topdown=False):
-        for name in files:
-            os.rename(os.path.join(root, name), os.path.join(filetree, name))
+        # Root files are already in place. Renaming onto an existing path is
+        # not portable, even when the paths refer to the same file.
+        if root != filetree:
+            for name in files:
+                os.rename(os.path.join(root, name), os.path.join(filetree, name))
         for name in dirs:
             os.rmdir(os.path.join(root, name))
 

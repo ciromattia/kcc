@@ -1,6 +1,8 @@
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from PIL import Image
 
@@ -20,6 +22,26 @@ class SpreadLabelsTests(unittest.TestCase):
 
     def layout(self):
         return list(comic2ebook.spread_label_pages(self.path, righttoleft=True, split=True))
+
+    def test_flatten_leaves_root_files_in_place(self):
+        nested = self.path / 'chapter'
+        nested.mkdir()
+        page = nested / 'kcc-0002.png'
+        page.write_bytes(self.source.read_bytes())
+        with patch.object(comic2ebook.os, 'rename', wraps=os.rename) as rename:
+            comic2ebook.flattenTree(self.path)
+        rename.assert_called_once_with(str(page), str(self.path / page.name))
+        self.assertTrue(self.source.is_file())
+        self.assertTrue((self.path / page.name).is_file())
+        self.assertFalse(nested.exists())
+
+    def test_save_replaces_an_existing_label_file(self):
+        sidecar = self.path / 'book.json'
+        sidecar.write_text('{"spreads": []}', encoding='utf-8')
+        labels = {'spreads': [0], 'righttoleft': True}
+        comic2ebook.write_spread_labels(sidecar, labels)
+        self.assertEqual(comic2ebook.read_spread_labels(sidecar), labels)
+        self.assertEqual({file.name for file in self.path.iterdir()}, {self.source.name, sidecar.name})
 
     def test_old_labels_still_load(self):
         layout = self.layout()
