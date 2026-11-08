@@ -219,6 +219,28 @@ Refer to the wiki to install: https://github.com/ciromattia/kcc/wiki/Installatio
 Should be pretty self-explanatory. All options have detailed information in tooltips.
 After completed conversion, you should find ready file alongside the original input file (same directory).
 
+For manga scanned two pages at a time, enable **Split before labeling** next
+to **Label Spreads**. Set the reading direction, then open **Label Spreads** to
+review pairs from the split pages. **By operation** puts pairs needing review
+first, followed by suggested merges and splits. **Show full pages** reveals the
+artwork outside the seam strips. Use any arrow key to browse, **Space** to toggle
+the current decision, or **M** to mark a merge. Shift-click to select a range or
+press **R** at each end of a
+run. Press **Enter** to save your decisions. Toggle
+**Spread shift** before opening the preview if pairs are offset by one page.
+Confirm your labels, then convert
+the original file. KCC splits the source pages and joins the labeled pairs
+before applying your final **Spread splitter** setting. For one output page per
+confirmed spread, use **Rotate**, and enable **No rotate** to keep the spread
+horizontal.
+
+Use **Compare Before / After** to see the original images above the planned
+splits and saved joins. Both rows scroll together. Choose a queued book in the
+dropdown to compare another book in the batch. The lower row follows the
+selected reading direction for splits and joins and shows the resulting pages
+in numbered file order. This previews spread layout before device-specific
+processing.
+
 Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more details.
 
 CLI version of **KCC** is intended for power users. It allows using options that might not be compatible and decrease the quality of output.

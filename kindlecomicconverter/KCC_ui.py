@@ -542,6 +542,16 @@ class Ui_mainWindow(object):
 
         self.gridLayout_6.addWidget(self.labelSpreadsButton, 0, 1, 1, 1)
 
+        self.splitBeforeLabelingBox = QCheckBox(self.toolWidget)
+        self.splitBeforeLabelingBox.setObjectName(u"splitBeforeLabelingBox")
+
+        self.gridLayout_6.addWidget(self.splitBeforeLabelingBox, 1, 1, 1, 1)
+
+        self.compareSpreadsButton = QPushButton(self.toolWidget)
+        self.compareSpreadsButton.setObjectName(u"compareSpreadsButton")
+
+        self.gridLayout_6.addWidget(self.compareSpreadsButton, 1, 2, 1, 1)
+
         self.kofiButton = QPushButton(self.toolWidget)
         self.kofiButton.setObjectName(u"kofiButton")
         self.kofiButton.setMinimumSize(QSize(0, 30))
@@ -655,7 +665,10 @@ class Ui_mainWindow(object):
         QWidget.setTabOrder(self.spreadShiftBox, self.fileFusionBox)
         QWidget.setTabOrder(self.fileFusionBox, self.chunkSizeBox)
         QWidget.setTabOrder(self.chunkSizeBox, self.editorButton)
-        QWidget.setTabOrder(self.editorButton, self.kofiButton)
+        QWidget.setTabOrder(self.editorButton, self.labelSpreadsButton)
+        QWidget.setTabOrder(self.labelSpreadsButton, self.splitBeforeLabelingBox)
+        QWidget.setTabOrder(self.splitBeforeLabelingBox, self.compareSpreadsButton)
+        QWidget.setTabOrder(self.compareSpreadsButton, self.kofiButton)
 
         self.retranslateUi(mainWindow)
 
@@ -932,6 +945,14 @@ class Ui_mainWindow(object):
         self.labelSpreadsButton.setToolTip(QCoreApplication.translate("mainWindow", u"Hold shift while clicking for a low quality preview.", None))
 #endif // QT_CONFIG(tooltip)
         self.labelSpreadsButton.setText(QCoreApplication.translate("mainWindow", u"Label Spreads", None))
+#if QT_CONFIG(tooltip)
+        self.splitBeforeLabelingBox.setToolTip(QCoreApplication.translate("mainWindow", u"Split wide source images into single pages before reviewing spread pairs.", None))
+#endif // QT_CONFIG(tooltip)
+        self.splitBeforeLabelingBox.setText(QCoreApplication.translate("mainWindow", u"Split before labeling", None))
+#if QT_CONFIG(tooltip)
+        self.compareSpreadsButton.setToolTip(QCoreApplication.translate("mainWindow", u"Preview how queued books will split and join pages.", None))
+#endif // QT_CONFIG(tooltip)
+        self.compareSpreadsButton.setText(QCoreApplication.translate("mainWindow", u"Compare Before / After", None))
         self.kofiButton.setText(QCoreApplication.translate("mainWindow", u"Support me on Ko-fi", None))
 #if QT_CONFIG(tooltip)
         self.editorButton.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p style='white-space:pre'>Shift+Click to edit directory.</p></body></html>", None))

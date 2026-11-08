@@ -1,5 +1,12 @@
 # CHANGELOG
 
+#### Unreleased
+
+* Spread editor can split wide scans before labeling and apply saved joins in one conversion.
+* Added spoilerless seam previews, optional full-page previews, gutter suggestions, and range editing with undo.
+* Added a before-and-after spread comparison with synchronized scrolling and a batch book picker. Both previews follow the reading direction.
+* Spread labels are saved atomically and checked against the source layout before applying joins. Existing label files still load.
+
 
 #### 5.6.2:
 * build pipeline : drop pypi by @darodi in [#465](https://github.com/ciromattia/kcc/pull/465)

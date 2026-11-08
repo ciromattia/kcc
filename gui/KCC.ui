@@ -1083,6 +1083,26 @@ Kind of works on firmwares 5.19.2 (before revert) and 5.19.3+</string>
          </property>
         </widget>
        </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="splitBeforeLabelingBox">
+         <property name="toolTip">
+          <string>Split wide source images into single pages before reviewing spread pairs.</string>
+         </property>
+         <property name="text">
+          <string>Split before labeling</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="compareSpreadsButton">
+         <property name="toolTip">
+          <string>Preview how queued books will split and join pages.</string>
+         </property>
+         <property name="text">
+          <string>Compare Before / After</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="2">
         <widget class="QPushButton" name="kofiButton">
          <property name="minimumSize">
@@ -1294,6 +1314,9 @@ Kind of works on firmwares 5.19.2 (before revert) and 5.19.3+</string>
   <tabstop>fileFusionBox</tabstop>
   <tabstop>chunkSizeBox</tabstop>
   <tabstop>editorButton</tabstop>
+  <tabstop>labelSpreadsButton</tabstop>
+  <tabstop>splitBeforeLabelingBox</tabstop>
+  <tabstop>compareSpreadsButton</tabstop>
   <tabstop>kofiButton</tabstop>
  </tabstops>
  <resources>
