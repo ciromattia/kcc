@@ -23,7 +23,7 @@ import json
 from pathlib import Path
 import platform
 from PySide6.QtCore import (QSize, QUrl, Qt, Signal, QIODeviceBase, QEvent, QThread, QSettings,
-                            QCoreApplication, QT_TRANSLATE_NOOP, QObject)
+                            QCoreApplication, QT_TRANSLATE_NOOP, QObject, qVersion)
 from PySide6.QtGui import (QActionGroup, QColor, QIcon, QImage, QKeyEvent, QPixmap, QDesktopServices)
 from PySide6.QtWidgets import (QApplication, QDialogButtonBox, QHBoxLayout, QLabel, QListWidgetItem, QMainWindow, QSizePolicy, QSystemTrayIcon, QFileDialog, QMessageBox, QDialog, QAbstractItemView, QListView, QTreeView, QWidget,
                                QToolButton, QMenu)
@@ -1504,8 +1504,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         MW = kccwindow
         GUI = self
         settings_key = 'kcc10'
-        if platform.system() == 'Darwin' and platform.machine() == 'x86_64':
-            settings_key += '-intel'
+        if Version(qVersion()) <= Version('6.4.3'):
+            settings_key += '-legacy'
         self.settings = QSettings('ciromattia', settings_key)
         self.language = str(self.settings.value('language', i18n.DEFAULT_LANGUAGE))
         self.language = i18n.apply_language(self.language)
