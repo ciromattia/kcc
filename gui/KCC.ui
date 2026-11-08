@@ -915,10 +915,12 @@ Higher values are larger and higher quality, and may resolve blank page issues.<
           <enum>Qt::FocusPolicy::ClickFocus</enum>
          </property>
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Default Title&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>For one item/fusion, sets the default title and filename.
+
+For multiple files, will enumerate the titles and filenames, e.g. Series 01, Series 02, etc.</string>
          </property>
          <property name="placeholderText">
-          <string>Default Title</string>
+          <string>Default Title/Series</string>
          </property>
          <property name="clearButtonEnabled">
           <bool>false</bool>
