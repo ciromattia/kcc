@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'KCC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.3
+## Created by: Qt User Interface Compiler version 6.12.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -889,9 +889,11 @@ class Ui_mainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.colorBox.setText(QCoreApplication.translate("mainWindow", u"Color mode", None))
 #if QT_CONFIG(tooltip)
-        self.titleEdit.setToolTip(QCoreApplication.translate("mainWindow", u"<html><head/><body><p>Default Title</p></body></html>", None))
+        self.titleEdit.setToolTip(QCoreApplication.translate("mainWindow", u"For one item/fusion, sets the default title and filename.\n"
+"\n"
+"For multiple files, will enumerate the titles and filenames, e.g. Series 01, Series 02, etc.", None))
 #endif // QT_CONFIG(tooltip)
-        self.titleEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Title", None))
+        self.titleEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Title/Series", None))
 #if QT_CONFIG(tooltip)
         self.coverFillBox.setToolTip(QCoreApplication.translate("mainWindow", u"Resize cover to exact device resolution by center-cropping to aspect ratio first.\n"
 "May crop top/bottom or left/right depending on source aspect ratio. Not implemented for Kindle Scribe.", None))
