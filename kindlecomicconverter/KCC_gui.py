@@ -1503,7 +1503,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         APP = kccapp
         MW = kccwindow
         GUI = self
-        settings_key = 'kcc13'
+        settings_key = 'kcc10'
         if Version(qVersion()) <= Version('6.4.3'):
             settings_key += '-legacy'
         self.settings = QSettings('ciromattia', settings_key)
@@ -1557,7 +1557,6 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
             self.p = Process(os.getpid())
             self.p.nice(BELOW_NORMAL_PRIORITY_CLASS)
             self.p.ionice(1)
-            APP.setStyle('windowsvista')
         elif sys.platform.startswith('linux'):
             APP.setStyle('fusion')
             if self.windowSize == '0x0':
