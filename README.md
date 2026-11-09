@@ -226,8 +226,13 @@ first, followed by suggested merges and splits. **Show full pages** reveals the
 artwork outside the seam strips. Use any arrow key to browse, **Space** to toggle
 the current decision, or **M** to mark a merge. Shift-click to select a range or
 press **R** at each end of a
-run. Press **Enter** to save your decisions. Toggle
-**Spread shift** before opening the preview if pairs are offset by one page.
+run. Press **Enter** to save your decisions. If pairs are offset by one page,
+toggle **Spread Shift** directly inside **Label Spreads**. The page pairings
+and previews update immediately. Saving also records the selected alignment
+for that book, without changing the main KCC **Spread shift** checkbox.
+During batch conversion, each book with a saved alignment uses its own
+Spread Shift setting. Books without a saved alignment continue using the
+main checkbox as the default, preserving normal KCC behavior.
 Confirm your labels, then convert
 the original file. KCC splits the source pages and joins the labeled pairs
 before applying your final **Spread splitter** setting. For one output page per

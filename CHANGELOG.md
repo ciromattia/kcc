@@ -1,6 +1,9 @@
 # CHANGELOG
 
 #### Unreleased
+* Added a Spread Shift toggle inside Label Spreads to preview and save each book's page pairing alignment.
+* Saved spread labels now preserve per-book Spread Shift settings during batch conversion, allowing books with different alignments to be converted together.
+* The main Spread Shift checkbox remains the default for books without a saved alignment, preserving existing conversion behavior.
 
 * Spread editor can split wide scans before labeling and apply saved joins in one conversion.
 * Added spoilerless seam previews, optional full-page previews, gutter suggestions, and range editing with undo.

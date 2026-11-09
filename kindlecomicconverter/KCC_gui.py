@@ -538,6 +538,28 @@ class WorkerThread(QThread):
             jobargv.append(job)
             try:
                 comic2ebook.options = comic2ebook.checkOptions(copy(options))
+
+                # Each conversion job starts with a fresh copy of the GUI options.
+                # Label Spreads can override Spread Shift for this source only.
+                #
+                # spread_start stores the first virtual page index (0 or 1),
+                # not the checkbox state. PDF/EPUB sources use the opposite
+                # starting alignment, so XOR recovers the saved checkbox state.
+                #
+                # Without a saved alignment, retain the global Spread Shift
+                # setting. This preserves existing behavior for unlabeled books
+                # and allows mixed alignments within a single batch.
+                label_path = Path(job + '.json')
+                if label_path.is_file():
+                    saved_labels = comic2ebook.read_spread_labels(label_path)
+                    saved_start = saved_labels.get('spread_start')
+
+                    if type(saved_start) is int and saved_start in (0, 1):
+                        comic2ebook.options.spreadshift = bool(
+                            saved_start
+                            ^ int(job.lower().endswith(('.pdf', '.epub')))
+                        )
+
                 if len(currentJobs) > 1 and comic2ebook.options.title != 'defaulttitle':
                     comic2ebook.options.title += f' {i:0{len(str(len(currentJobs)))}}'
                 outputPath = comic2ebook.makeBook(job, fusion_cover_path, self, job_progress_number)
@@ -839,45 +861,138 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                         preview = preview.convert('1', dither=Dither.NONE)
                     return QPixmap.fromImage(ImageQt(preview)), left_edge.width
 
-                # A label stores the first virtual page index, independently of sidebar order.
-                pairs = range(start_index, len(pages) - 1, 2)
-                spreads = set()
-                splits = set()
-                if pairs:
-                    label_path = Path(job + '.json')
-                    if label_path.exists():
-                        try:
-                            saved = comic2ebook.read_spread_labels(label_path)
-                            if saved.get('split_before_labeling', False) == split and saved.get('spread_start', start_index) == start_index:
-                                comic2ebook.validate_spread_labels(saved, layout, options.righttoleft)
-                                spreads.update(index for index in saved['spreads'] if index in pairs)
-                                review_splits = saved.get('review_splits', [])
-                                if isinstance(review_splits, list):
-                                    splits.update(index for index in review_splits if type(index) is int and index in pairs)
-                                splits.difference_update(spreads)
-                        except UserWarning as error:
-                            QMessageBox.information(MW, self.tr("Label Spreads"), str(error))
-                    names = {}
-                    for index in pairs:
-                        filenames = [original_names[file.stem] for file, _ in pages[index:index+2]]
-                        name = ' + '.join(dict.fromkeys(filenames))
-                        names[index] = f'{index + 1}–{index + 2}  {name}'
-                    dlg = LabelSpreadsDialog(
-                        APP.primaryScreen().availableGeometry().height(), pairs, spreads, seam,
-                        lambda index: seam(index, inspect=True), names, splits, self.settings,
+                # Spread Shift changes the first page of each pair.
+                # Keep decisions for each alignment separate while reviewing.
+                label_path = Path(job + '.json')
+                initial_shift = bool(options.spreadshift)
+                active_shift = initial_shift
+                decisions = {}
+
+                saved = None
+                if label_path.exists():
+                    try:
+                        saved = comic2ebook.read_spread_labels(label_path)
+                        if (
+                            saved.get('split_before_labeling', False) != split
+                            or saved.get('righttoleft') != options.righttoleft
+                        ):
+                            saved = None
+                        elif saved is not None:
+                            comic2ebook.validate_spread_labels(
+                                saved, layout, options.righttoleft
+                            )
+                    except UserWarning as error:
+                        QMessageBox.information(
+                            MW, self.tr("Label Spreads"), str(error)
+                        )
+                        saved = None
+
+                # A saved alignment belongs to this book, not the global setting.
+                if saved is not None and type(saved.get('spread_start')) is int:
+                    saved_start = saved['spread_start']
+                    if saved_start in (0, 1):
+                        active_shift = bool(
+                            saved_start
+                            ^ int(job.lower().endswith(('.pdf', '.epub')))
+                        )
+
+                def alignment(shift):
+                    index = (
+                        int(job.lower().endswith(('.pdf', '.epub')))
+                        ^ int(shift)
                     )
-                    direction = self.tr("RTL") if options.righttoleft else self.tr("LTR")
-                    dlg.setWindowTitle(f'Book {book}/{len(currentJobs)} — {Path(job).name} · {direction}')
+                    pairs = list(range(index, len(pages) - 1, 2))
+                    pair_set = set(pairs)
+
+                    if shift not in decisions:
+                        merges = set()
+                        separate = set()
+
+                        if saved is not None and saved.get('spread_start') == index:
+                            merges.update(
+                                i for i in saved['spreads']
+                                if i in pair_set
+                            )
+                            review_splits = saved.get('review_splits', [])
+                            if isinstance(review_splits, list):
+                                separate.update(
+                                    i for i in review_splits
+                                    if type(i) is int and i in pair_set
+                                )
+                            separate.difference_update(merges)
+
+                        decisions[shift] = (merges, separate)
+
+                    merges, separate = decisions[shift]
+                    names = {}
+
+                    for i in pairs:
+                        filenames = [
+                            original_names[file.stem]
+                            for file, _ in pages[i:i + 2]
+                        ]
+                        name = ' + '.join(dict.fromkeys(filenames))
+                        names[i] = f'{i + 1}–{i + 2}  {name}'
+
+                    return pairs, names, merges, separate
+
+                pairs, names, spreads, splits = alignment(active_shift)
+
+                if pairs:
+                    dlg = LabelSpreadsDialog(
+                        APP.primaryScreen().availableGeometry().height(),
+                        pairs, spreads, seam,
+                        lambda index: seam(index, inspect=True),
+                        names, splits, self.settings,
+                    )
+
+                    dlg.spread_shift_box.blockSignals(True)
+                    dlg.spread_shift_box.setChecked(active_shift)
+                    dlg.spread_shift_box.blockSignals(False)
+
+                    def change_alignment(enabled):
+                        # Prepare the requested alignment without committing it.
+                        return alignment(bool(enabled))
+
+                    def confirm_alignment(enabled):
+                        nonlocal active_shift
+                        active_shift = bool(enabled)
+
+                    dlg.shift_changed_callback = change_alignment
+                    dlg.shift_confirmed_callback = confirm_alignment
+
+                    direction = (
+                        self.tr("RTL") if options.righttoleft
+                        else self.tr("LTR")
+                    )
+                    dlg.setWindowTitle(
+                        f'Book {book}/{len(currentJobs)} — '
+                        f'{Path(job).name} · {direction}'
+                    )
+
                     accepted = dlg.exec() == 1
                     scan_image.cache_clear()
+
                     if accepted:
+                        start_index = (
+                            int(job.lower().endswith(('.pdf', '.epub')))
+                            ^ int(active_shift)
+                        )
+
                         data = {
-                            'spreads': sorted(spreads), 'review_splits': sorted(splits),
-                            'spread_start': start_index, 'split_before_labeling': split,
-                            'righttoleft': options.righttoleft, 'page_count': len(pages),
+                            'spreads': sorted(dlg.spreads),
+                            'review_splits': sorted(dlg.splits),
+                            'spread_start': start_index,
+                            'split_before_labeling': split,
+                            'righttoleft': options.righttoleft,
+                            'page_count': len(pages),
                         }
+
                         if source.suffix.lower() != '.pdf':
-                            data['source_layout'] = comic2ebook.spread_layout_signature(layout)
+                            data['source_layout'] = (
+                                comic2ebook.spread_layout_signature(layout)
+                            )
+
                         comic2ebook.write_spread_labels(label_path, data)
             except (OSError, RuntimeError, UserWarning) as err:
                 self.showDialog(str(err), 'error')

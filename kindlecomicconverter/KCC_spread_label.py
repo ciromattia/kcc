@@ -79,6 +79,12 @@ class LabelSpreadsDialog(QDialog):
         self.full_page.setToolTip('Show artwork outside the seam strips. May reveal spoilers.')
         self.full_page.toggled.connect(self.show_pair)
         controls.addWidget(self.full_page)
+        self.spread_shift_box = QCheckBox('Spread Shift')
+        self.spread_shift_box.setToolTip(
+            'Shift the starting page of each spread pair.'
+        )
+        controls.addWidget(self.spread_shift_box)
+        self.spread_shift_box.toggled.connect(self.change_spread_shift)
         controls.addWidget(QLabel('Arrows Browse   ·   Space Toggle   ·   M Merge   ·   Shift-click Range   ·   R Run   ·   U Undo   ·   Enter Save'), 1)
         footer = QHBoxLayout()
         layout.addLayout(footer)
@@ -112,6 +118,41 @@ class LabelSpreadsDialog(QDialog):
         self.finished.connect(lambda _: self.scan.stop())
         self.refresh_list()
         self.scan.start()
+
+    def change_spread_shift(self, enabled):
+        callback = getattr(self, "shift_changed_callback", None)
+        if callback is None:
+            return
+
+        try:
+            pairs, names, spreads, splits = callback(enabled)
+        except Exception as error:
+            self.spread_shift_box.blockSignals(True)
+            self.spread_shift_box.setChecked(not enabled)
+            self.spread_shift_box.blockSignals(False)
+            QMessageBox.warning(self, "Spread Shift", str(error))
+            return
+
+        self.scan.stop()
+        self.pairs = list(pairs)
+        self.names = names
+        self.spreads = spreads
+        self.splits = splits
+        self.kinds = {}
+        self.pending = iter(self.pairs)
+        self.finished_scan = False
+        self.reorder_pending = False
+        self.last_edit = None
+        self.run = None
+        self.pixmap = None
+
+        self.refresh_list(start_at_top=True)
+        self.scan.start()
+
+        # Commit the alignment only after the viewer has refreshed.
+        confirmed = getattr(self, "shift_confirmed_callback", None)
+        if confirmed is not None:
+            confirmed(enabled)
 
     def scan_pair(self):
         # Check one pair per timer tick so the reviewer can browse while sorting.
