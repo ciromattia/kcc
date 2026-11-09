@@ -1503,7 +1503,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         APP = kccapp
         MW = kccwindow
         GUI = self
-        settings_key = 'kcc13'
+        settings_key = 'kcc10'
         if Version(qVersion()) <= Version('6.4.3'):
             settings_key += '-legacy'
         self.settings = QSettings('ciromattia', settings_key)
