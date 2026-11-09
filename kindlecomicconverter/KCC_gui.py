@@ -912,17 +912,14 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
 
                 pairs, names = alignment(active_shift)
 
-                if pairs:
+                if len(pages) >= 2:
                     dlg = LabelSpreadsDialog(
                         APP.primaryScreen().availableGeometry().height(),
                         pairs, spreads, seam,
                         lambda index: seam(index, inspect=True),
                         names, splits, self.settings, merge_only=single_pages,
+                        spread_shift=active_shift,
                     )
-
-                    dlg.spread_shift_box.blockSignals(True)
-                    dlg.spread_shift_box.setChecked(active_shift)
-                    dlg.spread_shift_box.blockSignals(False)
 
                     dlg.shift_changed_callback = alignment
 
@@ -939,7 +936,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                     scan_image.cache_clear()
 
                     if accepted:
-                        start_index = base_start ^ int(dlg.spread_shift_box.isChecked())
+                        start_index = base_start ^ int(dlg.manual_shift)
 
                         data = {
                             'spreads': sorted(dlg.spreads),

@@ -8,9 +8,36 @@ from PySide6.QtWidgets import (
 )
 
 
+def choose_automatic_merges(candidates):
+    """Choose the highest-scoring set of adjacent pairs without reusing pages."""
+    pairs = sorted(candidates)
+    scores = [0] * (len(pairs) + 1)
+    take = [False] * len(pairs)
+    following = [0] * len(pairs)
+    for index in range(len(pairs) - 1, -1, -1):
+        pair = pairs[index]
+        next_index = index + 1
+        if next_index < len(pairs) and pairs[next_index] == pair + 1:
+            next_index += 1
+        following[index] = next_index
+        join_score = candidates[pair] + scores[next_index]
+        take[index] = join_score >= scores[index + 1]
+        scores[index] = join_score if take[index] else scores[index + 1]
+
+    chosen = set()
+    index = 0
+    while index < len(pairs):
+        if take[index]:
+            chosen.add(pairs[index])
+            index = following[index]
+        else:
+            index += 1
+    return chosen
+
+
 class LabelSpreadsDialog(QDialog):
     def __init__(self, available_height, pairs, spreads, load_preview, classify, names, splits, settings=None,
-                 *, merge_only=False):
+                 *, merge_only=False, spread_shift=False):
         super().__init__()
         # The caller owns these sets and saves them only after the dialog is accepted.
         # Automatic classifications live separately and never modify either set.
@@ -20,6 +47,7 @@ class LabelSpreadsDialog(QDialog):
         self.classify = classify
         self.names = names
         self.merge_only = merge_only
+        self.manual_shift = spread_shift
         self.kinds = {}
         self.alternate_pending = iter(())
         self.shift_hint = False
@@ -104,12 +132,15 @@ class LabelSpreadsDialog(QDialog):
         self.full_page.setToolTip('Show artwork outside the seam strips. May reveal spoilers.')
         self.full_page.toggled.connect(self.show_pair)
         controls.addWidget(self.full_page)
-        self.spread_shift_box = QCheckBox('Spread Shift')
-        self.spread_shift_box.setToolTip(
-            'Switch the visible pairing by one page. Decisions in both alignments are saved.'
+        self.pairing_box = QComboBox()
+        self.pairing_box.addItems(['Spread Shift off', 'Spread Shift on', 'Auto pairing'])
+        self.pairing_box.setCurrentIndex(int(spread_shift))
+        self.pairing_box.setToolTip(
+            'Auto pairing suggests non-overlapping merges from both alignments. '
+            'The manual views let you inspect either alignment.'
         )
-        controls.addWidget(self.spread_shift_box)
-        self.spread_shift_box.toggled.connect(self.change_spread_shift)
+        controls.addWidget(self.pairing_box)
+        self.pairing_box.currentIndexChanged.connect(self.change_pairing)
         controls.addStretch(1)
         footer = QHBoxLayout()
         layout.addLayout(footer)
@@ -132,7 +163,7 @@ class LabelSpreadsDialog(QDialog):
             shortcut.activated.connect(action)
             self.shortcuts.append(shortcut)
 
-        for widget in (self, self.files, self.files.viewport(), self.group, self.full_page, self.spread_shift_box):
+        for widget in (self, self.files, self.files.viewport(), self.group, self.full_page, self.pairing_box):
             widget.installEventFilter(self)
         self.files.setFocus()
 
@@ -146,19 +177,21 @@ class LabelSpreadsDialog(QDialog):
         self.refresh_list()
         self.scan.start()
 
-    def change_spread_shift(self, enabled):
-        callback = getattr(self, "shift_changed_callback", None)
+    def automatic_pairing(self):
+        return self.pairing_box.currentIndex() == 2
+
+    def change_pairing(self, mode):
+        callback = getattr(self, 'shift_changed_callback', None)
         if callback is None:
             return
-
-        try:
-            pairs, names = callback(enabled)
-        except Exception as error:
-            self.spread_shift_box.blockSignals(True)
-            self.spread_shift_box.setChecked(not enabled)
-            self.spread_shift_box.blockSignals(False)
-            QMessageBox.warning(self, "Spread Shift", str(error))
-            return
+        if mode == 2:
+            # Pair IDs are the same virtual page indices in either alignment.
+            off, off_names = callback(False)
+            on, on_names = callback(True)
+            pairs, names = sorted([*off, *on]), {**off_names, **on_names}
+        else:
+            self.manual_shift = bool(mode)
+            pairs, names = callback(self.manual_shift)
 
         self.scan.stop()
         self.shift_hint = False
@@ -185,9 +218,9 @@ class LabelSpreadsDialog(QDialog):
         self.scan.stop()
         self.shift_hint = False
         callback = getattr(self, 'shift_changed_callback', None)
-        if callback is None:
+        if callback is None or self.automatic_pairing():
             return
-        other_pairs, _ = callback(not self.spread_shift_box.isChecked())
+        other_pairs, _ = callback(not self.manual_shift)
         self.shift_hint = any(self.row_status(pair) == 'Suggested merge' for pair in other_pairs)
         if not self.shift_hint:
             remaining = [pair for pair in other_pairs if self.row_status(pair) == 'Checking']
@@ -221,7 +254,7 @@ class LabelSpreadsDialog(QDialog):
         if pair is None:
             self.scan.stop()
             self.finished_scan = True
-            if self.group.currentIndex() or self.merge_only:
+            if self.group.currentIndex() or self.merge_only or self.automatic_pairing():
                 if self.active_range is None:
                     self.refresh_list(start_at_top=bool(self.group.currentIndex()) and not self.keep_scan_position)
                 else:
@@ -308,6 +341,14 @@ class LabelSpreadsDialog(QDialog):
     def review_pairs(self):
         # Keep the list stable while checking pairs or selecting a range.
         # In merge-only review, an unmarked pair is already separate.
+        if self.automatic_pairing():
+            confirmed = self.spreads | self.splits
+            candidates = {
+                pair: 2 if self.kinds[pair] == 'full' else 1
+                for pair in self.pairs if self.row_status(pair) == 'Suggested merge'
+            } if self.finished_scan else {}
+            suggested = choose_automatic_merges(candidates)
+            return [pair for pair in self.pairs if pair in confirmed or pair in suggested]
         if not self.merge_only or not self.finished_scan:
             return list(self.pairs)
         return [pair for pair in self.pairs if self.row_status(pair) in ('Suggested merge', 'Merged', 'Split')]
@@ -390,7 +431,7 @@ class LabelSpreadsDialog(QDialog):
                 status = f'{count} pairs selected'
             self.status.setText(f'{status}   ·   {len(self.spreads)} confirmed merges · {len(self.splits)} confirmed splits')
         if self.shift_hint:
-            other = 'off' if self.spread_shift_box.isChecked() else 'on'
+            other = 'off' if self.manual_shift else 'on'
             self.shift_banner.setText(f'Likely merges found with Spread Shift {other}')
         self.shift_banner.setVisible(self.shift_hint)
         total = len(self.visible_pairs)
@@ -408,7 +449,7 @@ class LabelSpreadsDialog(QDialog):
         return pair - 1 in self.spreads or pair + 1 in self.spreads
 
     def apply(self, pairs, merge):
-        if merge and any(self.overlaps_merge(pair) for pair in pairs):
+        if merge and any(self.overlaps_merge(pair) or pair + 1 in pairs for pair in pairs):
             self.status.setText('A page is already in a confirmed merge. Switch alignment and split that pair first.')
             return False
         self.last_edit = (self.spreads.copy(), self.splits.copy())

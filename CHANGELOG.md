@@ -2,6 +2,8 @@
 
 #### Unreleased
 
+* Add Auto pairing to suggest non-overlapping joins from both Spread Shift alignments in one review list.
+
 * Use Spread Shift within a book and save confirmed decisions from both alignments. Overlap checks prevent a page from being used in two merges.
 * Remember the last alignment per book for batch conversion. The main Spread Shift checkbox remains the default when a book has no saved alignment.
 * Re-sort suggestions when the alignment changes and show a muted banner when the other alignment has a likely merge.

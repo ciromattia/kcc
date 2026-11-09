@@ -237,7 +237,9 @@ starting decision to a range. Shift-click also selects multiple pairs.
 **Enter** saves. The save prompt counts only merge suggestions in the current
 view.
 
-Toggle **Spread Shift** in **Label Spreads** to switch neighbors by one page.
+Choose **Auto pairing** in **Label Spreads** to review suggested merges from
+both alignments together. KCC prefers stronger non-overlapping suggestions.
+Choose **Spread Shift on** or **Spread Shift off** to inspect alternatives.
 Decisions from both alignments are saved together. A page can belong to only
 one confirmed merge. A banner above the preview flags likely merges in the
 other alignment after the current one has been checked.
