@@ -43,8 +43,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: 3.14
-          check-latest: true
+          # new enough to not worry about emudhra
+          python-version: 3.13.17
           cache: 'pip'
       - name: Install dependencies
         env:
