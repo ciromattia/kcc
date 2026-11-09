@@ -817,7 +817,12 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                 # order that comparison and conversion use when they load these labels.
                 layout = list(comic2ebook.spread_label_pages(path, options.righttoleft, split))
                 pages = [(file, box) for file, boxes in layout for box in boxes]
-                start_index = int(job.lower().endswith(('.pdf', '.epub'))) ^ options.spreadshift
+                # Portrait source images are already separate. Review likely
+                # joins and explicit decisions instead of asking about splits.
+                single_pages = all(
+                    len(boxes) == 1 and boxes[0][2] <= boxes[0][3]
+                    for _, boxes in layout
+                )
 
                 # Adjacent pairs can share a source scan. Keep a small decode cache
                 # for classification and render previews only as the reviewer opens them.
@@ -861,12 +866,10 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                         preview = preview.convert('1', dither=Dither.NONE)
                     return QPixmap.fromImage(ImageQt(preview)), left_edge.width
 
-                # Spread Shift changes the first page of each pair.
-                # Keep decisions for each alignment separate while reviewing.
+                # Both alignments refer to the same virtual page indices.
                 label_path = Path(job + '.json')
-                initial_shift = bool(options.spreadshift)
-                active_shift = initial_shift
-                decisions = {}
+                active_shift = bool(options.spreadshift)
+                base_start = int(job.lower().endswith(('.pdf', '.epub')))
 
                 saved = None
                 if label_path.exists():
@@ -874,7 +877,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                         saved = comic2ebook.read_spread_labels(label_path)
                         if (
                             saved.get('split_before_labeling', False) != split
-                            or saved.get('righttoleft') != options.righttoleft
+                            or saved.get('righttoleft', options.righttoleft) != options.righttoleft
                         ):
                             saved = None
                         elif saved is not None:
@@ -887,79 +890,41 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                         )
                         saved = None
 
-                # A saved alignment belongs to this book, not the global setting.
-                if saved is not None and type(saved.get('spread_start')) is int:
-                    saved_start = saved['spread_start']
-                    if saved_start in (0, 1):
-                        active_shift = bool(
-                            saved_start
-                            ^ int(job.lower().endswith(('.pdf', '.epub')))
-                        )
+                spreads, splits = set(), set()
+                if saved is not None:
+                    spreads.update(saved['spreads'])
+                    saved_splits = saved.get('review_splits', [])
+                    if isinstance(saved_splits, list):
+                        splits.update(i for i in saved_splits if type(i) is int and 0 <= i < len(pages) - 1)
+                    splits.difference_update(spreads)
+                    saved_start = saved.get('spread_start')
+                    if type(saved_start) is int and saved_start in (0, 1):
+                        active_shift = bool(saved_start ^ base_start)
 
                 def alignment(shift):
-                    index = (
-                        int(job.lower().endswith(('.pdf', '.epub')))
-                        ^ int(shift)
-                    )
-                    pairs = list(range(index, len(pages) - 1, 2))
-                    pair_set = set(pairs)
-
-                    if shift not in decisions:
-                        merges = set()
-                        separate = set()
-
-                        if saved is not None and saved.get('spread_start') == index:
-                            merges.update(
-                                i for i in saved['spreads']
-                                if i in pair_set
-                            )
-                            review_splits = saved.get('review_splits', [])
-                            if isinstance(review_splits, list):
-                                separate.update(
-                                    i for i in review_splits
-                                    if type(i) is int and i in pair_set
-                                )
-                            separate.difference_update(merges)
-
-                        decisions[shift] = (merges, separate)
-
-                    merges, separate = decisions[shift]
+                    pairs = range(base_start ^ int(shift), len(pages) - 1, 2)
                     names = {}
-
                     for i in pairs:
-                        filenames = [
-                            original_names[file.stem]
-                            for file, _ in pages[i:i + 2]
-                        ]
+                        filenames = [original_names[file.stem] for file, _ in pages[i:i + 2]]
                         name = ' + '.join(dict.fromkeys(filenames))
                         names[i] = f'{i + 1}–{i + 2}  {name}'
+                    return pairs, names
 
-                    return pairs, names, merges, separate
-
-                pairs, names, spreads, splits = alignment(active_shift)
+                pairs, names = alignment(active_shift)
 
                 if pairs:
                     dlg = LabelSpreadsDialog(
                         APP.primaryScreen().availableGeometry().height(),
                         pairs, spreads, seam,
                         lambda index: seam(index, inspect=True),
-                        names, splits, self.settings,
+                        names, splits, self.settings, merge_only=single_pages,
                     )
 
                     dlg.spread_shift_box.blockSignals(True)
                     dlg.spread_shift_box.setChecked(active_shift)
                     dlg.spread_shift_box.blockSignals(False)
 
-                    def change_alignment(enabled):
-                        # Prepare the requested alignment without committing it.
-                        return alignment(bool(enabled))
-
-                    def confirm_alignment(enabled):
-                        nonlocal active_shift
-                        active_shift = bool(enabled)
-
-                    dlg.shift_changed_callback = change_alignment
-                    dlg.shift_confirmed_callback = confirm_alignment
+                    dlg.shift_changed_callback = alignment
 
                     direction = (
                         self.tr("RTL") if options.righttoleft
@@ -974,10 +939,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                     scan_image.cache_clear()
 
                     if accepted:
-                        start_index = (
-                            int(job.lower().endswith(('.pdf', '.epub')))
-                            ^ int(active_shift)
-                        )
+                        start_index = base_start ^ int(dlg.spread_shift_box.isChecked())
 
                         data = {
                             'spreads': sorted(dlg.spreads),

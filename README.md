@@ -221,20 +221,31 @@ After completed conversion, you should find ready file alongside the original in
 
 For manga scanned two pages at a time, enable **Split before labeling** next
 to **Label Spreads**. Set the reading direction, then open **Label Spreads** to
-review pairs from the split pages. **By operation** puts pairs needing review
-first, followed by suggested merges and splits. **Show full pages** reveals the
-artwork outside the seam strips. Use any arrow key to browse, **Space** to toggle
-the current decision, or **M** to mark a merge. Shift-click to select a range or
-press **R** at each end of a
-run. Press **Enter** to save your decisions. If pairs are offset by one page,
-toggle **Spread Shift** directly inside **Label Spreads**. The page pairings
-and previews update immediately. Saving also records the selected alignment
-for that book, without changing the main KCC **Spread shift** checkbox.
-During batch conversion, each book with a saved alignment uses its own
-Spread Shift setting. Books without a saved alignment continue using the
-main checkbox as the default, preserving normal KCC behavior.
-Confirm your labels, then convert
-the original file. KCC splits the source pages and joins the labeled pairs
+review the resulting page pairs. Wide scans use the full review list. Books
+containing only single portrait pages show suggested merges and confirmed
+decisions. Other pairs stay separate.
+
+**Sort by operation** groups pairs needing review, merges, splits, and
+overlaps. Confirmed decisions have a muted green highlight, and overlaps
+have a muted red highlight. **Show full pages** reveals the artwork outside the
+seam strips.
+
+Use the arrow keys to browse, **Space** to toggle the current decision, or
+**M** to mark a merge. Press **R** at the first and last pair to apply the
+starting decision to a range. Shift-click also selects multiple pairs.
+**Backspace** clears a confirmation or range, **U** undoes the last edit, and
+**Enter** saves. The save prompt counts only merge suggestions in the current
+view.
+
+Toggle **Spread Shift** in **Label Spreads** to switch neighbors by one page.
+Decisions from both alignments are saved together. A page can belong to only
+one confirmed merge. A banner above the preview flags likely merges in the
+other alignment after the current one has been checked.
+
+KCC remembers the last alignment for each labeled book, including in a batch.
+Books without a saved alignment use the main **Spread shift** checkbox.
+Convert the original file once after saving your labels. KCC splits the
+source pages and joins the labeled pairs
 before applying your final **Spread splitter** setting. For one output page per
 confirmed spread, use **Rotate**, and enable **No rotate** to keep the spread
 horizontal.

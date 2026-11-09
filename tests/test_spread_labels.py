@@ -62,6 +62,15 @@ class SpreadLabelsTests(unittest.TestCase):
             with self.subTest(labels=labels), self.assertRaises(UserWarning):
                 comic2ebook.validate_spread_labels(labels, layout, True)
 
+    def test_saved_merges_can_use_both_pairing_alignments(self):
+        for index in range(2, 6):
+            Image.new('RGB', (120, 240), 'green').save(self.path / f'kcc-{index:04}.png')
+        layout = list(comic2ebook.spread_label_pages(self.path, righttoleft=True, split=False))
+        comic2ebook.validate_spread_labels({'spreads': [0, 3], 'spread_start': 1}, layout, True)
+        pages = [(source, box) for source, boxes in layout for box in boxes]
+        groups, _ = output_groups(pages, {0, 3})
+        self.assertEqual([len(pair) for source, _ in layout for pair in groups[source]], [2, 1, 2])
+
     def test_split_only_preview_has_same_page_order_as_conversion(self):
         for righttoleft, expected in ((False, [(255, 0, 0), (0, 0, 255)]),
                                      (True, [(0, 0, 255), (255, 0, 0)])):

@@ -1,9 +1,13 @@
 # CHANGELOG
 
 #### Unreleased
-* Added a Spread Shift toggle inside Label Spreads to preview and save each book's page pairing alignment.
-* Saved spread labels now preserve per-book Spread Shift settings during batch conversion, allowing books with different alignments to be converted together.
-* The main Spread Shift checkbox remains the default for books without a saved alignment, preserving existing conversion behavior.
+
+* Use Spread Shift within a book and save confirmed decisions from both alignments. Overlap checks prevent a page from being used in two merges.
+* Remember the last alignment per book for batch conversion. The main Spread Shift checkbox remains the default when a book has no saved alignment.
+* Re-sort suggestions when the alignment changes and show a muted banner when the other alignment has a likely merge.
+* Focus single-page books on suggested merges and confirmed decisions. Wide scans keep the full review list.
+* Move preview controls above the viewer and center the shortcut hints. Use R to select a range, Backspace to clear confirmations, and U to undo.
+* Tint overlaps red and confirmed decisions green. Save prompts count only suggested merges in the current view.
 
 * Spread editor can split wide scans before labeling and apply saved joins in one conversion.
 * Added spoilerless seam previews, optional full-page previews, gutter suggestions, and range editing with undo.
