@@ -148,7 +148,8 @@ def dependencyCheck(level):
         from pymupdf import __version__ as pymupdfVersion
         if Version('1.16.1') > Version(pymupdfVersion):
             missing.append('PyMuPDF 1.16.1+')
-    except ImportError:
+    except ImportError as e:
+        print(e)
         missing.append('PyMuPDF 1.16.1+')
     if len(missing) > 0:
         print('ERROR: ' + ', '.join(missing) + ' is not installed!')
