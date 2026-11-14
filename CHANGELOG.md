@@ -1,5 +1,21 @@
 # CHANGELOG
 
+#### Unreleased
+
+* Add Auto pairing to suggest non-overlapping joins from both Spread Shift alignments in one review list.
+
+* Use Spread Shift within a book and save confirmed decisions from both alignments. Overlap checks prevent a page from being used in two merges.
+* Remember the last alignment per book for batch conversion. The main Spread Shift checkbox remains the default when a book has no saved alignment.
+* Re-sort suggestions when the alignment changes and show a muted banner when the other alignment has a likely merge.
+* Focus single-page books on suggested merges and confirmed decisions. Wide scans keep the full review list.
+* Move preview controls above the viewer and center the shortcut hints. Use R to select a range, Backspace to clear confirmations, and U to undo.
+* Tint overlaps red and confirmed decisions green. Save prompts count only suggested merges in the current view.
+
+* Spread editor can split wide scans before labeling and apply saved joins in one conversion.
+* Added spoilerless seam previews, optional full-page previews, gutter suggestions, and range editing with undo.
+* Added a before-and-after spread comparison with synchronized scrolling and a batch book picker. Both previews follow the reading direction.
+* Spread labels are saved atomically and checked against the source layout before applying joins. Existing label files still load.
+
 
 #### 5.6.2:
 * build pipeline : drop pypi by @darodi in [#465](https://github.com/ciromattia/kcc/pull/465)

@@ -20,6 +20,7 @@
 
 from collections import Counter
 from datetime import datetime
+from hashlib import sha256
 import json
 import os
 import pathlib
@@ -35,7 +36,7 @@ from re import sub
 from stat import S_IWRITE, S_IREAD, S_IEXEC
 from typing import List
 from zipfile import ZipFile, ZIP_STORED
-from tempfile import mkdtemp, gettempdir
+from tempfile import NamedTemporaryFile, mkdtemp, gettempdir
 from shutil import move, copytree, rmtree
 from multiprocessing import Pool, cpu_count
 from uuid import uuid4
@@ -1243,7 +1244,7 @@ def removeNonImages(filetree):
         raise RuntimeError('\n'.join(warning))
 
 
-def sanitizeTree(filetree, options, prefix='kcc'):
+def sanitizeTree(filetree, options, prefix='kcc', original_names=None):
     chapterNames = {}
     page = 1
     cover_path = None
@@ -1255,6 +1256,8 @@ def sanitizeTree(filetree, options, prefix='kcc'):
             # 9999 page limit
             unique_name = f'{prefix}-{page:04}'
             page += 1
+            if original_names is not None:
+                original_names[unique_name] = name
 
             newKey = os.path.join(root, unique_name + ext)
             key = os.path.join(root, name)
@@ -1280,10 +1283,104 @@ def sanitizeTree(filetree, options, prefix='kcc'):
     return chapterNames, cover_path
 
 
+def spread_label_pages(path, righttoleft, split):
+    """List the source files and page bounds in reading order."""
+    for filename in os_sorted(os.listdir(path)):
+        source = Path(path, filename)
+        with Image.open(source) as page:
+            width, height = page.size
+        if split and image.MIN_SPREAD_RATIO < width / height < image.BISECT_THRESHOLD:
+            boxes = image.spread_boxes((width, height), righttoleft)
+        else:
+            boxes = ((0, 0, width, height),)
+        yield source, boxes
+
+
+def spread_layout_signature(layout):
+    """Fingerprint page geometry, order, and samples of the original encoded bytes."""
+    digest = sha256()
+    for source, boxes in layout:
+        size = source.stat().st_size
+        digest.update(repr((source.name, boxes, size)).encode('utf-8'))
+        with source.open('rb') as stream:
+            for offset in (0, max(0, size // 2 - 2048), max(0, size - 4096)):
+                stream.seek(offset)
+                digest.update(stream.read(4096))
+    return digest.hexdigest()
+
+
+def read_spread_labels(path):
+    try:
+        with open(path, encoding='utf-8') as stream:
+            data = json.load(stream)
+        if isinstance(data, dict) and isinstance(data.get('spreads'), list):
+            return data
+    except (ValueError, UnicodeError):
+        pass
+    raise UserWarning(QCoreApplication.translate(
+        "KCCGUI", "Spread labels are incompatible. Run Label Spreads again."
+    ))
+
+
+def write_spread_labels(path, data):
+    # Replace only after a complete write, using a file on the same filesystem.
+    temporary = None
+    try:
+        with NamedTemporaryFile(mode='w', encoding='utf-8', dir=path.parent, delete=False) as stream:
+            temporary = Path(stream.name)
+            json.dump(data, stream)
+        temporary.replace(path)
+    finally:
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
+
+
+def validate_spread_labels(data, layout, righttoleft):
+    """Validate virtual page indices before either previewing or merging them."""
+    if data.get('righttoleft', righttoleft) != righttoleft:
+        raise UserWarning(QCoreApplication.translate(
+            "KCCGUI", "Reading direction changed. Run Label Spreads again."
+        ))
+    count = sum(len(boxes) for _, boxes in layout)
+    indices = data['spreads']
+    signature = data.get('source_layout')
+    if (
+        not count or data.get('page_count', count) != count
+        or any(type(index) is not int or not 0 <= index < count - 1 for index in indices)
+        or len(set(indices) | {index + 1 for index in indices}) != 2 * len(indices)
+        or (signature is not None and signature != spread_layout_signature(layout))
+    ):
+        raise UserWarning(QCoreApplication.translate(
+            "KCCGUI", "Spread labels no longer match the pages. Run Label Spreads again."
+        ))
+
+
+def split_pages_for_labeling(layout):
+    """Materialize virtual pages in the conversion workspace and map bookmarks."""
+    first_page_indices = []
+    next_index = 0
+    for source, boxes in layout:
+        first_page_indices.append(next_index)
+        next_index += len(boxes)
+        if len(boxes) == 2:
+            with Image.open(source) as page:
+                for index, box in enumerate(boxes, 1):
+                    half = page.crop(box)
+                    if half.mode == 'CMYK':
+                        half = half.convert('RGB')
+                    half.save(source.with_name(f'{source.stem}-half-{index}.png'), compress_level=1)
+            source.unlink()
+    return first_page_indices
+
+
 def flattenTree(filetree):
+    filetree = os.fspath(filetree)
     for root, dirs, files in os.walk(filetree, topdown=False):
-        for name in files:
-            os.rename(os.path.join(root, name), os.path.join(filetree, name))
+        # Root files are already in place. Renaming onto an existing path is
+        # not portable, even when the paths refer to the same file.
+        if root != filetree:
+            for name in files:
+                os.rename(os.path.join(root, name), os.path.join(filetree, name))
         for name in dirs:
             os.rmdir(os.path.join(root, name))
 
@@ -1928,30 +2025,43 @@ def makeBook(source, fusion_cover_path=None, qtgui=None, job_progress=''):
     chapterNames, cover_path = sanitizeTree(os.path.join(path, 'OEBPS', 'Images'), options)
 
     if os.path.exists(source+'.json'):
-        flattenTree(os.path.join(path, 'OEBPS', 'Images'))
-        chapterNames = {}
-        cover_path = None
-        with open(source+'.json') as f:
-            data = json.load(f)
-            for root, _, files in os.walk(os.path.join(path, 'OEBPS', 'Images')):
-                sorted_files = os_sorted(files)
-                for i in range(len(sorted_files)):
-                    if not cover_path:
-                        cover_path = os.path.join(root, sorted_files[i])
-                    if i in data['spreads']:
-                        im1 = Image.open(os.path.join(root, sorted_files[i]))
-                        im2 = Image.open(os.path.join(root, sorted_files[i+1]))
-                        if not options.righttoleft:
-                            im1, im2 = im2, im1
-                        dst = Image.new('RGB', (im1.width + im2.width, im1.height))
-                        dst.paste(im2, (0, 0))
-                        dst.paste(im1, (im1.width, 0))
-                        base, _ = os.path.splitext(os.path.basename(sorted_files[i]))
-                        dst.save(os.path.join(path, 'OEBPS', 'Images', f'{base}-merged.png'))
-                        os.remove(os.path.join(root, sorted_files[i]))
-                        os.remove(os.path.join(root, sorted_files[i+1]))
-                        if not os.path.exists(cover_path):
-                            cover_path = os.path.join(root, f'{base}-merged.png')            
+        image_path = os.path.join(path, 'OEBPS', 'Images')
+        try:
+            data = read_spread_labels(source + '.json')
+            flattenTree(image_path)
+            chapterNames = {}
+            split_before_labeling = data.get('split_before_labeling', False)
+            layout = list(spread_label_pages(image_path, options.righttoleft, split_before_labeling))
+            validate_spread_labels(data, layout, options.righttoleft)
+            spread_indices = data['spreads']
+            if split_before_labeling:
+                first_page_indices = split_pages_for_labeling(layout)
+        except (OSError, UserWarning):
+            rmtree(path, True)
+            raise
+        sorted_files = os_sorted(os.listdir(image_path))
+        if split_before_labeling:
+            # Map original bookmarks to the first split half, then account for joins
+            # that removed a page before that position.
+            options.comicinfo_chapters = [
+                (page_index - sum(pair < page_index for pair in spread_indices), title)
+                for index, title in options.comicinfo_chapters
+                if 0 <= index < len(first_page_indices)
+                for page_index in (first_page_indices[index],)
+            ]
+        cover_path = os.path.join(image_path, sorted_files[0])
+        for i in spread_indices:
+            first = os.path.join(image_path, sorted_files[i])
+            second = os.path.join(image_path, sorted_files[i+1])
+            with Image.open(first) as first_page, Image.open(second) as second_page:
+                left, right = image.spread_visual_order(first_page, second_page, options.righttoleft)
+                spread = image.join_spread(left, right)
+                merged = os.path.splitext(first)[0] + '-merged.png'
+                spread.save(merged, compress_level=1)
+            os.remove(first)
+            os.remove(second)
+            if cover_path == first:
+                cover_path = merged
 
     if options.filefusion:
         # Strip the fusion_0001_ sort prefix from makeFusion if present

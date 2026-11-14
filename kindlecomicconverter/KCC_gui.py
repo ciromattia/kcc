@@ -36,19 +36,24 @@ from urllib.parse import unquote
 from time import sleep
 from shutil import move, rmtree
 
+import numpy as np
 import requests
 from xml.sax.saxutils import escape
 from psutil import Process
+from contextlib import ExitStack
+from functools import lru_cache
 from copy import copy
 from packaging.version import Version
-from tempfile import gettempdir, mkdtemp
+from tempfile import gettempdir
 from PIL import Image
 from PIL.Image import Dither
+from PIL.ImageQt import ImageQt
 
 from .KCC_spread_label import LabelSpreadsDialog
+from .KCC_spread_compare import show_comparison
 
 from .shared import HTMLStripper, sanitizeTrace, walkLevel
-from .image import ProfileData
+from .image import ProfileData, spread_visual_order
 from .comicarchive import SEVENZIP, TAR, available_archive_tools
 from .comic2ebook import KOBO_TOUCH_DRIVER_REGEX, OS_SORT_KEY, KF7_KINDLES, flattenTree, getWorkFolder, removeNonImages, sanitizeTree, detectKindleGen
 from . import __version__
@@ -58,6 +63,49 @@ from . import metadata
 from . import kindle
 from . import KCC_ui
 from . import KCC_ui_editor
+
+
+def has_plain_gutter(page, box, right_edge):
+    """Check the inner page edge for a nearly solid light or dark gutter."""
+    x1, y1, x2, y2 = box
+    width = max(1, round(0.04 * (x2 - x1)))
+    margin = round(0.05 * (y2 - y1))
+    if right_edge:
+        x1 = x2 - width
+    else:
+        x2 = x1 + width
+    pixels = np.asarray(page.crop((x1, y1 + margin, x2, y2 - margin)).convert('L'))
+    # Tolerate scan noise and marks that cross a small part of the gutter.
+    light_columns = (pixels >= 235).mean(axis=0) > 0.97
+    dark_columns = (pixels <= 25).mean(axis=0) > 0.97
+    return max(light_columns.mean(), dark_columns.mean()) >= 0.5
+
+
+def classify_spread_edges(left, right):
+    """Suggest a review group from panel gaps and continuity at the seam."""
+    a, b = (
+        np.asarray(edge.convert('RGB').resize((24, 160), Image.Resampling.BOX), dtype=np.float32)
+        for edge in (left, right)
+    )
+    a, b = a[8:-8], b[8:-8]
+    light = (np.concatenate((a, b), axis=1).min(axis=2) >= 235).mean(axis=1)
+    gaps = light >= 0.88
+    # Compare the color on either side of the seam at each height.
+    distance = np.abs(a[:, -1] - b[:, 0]).mean(axis=1)
+    crossing = (~gaps) & (distance < 26)
+    if crossing.mean() >= 0.72 and not np.any(gaps[:-1] & gaps[1:]):
+        return 'full'
+    if crossing.mean() >= 0.48:
+        return 'panel'
+    return 'review'
+
+
+def has_panel_border(page, box):
+    # A long, sharp vertical border away from the seam suggests a separate panel.
+    sample = page.resize((400, 240), Image.Resampling.BOX, box=box).convert('L')
+    pixels = np.asarray(sample, dtype=np.int16)[12:-12, 20:-20]
+    edges = np.abs(np.diff(pixels, axis=1)) > 35
+    return edges.mean(axis=0).max() >= 0.55
 
 
 class QApplicationMessaging(QApplication):
@@ -490,6 +538,28 @@ class WorkerThread(QThread):
             jobargv.append(job)
             try:
                 comic2ebook.options = comic2ebook.checkOptions(copy(options))
+
+                # Each conversion job starts with a fresh copy of the GUI options.
+                # Label Spreads can override Spread Shift for this source only.
+                #
+                # spread_start stores the first virtual page index (0 or 1),
+                # not the checkbox state. PDF/EPUB sources use the opposite
+                # starting alignment, so XOR recovers the saved checkbox state.
+                #
+                # Without a saved alignment, retain the global Spread Shift
+                # setting. This preserves existing behavior for unlabeled books
+                # and allows mixed alignments within a single batch.
+                label_path = Path(job + '.json')
+                if label_path.is_file():
+                    saved_labels = comic2ebook.read_spread_labels(label_path)
+                    saved_start = saved_labels.get('spread_start')
+
+                    if type(saved_start) is int and saved_start in (0, 1):
+                        comic2ebook.options.spreadshift = bool(
+                            saved_start
+                            ^ int(job.lower().endswith(('.pdf', '.epub')))
+                        )
+
                 if len(currentJobs) > 1 and comic2ebook.options.title != 'defaulttitle':
                     comic2ebook.options.title += f' {i:0{len(str(len(currentJobs)))}}'
                 outputPath = comic2ebook.makeBook(job, fusion_cover_path, self, job_progress_number)
@@ -712,87 +782,182 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                     GUI.jobList.addItem(dname)
                     GUI.jobList.scrollToBottom()
 
+    def spreadReviewJobs(self):
+        return [
+            Path(item.text())
+            for item in (GUI.jobList.item(index) for index in range(GUI.jobList.count()))
+            if item.icon().isNull()
+        ]
+
+    def compareSpreadsStart(self):
+        sources = self.spreadReviewJobs()
+        if not sources:
+            QMessageBox.information(MW, self.tr("Compare Before / After"), self.tr("Queue a book to compare its spreads."))
+            return
+        options, _ = get_options()
+        show_comparison(MW, sources, options, GUI.splitBeforeLabelingBox.isChecked())
+
     def labelSpreadsStart(self):
-        low_quality_preview = False
-        if QApplication.keyboardModifiers() == Qt.ShiftModifier:
-            low_quality_preview = True
-        currentJobs = []
-        # TODO: make this a function since it's copy pasted
-        for i in range(GUI.jobList.count()):
-            # Make sure that we don't consider any system message as job to do
-            if GUI.jobList.item(i).icon().isNull():
-                currentJobs.append(str(GUI.jobList.item(i).text()))
-        for job in currentJobs:
-            images = []
-            spreads = []
-            options, _ = get_options()
-            options.profileData = [(600, 800), (600,800)]
-            path = getWorkFolder(job, options)
-            removeNonImages(path)
-            sanitizeTree(path, options)
-            flattenTree(path)
+        low_quality_preview = QApplication.keyboardModifiers() == Qt.ShiftModifier
+        currentJobs = self.spreadReviewJobs()
+        for book, source in enumerate(currentJobs, 1):
+            job = str(source)
+            workdir = None
+            try:
+                options, _ = get_options()
+                options = comic2ebook.checkOptions(options)
+                workdir = getWorkFolder(job, options)
+                path = os.path.join(workdir, 'OEBPS', 'Images')
+                removeNonImages(path)
+                original_names = {}
+                sanitizeTree(path, options, original_names=original_names)
+                flattenTree(path)
+                split = GUI.splitBeforeLabelingBox.isChecked()
+                # Keep source images intact. Virtual page bounds define the exact reading
+                # order that comparison and conversion use when they load these labels.
+                layout = list(comic2ebook.spread_label_pages(path, options.righttoleft, split))
+                pages = [(file, box) for file, boxes in layout for box in boxes]
+                # Portrait source images are already separate. Review likely
+                # joins and explicit decisions instead of asking about splits.
+                single_pages = all(
+                    len(boxes) == 1 and boxes[0][2] <= boxes[0][3]
+                    for _, boxes in layout
+                )
 
-            if options.tempdir:
-                workdir = mkdtemp('', 'KCC-', os.path.dirname(job))
-            else:
-                workdir = mkdtemp('', 'KCC-')
+                # Adjacent pairs can share a source scan. Keep a small decode cache
+                # for classification and render previews only as the reviewer opens them.
+                @lru_cache(maxsize=3)
+                def scan_image(filename):
+                    with Image.open(filename) as source:
+                        return source.copy()
 
-            for root, _, files in os.walk(path):
-                files.sort(key=OS_SORT_KEY)
-                start_index = 0
-                if job.endswith('.pdf') or job.endswith('.epub'):
-                    start_index = 1
-                if options.spreadshift:
-                    start_index = 0 if start_index == 1 else 1
-                for i in range(start_index, len(files), 2):
-                    if i  == len(files) - 1:
-                        continue 
-                    # TODO: with statements
-                    # TODO: ignore 1% of top and bottom too?
-                    im1 = Image.open(os.path.join(root, files[i]))
-                    im2 = Image.open(os.path.join(root, files[i+1]))
-                    if not options.righttoleft:
-                        im1, im2 = im2, im1
-                    size1 = im1.size
-                    size2 = im2.size
-
-                    preview_crop1 = im1.crop((0, 0, 0.2*size1[0], size1[1]))
+                def seam(i, full=False, inspect=False):
+                    first_page, second_page = pages[i:i+2]
+                    left, right = spread_visual_order(first_page, second_page, options.righttoleft)
+                    with ExitStack() as images_to_close:
+                        if inspect:
+                            first, second = scan_image(left[0]), scan_image(right[0])
+                        else:
+                            first = images_to_close.enter_context(Image.open(left[0]))
+                            second = first if left[0] == right[0] else images_to_close.enter_context(Image.open(right[0]))
+                        x1, y1, x2, y2 = left[1]
+                        x3, y3, x4, y4 = right[1]
+                        left_width = x2 - x1
+                        right_width = x4 - x3
+                        if inspect and split:
+                            if has_plain_gutter(first, left[1], right_edge=True) or has_plain_gutter(second, right[1], right_edge=False):
+                                return 'split'
+                        elif inspect:
+                            left_hist = first.crop((x2 - 0.04 * left_width, y1, x2 - 0.01 * left_width, y2)).convert('1', dither=Dither.NONE).histogram()
+                            right_hist = second.crop((x3 + 0.01 * right_width, y3, x3 + 0.04 * right_width, y4)).convert('1', dither=Dither.NONE).histogram()
+                            if not all((left_hist[0], left_hist[-1], right_hist[0], right_hist[-1])):
+                                return 'split'
+                        left_edge = first.crop(left[1] if full else (x2 - max(1, round(0.2 * left_width)), y1, x2, y2))
+                        right_edge = second.crop(right[1] if full else (x3, y3, x3 + max(1, round(0.2 * right_width)), y4))
+                        if inspect:
+                            kind = classify_spread_edges(left_edge, right_edge)
+                            if kind == 'full' and (has_panel_border(first, left[1]) or has_panel_border(second, right[1])):
+                                return 'panel'
+                            return kind
+                    preview = Image.new('RGB', (left_edge.width + right_edge.width, max(left_edge.height, right_edge.height)))
+                    preview.paste(left_edge, (0, 0))
+                    preview.paste(right_edge, (left_edge.width, 0))
                     if low_quality_preview:
-                        preview_crop1 = preview_crop1.convert('1', dither=Dither.NONE)
-                    calculation_crop1 = im1.crop((0.01*size1[0], 0, 0.04*size1[0], size1[1])).convert('1', dither=Dither.NONE)
+                        preview = preview.convert('1', dither=Dither.NONE)
+                    return QPixmap.fromImage(ImageQt(preview)), left_edge.width
 
-                    preview_crop2 = im2.crop((0.8*size2[0], 0, size2[0], size2[1]))
-                    if low_quality_preview:
-                        preview_crop2 = preview_crop2.convert('1', dither=Dither.NONE)
-                    calculation_crop2 = im2.crop((0.96*size2[0], 0, .99* size2[0], size2[1])).convert('1', dither=Dither.NONE)
+                # Both alignments refer to the same virtual page indices.
+                label_path = Path(job + '.json')
+                active_shift = bool(options.spreadshift)
+                base_start = int(job.lower().endswith(('.pdf', '.epub')))
 
-                    # dst = Image.new('1', (im1.width + im2.width, im1.height))
-                    # dst.paste(im2, (0, 0))
-                    # dst.paste(im1, (im1.width, 0))
-                    hist1 = calculation_crop1.histogram()
-                    hist2 = calculation_crop2.histogram()
-                    # TODO: small percentage instead of zero
-                    if hist1[0] == 0 or hist1[-1] == 0 or hist2[0] == 0 or hist2[-1] == 0:
-                        continue
+                saved = None
+                if label_path.exists():
+                    try:
+                        saved = comic2ebook.read_spread_labels(label_path)
+                        if (
+                            saved.get('split_before_labeling', False) != split
+                            or saved.get('righttoleft', options.righttoleft) != options.righttoleft
+                        ):
+                            saved = None
+                        elif saved is not None:
+                            comic2ebook.validate_spread_labels(
+                                saved, layout, options.righttoleft
+                            )
+                    except UserWarning as error:
+                        QMessageBox.information(
+                            MW, self.tr("Label Spreads"), str(error)
+                        )
+                        saved = None
 
-                    preview_mode = '1' if low_quality_preview else 'RGB'
-                    dst = Image.new(preview_mode, (preview_crop1.width + preview_crop2.width, preview_crop1.height))
+                spreads, splits = set(), set()
+                if saved is not None:
+                    spreads.update(saved['spreads'])
+                    saved_splits = saved.get('review_splits', [])
+                    if isinstance(saved_splits, list):
+                        splits.update(i for i in saved_splits if type(i) is int and 0 <= i < len(pages) - 1)
+                    splits.difference_update(spreads)
+                    saved_start = saved.get('spread_start')
+                    if type(saved_start) is int and saved_start in (0, 1):
+                        active_shift = bool(saved_start ^ base_start)
 
-                    dst.paste(preview_crop2, (0, 0))
-                    dst.paste(preview_crop1, (preview_crop1.width, 0))
-                    dst.save(os.path.join(workdir, f'label-{i:04}.png'))
-                    images.append(os.path.join(workdir, f'label-{i:04}.png'))
+                def alignment(shift):
+                    pairs = range(base_start ^ int(shift), len(pages) - 1, 2)
+                    names = {}
+                    for i in pairs:
+                        filenames = [original_names[file.stem] for file, _ in pages[i:i + 2]]
+                        name = ' + '.join(dict.fromkeys(filenames))
+                        names[i] = f'{i + 1}–{i + 2}  {name}'
+                    return pairs, names
 
-                if images:
-                    dlg = LabelSpreadsDialog(APP.primaryScreen().availableGeometry().height(), images, spreads)
-                    dlg.setWindowTitle(job)
-                    if dlg.exec() == 1:
-                        with open(job+'.json', "w") as fp:
-                            # TODO: not very clean to grab index from filename
-                            spreads = [int(filename[6:10]) for filename in spreads]
-                            json.dump({'spreads': sorted(set(spreads))} , fp) 
-                rmtree(path, True)
-                rmtree(workdir, True)
+                pairs, names = alignment(active_shift)
+
+                if len(pages) >= 2:
+                    dlg = LabelSpreadsDialog(
+                        APP.primaryScreen().availableGeometry().height(),
+                        pairs, spreads, seam,
+                        lambda index: seam(index, inspect=True),
+                        names, splits, self.settings, merge_only=single_pages,
+                        spread_shift=active_shift,
+                    )
+
+                    dlg.shift_changed_callback = alignment
+
+                    direction = (
+                        self.tr("RTL") if options.righttoleft
+                        else self.tr("LTR")
+                    )
+                    dlg.setWindowTitle(
+                        f'Book {book}/{len(currentJobs)} — '
+                        f'{Path(job).name} · {direction}'
+                    )
+
+                    accepted = dlg.exec() == 1
+                    scan_image.cache_clear()
+
+                    if accepted:
+                        start_index = base_start ^ int(dlg.manual_shift)
+
+                        data = {
+                            'spreads': sorted(dlg.spreads),
+                            'review_splits': sorted(dlg.splits),
+                            'spread_start': start_index,
+                            'split_before_labeling': split,
+                            'righttoleft': options.righttoleft,
+                            'page_count': len(pages),
+                        }
+
+                        if source.suffix.lower() != '.pdf':
+                            data['source_layout'] = (
+                                comic2ebook.spread_layout_signature(layout)
+                            )
+
+                        comic2ebook.write_spread_labels(label_path, data)
+            except (OSError, RuntimeError, UserWarning) as err:
+                self.showDialog(str(err), 'error')
+            finally:
+                if workdir:
+                    rmtree(workdir, True)
 
     def selectFileMetaEditor(self, sname):
         files = []
@@ -901,6 +1066,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         GUI.ebokBox.show()
         GUI.languageEdit.show()
         GUI.labelSpreadsButton.show()
+        GUI.splitBeforeLabelingBox.show()
+        GUI.compareSpreadsButton.show()
         GUI.editorButton.show()
         GUI.easyLabel.hide()
 
@@ -940,6 +1107,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         GUI.ebokBox.hide()
         GUI.languageEdit.hide()
         GUI.labelSpreadsButton.hide()
+        GUI.splitBeforeLabelingBox.hide()
+        GUI.compareSpreadsButton.hide()
         GUI.editorButton.hide()
         GUI.easyLabel.show()
 
@@ -971,6 +1140,9 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         else:
             status = True
         GUI.editorButton.setEnabled(status)
+        GUI.labelSpreadsButton.setEnabled(status)
+        GUI.splitBeforeLabelingBox.setEnabled(status)
+        GUI.compareSpreadsButton.setEnabled(status)
         GUI.deviceBox.setEnabled(status)
         GUI.defaultOutputFolderButton.setEnabled(status)
         GUI.clearButton.setEnabled(status)
@@ -1405,6 +1577,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                                            'invertDirectionBox': GUI.invertDirectionBox.checkState(),
                                            'languageEdit': GUI.languageEdit.text(),
                                            'rotateBox': GUI.rotateBox.checkState(),
+                                           'splitBeforeLabelingBox': GUI.splitBeforeLabelingBox.checkState(),
                                            'qualityBox': GUI.qualityBox.checkState(),
                                            'vertical4PanelBox': GUI.vertical4PanelBox.checkState(),
                                            'legacyPanelViewBox': GUI.vertical4PanelBox.checkState(),
@@ -1497,7 +1670,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         self.saveSettings(None)
         sys.exit(0)
 
-    def __init__(self, kccapp, kccwindow):
+    def __init__(self, kccapp, kccwindow, settings=None):
         global APP, MW, GUI
         QObject.__init__(self)
         APP = kccapp
@@ -1506,7 +1679,8 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         settings_key = 'kcc10'
         if Version(qVersion()) <= Version('6.4.3'):
             settings_key += '-legacy'
-        self.settings = QSettings('ciromattia', settings_key)
+        # The test launcher supplies an INI file so it does not share desktop preferences.
+        self.settings = settings if settings is not None else QSettings('ciromattia', settings_key)
         self.language = str(self.settings.value('language', i18n.DEFAULT_LANGUAGE))
         self.language = i18n.apply_language(self.language)
         self.setupUi(MW)
@@ -1802,6 +1976,7 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         GUI.expertButton.clicked.connect(self.toggleExpert)
         GUI.convertButton.clicked.connect(self.convertStart)
         GUI.labelSpreadsButton.clicked.connect(self.labelSpreadsStart)
+        GUI.compareSpreadsButton.clicked.connect(self.compareSpreadsStart)
         GUI.gammaSlider.valueChanged.connect(self.changeGamma)
         GUI.gammaBox.stateChanged.connect(self.togglegammaBox)
         GUI.croppingBox.stateChanged.connect(self.togglecroppingBox)

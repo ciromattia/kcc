@@ -219,6 +219,46 @@ Refer to the wiki to install: https://github.com/ciromattia/kcc/wiki/Installatio
 Should be pretty self-explanatory. All options have detailed information in tooltips.
 After completed conversion, you should find ready file alongside the original input file (same directory).
 
+For manga scanned two pages at a time, enable **Split before labeling** next
+to **Label Spreads**. Set the reading direction, then open **Label Spreads** to
+review the resulting page pairs. Wide scans use the full review list. Books
+containing only single portrait pages show suggested merges and confirmed
+decisions. Other pairs stay separate.
+
+**Sort by operation** groups pairs needing review, merges, splits, and
+overlaps. Confirmed decisions have a muted green highlight, and overlaps
+have a muted red highlight. **Show full pages** reveals the artwork outside the
+seam strips.
+
+Use the arrow keys to browse, **Space** to toggle the current decision, or
+**M** to mark a merge. Press **R** at the first and last pair to apply the
+starting decision to a range. Shift-click also selects multiple pairs.
+**Backspace** clears a confirmation or range, **U** undoes the last edit, and
+**Enter** saves. The save prompt counts only merge suggestions in the current
+view.
+
+Choose **Auto pairing** in **Label Spreads** to review suggested merges from
+both alignments together. KCC prefers stronger non-overlapping suggestions.
+Choose **Spread Shift on** or **Spread Shift off** to inspect alternatives.
+Decisions from both alignments are saved together. A page can belong to only
+one confirmed merge. A banner above the preview flags likely merges in the
+other alignment after the current one has been checked.
+
+KCC remembers the last alignment for each labeled book, including in a batch.
+Books without a saved alignment use the main **Spread shift** checkbox.
+Convert the original file once after saving your labels. KCC splits the
+source pages and joins the labeled pairs
+before applying your final **Spread splitter** setting. For one output page per
+confirmed spread, use **Rotate**, and enable **No rotate** to keep the spread
+horizontal.
+
+Use **Compare Before / After** to see the original images above the planned
+splits and saved joins. Both rows scroll together. Choose a queued book in the
+dropdown to compare another book in the batch. The lower row follows the
+selected reading direction for splits and joins and shows the resulting pages
+in numbered file order. This previews spread layout before device-specific
+processing.
+
 Please check [our wiki](https://github.com/ciromattia/kcc/wiki/) for more details.
 
 CLI version of **KCC** is intended for power users. It allows using options that might not be compatible and decrease the quality of output.

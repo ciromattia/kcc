@@ -171,6 +171,32 @@ class ProfileData:
     }
 
 
+MIN_SPREAD_RATIO = 1.16
+BISECT_THRESHOLD = 1.8
+
+
+def spread_boxes(size, righttoleft):
+    """Return the two physical half-page bounds in reading order."""
+    width, height = size
+    midpoint = width // 2
+    left = (0, 0, midpoint, height)
+    right = (midpoint, 0, width, height)
+    return (right, left) if righttoleft else (left, right)
+
+
+def spread_visual_order(first, second, righttoleft):
+    """Convert a reading-order pair to physical left and right positions."""
+    return (second, first) if righttoleft else (first, second)
+
+
+def join_spread(left, right):
+    """Compose a left and right page without resizing either piece."""
+    page = Image.new('RGB', (left.width + right.width, max(left.height, right.height)))
+    page.paste(left, (0, 0))
+    page.paste(right, (left.width, 0))
+    return page
+
+
 class ComicPageParser:
     def __init__(self, source, is_first_page, options):
         Image.MAX_IMAGE_PIXELS = int(2048 * 2048 * 2048 // 4 // 3)
@@ -249,22 +275,10 @@ class ComicPageParser:
                     spread = spread.rotate(-90, Image.Resampling.BICUBIC, True)
             self.payload.append(['R', self.source, spread, self.page_background_color, self.fill])
         # elif wide enough to split
-        elif (width > height) != (dstwidth > dstheight) and width / height > 1.16:
+        elif (width > height) != (dstwidth > dstheight) and width / height > MIN_SPREAD_RATIO:
             # if (split) or (split and rotate)
-            BISECT_THRESHOLD = 1.8
             if self.opt.splitter != 1 and width / height < BISECT_THRESHOLD:
-                if width > height:
-                    leftbox = (0, 0, int(width / 2), height)
-                    rightbox = (int(width / 2), 0, width, height)
-                else:
-                    leftbox = (0, 0, width, int(height / 2))
-                    rightbox = (0, int(height / 2), width, height)
-                if self.opt.righttoleft:
-                    pageone = self.image.crop(rightbox)
-                    pagetwo = self.image.crop(leftbox)
-                else:
-                    pageone = self.image.crop(leftbox)
-                    pagetwo = self.image.crop(rightbox)
+                pageone, pagetwo = (self.image.crop(box) for box in spread_boxes(self.image.size, self.opt.righttoleft))
                 self.payload.append(['S1', self.source, pageone, self.page_background_color, self.fill])
                 self.payload.append(['S2', self.source, pagetwo, self.page_background_color, self.fill])
 
