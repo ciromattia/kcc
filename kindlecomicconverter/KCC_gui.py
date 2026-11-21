@@ -36,6 +36,7 @@ from urllib.parse import unquote
 from time import sleep
 from shutil import move, rmtree
 
+from natsort import os_sorted
 import requests
 from xml.sax.saxutils import escape
 from psutil import Process
@@ -466,6 +467,18 @@ class WorkerThread(QThread):
             except Exception as e:
                 print('Fusion Failed. ' + str(e))
                 MW.addMessage.emit(i18n.tr_arg(QCoreApplication.translate('KCCGUI', 'Fusion Failed. %1'), str(e)), 'error', True)
+
+        offset = 0
+        existing_files = os_sorted(os.listdir(GUI.targetDirectory))
+        indices = []
+        for file in existing_files:
+            stem = Path(file).stem
+            possible_index = stem.split(' ')[-1]
+            if possible_index.isdigit():
+                indices.append(int(possible_index))
+        if indices:
+            offset = max(indices)
+
         for i, job in enumerate(currentJobs, start=1):
             job_progress_number = f'[{i}/{len(currentJobs)}] '
             sleep(0.5)
@@ -491,7 +504,7 @@ class WorkerThread(QThread):
             try:
                 comic2ebook.options = comic2ebook.checkOptions(copy(options))
                 if len(currentJobs) > 1 and comic2ebook.options.title != 'defaulttitle':
-                    comic2ebook.options.title += f' {i:0{len(str(len(currentJobs)))}}'
+                    comic2ebook.options.title += ' ' + f'{i+offset:0{len(str(len(currentJobs)))}}'.zfill(2)
                 outputPath = comic2ebook.makeBook(job, fusion_cover_path, self, job_progress_number)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
