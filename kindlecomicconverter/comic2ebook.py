@@ -1093,8 +1093,6 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
 
     if options.filename:
         name = KOBO_TOUCH_DRIVER_REGEX.sub('_', options.filename)
-    elif options.title != 'defaulttitle':
-        name = KOBO_TOUCH_DRIVER_REGEX.sub('_', options.title)
     else:
         if source_path.is_file():
             name = source_path.stem

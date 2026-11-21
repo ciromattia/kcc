@@ -505,6 +505,7 @@ class WorkerThread(QThread):
                 comic2ebook.options = comic2ebook.checkOptions(copy(options))
                 if len(currentJobs) > 1 and comic2ebook.options.title != 'defaulttitle':
                     comic2ebook.options.title += ' ' + f'{i+offset:0{len(str(len(currentJobs)))}}'.zfill(2)
+                    comic2ebook.options.filename = comic2ebook.options.title
                 outputPath = comic2ebook.makeBook(job, fusion_cover_path, self, job_progress_number)
                 MW.hideProgressBar.emit()
             except UserWarning as warn:
