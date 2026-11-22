@@ -469,15 +469,16 @@ class WorkerThread(QThread):
                 MW.addMessage.emit(i18n.tr_arg(QCoreApplication.translate('KCCGUI', 'Fusion Failed. %1'), str(e)), 'error', True)
 
         offset = 0
-        existing_files = os_sorted(os.listdir(GUI.targetDirectory))
-        indices = []
-        for file in existing_files:
-            stem = Path(file).stem
-            possible_index = stem.split(' ')[-1]
-            if possible_index.isdigit():
-                indices.append(int(possible_index))
-        if indices:
-            offset = max(indices)
+        if GUI.targetDirectory:
+            existing_files = os_sorted(os.listdir(GUI.targetDirectory))
+            indices = []
+            for file in existing_files:
+                stem = Path(file).stem
+                possible_index = stem.split(' ')[-1]
+                if possible_index.isdigit():
+                    indices.append(int(possible_index))
+            if indices:
+                offset = max(indices)
 
         for i, job in enumerate(currentJobs, start=1):
             job_progress_number = f'[{i}/{len(currentJobs)}] '
