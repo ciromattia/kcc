@@ -469,7 +469,7 @@ class WorkerThread(QThread):
                 MW.addMessage.emit(i18n.tr_arg(QCoreApplication.translate('KCCGUI', 'Fusion Failed. %1'), str(e)), 'error', True)
 
         offset = 0
-        if GUI.targetDirectory:
+        if GUI.targetDirectory and os.path.isdir(GUI.targetDirectory):
             existing_files = os_sorted(os.listdir(GUI.targetDirectory))
             indices = []
             for file in existing_files:
@@ -1361,8 +1361,6 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
                     return
             elif GUI.defaultOutputFolderBox.checkState() == Qt.CheckState.PartiallyChecked:
                 target_path = parent.joinpath(f"{name} [kcc]")
-                if not target_path.exists():
-                    target_path.mkdir()
                 self.targetDirectory = str(target_path)
             elif GUI.defaultOutputFolderBox.isChecked():
                 self.targetDirectory = os.path.join(self.defaultOutputFolder, f"{name} [kcc]")
