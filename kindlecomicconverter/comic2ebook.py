@@ -1087,7 +1087,7 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
     if wantedname:
         abs_path = os.path.abspath(options.output)
         if not os.path.exists(abs_path):
-            os.mkdir(abs_path)
+            os.makedirs(abs_path, exist_ok=True)
     else:
         abs_path = source_path.parent
 
