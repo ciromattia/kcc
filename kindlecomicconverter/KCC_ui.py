@@ -893,7 +893,7 @@ class Ui_mainWindow(object):
 "\n"
 "For multiple files, will enumerate the titles and filenames, e.g. Series 01, Series 02, etc.", None))
 #endif // QT_CONFIG(tooltip)
-        self.titleEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Default Title/Series", None))
+        self.titleEdit.setPlaceholderText(QCoreApplication.translate("mainWindow", u"Title/Filename/Series", None))
 #if QT_CONFIG(tooltip)
         self.coverFillBox.setToolTip(QCoreApplication.translate("mainWindow", u"Resize cover to exact device resolution by center-cropping to aspect ratio first.\n"
 "May crop top/bottom or left/right depending on source aspect ratio. Not implemented for Kindle Scribe.", None))
