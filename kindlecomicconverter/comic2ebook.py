@@ -631,7 +631,6 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, ori
     if options.comicinfo_chapters:
         chapterlist = []
 
-        global_diff = 0
         diff_delta = 0
 
         # if split
@@ -643,13 +642,11 @@ def buildEPUB(path, chapternames, tomenumber, ischunked, cover: image.Cover, ori
 
         for aChapter in options.comicinfo_chapters:
             pageid = aChapter[0]
-            cur_diff = global_diff
-            global_diff = 0
-
-            for x in range(0, pageid + cur_diff + 1):
+            x = 0
+            while x < pageid:
                 if '-kcc-b' in filelist[x][1]:
                     pageid += diff_delta
-                    global_diff += diff_delta
+                x += 1
 
             filename = filelist[pageid][1]
             chapterlist.append((filelist[pageid][0].replace('Images', 'Text'), filename))
