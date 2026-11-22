@@ -1093,8 +1093,6 @@ def getOutputFilename(srcpath, wantedname, ext, tomenumber):
 
     if options.filename:
         name = KOBO_TOUCH_DRIVER_REGEX.sub('_', options.filename)
-    elif options.title != 'defaulttitle':
-        name = KOBO_TOUCH_DRIVER_REGEX.sub('_', options.title)
     else:
         if source_path.is_file():
             name = source_path.stem
@@ -1133,7 +1131,6 @@ def getMetadata(path, originalpath):
     options.volume = ''
     options.number = ''
     options.series = ''
-    options.filename = ''
     if options.title == 'defaulttitle':
         defaultTitle = True
         if os.path.isdir(originalpath):
@@ -1518,6 +1515,8 @@ def makeParser():
                                 help="Output generated file to specified directory or file")
     output_options.add_argument("-t", "--title", action="store", dest="title", default="defaulttitle",
                                 help="Comic title [Default=filename or directory name]")
+    output_options.add_argument("--filename", action="store", dest="filename", default="",
+                                help="filename without the extension [Default=original filename]")
     output_options.add_argument("--metadatatitle", type=int, dest="metadatatitle", default=0,
                                 help="Write title using ComicInfo.xml or other embedded metadata. 1: Combine Title with default schema "
                                      "2: Use Title only")
@@ -2053,11 +2052,9 @@ def makeBook(source, fusion_cover_path=None, qtgui=None, job_progress=''):
         if len(tomes) > 9:
             tomeNumber += 1
             options.title = options.baseTitle + ' [' + str(tomeNumber).zfill(2) + '/' + str(len(tomes)).zfill(2) + ']'
-            options.filename = options.baseTitle
         elif len(tomes) > 1:
             tomeNumber += 1
             options.title = options.baseTitle + ' [' + str(tomeNumber) + '/' + str(len(tomes)) + ']'
-            options.filename = options.baseTitle
         if options.format == 'CBZ':
             print(f"{job_progress}Creating CBZ file...")
             if len(tomes) > 1:
