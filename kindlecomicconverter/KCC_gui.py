@@ -1530,7 +1530,10 @@ class KCCGUI(QObject, KCC_ui.Ui_mainWindow):
         self.lastPath = self.settings.value('lastPath', '', type=str)
         self.defaultOutputFolder = str(self.settings.value('defaultOutputFolder', '', type=str))
         if not os.path.exists(self.defaultOutputFolder):
-            self.defaultOutputFolder = ''
+            try:
+                os.makedirs(self.defaultOutputFolder, exist_ok=True)
+            except Exception:
+                self.defaultOutputFolder = ''
 
         self.expertMode = self.settings.value('expertMode', False, type=bool)
         if not self.expertMode:
