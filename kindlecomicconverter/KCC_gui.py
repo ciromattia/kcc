@@ -43,6 +43,7 @@ from psutil import Process
 from copy import copy
 from packaging.version import Version
 from tempfile import gettempdir, mkdtemp
+import pillow_jxl 
 from PIL import Image
 from PIL.Image import Dither
 

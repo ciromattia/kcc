@@ -42,6 +42,7 @@ from uuid import uuid4
 from natsort import os_sort_keygen, os_sorted
 from packaging.version import Version
 from slugify import slugify as slugify_ext
+import pillow_jxl
 from PIL import Image, ImageFile, ImageOps
 from pathlib import Path
 from subprocess import STDOUT, PIPE, CalledProcessError
