@@ -23,6 +23,10 @@ import os
 from pathlib import Path
 import mozjpeg_lossless_optimization
 import numpy as np
+from packaging.version import Version
+from PIL import __version__ as pillowVersion
+if Version(pillowVersion) < Version('11.3.0'):
+    import pillow_avif
 import pillow_jxl
 from PIL import Image, ImageOps, ImageFile, ImageChops, ImageDraw
 
