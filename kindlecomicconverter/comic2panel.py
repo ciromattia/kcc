@@ -24,6 +24,7 @@ import sys
 from argparse import ArgumentParser
 from shutil import rmtree
 from multiprocessing import Pool
+import pillow_jxl
 from PIL import Image, ImageChops, ImageOps, ImageDraw, ImageFilter, ImageFile
 from PIL.Image import Dither
 from .shared import dot_clean, getImageFileName, walkLevel, walkSort, sanitizeTrace

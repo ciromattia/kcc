@@ -23,6 +23,7 @@ import os
 from pathlib import Path
 import mozjpeg_lossless_optimization
 import numpy as np
+import pillow_jxl
 from PIL import Image, ImageOps, ImageFile, ImageChops, ImageDraw
 
 from .rainbow_artifacts_eraser import erase_rainbow_artifacts

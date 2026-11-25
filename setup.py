@@ -161,6 +161,7 @@ setuptools.setup(
         'packaging>=23.2',
         "PyMuPDF<2.0;python_version<'3.12'",
         "pymupdf-lite>=2.0;python_version>='3.12'",
+        "pillow-jxl-plugin"
     ],
     classifiers=[],
     zip_safe=False,
