@@ -1,6 +1,6 @@
 ![thumbnail](images/thumbnail.jpeg)
 
-[Title: Ubunchu! | Author: Hiroshi Seo | Publisher: ASCII MEDIA WORKS Inc.]
+[Title: Ubunchu! | Author: Hiroshi Seo | Publisher: ASCII MEDIA WORKS Inc. | License: Creative Commons]
 
 # KCC
 
