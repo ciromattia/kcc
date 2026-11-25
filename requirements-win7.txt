@@ -9,3 +9,4 @@ natsort>=8.4.0
 numpy==1.23.5
 PyMuPDF<2
 pillow-jxl-plugin<=1.2.8
+pillow-avif-plugin

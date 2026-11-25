@@ -42,6 +42,9 @@ from uuid import uuid4
 from natsort import os_sort_keygen, os_sorted
 from packaging.version import Version
 from slugify import slugify as slugify_ext
+from PIL import __version__ as pillowVersion
+if Version(pillowVersion) < Version('11.3.0'):
+    import pillow_avif
 import pillow_jxl
 from PIL import Image, ImageFile, ImageOps
 from pathlib import Path
